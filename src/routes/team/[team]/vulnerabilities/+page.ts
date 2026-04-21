@@ -1,14 +1,12 @@
-import { load_TeamVulnerabilities } from '$houdini';
+import { runQuery } from '$lib/urql/load';
 import { addPageMeta } from '$lib/utils/pageMeta';
+import { TeamVulnerabilitiesQuery } from './teamVulnerabilities';
 
 export async function load(event) {
 	return {
 		...(await addPageMeta(event, { title: 'Vulnerabilities' })),
-		...(await load_TeamVulnerabilities({
-			event,
-			variables: {
-				team: event.params.team
-			}
-		}))
+		TeamVulnerabilities: await runQuery(event, TeamVulnerabilitiesQuery, {
+			team: event.params.team
+		})
 	};
 }

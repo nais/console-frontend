@@ -1,8 +1,9 @@
 <script lang="ts">
-	import { goto } from '$app/navigation';
+	import { goto, invalidateAll } from '$app/navigation';
 	import { page } from '$app/state';
-	import { ValueEncoding, graphql, type ValueEncoding$options } from '$houdini';
 	import Confirm from '$lib/ui/Confirm.svelte';
+	import { getContextClient } from '$lib/urql/context';
+	import { ValueEncoding } from '$lib/urql/gql/graphql';
 	import {
 		Alert,
 		BodyShort,
@@ -20,6 +21,11 @@
 		Tr
 	} from '@nais/ds-svelte-community';
 	import { SvelteMap } from 'svelte/reactivity';
+	import {
+		DeleteSecretMutation,
+		RemoveSecretValueMutation,
+		UpdateSecretValueMutation
+	} from './secret';
 
 	import SidebarActivity from '$lib/domain/activity/sidebar/SidebarActivity.svelte';
 	import WorkloadLink from '$lib/domain/workload/WorkloadLink.svelte';
@@ -42,9 +48,13 @@
 
 	let { data }: PageProps = $props();
 	let { Secret, teamSlug } = $derived(data);
-	let secret = $derived($Secret.data?.team.environment.secret);
-	let viewerIsMember = $derived($Secret.data?.team.viewerIsMember ?? false);
-	let isAdmin = $derived($Secret.data?.me?.__typename === 'User' ? $Secret.data.me.isAdmin : false);
+	let secret = $derived(Secret.data?.team.environment.secret);
+	let viewerIsMember = $derived(Secret.data?.team.viewerIsMember ?? false);
+	let isAdmin = $derived(Secret.data?.me?.__typename === 'User' ? Secret.data.me.isAdmin : false);
+
+	const client = getContextClient();
+
+	let mutationErrors: { message: string }[] | null = $state(null);
 	let permissions = $derived(getSecretPermissions(viewerIsMember, isAdmin));
 	let canMutate = $derived(permissions.canMutate);
 	let canRevealValues = $derived(permissions.canRevealValues);
@@ -68,20 +78,20 @@
 	// Store for revealed secret values (including encoding info)
 	interface RevealedValue {
 		value: string;
-		encoding: ValueEncoding$options;
+		encoding: ValueEncoding | `${ValueEncoding}`;
 	}
 	let revealedValues = new SvelteMap<string, RevealedValue>();
 
 	// Handle successful secret reveal - receives values directly from the mutation
 	const handleRevealSuccess = (
-		values: { name: string; value: string; encoding: ValueEncoding$options }[]
+		values: { name: string; value: string; encoding: ValueEncoding | `${ValueEncoding}` }[]
 	) => {
 		secretsRevealed = true;
 		revealedValues.clear();
 		for (const v of values) {
 			revealedValues.set(v.name, { value: v.value, encoding: v.encoding });
 		}
-		Secret.fetch();
+		void invalidateAll();
 	};
 
 	const hideSecrets = () => {
@@ -97,42 +107,26 @@
 		viewSecretsModalOpen = true;
 	};
 
-	const updateSecretValue = graphql(`
-		mutation updateSecretValue(
-			$name: String!
-			$team: Slug!
-			$env: String!
-			$value: SecretValueInput!
-		) {
-			updateSecretValue(input: { environment: $env, name: $name, team: $team, value: $value }) {
-				secret {
-					id
-					keys
-					lastModifiedBy {
-						name
-						email
-					}
-					lastModifiedAt
-				}
-			}
-		}
-	`);
-
 	const editValueForKey = async () => {
 		if (keyToEdit == '') {
 			return;
 		}
-		await updateSecretValue.mutate({
-			name: secretName,
-			team: teamSlug,
-			env: env,
-			value: {
-				name: keyToEdit,
-				value: valueToEdit
-			}
-		});
+		const result = await client
+			.mutation(UpdateSecretValueMutation, {
+				name: secretName,
+				team: teamSlug,
+				env: env,
+				value: {
+					name: keyToEdit,
+					value: valueToEdit
+				}
+			})
+			.toPromise();
 
-		if ($updateSecretValue.errors) {
+		if (result.error) {
+			mutationErrors = result.error.graphQLErrors?.length
+				? result.error.graphQLErrors.map((e) => ({ message: e.message }))
+				: [{ message: result.error.message }];
 			return;
 		}
 
@@ -143,39 +137,26 @@
 
 		editValueOpen = false;
 		keyToEdit = '';
-		Secret.fetch();
+		void invalidateAll();
 	};
-
-	const removeSecretValue = graphql(`
-		mutation removeSecretValue($name: String!, $team: Slug!, $env: String!, $valueName: String!) {
-			removeSecretValue(
-				input: { environment: $env, secretName: $name, team: $team, valueName: $valueName }
-			) {
-				secret {
-					id
-					keys
-					lastModifiedBy {
-						name
-						email
-					}
-					lastModifiedAt
-				}
-			}
-		}
-	`);
 
 	const deleteValueFromSecret = async () => {
 		if (keyToDelete == '') {
 			return;
 		}
-		await removeSecretValue.mutate({
-			name: secretName,
-			team: teamSlug,
-			env: env,
-			valueName: keyToDelete
-		});
+		const result = await client
+			.mutation(RemoveSecretValueMutation, {
+				name: secretName,
+				team: teamSlug,
+				env: env,
+				valueName: keyToDelete
+			})
+			.toPromise();
 
-		if ($removeSecretValue.errors) {
+		if (result.error) {
+			mutationErrors = result.error.graphQLErrors?.length
+				? result.error.graphQLErrors.map((e) => ({ message: e.message }))
+				: [{ message: result.error.message }];
 			return;
 		}
 
@@ -185,26 +166,23 @@
 		}
 
 		deleteValueOpen = false;
-		Secret.fetch();
+		void invalidateAll();
 		keyToDelete = '';
 	};
 
-	const deleteMutation = graphql(`
-		mutation deleteSecret($name: String!, $team: Slug!, $env: String!) {
-			deleteSecret(input: { name: $name, team: $team, environment: $env }) {
-				secretDeleted
-			}
-		}
-	`);
-
 	const deleteSecret = async () => {
-		await deleteMutation.mutate({
-			name: secretName,
-			team: teamSlug,
-			env: env
-		});
+		const result = await client
+			.mutation(DeleteSecretMutation, {
+				name: secretName,
+				team: teamSlug,
+				env: env
+			})
+			.toPromise();
 
-		if ($deleteMutation.errors) {
+		if (result.error) {
+			mutationErrors = result.error.graphQLErrors?.length
+				? result.error.graphQLErrors.map((e) => ({ message: e.message }))
+				: [{ message: result.error.message }];
 			return;
 		}
 
@@ -269,9 +247,9 @@
 	};
 </script>
 
-<GraphErrors errors={$Secret.errors} />
+<GraphErrors errors={Secret.errors} />
 
-{#if $Secret.fetching}
+{#if !Secret.data && !Secret.errors}
 	<Loader />
 {:else if secret}
 	<Confirm
@@ -344,8 +322,8 @@
 	<div class="wrapper">
 		<div>
 			<div class="alerts">
-				{#if $deleteMutation.errors}
-					<GraphErrors errors={$deleteMutation.errors} />
+				{#if mutationErrors}
+					<GraphErrors errors={mutationErrors} />
 				{/if}
 			</div>
 			<div class="data-heading">
@@ -480,12 +458,12 @@
 			</Table>
 			{#if canMutate}
 				<AddKeyValue
-					initial={secret.keys.map((k) => ({ name: k }))}
+					initial={secret.keys.map((k: string) => ({ name: k }))}
 					{teamSlug}
 					{env}
 					{secretName}
 					onSuccess={() => {
-						Secret.fetch();
+						void invalidateAll();
 					}}
 				/>
 			{/if}
@@ -494,9 +472,7 @@
 			<Metadata lastModifiedAt={secret.lastModifiedAt} lastModifiedBy={secret.lastModifiedBy} />
 			<Workloads workloads={secret.workloads} />
 			<Manifest {secretName} />
-			{#if secret}
-				<SidebarActivity activityLog={secret} direct={secret.activityLog} />
-			{/if}
+			<SidebarActivity activityLog={secret} />
 		</div>
 	</div>
 {/if}
@@ -504,13 +480,13 @@
 	{#snippet header()}
 		<Heading as="h1" size="large">Editing Value of Key <i>{keyToEdit}</i></Heading>
 	{/snippet}
-	{#if ($Secret.data?.team.environment.secret.workloads.nodes ?? []).length > 0}
+	{#if (secret?.workloads.nodes ?? []).length > 0}
 		<Alert variant="info" size="small">
 			<BodyShort
 				>Editing this secret will cause a restart of the applications listed below.</BodyShort
 			>
 			<ul>
-				{#each $Secret.data?.team.environment.secret.workloads.nodes ?? [] as workload (workload.id)}
+				{#each secret?.workloads.nodes ?? [] as workload (workload.id)}
 					<li><WorkloadLink {workload} /></li>
 				{/each}
 			</ul>

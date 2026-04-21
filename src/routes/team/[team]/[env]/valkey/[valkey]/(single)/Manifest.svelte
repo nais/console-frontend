@@ -1,31 +1,20 @@
 <script lang="ts">
-	import { fragment, graphql, type ValkeyManifestFragment } from '$houdini';
 	import { docURL } from '$lib/doc';
 	import ExternalLink from '$lib/ui/ExternalLink.svelte';
+	import { useFragment, type FragmentType } from '$lib/urql/fragment';
 	import { CopyButton, Heading } from '@nais/ds-svelte-community';
+	import { ValkeyManifestFragment } from './manifest';
 
 	interface Props {
-		valkey: ValkeyManifestFragment;
+		valkey: FragmentType<typeof ValkeyManifestFragment>;
 		teamSlug: string;
 	}
 
 	let { valkey, teamSlug }: Props = $props();
 
-	const data = $derived(
-		fragment(
-			valkey,
-			graphql(`
-				fragment ValkeyManifestFragment on Valkey {
-					name
-					memory
-					tier
-					maxMemoryPolicy
-				}
-			`)
-		)
-	);
+	const data = $derived(useFragment(ValkeyManifestFragment, valkey));
 
-	const niceName = $derived($data.name.replace(`valkey-${teamSlug}-`, ''));
+	const niceName = $derived(data.name.replace(`valkey-${teamSlug}-`, ''));
 
 	const workloadManifest = $derived(`spec:
   valkey:

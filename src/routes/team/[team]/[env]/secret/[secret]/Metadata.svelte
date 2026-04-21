@@ -3,11 +3,14 @@
 	import { BodyShort, Detail, Heading } from '@nais/ds-svelte-community';
 
 	interface Props {
-		lastModifiedAt: Date | null;
-		lastModifiedBy: {
-			readonly name: string;
-			readonly email: string;
-		} | null;
+		lastModifiedAt: Date | string | null | undefined;
+		lastModifiedBy:
+			| {
+					readonly name: string;
+					readonly email: string;
+			  }
+			| null
+			| undefined;
 	}
 
 	let { lastModifiedAt, lastModifiedBy }: Props = $props();

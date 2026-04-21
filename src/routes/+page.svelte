@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { goto } from '$app/navigation';
+	import { page } from '$app/state';
 	import TeamListItem from '$lib/domain/list-items/TeamListItem.svelte';
 	import List from '$lib/ui/List.svelte';
 	import PageModal, { pageModalClick } from '$lib/ui/PageModal.svelte';
@@ -17,11 +19,39 @@
 
 	let tenantName = $derived(data.tenantName);
 
-	let userTeams = $derived(
-		$UserTeams.data?.me.__typename == 'User' && $UserTeams.data.me.teams?.nodes.length
+	let userTeamsData = $derived(
+		UserTeams.data?.me.__typename === 'User' ? UserTeams.data.me.teams : null
 	);
 
-	let name = $derived($UserInfo.data?.me.__typename == 'User' ? $UserInfo.data.me.name : '');
+	let userTeams = $derived(userTeamsData ? userTeamsData.nodes.length : undefined);
+
+	let name = $derived(UserInfo.data?.me.__typename == 'User' ? UserInfo.data.me.name : '');
+
+	/**
+	 * Navigate to a new pagination state by mutating the URL search params.
+	 * The `+page.ts` `load` function picks these up and re-runs the query.
+	 */
+	function navigateToCursor(params: { after?: string; before?: string }) {
+		const url = new URL(page.url);
+		url.searchParams.delete('after');
+		url.searchParams.delete('before');
+		if (params.after) url.searchParams.set('after', params.after);
+		if (params.before) url.searchParams.set('before', params.before);
+		goto(url, { keepFocus: true, noScroll: true });
+	}
+
+	const paginationLoaders = {
+		loadNextPage: () => {
+			if (userTeamsData?.pageInfo.endCursor) {
+				navigateToCursor({ after: userTeamsData.pageInfo.endCursor });
+			}
+		},
+		loadPreviousPage: () => {
+			if (userTeamsData?.pageInfo.startCursor) {
+				navigateToCursor({ before: userTeamsData.pageInfo.startCursor });
+			}
+		}
+	};
 </script>
 
 <svelte:head><title>Nais Console</title></svelte:head>
@@ -47,27 +77,19 @@
 					Create team
 				</Button>
 			</div>
-			{#if $UserTeams.data}
-				{#if $UserTeams.data.me.__typename == 'User'}
-					<List>
-						{#each $UserTeams.data.me.teams.nodes as node (node.team.id)}
-							<TeamListItem team={node.team} />
-						{:else}
-							<BodyLong>
-								You don't seem to belong to any teams at the moment. You can create a new team or
-								search for the team you'd like to join. Once you find it, locate one of the owners
-								in the members list on the team page to request membership.
-							</BodyLong>
-						{/each}
-					</List>
-					<Pagination
-						page={$UserTeams.data.me.teams.pageInfo}
-						loaders={{
-							loadPreviousPage: UserTeams.loadPreviousPage,
-							loadNextPage: UserTeams.loadNextPage
-						}}
-					/>
-				{/if}
+			{#if userTeamsData}
+				<List>
+					{#each userTeamsData.nodes as node (node.team.id)}
+						<TeamListItem team={node.team} />
+					{:else}
+						<BodyLong>
+							You don't seem to belong to any teams at the moment. You can create a new team or
+							search for the team you'd like to join. Once you find it, locate one of the owners in
+							the members list on the team page to request membership.
+						</BodyLong>
+					{/each}
+				</List>
+				<Pagination page={userTeamsData.pageInfo} loaders={paginationLoaders} />
 			{/if}
 			<FavoritesList />
 		</div>

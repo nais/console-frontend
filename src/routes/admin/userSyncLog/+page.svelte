@@ -1,7 +1,9 @@
 <script lang="ts">
+	import { page } from '$app/state';
 	import GraphErrors from '$lib/ui/GraphErrors.svelte';
 	import Pagination from '$lib/ui/Pagination.svelte';
 	import Time from '$lib/ui/Time.svelte';
+	import { cursorPaginationLoaders } from '$lib/urql/pagination';
 	import { Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte-community';
 	import type { PageProps } from './$types';
 
@@ -9,8 +11,8 @@
 	let { UserSyncLogs } = $derived(data);
 </script>
 
-<GraphErrors errors={$UserSyncLogs.errors} />
-{#if $UserSyncLogs.data}
+<GraphErrors errors={UserSyncLogs.errors} />
+{#if UserSyncLogs.data}
 	<Table size="small">
 		<Thead>
 			<Tr>
@@ -21,7 +23,7 @@
 			</Tr>
 		</Thead>
 		<Tbody>
-			{#each $UserSyncLogs.data.userSyncLog.nodes || [] as entry (entry.id)}
+			{#each UserSyncLogs.data.userSyncLog.nodes || [] as entry (entry.id)}
 				<Tr>
 					<Td>
 						{#if entry.__typename === 'RoleAssignedUserSyncLogEntry'}
@@ -55,15 +57,8 @@
 	</Table>
 
 	<Pagination
-		page={$UserSyncLogs.data.userSyncLog.pageInfo}
-		loaders={{
-			loadNextPage: () => {
-				UserSyncLogs.loadNextPage();
-			},
-			loadPreviousPage: () => {
-				UserSyncLogs.loadPreviousPage();
-			}
-		}}
+		page={UserSyncLogs.data.userSyncLog.pageInfo}
+		loaders={cursorPaginationLoaders(page.url, UserSyncLogs.data.userSyncLog.pageInfo)}
 	/>
 {/if}
 

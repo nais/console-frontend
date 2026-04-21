@@ -1,15 +1,11 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
-	import {
-		graphql,
-		type ConfirmTeamDeletion$input,
-		type ConfirmTeamDeletion$result,
-		type QueryResult
-	} from '$houdini';
 	import GraphErrors from '$lib/ui/GraphErrors.svelte';
 	import Time from '$lib/ui/Time.svelte';
+	import { getContextClient } from '$lib/urql/context';
 	import { Alert, BodyLong, Button, Modal } from '@nais/ds-svelte-community';
 	import { TrashIcon } from '@nais/ds-svelte-community/icons';
+	import { ConfirmTeamDeletionMutation } from '../settings';
 	import type { PageProps } from './$types';
 
 	let { data }: PageProps = $props();
@@ -18,25 +14,18 @@
 
 	let showConfirmDeleteTeam = $state(false);
 	let deleteTeamLoading = $state(false);
-	let deleteTeamResp: QueryResult<ConfirmTeamDeletion$result, ConfirmTeamDeletion$input> | null =
-		$state(null);
+	let deleteTeamErrors: { message: string }[] | null = $state(null);
 
-	const deleteTeam = graphql(`
-		mutation ConfirmTeamDeletion($key: String!, $team: Slug!) {
-			confirmTeamDeletion(input: { key: $key, slug: $team }) {
-				deletionStarted
-			}
-		}
-	`);
+	const client = getContextClient();
 </script>
 
-<GraphErrors errors={$TeamDeleteKey.errors} />
+<GraphErrors errors={TeamDeleteKey.errors} />
 
-{#if $TeamDeleteKey.data}
-	{@const key = $TeamDeleteKey.data.team.deleteKey}
-	{#if $UserInfo.data?.me.__typename == 'User' && $UserInfo.data.me.id == key.createdBy.id}
+{#if TeamDeleteKey.data}
+	{@const key = TeamDeleteKey.data.team.deleteKey}
+	{#if UserInfo.data?.me.__typename == 'User' && UserInfo.data.me.id == key.createdBy.id}
 		<Alert variant="error">You can not confirm your own delete request.</Alert>
-	{:else if Date.now() - +key.expires > 0}
+	{:else if Date.now() - +new Date(key.expires) > 0}
 		<Alert variant="error">The delete key has expired.</Alert>
 	{:else}
 		<BodyLong style="padding-bottom: 1rem;">
@@ -63,8 +52,8 @@
 				it.
 			</BodyLong>
 
-			{#if deleteTeamResp?.errors}
-				<GraphErrors errors={deleteTeamResp.errors} />
+			{#if deleteTeamErrors}
+				<GraphErrors errors={deleteTeamErrors} />
 			{/if}
 
 			{#snippet footer()}
@@ -73,10 +62,20 @@
 					loading={deleteTeamLoading}
 					onclick={async () => {
 						deleteTeamLoading = true;
-						deleteTeamResp = await deleteTeam.mutate({
-							key: key.key,
-							team: key.team.slug
-						});
+						deleteTeamErrors = null;
+						const result = await client
+							.mutation(ConfirmTeamDeletionMutation, {
+								key: key.key,
+								team: key.team.slug
+							})
+							.toPromise();
+						deleteTeamLoading = false;
+						if (result.error) {
+							deleteTeamErrors = result.error.graphQLErrors?.length
+								? result.error.graphQLErrors.map((e) => ({ message: e.message }))
+								: [{ message: result.error.message }];
+							return;
+						}
 						goto('/team/' + key.team.slug, { replaceState: true });
 					}}>Confirm</Button
 				>

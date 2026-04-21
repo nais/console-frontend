@@ -1,8 +1,10 @@
 <script lang="ts">
 	import { page } from '$app/state';
-	import { graphql } from '$houdini';
 	import { menuItems } from '$lib/menuItems';
 	import Menu from '$lib/ui/Menu.svelte';
+	import { getContextClient } from '$lib/urql/context';
+	import { graphql as gql } from '$lib/urql/gql';
+	import { queryStore } from '@urql/svelte';
 	import { setInventoryRefetcher } from './teamContext.svelte';
 
 	const {
@@ -22,64 +24,65 @@
 		teamSlug: string;
 	} = $props();
 
-	const Inventory = $derived(
-		graphql(`
-			query Inventory($team: Slug!) @cache(policy: CacheAndNetwork) {
-				team(slug: $team) {
-					inventoryCounts {
-						applications {
-							total
-						}
-						jobs {
-							total
-						}
-						sqlInstances {
-							total
-						}
-						buckets {
-							total
-						}
-						valkeys {
-							total
-						}
-						openSearches {
-							total
-						}
-						kafkaTopics {
-							total
-						}
-						bigQueryDatasets {
-							total
-						}
-						postgresInstances {
-							total
-						}
-						secrets {
-							total
-						}
-						configs {
-							total
-						}
+	const InventoryQuery = gql(/* GraphQL */ `
+		query Inventory($team: Slug!) {
+			team(slug: $team) {
+				inventoryCounts {
+					applications {
+						total
+					}
+					jobs {
+						total
+					}
+					sqlInstances {
+						total
+					}
+					buckets {
+						total
+					}
+					valkeys {
+						total
+					}
+					openSearches {
+						total
+					}
+					kafkaTopics {
+						total
+					}
+					bigQueryDatasets {
+						total
+					}
+					postgresInstances {
+						total
+					}
+					secrets {
+						total
+					}
+					configs {
+						total
 					}
 				}
 			}
-		`)
+		}
+	`);
+
+	const client = getContextClient();
+
+	const inventory = $derived(
+		queryStore({
+			client,
+			query: InventoryQuery,
+			variables: { team: teamSlug },
+			requestPolicy: 'cache-and-network'
+		})
 	);
 
-	$effect(() => {
-		Inventory.fetch({
-			variables: {
-				team: teamSlug
-			}
-		});
-	});
+	const result = $derived($inventory);
 
 	setInventoryRefetcher(() => {
-		Inventory.fetch({
-			variables: {
-				team: teamSlug
-			}
-		});
+		// Re-issue the query bypassing the cache; the queryStore subscribed
+		// above will receive the fresh result through the normalized cache.
+		client.query(InventoryQuery, { team: teamSlug }, { requestPolicy: 'network-only' }).toPromise();
 	});
 </script>
 
@@ -87,7 +90,7 @@
 	items={menuItems({
 		path: page.url.pathname,
 		member,
-		inventory: $Inventory.fetching ? undefined : $Inventory.data?.team.inventoryCounts,
+		inventory: result.fetching ? undefined : result.data?.team.inventoryCounts,
 		features,
 		isAdmin
 	})}

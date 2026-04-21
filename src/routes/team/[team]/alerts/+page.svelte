@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { page } from '$app/state';
-	import { AlertOrderField } from '$houdini';
 	import { docURL, tenantURL } from '$lib/doc';
 	import CodeBlockPromQl from '$lib/domain/monitoring/CodeBlockPromQL.svelte';
 	import { formatSeconds } from '$lib/domain/vulnerability/dateUtils';
@@ -9,6 +8,8 @@
 	import List from '$lib/ui/List.svelte';
 	import OrderByMenu from '$lib/ui/OrderByMenu.svelte';
 	import Pagination from '$lib/ui/Pagination.svelte';
+	import { AlertOrderField } from '$lib/urql/gql/graphql';
+	import { cursorPaginationLoaders } from '$lib/urql/pagination';
 	import { changeParams } from '$lib/utils/searchparams';
 	import { BodyLong, Button, CopyButton, Heading, Search, Tag } from '@nais/ds-svelte-community';
 	import { ActionMenu, ActionMenuCheckboxItem } from '@nais/ds-svelte-community/experimental';
@@ -23,10 +24,7 @@
 	let { data }: PageProps = $props();
 	let { Alerts, AlertsMetadata } = $derived(data);
 
-	let filter = $state($Alerts.variables?.filter?.name ?? '');
-
-	let after: string = $derived($Alerts.variables?.after ?? '');
-	let before: string = $derived($Alerts.variables?.before ?? '');
+	let filter = $state(page.url.searchParams.get('filter') ?? '');
 
 	function makeGrafanaExploreUrl(query: string): string {
 		const params = new URLSearchParams({
@@ -52,10 +50,10 @@
 		return tenantURL('grafana', `/explore?${params.toString()}`);
 	}
 
-	const totalAlerts = $derived($AlertsMetadata.data?.team.totalAlerts.pageInfo.totalCount ?? 0);
+	const totalAlerts = $derived(AlertsMetadata.data?.team.totalAlerts.pageInfo.totalCount ?? 0);
 
 	const allEnvs = $derived(
-		$AlertsMetadata.data?.team.environments.map((env) => env.environment.name) ?? []
+		AlertsMetadata.data?.team.environments.map((env) => env.environment.name) ?? []
 	);
 
 	let filteredEnvs = $derived(page.url.searchParams.get('environments')?.split(',') ?? allEnvs);
@@ -70,15 +68,13 @@
 
 	const changeQuery = (
 		params: {
-			after?: string;
-			before?: string;
 			newFilter?: string;
 			environments?: string;
 		} = {}
 	) => {
 		changeParams({
-			before: params.before ?? before,
-			after: params.after ?? after,
+			before: '',
+			after: '',
 			filter: params.newFilter ?? filter,
 			environments: params.environments ?? ''
 		});
@@ -98,7 +94,7 @@
 			>
 		</BodyLong>
 		{#if totalAlerts > 0}
-			{@const alerts = $Alerts.data?.team.alerts}
+			{@const alerts = Alerts.data?.team.alerts}
 			<div class="search">
 				<form
 					onsubmit={(e) => {
@@ -145,7 +141,7 @@
 							</Button>
 						{/snippet}
 						<ActionMenuCheckboxItem
-							checked={$Alerts.data?.team.environments.every((env) =>
+							checked={Alerts.data?.team.environments.every((env) =>
 								filteredEnvs.includes(env.environment.name)
 							)
 								? true
@@ -156,7 +152,7 @@
 						>
 							All environments
 						</ActionMenuCheckboxItem>
-						{#each $Alerts.data?.team.environments ?? [] as { environment, id } (id)}
+						{#each Alerts.data?.team.environments ?? [] as { environment, id } (id)}
 							<ActionMenuCheckboxItem
 								checked={filteredEnvs.includes(environment.name)}
 								onchange={(checked) =>
@@ -242,11 +238,7 @@
 
 			<Pagination
 				page={alerts?.pageInfo}
-				loaders={{
-					loadPreviousPage: () =>
-						changeQuery({ before: alerts?.pageInfo.startCursor ?? '', after: '' }),
-					loadNextPage: () => changeQuery({ after: alerts?.pageInfo.endCursor ?? '', before: '' })
-				}}
+				loaders={cursorPaginationLoaders(page.url, alerts?.pageInfo)}
 			/>
 		{/if}
 	</div>

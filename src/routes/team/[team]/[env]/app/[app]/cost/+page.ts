@@ -1,7 +1,8 @@
-import { load_AppCost } from '$houdini';
 import { getFromForCost, type CostInterval } from '$lib/domain/cost/dateUtils';
+import { runQuery } from '$lib/urql/load';
 import { addPageMeta } from '$lib/utils/pageMeta.js';
-import { subDays } from 'date-fns';
+import { format, subDays } from 'date-fns';
+import { AppCostQuery } from './appCost';
 
 export async function load(event) {
 	const interval = (event.url.searchParams.get('interval') ?? '30d') as CostInterval;
@@ -13,15 +14,14 @@ export async function load(event) {
 		to,
 		from,
 		...(await addPageMeta(event, { title: 'Cost' })),
-		...(await load_AppCost({
-			event,
-			variables: {
-				team: event.params.team,
-				app: event.params.app,
-				env: event.params.env,
-				to,
-				from
-			}
-		}))
+		AppCost: await runQuery(event, AppCostQuery, {
+			team: event.params.team,
+			app: event.params.app,
+			env: event.params.env,
+			// `Date` scalar is `YYYY-MM-DD` on the wire. Houdini auto-formatted
+			// JS `Date` instances; with urql we serialize explicitly.
+			from: format(from, 'yyyy-MM-dd'),
+			to: format(to, 'yyyy-MM-dd')
+		})
 	};
 }

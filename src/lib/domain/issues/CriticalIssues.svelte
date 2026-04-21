@@ -1,7 +1,9 @@
 <script lang="ts">
-	import { graphql } from '$houdini';
 	import IssueListItem from '$lib/domain/list-items/IssueListItem.svelte';
+	import { getContextClient } from '$lib/urql/context';
+	import { graphql as gql } from '$lib/urql/gql';
 	import { Button, Heading } from '@nais/ds-svelte-community';
+	import { queryStore } from '@urql/svelte';
 
 	interface Props {
 		teamSlug: string;
@@ -9,12 +11,12 @@
 
 	let { teamSlug }: Props = $props();
 
-	const first = 5;
+	let pageSize = $state(5);
 
-	const teamHealth = graphql(`
+	const TeamHealthQuery = gql(/* GraphQL */ `
 		query TeamHealth($teamSlug: Slug!, $first: Int!) {
 			team(slug: $teamSlug) {
-				issues(first: $first, filter: { severity: CRITICAL }) @paginate(mode: Infinite) {
+				issues(first: $first, filter: { severity: CRITICAL }) {
 					pageInfo {
 						endCursor
 						hasNextPage
@@ -32,31 +34,44 @@
 		}
 	`);
 
-	$effect(() => {
-		teamHealth.fetch({ variables: { teamSlug, first } });
-	});
+	const client = getContextClient();
 
-	async function loadMore() {
-		await teamHealth.loadNextPage({ first: 5 });
+	// `@paginate(mode: Infinite)` from the previous Houdini document has
+	// no direct equivalent in urql. As a stop-gap until Phase 3.3 lands a
+	// proper infinite-scroll helper for urql, we re-issue the query with
+	// a larger `$first` whenever the user clicks "Load more". The
+	// document cache de-duplicates the overlapping selection.
+	const teamHealth = $derived(
+		queryStore({
+			client,
+			query: TeamHealthQuery,
+			variables: { teamSlug, first: pageSize }
+		})
+	);
+
+	const result = $derived($teamHealth);
+
+	const hasCriticalIssues = $derived((result.data?.team?.issues?.pageInfo?.totalCount ?? 0) > 0);
+
+	function loadMore() {
+		pageSize += 5;
 	}
-
-	const hasCriticalIssues = $derived($teamHealth.data?.team?.issues?.pageInfo?.totalCount ?? 0 > 0);
 </script>
 
-{#if $teamHealth.data && hasCriticalIssues && !$teamHealth.fetching}
+{#if result.data && hasCriticalIssues && !result.fetching}
 	<div class="issues-wrapper">
-		{#if ($teamHealth.data?.team?.issues?.edges?.length ?? 0) > 0}
+		{#if (result.data?.team?.issues?.edges?.length ?? 0) > 0}
 			<Heading as="h2" size="small" spacing
 				><a href="/team/{teamSlug}/issues?severity=CRITICAL">Critical Issues</a></Heading
 			>
 			<div class="issues-list">
-				{#each $teamHealth.data?.team?.issues?.edges ?? [] as issue (issue.node.id)}
+				{#each result.data?.team?.issues?.edges ?? [] as issue (issue.node.id)}
 					<IssueListItem item={issue.node} />
 				{/each}
 			</div>
 		{/if}
 
-		{#if $teamHealth.data?.team?.issues?.pageInfo?.hasNextPage}
+		{#if result.data?.team?.issues?.pageInfo?.hasNextPage}
 			<div class="load-more">
 				<Button variant="tertiary" size="small" onclick={loadMore}>Load more issues</Button>
 			</div>

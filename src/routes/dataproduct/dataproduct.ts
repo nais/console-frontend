@@ -1,0 +1,47 @@
+import { graphql as gql } from '$lib/urql/gql';
+
+export const DataProductQuery = gql(/* GraphQL */ `
+	query DataProduct {
+		currentUnitPrices {
+			cpu {
+				value
+			}
+			memory {
+				value
+			}
+		}
+		teams(first: 1000) {
+			nodes {
+				inventoryCounts {
+					applications {
+						total
+					}
+					bigQueryDatasets {
+						total
+					}
+					buckets {
+						total
+					}
+					jobs {
+						total
+					}
+					kafkaTopics {
+						total
+					}
+					openSearches {
+						total
+					}
+					postgresInstances {
+						total
+					}
+					valkeys {
+						total
+					}
+					sqlInstances {
+						total
+					}
+				}
+			}
+		}
+	}
+`);

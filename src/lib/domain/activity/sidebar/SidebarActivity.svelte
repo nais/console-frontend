@@ -1,10 +1,7 @@
 <script lang="ts">
-	import {
-		fragment,
-		graphql,
-		type SidebarActivityLogFragment,
-		type SidebarActivityLogFragment$data
-	} from '$houdini';
+	import { SidebarActivityLogFragment } from '$lib/domain/activity/sidebar/sidebarActivity';
+	import { useFragment, type FragmentType } from '$lib/urql/fragment';
+	import type { ResultOf } from '@graphql-typed-document-node/core';
 	import { Heading } from '@nais/ds-svelte-community';
 	import { RocketIcon } from '@nais/ds-svelte-community/icons';
 	import type { Component } from 'svelte';
@@ -42,203 +39,19 @@
 	import ValkeyDeletedActivityLogEntryText from './texts/ValkeyDeletedActivityLogEntryText.svelte';
 	import ValkeyUpdatedActivityLogEntryText from './texts/ValkeyUpdatedActivityLogEntryText.svelte';
 
+	type SidebarActivityLogFragmentData = ResultOf<typeof SidebarActivityLogFragment>;
+
 	interface Props {
-		activityLog: SidebarActivityLogFragment;
-		direct?: SidebarActivityLogFragment$data['activityLog'];
+		activityLog: FragmentType<typeof SidebarActivityLogFragment>;
+		direct?: SidebarActivityLogFragmentData['activityLog'];
 	}
 
 	let { activityLog, direct }: Props = $props();
 
-	const data = $derived(
-		fragment(
-			activityLog,
-			graphql(`
-				fragment SidebarActivityLogFragment on ActivityLogger
-				@arguments(filter: { type: "ActivityLogFilter" }, limit: { type: "Int" }) {
-					activityLog(first: $limit, filter: $filter) {
-						nodes {
-							id
-							actor
-							message
-							createdAt
-							resourceName
-							resourceType
-							environmentName
-							teamSlug
-							__typename
-
-							... on DeploymentActivityLogEntry {
-								deploymentData: data {
-									triggerURL
-								}
-							}
-							... on ApplicationScaledActivityLogEntry {
-								appScaled: data {
-									newSize
-									direction
-								}
-							}
-							... on ClusterAuditActivityLogEntry {
-								id
-								clusterAuditData: data {
-									action
-									resourceKind
-								}
-							}
-
-							... on RepositoryAddedActivityLogEntry {
-								id
-							}
-							... on RepositoryRemovedActivityLogEntry {
-								id
-							}
-							... on SecretCreatedActivityLogEntry {
-								id
-							}
-							... on SecretDeletedActivityLogEntry {
-								id
-							}
-							... on SecretValueAddedActivityLogEntry {
-								secretValueAddedData: data {
-									valueName
-								}
-							}
-							... on SecretValueUpdatedActivityLogEntry {
-								secretValueUpdatedData: data {
-									valueName
-								}
-							}
-							... on SecretValueRemovedActivityLogEntry {
-								secretValueRemovedData: data {
-									valueName
-								}
-							}
-							... on SecretValuesViewedActivityLogEntry {
-								secretValuesViewedData: data {
-									reason
-								}
-							}
-							... on ConfigCreatedActivityLogEntry {
-								id
-							}
-							... on ConfigDeletedActivityLogEntry {
-								id
-							}
-							... on ConfigUpdatedActivityLogEntry {
-								configUpdatedData: data {
-									updatedFields {
-										field
-										oldValue
-										newValue
-									}
-								}
-							}
-							... on TeamEnvironmentUpdatedActivityLogEntry {
-								id
-								teamEnvironmentUpdatedData: data {
-									updatedFields {
-										field
-										oldValue
-										newValue
-									}
-								}
-							}
-							... on TeamDeployKeyUpdatedActivityLogEntry {
-								id
-							}
-							... on JobRunDeletedActivityLogEntry {
-								id
-								jobRunDeletedData: data {
-									runName
-								}
-							}
-							... on JobTriggeredActivityLogEntry {
-								id
-							}
-							... on TeamMemberAddedActivityLogEntry {
-								addedData: data {
-									role
-									userEmail
-									userID
-								}
-							}
-							... on TeamMemberRemovedActivityLogEntry {
-								removedData: data {
-									userEmail
-									userID
-								}
-							}
-							... on TeamMemberSetRoleActivityLogEntry {
-								setRoleData: data {
-									role
-									userEmail
-									userID
-								}
-							}
-							... on TeamUpdatedActivityLogEntry {
-								id
-								teamUpdatedData: data {
-									updatedFields {
-										field
-										oldValue
-										newValue
-									}
-								}
-							}
-							... on ApplicationRestartedActivityLogEntry {
-								id
-							}
-							... on ApplicationDeletedActivityLogEntry {
-								id
-							}
-							... on JobDeletedActivityLogEntry {
-								id
-							}
-							... on CredentialsActivityLogEntry {
-								credentialsData: data {
-									permission
-									ttl
-								}
-							}
-							... on ValkeyCreatedActivityLogEntry {
-								id
-							}
-							... on ValkeyDeletedActivityLogEntry {
-								id
-							}
-							... on ValkeyUpdatedActivityLogEntry {
-								valkeyData: data {
-									updatedFields {
-										field
-										newValue
-										oldValue
-									}
-								}
-							}
-							... on OpenSearchCreatedActivityLogEntry {
-								id
-							}
-							... on OpenSearchDeletedActivityLogEntry {
-								id
-							}
-							... on OpenSearchUpdatedActivityLogEntry {
-								opensearchData: data {
-									updatedFields {
-										field
-										newValue
-										oldValue
-									}
-								}
-							}
-						}
-					}
-				}
-			`)
-		)
-	);
+	const data = $derived(useFragment(SidebarActivityLogFragment, activityLog));
 
 	type Kind =
-		| SidebarActivityLogFragment$data['activityLog']['nodes'][number]['__typename']
+		| SidebarActivityLogFragmentData['activityLog']['nodes'][number]['__typename']
 		| 'JobTriggeredActivityLogEntry';
 
 	function textComponent(kind: Kind): Component<{ data: unknown }> {
@@ -309,7 +122,7 @@
 		}
 	}
 
-	const list = $derived(data && $data ? $data.activityLog.nodes : (direct?.nodes ?? []));
+	const list = $derived(data ? data.activityLog.nodes : (direct?.nodes ?? []));
 </script>
 
 <div class="wrapper">

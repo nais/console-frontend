@@ -1,15 +1,12 @@
 <script lang="ts">
-	import type { SidebarActivityLogFragment$data } from '$houdini';
+	import type { SidebarActivityLogEntry } from './types';
 	import Time from '$lib/ui/Time.svelte';
 	import { BodyShort } from '@nais/ds-svelte-community';
 
 	let {
 		data
 	}: {
-		data: Extract<
-			SidebarActivityLogFragment$data['activityLog']['nodes'][number],
-			{ __typename: 'RepositoryRemovedActivityLogEntry' }
-		>;
+		data: SidebarActivityLogEntry<'RepositoryRemovedActivityLogEntry'>;
 	} = $props();
 </script>
 

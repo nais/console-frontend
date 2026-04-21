@@ -7,11 +7,11 @@
 	let { JobManifest } = $derived(data);
 </script>
 
-<GraphErrors errors={$JobManifest.errors} />
+<GraphErrors errors={JobManifest.errors} />
 
-{#if $JobManifest.data}
+{#if JobManifest.data}
 	<div class="wrapper">
-		<Manifest workload={$JobManifest.data.team.environment.workload} />
+		<Manifest workload={JobManifest.data.team.environment.workload} />
 	</div>
 {/if}
 

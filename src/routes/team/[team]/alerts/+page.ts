@@ -1,12 +1,9 @@
-import {
-	AlertOrderField,
-	load_Alerts,
-	load_AlertsMetadata,
-	OrderDirection,
-	type TeamAlertsFilter
-} from '$houdini';
 import { urlToOrderDirection, urlToOrderField } from '$lib/ui/OrderByMenu.svelte';
+import { AlertOrderField, OrderDirection, type TeamAlertsFilter } from '$lib/urql/gql/graphql';
+import { runQuery } from '$lib/urql/load';
+import { readCursorPagination } from '$lib/urql/pagination';
 import { addPageMeta } from '$lib/utils/pageMeta';
+import { AlertsMetadataQuery, AlertsQuery } from './alerts';
 
 const rows = 25;
 
@@ -17,28 +14,19 @@ export async function load(event) {
 			? undefined
 			: event.url.searchParams.get('environments')?.split(',') || [];
 
-	const after = event.url.searchParams.get('after') || '';
-	const before = event.url.searchParams.get('before') || '';
-
 	return {
 		...(await addPageMeta(event, { title: 'Alerts' })),
-		...(await load_Alerts({
-			event,
-			variables: {
-				team: event.params.team,
-				filter: { name: filter, environments } as TeamAlertsFilter,
-				orderBy: {
-					field: urlToOrderField(AlertOrderField, AlertOrderField.STATE, event.url),
-					direction: urlToOrderDirection(event.url, OrderDirection.ASC)
-				},
-				...(before ? { before, last: rows } : { after, first: rows })
-			}
-		})),
-		...(await load_AlertsMetadata({
-			event,
-			variables: {
-				team: event.params.team
-			}
-		}))
+		Alerts: await runQuery(event, AlertsQuery, {
+			team: event.params.team,
+			filter: { name: filter, environments } as TeamAlertsFilter,
+			orderBy: {
+				field: urlToOrderField(AlertOrderField, AlertOrderField.STATE, event.url),
+				direction: urlToOrderDirection(event.url, OrderDirection.ASC)
+			},
+			...readCursorPagination(event.url, rows)
+		}),
+		AlertsMetadata: await runQuery(event, AlertsMetadataQuery, {
+			team: event.params.team
+		})
 	};
 }

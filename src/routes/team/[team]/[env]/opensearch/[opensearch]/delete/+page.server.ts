@@ -1,7 +1,8 @@
-import { graphql } from '$houdini';
+import { graphql as gql } from '$lib/urql/gql';
+import { runMutation } from '$lib/urql/mutation';
 import { fail, redirect } from '@sveltejs/kit';
 
-const mutation = graphql(`
+const DeleteOpenSearchMutation = gql(/* GraphQL */ `
 	mutation DeleteOpenSearch($input: DeleteOpenSearchInput!) {
 		deleteOpenSearch(input: $input) {
 			openSearchDeleted
@@ -29,21 +30,18 @@ export const actions = {
 			});
 		}
 
-		const res = await mutation.mutate(
-			{
-				input: {
-					name: params.opensearch,
-					environmentName: params.env,
-					teamSlug: params.team
-				}
-			},
-			{ event }
-		);
+		const res = await runMutation(event, DeleteOpenSearchMutation, {
+			input: {
+				name: params.opensearch,
+				environmentName: params.env,
+				teamSlug: params.team
+			}
+		});
 
-		if (res.errors?.length ?? 0 > 0) {
+		if (res.errors?.length) {
 			return fail(400, {
 				success: false,
-				error: res.errors![0].message
+				error: res.errors[0].message
 			});
 		} else if (!res.data) {
 			return fail(500, {

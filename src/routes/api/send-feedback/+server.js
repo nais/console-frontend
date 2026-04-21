@@ -1,5 +1,6 @@
 import { env } from '$env/dynamic/private';
-import { ServerGetUserStore } from '$houdini';
+import { ServerGetUserQuery } from '$lib/urql/queries/serverGetUser';
+import { runQuery } from '$lib/urql/load';
 import { createFeedbackMessage } from './message';
 import { WebClient } from '@slack/web-api';
 import { json } from '@sveltejs/kit';
@@ -11,8 +12,7 @@ const tenant = env.TENANT_NAME || '';
 export async function POST(event) {
 	const { request } = event;
 
-	const q = new ServerGetUserStore();
-	const { data } = await q.fetch({ event });
+	const { data } = await runQuery(event, ServerGetUserQuery, {}, { ignoreAuthErrors: true });
 	if (data?.me.__typename !== 'User') {
 		return json({ error: 'Not authenticated' }, { status: 401 });
 	}

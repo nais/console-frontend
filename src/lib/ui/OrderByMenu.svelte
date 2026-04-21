@@ -1,4 +1,6 @@
 <script module lang="ts">
+	import { OrderDirection } from '$lib/urql/gql/graphql';
+
 	type ValueOf<T> = T[keyof T];
 
 	export type OrderField = {
@@ -16,15 +18,14 @@
 
 	export const urlToOrderDirection = (
 		url: URL,
-		defaultDirection: OrderDirection$options = OrderDirection.ASC
-	) =>
-		Object.values(OrderDirection).find((dir) => url.searchParams.get('sort')?.endsWith(dir)) ??
-		defaultDirection;
+		defaultDirection: OrderDirection | `${OrderDirection}` = OrderDirection.ASC
+	): OrderDirection =>
+		(Object.values(OrderDirection).find((dir) => url.searchParams.get('sort')?.endsWith(dir)) ??
+			defaultDirection) as OrderDirection;
 </script>
 
 <script lang="ts" generics="T extends OrderField">
 	import { page } from '$app/state';
-	import { OrderDirection, type OrderDirection$options } from '$houdini';
 	import { changeParams } from '$lib/utils/searchparams';
 	import { Button } from '@nais/ds-svelte-community';
 	import {
@@ -38,7 +39,7 @@
 	interface Props {
 		orderField: T;
 		defaultOrderField: ValueOf<T>;
-		defaultOrderDirection?: OrderDirection$options;
+		defaultOrderDirection?: OrderDirection | `${OrderDirection}`;
 		onlyInclude?: ValueOf<T>[];
 	}
 

@@ -1,6 +1,9 @@
-import { load_DeploymentsMetadata, load_TenantDeployments, type DeploymentFilter } from '$houdini';
+import type { DeploymentFilter } from '$lib/urql/gql/graphql';
+import { runQuery } from '$lib/urql/load';
+import { readCursorPagination } from '$lib/urql/pagination';
 import { addPageMeta } from '$lib/utils/pageMeta';
 import { subDays, subMonths } from 'date-fns';
+import { DeploymentsMetadataQuery, TenantDeploymentsQuery } from './deployments';
 
 const rows = 25;
 
@@ -24,8 +27,6 @@ function getFromDate(interval: Interval): Date | null {
 }
 
 export async function load(event) {
-	const after = event.url.searchParams.get('after') || '';
-	const before = event.url.searchParams.get('before') || '';
 	const intervalParam = event.url.searchParams.get('interval') as Interval | null;
 	const interval = intervalParam && intervalOptions.includes(intervalParam) ? intervalParam : '7d';
 	const from = getFromDate(interval);
@@ -33,23 +34,21 @@ export async function load(event) {
 		event.url.searchParams.get('environments')?.split(',') || undefined;
 
 	const filter: DeploymentFilter = {
-		...(from ? { from } : {}),
+		...(from ? { from: from.toISOString() } : {}),
 		...(environments ? { environments } : {})
 	};
 
+	const [TenantDeployments, DeploymentsMetadata] = await Promise.all([
+		runQuery(event, TenantDeploymentsQuery, {
+			...readCursorPagination(event.url, rows),
+			...(Object.keys(filter).length > 0 ? { filter } : {})
+		}),
+		runQuery(event, DeploymentsMetadataQuery, {})
+	]);
+
 	return {
-		...(await addPageMeta(event, {
-			title: 'Tenant Deployments'
-		})),
-		...(await load_TenantDeployments({
-			event,
-			variables: {
-				...(before ? { before, last: rows } : after ? { after, first: rows } : { first: rows }),
-				...(Object.keys(filter).length > 0 ? { filter } : {})
-			}
-		})),
-		...(await load_DeploymentsMetadata({
-			event
-		}))
+		...(await addPageMeta(event, { title: 'Tenant Deployments' })),
+		TenantDeployments,
+		DeploymentsMetadata
 	};
 }

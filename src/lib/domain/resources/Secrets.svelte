@@ -1,11 +1,21 @@
 <script lang="ts">
-	import { graphql } from '$houdini';
 	import GraphErrors from '$lib/ui/GraphErrors.svelte';
 	import IconLabel from '$lib/ui/IconLabel.svelte';
+	import { getContextClient } from '$lib/urql/context';
+	import { graphql as gql } from '$lib/urql/gql';
 	import { BodyShort, Heading, Loader } from '@nais/ds-svelte-community';
 	import { PadlockLockedIcon } from '@nais/ds-svelte-community/icons';
+	import { queryStore } from '@urql/svelte';
 
-	const secrets = graphql(`
+	interface Props {
+		environment: string;
+		workload: string;
+		teamSlug: string;
+	}
+
+	let { environment, workload, teamSlug }: Props = $props();
+
+	const WorkloadSecretsQuery = gql(/* GraphQL */ `
 		query WorkloadSecrets($name: String!, $team: Slug!, $env: String!) {
 			team(slug: $team) {
 				slug
@@ -28,37 +38,32 @@
 		}
 	`);
 
-	interface Props {
-		environment: string;
-		workload: string;
-		teamSlug: string;
-	}
+	const client = getContextClient();
 
-	let { environment, workload, teamSlug }: Props = $props();
+	const secrets = $derived(
+		queryStore({
+			client,
+			query: WorkloadSecretsQuery,
+			variables: { name: workload, team: teamSlug, env: environment },
+			requestPolicy: 'cache-and-network'
+		})
+	);
 
-	$effect(() => {
-		secrets.fetch({
-			variables: {
-				name: workload,
-				team: teamSlug,
-				env: environment
-			}
-		});
-	});
+	const result = $derived($secrets);
 </script>
 
 <div class="wrapper">
 	<Heading as="h3" size="small">Secrets</Heading>
-	<GraphErrors errors={$secrets.errors} />
+	<GraphErrors errors={result.error?.graphQLErrors ?? null} />
 
-	{#if $secrets.fetching}
+	{#if result.fetching && !result.data}
 		<Loader />
-	{:else if $secrets.data && $secrets.data.team.environment.workload.secrets.edges.length > 0}
-		{#each $secrets.data.team.environment.workload.secrets.edges as secret (secret.node.id)}
+	{:else if result.data && result.data.team.environment.workload.secrets.edges.length > 0}
+		{#each result.data.team.environment.workload.secrets.edges as secret (secret.node.id)}
 			<IconLabel
 				label={secret.node.name}
 				icon={PadlockLockedIcon}
-				href="/team/{$secrets.data.team.slug}/{$secrets.data.team.environment.environment
+				href="/team/{result.data.team.slug}/{result.data.team.environment.environment
 					.name}/secret/{secret.node.name}"
 			/>
 		{/each}

@@ -1,5 +1,6 @@
-import { load_Instances } from '$houdini';
+import { runQuery } from '$lib/urql/load';
 import { addPageMeta } from '$lib/utils/pageMeta';
+import { InstancesQuery } from './appLogs';
 
 export const ssr = false;
 
@@ -8,13 +9,10 @@ export async function load(event) {
 		...(await addPageMeta(event, {
 			title: 'Logs'
 		})),
-		...(await load_Instances({
-			event,
-			variables: {
-				team: event.params.team,
-				env: event.params.env,
-				app: event.params.app
-			}
-		}))
+		Instances: await runQuery(event, InstancesQuery, {
+			team: event.params.team,
+			env: event.params.env,
+			app: event.params.app
+		})
 	};
 }

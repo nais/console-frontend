@@ -1,11 +1,11 @@
 <script lang="ts">
 	import { page } from '$app/state';
-	import { type App$result } from '$houdini';
 	import WarningIcon from '$lib/icons/WarningIcon.svelte';
 	import IconLabel from '$lib/ui/IconLabel.svelte';
 	import List from '$lib/ui/List.svelte';
 	import ListItem from '$lib/ui/ListItem.svelte';
 	import TooltipAlignHack from '$lib/ui/TooltipAlignHack.svelte';
+	import type { ResultOf } from '@graphql-typed-document-node/core';
 	import { Button, Heading } from '@nais/ds-svelte-community';
 	import {
 		ArrowRightIcon,
@@ -15,9 +15,12 @@
 		HouseIcon,
 		PadlockLockedIcon
 	} from '@nais/ds-svelte-community/icons';
+	import type { AppQuery } from './app';
+
+	type AppData = NonNullable<ResultOf<typeof AppQuery>>;
 
 	interface Props {
-		app: App$result;
+		app: AppData;
 	}
 
 	let { app }: Props = $props();

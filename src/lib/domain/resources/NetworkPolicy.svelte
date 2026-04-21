@@ -1,85 +1,25 @@
 <script lang="ts">
-	import { fragment, graphql, type NetworkPolicy, type NetworkPolicy$data } from '$houdini';
+	import WorkloadLink from '$lib/domain/workload/WorkloadLink.svelte';
 	import { envTagVariant } from '$lib/envTagVariant';
 	import WarningIcon from '$lib/icons/WarningIcon.svelte';
-	import { Heading, Tag } from '@nais/ds-svelte-community';
-	import { GlobeIcon } from '@nais/ds-svelte-community/icons';
 	import IconLabel from '$lib/ui/IconLabel.svelte';
 	import TooltipAlignHack from '$lib/ui/TooltipAlignHack.svelte';
-	import WorkloadLink from '$lib/domain/workload/WorkloadLink.svelte';
+	import { useFragment, type FragmentType } from '$lib/urql/fragment';
+	import type { ResultOf } from '@graphql-typed-document-node/core';
+	import { Heading, Tag } from '@nais/ds-svelte-community';
+	import { GlobeIcon } from '@nais/ds-svelte-community/icons';
+	import { NetworkPolicyFragment } from './networkPolicy';
 
 	interface Props {
-		workload: NetworkPolicy;
+		workload: FragmentType<typeof NetworkPolicyFragment>;
 	}
 
 	let { workload }: Props = $props();
 
-	let data = $derived(
-		fragment(
-			workload,
-			graphql(`
-				fragment NetworkPolicy on Workload {
-					__typename
-					name
-					teamEnvironment {
-						environment {
-							name
-						}
-					}
-					team {
-						slug
-					}
-					networkPolicy {
-						inbound {
-							rules {
-								mutual
-								targetTeamSlug
-								targetWorkloadName
-								targetWorkload {
-									__typename
-									name
-									team {
-										slug
-									}
-									teamEnvironment {
-										environment {
-											name
-										}
-									}
-								}
-							}
-						}
-						outbound {
-							rules {
-								mutual
-								targetTeamSlug
-								targetWorkloadName
-								targetWorkload {
-									__typename
-									name
-									team {
-										slug
-									}
-									teamEnvironment {
-										environment {
-											name
-										}
-									}
-								}
-							}
-							external {
-								__typename
-								ports
-								target
-							}
-						}
-					}
-				}
-			`)
-		)
-	);
+	const data = $derived(useFragment(NetworkPolicyFragment, workload));
 
-	type NetworkPolicyRule = NetworkPolicy$data['networkPolicy']['inbound' | 'outbound']['rules'][0];
+	type NetworkPolicyData = ResultOf<typeof NetworkPolicyFragment>;
+	type NetworkPolicyRule = NetworkPolicyData['networkPolicy']['inbound' | 'outbound']['rules'][0];
 </script>
 
 {#snippet networkPolicyRule(rule: NetworkPolicyRule)}
@@ -90,13 +30,13 @@
 		{:else}
 			in {rule.targetTeamSlug}
 		{/if}
-		in <Tag size="small" variant={envTagVariant($data.teamEnvironment.environment.name)}
-			>{$data.teamEnvironment.environment.name}</Tag
-		> can access {$data.name}.
+		in <Tag size="small" variant={envTagVariant(data.teamEnvironment.environment.name)}
+			>{data.teamEnvironment.environment.name}</Tag
+		> can access {data.name}.
 	{:else if !rule.mutual && rule.targetWorkload}
 		<WorkloadLink
 			workload={rule.targetWorkload}
-			warning="{rule.targetWorkloadName} is missing outbound policy to {$data.name}"
+			warning="{rule.targetWorkloadName} is missing outbound policy to {data.name}"
 		/>
 	{:else if rule.targetWorkload}
 		<WorkloadLink workload={rule.targetWorkload} />
@@ -111,19 +51,19 @@
 	{/if}
 {/snippet}
 
-{#if $data.networkPolicy.inbound.rules.length > 0 || $data.networkPolicy.outbound.rules.length > 0 || $data.networkPolicy.outbound.external.length > 0}
+{#if data.networkPolicy.inbound.rules.length > 0 || data.networkPolicy.outbound.rules.length > 0 || data.networkPolicy.outbound.external.length > 0}
 	<Heading as="h2" size="medium" spacing>Network Policy</Heading>
 	<div class="grid">
 		<div>
 			<Heading as="h3" size="small" spacing>Inbound</Heading>
 			<ul>
-				{#each $data.networkPolicy.inbound.rules as rule (rule)}
+				{#each data.networkPolicy.inbound.rules as rule (rule)}
 					<li>
 						{@render networkPolicyRule(rule)}
 					</li>
 				{:else}
 					<li>
-						No inbound network policies configured for this {$data.__typename?.toLowerCase()}.
+						No inbound network policies configured for this {data.__typename?.toLowerCase()}.
 					</li>
 				{/each}
 			</ul>
@@ -131,10 +71,10 @@
 
 		<div>
 			<Heading as="h3" size="small" spacing>Outbound</Heading>
-			{#if $data.networkPolicy.outbound.rules.length > 0 || $data.networkPolicy.outbound.external.length > 0}
+			{#if data.networkPolicy.outbound.rules.length > 0 || data.networkPolicy.outbound.external.length > 0}
 				<Heading as="h4" size="xsmall" spacing>External</Heading>
 				<ul>
-					{#each Object.entries(Object.groupBy($data.networkPolicy.outbound.external, (e) => e.__typename ?? 'none')) as [type, list = []] (type)}
+					{#each Object.entries(Object.groupBy(data.networkPolicy.outbound.external, (e) => e.__typename ?? 'none')) as [type, list = []] (type)}
 						{#each list as external (external)}
 							{#each external.ports as port (port)}
 								<li><IconLabel label="https://{external.target}:{port}" icon={GlobeIcon} /></li>
@@ -144,14 +84,14 @@
 						{/each}
 					{:else}
 						<li>
-							No external outbound network policies configured for this {$data.__typename?.toLowerCase()}.
+							No external outbound network policies configured for this {data.__typename?.toLowerCase()}.
 						</li>
 					{/each}
 				</ul>
-				{#if $data.networkPolicy.outbound.rules.length > 0}
+				{#if data.networkPolicy.outbound.rules.length > 0}
 					<Heading as="h4" size="xsmall" spacing>Workloads</Heading>
 					<ul>
-						{#each $data.networkPolicy.outbound.rules as rule (rule)}
+						{#each data.networkPolicy.outbound.rules as rule (rule)}
 							<li>
 								{@render networkPolicyRule(rule)}
 							</li>
@@ -159,7 +99,7 @@
 					</ul>
 				{/if}
 			{:else}
-				No outbound network policies configured for this {$data.__typename?.toLowerCase()}.
+				No outbound network policies configured for this {data.__typename?.toLowerCase()}.
 			{/if}
 		</div>
 	</div>

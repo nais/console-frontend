@@ -6,7 +6,7 @@
 	interface Props {
 		title: string;
 		description: string;
-		start_at: Date | null | undefined;
+		start_at: Date | string | null | undefined;
 		deadline: boolean;
 	}
 

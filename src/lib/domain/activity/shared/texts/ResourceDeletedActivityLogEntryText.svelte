@@ -8,10 +8,7 @@
 	let {
 		data
 	}: {
-		data: Extract<
-			ActivityLogEntry<string>,
-			{ resourceType: string; resourceName: string; environmentName: string | null }
-		>;
+		data: ActivityLogEntry<string>;
 	} = $props();
 </script>
 

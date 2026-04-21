@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { page } from '$app/state';
-	import { IssueType } from '$houdini';
+	import { IssueType } from '$lib/urql/gql/graphql';
 	import { issueTypeLabel } from '$lib/utils/issueTypeLabel';
 	import { changeParams } from '$lib/utils/searchparams';
 	import { Heading } from '@nais/ds-svelte-community';
@@ -12,7 +12,7 @@
 		page.url.searchParams.get('issueType') ?? IssueType.DEPRECATED_INGRESS
 	);
 
-	let issues = $derived($AllIssues.data?.teams.nodes.flatMap((team) => team.issues.nodes) ?? []);
+	let issues = $derived(AllIssues.data?.teams.nodes.flatMap((team) => team.issues.nodes) ?? []);
 </script>
 
 <select
@@ -29,7 +29,7 @@
 
 <Heading as="h1" size="large" spacing>{issues.length}</Heading>
 <div class="grid">
-	{#if $AllIssues.data}
+	{#if AllIssues.data}
 		{#each issues as issue (issue.id)}
 			<div>
 				{issue.__typename}: {issue.message}

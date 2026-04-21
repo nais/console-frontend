@@ -1,15 +1,9 @@
-import {
-	graphql,
-	OpenSearchMajorVersion,
-	type OpenSearchMajorVersion$options,
-	OpenSearchMemory,
-	type OpenSearchMemory$options,
-	OpenSearchTier,
-	type OpenSearchTier$options
-} from '$houdini';
+import { graphql as gql } from '$lib/urql/gql';
+import { OpenSearchMajorVersion, OpenSearchMemory, OpenSearchTier } from '$lib/urql/gql/graphql';
+import { runMutation } from '$lib/urql/mutation';
 import { fail, redirect } from '@sveltejs/kit';
 
-const mutation = graphql(`
+const UpdateOpenSearchMutation = gql(/* GraphQL */ `
 	mutation UpdateOpenSearch($input: UpdateOpenSearchInput!) {
 		updateOpenSearch(input: $input) {
 			openSearch {
@@ -24,9 +18,9 @@ export const actions = {
 		const { request, params } = event;
 		const data = await request.formData();
 
-		const tier = data.get('tier') as OpenSearchTier$options | null;
-		const memory = data.get('memory') as OpenSearchMemory$options | null;
-		const version = data.get('version') as OpenSearchMajorVersion$options | null;
+		const tier = data.get('tier') as keyof typeof OpenSearchTier | null;
+		const memory = data.get('memory') as keyof typeof OpenSearchMemory | null;
+		const version = data.get('version') as keyof typeof OpenSearchMajorVersion | null;
 		const storage = data.get('storageGB') as string | null;
 
 		const allProps = {
@@ -53,26 +47,23 @@ export const actions = {
 			});
 		}
 
-		const res = await mutation.mutate(
-			{
-				input: {
-					name: params.opensearch,
-					environmentName: params.env,
-					teamSlug: params.team,
-					tier: OpenSearchTier[tier as keyof typeof OpenSearchTier],
-					memory: OpenSearchMemory[memory as keyof typeof OpenSearchMemory],
-					version: OpenSearchMajorVersion[version as keyof typeof OpenSearchMajorVersion],
-					storageGB: storageGB
-				}
-			},
-			{ event }
-		);
+		const res = await runMutation(event, UpdateOpenSearchMutation, {
+			input: {
+				name: params.opensearch,
+				environmentName: params.env,
+				teamSlug: params.team,
+				tier: OpenSearchTier[tier as keyof typeof OpenSearchTier],
+				memory: OpenSearchMemory[memory as keyof typeof OpenSearchMemory],
+				version: OpenSearchMajorVersion[version as keyof typeof OpenSearchMajorVersion],
+				storageGB: storageGB
+			}
+		});
 
-		if (res.errors?.length ?? 0 > 0) {
+		if (res.errors?.length) {
 			return fail(400, {
 				...allProps,
 				success: false,
-				error: res.errors![0].message
+				error: res.errors[0].message
 			});
 		} else if (!res.data) {
 			return fail(500, {

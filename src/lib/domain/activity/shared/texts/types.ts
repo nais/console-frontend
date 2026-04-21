@@ -1,6 +1,7 @@
-import type { ActivityLogEntryFragment$data } from '$houdini';
+import { ActivityLogEntryFragment } from '$lib/domain/list-items/activityLogListItem';
+import type { ResultOf } from '@graphql-typed-document-node/core';
 
 export type ActivityLogEntry<T extends string> = Extract<
-	ActivityLogEntryFragment$data,
+	ResultOf<typeof ActivityLogEntryFragment>,
 	{ __typename: T }
 >;

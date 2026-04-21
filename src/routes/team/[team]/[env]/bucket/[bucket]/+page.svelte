@@ -1,10 +1,10 @@
 <script lang="ts">
-	import GraphErrors from '$lib/ui/GraphErrors.svelte';
-	import ExternalLink from '$lib/ui/ExternalLink.svelte';
-	import IconLabel from '$lib/ui/IconLabel.svelte';
-	import TooltipAlignHack from '$lib/ui/TooltipAlignHack.svelte';
 	import WorkloadLink from '$lib/domain/workload/WorkloadLink.svelte';
 	import WarningIcon from '$lib/icons/WarningIcon.svelte';
+	import ExternalLink from '$lib/ui/ExternalLink.svelte';
+	import GraphErrors from '$lib/ui/GraphErrors.svelte';
+	import IconLabel from '$lib/ui/IconLabel.svelte';
+	import TooltipAlignHack from '$lib/ui/TooltipAlignHack.svelte';
 	import { CopyButton, Heading } from '@nais/ds-svelte-community';
 	import { CheckmarkIcon, XMarkIcon } from '@nais/ds-svelte-community/icons';
 	import type { PageProps } from './$types';
@@ -13,9 +13,9 @@
 	let { Bucket } = $derived(data);
 </script>
 
-<GraphErrors errors={$Bucket.errors} />
-{#if $Bucket.data}
-	{@const bucket = $Bucket.data.team.environment.bucket}
+<GraphErrors errors={Bucket.errors} />
+{#if Bucket.data}
+	{@const bucket = Bucket.data.team.environment.bucket}
 
 	<div class="wrapper">
 		<div>

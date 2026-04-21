@@ -10,9 +10,9 @@
 
 <div class="wrapper">
 	<div class="header">
-		{#if $TenantVulnerabilites.data?.vulnerabilitySummary}
+		{#if TenantVulnerabilites.data?.vulnerabilitySummary}
 			<VulnerabilitySummaryTenant
-				vulnerabilitySummary={$TenantVulnerabilites.data?.vulnerabilitySummary}
+				vulnerabilitySummary={TenantVulnerabilites.data?.vulnerabilitySummary}
 			/>
 		{/if}
 	</div>

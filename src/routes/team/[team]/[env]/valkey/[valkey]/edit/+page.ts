@@ -1,6 +1,7 @@
-import { load_UpdateValkeyData } from '$houdini';
+import { runQuery } from '$lib/urql/load';
 import { addPageMeta } from '$lib/utils/pageMeta';
 import { error } from '@sveltejs/kit';
+import { UpdateValkeyDataQuery } from './query';
 
 export async function load(event) {
 	const { parent, params } = event;
@@ -18,13 +19,10 @@ export async function load(event) {
 
 	return {
 		...(await addPageMeta(event, { title: 'Edit' })),
-		...(await load_UpdateValkeyData({
-			event,
-			variables: {
-				environment: event.params.env,
-				team: event.params.team,
-				name: event.params.valkey
-			}
-		}))
+		UpdateValkeyData: await runQuery(event, UpdateValkeyDataQuery, {
+			environment: event.params.env,
+			team: event.params.team,
+			name: event.params.valkey
+		})
 	};
 }

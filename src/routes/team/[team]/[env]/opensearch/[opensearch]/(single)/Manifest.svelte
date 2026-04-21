@@ -1,28 +1,20 @@
 <script lang="ts">
-	import { fragment, graphql, type OpenSearchManifestFragment } from '$houdini';
 	import { docURL } from '$lib/doc';
 	import ExternalLink from '$lib/ui/ExternalLink.svelte';
+	import { useFragment, type FragmentType } from '$lib/urql/fragment';
 	import { CopyButton, Heading } from '@nais/ds-svelte-community';
+	import { OpenSearchManifestFragment } from './manifest';
 
 	interface Props {
-		openSearch: OpenSearchManifestFragment;
+		openSearch: FragmentType<typeof OpenSearchManifestFragment>;
 		teamSlug: string;
 	}
 
 	let { openSearch, teamSlug }: Props = $props();
 
-	const data = $derived(
-		fragment(
-			openSearch,
-			graphql(`
-				fragment OpenSearchManifestFragment on OpenSearch {
-					name
-				}
-			`)
-		)
-	);
+	const data = $derived(useFragment(OpenSearchManifestFragment, openSearch));
 
-	const niceName = $derived($data.name.replace(`opensearch-${teamSlug}-`, ''));
+	const niceName = $derived(data.name.replace(`opensearch-${teamSlug}-`, ''));
 
 	const workloadManifest = $derived(`spec:
   openSearch:

@@ -1,6 +1,6 @@
 <script lang="ts">
+	import { invalidateAll } from '$app/navigation';
 	import { page } from '$app/state';
-	import { graphql } from '$houdini';
 	import SidebarActivity from '$lib/domain/activity/sidebar/SidebarActivity.svelte';
 	import AggregatedCostForWorkload from '$lib/domain/cost/AggregatedCostForWorkload.svelte';
 	import IssueListItem from '$lib/domain/list-items/IssueListItem.svelte';
@@ -14,9 +14,11 @@
 	import GraphErrors from '$lib/ui/GraphErrors.svelte';
 	import List from '$lib/ui/List.svelte';
 	import Time from '$lib/ui/Time.svelte';
+	import { getContextClient } from '$lib/urql/context';
 	import { generateJobRunName } from '$lib/utils/jobRunName';
 	import { Alert, BodyShort, Button, Heading, Loader } from '@nais/ds-svelte-community';
 	import type { PageProps } from './$types';
+	import { DeleteJobRunMutation, TriggerJobMutation } from './job';
 	import Runs from './Runs.svelte';
 	import Schedule from './Schedule.svelte';
 	import TriggerRunModal from './TriggerRunModal.svelte';
@@ -24,59 +26,29 @@
 	let { data }: PageProps = $props();
 	let { Job, teamSlug, viewerIsMember } = $derived(data);
 
-	const triggerRunMutation = () =>
-		graphql(`
-			mutation TriggerJob(
-				$teamSlug: Slug!
-				$environment: String!
-				$jobName: String!
-				$runName: String!
-				$jobId: ID!
-			) {
-				triggerJob(
-					input: {
-						environmentName: $environment
-						teamSlug: $teamSlug
-						runName: $runName
-						name: $jobName
-					}
-				) {
-					jobRun {
-						...All_Runs_insert @parentID(value: $jobId) @prepend
-					}
-				}
-			}
-		`);
-
-	const deleteJobRunMutation = graphql(`
-		mutation DeleteJobRun($teamSlug: Slug!, $environment: String!, $runName: String!) {
-			deleteJobRun(
-				input: { teamSlug: $teamSlug, environmentName: $environment, runName: $runName }
-			) {
-				success
-			}
-		}
-	`);
-
-	let triggerRun = $state(triggerRunMutation());
+	const client = getContextClient();
 
 	let jobName = $derived(page.params.job);
 	let environment = $derived(page.params.env);
 
 	let open = $state(false);
 
-	const submit = (runName: string) => {
+	let deleteErrors = $state<{ message: string }[] | null>(null);
+
+	const submit = async (runName: string) => {
 		if (!jobName || !environment) {
 			console.error('Job name or environment is not defined');
 			return;
 		}
-		triggerRun.mutate({
-			jobName: jobName,
-			environment,
-			teamSlug,
-			runName,
-			jobId: $Job.data!.team.environment.job.id
-		});
+		await client
+			.mutation(TriggerJobMutation, {
+				jobName,
+				environment,
+				teamSlug,
+				runName
+			})
+			.toPromise();
+		void invalidateAll();
 	};
 
 	let deleteConfirmOpen = $state(false);
@@ -90,38 +62,46 @@
 	const confirmDeleteRun = async () => {
 		if (!jobName || !environment) return;
 
-		const resp = await deleteJobRunMutation.mutate({
-			teamSlug,
-			environment,
-			runName: deleteRunName
-		});
+		const result = await client
+			.mutation(DeleteJobRunMutation, {
+				teamSlug,
+				environment,
+				runName: deleteRunName
+			})
+			.toPromise();
 
-		if ($deleteJobRunMutation.errors) return;
-		if (!resp.data?.deleteJobRun.success) return;
+		if (result.error) {
+			deleteErrors = result.error.graphQLErrors?.map((e) => ({ message: e.message })) ?? [
+				{ message: result.error.message }
+			];
+			return;
+		}
+		if (!result.data?.deleteJobRun.success) return;
 
+		deleteErrors = null;
 		deleteRunName = '';
-		// Small delay to allow the watcher cache to process the delete event
-		setTimeout(() => Job.fetch({ policy: 'NetworkOnly' }), 500);
+		// Small delay to allow the backend to process the delete event
+		setTimeout(() => void invalidateAll(), 500);
 	};
 </script>
 
-{#if $Job.data}
-	{@const job = $Job.data.team.environment.job}
+{#if Job.data}
+	{@const job = Job.data.team.environment.job}
 	<div class="workload-deploy-wrapper">
 		<WorkloadDeploy workload={job} />
 	</div>
 {/if}
 
-<GraphErrors errors={$Job.errors} />
+<GraphErrors errors={Job.errors} />
 
-{#if $Job.fetching}
+{#if !Job.data && !Job.errors}
 	<div style="display: flex; justify-content: center; align-items: center; height: 500px;">
 		<Loader size="3xlarge" />
 	</div>
 {/if}
 
-{#if $Job.data}
-	{@const job = $Job.data.team.environment.job}
+{#if Job.data}
+	{@const job = Job.data.team.environment.job}
 	<div class="wrapper">
 		<div class="job-content">
 			<div class="main-section">
@@ -133,11 +113,11 @@
 						/>. If the deletion is taking too long, contact the Nais team.
 					</Alert>
 				{/if}
-				{#if $Job.data.team.environment.job.issues.edges.length > 0}
+				{#if job.issues.edges.length > 0}
 					<div>
 						<Heading as="h3" spacing>Issues</Heading>
 						<List>
-							{#each $Job.data.team.environment.job.issues.edges as edge (edge.node.id)}
+							{#each job.issues.edges as edge (edge.node.id)}
 								<IssueListItem item={edge.node} />
 							{/each}
 						</List>
@@ -215,7 +195,7 @@
 			{#snippet header()}
 				<Heading>Delete job run</Heading>
 			{/snippet}
-			<GraphErrors errors={$deleteJobRunMutation.errors} />
+			<GraphErrors errors={deleteErrors} />
 			<BodyShort>
 				Are you sure you want to delete the job run <strong>{deleteRunName}</strong>?
 			</BodyShort>

@@ -1,10 +1,10 @@
 <script lang="ts">
-	import GraphErrors from '$lib/ui/GraphErrors.svelte';
-	import Time from '$lib/ui/Time.svelte';
-	import IconLabel from '$lib/ui/IconLabel.svelte';
-	import TooltipAlignHack from '$lib/ui/TooltipAlignHack.svelte';
 	import WorkloadLink from '$lib/domain/workload/WorkloadLink.svelte';
 	import WarningIcon from '$lib/icons/WarningIcon.svelte';
+	import GraphErrors from '$lib/ui/GraphErrors.svelte';
+	import IconLabel from '$lib/ui/IconLabel.svelte';
+	import Time from '$lib/ui/Time.svelte';
+	import TooltipAlignHack from '$lib/ui/TooltipAlignHack.svelte';
 	import { euroValueFormatter } from '$lib/utils/formatters';
 	import {
 		BodyShort,
@@ -24,9 +24,9 @@
 	let { BigQueryDataset: BigQueryDatasetInstance } = $derived(data);
 </script>
 
-<GraphErrors errors={$BigQueryDatasetInstance.errors} />
-{#if $BigQueryDatasetInstance.data}
-	{@const bq = $BigQueryDatasetInstance.data.team.environment.bigQueryDataset}
+<GraphErrors errors={BigQueryDatasetInstance.errors} />
+{#if BigQueryDatasetInstance.data}
+	{@const bq = BigQueryDatasetInstance.data.team.environment.bigQueryDataset}
 
 	<div class="wrapper">
 		<div>

@@ -1,14 +1,12 @@
-import { load_TeamResourceUsage } from '$houdini';
+import { runQuery } from '$lib/urql/load';
 import { addPageMeta } from '$lib/utils/pageMeta';
+import { TeamResourceUsageQuery } from './teamResourceUsage';
 
 export async function load(event) {
 	return {
 		...(await addPageMeta(event, { title: 'Utilization' })),
-		...(await load_TeamResourceUsage({
-			event,
-			variables: {
-				team: event.params.team
-			}
-		}))
+		TeamResourceUsage: await runQuery(event, TeamResourceUsageQuery, {
+			team: event.params.team
+		})
 	};
 }

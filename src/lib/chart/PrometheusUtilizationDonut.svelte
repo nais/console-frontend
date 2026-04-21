@@ -1,8 +1,10 @@
 <script lang="ts">
 	import { browser } from '$app/environment';
-	import { graphql } from '$houdini';
+	import { getContextClient } from '$lib/urql/context';
+	import { graphql as gql } from '$lib/urql/gql';
 	import { intersect } from '$lib/utils/intersectionObserver';
 	import { Loader } from '@nais/ds-svelte-community';
+	import { queryStore } from '@urql/svelte';
 	import { Arc, Chart, Group, Svg, Text } from 'layerchart';
 	import { untrack } from 'svelte';
 
@@ -26,7 +28,7 @@
 		formatCenterValue = (value: number) => `${value.toFixed(1)}%`
 	}: PrometheusUtilizationDonutProps = $props();
 
-	const q = graphql(`
+	const PrometheusUtilizationDonutQuery = gql(/* GraphQL */ `
 		query PrometheusUtilizationDonutQuery($input: MetricsQueryInput!, $environmentName: String!) {
 			environment(name: $environmentName) {
 				metrics(input: $input) {
@@ -58,12 +60,37 @@
 		}
 	};
 
+	// urql `Time` scalar serializes as a string. We materialize the variables
+	// only once the chart enters the viewport, mirroring the lazy-fetch
+	// behavior of the original Houdini-driven component.
+	let queryVariables = $state<{
+		input: { query: string; time: string };
+		environmentName: string;
+	} | null>(null);
+
+	const client = getContextClient();
+
+	const q = $derived(
+		queryStore({
+			client,
+			query: PrometheusUtilizationDonutQuery,
+			variables: queryVariables ?? {
+				input: { query: '', time: '' },
+				environmentName
+			},
+			pause: queryVariables === null,
+			requestPolicy: 'cache-and-network'
+		})
+	);
+
+	const result = $derived($q);
+
 	const latestSeriesValues = $derived.by(() => {
-		if (!$q.data) {
+		if (!result.data) {
 			return [] as number[];
 		}
 
-		return $q.data.environment.metrics.series
+		return result.data.environment.metrics.series
 			.map((series) => series.values.at(-1)?.value)
 			.filter((value): value is number => value !== undefined && Number.isFinite(value));
 	});
@@ -136,15 +163,15 @@
 	};
 
 	const overlayState = $derived.by(() => {
-		if ($q.errors) {
+		if (result.error) {
 			return 'error';
 		}
 
-		if ($q.fetching || $q.data === null) {
+		if (result.fetching || (queryVariables !== null && !result.data)) {
 			return 'loading';
 		}
 
-		if ($q.data && utilizationValue === null) {
+		if (result.data && utilizationValue === null) {
 			return 'no-data';
 		}
 
@@ -157,12 +184,10 @@
 		}
 
 		const time = new Date();
-		q.fetch({
-			variables: {
-				input: { query, time },
-				environmentName
-			}
-		});
+		queryVariables = {
+			input: { query, time: time.toISOString() },
+			environmentName
+		};
 	};
 
 	$effect(() => {

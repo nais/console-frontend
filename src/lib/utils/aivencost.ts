@@ -1,13 +1,11 @@
 import {
 	OpenSearchMemory,
-	type OpenSearchMemory$options,
 	OpenSearchTier,
-	type OpenSearchTier$options,
-	type ValkeyMemory$options,
-	type ValkeyTier$options
-} from '$houdini';
+	type ValkeyMemory,
+	type ValkeyTier
+} from '$lib/urql/gql/graphql';
 
-export const valkeyPlanCosts: Record<ValkeyTier$options, Record<ValkeyMemory$options, number>> = {
+export const valkeyPlanCosts: Record<`${ValkeyTier}`, Record<`${ValkeyMemory}`, number>> = {
 	SINGLE_NODE: {
 		GB_1: 16, // hobbyist
 		GB_4: 64,
@@ -31,8 +29,8 @@ export const valkeyPlanCosts: Record<ValkeyTier$options, Record<ValkeyMemory$opt
 };
 
 export const openSearchPlanCosts: Record<
-	OpenSearchTier$options,
-	Record<OpenSearchMemory$options, number>
+	`${OpenSearchTier}`,
+	Record<`${OpenSearchMemory}`, number>
 > = {
 	SINGLE_NODE: {
 		GB_2: 16, // hobbyist
@@ -53,9 +51,9 @@ export const openSearchPlanCosts: Record<
 };
 
 export const storageRequirements: Record<
-	OpenSearchTier$options,
+	`${OpenSearchTier}`,
 	Record<
-		OpenSearchMemory$options,
+		`${OpenSearchMemory}`,
 		{
 			min: number;
 			max: number;

@@ -1,122 +1,31 @@
 <script lang="ts">
-	import { fragment, graphql, type Persistence } from '$houdini';
+	import { PersistenceFragment } from '$lib/domain/persistence/persistence';
 	import IconLabel from '$lib/ui/IconLabel.svelte';
+	import { useFragment, type FragmentType } from '$lib/urql/fragment';
 	import { Heading } from '@nais/ds-svelte-community';
 
 	interface Props {
-		workload: Persistence;
+		workload: FragmentType<typeof PersistenceFragment>;
 	}
 
 	let { workload }: Props = $props();
 
-	let data = $derived(
-		fragment(
-			workload,
-			graphql(`
-				fragment Persistence on Workload {
-					name
-					team {
-						slug
-					}
-					teamEnvironment {
-						environment {
-							name
-						}
-					}
-					bigQueryDatasets {
-						edges {
-							node {
-								id
-								name
-							}
-						}
-					}
-					buckets {
-						edges {
-							node {
-								id
-								name
-							}
-						}
-					}
-					kafkaTopicAcls {
-						edges {
-							node {
-								teamName
-								access
-								workloadName
-								topic {
-									name
-									team {
-										slug
-									}
-									teamEnvironment {
-										environment {
-											name
-										}
-									}
-								}
-							}
-						}
-					}
-					openSearch {
-						id
-						name
-						access {
-							edges {
-								node {
-									access
-									workload {
-										id
-										name
-									}
-								}
-							}
-						}
-					}
-					postgresInstances {
-						edges {
-							node {
-								id
-								name
-							}
-						}
-					}
-					valkeys {
-						edges {
-							node {
-								id
-								name
-							}
-						}
-					}
-					sqlInstances {
-						edges {
-							node {
-								id
-								name
-							}
-						}
-					}
-				}
-			`)
-		)
-	);
+	const data = $derived(useFragment(PersistenceFragment, workload));
 
 	const toIconLabel =
 		(urlName: string) => (persistence: { node: { id: string; name: string } }) => ({
 			id: persistence.node.id,
 			label: persistence.node.name,
-			href: `/team/${$data.team.slug}/${$data.teamEnvironment.environment.name}/${urlName}/${persistence.node.name}`,
+			href: `/team/${data.team.slug}/${data.teamEnvironment.environment.name}/${urlName}/${persistence.node.name}`,
 			icon: urlName
 		});
 
 	const persistence = $derived({
-		buckets: $data.buckets.edges.map(toIconLabel('bucket')),
-		bigQuery: $data.bigQueryDatasets.edges.map(toIconLabel('bigquery')),
-		cloudSql: $data.sqlInstances.edges.map(toIconLabel('cloudsql')),
-		postgres: $data.postgresInstances.edges.map(toIconLabel('postgres')),
-		kafka: $data.kafkaTopicAcls.edges
+		buckets: data.buckets.edges.map(toIconLabel('bucket')),
+		bigQuery: data.bigQueryDatasets.edges.map(toIconLabel('bigquery')),
+		cloudSql: data.sqlInstances.edges.map(toIconLabel('cloudsql')),
+		postgres: data.postgresInstances.edges.map(toIconLabel('postgres')),
+		kafka: data.kafkaTopicAcls.edges
 			.filter((acl) => acl.node.teamName !== '*')
 			.map((e) => e.node)
 			.map((acl) => ({
@@ -126,15 +35,15 @@
 				icon: 'kafka',
 				description: acl.access
 			})),
-		openSearch: ($data.openSearch ? [$data.openSearch] : []).map((os) => ({
+		openSearch: (data.openSearch ? [data.openSearch] : []).map((os) => ({
 			id: os.id,
 			label: os.name,
-			href: `/team/${$data.team.slug}/${$data.teamEnvironment.environment.name}/opensearch/${os.name}`,
+			href: `/team/${data.team.slug}/${data.teamEnvironment.environment.name}/opensearch/${os.name}`,
 			icon: 'opensearch',
-			description: os.access.edges.find((access) => access.node.workload.name == $data.name)?.node
+			description: os.access.edges.find((access) => access.node.workload.name == data.name)?.node
 				.access
 		})),
-		valkey: $data.valkeys.edges.map(toIconLabel('valkey'))
+		valkey: data.valkeys.edges.map(toIconLabel('valkey'))
 	});
 </script>
 

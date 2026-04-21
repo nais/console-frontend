@@ -1,16 +1,16 @@
 <script lang="ts">
-	import { BigQueryDatasetOrderField, OrderDirection } from '$houdini';
-	import ExternalLink from '$lib/ui/ExternalLink.svelte';
-	import List from '$lib/ui/List.svelte';
-	import ListItem from '$lib/ui/ListItem.svelte';
-	import OrderByMenu from '$lib/ui/OrderByMenu.svelte';
+	import { docURL } from '$lib/doc';
 	import PersistenceCost from '$lib/domain/cost/PersistenceCost.svelte';
 	import PersistenceLink from '$lib/domain/persistence/PersistenceLink.svelte';
 	import WorkloadLink from '$lib/domain/workload/WorkloadLink.svelte';
-	import { docURL } from '$lib/doc';
 	import { envTagVariant } from '$lib/envTagVariant';
+	import ExternalLink from '$lib/ui/ExternalLink.svelte';
 	import GraphErrors from '$lib/ui/GraphErrors.svelte';
+	import List from '$lib/ui/List.svelte';
+	import ListItem from '$lib/ui/ListItem.svelte';
+	import OrderByMenu from '$lib/ui/OrderByMenu.svelte';
 	import Pagination from '$lib/ui/Pagination.svelte';
+	import { BigQueryDatasetOrderField, OrderDirection } from '$lib/urql/gql/graphql';
 	import { changeParams } from '$lib/utils/searchparams';
 	import { BodyLong, Tag } from '@nais/ds-svelte-community';
 	import { endOfYesterday, startOfMonth, subMonths } from 'date-fns';
@@ -20,8 +20,8 @@
 	let { BigQuery } = $derived(data);
 
 	let cost = $derived(() => {
-		const costData = $BigQuery.data?.team.cost;
-		const teamSlug = $BigQuery.data?.team.slug;
+		const costData = BigQuery.data?.team.cost;
+		const teamSlug = BigQuery.data?.team.slug;
 
 		if (!costData || !teamSlug) return null;
 
@@ -33,10 +33,10 @@
 	});
 </script>
 
-<GraphErrors errors={$BigQuery.errors} />
+<GraphErrors errors={BigQuery.errors} />
 
-{#if $BigQuery.data}
-	{#if $BigQuery.data.team.bigQueryDatasets.pageInfo.totalCount}
+{#if BigQuery.data}
+	{#if BigQuery.data.team.bigQueryDatasets.pageInfo.totalCount}
 		<div class="content-wrapper">
 			<div>
 				<BodyLong spacing>
@@ -46,7 +46,7 @@
 					>
 				</BodyLong>
 
-				<List title="{$BigQuery.data.team.bigQueryDatasets.pageInfo.totalCount} entries">
+				<List title="{BigQuery.data.team.bigQueryDatasets.pageInfo.totalCount} entries">
 					{#snippet menu()}
 						<OrderByMenu
 							orderField={BigQueryDatasetOrderField}
@@ -54,7 +54,7 @@
 							defaultOrderDirection={OrderDirection.DESC}
 						/>
 					{/snippet}
-					{#each $BigQuery.data.team.bigQueryDatasets.nodes as instance (instance.id)}
+					{#each BigQuery.data.team.bigQueryDatasets.nodes as instance (instance.id)}
 						<ListItem>
 							<div>
 								<PersistenceLink {instance} />
@@ -71,13 +71,13 @@
 					{/each}
 				</List>
 				<Pagination
-					page={$BigQuery.data.team.bigQueryDatasets.pageInfo}
+					page={BigQuery.data.team.bigQueryDatasets.pageInfo}
 					loaders={{
 						loadPreviousPage: () =>
 							changeParams(
 								{
 									after: '',
-									before: $BigQuery.data?.team.bigQueryDatasets.pageInfo.startCursor ?? ''
+									before: BigQuery.data?.team.bigQueryDatasets.pageInfo.startCursor ?? ''
 								},
 								{ noScroll: true }
 							),
@@ -85,7 +85,7 @@
 							changeParams(
 								{
 									before: '',
-									after: $BigQuery.data?.team.bigQueryDatasets.pageInfo.endCursor ?? ''
+									after: BigQuery.data?.team.bigQueryDatasets.pageInfo.endCursor ?? ''
 								},
 								{ noScroll: true }
 							)

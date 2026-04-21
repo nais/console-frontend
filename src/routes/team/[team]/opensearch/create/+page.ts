@@ -1,6 +1,7 @@
-import { load_CreateOpenSearchEnvironments } from '$houdini';
+import { runQuery } from '$lib/urql/load';
 import { addPageMeta } from '$lib/utils/pageMeta';
 import { error } from '@sveltejs/kit';
+import { CreateOpenSearchEnvironmentsQuery } from './createOpenSearch';
 
 export async function load(event) {
 	const { parent } = event;
@@ -21,6 +22,8 @@ export async function load(event) {
 				}
 			]
 		})),
-		...(await load_CreateOpenSearchEnvironments({ event, variables: { slug: event.params.team } }))
+		CreateOpenSearchEnvironments: await runQuery(event, CreateOpenSearchEnvironmentsQuery, {
+			slug: event.params.team
+		})
 	};
 }

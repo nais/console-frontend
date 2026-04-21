@@ -1,8 +1,8 @@
-import { ActivityLogEntryResourceType, type ActivityLogEntryResourceType$options } from '$houdini';
+import { ActivityLogEntryResourceType } from '$lib/urql/gql/graphql';
 
 export const activityLogResourceLink = (
 	environmentName: string,
-	resourceType: ActivityLogEntryResourceType$options,
+	resourceType: ActivityLogEntryResourceType | `${ActivityLogEntryResourceType}`,
 	resourceName: string,
 	teamSlug: string | null
 ) => {

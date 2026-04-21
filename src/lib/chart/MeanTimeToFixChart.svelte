@@ -3,11 +3,11 @@
 		| {
 				samples: {
 					severity: string;
-					date: Date;
+					date: Date | string;
 					days: number;
 					fixedCount: number;
-					firstFixedAt: Date | null;
-					lastFixedAt: Date | null;
+					firstFixedAt?: Date | string | null;
+					lastFixedAt?: Date | string | null;
 				}[];
 		  }
 		| undefined
@@ -38,7 +38,7 @@
 
 	type MTTFixChartData = {
 		date: Date;
-		[key: string]: number | Date | null;
+		[key: string]: number | Date | string | null | undefined;
 	};
 
 	function transformLayerchartMTTFix(data: MeanTimeToFixHistory): {
@@ -60,8 +60,10 @@
 
 			entry[severity] = sample.days ?? 0;
 			entry[`fixedCount_${severity}`] = sample.fixedCount ?? 0;
-			entry[`lastFixedAt_${severity}`] = sample.lastFixedAt;
-			entry[`firstFixedAt_${severity}`] = sample.firstFixedAt;
+			entry[`lastFixedAt_${severity}`] = sample.lastFixedAt ? new Date(sample.lastFixedAt) : null;
+			entry[`firstFixedAt_${severity}`] = sample.firstFixedAt
+				? new Date(sample.firstFixedAt)
+				: null;
 
 			mergedDataMap.set(dateKey, entry);
 		}

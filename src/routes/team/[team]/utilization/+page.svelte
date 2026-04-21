@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
-	import { UtilizationResourceType } from '$houdini';
 	import UtilizationChart from '$lib/chart/UtilizationChart.svelte';
 	import WorkloadLink from '$lib/domain/workload/WorkloadLink.svelte';
 	import GraphErrors from '$lib/ui/GraphErrors.svelte';
@@ -75,7 +74,7 @@
 
 	let { TeamResourceUsage } = $derived(data);
 
-	let resourceUtilization = $derived($TeamResourceUsage.data);
+	let resourceUtilization = $derived(TeamResourceUsage.data);
 
 	let overageTable: TeamOverageData[] = $derived(
 		getTeamOverageData(resourceUtilization, sortState.orderBy, sortState.direction)
@@ -120,7 +119,7 @@
 	};
 </script>
 
-<GraphErrors errors={$TeamResourceUsage.errors} />
+<GraphErrors errors={TeamResourceUsage.errors} />
 <div class="wrapper">
 	{#if resourceUtilization}
 		{@const filteredCpuUtil = resourceUtilization.team.cpuUtil.filter(
@@ -157,7 +156,7 @@
 						{euroValueFormatter(
 							round(
 								yearlyOverageCost(
-									UtilizationResourceType.CPU,
+									'CPU',
 									cpuRequested - cpuUsage,
 									resourceUtilization.currentUnitPrices.cpu.value,
 									resourceUtilization.currentUnitPrices.memory.value
@@ -183,7 +182,7 @@
 						{euroValueFormatter(
 							round(
 								yearlyOverageCost(
-									UtilizationResourceType.MEMORY,
+									'MEMORY',
 									memoryRequested - memoryUsage,
 									resourceUtilization.currentUnitPrices.cpu.value,
 									resourceUtilization.currentUnitPrices.memory.value

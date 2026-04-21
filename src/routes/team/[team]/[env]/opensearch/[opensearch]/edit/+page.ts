@@ -1,6 +1,7 @@
-import { load_UpdateOpenSearchData } from '$houdini';
+import { runQuery } from '$lib/urql/load';
 import { addPageMeta } from '$lib/utils/pageMeta';
 import { error } from '@sveltejs/kit';
+import { UpdateOpenSearchDataQuery } from './query';
 
 export async function load(event) {
 	const { parent, params } = event;
@@ -18,13 +19,10 @@ export async function load(event) {
 
 	return {
 		...(await addPageMeta(event, { title: 'Edit' })),
-		...(await load_UpdateOpenSearchData({
-			event,
-			variables: {
-				environment: event.params.env,
-				team: event.params.team,
-				name: event.params.opensearch
-			}
-		}))
+		UpdateOpenSearchData: await runQuery(event, UpdateOpenSearchDataQuery, {
+			environment: event.params.env,
+			team: event.params.team,
+			name: event.params.opensearch
+		})
 	};
 }

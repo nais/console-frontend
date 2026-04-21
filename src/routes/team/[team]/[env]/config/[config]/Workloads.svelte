@@ -1,10 +1,19 @@
 <script lang="ts">
-	import { type Config$result } from '$houdini';
 	import WorkloadLink from '$lib/domain/workload/WorkloadLink.svelte';
 	import { Alert, Heading } from '@nais/ds-svelte-community';
 
 	interface Props {
-		workloads: Config$result['team']['environment']['config']['workloads'];
+		workloads: {
+			nodes: ReadonlyArray<{
+				id: string;
+				name: string;
+				__typename: string | null | undefined;
+				teamEnvironment: {
+					environment: { name: string };
+				};
+				team: { slug: string };
+			}>;
+		};
 	}
 
 	let { workloads }: Props = $props();

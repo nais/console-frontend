@@ -1,6 +1,7 @@
-import { load_DeleteValkeyData } from '$houdini';
+import { runQuery } from '$lib/urql/load';
 import { addPageMeta } from '$lib/utils/pageMeta';
 import { error } from '@sveltejs/kit';
+import { DeleteValkeyDataQuery } from './query';
 
 export async function load(event) {
 	const { parent, params } = event;
@@ -18,13 +19,10 @@ export async function load(event) {
 
 	return {
 		...(await addPageMeta(event, { title: 'Delete' })),
-		...(await load_DeleteValkeyData({
-			event,
-			variables: {
-				environment: event.params.env,
-				team: event.params.team,
-				name: event.params.valkey
-			}
-		}))
+		DeleteValkeyData: await runQuery(event, DeleteValkeyDataQuery, {
+			environment: event.params.env,
+			team: event.params.team,
+			name: event.params.valkey
+		})
 	};
 }

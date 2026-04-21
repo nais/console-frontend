@@ -1,40 +1,22 @@
 <script lang="ts">
-	import { fragment, graphql, type WorkloadDeploy } from '$houdini';
+	import { WorkloadDeployFragment } from '$lib/domain/workload/workloadDeploy';
 	import ExternalLink from '$lib/ui/ExternalLink.svelte';
+	import IconLabel from '$lib/ui/IconLabel.svelte';
 	import Time from '$lib/ui/Time.svelte';
+	import { useFragment, type FragmentType } from '$lib/urql/fragment';
 	import { BodyShort, Tag } from '@nais/ds-svelte-community';
 	import { RocketIcon } from '@nais/ds-svelte-community/icons';
-	import IconLabel from '$lib/ui/IconLabel.svelte';
 
 	interface Props {
-		workload: WorkloadDeploy;
+		workload: FragmentType<typeof WorkloadDeployFragment>;
 	}
 
 	let { workload }: Props = $props();
 
-	let data = $derived(
-		fragment(
-			workload,
-			graphql(`
-				fragment WorkloadDeploy on Workload {
-					deployments(first: 1) {
-						nodes {
-							createdAt
-							repository
-							statuses {
-								nodes {
-									state
-								}
-							}
-						}
-					}
-				}
-			`)
-		)
-	);
+	const data = $derived(useFragment(WorkloadDeployFragment, workload));
 
 	let deploymentInfo = $derived(
-		$data.deployments.nodes.length > 0 ? $data.deployments.nodes[0] : null
+		data.deployments.nodes.length > 0 ? data.deployments.nodes[0] : null
 	);
 </script>
 

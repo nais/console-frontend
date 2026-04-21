@@ -1,9 +1,0 @@
-query AppManifest($app: String!, $team: Slug!, $env: String!) {
-	team(slug: $team) {
-		environment(name: $env) {
-			workload(name: $app) {
-				...Manifest
-			}
-		}
-	}
-}

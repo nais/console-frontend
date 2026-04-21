@@ -1,7 +1,9 @@
-import { graphql, OpenSearchMajorVersion, OpenSearchMemory, OpenSearchTier } from '$houdini';
+import { graphql as gql } from '$lib/urql/gql';
+import { OpenSearchMajorVersion, OpenSearchMemory, OpenSearchTier } from '$lib/urql/gql/graphql';
+import { runMutation } from '$lib/urql/mutation';
 import { fail, redirect } from '@sveltejs/kit';
 
-const mutation = graphql(`
+const CreateOpenSearchMutation = gql(/* GraphQL */ `
 	mutation CreateOpenSearch($input: CreateOpenSearchInput!) {
 		createOpenSearch(input: $input) {
 			openSearch {
@@ -54,26 +56,23 @@ export const actions = {
 			});
 		}
 
-		const res = await mutation.mutate(
-			{
-				input: {
-					name: name,
-					environmentName: environment,
-					teamSlug: params.team,
-					tier: OpenSearchTier[tier as keyof typeof OpenSearchTier],
-					memory: OpenSearchMemory[memory as keyof typeof OpenSearchMemory],
-					version: OpenSearchMajorVersion[version as keyof typeof OpenSearchMajorVersion],
-					storageGB: storageGB
-				}
-			},
-			{ event }
-		);
+		const res = await runMutation(event, CreateOpenSearchMutation, {
+			input: {
+				name: name,
+				environmentName: environment,
+				teamSlug: params.team,
+				tier: OpenSearchTier[tier as keyof typeof OpenSearchTier],
+				memory: OpenSearchMemory[memory as keyof typeof OpenSearchMemory],
+				version: OpenSearchMajorVersion[version as keyof typeof OpenSearchMajorVersion],
+				storageGB: storageGB
+			}
+		});
 
-		if (res.errors?.length ?? 0 > 0) {
+		if (res.errors?.length) {
 			return fail(400, {
 				...allProps,
 				success: false,
-				error: res.errors![0].message
+				error: res.errors[0].message
 			});
 		} else if (!res.data) {
 			return fail(500, {

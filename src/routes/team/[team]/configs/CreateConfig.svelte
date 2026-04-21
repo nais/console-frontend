@@ -11,10 +11,11 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 
-	import { graphql } from '$houdini';
 	import GraphErrors from '$lib/ui/GraphErrors.svelte';
+	import { getContextClient } from '$lib/urql/context';
 
 	import { BodyShort, Button, Heading, Modal, Select, TextField } from '@nais/ds-svelte-community';
+	import { CreateConfigMutation } from './configs';
 
 	interface Props {
 		team: string;
@@ -39,37 +40,30 @@
 		name = '';
 	};
 
-	const createConfig = graphql(`
-		mutation createConfig($name: String!, $team: Slug!, $env: String!) {
-			createConfig(input: { name: $name, teamSlug: $team, environmentName: $env }) {
-				config {
-					id
-					name
-					teamEnvironment {
-						environment {
-							name
-						}
-					}
-				}
-			}
-		}
-	`);
+	const client = getContextClient();
+	let mutationErrors: { message: string }[] | null = $state(null);
 
 	const create = async () => {
 		if (validate(name).length > 0 && name.length > 0) {
 			return;
 		}
 
-		await createConfig.mutate({
-			name: name,
-			team: team,
-			env: selectedEnvironment
-		});
+		const result = await client
+			.mutation(CreateConfigMutation, {
+				name: name,
+				team: team,
+				env: selectedEnvironment
+			})
+			.toPromise();
 
-		if ($createConfig.errors) {
+		if (result.error) {
+			mutationErrors = result.error.graphQLErrors.length
+				? result.error.graphQLErrors.map((e) => ({ message: e.message }))
+				: [{ message: result.error.message }];
 			open = true;
 			return;
 		}
+		mutationErrors = null;
 		const configPage = '/team/' + team + '/' + selectedEnvironment + '/config/' + name;
 		close();
 		await goto(configPage);
@@ -137,7 +131,7 @@
 		</TextField>
 	</div>
 
-	<GraphErrors errors={$createConfig.errors} />
+	<GraphErrors errors={mutationErrors} />
 
 	{#snippet footer()}
 		{#if name === '' || validate(name) !== ''}

@@ -1,11 +1,13 @@
 <script lang="ts">
 	import { browser } from '$app/environment';
-	import { graphql } from '$houdini';
 	import LegendWrapper, { legendSnippet } from '$lib/chart/LegendWrapper.svelte';
 	import CodeBlockPromQL from '$lib/domain/monitoring/CodeBlockPromQL.svelte';
+	import { getContextClient } from '$lib/urql/context';
+	import { graphql as gql } from '$lib/urql/gql';
 	import { intersect } from '$lib/utils/intersectionObserver';
 	import { BodyShort, CopyButton, Heading, Loader, Modal } from '@nais/ds-svelte-community';
 	import { InformationIcon } from '@nais/ds-svelte-community/icons';
+	import { queryStore } from '@urql/svelte';
 	import * as d3 from 'd3-time';
 	import { LineChart, Tooltip } from 'layerchart';
 	import { untrack } from 'svelte';
@@ -45,7 +47,7 @@
 		interval = PrometheusChartQueryInterval.SevenDays
 	}: PrometheusChartProps = $props();
 
-	const q = graphql(`
+	const PrometheusQuery = gql(/* GraphQL */ `
 		query PrometheusQuery($input: MetricsQueryInput!, $environmentName: String!) {
 			environment(name: $environmentName) {
 				metrics(input: $input) {
@@ -88,10 +90,42 @@
 		}
 	};
 
+	const processedQuery = $derived(replaceQueryVariables(query, interval));
+
+	// urql's `Time` scalar is a string. We capture the request range here so
+	// the query-info modal can display the start/end/step that were sent.
+	let lastRequestRange = $state<{ start: Date; end: Date; step: number } | null>(null);
+
+	// We drive fetching off `firstTimeLoad`/`allowLoading` instead of
+	// urql's `pause` because the original component intentionally only
+	// fetches once when first scrolled into view (and refetches when the
+	// interval changes while in view).
+	let queryVariables = $state<{
+		input: { query: string; range: { start: string; end: string; step: number } };
+		environmentName: string;
+	} | null>(null);
+
+	const client = getContextClient();
+
+	const q = $derived(
+		queryStore({
+			client,
+			query: PrometheusQuery,
+			variables: queryVariables ?? {
+				input: { query: '', range: { start: '', end: '', step: 0 } },
+				environmentName
+			},
+			pause: queryVariables === null,
+			requestPolicy: 'cache-and-network'
+		})
+	);
+
+	const result = $derived($q);
+
 	// Compute series from GraphQL data
 	const series = $derived.by(() => {
-		if ($q.data) {
-			const metrics = $q.data.environment.metrics.series;
+		if (result.data) {
+			const metrics = result.data.environment.metrics.series;
 			if (metrics.length == 0) return [];
 
 			return metrics.map((metric, i) => {
@@ -112,7 +146,7 @@
 	// Compute chart data from series
 	const chartData = $derived.by(() => {
 		// Always return chart data, even if empty
-		if (!$q.data || series.length === 0) {
+		if (!result.data || series.length === 0) {
 			const fallbackStart = getStartFromInterval(interval);
 			return {
 				series: [],
@@ -193,15 +227,14 @@
 
 	// Determine overlay state
 	const overlayState = $derived.by(() => {
-		if ($q.fetching || $q.data === null) {
+		if (result.fetching || (queryVariables !== null && !result.data)) {
 			return 'loading';
 		}
-		if ($q.data && series.length === 0) {
+		if (result.data && series.length === 0) {
 			return 'no-data';
 		}
 		return null;
 	});
-	const processedQuery = $derived(replaceQueryVariables(query, interval));
 
 	const fetchGQL = () => {
 		if (!browser) {
@@ -210,12 +243,14 @@
 		const end = new Date();
 		const start = getStartFromInterval(interval);
 		const step = getStepFromInterval(interval);
-		q.fetch({
-			variables: {
-				input: { query: processedQuery, range: { start, end, step } },
-				environmentName
-			}
-		});
+		lastRequestRange = { start, end, step };
+		queryVariables = {
+			input: {
+				query: processedQuery,
+				range: { start: start.toISOString(), end: end.toISOString(), step }
+			},
+			environmentName
+		};
 	};
 
 	$effect(() => {
@@ -362,8 +397,8 @@
 			<div class="query-section">
 				<Heading size="xsmall" as="h3">Start Time</Heading>
 				<BodyShort>
-					{#if $q.variables?.input?.range?.start}
-						{new Date($q.variables.input.range.start).toLocaleString('en-GB')}
+					{#if lastRequestRange}
+						{lastRequestRange.start.toLocaleString('en-GB')}
 					{:else}
 						Not fetched yet
 					{/if}
@@ -373,8 +408,8 @@
 			<div class="query-section">
 				<Heading size="xsmall" as="h3">End Time</Heading>
 				<BodyShort>
-					{#if $q.variables?.input?.range?.end}
-						{new Date($q.variables.input.range.end).toLocaleString('en-GB')}
+					{#if lastRequestRange}
+						{lastRequestRange.end.toLocaleString('en-GB')}
 					{:else}
 						Not fetched yet
 					{/if}
@@ -384,8 +419,8 @@
 			<div class="query-section">
 				<Heading size="xsmall" as="h3">Step Interval</Heading>
 				<BodyShort>
-					{#if $q.variables?.input?.range?.step}
-						{$q.variables.input.range.step} seconds
+					{#if lastRequestRange}
+						{lastRequestRange.step} seconds
 					{:else}
 						Not fetched yet
 					{/if}

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { SidebarActivityLogFragment$data } from '$houdini';
+	import type { SidebarActivityLogEntry } from './types';
 	import { envTagVariant } from '$lib/envTagVariant';
 	import Time from '$lib/ui/Time.svelte';
 	import { capitalizeFirstLetter } from '$lib/utils/formatters';
@@ -8,10 +8,7 @@
 	let {
 		data
 	}: {
-		data: Extract<
-			SidebarActivityLogFragment$data['activityLog']['nodes'][number],
-			{ __typename: 'ClusterAuditActivityLogEntry' }
-		>;
+		data: SidebarActivityLogEntry<'ClusterAuditActivityLogEntry'>;
 	} = $props();
 </script>
 

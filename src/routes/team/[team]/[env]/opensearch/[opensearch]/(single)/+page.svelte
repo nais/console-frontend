@@ -1,6 +1,6 @@
 <script lang="ts">
+	import { invalidateAll } from '$app/navigation';
 	import { page } from '$app/state';
-	import { graphql, OpenSearchAccessOrderField } from '$houdini';
 	import { docURL } from '$lib/doc';
 	import SidebarActivity from '$lib/domain/activity/sidebar/SidebarActivity.svelte';
 	import IssueListItem from '$lib/domain/list-items/IssueListItem.svelte';
@@ -10,6 +10,9 @@
 	import GraphErrors from '$lib/ui/GraphErrors.svelte';
 	import List from '$lib/ui/List.svelte';
 	import Pagination from '$lib/ui/Pagination.svelte';
+	import { getContextClient } from '$lib/urql/context';
+	import { OpenSearchAccessOrderField } from '$lib/urql/gql/graphql';
+	import { cursorPaginationLoaders } from '$lib/urql/pagination';
 	import { changeParams } from '$lib/utils/searchparams';
 	import {
 		Alert,
@@ -26,60 +29,57 @@
 	import { CogRotationIcon, NotePencilIcon, TrashIcon } from '@nais/ds-svelte-community/icons';
 	import type { PageProps } from './$types';
 	import Manifest from './Manifest.svelte';
-
-	const runServiceMaintenance = graphql(`
-		mutation runOpenSearchMaintenance(
-			$serviceName: String!
-			$teamSlug: Slug!
-			$environmentName: String!
-		) {
-			startOpenSearchMaintenance(
-				input: { serviceName: $serviceName, teamSlug: $teamSlug, environmentName: $environmentName }
-			) {
-				error
-			}
-		}
-	`);
-
-	let maintenanceError = $state<string | null | undefined>(undefined);
-	const runServiceMaintenanceStart = async () => {
-		if ($OpenSearchInstance.data) {
-			let resp = await runServiceMaintenance.mutate({
-				serviceName: $OpenSearchInstance.data.team.environment.openSearch.name,
-				teamSlug: $OpenSearchInstance.data.team.slug,
-				environmentName:
-					$OpenSearchInstance.data.team.environment.openSearch.teamEnvironment.environment.name
-			});
-			if (resp.errors) {
-				maintenanceError = resp.errors.map((e) => e.message).join(', ');
-			} else {
-				maintenanceError = resp.data?.startOpenSearchMaintenance?.error;
-			}
-		}
-	};
+	import { RunOpenSearchMaintenanceMutation } from './opensearch';
 
 	let { data }: PageProps = $props();
 	let { OpenSearchInstance, viewerIsMember, teamSlug } = $derived(data);
 
-	let tableSort = $derived({
-		orderBy: $OpenSearchInstance.variables?.orderBy?.field,
-		direction: $OpenSearchInstance.variables?.orderBy?.direction
-	});
+	const client = getContextClient();
+
+	let maintenanceError = $state<string | null | undefined>(undefined);
+	const runServiceMaintenanceStart = async () => {
+		if (!OpenSearchInstance.data) return;
+		const instance = OpenSearchInstance.data.team.environment.openSearch;
+		const resp = await client
+			.mutation(RunOpenSearchMaintenanceMutation, {
+				serviceName: instance.name,
+				teamSlug: OpenSearchInstance.data.team.slug,
+				environmentName: instance.teamEnvironment.environment.name
+			})
+			.toPromise();
+		if (resp.error) {
+			maintenanceError = resp.error.graphQLErrors?.length
+				? resp.error.graphQLErrors.map((e) => e.message).join(', ')
+				: resp.error.message;
+		} else {
+			maintenanceError = resp.data?.startOpenSearchMaintenance?.error;
+			void invalidateAll();
+		}
+	};
+
+	let currentField = $derived(
+		(page.url.searchParams.get('field') as OpenSearchAccessOrderField | null) ??
+			OpenSearchAccessOrderField.WORKLOAD
+	);
+	let currentDirection = $derived(
+		(page.url.searchParams.get('direction') as 'ASC' | 'DESC' | null) ?? 'ASC'
+	);
 
 	const tableSortChange = (key: string) => {
-		if (key === tableSort.orderBy) {
-			const direction = tableSort.direction === 'ASC' ? 'DESC' : 'ASC';
-			tableSort.direction = direction;
+		let direction: 'ASC' | 'DESC';
+		let field: OpenSearchAccessOrderField;
+		if (key === currentField) {
+			direction = currentDirection === 'ASC' ? 'DESC' : 'ASC';
+			field = currentField;
 		} else {
-			tableSort.orderBy =
-				OpenSearchAccessOrderField[key as keyof typeof OpenSearchAccessOrderField];
-			tableSort.direction = 'ASC';
+			field = OpenSearchAccessOrderField[key as keyof typeof OpenSearchAccessOrderField];
+			direction = 'ASC';
 		}
 
 		changeParams(
 			{
-				direction: tableSort.direction,
-				field: tableSort.orderBy || OpenSearchAccessOrderField.WORKLOAD
+				direction,
+				field
 			},
 			{
 				noScroll: true
@@ -88,16 +88,14 @@
 	};
 
 	const isManagedByConsole = $derived(
-		!$OpenSearchInstance.data?.team.environment.openSearch.name.startsWith(
-			`opensearch-${teamSlug}-`
-		)
+		!OpenSearchInstance.data?.team.environment.openSearch.name.startsWith(`opensearch-${teamSlug}-`)
 	);
 </script>
 
-{#if $OpenSearchInstance.errors}
-	<GraphErrors errors={$OpenSearchInstance.errors} />
-{:else if $OpenSearchInstance.data}
-	{@const instance = $OpenSearchInstance.data.team.environment.openSearch}
+{#if OpenSearchInstance.errors}
+	<GraphErrors errors={OpenSearchInstance.errors} />
+{:else if OpenSearchInstance.data}
+	{@const instance = OpenSearchInstance.data.team.environment.openSearch}
 	{@const mandatoryServiceMaintenanceUpdates = instance.maintenance.updates.nodes.filter(
 		(x) => !!x?.deadline
 	)}
@@ -123,8 +121,8 @@
 					<Table
 						size="small"
 						sort={{
-							orderBy: tableSort.orderBy || OpenSearchAccessOrderField.WORKLOAD,
-							direction: tableSort.direction === 'ASC' ? 'ascending' : 'descending'
+							orderBy: currentField,
+							direction: currentDirection === 'ASC' ? 'ascending' : 'descending'
 						}}
 						onsortchange={tableSortChange}
 					>
@@ -151,14 +149,7 @@
 					{#if instance.access.pageInfo.hasPreviousPage || instance.access.pageInfo.hasNextPage}
 						<Pagination
 							page={instance.access.pageInfo}
-							loaders={{
-								loadPreviousPage: () => {
-									OpenSearchInstance.loadPreviousPage();
-								},
-								loadNextPage: () => {
-									OpenSearchInstance.loadNextPage();
-								}
-							}}
+							loaders={cursorPaginationLoaders(page.url, instance.access.pageInfo)}
 						/>
 					{/if}
 				{:else}
@@ -168,7 +159,7 @@
 			<div class="spacing">
 				<Heading as="h3">Issues</Heading>
 				<List>
-					{#each $OpenSearchInstance.data.team.environment.openSearch.issues.edges as edge (edge.node.id)}
+					{#each instance.issues.edges as edge (edge.node.id)}
 						<IssueListItem item={edge.node} />
 					{:else}
 						<span>No issues found</span>
@@ -264,7 +255,7 @@
 				</Button>
 			{/if}
 
-			<SidebarActivity activityLog={instance} direct={instance.activityLog} />
+			<SidebarActivity activityLog={instance} />
 		</div>
 	</div>
 {/if}

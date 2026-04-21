@@ -1,27 +1,23 @@
-import { load_TenantVulnerabilites, OrderDirection, TeamOrderField } from '$houdini';
 import { urlToOrderDirection, urlToOrderField } from '$lib/ui/OrderByMenu.svelte';
+import { OrderDirection, TeamOrderField } from '$lib/urql/gql/graphql';
+import { runQuery } from '$lib/urql/load';
+import { readCursorPagination } from '$lib/urql/pagination';
 import { addPageMeta } from '$lib/utils/pageMeta.js';
+import { TenantVulnerabilitesQuery } from '../tenantVulnerabilities';
 
 const rows = 20;
 
 export async function load(event) {
-	const after = event.url.searchParams.get('after') || '';
-	const before = event.url.searchParams.get('before') || '';
-
 	return {
 		...(await addPageMeta(event, {
 			title: 'Team Security Posture'
 		})),
-		...(await load_TenantVulnerabilites({
-			event,
-			blocking: true,
-			variables: {
-				orderBy: {
-					field: urlToOrderField(TeamOrderField, TeamOrderField.RISK_SCORE, event.url),
-					direction: urlToOrderDirection(event.url, OrderDirection.DESC)
-				},
-				...(before ? { before, last: rows } : { after, first: rows })
-			}
-		}))
+		TenantVulnerabilites: await runQuery(event, TenantVulnerabilitesQuery, {
+			orderBy: {
+				field: urlToOrderField(TeamOrderField, TeamOrderField.RISK_SCORE, event.url),
+				direction: urlToOrderDirection(event.url, OrderDirection.DESC)
+			},
+			...readCursorPagination(event.url, rows)
+		})
 	};
 }

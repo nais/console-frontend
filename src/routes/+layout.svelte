@@ -2,17 +2,19 @@
 	import { browser } from '$app/environment';
 	import { afterNavigate, beforeNavigate } from '$app/navigation';
 	import { page } from '$app/state';
-	import { graphql } from '$houdini';
 	import { isAuthenticated, isUnauthenticated } from '$lib/authentication';
 	import { localizeLayerChart } from '$lib/chart/util';
 	import '$lib/font.css';
 	import { themeSwitch } from '$lib/stores/theme.svelte';
 	import ProgressBar from '$lib/ui/ProgressBar.svelte';
+	import { createUrqlClient } from '$lib/urql/client';
+	import { setContextClient } from '$lib/urql/context';
+	import { RefreshCookieQuery } from '$lib/urql/queries/userInfo';
 	import { Page, Theme } from '@nais/ds-svelte-community';
-	import { onMount } from 'svelte';
+	import { onMount, untrack } from 'svelte';
 	import '../styles/app.css';
 	import '../styles/colors.css';
-	import type { LayoutProps } from './$houdini';
+	import type { LayoutProps } from './$types';
 	import Login from './Login.svelte';
 	import Naisdevice from './Naisdevice.svelte';
 	import PageHeader from './PageHeader.svelte';
@@ -26,23 +28,38 @@
 		themeSwitch.theme = data.theme;
 	});
 
+	/**
+	 * Browser-side urql client. Created once per page load, seeded with the
+	 * SSR cache that `+layout.server.ts` collected via the per-request
+	 * server client, so any query that ran during SSR is hydrated without
+	 * a duplicate fetch. Registered into Svelte context with the official
+	 * `setContextClient` so descendant components can grab it via
+	 * `getContextClient()` from `@urql/svelte`.
+	 *
+	 * On the server we still need a client for the `RefreshCookie`
+	 * keepalive call below to type-check, but the keepalive only runs
+	 * inside `onMount`, i.e. browser-only.
+	 */
+	// `untrack` because we deliberately want the *initial* SSR payload to
+	// seed the client; later updates to `data.urqlState` (which won't
+	// happen anyway, since the SSR cache is only collected once) must not
+	// re-create the client.
+	const { client } = untrack(() =>
+		createUrqlClient({
+			ssrData: data.urqlState
+		})
+	);
+	setContextClient(client);
+
 	let user = $derived(
-		$UserInfo.data?.me as
-			| {
+		UserInfo.data?.me.__typename === 'User'
+			? (UserInfo.data.me as {
 					readonly name: string;
 					readonly isAdmin: boolean;
 					readonly __typename: 'User';
-			  }
-			| undefined
+				})
+			: undefined
 	);
-
-	const refreshCookie = graphql(`
-		query RefreshCookie {
-			me {
-				__typename
-			}
-		}
-	`);
 
 	let refreshCookieInterval: ReturnType<typeof setInterval> | undefined;
 
@@ -50,7 +67,7 @@
 		refreshCookieInterval = setInterval(
 			async () => {
 				if (user?.__typename !== 'User') return;
-				refreshCookie.fetch({ policy: 'NoCache' });
+				await client.query(RefreshCookieQuery, {}, { requestPolicy: 'network-only' }).toPromise();
 			},
 			1000 * 60 * 10
 		);
@@ -99,7 +116,7 @@
 				<ProgressBar />
 			{/if}
 
-			{#if !$isAuthenticated || isUnauthenticated($UserInfo.errors)}
+			{#if !$isAuthenticated || isUnauthenticated(UserInfo.errors)}
 				<!-- logged out. We check both to support both  -->
 				<Login {userAgent} />
 			{:else}

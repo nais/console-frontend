@@ -11,9 +11,9 @@
 	let { TeamVulnerabilities, teamSlug } = $derived(data);
 </script>
 
-<GraphErrors errors={$TeamVulnerabilities.errors} />
+<GraphErrors errors={TeamVulnerabilities.errors} />
 
-{#if $TeamVulnerabilities.data}
+{#if TeamVulnerabilities.data}
 	<div class="wrapper">
 		<div class="columns">
 			<div class="graphs">

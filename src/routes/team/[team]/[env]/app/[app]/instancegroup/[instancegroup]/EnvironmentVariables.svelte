@@ -1,6 +1,5 @@
 <script lang="ts">
-	import type { InstanceGroupDetail$result } from '$houdini';
-	import { SvelteMap } from 'svelte/reactivity';
+	import type { ResultOf } from '@graphql-typed-document-node/core';
 	import {
 		Button,
 		CopyButton,
@@ -13,9 +12,12 @@
 		Tr
 	} from '@nais/ds-svelte-community';
 	import { EyeIcon, EyeSlashIcon } from '@nais/ds-svelte-community/icons';
+	import { SvelteMap } from 'svelte/reactivity';
+	import type { InstanceGroupDetailQuery } from './instanceGroup';
 
-	type EnvironmentVariable =
-		InstanceGroupDetail$result['team']['environment']['application']['instanceGroups'][number]['environmentVariables'][number];
+	type EnvironmentVariable = NonNullable<
+		ResultOf<typeof InstanceGroupDetailQuery>
+	>['team']['environment']['application']['instanceGroups'][number]['environmentVariables'][number];
 
 	interface Props {
 		envVars: EnvironmentVariable[];
@@ -66,14 +68,14 @@
 											size="xsmall"
 											variant="tertiary-neutral"
 											icon={EyeIcon}
-											onclick={() => onReveal(env.source.name)}
+											onclick={() => onReveal(env.source.name ?? '')}
 										/>
 									{/if}
 								</span>
 							{:else if env.value !== null}
 								<span class="env-value">
 									<code>{env.value}</code>
-									<CopyButton size="xsmall" copyText={env.value} />
+									<CopyButton size="xsmall" copyText={env.value ?? ''} />
 								</span>
 							{:else}
 								<span class="muted">-</span>

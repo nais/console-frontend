@@ -11,10 +11,10 @@
 	let { data }: PageProps = $props();
 	let { PostgresInstance, viewerIsMember } = $derived(data);
 
-	let instance = $derived($PostgresInstance.data?.team.environment.postgresInstance);
+	let instance = $derived(PostgresInstance.data?.team.environment.postgresInstance);
 	let instanceName = $derived(sanitizePromLabel(instance?.name ?? ''));
 	let environmentName = $derived(instance?.teamEnvironment.environment.name ?? '');
-	let teamSlug = $derived(sanitizePromLabel($PostgresInstance.data?.team.slug ?? ''));
+	let teamSlug = $derived(sanitizePromLabel(PostgresInstance.data?.team.slug ?? ''));
 	let grafanaPostgresOverviewUrl = $derived.by(() => {
 		const datasource = encodeURIComponent(environmentName);
 		const namespace = encodeURIComponent(`pg-${teamSlug}`);
@@ -143,8 +143,8 @@ clamp_min(
 	const distinctErrors = (errors: { message: string }[]) => new Set(errors.map((e) => e.message));
 </script>
 
-{#if $PostgresInstance.errors}
-	{#each distinctErrors($PostgresInstance.errors) as error (error)}
+{#if PostgresInstance.errors}
+	{#each distinctErrors(PostgresInstance.errors) as error (error)}
 		<Alert style="margin-bottom: 1rem;" variant="error">
 			{error}
 		</Alert>

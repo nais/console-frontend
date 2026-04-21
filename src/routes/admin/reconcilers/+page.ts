@@ -1,11 +1,10 @@
-import { load_AdminReconcilers } from '$houdini';
+import { runQuery } from '$lib/urql/load';
 import { addPageMeta } from '$lib/utils/pageMeta';
+import { AdminReconcilersQuery } from './reconcilers';
 
 export async function load(event) {
 	return {
 		...(await addPageMeta(event, { title: 'Reconcilers' })),
-		...(await load_AdminReconcilers({
-			event
-		}))
+		AdminReconcilers: await runQuery(event, AdminReconcilersQuery, {})
 	};
 }

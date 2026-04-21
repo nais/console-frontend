@@ -1,7 +1,8 @@
 <script lang="ts">
-	import { graphql } from '$houdini';
 	import LegendWrapper, { legendSnippet } from '$lib/chart/LegendWrapper.svelte';
 	import { euroAxisFormatter } from '$lib/chart/util';
+	import { getContextClient } from '$lib/urql/context';
+	import { graphql as gql } from '$lib/urql/gql';
 	import { changeParams } from '$lib/utils/searchparams';
 	import { visualizationColors } from '$lib/visualizationColors';
 	import {
@@ -11,6 +12,8 @@
 		ToggleGroup,
 		ToggleGroupItem
 	} from '@nais/ds-svelte-community';
+	import { queryStore } from '@urql/svelte';
+	import { format } from 'date-fns';
 	import { LineChart } from 'layerchart';
 
 	const {
@@ -25,7 +28,7 @@
 		interval: string;
 	} = $props();
 
-	const costQuery = graphql(`
+	const TeamEnvironmentApplicationsCostQuery = gql(/* GraphQL */ `
 		query TeamEnvironmentApplicationsCost($teamSlug: Slug!, $from: Date!, $to: Date!) {
 			team(slug: $teamSlug) {
 				environments {
@@ -52,15 +55,24 @@
 		}
 	`);
 
-	$effect(() => {
-		costQuery.fetch({
-			variables: {
-				teamSlug,
-				from,
-				to
-			}
-		});
+	const client = getContextClient();
+
+	// `Date` scalar is `YYYY-MM-DD` on the wire. Houdini auto-formatted JS
+	// `Date` instances; with urql we serialize explicitly.
+	const variables = $derived({
+		teamSlug,
+		from: format(from, 'yyyy-MM-dd'),
+		to: format(to, 'yyyy-MM-dd')
 	});
+
+	const costQuery = $derived(
+		queryStore({
+			client,
+			query: TeamEnvironmentApplicationsCostQuery,
+			variables,
+			requestPolicy: 'cache-and-network'
+		})
+	);
 
 	const appsByEnv = $derived(
 		$costQuery.data?.team.environments
@@ -78,7 +90,7 @@
 						name,
 						data: env.cost.daily.series
 							.map((s) => [
-								s.date.getTime(),
+								new Date(s.date).getTime(),
 								s.workloads.find((w) => w.workload?.name === name)?.cost
 							])
 							.filter(([, cost]) => cost !== undefined),

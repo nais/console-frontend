@@ -1,43 +1,56 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
-	import { type DeleteAppPage$result, graphql } from '$houdini';
 	import PersistenceItem from '$lib/domain/persistence/PersistenceItem.svelte';
 	import WarningIcon from '$lib/icons/WarningIcon.svelte';
 	import GraphErrors from '$lib/ui/GraphErrors.svelte';
 	import Time from '$lib/ui/Time.svelte';
+	import { getContextClient } from '$lib/urql/context';
+	import type { ResultOf } from '@graphql-typed-document-node/core';
 	import { BodyShort, Button, Heading, TextField } from '@nais/ds-svelte-community';
-	import { get } from 'svelte/store';
 	import { getTeamContext } from '../../../../teamContext.svelte';
 	import type { PageProps } from './$types';
+	import { DeleteAppMutation, DeleteAppPageQuery } from './delete';
 
 	let { data }: PageProps = $props();
 
 	let { DeleteAppPage } = $derived(data);
+	let result = $derived(DeleteAppPage);
 
-	let result = $derived($DeleteAppPage.data);
+	type DeleteAppPageData = ResultOf<typeof DeleteAppPageQuery>;
+	type Application = NonNullable<DeleteAppPageData['team']['environment']['application']>;
 
-	const deleteApp = graphql(`
-		mutation DeleteApp($team: Slug!, $env: String!, $app: String!) {
-			deleteApplication(input: { teamSlug: $team, environmentName: $env, name: $app }) {
-				success
-			}
-		}
-	`);
-
+	const client = getContextClient();
 	const teamCtx = getTeamContext();
+
 	let confirmation = $state('');
+	let deleting = $state(false);
+	let deleteErrors = $state<{ message: string }[] | null>(null);
 
 	const submit = async () => {
-		const app = get(DeleteAppPage).data?.team.environment.application;
+		const app = result.data?.team.environment.application;
 		if (!app) {
 			return;
 		}
 
-		const resp = await deleteApp.mutate({
-			app: app.name,
-			env: app.teamEnvironment.environment.name,
-			team: app.team.slug
-		});
+		deleting = true;
+		deleteErrors = null;
+
+		const resp = await client
+			.mutation(DeleteAppMutation, {
+				app: app.name,
+				env: app.teamEnvironment.environment.name,
+				team: app.team.slug
+			})
+			.toPromise();
+
+		deleting = false;
+
+		if (resp.error) {
+			deleteErrors = resp.error.graphQLErrors?.map((e) => ({ message: e.message })) ?? [
+				{ message: resp.error.message }
+			];
+			return;
+		}
 
 		if (resp.data?.deleteApplication.success) {
 			teamCtx.refetchInventory();
@@ -45,7 +58,7 @@
 		}
 	};
 
-	function hasResourcesToDelete(app: DeleteAppPage$result['team']['environment']['application']) {
+	function hasResourcesToDelete(app: Application) {
 		return (
 			app.sqlInstances.nodes.filter((s) => s.cascadingDelete).length > 0 ||
 			app.bigQueryDatasets.nodes.filter((s) => s.cascadingDelete).length > 0 ||
@@ -54,7 +67,7 @@
 		);
 	}
 
-	function hasOrphans(app: DeleteAppPage$result['team']['environment']['application']) {
+	function hasOrphans(app: Application) {
 		return (
 			app.sqlInstances.nodes.filter((s) => !s.cascadingDelete).length > 0 ||
 			app.bigQueryDatasets.nodes.filter((s) => !s.cascadingDelete).length > 0 ||
@@ -64,10 +77,12 @@
 	}
 </script>
 
+<GraphErrors errors={result.errors} />
+
 <Heading as="h2"><WarningIcon class="heading-aligned-icon" /> Danger Zone</Heading>
 <div class="danger-zone">
-	{#if result?.team.environment.application}
-		{@const app = result.team.environment.application}
+	{#if result.data?.team.environment.application}
+		{@const app = result.data.team.environment.application}
 		{#if app.deletionStartedAt}
 			<div class="heading-wrapper">
 				<Heading as="h3" spacing>Deletion in Progress</Heading>
@@ -143,8 +158,8 @@
 					Confirm deletion by writing <strong>{expected}</strong> in the box below and click
 					<em>Delete</em>.
 				</BodyShort>
-				{#if $deleteApp.errors}
-					<GraphErrors errors={$deleteApp.errors} />
+				{#if deleteErrors}
+					<GraphErrors errors={deleteErrors} />
 				{/if}
 
 				<form
@@ -154,11 +169,7 @@
 					}}
 				>
 					<TextField label="" hideLabel bind:value={confirmation} style="width: 300px;" />
-					<Button
-						disabled={confirmation !== expected}
-						variant="danger"
-						loading={$DeleteAppPage.fetching}
-					>
+					<Button disabled={confirmation !== expected} variant="danger" loading={deleting}>
 						Delete
 					</Button>
 				</form>

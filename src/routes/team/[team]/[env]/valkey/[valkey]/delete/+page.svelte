@@ -3,11 +3,11 @@
 	import { enhance } from '$app/forms';
 	import { resolve } from '$app/paths';
 	import { page } from '$app/state';
-	import ExternalLink from '$lib/ui/ExternalLink.svelte';
 	import { docURL } from '$lib/doc';
+	import ExternalLink from '$lib/ui/ExternalLink.svelte';
 	import { Alert, BodyLong, Button, ErrorMessage, TextField } from '@nais/ds-svelte-community';
 	import { getTeamContext } from '../../../../teamContext.svelte';
-	import type { PageProps } from './$houdini';
+	import type { PageProps } from './$types';
 
 	let { form, data }: PageProps = $props();
 	let name = $state('');
@@ -16,7 +16,7 @@
 	const { DeleteValkeyData } = $derived(data);
 
 	let usesCount = $derived(
-		$DeleteValkeyData.data?.team.environment.valkey.access.pageInfo.totalCount ?? 0
+		DeleteValkeyData.data?.team.environment.valkey.access.pageInfo.totalCount ?? 0
 	);
 
 	const teamCtx = getTeamContext();

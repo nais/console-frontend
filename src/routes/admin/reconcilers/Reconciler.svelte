@@ -1,6 +1,7 @@
 <script lang="ts">
-	import { fragment, graphql, type ReconcilerFragment } from '$houdini';
 	import Confirm from '$lib/ui/Confirm.svelte';
+	import { getContextClient } from '$lib/urql/context';
+	import { useFragment, type FragmentType } from '$lib/urql/fragment';
 	import {
 		Accordion,
 		AccordionItem,
@@ -12,12 +13,20 @@
 	} from '@nais/ds-svelte-community';
 	import { InformationSquareFillIcon } from '@nais/ds-svelte-community/icons';
 	import { untrack } from 'svelte';
+	import {
+		DisableReconcilerMutation,
+		EnableReconcilerMutation,
+		ReconcilerFragment,
+		SaveReconcilerConfigMutation
+	} from './reconcilers';
 
 	interface Props {
-		reconciler: ReconcilerFragment;
+		reconciler: FragmentType<typeof ReconcilerFragment>;
 	}
 
 	let { reconciler }: Props = $props();
+
+	const client = getContextClient();
 
 	let confirm = $state(false);
 	let errors: string[] = $state([]);
@@ -25,61 +34,23 @@
 	let reconcileLoading = $state(false);
 	let configLoading = $state(false);
 
-	let r = $derived(
-		fragment(
-			reconciler,
-			graphql(`
-				fragment ReconcilerFragment on Reconciler {
-					id
-					configured
-					description
-					displayName
-					enabled
-					name
-					config {
-						configured
-						description
-						displayName
-						key
-						value
-						secret
-					}
-					errors {
-						pageInfo {
-							totalCount
-						}
-					}
-				}
-			`)
-		)
-	);
-
-	const enableReconciler = graphql(`
-		mutation EnableReconciler($name: String!) {
-			enableReconciler(input: { name: $name }) {
-				enabled
-			}
-		}
-	`);
-
-	const disableReconciler = graphql(`
-		mutation DisableReconciler($name: String!) {
-			disableReconciler(input: { name: $name }) {
-				enabled
-			}
-		}
-	`);
+	let r = $derived(useFragment(ReconcilerFragment, reconciler));
 
 	const toggle = async () => {
 		errors = [];
 		reconcileLoading = true;
 		try {
-			const resp = $r.enabled
-				? await disableReconciler.mutate({ name: $r.name })
-				: await enableReconciler.mutate({ name: $r.name });
+			const resp = r.enabled
+				? await client.mutation(DisableReconcilerMutation, { name: r.name }).toPromise()
+				: await client.mutation(EnableReconcilerMutation, { name: r.name }).toPromise();
 
-			if (resp.errors) {
-				errors = resp.errors.filter((e) => e.message != 'unable to resolve').map((e) => e.message);
+			if (resp.error) {
+				errors = (resp.error.graphQLErrors ?? [])
+					.filter((e) => e.message != 'unable to resolve')
+					.map((e) => e.message);
+				if (errors.length === 0 && resp.error.message) {
+					errors = [resp.error.message];
+				}
 			}
 		} catch (error) {
 			errors = [error instanceof Error ? error.message : 'Failed to update reconciler state'];
@@ -97,57 +68,56 @@
 				return;
 			}
 
-			config = $r.config.map((c) => {
+			config = r.config.map((c) => {
 				return { key: c.key, value: c.value || '', secret: c.secret };
 			});
 		});
 	});
 
-	const saveConfigMutation = graphql(`
-		mutation SaveReconcilerConfig($name: String!, $config: [ReconcilerConfigInput!]!) {
-			configureReconciler(input: { name: $name, config: $config }) {
-				configured
-			}
-		}
-	`);
-
 	const saveConfig = async () => {
 		configErrors = [];
 		configLoading = true;
 
-		const resp = await saveConfigMutation.mutate({
-			name: $r.name,
-			config: config
-				.filter((c) => {
-					return !c.secret || !!c.value;
-				})
-				.map((c) => ({ key: c.key, value: c.value }))
-		});
+		const resp = await client
+			.mutation(SaveReconcilerConfigMutation, {
+				name: r.name,
+				config: config
+					.filter((c) => {
+						return !c.secret || !!c.value;
+					})
+					.map((c) => ({ key: c.key, value: c.value }))
+			})
+			.toPromise();
 
 		configLoading = false;
-		if (resp.errors) {
-			errors = resp.errors.filter((e) => e.message != 'unable to resolve').map((e) => e.message);
+		if (resp.error) {
+			errors = (resp.error.graphQLErrors ?? [])
+				.filter((e) => e.message != 'unable to resolve')
+				.map((e) => e.message);
+			if (errors.length === 0 && resp.error.message) {
+				errors = [resp.error.message];
+			}
 		}
 	};
 </script>
 
 <!-- <Card style="margin-bottom:1rem;"> -->
 <div class="card">
-	<Heading as="h2">{$r.displayName}</Heading>
-	{#if $r.errors.pageInfo.totalCount}
+	<Heading as="h2">{r.displayName}</Heading>
+	{#if r.errors.pageInfo.totalCount}
 		<span class="reconciler-error">
-			Reconciler has {$r.errors.pageInfo.totalCount} errors. Please consult the
-			<a href="/admin/reconcilerLogs/{$r.id}">logs</a> 🙏
+			Reconciler has {r.errors.pageInfo.totalCount} errors. Please consult the
+			<a href="/admin/reconcilerLogs/{r.id}">logs</a> 🙏
 		</span>
 	{/if}
-	<p>{$r.description}</p>
+	<p>{r.description}</p>
 
 	{#each errors as error (error)}
 		<Alert variant="error">{error}</Alert>
 	{/each}
 
 	<Switch
-		checked={$r.enabled}
+		checked={r.enabled}
 		loading={reconcileLoading}
 		disabled={reconcileLoading}
 		onclick={(e: MouseEvent) => {
@@ -155,9 +125,9 @@
 			confirm = true;
 		}}
 	>
-		Synchronize {$r.displayName}</Switch
+		Synchronize {r.displayName}</Switch
 	>
-	{#if $r.config.length > 0 && config.length > 0}
+	{#if r.config.length > 0 && config.length > 0}
 		<Accordion>
 			<AccordionItem heading="Configuration">
 				<form
@@ -170,7 +140,7 @@
 						<Alert variant="error">{error}</Alert>
 					{/each}
 
-					{#each $r.config as c, i (c.key)}
+					{#each r.config as c, i (c.key)}
 						<TextField bind:value={config[i].value} style="width:400px">
 							{#snippet label()}
 								{c.displayName}
@@ -196,7 +166,7 @@
 	{#snippet header()}
 		Confirmation required
 	{/snippet}
-	This will <b>{$r.enabled ? 'disable' : 'enable'}</b> synchronization of <i>{$r.displayName}</i><br
+	This will <b>{r.enabled ? 'disable' : 'enable'}</b> synchronization of <i>{r.displayName}</i><br
 	/>
 	Are you sure?
 </Confirm>

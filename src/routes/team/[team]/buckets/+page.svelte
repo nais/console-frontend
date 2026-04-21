@@ -1,17 +1,17 @@
 <script lang="ts">
-	import { BucketOrderField, OrderDirection } from '$houdini';
+	import { docURL } from '$lib/doc';
+	import PersistenceCost from '$lib/domain/cost/PersistenceCost.svelte';
+	import CdnBucket from '$lib/domain/persistence/CDNBucket.svelte';
+	import PersistenceLink from '$lib/domain/persistence/PersistenceLink.svelte';
+	import WorkloadLink from '$lib/domain/workload/WorkloadLink.svelte';
+	import { envTagVariant } from '$lib/envTagVariant';
 	import ExternalLink from '$lib/ui/ExternalLink.svelte';
+	import GraphErrors from '$lib/ui/GraphErrors.svelte';
 	import List from '$lib/ui/List.svelte';
 	import ListItem from '$lib/ui/ListItem.svelte';
 	import OrderByMenu from '$lib/ui/OrderByMenu.svelte';
-	import CdnBucket from '$lib/domain/persistence/CDNBucket.svelte';
-	import PersistenceCost from '$lib/domain/cost/PersistenceCost.svelte';
-	import PersistenceLink from '$lib/domain/persistence/PersistenceLink.svelte';
-	import WorkloadLink from '$lib/domain/workload/WorkloadLink.svelte';
-	import { docURL } from '$lib/doc';
-	import { envTagVariant } from '$lib/envTagVariant';
-	import GraphErrors from '$lib/ui/GraphErrors.svelte';
 	import Pagination from '$lib/ui/Pagination.svelte';
+	import { BucketOrderField, OrderDirection } from '$lib/urql/gql/graphql';
 	import { changeParams } from '$lib/utils/searchparams';
 	import { BodyLong, Tag } from '@nais/ds-svelte-community';
 	import { endOfYesterday, startOfMonth, subMonths } from 'date-fns';
@@ -21,8 +21,8 @@
 	let { Buckets, viewerIsMember } = $derived(data);
 
 	let cost = $derived(() => {
-		const costData = $Buckets.data?.team.cost;
-		const teamSlug = $Buckets.data?.team.slug;
+		const costData = Buckets.data?.team.cost;
+		const teamSlug = Buckets.data?.team.slug;
 
 		if (!costData || !teamSlug) return null;
 
@@ -34,10 +34,10 @@
 	});
 </script>
 
-<GraphErrors errors={$Buckets.errors} />
+<GraphErrors errors={Buckets.errors} />
 
-{#if $Buckets.data}
-	{#if $Buckets.data.team.buckets.pageInfo.totalCount || $Buckets.data.team.externalResources.cdn?.bucket}
+{#if Buckets.data}
+	{#if Buckets.data.team.buckets.pageInfo.totalCount || Buckets.data.team.externalResources.cdn?.bucket}
 		<div class="content-wrapper">
 			<div>
 				<BodyLong spacing>
@@ -47,8 +47,8 @@
 					>
 				</BodyLong>
 
-				{#if $Buckets.data.team.buckets.pageInfo.totalCount}
-					<List title="{$Buckets.data.team.buckets.pageInfo.totalCount} entries">
+				{#if Buckets.data.team.buckets.pageInfo.totalCount}
+					<List title="{Buckets.data.team.buckets.pageInfo.totalCount} entries">
 						{#snippet menu()}
 							<OrderByMenu
 								orderField={BucketOrderField}
@@ -56,7 +56,7 @@
 								defaultOrderDirection={OrderDirection.DESC}
 							/>
 						{/snippet}
-						{#each $Buckets.data.team.buckets.nodes as instance (instance.id)}
+						{#each Buckets.data.team.buckets.nodes as instance (instance.id)}
 							<ListItem>
 								<div>
 									<PersistenceLink {instance} />
@@ -75,19 +75,19 @@
 						{/each}
 					</List>
 					<Pagination
-						page={$Buckets.data.team.buckets.pageInfo}
+						page={Buckets.data.team.buckets.pageInfo}
 						loaders={{
 							loadPreviousPage: () =>
 								changeParams(
 									{
 										after: '',
-										before: $Buckets.data?.team.buckets.pageInfo.startCursor ?? ''
+										before: Buckets.data?.team.buckets.pageInfo.startCursor ?? ''
 									},
 									{ noScroll: true }
 								),
 							loadNextPage: () =>
 								changeParams(
-									{ before: '', after: $Buckets.data?.team.buckets.pageInfo.endCursor ?? '' },
+									{ before: '', after: Buckets.data?.team.buckets.pageInfo.endCursor ?? '' },
 									{ noScroll: true }
 								)
 						}}
@@ -108,9 +108,9 @@
 						/>
 					</div>
 				{/if}
-				{#if $Buckets.data.team.externalResources.cdn?.bucket && viewerIsMember}
+				{#if Buckets.data.team.externalResources.cdn?.bucket && viewerIsMember}
 					<div>
-						<CdnBucket cdnBucket={$Buckets.data.team.externalResources.cdn.bucket} />
+						<CdnBucket cdnBucket={Buckets.data.team.externalResources.cdn.bucket} />
 					</div>
 				{/if}
 			</div>
@@ -125,9 +125,9 @@
 				</ExternalLink>
 			</BodyLong>
 			<div class="right-column">
-				{#if $Buckets.data.team.externalResources.cdn?.bucket && viewerIsMember}
+				{#if Buckets.data.team.externalResources.cdn?.bucket && viewerIsMember}
 					<div>
-						<CdnBucket cdnBucket={$Buckets.data.team.externalResources.cdn.bucket} />
+						<CdnBucket cdnBucket={Buckets.data.team.externalResources.cdn.bucket} />
 					</div>
 				{/if}
 			</div>

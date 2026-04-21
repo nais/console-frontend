@@ -1,43 +1,56 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
-	import { type DeleteJobPage$result, graphql } from '$houdini';
 	import PersistenceItem from '$lib/domain/persistence/PersistenceItem.svelte';
 	import WarningIcon from '$lib/icons/WarningIcon.svelte';
 	import GraphErrors from '$lib/ui/GraphErrors.svelte';
 	import Time from '$lib/ui/Time.svelte';
+	import { getContextClient } from '$lib/urql/context';
+	import type { ResultOf } from '@graphql-typed-document-node/core';
 	import { BodyShort, Button, Heading, TextField } from '@nais/ds-svelte-community';
-	import { get } from 'svelte/store';
 	import { getTeamContext } from '../../../../teamContext.svelte';
 	import type { PageProps } from './$types';
+	import { DeleteJobMutation, DeleteJobPageQuery } from './delete';
 
 	let { data }: PageProps = $props();
 
 	let { DeleteJobPage } = $derived(data);
+	let result = $derived(DeleteJobPage);
 
-	let result = $derived($DeleteJobPage.data);
+	type DeleteJobPageData = ResultOf<typeof DeleteJobPageQuery>;
+	type Job = NonNullable<DeleteJobPageData['team']['environment']['job']>;
 
-	const deleteJob = graphql(`
-		mutation DeleteJob($team: Slug!, $env: String!, $job: String!) {
-			deleteJob(input: { teamSlug: $team, environmentName: $env, name: $job }) {
-				success
-			}
-		}
-	`);
-
+	const client = getContextClient();
 	const teamCtx = getTeamContext();
+
 	let confirmation = $state('');
+	let deleting = $state(false);
+	let deleteErrors = $state<{ message: string }[] | null>(null);
 
 	const submit = async () => {
-		const job = get(DeleteJobPage).data?.team.environment.job;
+		const job = result.data?.team.environment.job;
 		if (!job) {
 			return;
 		}
 
-		const resp = await deleteJob.mutate({
-			job: job.name,
-			env: job.teamEnvironment.environment.name,
-			team: job.team.slug
-		});
+		deleting = true;
+		deleteErrors = null;
+
+		const resp = await client
+			.mutation(DeleteJobMutation, {
+				job: job.name,
+				env: job.teamEnvironment.environment.name,
+				team: job.team.slug
+			})
+			.toPromise();
+
+		deleting = false;
+
+		if (resp.error) {
+			deleteErrors = resp.error.graphQLErrors?.map((e) => ({ message: e.message })) ?? [
+				{ message: resp.error.message }
+			];
+			return;
+		}
 
 		if (resp.data?.deleteJob.success) {
 			teamCtx.refetchInventory();
@@ -45,7 +58,7 @@
 		}
 	};
 
-	function hasResourcesToDelete(job: DeleteJobPage$result['team']['environment']['job']) {
+	function hasResourcesToDelete(job: Job) {
 		return (
 			job.sqlInstances.nodes.filter((s) => s.cascadingDelete).length > 0 ||
 			job.bigQueryDatasets.nodes.filter((s) => s.cascadingDelete).length > 0 ||
@@ -54,7 +67,7 @@
 		);
 	}
 
-	function hasOrphans(job: DeleteJobPage$result['team']['environment']['job']) {
+	function hasOrphans(job: Job) {
 		return (
 			job.sqlInstances.nodes.filter((s) => !s.cascadingDelete).length > 0 ||
 			job.bigQueryDatasets.nodes.filter((s) => !s.cascadingDelete).length > 0 ||
@@ -64,10 +77,12 @@
 	}
 </script>
 
+<GraphErrors errors={result.errors} />
+
 <Heading as="h2"><WarningIcon class="heading-aligned-icon" /> Danger Zone</Heading>
 <div class="danger-zone">
-	{#if result?.team.environment.job}
-		{@const job = result.team.environment.job}
+	{#if result.data?.team.environment.job}
+		{@const job = result.data.team.environment.job}
 		{#if job.deletionStartedAt}
 			<div class="heading-wrapper">
 				<Heading as="h3">Deletion in Progress</Heading>
@@ -141,8 +156,8 @@
 					Confirm deletion by writing <strong>{expected}</strong> in the box below and click
 					<em>Delete</em>.
 				</BodyShort>
-				{#if $deleteJob.errors}
-					<GraphErrors errors={$deleteJob.errors} />
+				{#if deleteErrors}
+					<GraphErrors errors={deleteErrors} />
 				{/if}
 
 				<form
@@ -152,11 +167,7 @@
 					}}
 				>
 					<TextField label="" hideLabel bind:value={confirmation} style="width: 300px;" />
-					<Button
-						disabled={confirmation !== expected}
-						variant="danger"
-						loading={$DeleteJobPage.fetching}
-					>
+					<Button disabled={confirmation !== expected} variant="danger" loading={deleting}>
 						Delete
 					</Button>
 				</form>

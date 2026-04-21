@@ -1,45 +1,46 @@
 <script lang="ts">
-	import type { InstanceGroupDetail$result } from '$houdini';
+	import { pageHeaderState } from '$lib/stores/pageHeaderState.svelte';
 	import GraphErrors from '$lib/ui/GraphErrors.svelte';
 	import Time from '$lib/ui/Time.svelte';
-	import ViewSecretModal from '../../../../secret/[secret]/ViewSecretModal.svelte';
-	import { SvelteMap } from 'svelte/reactivity';
-	import prettyBytes from 'pretty-bytes';
+	import { ValueEncoding } from '$lib/urql/gql/graphql';
+	import type { ResultOf } from '@graphql-typed-document-node/core';
 	import {
 		Alert,
 		BodyShort,
 		Heading,
 		Loader,
 		Table,
+		Tag,
 		Tbody,
 		Td,
 		Th,
 		Thead,
-		Tr,
-		Tag
+		Tr
 	} from '@nais/ds-svelte-community';
-	import { pageHeaderState } from '$lib/stores/pageHeaderState.svelte';
+	import prettyBytes from 'pretty-bytes';
+	import { SvelteMap } from 'svelte/reactivity';
+	import ViewSecretModal from '../../../../secret/[secret]/ViewSecretModal.svelte';
 	import type { PageProps } from './$types';
-	import type { ValueEncoding$options } from '$houdini';
-	import { ValueEncoding } from '$houdini';
 	import EnvironmentVariables from './EnvironmentVariables.svelte';
 	import MountedFiles from './MountedFiles.svelte';
+	import type { InstanceGroupDetailQuery } from './instanceGroup';
 
-	type InstanceGroup =
-		InstanceGroupDetail$result['team']['environment']['application']['instanceGroups'][number];
+	type InstanceGroup = NonNullable<
+		ResultOf<typeof InstanceGroupDetailQuery>
+	>['team']['environment']['application']['instanceGroups'][number];
 
 	let { data }: PageProps = $props();
 	let { InstanceGroupDetail, instanceGroupName } = $derived(data);
 
 	const group = $derived(
-		$InstanceGroupDetail.data?.team.environment.application.instanceGroups.find(
+		InstanceGroupDetail.data?.team.environment.application.instanceGroups.find(
 			(g: InstanceGroup) => g.name === instanceGroupName
 		)
 	);
 
-	const application = $derived($InstanceGroupDetail.data?.team.environment.application);
+	const application = $derived(InstanceGroupDetail.data?.team.environment.application);
 	const allGroups = $derived(application?.instanceGroups ?? []);
-	const viewerIsMember = $derived($InstanceGroupDetail.data?.team.viewerIsMember ?? false);
+	const viewerIsMember = $derived(InstanceGroupDetail.data?.team.viewerIsMember ?? false);
 
 	// Determine if this group is "current" or "incoming"
 	const incoming = $derived(
@@ -102,7 +103,7 @@
 	const needsSecretModal = $derived(hasSecrets || hasSecretFiles);
 
 	function handleRevealSuccess(
-		values: { name: string; value: string; encoding: ValueEncoding$options }[]
+		values: { name: string; value: string; encoding: ValueEncoding | `${ValueEncoding}` }[]
 	) {
 		if (pendingFileDownload) {
 			// Triggered for file download — find matching key and download
@@ -200,9 +201,9 @@
 	}
 </script>
 
-<GraphErrors errors={$InstanceGroupDetail.errors} />
+<GraphErrors errors={InstanceGroupDetail.errors} />
 
-{#if $InstanceGroupDetail.fetching}
+{#if !InstanceGroupDetail.data && !InstanceGroupDetail.errors}
 	<div style="display: flex; justify-content: center; align-items: center; height: 500px;">
 		<Loader size="3xlarge" />
 	</div>
@@ -356,7 +357,7 @@
 							<Td>Memory</Td>
 							<Td>
 								<code>
-									{#if application.resources.requests.memory !== null}
+									{#if application.resources.requests.memory != null}
 										{prettyBytes(application.resources.requests.memory, {
 											locale: 'en',
 											minimumFractionDigits: 2,
@@ -364,7 +365,7 @@
 											binary: true
 										})}
 									{:else}
-										{prettyBytes(application.utilization.requested_memory, {
+										{prettyBytes(application.utilization.requested_memory ?? 0, {
 											locale: 'en',
 											minimumFractionDigits: 2,
 											maximumFractionDigits: 2,

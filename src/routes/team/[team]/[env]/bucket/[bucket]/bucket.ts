@@ -1,0 +1,37 @@
+import { graphql as gql } from '$lib/urql/gql';
+
+export const BucketQuery = gql(/* GraphQL */ `
+	query Bucket($team: Slug!, $name: String!, $environment: String!) {
+		team(slug: $team) {
+			slug
+			environment(name: $environment) {
+				bucket(name: $name) {
+					__typename
+					cascadingDelete
+					publicAccessPrevention
+					uniformBucketLevelAccess
+
+					name
+					teamEnvironment {
+						environment {
+							name
+						}
+					}
+
+					workload {
+						name
+						__typename
+						teamEnvironment {
+							environment {
+								name
+							}
+						}
+						team {
+							slug
+						}
+					}
+				}
+			}
+		}
+	}
+`);

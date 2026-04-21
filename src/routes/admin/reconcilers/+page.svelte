@@ -5,7 +5,7 @@
 	let { data }: PageProps = $props();
 
 	let { AdminReconcilers } = $derived(data);
-	let reconcilers = $derived($AdminReconcilers.data?.reconcilers.nodes);
+	let reconcilers = $derived(AdminReconcilers.data?.reconcilers.nodes);
 </script>
 
 {#each reconcilers || [] as r (r.id)}

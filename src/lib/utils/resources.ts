@@ -1,9 +1,53 @@
-import {
-	UtilizationResourceType,
-	type TeamResourceUsage$result,
-	type TenantUtilization$result,
-	type UtilizationResourceType$options
-} from '$houdini';
+/**
+ * Structural input shapes for the utilization helpers below.
+ *
+ * These mirror the data the existing `TeamResourceUsage` and
+ * `TenantUtilization` queries select, but are declared inline so this
+ * module no longer depends on Houdini-generated types. Both the legacy
+ * Houdini result shapes and the new urql/codegen result shapes are
+ * assignable to these structural types, which keeps the call sites
+ * working through the migration.
+ */
+
+type WorkloadUtilizationItem = {
+	readonly workload: {
+		readonly id: string;
+		readonly name: string;
+		readonly __typename?: string | null;
+		readonly teamEnvironment: {
+			readonly environment: { readonly name: string };
+		};
+	};
+	readonly requested: number;
+	readonly used: number;
+};
+
+type CurrentUnitPrices = {
+	readonly cpu: { readonly value: number };
+	readonly memory: { readonly value: number };
+};
+
+export type TeamResourceUsageData = {
+	readonly currentUnitPrices: CurrentUnitPrices;
+	readonly team: {
+		readonly cpuUtil: ReadonlyArray<WorkloadUtilizationItem | null>;
+		readonly memUtil: ReadonlyArray<WorkloadUtilizationItem | null>;
+	};
+};
+
+type TenantUtilizationItem = {
+	readonly team: { readonly slug: string };
+	readonly requested: number;
+	readonly used: number;
+};
+
+export type TenantUtilizationData = {
+	readonly currentUnitPrices: CurrentUnitPrices;
+	readonly cpuUtil: ReadonlyArray<TenantUtilizationItem>;
+	readonly memUtil: ReadonlyArray<TenantUtilizationItem>;
+};
+
+type ResourceType = 'CPU' | 'MEMORY';
 
 export function round(value: number, decimals: number = 0): number {
 	const factor = Math.pow(10, decimals);
@@ -12,7 +56,7 @@ export function round(value: number, decimals: number = 0): number {
 
 // memory should be in Bytes
 export function yearlyOverageCost(
-	resourceType: UtilizationResourceType$options,
+	resourceType: ResourceType,
 	unutilized: number,
 	cpuCost: number,
 	memCost: number
@@ -21,9 +65,7 @@ export function yearlyOverageCost(
 	const costPerBytePerYear = (memCost / 1024 / 1024 / 1024) * 8760; // convert to GB and multiply by hours in a year
 
 	const cost =
-		resourceType == UtilizationResourceType.CPU
-			? costPerCpuCorePerYear * unutilized
-			: costPerBytePerYear * unutilized;
+		resourceType === 'CPU' ? costPerCpuCorePerYear * unutilized : costPerBytePerYear * unutilized;
 
 	return cost > 0.0 ? cost : 0.0;
 }
@@ -35,7 +77,7 @@ export type TeamOverageData = {
 	unusedMem: number;
 	unusedCpu: number;
 	estimatedAnnualOverageCost: number;
-	type: string | null;
+	type: string | null | undefined;
 };
 
 export type TeamsOverageData = {
@@ -46,7 +88,7 @@ export type TeamsOverageData = {
 };
 
 export function getTeamOverageData(
-	data: TeamResourceUsage$result | undefined | null,
+	data: TeamResourceUsageData | undefined | null,
 	sortedBy: string = 'COST',
 	sortDirection: string = 'descending'
 ): TeamOverageData[] {
@@ -178,7 +220,7 @@ export function getTeamOverageData(
 }
 
 export function getTeamsOverageData(
-	data: TenantUtilization$result | null,
+	data: TenantUtilizationData | null,
 	sortedBy: string,
 	sortDirection: string
 ): TeamsOverageData[] {

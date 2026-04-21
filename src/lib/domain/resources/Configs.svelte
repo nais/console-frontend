@@ -1,11 +1,21 @@
 <script lang="ts">
-	import { graphql } from '$houdini';
 	import GraphErrors from '$lib/ui/GraphErrors.svelte';
 	import IconLabel from '$lib/ui/IconLabel.svelte';
+	import { getContextClient } from '$lib/urql/context';
+	import { graphql as gql } from '$lib/urql/gql';
 	import { BodyShort, Heading, Loader } from '@nais/ds-svelte-community';
 	import { FileTextIcon } from '@nais/ds-svelte-community/icons';
+	import { queryStore } from '@urql/svelte';
 
-	const configs = graphql(`
+	interface Props {
+		environment: string;
+		workload: string;
+		teamSlug: string;
+	}
+
+	let { environment, workload, teamSlug }: Props = $props();
+
+	const WorkloadConfigsQuery = gql(/* GraphQL */ `
 		query WorkloadConfigs($name: String!, $team: Slug!, $env: String!) {
 			team(slug: $team) {
 				slug
@@ -28,37 +38,32 @@
 		}
 	`);
 
-	interface Props {
-		environment: string;
-		workload: string;
-		teamSlug: string;
-	}
+	const client = getContextClient();
 
-	let { environment, workload, teamSlug }: Props = $props();
+	const configs = $derived(
+		queryStore({
+			client,
+			query: WorkloadConfigsQuery,
+			variables: { name: workload, team: teamSlug, env: environment },
+			requestPolicy: 'cache-and-network'
+		})
+	);
 
-	$effect(() => {
-		configs.fetch({
-			variables: {
-				name: workload,
-				team: teamSlug,
-				env: environment
-			}
-		});
-	});
+	const result = $derived($configs);
 </script>
 
 <div class="wrapper">
 	<Heading as="h3" size="small">Configs</Heading>
-	<GraphErrors errors={$configs.errors} />
+	<GraphErrors errors={result.error?.graphQLErrors ?? null} />
 
-	{#if $configs.fetching}
+	{#if result.fetching && !result.data}
 		<Loader />
-	{:else if $configs.data && $configs.data.team.environment.workload.configs.edges.length > 0}
-		{#each $configs.data.team.environment.workload.configs.edges as config (config.node.id)}
+	{:else if result.data && result.data.team.environment.workload.configs.edges.length > 0}
+		{#each result.data.team.environment.workload.configs.edges as config (config.node.id)}
 			<IconLabel
 				label={config.node.name}
 				icon={FileTextIcon}
-				href="/team/{$configs.data.team.slug}/{$configs.data.team.environment.environment
+				href="/team/{result.data.team.slug}/{result.data.team.environment.environment
 					.name}/config/{config.node.name}"
 			/>
 		{/each}

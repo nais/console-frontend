@@ -1,14 +1,14 @@
 <script lang="ts">
 	import { page } from '$app/state';
-	import { JobOrderField, OrderDirection } from '$houdini';
+	import { docURL } from '$lib/doc';
 	import AggregatedCostForJobs from '$lib/domain/cost/AggregatedCostForJobs.svelte';
-	import ExternalLink from '$lib/ui/ExternalLink.svelte';
 	import JobListItem from '$lib/domain/list-items/JobListItem.svelte';
+	import ExternalLink from '$lib/ui/ExternalLink.svelte';
+	import GraphErrors from '$lib/ui/GraphErrors.svelte';
 	import List from '$lib/ui/List.svelte';
 	import OrderByMenu from '$lib/ui/OrderByMenu.svelte';
-	import { docURL } from '$lib/doc';
-	import GraphErrors from '$lib/ui/GraphErrors.svelte';
 	import Pagination from '$lib/ui/Pagination.svelte';
+	import { JobOrderField, OrderDirection } from '$lib/urql/gql/graphql';
 	import { changeParams } from '$lib/utils/searchparams';
 	import { BodyLong, Button, Search } from '@nais/ds-svelte-community';
 	import { ActionMenu, ActionMenuCheckboxItem } from '@nais/ds-svelte-community/experimental';
@@ -18,14 +18,14 @@
 	let { data }: PageProps = $props();
 	let { Jobs, JobsListMetadata, teamSlug } = $derived(data);
 
-	let filter = $state($Jobs.variables?.filter?.name ?? '');
+	let filter = $state(page.url.searchParams.get('filter') ?? '');
 
-	let after: string = $derived($Jobs.variables?.after ?? '');
-	let before: string = $derived($Jobs.variables?.before ?? '');
+	let after: string = $derived(page.url.searchParams.get('after') ?? '');
+	let before: string = $derived(page.url.searchParams.get('before') ?? '');
 
-	const totalJobs = $derived($JobsListMetadata.data?.team.totalJobs.pageInfo.totalCount ?? 0);
+	const totalJobs = $derived(JobsListMetadata.data?.team.totalJobs.pageInfo.totalCount ?? 0);
 
-	const allEnvs = $derived($Jobs.data?.team.environments.map((env) => env.environment.name) ?? []);
+	const allEnvs = $derived(Jobs.data?.team.environments.map((env) => env.environment.name) ?? []);
 
 	let filteredEnvs = $derived(page.url.searchParams.get('environments')?.split(',') ?? allEnvs);
 
@@ -56,7 +56,7 @@
 	};
 </script>
 
-<GraphErrors errors={$Jobs.errors} />
+<GraphErrors errors={Jobs.errors} />
 
 <div class="wrapper">
 	<div class="content">
@@ -69,7 +69,7 @@
 			{/if}
 		</BodyLong>
 		{#if totalJobs > 0}
-			{@const jobs = $Jobs.data?.team.jobs}
+			{@const jobs = Jobs.data?.team.jobs}
 			<div class="search">
 				<form
 					onsubmit={(e) => {
@@ -123,7 +123,7 @@
 						>
 							All environments
 						</ActionMenuCheckboxItem>
-						{#each $Jobs.data?.team.environments ?? [] as { environment, id } (id)}
+						{#each Jobs.data?.team.environments ?? [] as { environment, id } (id)}
 							<ActionMenuCheckboxItem
 								checked={filteredEnvs.includes(environment.name)}
 								onchange={(checked) =>

@@ -1,14 +1,14 @@
 <script lang="ts">
 	import { page } from '$app/state';
-	import { ApplicationOrderField, OrderDirection } from '$houdini';
+	import { docURL } from '$lib/doc';
 	import AggregatedCostForApplications from '$lib/domain/cost/AggregatedCostForApplications.svelte';
-	import ExternalLink from '$lib/ui/ExternalLink.svelte';
 	import AppListItem from '$lib/domain/list-items/AppListItem.svelte';
+	import ExternalLink from '$lib/ui/ExternalLink.svelte';
+	import GraphErrors from '$lib/ui/GraphErrors.svelte';
 	import List from '$lib/ui/List.svelte';
 	import OrderByMenu from '$lib/ui/OrderByMenu.svelte';
-	import { docURL } from '$lib/doc';
-	import GraphErrors from '$lib/ui/GraphErrors.svelte';
 	import Pagination from '$lib/ui/Pagination.svelte';
+	import { ApplicationOrderField, OrderDirection } from '$lib/urql/gql/graphql';
 	import { changeParams } from '$lib/utils/searchparams';
 	import { BodyLong, Button, Search } from '@nais/ds-svelte-community';
 	import { ActionMenu, ActionMenuCheckboxItem } from '@nais/ds-svelte-community/experimental';
@@ -18,17 +18,17 @@
 	let { data }: PageProps = $props();
 	let { Applications, ApplicationsListMetadata, teamSlug } = $derived(data);
 
-	let filter = $state($Applications.variables?.filter?.name ?? '');
+	let filter = $state(page.url.searchParams.get('filter') ?? '');
 
-	let after: string = $derived($Applications.variables?.after ?? '');
-	let before: string = $derived($Applications.variables?.before ?? '');
+	let after: string = $derived(page.url.searchParams.get('after') ?? '');
+	let before: string = $derived(page.url.searchParams.get('before') ?? '');
 
 	const totalApplications = $derived(
-		$ApplicationsListMetadata.data?.team.totalApplications.pageInfo.totalCount ?? 0
+		ApplicationsListMetadata.data?.team.totalApplications.pageInfo.totalCount ?? 0
 	);
 
 	const allEnvs = $derived(
-		$ApplicationsListMetadata.data?.team.environments.map((env) => env.environment.name) ?? []
+		ApplicationsListMetadata.data?.team.environments.map((env) => env.environment.name) ?? []
 	);
 
 	let filteredEnvs = $derived(page.url.searchParams.get('environments')?.split(',') ?? allEnvs);
@@ -60,7 +60,7 @@
 	};
 </script>
 
-<GraphErrors errors={$Applications.errors} />
+<GraphErrors errors={Applications.errors} />
 
 <div class="wrapper">
 	<div>
@@ -75,7 +75,7 @@
 			>
 		</BodyLong>
 		{#if totalApplications > 0}
-			{@const apps = $Applications.data?.team.applications}
+			{@const apps = Applications.data?.team.applications}
 			<div class="search">
 				<form
 					onsubmit={(e) => {
@@ -122,7 +122,7 @@
 							</Button>
 						{/snippet}
 						<ActionMenuCheckboxItem
-							checked={$ApplicationsListMetadata.data?.team.environments.every((env) =>
+							checked={ApplicationsListMetadata.data?.team.environments.every((env) =>
 								filteredEnvs.includes(env.environment.name)
 							)
 								? true
@@ -133,7 +133,7 @@
 						>
 							All environments
 						</ActionMenuCheckboxItem>
-						{#each $ApplicationsListMetadata.data?.team.environments ?? [] as { environment, id } (id)}
+						{#each ApplicationsListMetadata.data?.team.environments ?? [] as { environment, id } (id)}
 							<ActionMenuCheckboxItem
 								checked={filteredEnvs.includes(environment.name)}
 								onchange={(checked) =>

@@ -1,10 +1,12 @@
 <script lang="ts">
-	import type { InstanceGroupDetail$result } from '$houdini';
+	import type { ResultOf } from '@graphql-typed-document-node/core';
 	import { Button, Heading, Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte-community';
 	import { DownloadIcon } from '@nais/ds-svelte-community/icons';
+	import type { InstanceGroupDetailQuery } from './instanceGroup';
 
-	type MountedFile =
-		InstanceGroupDetail$result['team']['environment']['application']['instanceGroups'][number]['mountedFiles'][number];
+	type MountedFile = NonNullable<
+		ResultOf<typeof InstanceGroupDetailQuery>
+	>['team']['environment']['application']['instanceGroups'][number]['mountedFiles'][number];
 
 	interface Props {
 		files: MountedFile[];

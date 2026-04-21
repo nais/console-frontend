@@ -1,15 +1,8 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
 	import { page } from '$app/state';
-	import {
-		ValkeyMaxMemoryPolicy,
-		type ValkeyMaxMemoryPolicy$options,
-		ValkeyMemory,
-		type ValkeyMemory$options,
-		ValkeyTier,
-		type ValkeyTier$options
-	} from '$houdini';
 	import ExternalLink from '$lib/ui/ExternalLink.svelte';
+	import { ValkeyMaxMemoryPolicy, ValkeyMemory, ValkeyTier } from '$lib/urql/gql/graphql';
 	import { valkeyPlanCosts } from '$lib/utils/aivencost';
 	import {
 		Alert,
@@ -22,22 +15,23 @@
 		TextField
 	} from '@nais/ds-svelte-community';
 	import { getTeamContext } from '../../teamContext.svelte';
-	import type { PageProps } from './$houdini';
+	import type { PageProps } from './$types';
 
 	let { data }: PageProps = $props();
 
 	const { CreateValkeyEnvironments } = $derived(data);
 
 	const environments = $derived(
-		($CreateValkeyEnvironments.data?.team.environments ?? []).filter((env) => !!env.gcpProjectID)
+		(CreateValkeyEnvironments.data?.team.environments ?? []).filter((env) => !!env.gcpProjectID)
 	);
 
 	const form = $derived(page.form);
 
-	let tier = $derived((form?.tier as ValkeyTier$options) ?? ValkeyTier.HIGH_AVAILABILITY);
-	let memory = $derived((form?.size as ValkeyMemory$options) ?? ValkeyMemory.GB_1);
+	let tier = $derived((form?.tier as ValkeyTier | `${ValkeyTier}`) ?? ValkeyTier.HIGH_AVAILABILITY);
+	let memory = $derived((form?.size as ValkeyMemory | `${ValkeyMemory}`) ?? ValkeyMemory.GB_1);
 	let maxMemoryPolicy = $derived(
-		(form?.max_memory_policy as ValkeyMaxMemoryPolicy$options) ?? ValkeyMaxMemoryPolicy.NO_EVICTION
+		(form?.max_memory_policy as ValkeyMaxMemoryPolicy | `${ValkeyMaxMemoryPolicy}`) ??
+			ValkeyMaxMemoryPolicy.NO_EVICTION
 	);
 
 	const teamCtx = getTeamContext();

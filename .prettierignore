@@ -1,7 +1,6 @@
 .DS_Store
 node_modules
-$houdini
-.houdini
+src/lib/urql/gql
 schema.graphql
 /build
 /.svelte-kit

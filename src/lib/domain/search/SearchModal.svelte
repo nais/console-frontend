@@ -1,10 +1,12 @@
 <script lang="ts">
-	import { graphql } from '$houdini';
 	import { envTagVariant } from '$lib/envTagVariant';
 	import BigQueryIcon from '$lib/icons/BigQueryIcon.svelte';
 	import KafkaIcon from '$lib/icons/KafkaIcon.svelte';
 	import OpenSearchIcon from '$lib/icons/OpenSearchIcon.svelte';
 	import ValkeyIcon from '$lib/icons/ValkeyIcon.svelte';
+	import { getContextClient } from '$lib/urql/context';
+	import { graphql as gql } from '$lib/urql/gql';
+	import { SearchType } from '$lib/urql/gql/graphql';
 	import { Modal } from '@nais/ds-svelte-community';
 	import {
 		BriefcaseClockIcon,
@@ -13,11 +15,12 @@
 		PackageIcon,
 		PersonGroupIcon
 	} from '@nais/ds-svelte-community/icons';
+	import { queryStore } from '@urql/svelte';
 	import Search from './Search.svelte';
 
 	let { open = $bindable() }: { open: boolean } = $props();
 
-	const store = graphql(`
+	const SearchModalQuery = gql(/* GraphQL */ `
 		query SearchQuery($query: String!, $type: SearchType) {
 			search(first: 20, filter: { query: $query, type: $type }) {
 				nodes {
@@ -135,116 +138,132 @@
 			icon: PersonGroupIcon,
 			urlName: 'team',
 			prefix: 'team',
-			type: 'TEAM'
+			type: SearchType.TEAM
 		},
 		Application: {
 			icon: PackageIcon,
 			urlName: 'app',
 			prefix: 'app',
-			type: 'APPLICATION'
+			type: SearchType.APPLICATION
 		},
 		Job: {
 			icon: BriefcaseClockIcon,
 			urlName: 'job',
 			prefix: 'job',
-			type: 'JOB'
+			type: SearchType.JOB
 		},
 		SqlInstance: {
 			icon: DatabaseIcon,
 			urlName: 'cloudsql',
 			prefix: 'sql',
-			type: 'SQL_INSTANCE'
+			type: SearchType.SQL_INSTANCE
 		},
 		PostgresInstance: {
 			icon: DatabaseIcon,
 			urlName: 'postgres',
 			prefix: 'postgres',
-			type: 'POSTGRES'
+			type: SearchType.POSTGRES
 		},
 		Valkey: {
 			icon: ValkeyIcon,
 			urlName: 'valkey',
 			prefix: 'valkey',
-			type: 'VALKEY'
+			type: SearchType.VALKEY
 		},
 		OpenSearch: {
 			icon: OpenSearchIcon,
 			urlName: 'opensearch',
 			prefix: 'os',
-			type: 'OPENSEARCH'
+			type: SearchType.OPENSEARCH
 		},
 		BigQueryDataset: {
 			icon: BigQueryIcon,
 			urlName: 'bigquery',
 			prefix: 'bq',
-			type: 'BIGQUERY_DATASET'
+			type: SearchType.BIGQUERY_DATASET
 		},
 		Bucket: {
 			icon: BucketIcon,
 			urlName: 'bucket',
 			prefix: 'bucket',
-			type: 'BUCKET'
+			type: SearchType.BUCKET
 		},
 		KafkaTopic: {
 			icon: KafkaIcon,
 			urlName: 'kafka',
 			prefix: 'kafka',
-			type: 'KAFKA_TOPIC'
+			type: SearchType.KAFKA_TOPIC
 		}
 	} as const;
 
 	let query = $state('');
+	// Debounced + parsed search variables. `null` while the user is still
+	// typing (or the box is empty) so the urql store stays paused.
+	let searchVars = $state<{ query: string; type: SearchType | undefined } | null>(null);
 
 	$effect(() => {
-		if (query) {
-			const timeout = setTimeout(() => {
-				const [prefix, q] = query.split(':');
-				const category = Object.values(categories).find((c) => c.prefix === prefix);
-				const type = category?.type;
-				let searchQuery;
-				if (type) {
-					if (q && q.trim()) {
-						searchQuery = q.trim();
-					} else {
-						searchQuery = '';
-					}
-				} else {
-					searchQuery = query;
-				}
-				store.fetch({ variables: { query: searchQuery, type } });
-			}, 300);
-
-			return () => clearTimeout(timeout);
+		if (!query) {
+			searchVars = null;
+			return;
 		}
+
+		const timeout = setTimeout(() => {
+			const [prefix, q] = query.split(':');
+			const category = Object.values(categories).find((c) => c.prefix === prefix);
+			const type = category?.type;
+			let searchQuery: string;
+			if (type) {
+				searchQuery = q && q.trim() ? q.trim() : '';
+			} else {
+				searchQuery = query;
+			}
+			searchVars = { query: searchQuery, type };
+		}, 300);
+
+		return () => clearTimeout(timeout);
 	});
+
+	const client = getContextClient();
+
+	const store = $derived(
+		queryStore({
+			client,
+			query: SearchModalQuery,
+			variables: searchVars ?? { query: '', type: undefined },
+			pause: searchVars === null,
+			requestPolicy: 'cache-and-network'
+		})
+	);
+
+	const result = $derived($store);
 </script>
 
 <Modal width="medium" bind:open class="search-modal">
 	<Search
 		close={() => (open = false)}
 		bind:query
-		loading={$store.fetching}
+		loading={result.fetching}
 		results={query
-			? $store.data?.search.nodes.map((result) => {
-					const { icon, urlName } = categories[result.__typename];
-					if (result.__typename === 'Team') {
+			? result.data?.search.nodes.map((node) => {
+					const { icon, urlName } = categories[node.__typename];
+					if (node.__typename === 'Team') {
 						return {
 							icon,
-							label: result.slug,
-							description: result.purpose,
-							href: `/team/${result.slug}`,
+							label: node.slug,
+							description: node.purpose,
+							href: `/team/${node.slug}`,
 							type: 'link'
 						};
 					}
 					return {
 						icon,
-						label: result.name,
-						description: result.team.slug,
+						label: node.name,
+						description: node.team.slug,
 						tag: {
-							label: result.teamEnvironment.environment.name,
-							variant: envTagVariant(result.teamEnvironment.environment.name)
+							label: node.teamEnvironment.environment.name,
+							variant: envTagVariant(node.teamEnvironment.environment.name)
 						},
-						href: `/team/${result.team.slug}/${result.teamEnvironment.environment.name}/${urlName}/${result.name}`,
+						href: `/team/${node.team.slug}/${node.teamEnvironment.environment.name}/${urlName}/${node.name}`,
 						type: 'link'
 					};
 				})

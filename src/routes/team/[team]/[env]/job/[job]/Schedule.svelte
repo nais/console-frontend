@@ -3,10 +3,13 @@
 	import { Heading } from '@nais/ds-svelte-community';
 
 	interface Props {
-		schedule: {
-			readonly expression: string;
-			readonly timeZone: string;
-		} | null;
+		schedule:
+			| {
+					readonly expression: string;
+					readonly timeZone: string;
+			  }
+			| null
+			| undefined;
 		scheduleContext?: ScheduleContext;
 	}
 

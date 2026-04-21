@@ -1,7 +1,6 @@
 <script lang="ts">
-	import { PendingValue } from '$houdini';
-	import GraphErrors from '$lib/ui/GraphErrors.svelte';
 	import CostAreaChart from '$lib/chart/CostAreaChart.svelte';
+	import GraphErrors from '$lib/ui/GraphErrors.svelte';
 	import { changeParams } from '$lib/utils/searchparams';
 	import {
 		BodyLong,
@@ -18,7 +17,7 @@
 </script>
 
 <div class="wrapper">
-	<GraphErrors errors={$TeamCost.errors} />
+	<GraphErrors errors={TeamCost.errors} />
 
 	<div class="graph">
 		<div class="heading">
@@ -39,11 +38,13 @@
 				{/each}
 			</ToggleGroup>
 		</div>
-		{#if $TeamCost.data && $TeamCost.data.team.cost !== PendingValue}
+		{#if TeamCost.data}
 			<div class="mt-4 h-[500px]">
 				<CostAreaChart
-					data={$TeamCost.data.team.cost.daily.series.map((item) => {
-						const ret: { date: Date; [key: string]: number | Date } = { date: item.date };
+					data={TeamCost.data.team.cost.daily.series.map((item) => {
+						const ret: { date: Date; [key: string]: number | Date } = {
+							date: new Date(item.date)
+						};
 						item.services.forEach((service) => {
 							ret[service.service] = service.cost;
 						});

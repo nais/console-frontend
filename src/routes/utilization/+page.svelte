@@ -1,8 +1,8 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
-	import { UtilizationResourceType, type TenantUtilization$result } from '$houdini';
 	import UtilizationChart from '$lib/chart/UtilizationChart.svelte';
 	import GraphErrors from '$lib/ui/GraphErrors.svelte';
+	import { UtilizationResourceType } from '$lib/urql/gql/graphql';
 	import { euroValueFormatter } from '$lib/utils/formatters';
 	import {
 		getTeamsOverageData,
@@ -34,7 +34,12 @@
 		used: number;
 	};
 
-	function mergeAll(data: TenantUtilization$result | null): {
+	function mergeAll(
+		data: {
+			cpuUtil: ReadonlyArray<TenantOverageData>;
+			memUtil: ReadonlyArray<TenantOverageData>;
+		} | null
+	): {
 		cpuUtil: TenantOverageData[];
 		memUtil: TenantOverageData[];
 	} {
@@ -45,7 +50,7 @@
 		return { memUtil: merge(data.memUtil), cpuUtil: merge(data.cpuUtil) };
 	}
 
-	function merge(data: TenantOverageData[]) {
+	function merge(data: ReadonlyArray<TenantOverageData>) {
 		const merged = data.reduce((acc, { team, requested, used }) => {
 			const existing = acc.get(team.slug);
 			if (existing) {
@@ -91,9 +96,9 @@
 	});
 	let { TenantUtilization } = $derived(data);
 
-	let resourceUtilization = $derived(mergeAll($TenantUtilization.data));
+	let resourceUtilization = $derived(mergeAll(TenantUtilization.data));
 	let overageTable: TeamsOverageData[] = $derived(
-		getTeamsOverageData($TenantUtilization.data, sortState.orderBy, sortState.direction)
+		getTeamsOverageData(TenantUtilization.data, sortState.orderBy, sortState.direction)
 	);
 
 	const sortedMemoryData = $derived.by(() => {
@@ -133,7 +138,7 @@
 
 <div class="page">
 	<div class="container">
-		<GraphErrors errors={$TenantUtilization.errors} />
+		<GraphErrors errors={TenantUtilization.errors} />
 		{#if resourceUtilization}
 			<div class="grid">
 				<div class="card">
@@ -158,8 +163,8 @@
 										yearlyOverageCost(
 											UtilizationResourceType.CPU,
 											cpuRequested - cpuUsage,
-											$TenantUtilization.data?.currentUnitPrices.cpu.value ?? 0,
-											$TenantUtilization.data?.currentUnitPrices.memory.value ?? 0
+											TenantUtilization.data?.currentUnitPrices.cpu.value ?? 0,
+											TenantUtilization.data?.currentUnitPrices.memory.value ?? 0
 										),
 										0
 									),
@@ -193,8 +198,8 @@
 									yearlyOverageCost(
 										UtilizationResourceType.MEMORY,
 										memoryRequested - memoryUsage,
-										$TenantUtilization.data?.currentUnitPrices.cpu.value ?? 0,
-										$TenantUtilization.data?.currentUnitPrices.memory.value ?? 0
+										TenantUtilization.data?.currentUnitPrices.cpu.value ?? 0,
+										TenantUtilization.data?.currentUnitPrices.memory.value ?? 0
 									),
 									{ maximumFractionDigits: 0 }
 								)}

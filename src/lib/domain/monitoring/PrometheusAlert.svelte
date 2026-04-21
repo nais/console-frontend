@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { AlertState, type ValueOf } from '$houdini';
 	import { envTagVariant } from '$lib/envTagVariant';
+	import { AlertState } from '$lib/urql/gql/graphql';
 	import { Alert, BodyLong, Button, Heading, Tag } from '@nais/ds-svelte-community';
 
 	const {
@@ -14,14 +14,14 @@
 		alerts: {
 			id: string;
 			name: string;
-			state: ValueOf<typeof AlertState>;
+			state: AlertState | `${AlertState}`;
 			teamEnvironment: {
 				environment: {
 					name: string;
 				};
 			};
 		}[];
-		alertsState: ValueOf<typeof AlertState>;
+		alertsState: AlertState | `${AlertState}`;
 	} = $props();
 
 	let open = $state(false);

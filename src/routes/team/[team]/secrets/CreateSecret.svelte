@@ -11,10 +11,11 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 
-	import { graphql } from '$houdini';
 	import GraphErrors from '$lib/ui/GraphErrors.svelte';
+	import { getContextClient } from '$lib/urql/context';
 
 	import { BodyShort, Button, Heading, Modal, Select, TextField } from '@nais/ds-svelte-community';
+	import { CreateSecretMutation } from './secrets';
 
 	interface Props {
 		team: string;
@@ -39,37 +40,30 @@
 		name = '';
 	};
 
-	const createSecret = graphql(`
-		mutation createSecret($name: String!, $team: Slug!, $env: String!) {
-			createSecret(input: { name: $name, team: $team, environment: $env }) {
-				secret {
-					id
-					name
-					teamEnvironment {
-						environment {
-							name
-						}
-					}
-				}
-			}
-		}
-	`);
+	const client = getContextClient();
+	let mutationErrors: { message: string }[] | null = $state(null);
 
 	const create = async () => {
 		if (validate(name).length > 0 && name.length > 0) {
 			return;
 		}
 
-		await createSecret.mutate({
-			name: name,
-			team: team,
-			env: selectedEnvironment
-		});
+		const result = await client
+			.mutation(CreateSecretMutation, {
+				name: name,
+				team: team,
+				env: selectedEnvironment
+			})
+			.toPromise();
 
-		if ($createSecret.errors) {
+		if (result.error) {
+			mutationErrors = result.error.graphQLErrors.length
+				? result.error.graphQLErrors.map((e) => ({ message: e.message }))
+				: [{ message: result.error.message }];
 			open = true;
 			return;
 		}
+		mutationErrors = null;
 		const secretPage = '/team/' + team + '/' + selectedEnvironment + '/secret/' + name;
 		close();
 		await goto(secretPage);
@@ -137,7 +131,7 @@
 		</TextField>
 	</div>
 
-	<GraphErrors errors={$createSecret.errors} />
+	<GraphErrors errors={mutationErrors} />
 
 	{#snippet footer()}
 		{#if name === '' || validate(name) !== ''}

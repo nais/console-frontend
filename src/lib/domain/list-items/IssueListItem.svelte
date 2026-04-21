@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { fragment, graphql, type IssueFragment, type IssueFragment$data } from '$houdini';
+	import ApplicationRestartLoopIssue from '$lib/domain/issues/ApplicationRestartLoopIssue.svelte';
 	import DefaultIssue from '$lib/domain/issues/DefaultIssue.svelte';
 	import DeprecatedIngressIssue from '$lib/domain/issues/DeprecatedIngressIssue.svelte';
 	import DeprecatedRegistryIssue from '$lib/domain/issues/DeprecatedRegistryIssue.svelte';
@@ -7,138 +7,27 @@
 	import FailedSynchronizationIssue from '$lib/domain/issues/FailedSynchronizationIssue.svelte';
 	import InvalidSpecIssue from '$lib/domain/issues/InvalidSpecIssue.svelte';
 	import LastRunFailedIssue from '$lib/domain/issues/LastRunFailedIssue.svelte';
-	import ApplicationRestartLoopIssue from '$lib/domain/issues/ApplicationRestartLoopIssue.svelte';
 	import NoRunningInstancesIssue from '$lib/domain/issues/NoRunningInstancesIssue.svelte';
 	import OpenSearchIssue from '$lib/domain/issues/OpenSearchIssue.svelte';
 	import SqlInstanceStateIssue from '$lib/domain/issues/SqlInstanceStateIssue.svelte';
 	import SqlInstanceVersionIssue from '$lib/domain/issues/SqlInstanceVersionIssue.svelte';
 	import ValkeyIssue from '$lib/domain/issues/ValkeyIssue.svelte';
+	import { IssueFragment } from '$lib/domain/list-items/issueListItem';
 	import ListItem from '$lib/ui/ListItem.svelte';
+	import { useFragment, type FragmentType } from '$lib/urql/fragment';
 	import type { Component } from 'svelte';
 	import MissingSbomIssue from '../issues/MissingSbomIssue.svelte';
 	import VulnerableImageIssue from '../issues/VulnerableImageIssue.svelte';
 
 	interface Props {
-		item: IssueFragment;
+		item: FragmentType<typeof IssueFragment>;
 	}
 
 	let { item }: Props = $props();
 
-	let data = $derived(
-		fragment(
-			item,
-			graphql(`
-				fragment IssueFragment on Issue {
-					teamEnvironment {
-						environment {
-							name
-						}
-						team {
-							slug
-						}
-					}
-					message
-					severity
-					... on DeprecatedIngressIssue {
-						application {
-							name
-						}
-						ingresses
-					}
-					... on DeprecatedRegistryIssue {
-						workload {
-							__typename
-							name
-							image {
-								name
-							}
-						}
-					}
-					... on ExternalIngressCriticalVulnerabilityIssue {
-						cvssScore
-						ingresses
-						workload {
-							__typename
-							name
-						}
-					}
-					... on LastRunFailedIssue {
-						job {
-							name
-						}
-					}
-					... on FailedSynchronizationIssue {
-						workload {
-							__typename
-							name
-						}
-					}
-					... on InvalidSpecIssue {
-						workload {
-							__typename
-							name
-						}
-					}
-					... on MissingSbomIssue {
-						workload {
-							__typename
-							name
-						}
-					}
-					... on FailedSynchronizationIssue {
-						workload {
-							__typename
-							name
-						}
-					}
-					... on NoRunningInstancesIssue {
-						workload {
-							__typename
-							name
-						}
-					}
-					... on ApplicationRestartLoopIssue {
-						workload {
-							__typename
-							name
-						}
-					}
-					... on OpenSearchIssue {
-						event
-						openSearch {
-							name
-						}
-					}
-					... on SqlInstanceStateIssue {
-						sqlInstance {
-							name
-						}
-						state
-					}
-					... on SqlInstanceVersionIssue {
-						sqlInstance {
-							name
-						}
-					}
-					... on ValkeyIssue {
-						valkey {
-							name
-						}
-					}
-					... on VulnerableImageIssue {
-						workload {
-							__typename
-							name
-						}
-					}
-				}
-			`)
-		)
-	);
+	const data = $derived(useFragment(IssueFragment, item));
 
-	type Kind = IssueFragment$data['__typename'];
-
-	function issueComponent(kind: Kind): Component<{ data: unknown }> {
+	function issueComponent(kind: string): Component<{ data: unknown }> {
 		switch (kind) {
 			case 'DeprecatedIngressIssue':
 				return DeprecatedIngressIssue as Component<{ data: unknown }>;
@@ -175,6 +64,6 @@
 </script>
 
 <ListItem>
-	{@const IssueComponent = issueComponent($data.__typename)}
-	<IssueComponent data={$data} />
+	{@const IssueComponent = issueComponent(data.__typename)}
+	<IssueComponent {data} />
 </ListItem>

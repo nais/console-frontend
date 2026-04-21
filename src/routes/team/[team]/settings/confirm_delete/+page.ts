@@ -1,6 +1,7 @@
-import { load_TeamDeleteKey } from '$houdini';
+import { runQuery } from '$lib/urql/load';
 import { addPageMeta } from '$lib/utils/pageMeta';
 import { error } from '@sveltejs/kit';
+import { TeamDeleteKeyQuery } from '../settings';
 
 export async function load(event) {
 	const key = event.url.searchParams.get('key');
@@ -19,12 +20,9 @@ export async function load(event) {
 
 	return {
 		...(await addPageMeta(event, { title: 'Confirm Delete' })),
-		...(await load_TeamDeleteKey({
-			event,
-			variables: {
-				team: event.params.team,
-				key: key
-			}
-		}))
+		TeamDeleteKey: await runQuery(event, TeamDeleteKeyQuery, {
+			team: event.params.team,
+			key: key
+		})
 	};
 }

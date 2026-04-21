@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { page } from '$app/state';
-	import { SecretOrderField } from '$houdini';
 	import SidebarActivity from '$lib/domain/activity/sidebar/SidebarActivity.svelte';
 	import { envTagVariant } from '$lib/envTagVariant';
 	import GraphErrors from '$lib/ui/GraphErrors.svelte';
@@ -10,6 +9,8 @@
 	import OrderByMenu from '$lib/ui/OrderByMenu.svelte';
 	import Pagination from '$lib/ui/Pagination.svelte';
 	import Time from '$lib/ui/Time.svelte';
+	import { SecretOrderField } from '$lib/urql/gql/graphql';
+	import { cursorPaginationLoaders } from '$lib/urql/pagination';
 	import { changeParams } from '$lib/utils/searchparams';
 	import { getSecretPermissions } from '$lib/utils/secretPermissions';
 	import { Button, Detail, Search } from '@nais/ds-svelte-community';
@@ -24,17 +25,12 @@
 
 	let { data }: PageProps = $props();
 	let { Secrets, teamSlug } = $derived(data);
-	let viewerIsMember = $derived($Secrets.data?.team.viewerIsMember ?? false);
-	let isAdmin = $derived(
-		$Secrets.data?.me?.__typename === 'User' ? $Secrets.data.me.isAdmin : false
-	);
+	let viewerIsMember = $derived(Secrets.data?.team.viewerIsMember ?? false);
+	let isAdmin = $derived(Secrets.data?.me?.__typename === 'User' ? Secrets.data.me.isAdmin : false);
 	let permissions = $derived(getSecretPermissions(viewerIsMember, isAdmin));
 	let canMutate = $derived(permissions.canMutate);
 
 	let filter = $state(page.url.searchParams.get('nameFilter') ?? '');
-
-	let after: string = $derived($Secrets.variables?.after ?? '');
-	let before: string = $derived($Secrets.variables?.before ?? '');
 
 	let usage: 'all' | 'inUse' | 'notInUse' = $derived(
 		(page.url.searchParams.get('filter') as 'all' | 'inUse' | 'notInUse') || 'all'
@@ -44,23 +40,21 @@
 		const allowed: Array<'all' | 'inUse' | 'notInUse'> = ['all', 'inUse', 'notInUse'];
 		if (allowed.includes(value as 'all' | 'inUse' | 'notInUse')) {
 			if (value === 'all') {
-				changeParams({ filter: '' });
+				changeParams({ filter: '', before: '', after: '' });
 				return;
 			}
-			changeParams({ filter: value });
+			changeParams({ filter: value, before: '', after: '' });
 		}
 	};
 
 	const changeQuery = (
 		params: {
-			after?: string;
-			before?: string;
 			newFilter?: string;
 		} = {}
 	) => {
 		changeParams({
-			before: params.before ?? before,
-			after: params.after ?? after,
+			before: '',
+			after: '',
 			nameFilter: params.newFilter ?? filter
 		});
 	};
@@ -69,12 +63,12 @@
 
 	const environments = $derived.by(() => {
 		return (
-			$Secrets.data?.team.environments
+			Secrets.data?.team.environments
 				.map((env) => {
 					return {
 						name: env.environment.name,
 						secrets:
-							$Secrets.data?.team.secrets.nodes
+							Secrets.data?.team.secrets.nodes
 								.filter((node) => node.teamEnvironment.environment.name === env.environment.name)
 								.map((node) => {
 									return {
@@ -93,10 +87,10 @@
 	};
 </script>
 
-{#if $Secrets.errors}
-	<GraphErrors errors={$Secrets.errors} />
-{:else if $Secrets.data}
-	{@const secrets = $Secrets.data.team.secrets}
+{#if Secrets.errors}
+	<GraphErrors errors={Secrets.errors} />
+{:else if Secrets.data}
+	{@const secrets = Secrets.data.team.secrets}
 	<div class="wrapper">
 		<div>
 			{#if canMutate}
@@ -209,19 +203,12 @@
 				</List>
 				<Pagination
 					page={secrets.pageInfo}
-					loaders={{
-						loadPreviousPage: () => {
-							changeQuery({ before: secrets.pageInfo.startCursor ?? '', after: '' });
-						},
-						loadNextPage: () => {
-							changeQuery({ after: secrets.pageInfo.endCursor ?? '', before: '' });
-						}
-					}}
+					loaders={cursorPaginationLoaders(page.url, secrets.pageInfo)}
 				/>
 			</div>
 		</div>
 		<div style="margin-top: var(--spacing-layout);">
-			<SidebarActivity activityLog={$Secrets.data.team} direct={$Secrets.data.team.activityLog} />
+			<SidebarActivity activityLog={Secrets.data.team} />
 		</div>
 	</div>
 	{#if createSecretOpen}

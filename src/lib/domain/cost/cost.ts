@@ -4,7 +4,7 @@ export function aggregateAndSortCostByDate(
 				readonly cost: {
 					readonly monthly: {
 						readonly series: {
-							readonly date: Date;
+							readonly date: Date | string;
 							readonly sum: number;
 						}[];
 					};
@@ -22,8 +22,9 @@ export function aggregateAndSortCostByDate(
 
 	series.forEach((entry) => {
 		entry.cost.monthly.series.forEach(({ date, sum }) => {
-			if (date >= oneYearAgo) {
-				const dateKey = date.toISOString().split('T')[0];
+			const d = date instanceof Date ? date : new Date(date);
+			if (d >= oneYearAgo) {
+				const dateKey = d.toISOString().split('T')[0];
 				aggregated.set(dateKey, (aggregated.get(dateKey) || 0) + sum);
 			}
 		});

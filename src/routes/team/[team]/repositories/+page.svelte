@@ -1,6 +1,6 @@
 <script lang="ts">
+	import { invalidateAll } from '$app/navigation';
 	import { page } from '$app/state';
-	import { graphql, RepositoryOrderField } from '$houdini';
 	import SidebarActivity from '$lib/domain/activity/sidebar/SidebarActivity.svelte';
 	import ExternalLink from '$lib/ui/ExternalLink.svelte';
 	import GraphErrors from '$lib/ui/GraphErrors.svelte';
@@ -8,30 +8,24 @@
 	import ListItem from '$lib/ui/ListItem.svelte';
 	import OrderByMenu from '$lib/ui/OrderByMenu.svelte';
 	import Pagination from '$lib/ui/Pagination.svelte';
+	import { getContextClient } from '$lib/urql/context';
+	import { RepositoryOrderField } from '$lib/urql/gql/graphql';
+	import { cursorPaginationLoaders } from '$lib/urql/pagination';
 	import { changeParams } from '$lib/utils/searchparams';
 	import { Alert, BodyLong, Button, Detail, Heading, TextField } from '@nais/ds-svelte-community';
 	import { PlusIcon, TrashIcon } from '@nais/ds-svelte-community/icons';
 	import type { PageProps } from './$types';
+	import { AddRepositoryMutation, RemoveRepositoryMutation } from './repositories';
 
 	let { data }: PageProps = $props();
 
 	let { Repositories, teamSlug, viewerIsMember } = $derived(data);
 
-	const addRepositoryMutation = graphql(`
-		mutation AddRepository($repository: String!, $team: Slug!) {
-			addRepositoryToTeam(input: { repositoryName: $repository, teamSlug: $team }) {
-				repository {
-					name
-				}
-			}
-		}
-	`);
+	const client = getContextClient();
+
 	const addRepository = async (team: string, repository: string) => {
-		await addRepositoryMutation.mutate({
-			repository,
-			team
-		});
-		Repositories.fetch();
+		await client.mutation(AddRepositoryMutation, { repository, team }).toPromise();
+		void invalidateAll();
 		repositoryAdded = true;
 		repoOperatedOn = repository;
 		setTimeout(() => {
@@ -39,19 +33,9 @@
 		}, 10000);
 	};
 
-	const removeRepositoryMutation = graphql(`
-		mutation RemoveRepository($repository: String!, $team: Slug!) {
-			removeRepositoryFromTeam(input: { repositoryName: $repository, teamSlug: $team }) {
-				success
-			}
-		}
-	`);
 	const removeRepository = async (team: string, repository: string) => {
-		await removeRepositoryMutation.mutate({
-			repository,
-			team
-		});
-		Repositories.fetch();
+		await client.mutation(RemoveRepositoryMutation, { repository, team }).toPromise();
+		void invalidateAll();
 		repositoryRemoved = true;
 		repoOperatedOn = repository;
 		setTimeout(() => {
@@ -74,19 +58,13 @@
 		}
 	};
 
-	let filter = $state('');
+	let filter = $state(page.url.searchParams.get('filter') ?? '');
 	let repositoryAdded = $state(false);
 	let repositoryRemoved = $state(false);
 	let repoOperatedOn = $state('');
 
 	const handleFilter = () => {
-		if (filter === '') {
-			page.url.searchParams.delete('filter');
-		} else {
-			page.url.searchParams.set('filter', filter);
-		}
-		history.replaceState({}, '', page.url.toString());
-		Repositories.fetch({ variables: { team: teamSlug, filter: { name: filter } } });
+		changeParams({ filter, before: '', after: '' });
 	};
 
 	let searchTimeout: ReturnType<typeof setTimeout> | undefined = undefined;
@@ -116,9 +94,9 @@
 	const errorMessage = `Invalid input`;
 </script>
 
-<GraphErrors errors={$Repositories.errors} />
+<GraphErrors errors={Repositories.errors} />
 
-{#if $Repositories.data}
+{#if Repositories.data}
 	{#if repositoryAdded}
 		<div style="margin-bottom: var(--spacing-layout)">
 			<Alert variant="success" size="small" fullWidth={true}
@@ -138,8 +116,8 @@
 
 	<div class="wrapper">
 		<div>
-			{#if $Repositories.data.team}
-				{@const team = $Repositories.data.team}
+			{#if Repositories.data.team}
+				{@const team = Repositories.data.team}
 				{#if viewerIsMember}
 					<div class="repository">
 						<Heading as="h2" size="small">Add Repository</Heading>
@@ -234,15 +212,7 @@
 							</List>
 							<Pagination
 								page={team.repositories.pageInfo}
-								loaders={{
-									loadPreviousPage: () =>
-										changeParams({
-											after: '',
-											before: team.repositories.pageInfo.startCursor ?? ''
-										}),
-									loadNextPage: () =>
-										changeParams({ before: '', after: team.repositories.pageInfo.endCursor ?? '' })
-								}}
+								loaders={cursorPaginationLoaders(page.url, team.repositories.pageInfo)}
 							/>
 						</div>
 					</div>
@@ -250,10 +220,7 @@
 			{/if}
 		</div>
 		<div>
-			<SidebarActivity
-				activityLog={$Repositories.data.team}
-				direct={$Repositories.data.team.activityLog}
-			/>
+			<SidebarActivity activityLog={Repositories.data.team} />
 		</div>
 	</div>
 {/if}

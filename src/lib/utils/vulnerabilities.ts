@@ -1,5 +1,4 @@
-import type { ImageVulnerabilitySuppressionState$options } from '$houdini/graphql/enums';
-import { ImageVulnerabilitySuppressionState } from '$houdini/graphql/enums';
+import { ImageVulnerabilitySuppressionState } from '$lib/urql/gql/graphql';
 
 export function severityToColor({
 	severity,
@@ -86,7 +85,7 @@ export const severityToRiskScore: Record<Severity, number> = {
 	Unassigned: 5
 };
 
-export const suppressionStateLabels: Record<ImageVulnerabilitySuppressionState$options, string> = {
+export const suppressionStateLabels: Record<`${ImageVulnerabilitySuppressionState}`, string> = {
 	FALSE_POSITIVE: 'False Positive',
 	NOT_AFFECTED: 'Not Affected',
 	IN_TRIAGE: 'In Triage',
@@ -94,7 +93,7 @@ export const suppressionStateLabels: Record<ImageVulnerabilitySuppressionState$o
 };
 
 export const suppressionStateOptions: Array<{
-	value: ImageVulnerabilitySuppressionState$options | '';
+	value: `${ImageVulnerabilitySuppressionState}` | '';
 	text: string;
 }> = [
 	{ value: '', text: 'Suppress Reason' },

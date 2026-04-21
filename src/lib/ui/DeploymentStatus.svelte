@@ -1,10 +1,10 @@
 <script lang="ts">
-	import { DeploymentStatusState, type DeploymentStatusState$options } from '$houdini';
+	import { DeploymentStatusState } from '$lib/urql/gql/graphql';
 	import { Tag } from '@nais/ds-svelte-community';
 	import type { TagProps } from '@nais/ds-svelte-community/components/Tag/type.js';
 
 	interface Props {
-		status: DeploymentStatusState$options | 'UNKNOWN';
+		status: DeploymentStatusState | `${DeploymentStatusState}` | 'UNKNOWN';
 	}
 
 	let { status }: Props = $props();

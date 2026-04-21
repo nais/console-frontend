@@ -2,7 +2,6 @@
 	import List from '$lib/ui/List.svelte';
 	import ListItem from '$lib/ui/ListItem.svelte';
 
-	import { OrderDirection, PostgresInstanceOrderField } from '$houdini';
 	import { docURL } from '$lib/doc';
 	import { envTagVariant } from '$lib/envTagVariant';
 	import ExternalLink from '$lib/ui/ExternalLink.svelte';
@@ -11,6 +10,7 @@
 	import OrderByMenu from '$lib/ui/OrderByMenu.svelte';
 	import Pagination from '$lib/ui/Pagination.svelte';
 	import TooltipAlignHack from '$lib/ui/TooltipAlignHack.svelte';
+	import { OrderDirection, PostgresInstanceOrderField } from '$lib/urql/gql/graphql';
 	import { changeParams } from '$lib/utils/searchparams';
 	import { Alert, BodyLong, Loader } from '@nais/ds-svelte-community';
 	import { CircleFillIcon } from '@nais/ds-svelte-community/icons';
@@ -20,13 +20,13 @@
 
 	let { PostgresInstances } = $derived(data);
 	let hasCloudSql = $derived(
-		($PostgresInstances.data?.team.inventoryCounts.sqlInstances.total ?? 0) > 0
+		(PostgresInstances.data?.team.inventoryCounts.sqlInstances.total ?? 0) > 0
 	);
-	let cloudSqlTeamSlug = $derived($PostgresInstances.data?.team.slug ?? data.teamSlug);
+	let cloudSqlTeamSlug = $derived(PostgresInstances.data?.team.slug ?? data.teamSlug);
 	const postgresDocUrl = docURL('/persistence/postgresql');
 </script>
 
-<GraphErrors errors={$PostgresInstances.errors} />
+<GraphErrors errors={PostgresInstances.errors} />
 
 {#snippet cloudSqlRelocationAlert()}
 	{#if hasCloudSql}
@@ -37,12 +37,12 @@
 	{/if}
 {/snippet}
 
-{#if $PostgresInstances.fetching}
+{#if !PostgresInstances.data && !PostgresInstances.errors}
 	<div class="loading">
 		<Loader size="3xlarge" />
 	</div>
-{:else if $PostgresInstances.data && $PostgresInstances.data.team.postgresInstances.pageInfo.totalCount > 0}
-	{@const si = $PostgresInstances.data.team.postgresInstances}
+{:else if PostgresInstances.data && PostgresInstances.data.team.postgresInstances.pageInfo.totalCount > 0}
+	{@const si = PostgresInstances.data.team.postgresInstances}
 
 	<div class="content-wrapper">
 		<div>

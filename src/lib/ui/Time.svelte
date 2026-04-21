@@ -13,14 +13,19 @@
 	import { onDestroy } from 'svelte';
 
 	const {
-		time,
+		time: rawTime,
 		dateFormat = 'PPPP',
 		distance = false,
 		short = false
 	}: {
-		time: Date;
+		time: Date | string;
 		dateFormat?: string;
 	} & ({ distance?: false; short?: never } | { distance: true; short?: boolean }) = $props();
+
+	// Accept either a `Date` (Houdini auto-deserialized scalar) or an ISO-8601
+	// string (urql + GraphQL Code Generator default for the `Time` scalar).
+	// Normalize to `Date` once so the rest of the component doesn't care.
+	let time = $derived(rawTime instanceof Date ? rawTime : new Date(rawTime));
 
 	let title = $derived(format(time, 'dd. MMMM yyyy HH:mm:ss', { locale: enGB }));
 

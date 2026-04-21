@@ -1,12 +1,21 @@
 <script lang="ts">
-	import { graphql, PendingValue } from '$houdini';
 	import GraphErrors from '$lib/ui/GraphErrors.svelte';
+	import { getContextClient } from '$lib/urql/context';
+	import { graphql as gql } from '$lib/urql/gql';
 	import { Heading, HelpText, Loader } from '@nais/ds-svelte-community';
+	import { queryStore } from '@urql/svelte';
 	import AggregatedCostForWorkloads from './AggregatedCostForWorkloads.svelte';
 
-	const costQuery = graphql(`
+	interface Props {
+		teamSlug: string;
+		totalCount: number;
+	}
+
+	let { teamSlug, totalCount }: Props = $props();
+
+	const AggregatedCostForJobsQuery = gql(/* GraphQL */ `
 		query AggregatedCostForJobs($team: Slug!, $totalCount: Int) {
-			team(slug: $team) @loading {
+			team(slug: $team) {
 				slug
 				jobs(first: $totalCount) {
 					nodes {
@@ -24,24 +33,21 @@
 		}
 	`);
 
-	$effect(() => {
-		costQuery.fetch({
-			variables: {
-				team: teamSlug,
-				totalCount: totalCount
-			}
-		});
-	});
+	const client = getContextClient();
 
-	interface Props {
-		teamSlug: string;
-		totalCount: number;
-	}
+	const costQuery = $derived(
+		queryStore({
+			client,
+			query: AggregatedCostForJobsQuery,
+			variables: { team: teamSlug, totalCount },
+			requestPolicy: 'cache-and-network'
+		})
+	);
 
-	let { teamSlug, totalCount }: Props = $props();
+	const result = $derived($costQuery);
 </script>
 
-<GraphErrors errors={$costQuery.errors} />
+<GraphErrors errors={result.error?.graphQLErrors ?? null} />
 <div class="wrapper">
 	<div class="heading">
 		<Heading as="h3" size="small">Jobs Cost</Heading>
@@ -50,14 +56,12 @@
 			>Aggregated cost for jobs. Current month is estimated.</HelpText
 		>
 	</div>
-	{#if $costQuery.data && $costQuery.data.team !== PendingValue}
-		{#if $costQuery.data.team.jobs.nodes.length > 0}
-			<AggregatedCostForWorkloads nodes={$costQuery.data.team.jobs.nodes} />
-		{/if}
-	{:else}
+	{#if result.fetching && !result.data}
 		<div class="loading">
 			<Loader size="3xlarge" />
 		</div>
+	{:else if result.data && result.data.team.jobs.nodes.length > 0}
+		<AggregatedCostForWorkloads nodes={result.data.team.jobs.nodes} />
 	{/if}
 </div>
 

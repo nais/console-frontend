@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { page } from '$app/state';
-	import { graphql } from '$houdini';
 	import ExternalLink from '$lib/ui/ExternalLink.svelte';
+	import { getContextClient } from '$lib/urql/context';
 	import {
 		createBufferedLogAppender,
 		getLogLevel,
@@ -11,6 +11,7 @@
 	import { BodyShort, Button, Chips, ToggleChip } from '@nais/ds-svelte-community';
 	import { onDestroy, onMount } from 'svelte';
 	import { SvelteSet } from 'svelte/reactivity';
+	import { AppLogsSubscription } from './appLogs';
 
 	const {
 		team
@@ -28,18 +29,11 @@
 							name: string;
 						}[];
 					};
-					logDestinations: ({
-						id: string;
-						__typename: string | null;
-					} & (
-						| {
-								grafanaURL: string;
-								__typename: 'LogDestinationLoki';
-						  }
-						| {
-								__typename: "non-exhaustive; don't match this";
-						  }
-					))[];
+					logDestinations: (
+						| { __typename: 'LogDestinationLoki'; id: string; grafanaURL: string }
+						| { __typename: 'LogDestinationGeneric'; id: string }
+						| { __typename: 'LogDestinationSecureLogs'; id: string }
+					)[];
 				};
 			};
 		};
@@ -48,6 +42,8 @@
 	const MAX_LOG_LINES = 200;
 	const MAX_PENDING_LOG_LINES = 5000;
 	const FLUSH_INTERVAL_MS = 100;
+
+	const client = getContextClient();
 
 	let logs: LogLine[] = $state([]);
 	let logAppender = createBufferedLogAppender({
@@ -60,26 +56,43 @@
 		}
 	});
 
-	const newstore = () => {
-		const store = graphql(`
-			subscription NewLogsSubscription($filter: WorkloadLogSubscriptionFilter!) {
-				workloadLog(filter: $filter) {
-					time
-					message
-					instance
+	let activeSub: { unsubscribe: () => void } | undefined;
+
+	function stopSubscription() {
+		if (activeSub) {
+			activeSub.unsubscribe();
+			activeSub = undefined;
+		}
+	}
+
+	function start() {
+		if (selectedInstances.length === 0) {
+			return;
+		}
+		stopSubscription();
+		logAppender.clear();
+		logs = [];
+		isPaused = false;
+		isStarted = true;
+
+		activeSub = client
+			.subscription(AppLogsSubscription, {
+				filter: {
+					team: team.slug,
+					environment: team.environment.environment.name,
+					application: team.environment.application.name,
+					instances: selectedInstances
 				}
-			}
-		`);
-		store.subscribe((result) => {
-			if (!result.fetching) {
-				return;
-			}
+			})
+			.subscribe((result) => {
+				if (result.error) {
+					console.error('subscription error', result.error);
+					return;
+				}
+				if (!result.data) {
+					return;
+				}
 
-			if (!result.partial) {
-				return;
-			}
-
-			if (result.data) {
 				const workloadLog = result.data.workloadLog;
 				const parsedMessage = parseLogMessage(workloadLog.message);
 
@@ -87,7 +100,7 @@
 					console.debug('Subscription closed');
 					isPaused = true;
 					logAppender.flush();
-					store.unlisten();
+					stopSubscription();
 					isStarted = false;
 					return;
 				}
@@ -104,31 +117,7 @@
 				}
 
 				logAppender.enqueue(workloadLog);
-			}
-		});
-		return store;
-	};
-
-	let store = newstore();
-
-	function start() {
-		if (selectedInstances.length === 0) {
-			return;
-		}
-		logAppender.clear();
-		logs = [];
-		isPaused = false;
-		isStarted = true;
-
-		store = newstore();
-		store.listen({
-			filter: {
-				team: team.slug,
-				environment: team.environment.environment.name,
-				application: team.environment.application.name,
-				instances: selectedInstances
-			}
-		});
+			});
 	}
 
 	let displayedLogs = $derived(logs.toReversed());
@@ -150,7 +139,7 @@
 
 	onDestroy(() => {
 		logAppender.clear();
-		store.unlisten();
+		stopSubscription();
 	});
 
 	const viewOptions = ['Time', 'Level', 'Instance'];
@@ -237,14 +226,15 @@
 							}
 
 							if (selectedInstances.length === 0) {
-								store.unlisten();
+								stopSubscription();
 								isPaused = true;
 							}
 
 							if (isPaused) {
 								return;
 							}
-							store.unlisten().then(start);
+							stopSubscription();
+							start();
 						}}
 					/>
 				{/each}
@@ -262,7 +252,7 @@
 								start();
 							} else {
 								isPaused = true;
-								store.unlisten();
+								stopSubscription();
 							}
 						}}
 					>
@@ -323,7 +313,8 @@
 						} else {
 							selectedLogLevels.add(level);
 						}
-						store.unlisten().then(start);
+						stopSubscription();
+						start();
 					}}
 				/>
 			{/each}

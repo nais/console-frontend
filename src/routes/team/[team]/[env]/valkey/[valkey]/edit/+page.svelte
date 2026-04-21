@@ -1,14 +1,7 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
-	import {
-		ValkeyMaxMemoryPolicy,
-		type ValkeyMaxMemoryPolicy$options,
-		ValkeyMemory,
-		type ValkeyMemory$options,
-		ValkeyTier,
-		type ValkeyTier$options
-	} from '$houdini';
 	import ExternalLink from '$lib/ui/ExternalLink.svelte';
+	import { ValkeyMaxMemoryPolicy, ValkeyMemory, ValkeyTier } from '$lib/urql/gql/graphql';
 	import { valkeyPlanCosts } from '$lib/utils/aivencost';
 	import {
 		Alert,
@@ -21,38 +14,38 @@
 		Select,
 		TextField
 	} from '@nais/ds-svelte-community';
-	import type { PageProps } from './$houdini';
+	import type { PageProps } from './$types';
 
 	let { form, data }: PageProps = $props();
 
 	const { UpdateValkeyData } = $derived(data);
 
 	let tier = $derived(
-		(form?.tier as ValkeyTier$options) ??
-			$UpdateValkeyData.data?.team.environment.valkey.tier ??
+		(form?.tier as ValkeyTier) ??
+			UpdateValkeyData.data?.team.environment.valkey.tier ??
 			ValkeyTier.HIGH_AVAILABILITY
 	);
 	let memory = $derived(
-		(form?.memory as ValkeyMemory$options) ??
-			$UpdateValkeyData.data?.team.environment.valkey.memory ??
+		(form?.memory as ValkeyMemory) ??
+			UpdateValkeyData.data?.team.environment.valkey.memory ??
 			ValkeyMemory.GB_1
 	);
 	let maxMemoryPolicy = $derived(
-		(form?.max_memory_policy as ValkeyMaxMemoryPolicy$options) ??
-			$UpdateValkeyData.data?.team.environment.valkey.maxMemoryPolicy ??
+		(form?.max_memory_policy as ValkeyMaxMemoryPolicy) ??
+			UpdateValkeyData.data?.team.environment.valkey.maxMemoryPolicy ??
 			ValkeyMaxMemoryPolicy.NO_EVICTION
 	);
 	let notifyKeyspaceEvents = $derived(
 		(form?.notify_keyspace_events as string) ??
-			$UpdateValkeyData.data?.team.environment.valkey.notifyKeyspaceEvents ??
+			UpdateValkeyData.data?.team.environment.valkey.notifyKeyspaceEvents ??
 			''
 	);
 	let databases = $derived(
 		(form?.databases as string) ??
-			String($UpdateValkeyData.data?.team.environment.valkey.databases ?? 16)
+			String(UpdateValkeyData.data?.team.environment.valkey.databases ?? 16)
 	);
 
-	const tomlManifest = $derived(`[valkey.${$UpdateValkeyData.data?.team.environment.valkey.name}]
+	const tomlManifest = $derived(`[valkey.${UpdateValkeyData.data?.team.environment.valkey.name}]
 tier = "${tier}"
 memory = "${memory}"
 ${maxMemoryPolicy ? `max_memory_policy = "${maxMemoryPolicy}"` : ``}

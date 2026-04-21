@@ -1,11 +1,11 @@
 <script lang="ts">
-	import type { Severity$options } from '$houdini';
 	import { envTagVariant } from '$lib/envTagVariant';
 	import OpenSearchIcon from '$lib/icons/OpenSearchIcon.svelte';
 	import ValkeyIcon from '$lib/icons/ValkeyIcon.svelte';
 	import CriticalIndicator from '$lib/ui/CriticalIndicator.svelte';
 	import IconLabel from '$lib/ui/IconLabel.svelte';
 	import TooltipAlignHack from '$lib/ui/TooltipAlignHack.svelte';
+	import type { Severity } from '$lib/urql/gql/graphql';
 	import {
 		BriefcaseClockIcon,
 		CircleFillIcon,
@@ -18,7 +18,7 @@
 		environmentName: string;
 		resourceType: 'app' | 'job' | 'opensearch' | 'cloudsql' | 'postgres' | 'valkey';
 		resourceName: string;
-		severity: Severity$options;
+		severity: Severity | `${Severity}`;
 	}
 
 	let { teamSlug, environmentName, resourceType, resourceName, severity }: Props = $props();

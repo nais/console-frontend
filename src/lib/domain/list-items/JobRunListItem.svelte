@@ -15,10 +15,10 @@
 	}: {
 		run: {
 			name: string;
-			startTime: Date | null;
+			startTime?: Date | string | null;
 			duration: number;
 			status: { state: string; message: string };
-			trigger: { type: 'MANUAL' | 'AUTOMATIC'; actor: string | null };
+			trigger: { type: 'MANUAL' | 'AUTOMATIC'; actor?: string | null };
 		};
 		urlBase?: string;
 		ondelete?: (runName: string) => void;

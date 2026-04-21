@@ -1,12 +1,6 @@
 <script lang="ts">
 	import { browser } from '$app/environment';
 	import { resolve } from '$app/paths';
-	import {
-		type GetTeamDeleteKey$input,
-		type GetTeamDeleteKey$result,
-		graphql,
-		type QueryResult
-	} from '$houdini';
 	import { docURL } from '$lib/doc';
 	import SidebarActivity from '$lib/domain/activity/sidebar/SidebarActivity.svelte';
 	import SlackIcon from '$lib/icons/SlackIcon.svelte';
@@ -14,6 +8,7 @@
 	import ExternalLink from '$lib/ui/ExternalLink.svelte';
 	import GraphErrors from '$lib/ui/GraphErrors.svelte';
 	import Time from '$lib/ui/Time.svelte';
+	import { getContextClient } from '$lib/urql/context';
 	import {
 		Alert,
 		BodyLong,
@@ -32,68 +27,42 @@
 		TokenIcon,
 		TrashIcon
 	} from '@nais/ds-svelte-community/icons';
+	import type { OperationResult } from '@urql/core';
 	import type { PageProps } from './$types';
 	import EditText from './EditText.svelte';
+	import {
+		GetTeamDeleteKeyMutation,
+		RotateDeployKeyMutation,
+		UpdateTeamMutation,
+		UpdateTeamSlackAlertsChannelMutation
+	} from './settings';
 
 	let { data }: PageProps = $props();
 	let { TeamSettings, viewerIsOwner, teamSlug, viewerIsMember } = $derived(data);
 
-	const rotateKey = graphql(`
-		mutation RotateDeployKey($team: Slug!) {
-			changeDeploymentKey(input: { teamSlug: $team }) {
-				deploymentKey {
-					created
-					expires
-					key
-				}
-			}
-		}
-	`);
+	const client = getContextClient();
 
-	const updateTeam = graphql(`
-		mutation UpdateTeam($input: UpdateTeamInput!) {
-			updateTeam(input: $input) {
-				team {
-					purpose
-					slackChannel
-				}
-			}
+	/**
+	 * Convert an urql `OperationResult.error` into the
+	 * `{ message: string }[] | undefined` shape that `GraphErrors` and the
+	 * existing component-local error state expect. Mirrors the `errors`
+	 * field that Houdini's mutation `.mutate()` used to return.
+	 */
+	function errorsFromResult(result: OperationResult): { message: string }[] | undefined {
+		if (!result.error) return undefined;
+		if (result.error.graphQLErrors.length > 0) {
+			return result.error.graphQLErrors.map((e) => ({ message: e.message }));
 		}
-	`);
-
-	const updateTeamSlackAlertsChannel = graphql(`
-		mutation UpdateTeamSlackAlertsChannel($input: UpdateTeamEnvironmentInput!) {
-			updateTeamEnvironment(input: $input) {
-				environment {
-					slackAlertsChannel
-				}
-			}
-		}
-	`);
-
-	const getTeamDeleteKey = graphql(`
-		mutation GetTeamDeleteKey($input: RequestTeamDeletionInput!) {
-			requestTeamDeletion(input: $input) {
-				key {
-					createdAt
-					createdBy {
-						email
-					}
-					expires
-					key
-					team {
-						slug
-					}
-				}
-			}
-		}
-	`);
+		return [{ message: result.error.message }];
+	}
 
 	let deleteKeyLoading = $state(false);
-	let deleteKeyResp: QueryResult<GetTeamDeleteKey$result, GetTeamDeleteKey$input> | null =
-		$state(null);
+	let deleteKeyResp: {
+		data?: { requestTeamDeletion: { key?: { key: string } | null } } | null;
+		errors?: { message: string }[];
+	} | null = $state(null);
 
-	let teamSettings = $derived($TeamSettings.data?.team);
+	let teamSettings = $derived(TeamSettings.data?.team);
 
 	let showKey = $state(false);
 	let showRotateKey = $state(false);
@@ -110,7 +79,7 @@
 	};
 </script>
 
-<GraphErrors errors={$TeamSettings.errors} />
+<GraphErrors errors={TeamSettings.errors} />
 
 {#if teamSettings}
 	<div class="wrapper">
@@ -121,16 +90,16 @@
 					text={teamSettings.purpose}
 					onsave={async (text) => {
 						descriptionErrors = undefined;
-						const data = await updateTeam.mutate({
-							input: {
-								slug: teamSlug,
-								purpose: text
-							}
-						});
+						const result = await client
+							.mutation(UpdateTeamMutation, {
+								input: {
+									slug: teamSlug,
+									purpose: text
+								}
+							})
+							.toPromise();
 
-						if (data.errors) {
-							descriptionErrors = data.errors;
-						}
+						descriptionErrors = errorsFromResult(result);
 					}}
 					isMember={viewerIsMember}
 				/>
@@ -148,16 +117,16 @@
 							variant="textfield"
 							onsave={async (text) => {
 								defaultSlackChannelErrors = undefined;
-								const data = await updateTeam.mutate({
-									input: {
-										slug: teamSlug,
-										slackChannel: text
-									}
-								});
+								const result = await client
+									.mutation(UpdateTeamMutation, {
+										input: {
+											slug: teamSlug,
+											slackChannel: text
+										}
+									})
+									.toPromise();
 
-								if (data.errors) {
-									defaultSlackChannelErrors = data.errors;
-								}
+								defaultSlackChannelErrors = errorsFromResult(result);
 							}}
 							isMember={viewerIsMember}
 						/>
@@ -179,17 +148,17 @@
 											return;
 										}
 
-										const data = await updateTeamSlackAlertsChannel.mutate({
-											input: {
-												slug: teamSlug,
-												environmentName: env.environment.name,
-												slackAlertsChannel: text
-											}
-										});
+										const result = await client
+											.mutation(UpdateTeamSlackAlertsChannelMutation, {
+												input: {
+													slug: teamSlug,
+													environmentName: env.environment.name,
+													slackAlertsChannel: text
+												}
+											})
+											.toPromise();
 
-										if (data.errors) {
-											slackChannelsErrors = data.errors;
-										}
+										slackChannelsErrors = errorsFromResult(result);
 									}}
 									isMember={viewerIsMember}
 								/>
@@ -325,8 +294,8 @@
 			<div class="managed-resources">
 				<Heading as="h2" size="small">Managed Resources</Heading>
 				<dl>
-					{#if $TeamSettings.data?.team.externalResources}
-						{@const external = $TeamSettings.data.team.externalResources}
+					{#if TeamSettings.data?.team.externalResources}
+						{@const external = TeamSettings.data.team.externalResources}
 						{#if external.googleArtifactRegistry}
 							<Detail as="dt">Google Artifact Registry</Detail>
 							<BodyShort as="dd">
@@ -358,7 +327,7 @@
 							</BodyShort>
 						{/if}
 					{/if}
-					{#each $TeamSettings.data?.team.environments.filter((e) => e.gcpProjectID) ?? [] as teamEnvironment (teamEnvironment.id)}
+					{#each TeamSettings.data?.team.environments.filter((e) => e.gcpProjectID) ?? [] as teamEnvironment (teamEnvironment.id)}
 						<Detail as="dt">Team project in {teamEnvironment.environment.name}</Detail>
 						<BodyShort as="dd">
 							<ExternalLink
@@ -370,11 +339,8 @@
 					{/each}
 				</dl>
 			</div>
-			{#if $TeamSettings.data?.team}
-				<SidebarActivity
-					activityLog={$TeamSettings.data.team}
-					direct={$TeamSettings.data.team.activityLog}
-				/>
+			{#if TeamSettings.data?.team}
+				<SidebarActivity activityLog={TeamSettings.data.team} />
 			{/if}
 		</div>
 		<p class="last-sync">
@@ -397,10 +363,8 @@
 			<Button
 				variant="danger"
 				onclick={async () => {
-					//rotateClicked = false;
 					showRotateKey = !showRotateKey;
-					await rotateKey.mutate({ team: teamSlug });
-					//rotateClicked = true;
+					await client.mutation(RotateDeployKeyMutation, { team: teamSlug }).toPromise();
 				}}>Rotate key</Button
 			>
 			<Button
@@ -429,7 +393,7 @@
 				variant="primary"
 				onclick={async () => {
 					showCreateKey = !showCreateKey;
-					await rotateKey.mutate({ team: teamSlug });
+					await client.mutation(RotateDeployKeyMutation, { team: teamSlug }).toPromise();
 				}}>Create key</Button
 			>
 			<Button
@@ -489,9 +453,16 @@
 					loading={deleteKeyLoading}
 					onclick={async () => {
 						deleteKeyLoading = true;
-						deleteKeyResp = await getTeamDeleteKey.mutate({
-							input: { slug: teamSlug }
-						});
+						const result = await client
+							.mutation(GetTeamDeleteKeyMutation, {
+								input: { slug: teamSlug }
+							})
+							.toPromise();
+						const errors = errorsFromResult(result);
+						deleteKeyResp = {
+							data: result.data ?? null,
+							errors
+						};
 						deleteKeyLoading = false;
 					}}>Confirm</Button
 				>

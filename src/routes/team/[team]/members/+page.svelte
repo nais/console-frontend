@@ -1,5 +1,6 @@
 <script lang="ts">
-	import { graphql, TeamMemberOrderField } from '$houdini';
+	import { invalidateAll } from '$app/navigation';
+	import { page } from '$app/state';
 	import SidebarActivity from '$lib/domain/activity/sidebar/SidebarActivity.svelte';
 	import Confirm from '$lib/ui/Confirm.svelte';
 	import GraphErrors from '$lib/ui/GraphErrors.svelte';
@@ -7,31 +8,27 @@
 	import ListItem from '$lib/ui/ListItem.svelte';
 	import OrderByMenu from '$lib/ui/OrderByMenu.svelte';
 	import Pagination from '$lib/ui/Pagination.svelte';
-	import { changeParams } from '$lib/utils/searchparams';
+	import { getContextClient } from '$lib/urql/context';
+	import { TeamMemberOrderField } from '$lib/urql/gql/graphql';
+	import { cursorPaginationLoaders } from '$lib/urql/pagination';
 	import { BodyShort, Button, Heading } from '@nais/ds-svelte-community';
 	import { PencilIcon, PlusIcon, TrashIcon } from '@nais/ds-svelte-community/icons';
 	import type { PageProps } from './$types';
 	import AddMember from './AddMember.svelte';
 	import EditMember from './EditMember.svelte';
+	import { DeleteTeamMemberMutation } from './members';
 
 	let { data }: PageProps = $props();
 	let { Members, UserInfo, viewerIsOwner } = $derived(data);
-	let team = $derived($Members.data?.team);
+	let team = $derived(Members.data?.team);
 
-	const deleteTeamMember = graphql(`
-		mutation DeleteTeamMember($input: RemoveTeamMemberInput!) {
-			removeTeamMember(input: $input) {
-				team {
-					slug
-				}
-			}
-		}
-	`);
+	const client = getContextClient();
 
 	const refetch = () => {
-		Members.fetch({
-			policy: 'CacheAndNetwork'
-		});
+		// Re-run the page's `load` so the `Members` query is re-executed
+		// with the same URL-driven variables. urql's normalized cache will
+		// merge the result and update any subscribed components.
+		void invalidateAll();
 	};
 
 	let addMemberOpen = $state(false);
@@ -41,27 +38,11 @@
 	let deleteUserOpen = $state(false);
 
 	let canEdit = $derived(
-		viewerIsOwner === true ||
-			($UserInfo.data?.me.__typename == 'User' && $UserInfo.data?.me.isAdmin)
+		viewerIsOwner === true || (UserInfo.data?.me.__typename == 'User' && UserInfo.data?.me.isAdmin)
 	);
-
-	let after: string = $state($Members.variables?.after ?? '');
-	let before: string = $state($Members.variables?.before ?? '');
-
-	const changeQuery = (
-		params: {
-			after?: string;
-			before?: string;
-		} = {}
-	) => {
-		changeParams({
-			before: params.before ?? before,
-			after: params.after ?? after
-		});
-	};
 </script>
 
-<GraphErrors errors={$Members.errors} />
+<GraphErrors errors={Members.errors} />
 {#if team}
 	<div class="content-wrapper">
 		<div>
@@ -77,8 +58,7 @@
 				</div>
 			{/if}
 			<List
-				title="{$Members.data?.team.members.pageInfo.totalCount} user{$Members.data?.team.members
-					.pageInfo.totalCount !== 1
+				title="{team.members.pageInfo.totalCount} user{team.members.pageInfo.totalCount !== 1
 					? 's'
 					: ''}"
 			>
@@ -88,114 +68,100 @@
 						defaultOrderField={TeamMemberOrderField.NAME}
 					/>
 				{/snippet}
-				{#if $Members.data?.team.members.edges}
-					{#each $Members.data?.team.members.edges as edge (edge.node.user.id + edge.node.role)}
-						<ListItem>
-							<div class="item">
-								<div>
-									<BodyShort size="small">
-										{edge.node.user.name}
-									</BodyShort>
-									<BodyShort size="small">
-										<span style="color: var(--ax-text-subtle);">{edge.node.user.email}</span>
-									</BodyShort>
-								</div>
-
-								<div class="role-and-buttons">
-									<div class="role">
-										<BodyShort size="small">{edge.node.role}</BodyShort>
-									</div>
-									{#if canEdit}
-										<div>
-											<Button
-												title="Edit member"
-												size="small"
-												variant="tertiary"
-												onclick={() => {
-													editUser = edge.node.user.email;
-													editUserOpen = true;
-												}}
-												icon={PencilIcon}
-											/>
-											<Button
-												title="Delete member"
-												size="small"
-												variant="tertiary-neutral"
-												onclick={() => {
-													deleteUser = {
-														email: edge.node.user.email,
-														name: edge.node.user.name
-													};
-													deleteUserOpen = true;
-												}}
-											>
-												{#snippet icon()}
-													<TrashIcon style="color:var(--ax-text-danger-decoration)!important" />
-												{/snippet}
-											</Button>
-										</div>
-									{/if}
-								</div>
+				{#each team.members.edges as edge (edge.node.user.id + edge.node.role)}
+					<ListItem>
+						<div class="item">
+							<div>
+								<BodyShort size="small">
+									{edge.node.user.name}
+								</BodyShort>
+								<BodyShort size="small">
+									<span style="color: var(--ax-text-subtle);">{edge.node.user.email}</span>
+								</BodyShort>
 							</div>
-						</ListItem>
-					{/each}
-				{/if}
+
+							<div class="role-and-buttons">
+								<div class="role">
+									<BodyShort size="small">{edge.node.role}</BodyShort>
+								</div>
+								{#if canEdit}
+									<div>
+										<Button
+											title="Edit member"
+											size="small"
+											variant="tertiary"
+											onclick={() => {
+												editUser = edge.node.user.email;
+												editUserOpen = true;
+											}}
+											icon={PencilIcon}
+										/>
+										<Button
+											title="Delete member"
+											size="small"
+											variant="tertiary-neutral"
+											onclick={() => {
+												deleteUser = {
+													email: edge.node.user.email,
+													name: edge.node.user.name
+												};
+												deleteUserOpen = true;
+											}}
+										>
+											{#snippet icon()}
+												<TrashIcon style="color:var(--ax-text-danger-decoration)!important" />
+											{/snippet}
+										</Button>
+									</div>
+								{/if}
+							</div>
+						</div>
+					</ListItem>
+				{/each}
 			</List>
 			<Pagination
-				page={$Members.data?.team.members.pageInfo}
-				loaders={{
-					loadPreviousPage: () => {
-						changeQuery({
-							before: $Members.data?.team.members.pageInfo.startCursor ?? '',
-							after: ''
-						});
-					},
-					loadNextPage: () => {
-						changeQuery({
-							after: $Members.data?.team.members.pageInfo.endCursor ?? '',
-							before: ''
-						});
-					}
-				}}
+				page={team.members.pageInfo}
+				loaders={cursorPaginationLoaders(page.url, team.members.pageInfo)}
 			/>
 		</div>
-		<!--div>Here be documentation of teams, members and roles</div-->
 		<div>
-			<SidebarActivity activityLog={team} direct={$Members.data?.team.activityLog} />
+			<SidebarActivity activityLog={team} />
 		</div>
 	</div>
-	{#if team}
-		<AddMember bind:open={addMemberOpen} team={team.slug} oncreated={refetch} />
+	<AddMember bind:open={addMemberOpen} team={team.slug} oncreated={refetch} />
 
-		{#if editUser && editUserOpen}
-			<EditMember
-				bind:open={editUserOpen}
-				team={team.slug}
-				email={editUser}
-				onupdated={refetch}
-				onclosed={() => {
-					editUser = null;
-				}}
-			/>
-		{/if}
-		{#if deleteUser && deleteUserOpen}
-			{@const teamSlug = team.slug}
-			{@const userId = deleteUser.email}
-			<Confirm
-				bind:open={deleteUserOpen}
-				confirmText="Delete"
-				variant="danger"
-				onconfirm={async () => {
-					await deleteTeamMember.mutate({ input: { teamSlug: teamSlug, userEmail: userId } });
-					refetch();
-				}}
-			>
-				{#snippet header()}
-					<Heading>Delete Member</Heading>
-				{/snippet}
-				Are you sure you want to remove <b>{deleteUser.name}</b> from this team?
-			</Confirm>
-		{/if}
+	{#if editUser && editUserOpen}
+		<EditMember
+			bind:open={editUserOpen}
+			team={team.slug}
+			email={editUser}
+			onupdated={refetch}
+			onclosed={() => {
+				editUser = null;
+			}}
+		/>
+	{/if}
+	{#if deleteUser && deleteUserOpen}
+		{@const teamSlug = team.slug}
+		{@const userId = deleteUser.email}
+		<Confirm
+			bind:open={deleteUserOpen}
+			confirmText="Delete"
+			variant="danger"
+			onconfirm={async () => {
+				await client
+					.mutation(DeleteTeamMemberMutation, {
+						input: { teamSlug: teamSlug, userEmail: userId }
+					})
+					.toPromise();
+				refetch();
+			}}
+		>
+			{#snippet header()}
+				<Heading>Delete Member</Heading>
+			{/snippet}
+			Are you sure you want to remove <b>{deleteUser.name}</b> from this team?
+		</Confirm>
 	{/if}
 {/if}
 

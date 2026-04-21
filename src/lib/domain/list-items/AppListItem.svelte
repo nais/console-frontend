@@ -23,7 +23,7 @@
 			};
 			team: { slug: string };
 			state: string;
-			deployments: { nodes: { createdAt: Date }[] };
+			deployments: { nodes: { createdAt: Date | string }[] };
 			instances: {
 				pageInfo: { totalCount: number };
 				edges: { node: { status: { message: string; state: string } } }[];
@@ -72,7 +72,10 @@
 
 	<div class="right">
 		{#if app.deployments.nodes.length > 0}
-			{@const timestamp = app.deployments.nodes[0].createdAt}
+			{@const timestamp =
+				app.deployments.nodes[0].createdAt instanceof Date
+					? app.deployments.nodes[0].createdAt
+					: new Date(app.deployments.nodes[0].createdAt)}
 			<Tooltip
 				content="Last deploy - {format(timestamp, 'PPPP', {
 					locale: enGB

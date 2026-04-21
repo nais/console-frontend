@@ -1,13 +1,12 @@
-import { load_TenantUtilization } from '$houdini';
+import { runQuery } from '$lib/urql/load';
 import { addPageMeta } from '$lib/utils/pageMeta';
+import { TenantUtilizationQuery } from './utilization';
 
 export async function load(event) {
 	return {
 		...(await addPageMeta(event, {
 			title: 'Tenant Utilization'
 		})),
-		...(await load_TenantUtilization({
-			event
-		}))
+		TenantUtilization: await runQuery(event, TenantUtilizationQuery, {})
 	};
 }

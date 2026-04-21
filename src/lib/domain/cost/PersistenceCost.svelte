@@ -22,7 +22,7 @@
 				// readonly services: {
 				// 	readonly service: string;
 				// }[];
-				readonly date: Date;
+				readonly date: Date | string;
 				readonly sum: number;
 			}[];
 		};
@@ -140,7 +140,10 @@
 	</div>
 	<div>
 		<CostChart
-			data={costData.daily.series}
+			data={costData.daily.series.map((s) => ({
+				...s,
+				date: s.date instanceof Date ? s.date : new Date(s.date)
+			}))}
 			dateField="date"
 			valueField="sum"
 			class="mt-3 mb-5 h-55 w-[93%] pl-[7%]"

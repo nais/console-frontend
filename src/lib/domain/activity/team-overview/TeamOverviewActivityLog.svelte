@@ -1,7 +1,9 @@
 <script lang="ts">
-	import { ActivityLogActivityType, graphql, type ActivityLogFilter } from '$houdini';
+	import { getContextClient } from '$lib/urql/context';
+	import { ActivityLogActivityType, type ActivityLogFilter } from '$lib/urql/gql/graphql';
 	import { Heading, Loader, Tooltip } from '@nais/ds-svelte-community';
 	import { RocketIcon } from '@nais/ds-svelte-community/icons';
+	import { queryStore } from '@urql/svelte';
 	import type { Component } from 'svelte';
 
 	import { icons } from '../activity-log-icons';
@@ -32,6 +34,7 @@
 	import ValkeyCreatedActivityLogEntryText from '../sidebar/texts/ValkeyCreatedActivityLogEntryText.svelte';
 	import ValkeyDeletedActivityLogEntryText from '../sidebar/texts/ValkeyDeletedActivityLogEntryText.svelte';
 	import ValkeyUpdatedActivityLogEntryText from '../sidebar/texts/ValkeyUpdatedActivityLogEntryText.svelte';
+	import { TeamOverviewActivityLogQuery } from './teamOverviewActivityLog';
 
 	interface Props {
 		teamSlug: string;
@@ -83,114 +86,17 @@
 		]
 	};
 
-	const activityLogQuery = graphql(`
-		query TeamOverviewActivityLog($teamSlug: Slug!, $filter: ActivityLogFilter) {
-			team(slug: $teamSlug) {
-				activityLog(first: 10, filter: $filter) {
-					edges {
-						node {
-							id
-							actor
-							message
-							createdAt
-							resourceName
-							resourceType
-							__typename
-							environmentName
-							teamSlug
-							... on ApplicationScaledActivityLogEntry {
-								appScaled: data {
-									newSize
-									direction
-								}
-							}
-							... on ClusterAuditActivityLogEntry {
-								clusterAuditData: data {
-									action
-									resourceKind
-								}
-							}
-							... on CredentialsActivityLogEntry {
-								credentialsData: data {
-									permission
-									ttl
-								}
-							}
-							... on DeploymentActivityLogEntry {
-								deploymentData: data {
-									triggerURL
-								}
-							}
-							... on OpenSearchUpdatedActivityLogEntry {
-								opensearchData: data {
-									updatedFields {
-										field
-										newValue
-										oldValue
-									}
-								}
-							}
-							... on SecretValueAddedActivityLogEntry {
-								secretValueAddedData: data {
-									valueName
-								}
-							}
-							... on SecretValueRemovedActivityLogEntry {
-								secretValueRemovedData: data {
-									valueName
-								}
-							}
-							... on SecretValueUpdatedActivityLogEntry {
-								secretValueUpdatedData: data {
-									valueName
-								}
-							}
-							... on SecretValuesViewedActivityLogEntry {
-								secretValuesViewedData: data {
-									reason
-								}
-							}
-							... on TeamMemberAddedActivityLogEntry {
-								addedData: data {
-									role
-									userEmail
-								}
-							}
-							... on TeamMemberRemovedActivityLogEntry {
-								removedData: data {
-									userEmail
-								}
-							}
-							... on TeamMemberSetRoleActivityLogEntry {
-								setRoleData: data {
-									role
-									userEmail
-								}
-							}
-							... on ValkeyUpdatedActivityLogEntry {
-								valkeyData: data {
-									updatedFields {
-										field
-										newValue
-										oldValue
-									}
-								}
-							}
-							... on JobRunDeletedActivityLogEntry {
-								jobRunDeletedData: data {
-									runName
-								}
-							}
-						}
-					}
-				}
-			}
-		}
-	`);
+	const client = getContextClient();
 
-	$effect(() => {
-		activityLogQuery.fetch({ variables: { teamSlug, filter } });
-	});
+	const activityLogQuery = $derived(
+		queryStore({
+			client,
+			query: TeamOverviewActivityLogQuery,
+			variables: { teamSlug, filter }
+		})
+	);
+
+	const result = $derived($activityLogQuery);
 
 	type Kind = string;
 
@@ -255,15 +161,15 @@
 	<Heading as="h2" size="small" spacing
 		><a href="/team/{teamSlug}/activity-log">Activity log</a></Heading
 	>
-	{#if $activityLogQuery.fetching || !$activityLogQuery.data}
+	{#if result.fetching || !result.data}
 		<div style="display: flex; justify-content: center; align-items: center; min-height: 500px;">
 			<Loader size="3xlarge" />
 		</div>
 	{:else}
-		{#each $activityLogQuery.data?.team?.activityLog.edges || [] as { node: entry }, i (entry.id)}
+		{#each result.data?.team?.activityLog.edges || [] as { node: entry }, i (entry.id)}
 			{@const Icon = icons[entry.__typename] || RocketIcon}
 			{@const TextComponent = textComponent(entry.__typename)}
-			{@const isLast = i === ($activityLogQuery.data?.team?.activityLog.edges?.length ?? 0) - 1}
+			{@const isLast = i === (result.data?.team?.activityLog.edges?.length ?? 0) - 1}
 			<div class="item" class:last-item={isLast}>
 				<div class="activity-icon">
 					<Tooltip content={activityTooltip(entry.__typename)}>
@@ -276,7 +182,7 @@
 			</div>
 		{/each}
 
-		{#if !$activityLogQuery.fetching && ($activityLogQuery.data?.team?.activityLog.edges || []).length === 0}
+		{#if !result.fetching && (result.data?.team?.activityLog.edges || []).length === 0}
 			<p class="empty">No recent activity found.</p>
 		{/if}
 	{/if}

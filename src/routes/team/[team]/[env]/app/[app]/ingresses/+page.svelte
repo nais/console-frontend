@@ -49,12 +49,30 @@
 		};
 	}
 
+	// `Time` scalar comes through as ISO-8601 strings with urql; LineChart
+	// expects `Date` instances on the x axis, so normalize once here.
+	const ingresses = $derived(
+		IngressMetrics.data?.team.environment.application.ingresses.map((ingress) => ({
+			...ingress,
+			metrics: {
+				rps: ingress.metrics.rps.map((p) => ({
+					timestamp: new Date(p.timestamp),
+					value: p.value
+				})),
+				eps: ingress.metrics.eps.map((p) => ({
+					timestamp: new Date(p.timestamp),
+					value: p.value
+				}))
+			}
+		})) ?? []
+	);
+
 	// Scroll to ingress target and add a subtle pulse glow (1s fade-out)
 	$effect(() => {
-		if ($IngressMetrics.fetching) return;
+		if (!IngressMetrics.data) return;
 
 		const q = page.url.searchParams.get('ingress');
-		if (!q || !$IngressMetrics.data) return;
+		if (!q) return;
 
 		const id = decodeURIComponent(q);
 
@@ -86,14 +104,14 @@
 	});
 </script>
 
-<GraphErrors errors={$IngressMetrics.errors} />
+<GraphErrors errors={IngressMetrics.errors} />
 
 <div class="wrapper">
-	{#if $IngressMetrics.fetching}
+	{#if !IngressMetrics.data && !IngressMetrics.errors}
 		<div style="display: flex; justify-content: center; align-items: center; min-height: 500px;">
 			<Loader size="3xlarge" />
 		</div>
-	{:else if $IngressMetrics.data?.team.environment.application.ingresses && $IngressMetrics.data.team.environment.application.ingresses.length > 0}
+	{:else if ingresses.length > 0}
 		<div style="display: flex; justify-content: end">
 			<ToggleGroup
 				value={interval}
@@ -104,8 +122,8 @@
 				{/each}
 			</ToggleGroup>
 		</div>
-		{#each Object.entries(Object.groupBy($IngressMetrics.data.team.environment.application.ingresses, ({ type }) => type)) as [group, ingresses] (group)}
-			{#each ingresses as ingress (ingress.url)}
+		{#each Object.entries(Object.groupBy(ingresses, ({ type }) => type)) as [group, groupIngresses] (group)}
+			{#each groupIngresses ?? [] as ingress (ingress.url)}
 				<div class="section" id={ingress.url}>
 					<IconLabel size="large" as="h2" label={ingress.url}>
 						{#snippet icon()}

@@ -1,27 +1,25 @@
-import { load_Repositories, RepositoryOrderField, type TeamRepositoryFilter } from '$houdini';
 import { urlToOrderDirection, urlToOrderField } from '$lib/ui/OrderByMenu.svelte';
+import { RepositoryOrderField } from '$lib/urql/gql/graphql';
+import { runQuery } from '$lib/urql/load';
+import { readCursorPagination } from '$lib/urql/pagination';
 import { addPageMeta } from '$lib/utils/pageMeta';
+import { RepositoriesQuery } from './repositories';
 
 const rows = 25;
 
 export async function load(event) {
-	const filter = event.url.searchParams.get('filter');
-	const after = event.url.searchParams.get('after') || '';
-	const before = event.url.searchParams.get('before') || '';
+	const filter = event.url.searchParams.get('filter') ?? '';
 
 	return {
 		...(await addPageMeta(event, { title: 'Repositories' })),
-		...(await load_Repositories({
-			event,
-			variables: {
-				team: event.params.team,
-				orderBy: {
-					field: urlToOrderField(RepositoryOrderField, RepositoryOrderField.NAME, event.url),
-					direction: urlToOrderDirection(event.url)
-				},
-				...(before ? { before, last: rows } : { after, first: rows }),
-				filter: { name: filter } as TeamRepositoryFilter
-			}
-		}))
+		Repositories: await runQuery(event, RepositoriesQuery, {
+			team: event.params.team,
+			orderBy: {
+				field: urlToOrderField(RepositoryOrderField, RepositoryOrderField.NAME, event.url),
+				direction: urlToOrderDirection(event.url)
+			},
+			...readCursorPagination(event.url, rows),
+			filter: { name: filter }
+		})
 	};
 }

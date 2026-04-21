@@ -1,12 +1,8 @@
-import {
-	ApplicationOrderField,
-	load_Applications,
-	load_ApplicationsListMetadata,
-	OrderDirection,
-	type TeamApplicationsFilter
-} from '$houdini';
 import { urlToOrderDirection, urlToOrderField } from '$lib/ui/OrderByMenu.svelte';
+import { ApplicationOrderField, OrderDirection } from '$lib/urql/gql/graphql';
+import { runQuery } from '$lib/urql/load';
 import { addPageMeta } from '$lib/utils/pageMeta';
+import { ApplicationsListMetadataQuery, ApplicationsQuery } from './applications';
 
 const rows = 25;
 
@@ -20,23 +16,17 @@ export async function load(event) {
 
 	return {
 		...(await addPageMeta(event, { title: 'Applications' })),
-		...(await load_Applications({
-			event,
-			variables: {
-				team: event.params.team,
-				filter: { name: filter, environments } as TeamApplicationsFilter,
-				orderBy: {
-					field: urlToOrderField(ApplicationOrderField, ApplicationOrderField.ISSUES, event.url),
-					direction: urlToOrderDirection(event.url, OrderDirection.DESC)
-				},
-				...(before ? { before, last: rows } : { after, first: rows })
-			}
-		})),
-		...(await load_ApplicationsListMetadata({
-			event,
-			variables: {
-				team: event.params.team
-			}
-		}))
+		Applications: await runQuery(event, ApplicationsQuery, {
+			team: event.params.team,
+			filter: { name: filter, environments },
+			orderBy: {
+				field: urlToOrderField(ApplicationOrderField, ApplicationOrderField.ISSUES, event.url),
+				direction: urlToOrderDirection(event.url, OrderDirection.DESC)
+			},
+			...(before ? { before, last: rows } : { after, first: rows })
+		}),
+		ApplicationsListMetadata: await runQuery(event, ApplicationsListMetadataQuery, {
+			team: event.params.team
+		})
 	};
 }

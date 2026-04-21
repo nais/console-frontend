@@ -1,11 +1,11 @@
 <script lang="ts">
-	import type { DeploymentStatusState, ValueOf } from '$houdini';
 	import { envTagVariant } from '$lib/envTagVariant';
 	import DeploymentStatus from '$lib/ui/DeploymentStatus.svelte';
 	import ExternalLink from '$lib/ui/ExternalLink.svelte';
 	import IconLabel from '$lib/ui/IconLabel.svelte';
 	import ListItem from '$lib/ui/ListItem.svelte';
 	import Time from '$lib/ui/Time.svelte';
+	import type { DeploymentStatusState } from '$lib/urql/gql/graphql';
 	import { isValidSha } from '$lib/utils/isValidSha';
 	import { BodyLong, Tag } from '@nais/ds-svelte-community';
 	import { PersonGroupIcon } from '@nais/ds-svelte-community/icons';
@@ -17,9 +17,9 @@
 			id: string;
 			statuses: {
 				nodes: {
-					state: ValueOf<typeof DeploymentStatusState>;
+					state: DeploymentStatusState | `${DeploymentStatusState}`;
 					message: string;
-					createdAt: Date;
+					createdAt: Date | string;
 				}[];
 			};
 			resources: {
@@ -30,12 +30,12 @@
 				}[];
 			};
 			environmentName: string;
-			createdAt: Date;
+			createdAt: Date | string;
 			teamSlug: string;
-			repository: string | null;
-			commitSha: string | null;
-			deployerUsername: string | null;
-			triggerUrl: string | null;
+			repository?: string | null;
+			commitSha?: string | null;
+			deployerUsername?: string | null;
+			triggerUrl?: string | null;
 		};
 	} = $props();
 </script>

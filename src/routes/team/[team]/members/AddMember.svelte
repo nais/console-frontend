@@ -1,5 +1,6 @@
 <script lang="ts">
-	import { graphql, type AddTeamMemberInput } from '$houdini';
+	import { getContextClient } from '$lib/urql/context';
+	import type { AddTeamMemberInput, TeamMemberRole } from '$lib/urql/gql/graphql';
 	import {
 		Alert,
 		Button,
@@ -10,6 +11,8 @@
 		TextField
 	} from '@nais/ds-svelte-community';
 	import { PlusIcon } from '@nais/ds-svelte-community/icons';
+	import { queryStore } from '@urql/svelte';
+	import { AddMemberQuery, AddTeamMemberMutation } from './members';
 
 	interface Props {
 		open: boolean;
@@ -19,70 +22,33 @@
 
 	let { open = $bindable(), team, oncreated }: Props = $props();
 
-	const store = graphql(`
-		query AddMemberQuery($team: Slug!) {
-			users(first: 10000) {
-				nodes {
-					id
-					email
-				}
-			}
-			team(slug: $team) {
-				members {
-					nodes {
-						user {
-							email
-						}
-					}
-				}
-			}
-		}
-	`);
+	const client = getContextClient();
 
-	$effect(() => {
-		store.fetch({
-			variables: {
-				team: team
-			}
-		});
-	});
+	const store = $derived(
+		queryStore({
+			client,
+			query: AddMemberQuery,
+			variables: { team }
+		})
+	);
 
-	const create = graphql(`
-		mutation CreateMemberMutation($input: AddTeamMemberInput!) {
-			addTeamMember(input: $input) {
-				member {
-					team {
-						members {
-							nodes {
-								user {
-									email
-								}
-							}
-						}
-					}
-					user {
-						id
-					}
-				}
-			}
-		}
-	`);
+	const result = $derived($store);
 
 	let emails = $derived.by(() => {
-		const allEmails = $store.data?.users.nodes.map((user) => user.email) ?? [];
+		const allEmails = result.data?.users.nodes.map((user) => user.email) ?? [];
 		const teamMemberEmails = new Set(
-			$store.data?.team.members.nodes.map((member) => member.user.email) ?? []
+			result.data?.team.members.nodes.map((member) => member.user.email) ?? []
 		);
 		return allEmails.filter((email) => !teamMemberEmails.has(email));
 	});
 
-	let role: AddTeamMemberInput['role'] = $state('MEMBER');
+	let role: TeamMemberRole | `${TeamMemberRole}` = $state('MEMBER');
 	let email: string = $state('');
 
 	let errors: string[] = $state([]);
 	const submit = async () => {
 		errors = [];
-		const userID = $store.data?.users.nodes.find(
+		const userID = result.data?.users.nodes.find(
 			(u) =>
 				email.localeCompare(u.email, undefined, {
 					sensitivity: 'base'
@@ -94,17 +60,18 @@
 		}
 
 		const input: AddTeamMemberInput = {
-			role,
+			role: role as TeamMemberRole,
 			teamSlug: team,
 			userEmail: userID
 		};
 
-		const resp = await create.mutate({
-			input
-		});
+		const resp = await client.mutation(AddTeamMemberMutation, { input }).toPromise();
 
-		if (resp.errors) {
-			errors = resp.errors.filter((e) => e.message != 'unable to resolve').map((e) => e.message);
+		if (resp.error) {
+			const gqlErrors = resp.error.graphQLErrors
+				.filter((e) => e.message != 'unable to resolve')
+				.map((e) => e.message);
+			errors = gqlErrors.length > 0 ? gqlErrors : [resp.error.message];
 			return;
 		}
 

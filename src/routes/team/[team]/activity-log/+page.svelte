@@ -1,24 +1,35 @@
 <script lang="ts">
-	import {
-		ActivityLogActivityType,
-		type ActivityLog$input,
-		type ActivityLogActivityType$options
-	} from '$houdini';
+	import { page } from '$app/state';
 	import ActivityLogItem from '$lib/domain/list-items/ActivityLogListItem.svelte';
+	import GraphErrors from '$lib/ui/GraphErrors.svelte';
 	import List from '$lib/ui/List.svelte';
 	import Pagination from '$lib/ui/Pagination.svelte';
+	import { ActivityLogActivityType } from '$lib/urql/gql/graphql';
+	import { cursorPaginationLoaders } from '$lib/urql/pagination';
 	import { capitalizeFirstLetter } from '$lib/utils/formatters';
+	import { changeParams } from '$lib/utils/searchparams';
 	import { BodyLong, Button, Search } from '@nais/ds-svelte-community';
 	import { ActionMenu, ActionMenuCheckboxItem } from '@nais/ds-svelte-community/experimental';
 	import { ChevronDownIcon } from '@nais/ds-svelte-community/icons';
 	import type { PageProps } from './$types';
 
 	let { data }: PageProps = $props();
-	let { ActivityLog, teamSlug } = $derived(data);
+	let { ActivityLog } = $derived(data);
 
 	const allActivities = Object.values(ActivityLogActivityType).map((type) => type);
 
-	let filtered = $state(allActivities);
+	// The active filter is driven by the `activityTypes` URL param. An
+	// empty / missing param means "no filter applied" — show all.
+	let filtered = $derived.by(() => {
+		const raw = page.url.searchParams.get('activityTypes');
+		if (!raw) return [...allActivities];
+		const set = new Set(allActivities as string[]);
+		const parsed = raw
+			.split(',')
+			.map((s) => s.trim())
+			.filter((s) => set.has(s)) as ActivityLogActivityType[];
+		return parsed.length > 0 ? parsed : [];
+	});
 
 	let allActivitiesButtonState: boolean | 'indeterminate' = $derived(
 		filtered.length === allActivities.length
@@ -30,7 +41,7 @@
 
 	let searchQuery = $state('');
 
-	const groupedActivities: Record<string, ActivityLogActivityType$options[]> = {
+	const groupedActivities: Record<string, ActivityLogActivityType[]> = {
 		Application: [
 			ActivityLogActivityType.APPLICATION_DELETED,
 			ActivityLogActivityType.APPLICATION_RESTARTED,
@@ -49,11 +60,6 @@
 			ActivityLogActivityType.OPENSEARCH_UPDATED,
 			ActivityLogActivityType.OPENSEARCH_MAINTENANCE_STARTED
 		],
-		// Reconciler: [
-		// 	ActivityLogActivityType.RECONCILER_CONFIGURED,
-		// 	ActivityLogActivityType.RECONCILER_DISABLED,
-		// 	ActivityLogActivityType.RECONCILER_ENABLED
-		// ],
 		Repository: [
 			ActivityLogActivityType.REPOSITORY_ADDED,
 			ActivityLogActivityType.REPOSITORY_REMOVED
@@ -95,23 +101,22 @@
 		return types.filter((type) => type.toLowerCase().includes(searchQuery.toLowerCase()));
 	}
 
-	function filterActivities() {
-		ActivityLog.fetch({
-			variables: {
-				team: teamSlug.valueOf(),
-				first: 20,
-				after: undefined,
-				filter: {
-					activityTypes: filtered.length === allActivities.length ? [] : filtered.toSorted()
-				}
-			} as ActivityLog$input
-		});
+	// Persist the active filter in the URL. Whenever the filter changes
+	// we also clear `before`/`after` so the user lands back on page 1
+	// (matching the previous Houdini-based UX which reset pagination on
+	// every fetch).
+	function applyFilter(next: ActivityLogActivityType[]) {
+		const activityTypes =
+			next.length === allActivities.length || next.length === 0 ? '' : [...next].sort().join(',');
+		changeParams({ activityTypes, before: '', after: '' });
 	}
 </script>
 
+<GraphErrors errors={ActivityLog.errors} />
+
 <div>
-	{#if $ActivityLog.data}
-		{@const ae = $ActivityLog.data.team.activityLog}
+	{#if ActivityLog.data}
+		{@const ae = ActivityLog.data.team.activityLog}
 		<div class="wrapper">
 			<div>
 				<BodyLong spacing
@@ -144,8 +149,7 @@
 							<ActionMenuCheckboxItem
 								checked={allActivitiesButtonState}
 								onchange={(checked) => {
-									filtered = checked ? [...allActivities] : [];
-									filterActivities();
+									applyFilter(checked ? [...allActivities] : []);
 								}}
 							>
 								All Activities
@@ -155,12 +159,11 @@
 									<div class="activity-group-label">{group}</div>
 									{#each filteredGroup(types) as type (type)}
 										<ActionMenuCheckboxItem
-											checked={filtered.includes(type as ActivityLogActivityType$options)}
+											checked={filtered.includes(type as ActivityLogActivityType)}
 											onchange={(checked) => {
-												const t = type as ActivityLogActivityType$options;
-												filtered = checked ? [...filtered, t] : filtered.filter((a) => a !== t);
-
-												filterActivities();
+												const t = type as ActivityLogActivityType;
+												const next = checked ? [...filtered, t] : filtered.filter((a) => a !== t);
+												applyFilter(next);
 											}}
 										>
 											{capitalizeFirstLetter(type.split('_').join(' ').toLowerCase())}
@@ -174,20 +177,8 @@
 						<ActivityLogItem {item} />
 					{/each}
 				</List>
-				{#if $ActivityLog.data.team.activityLog.pageInfo.hasPreviousPage || $ActivityLog.data.team.activityLog.pageInfo.hasNextPage}
-					<Pagination
-						page={ae.pageInfo}
-						loaders={{
-							loadNextPage: () => {
-								ActivityLog.loadNextPage({ first: 20 });
-							},
-							loadPreviousPage: () => {
-								ActivityLog.loadPreviousPage({
-									last: 20
-								});
-							}
-						}}
-					/>
+				{#if ae.pageInfo.hasPreviousPage || ae.pageInfo.hasNextPage}
+					<Pagination page={ae.pageInfo} loaders={cursorPaginationLoaders(page.url, ae.pageInfo)} />
 				{/if}
 			</div>
 		</div>

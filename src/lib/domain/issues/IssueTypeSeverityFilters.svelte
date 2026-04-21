@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { IssueType, Severity } from '$houdini';
+	import { IssueType, Severity } from '$lib/urql/gql/graphql';
 	import { issueTypeLabel } from '$lib/utils/issueTypeLabel';
 	import {
 		ActionMenuRadioGroup,

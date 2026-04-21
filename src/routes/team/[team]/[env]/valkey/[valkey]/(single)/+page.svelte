@@ -1,6 +1,6 @@
 <script lang="ts">
+	import { invalidateAll } from '$app/navigation';
 	import { page } from '$app/state';
-	import { graphql, ValkeyAccessOrderField } from '$houdini';
 	import { docURL } from '$lib/doc';
 	import SidebarActivity from '$lib/domain/activity/sidebar/SidebarActivity.svelte';
 	import IssueListItem from '$lib/domain/list-items/IssueListItem.svelte';
@@ -10,6 +10,9 @@
 	import GraphErrors from '$lib/ui/GraphErrors.svelte';
 	import List from '$lib/ui/List.svelte';
 	import Pagination from '$lib/ui/Pagination.svelte';
+	import { getContextClient } from '$lib/urql/context';
+	import { ValkeyAccessOrderField } from '$lib/urql/gql/graphql';
+	import { cursorPaginationLoaders } from '$lib/urql/pagination';
 	import { changeParams } from '$lib/utils/searchparams';
 	import {
 		Alert,
@@ -26,58 +29,57 @@
 	import { CogRotationIcon, NotePencilIcon, TrashIcon } from '@nais/ds-svelte-community/icons';
 	import type { PageProps } from './$types';
 	import Manifest from './Manifest.svelte';
-
-	const runServiceMaintenance = graphql(`
-		mutation runValkeyMaintenance(
-			$serviceName: String!
-			$teamSlug: Slug!
-			$environmentName: String!
-		) {
-			startValkeyMaintenance(
-				input: { serviceName: $serviceName, teamSlug: $teamSlug, environmentName: $environmentName }
-			) {
-				error
-			}
-		}
-	`);
-
-	let maintenanceError = $state<string | null | undefined>(undefined);
-	const runServiceMaintenanceStart = async () => {
-		if ($Valkey.data) {
-			let resp = await runServiceMaintenance.mutate({
-				serviceName: $Valkey.data.team.environment.valkey.name,
-				teamSlug: $Valkey.data.team.slug,
-				environmentName: $Valkey.data.team.environment.valkey.teamEnvironment.environment.name
-			});
-			if (resp.errors) {
-				maintenanceError = resp.errors.map((e) => e.message).join(', ');
-			} else {
-				maintenanceError = resp.data?.startValkeyMaintenance?.error;
-			}
-		}
-	};
+	import { RunValkeyMaintenanceMutation } from './valkey';
 
 	let { data }: PageProps = $props();
 	let { Valkey, viewerIsMember, teamSlug } = $derived(data);
 
-	let tableSort = $derived({
-		orderBy: $Valkey.variables?.orderBy?.field,
-		direction: $Valkey.variables?.orderBy?.direction
-	});
+	const client = getContextClient();
+
+	let maintenanceError = $state<string | null | undefined>(undefined);
+	const runServiceMaintenanceStart = async () => {
+		if (!Valkey.data) return;
+		const instance = Valkey.data.team.environment.valkey;
+		const resp = await client
+			.mutation(RunValkeyMaintenanceMutation, {
+				serviceName: instance.name,
+				teamSlug: Valkey.data.team.slug,
+				environmentName: instance.teamEnvironment.environment.name
+			})
+			.toPromise();
+		if (resp.error) {
+			maintenanceError = resp.error.graphQLErrors?.length
+				? resp.error.graphQLErrors.map((e) => e.message).join(', ')
+				: resp.error.message;
+		} else {
+			maintenanceError = resp.data?.startValkeyMaintenance?.error;
+			void invalidateAll();
+		}
+	};
+
+	let currentField = $derived(
+		(page.url.searchParams.get('field') as ValkeyAccessOrderField | null) ??
+			ValkeyAccessOrderField.WORKLOAD
+	);
+	let currentDirection = $derived(
+		(page.url.searchParams.get('direction') as 'ASC' | 'DESC' | null) ?? 'ASC'
+	);
 
 	const tableSortChange = (key: string) => {
-		if (key === tableSort.orderBy) {
-			const direction = tableSort.direction === 'ASC' ? 'DESC' : 'ASC';
-			tableSort.direction = direction;
+		let direction: 'ASC' | 'DESC';
+		let field: ValkeyAccessOrderField;
+		if (key === currentField) {
+			direction = currentDirection === 'ASC' ? 'DESC' : 'ASC';
+			field = currentField;
 		} else {
-			tableSort.orderBy = ValkeyAccessOrderField[key as keyof typeof ValkeyAccessOrderField];
-			tableSort.direction = 'ASC';
+			field = ValkeyAccessOrderField[key as keyof typeof ValkeyAccessOrderField];
+			direction = 'ASC';
 		}
 
 		changeParams(
 			{
-				direction: tableSort.direction,
-				field: tableSort.orderBy || ValkeyAccessOrderField.WORKLOAD
+				direction,
+				field
 			},
 			{
 				noScroll: true
@@ -86,15 +88,15 @@
 	};
 
 	const isManagedByConsole = $derived(
-		!$Valkey.data?.team.environment.valkey.name.startsWith(`valkey-${teamSlug}-`)
+		!Valkey.data?.team.environment.valkey.name.startsWith(`valkey-${teamSlug}-`)
 	);
 </script>
 
-{#if $Valkey.errors}
-	<GraphErrors errors={$Valkey.errors} />
+{#if Valkey.errors}
+	<GraphErrors errors={Valkey.errors} />
 {/if}
-{#if $Valkey.data}
-	{@const instance = $Valkey.data.team.environment.valkey}
+{#if Valkey.data}
+	{@const instance = Valkey.data.team.environment.valkey}
 	{@const mandatoryServiceMaintenanceUpdates = instance.maintenance.updates.nodes.filter(
 		(x) => !!x?.deadline
 	)}
@@ -117,8 +119,8 @@
 				<Table
 					size="small"
 					sort={{
-						orderBy: tableSort.orderBy || ValkeyAccessOrderField.WORKLOAD,
-						direction: tableSort.direction === 'ASC' ? 'ascending' : 'descending'
+						orderBy: currentField,
+						direction: currentDirection === 'ASC' ? 'ascending' : 'descending'
 					}}
 					onsortchange={tableSortChange}
 				>
@@ -149,20 +151,13 @@
 				</Table>
 				<Pagination
 					page={instance.access.pageInfo}
-					loaders={{
-						loadPreviousPage: () => {
-							Valkey.loadPreviousPage();
-						},
-						loadNextPage: () => {
-							Valkey.loadNextPage();
-						}
-					}}
+					loaders={cursorPaginationLoaders(page.url, instance.access.pageInfo)}
 				/>
 			</div>
 			<div class="spacing">
 				<Heading as="h3">Issues</Heading>
 				<List>
-					{#each $Valkey.data.team.environment.valkey.issues.edges as edge (edge.node.id)}
+					{#each instance.issues.edges as edge (edge.node.id)}
 						<IssueListItem item={edge.node} />
 					{:else}
 						<span>No issues found</span>
@@ -263,7 +258,7 @@
 				</Button>
 			{/if}
 
-			<SidebarActivity activityLog={instance} direct={instance.activityLog} />
+			<SidebarActivity activityLog={instance} />
 		</div>
 	</div>
 {/if}

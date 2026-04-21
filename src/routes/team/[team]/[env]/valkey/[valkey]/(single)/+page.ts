@@ -1,36 +1,32 @@
-import {
-	load_Valkey,
-	type OrderDirection$options,
-	ValkeyAccessOrderField,
-	type ValkeyAccessOrderField$options
-} from '$houdini';
+import { urlToOrderDirection, urlToOrderField } from '$lib/ui/OrderByMenu.svelte';
+import { OrderDirection, ValkeyAccessOrderField } from '$lib/urql/gql/graphql';
+import { runQuery } from '$lib/urql/load';
+import { readCursorPagination } from '$lib/urql/pagination';
 import { addPageMeta } from '$lib/utils/pageMeta';
 import { redirect } from '@sveltejs/kit';
-import { get } from 'svelte/store';
+import { ValkeyQuery } from './valkey';
+
+const rows = 10;
 
 export async function load(event) {
-	const field = (event.url.searchParams.get('field') ||
-		ValkeyAccessOrderField.WORKLOAD) as ValkeyAccessOrderField$options;
-	const direction = (event.url.searchParams.get('direction') || 'ASC') as OrderDirection$options;
-
-	const loadValkey = await load_Valkey({
-		event,
-		blocking: true,
-		variables: {
-			orderBy: { field: field, direction: direction },
-			environment: event.params.env,
-			team: event.params.team,
-			name: event.params.valkey
-		}
+	const Valkey = await runQuery(event, ValkeyQuery, {
+		environment: event.params.env,
+		team: event.params.team,
+		name: event.params.valkey,
+		orderBy: {
+			field: urlToOrderField(ValkeyAccessOrderField, ValkeyAccessOrderField.WORKLOAD, event.url),
+			direction: urlToOrderDirection(event.url, OrderDirection.ASC)
+		},
+		...readCursorPagination(event.url, rows)
 	});
 
-	const name = get(loadValkey.Valkey).data?.team.environment.valkey.name;
+	const name = Valkey.data?.team.environment.valkey.name;
 	if (!!name && name !== event.params.valkey) {
 		redirect(307, `/team/${event.params.team}/${event.params.env}/valkey/${name}`);
 	}
 
 	return {
 		...(await addPageMeta(event, { title: event.params.valkey })),
-		...loadValkey
+		Valkey
 	};
 }

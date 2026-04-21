@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { OpenSearchOrderField, OrderDirection } from '$houdini';
+	import { page } from '$app/state';
 	import { docURL } from '$lib/doc';
 	import PersistenceCost from '$lib/domain/cost/PersistenceCost.svelte';
 	import IssueSeverityTags from '$lib/domain/issues/IssueSeverityTags.svelte';
@@ -14,8 +14,9 @@
 	import Pagination from '$lib/ui/Pagination.svelte';
 	import RunningIndicator from '$lib/ui/RunningIndicator.svelte';
 	import TooltipAlignHack from '$lib/ui/TooltipAlignHack.svelte';
+	import { OpenSearchOrderField, OrderDirection } from '$lib/urql/gql/graphql';
+	import { cursorPaginationLoaders } from '$lib/urql/pagination';
 	import { countIssuesBySeverity } from '$lib/utils/issueCounts';
-	import { changeParams } from '$lib/utils/searchparams';
 	import { BodyLong, Button } from '@nais/ds-svelte-community';
 	import { CircleFillIcon, PlusIcon } from '@nais/ds-svelte-community/icons';
 	import { endOfYesterday, startOfMonth, subMonths } from 'date-fns';
@@ -26,8 +27,8 @@
 	let { OpenSearch, viewerIsMember } = $derived(data);
 
 	let cost = $derived(() => {
-		const costData = $OpenSearch.data?.team.cost;
-		const teamSlug = $OpenSearch.data?.team.slug;
+		const costData = OpenSearch.data?.team.cost;
+		const teamSlug = OpenSearch.data?.team.slug;
 
 		if (!costData || !teamSlug) return null;
 
@@ -40,16 +41,16 @@
 
 	let create = $derived({
 		buttonText: 'Create OpenSearch',
-		url: `/team/${$OpenSearch.data?.team.slug}/opensearch/create`,
+		url: `/team/${OpenSearch.data?.team.slug}/opensearch/create`,
 		page: CreatePage,
 		header: 'Create OpenSearch',
 		viewerIsMember: viewerIsMember
 	});
 </script>
 
-<GraphErrors errors={$OpenSearch.errors} />
+<GraphErrors errors={OpenSearch.errors} />
 
-{#if $OpenSearch.data}
+{#if OpenSearch.data}
 	{#snippet createButton()}
 		{#if create && create.viewerIsMember}
 			<div class="button">
@@ -67,7 +68,7 @@
 		{/if}
 	{/snippet}
 
-	{#if $OpenSearch.data.team.openSearches.pageInfo.totalCount}
+	{#if OpenSearch.data.team.openSearches.pageInfo.totalCount}
 		<div class="content-wrapper">
 			<div>
 				<BodyLong spacing>
@@ -78,7 +79,7 @@
 				</BodyLong>
 
 				{@render createButton()}
-				<List title="{$OpenSearch.data.team.openSearches.pageInfo.totalCount} entries">
+				<List title="{OpenSearch.data.team.openSearches.pageInfo.totalCount} entries">
 					{#snippet menu()}
 						<OrderByMenu
 							orderField={OpenSearchOrderField}
@@ -86,7 +87,7 @@
 							defaultOrderDirection={OrderDirection.DESC}
 						/>
 					{/snippet}
-					{#each $OpenSearch.data.team.openSearches.nodes as instance (instance.id)}
+					{#each OpenSearch.data.team.openSearches.nodes as instance (instance.id)}
 						<ListItem>
 							<IconLabel
 								as="h4"
@@ -150,22 +151,8 @@
 					{/each}
 				</List>
 				<Pagination
-					page={$OpenSearch.data.team.openSearches.pageInfo}
-					loaders={{
-						loadPreviousPage: () =>
-							changeParams(
-								{
-									after: '',
-									before: $OpenSearch.data?.team.openSearches.pageInfo.startCursor ?? ''
-								},
-								{ noScroll: true }
-							),
-						loadNextPage: () =>
-							changeParams(
-								{ before: '', after: $OpenSearch.data?.team.openSearches.pageInfo.endCursor ?? '' },
-								{ noScroll: true }
-							)
-					}}
+					page={OpenSearch.data.team.openSearches.pageInfo}
+					loaders={cursorPaginationLoaders(page.url, OpenSearch.data.team.openSearches.pageInfo)}
 				/>
 			</div>
 			<div class="right-column">

@@ -1,28 +1,25 @@
-import { BucketOrderField, load_Buckets } from '$houdini';
 import { urlToOrderDirection, urlToOrderField } from '$lib/ui/OrderByMenu.svelte';
+import { BucketOrderField } from '$lib/urql/gql/graphql';
+import { runQuery } from '$lib/urql/load';
+import { readCursorPagination } from '$lib/urql/pagination';
 import { addPageMeta } from '$lib/utils/pageMeta';
-import { startOfMonth, subMonths } from 'date-fns';
+import { format, startOfMonth, subMonths } from 'date-fns';
+import { BucketsQuery } from './buckets';
 
 const rows = 25;
 
 export async function load(event) {
-	const after = event.url.searchParams.get('after') || '';
-	const before = event.url.searchParams.get('before') || '';
-
 	return {
 		...(await addPageMeta(event, { title: 'Buckets' })),
-		...(await load_Buckets({
-			event,
-			variables: {
-				team: event.params.team,
-				orderBy: {
-					field: urlToOrderField(BucketOrderField, BucketOrderField.NAME, event.url),
-					direction: urlToOrderDirection(event.url)
-				},
-				...(before ? { before, last: rows } : { after, first: rows }),
-				from: startOfMonth(subMonths(new Date(), 12)),
-				to: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000)
-			}
-		}))
+		Buckets: await runQuery(event, BucketsQuery, {
+			team: event.params.team,
+			orderBy: {
+				field: urlToOrderField(BucketOrderField, BucketOrderField.NAME, event.url),
+				direction: urlToOrderDirection(event.url)
+			},
+			...readCursorPagination(event.url, rows),
+			from: format(startOfMonth(subMonths(new Date(), 12)), 'yyyy-MM-dd'),
+			to: format(new Date(Date.now() - 3 * 24 * 60 * 60 * 1000), 'yyyy-MM-dd')
+		})
 	};
 }

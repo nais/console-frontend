@@ -1,12 +1,13 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
+	import { page } from '$app/state';
 	import WorkloadLink from '$lib/domain/workload/WorkloadLink.svelte';
 	import ExternalLink from '$lib/ui/ExternalLink.svelte';
 	import GraphErrors from '$lib/ui/GraphErrors.svelte';
 	import List from '$lib/ui/List.svelte';
 	import ListItem from '$lib/ui/ListItem.svelte';
 	import Pagination from '$lib/ui/Pagination.svelte';
-	import { changeParams } from '$lib/utils/searchparams';
+	import { cursorPaginationLoaders } from '$lib/urql/pagination';
 	import { severityToColor, suppressionStateLabels } from '$lib/utils/vulnerabilities';
 	import {
 		Alert,
@@ -14,7 +15,6 @@
 		Button,
 		Detail,
 		Heading,
-		Loader,
 		ReadMore,
 		Search,
 		Tag
@@ -24,6 +24,8 @@
 
 	let { data }: PageProps = $props();
 	let { CVEDetails, CVEWorkloads } = $derived(data);
+	let cveData = $derived(CVEDetails.data);
+	let workloadsData = $derived(CVEWorkloads.data);
 
 	let searchValue = $state('');
 
@@ -67,16 +69,12 @@
 			>
 		</form>
 
-		{#if $CVEDetails.fetching}
-			<div class="loading">
-				<Loader size="3xlarge" />
-			</div>
-		{:else if isNotFoundError($CVEDetails.errors)}
+		{#if isNotFoundError(CVEDetails.errors)}
 			<Alert variant="warning" size="medium" style="margin-bottom: 1rem;">
 				Vulnerability not found. The ID you entered doesn't exist in our database.
 			</Alert>
-		{:else if $CVEDetails.data}
-			{@const cve = $CVEDetails.data.cve}
+		{:else if cveData}
+			{@const cve = cveData.cve}
 			<div class="wrapper">
 				<div class="header">
 					<div class="title-row">
@@ -134,23 +132,19 @@
 					{/if}
 				</div>
 			</div>
-		{:else if hasOtherErrors($CVEDetails.errors)}
-			<GraphErrors errors={$CVEDetails.errors} />
+		{:else if hasOtherErrors(CVEDetails.errors)}
+			<GraphErrors errors={CVEDetails.errors} />
 		{/if}
-		{#if !isNotFoundError($CVEWorkloads.errors)}
+		{#if !isNotFoundError(CVEWorkloads.errors)}
 			<div>
 				<Heading as="h2" size="small" spacing>
 					Affected Workloads
-					{#if $CVEWorkloads.data?.cve.workloads.pageInfo.totalCount ?? 0 > 0}
-						<span class="count">({$CVEWorkloads.data?.cve.workloads.pageInfo.totalCount})</span>
+					{#if workloadsData?.cve.workloads.pageInfo.totalCount ?? 0 > 0}
+						<span class="count">({workloadsData?.cve.workloads.pageInfo.totalCount})</span>
 					{/if}
 				</Heading>
-				{#if $CVEWorkloads.fetching}
-					<div class="loading">
-						<Loader size="3xlarge" />
-					</div>
-				{:else if $CVEWorkloads.data}
-					{@const workloads = $CVEWorkloads.data.cve.workloads}
+				{#if workloadsData}
+					{@const workloads = workloadsData.cve.workloads}
 					{#if workloads.nodes.length > 0}
 						<List>
 							{#each workloads.nodes as node ([node.workload.name, node.workload.team.slug, node.workload.teamEnvironment.environment.name, node.vulnerability.package].join('|'))}
@@ -191,31 +185,13 @@
 						</List>
 						<Pagination
 							page={workloads.pageInfo}
-							fetching={$CVEWorkloads.fetching}
-							loaders={{
-								loadPreviousPage: () =>
-									changeParams(
-										{
-											after: '',
-											before: workloads.pageInfo.startCursor ?? ''
-										},
-										{ noScroll: true }
-									),
-								loadNextPage: () =>
-									changeParams(
-										{
-											after: workloads.pageInfo.endCursor ?? '',
-											before: ''
-										},
-										{ noScroll: true }
-									)
-							}}
+							loaders={cursorPaginationLoaders(page.url, workloads.pageInfo)}
 						/>
 					{:else}
 						<BodyShort>No workloads are currently affected by this vulnerability.</BodyShort>
 					{/if}
-				{:else if hasOtherErrors($CVEWorkloads.errors)}
-					<GraphErrors errors={$CVEWorkloads.errors} />
+				{:else if hasOtherErrors(CVEWorkloads.errors)}
+					<GraphErrors errors={CVEWorkloads.errors} />
 				{/if}
 			</div>
 		{/if}
@@ -242,13 +218,6 @@
 		flex: 1;
 		min-width: 0;
 		align-items: flex-start;
-	}
-
-	.loading {
-		display: flex;
-		justify-content: center;
-		align-items: center;
-		height: 500px;
 	}
 
 	.wrapper {

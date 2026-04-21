@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { page } from '$app/state';
-	import { TeamOrderField } from '$houdini';
 	import LegendWrapper, { legendSnippet } from '$lib/chart/LegendWrapper.svelte';
 	import { euroAxisFormatter, serviceColor } from '$lib/chart/util';
 	import IconLabel from '$lib/ui/IconLabel.svelte';
@@ -9,6 +8,8 @@
 	import OrderByMenu from '$lib/ui/OrderByMenu.svelte';
 	import Pagination from '$lib/ui/Pagination.svelte';
 	import Time from '$lib/ui/Time.svelte';
+	import { TeamOrderField } from '$lib/urql/gql/graphql';
+	import { cursorPaginationLoaders } from '$lib/urql/pagination';
 	import { euroValueFormatter } from '$lib/utils/formatters';
 	import { changeParams } from '$lib/utils/searchparams';
 	import {
@@ -29,8 +30,8 @@
 	let { TenantCost, CostMonthly, interval } = $derived(data);
 
 	const allServicesSeries = $derived.by(() => {
-		if (!$CostMonthly.data?.costMonthlySummary.series) return [];
-		const mp = $CostMonthly.data.costMonthlySummary.series.reduce((acc, item) => {
+		if (!CostMonthly.data?.costMonthlySummary.series) return [];
+		const mp = CostMonthly.data.costMonthlySummary.series.reduce((acc, item) => {
 			item.services.forEach((service) => {
 				acc.set(service.service, service.cost);
 			});
@@ -51,8 +52,8 @@
 	});
 
 	const tenantCostData = $derived.by(() => {
-		if (!$CostMonthly.data?.costMonthlySummary?.series) return [];
-		return $CostMonthly.data.costMonthlySummary.series.map((item) => ({
+		if (!CostMonthly.data?.costMonthlySummary?.series) return [];
+		return CostMonthly.data.costMonthlySummary.series.map((item) => ({
 			date: item.date,
 			...Object.fromEntries(item.services.map((s) => [s.service, s.cost]))
 		}));
@@ -92,10 +93,10 @@
 							Service cost distribution for <strong>{page.data.tenantName?.toUpperCase()}</strong>.
 							Some services are missing cost data. Figures are based on data from Google Cloud and
 							Aiven. The current month includes data up to
-							{#if $CostMonthly.data?.costMonthlySummary?.series && $CostMonthly.data.costMonthlySummary.series.length > 0 && $CostMonthly.data.costMonthlySummary.series.at(-1)?.date}
+							{#if CostMonthly.data?.costMonthlySummary?.series && CostMonthly.data.costMonthlySummary.series.length > 0 && CostMonthly.data.costMonthlySummary.series.at(-1)?.date}
 								<strong
 									><Time
-										time={$CostMonthly.data.costMonthlySummary.series.at(-1)?.date as Date}
+										time={new Date(CostMonthly.data.costMonthlySummary.series.at(-1)!.date)}
 									/></strong
 								>
 							{/if}.
@@ -110,7 +111,7 @@
 						{/each}
 					</ToggleGroup>
 				</div>
-				{#if $CostMonthly.data}
+				{#if CostMonthly.data}
 					<LegendWrapper height="1000px">
 						<BarChart
 							legend={legendSnippet}
@@ -184,54 +185,28 @@
 							onlyInclude={[TeamOrderField.SLUG, TeamOrderField.ACCUMULATED_COST]}
 						/>
 					{/snippet}
-					{#if !$TenantCost.fetching}
-						{#each $TenantCost.data?.teams.nodes ?? [] as team (team.slug)}
-							<ListItem>
-								<IconLabel
-									label={team.slug}
-									href="/team/{team.slug}/cost"
-									icon={PersonGroupIcon}
-									size="large"
-									as="h3"
-								/>
-								<div class="right">
-									<BodyShort
-										>{euroValueFormatter(team.cost.monthlySummary.sum, {
-											maximumFractionDigits: 0
-										})}</BodyShort
-									>
-								</div>
-							</ListItem>
-						{/each}
-					{:else}
-						<div
-							style="display: flex; justify-content: center; align-items: center; height: 200px;"
-						>
-							<Loader size="3xlarge" />
-						</div>
-					{/if}
+					{#each TenantCost.data?.teams.nodes ?? [] as team (team.slug)}
+						<ListItem>
+							<IconLabel
+								label={team.slug}
+								href="/team/{team.slug}/cost"
+								icon={PersonGroupIcon}
+								size="large"
+								as="h3"
+							/>
+							<div class="right">
+								<BodyShort
+									>{euroValueFormatter(team.cost.monthlySummary.sum, {
+										maximumFractionDigits: 0
+									})}</BodyShort
+								>
+							</div>
+						</ListItem>
+					{/each}
 				</List>
 				<Pagination
-					page={$TenantCost.data?.teams.pageInfo}
-					fetching={$TenantCost.fetching}
-					loaders={{
-						loadPreviousPage: () =>
-							changeParams(
-								{
-									after: '',
-									before: $TenantCost.data?.teams.pageInfo.startCursor ?? ''
-								},
-								{ noScroll: true }
-							),
-						loadNextPage: () =>
-							changeParams(
-								{
-									after: $TenantCost.data?.teams.pageInfo.endCursor ?? '',
-									before: ''
-								},
-								{ noScroll: true }
-							)
-					}}
+					page={TenantCost.data?.teams.pageInfo}
+					loaders={cursorPaginationLoaders(page.url, TenantCost.data?.teams.pageInfo)}
 				/>
 			</div>
 		</div>

@@ -1,6 +1,9 @@
 <script lang="ts">
-	import { graphql, type TeamMemberRole$options } from '$houdini';
+	import { getContextClient } from '$lib/urql/context';
+	import type { TeamMemberRole } from '$lib/urql/gql/graphql';
 	import { Alert, Detail, Heading, Label, Modal, Select } from '@nais/ds-svelte-community';
+	import { queryStore } from '@urql/svelte';
+	import { TeamMemberQuery, UpdateMemberRoleMutation } from './members';
 
 	interface Props {
 		open: boolean;
@@ -12,28 +15,17 @@
 
 	let { open = $bindable(), team, email, onupdated, onclosed }: Props = $props();
 
-	const store = graphql(`
-		query TeamMember($team: Slug!, $email: String!) {
-			team(slug: $team) {
-				member(email: $email) {
-					role
-					user {
-						id
-						name
-					}
-				}
-			}
-		}
-	`);
+	const client = getContextClient();
 
-	$effect(() => {
-		store.fetch({
-			variables: {
-				team: team,
-				email: email
-			}
-		});
-	});
+	const store = $derived(
+		queryStore({
+			client,
+			query: TeamMemberQuery,
+			variables: { team, email }
+		})
+	);
+
+	const result = $derived($store);
 
 	let previousOpen = $state(open);
 	$effect(() => {
@@ -43,29 +35,20 @@
 		previousOpen = open;
 	});
 
-	const alterRole = graphql(`
-		mutation UpdateMemberRoleMutation($input: SetTeamMemberRoleInput!) {
-			setTeamMemberRole(input: $input) {
-				member {
-					role
-				}
-			}
-		}
-	`);
-
 	let errors: string[] = [];
 	const updateRole = async (e: Event) => {
 		if (!e.target) return;
 		if (!(e.target instanceof HTMLSelectElement)) return;
 
-		await alterRole.mutate({
-			input: {
-				teamSlug: team,
-				userEmail: email,
-				role: e.target.value as TeamMemberRole$options
-			}
-		});
-		store.fetch({ policy: 'NetworkOnly' });
+		await client
+			.mutation(UpdateMemberRoleMutation, {
+				input: {
+					teamSlug: team,
+					userEmail: email,
+					role: e.target.value as TeamMemberRole
+				}
+			})
+			.toPromise();
 		onupdated?.();
 		open = false;
 	};
@@ -76,8 +59,8 @@
 		<Heading>Edit Member</Heading>
 	{/snippet}
 
-	{#if $store.data}
-		{@const member = $store.data.team.member}
+	{#if result.data}
+		{@const member = result.data.team.member}
 
 		{#each errors as error (error)}
 			<Alert variant="error">{error}</Alert>

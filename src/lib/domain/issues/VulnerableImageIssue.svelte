@@ -1,12 +1,12 @@
 <script lang="ts">
-	import type { IssueFragment$data } from '$houdini';
 	import { Detail, Heading } from '@nais/ds-svelte-community';
 	import IssueLabel from './IssueLabel.svelte';
+	import type { Issue } from './types';
 
 	let {
 		data
 	}: {
-		data: Extract<IssueFragment$data, { __typename: 'MissingSbomIssue' }>;
+		data: Issue<'MissingSbomIssue'>;
 	} = $props();
 
 	let workloadType: 'app' | 'job' = $derived.by(() => {

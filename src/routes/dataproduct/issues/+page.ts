@@ -1,19 +1,17 @@
-import { IssueType, load_AllIssues } from '$houdini';
+import { IssueType } from '$lib/urql/gql/graphql';
+import { runQuery } from '$lib/urql/load';
+import { AllIssuesQuery } from './issues';
 
 export async function load(event) {
 	const issueTypeParam = event.url.searchParams.get('issueType');
 	const issueType =
-		issueTypeParam &&
-		Object.values(IssueType).includes(issueTypeParam as (typeof IssueType)[keyof typeof IssueType])
-			? (issueTypeParam as (typeof IssueType)[keyof typeof IssueType])
+		issueTypeParam && Object.values(IssueType).includes(issueTypeParam as IssueType)
+			? (issueTypeParam as IssueType)
 			: undefined;
 
 	return {
-		...(await load_AllIssues({
-			event,
-			variables: {
-				issueType
-			}
-		}))
+		AllIssues: await runQuery(event, AllIssuesQuery, {
+			issueType
+		})
 	};
 }

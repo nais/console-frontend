@@ -1,18 +1,20 @@
-import { graphql } from '$houdini';
+import { graphql as gql } from '$lib/urql/gql';
+import { runMutation } from '$lib/urql/mutation';
 import { redirect } from '@sveltejs/kit';
 import type { Actions } from './$types';
 
+const CreateTeamMutation = gql(/* GraphQL */ `
+	mutation CreateTeam($input: CreateTeamInput!) {
+		createTeam(input: $input) {
+			team {
+				slug
+			}
+		}
+	}
+`);
+
 export const actions = {
 	default: async (event) => {
-		const query = graphql(`
-			mutation CreateTeam($input: CreateTeamInput!) {
-				createTeam(input: $input) {
-					team {
-						slug
-					}
-				}
-			}
-		`);
 		const data = await event.request.formData();
 		const input = {
 			slug: (data.get('name') as string) || '',
@@ -20,12 +22,8 @@ export const actions = {
 			slackChannel: (data.get('slackChannel') as string) || ''
 		};
 
-		const resp = await query.mutate(
-			{
-				input
-			},
-			{ event }
-		);
+		const resp = await runMutation(event, CreateTeamMutation, { input });
+
 		if (resp.errors) {
 			return { input, errors: resp.errors };
 		}

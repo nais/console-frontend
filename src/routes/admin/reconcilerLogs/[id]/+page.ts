@@ -1,17 +1,17 @@
-import { load_ReconcilerLogs } from '$houdini';
+import { runQuery } from '$lib/urql/load';
+import { readCursorPagination } from '$lib/urql/pagination';
 import { addPageMeta } from '$lib/utils/pageMeta';
-import { get } from 'svelte/store';
+import { ReconcilerLogsQuery } from './reconcilerLogs';
+
+const rows = 20;
 
 export async function load(event) {
-	const data = await load_ReconcilerLogs({
-		event,
-		variables: {
-			id: event.params.id
-		},
-		blocking: true
+	const ReconcilerLogs = await runQuery(event, ReconcilerLogsQuery, {
+		id: event.params.id,
+		...readCursorPagination(event.url, rows)
 	});
 
-	const node = get(data.ReconcilerLogs).data?.node;
+	const node = ReconcilerLogs.data?.node;
 	const title = node?.__typename === 'Reconciler' ? `${node.displayName} logs` : 'Reconciler logs';
 	return {
 		...(await addPageMeta(event, {
@@ -23,6 +23,6 @@ export async function load(event) {
 				}
 			]
 		})),
-		...data
+		ReconcilerLogs
 	};
 }

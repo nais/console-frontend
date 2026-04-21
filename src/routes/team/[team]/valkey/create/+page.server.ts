@@ -1,7 +1,9 @@
-import { graphql, ValkeyMaxMemoryPolicy, ValkeyMemory, ValkeyTier } from '$houdini';
+import { graphql as gql } from '$lib/urql/gql';
+import { ValkeyMaxMemoryPolicy, ValkeyMemory, ValkeyTier } from '$lib/urql/gql/graphql';
+import { runMutation } from '$lib/urql/mutation';
 import { fail, redirect } from '@sveltejs/kit';
 
-const mutation = graphql(`
+const CreateValkeyMutation = gql(/* GraphQL */ `
 	mutation CreateValkey($input: CreateValkeyInput!) {
 		createValkey(input: $input) {
 			valkey {
@@ -43,28 +45,25 @@ export const actions = {
 			});
 		}
 
-		const res = await mutation.mutate(
-			{
-				input: {
-					name: name,
-					environmentName: environment,
-					teamSlug: params.team,
-					tier: ValkeyTier[tier as keyof typeof ValkeyTier],
-					memory: ValkeyMemory[memory as keyof typeof ValkeyMemory],
-					maxMemoryPolicy: !max_memory_policy
-						? null
-						: ValkeyMaxMemoryPolicy[max_memory_policy as keyof typeof ValkeyMaxMemoryPolicy],
-					notifyKeyspaceEvents: !notify_keyspace_events ? null : notify_keyspace_events,
-					databases: databases ? parseInt(databases, 10) : null
-				}
-			},
-			{ event }
-		);
+		const res = await runMutation(event, CreateValkeyMutation, {
+			input: {
+				name: name,
+				environmentName: environment,
+				teamSlug: params.team,
+				tier: ValkeyTier[tier as keyof typeof ValkeyTier],
+				memory: ValkeyMemory[memory as keyof typeof ValkeyMemory],
+				maxMemoryPolicy: !max_memory_policy
+					? null
+					: ValkeyMaxMemoryPolicy[max_memory_policy as keyof typeof ValkeyMaxMemoryPolicy],
+				notifyKeyspaceEvents: !notify_keyspace_events ? null : notify_keyspace_events,
+				databases: databases ? parseInt(databases, 10) : null
+			}
+		});
 
-		if (res.errors?.length ?? 0 > 0) {
+		if (res.errors?.length) {
 			return fail(400, {
 				success: false,
-				error: res.errors![0].message,
+				error: res.errors[0].message,
 				name,
 				environment,
 				tier,

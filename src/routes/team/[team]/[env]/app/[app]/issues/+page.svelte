@@ -6,6 +6,7 @@
 	import List from '$lib/ui/List.svelte';
 	import ListItem from '$lib/ui/ListItem.svelte';
 	import Pagination from '$lib/ui/Pagination.svelte';
+	import { cursorPaginationLoaders } from '$lib/urql/pagination';
 	import { changeParams } from '$lib/utils/searchparams';
 	import { Button } from '@nais/ds-svelte-community';
 	import { ActionMenu } from '@nais/ds-svelte-community/experimental';
@@ -14,35 +15,28 @@
 
 	let { data }: PageProps = $props();
 	let { ApplicationIssues } = $derived(data);
-	let issues = $derived($ApplicationIssues.data?.team.environment.application.issues);
+	let issues = $derived(ApplicationIssues.data?.team.environment.application.issues);
 	let issueCount = $derived(issues?.pageInfo.totalCount ?? 0);
-	let totalCount = $derived(
-		$ApplicationIssues.data?.team.environment.application.issues.pageInfo.totalCount ?? 0
-	);
-
-	let after: string = $derived($ApplicationIssues.variables?.after ?? '');
-	let before: string = $derived($ApplicationIssues.variables?.before ?? '');
+	let totalCount = $derived(issues?.pageInfo.totalCount ?? 0);
 
 	const changeQuery = (
 		params: {
 			environments?: string;
 			severity?: string | undefined;
 			issueType?: string | undefined;
-			after?: string;
-			before?: string;
 		} = {}
 	) => {
 		changeParams({
 			environments: params.environments ?? '',
 			severity: params.severity ?? '',
 			issueType: params.issueType ?? '',
-			before: params.before ?? before,
-			after: params.after ?? after
+			before: '',
+			after: ''
 		});
 	};
 </script>
 
-<GraphErrors errors={$ApplicationIssues.errors} />
+<GraphErrors errors={ApplicationIssues.errors} />
 
 <div class="wrapper">
 	<div>
@@ -82,11 +76,7 @@
 		{#if (issues?.pageInfo.totalCount ?? 0) > 0}
 			<Pagination
 				page={issues?.pageInfo}
-				loaders={{
-					loadPreviousPage: () =>
-						changeQuery({ before: issues?.pageInfo.startCursor ?? '', after: '' }),
-					loadNextPage: () => changeQuery({ after: issues?.pageInfo.endCursor ?? '', before: '' })
-				}}
+				loaders={cursorPaginationLoaders(page.url, issues?.pageInfo)}
 			/>
 		{/if}
 	</div>

@@ -1,7 +1,6 @@
 <script lang="ts">
-	import { onNavigate } from '$app/navigation';
+	import { invalidateAll } from '$app/navigation';
 	import { page } from '$app/state';
-	import { graphql } from '$houdini';
 	import SidebarActivity from '$lib/domain/activity/sidebar/SidebarActivity.svelte';
 	import AggregatedCostForWorkload from '$lib/domain/cost/AggregatedCostForWorkload.svelte';
 	import IssueListItem from '$lib/domain/list-items/IssueListItem.svelte';
@@ -12,19 +11,23 @@
 	import WorkloadDeploy from '$lib/domain/workload/WorkloadDeploy.svelte';
 	import Confirm from '$lib/ui/Confirm.svelte';
 	import GraphErrors from '$lib/ui/GraphErrors.svelte';
+	import IncomingIndicator from '$lib/ui/IncomingIndicator.svelte';
 	import List from '$lib/ui/List.svelte';
+	import RunningIndicator from '$lib/ui/RunningIndicator.svelte';
 	import Time from '$lib/ui/Time.svelte';
-	import { Alert, Button, Heading, Loader, Tag } from '@nais/ds-svelte-community';
+	import { getContextClient } from '$lib/urql/context';
+	import { Alert, Button, Heading, Tag } from '@nais/ds-svelte-community';
 	import { ArrowCirclepathIcon } from '@nais/ds-svelte-community/icons';
 	import type { PageProps } from './$types';
+	import { RestartAppMutation } from './app';
 	import Ingresses from './Ingresses.svelte';
-	import RunningIndicator from '$lib/ui/RunningIndicator.svelte';
-	import IncomingIndicator from '$lib/ui/IncomingIndicator.svelte';
 
 	let { data }: PageProps = $props();
 	let { App, teamSlug, viewerIsMember } = $derived(data);
 
-	const instanceGroups = $derived($App.data?.team.environment.application.instanceGroups ?? []);
+	const client = getContextClient();
+
+	const instanceGroups = $derived(App.data?.team.environment.application.instanceGroups ?? []);
 
 	// The newest group that isn't fully running is "incoming" (a rollout in progress).
 	// Everything else is "current". If there's only one group, it's always current.
@@ -41,58 +44,38 @@
 		return 'current';
 	}
 
-	const restartAppMutation = () =>
-		graphql(`
-			mutation RestartApp($team: Slug!, $environment: String!, $application: String!) {
-				restartApplication(
-					input: { teamSlug: $team, environmentName: $environment, name: $application }
-				) {
-					application {
-						name
-					}
-				}
-			}
-		`);
-	let restartApp = $state(restartAppMutation());
-
-	onNavigate(() => {
-		restartApp = restartAppMutation();
-	});
-
 	let application = $derived(page.params.app);
 	let environment = $derived(page.params.env);
 
 	let restart = $state(false);
 
-	const submit = () => {
+	const submit = async () => {
 		if (!application || !environment) {
 			console.error('Application or environment is not defined');
 			return;
 		}
-		restartApp.mutate({
-			application,
-			environment,
-			team: teamSlug
-		});
+		await client
+			.mutation(RestartAppMutation, {
+				application,
+				environment,
+				team: teamSlug
+			})
+			.toPromise();
+		void invalidateAll();
 	};
 </script>
 
-{#if $App.data}
-	{@const app = $App.data.team.environment.application}
+{#if App.data}
+	{@const app = App.data.team.environment.application}
 	<div class="workload-deploy-wrapper">
 		<WorkloadDeploy workload={app} />
 	</div>
 {/if}
 
-<GraphErrors errors={$App.errors} />
+<GraphErrors errors={App.errors} />
 
-{#if $App.fetching}
-	<div style="display: flex; justify-content: center; align-items: center; height: 500px;">
-		<Loader size="3xlarge" />
-	</div>
-{/if}
-{#if $App.data}
-	{@const app = $App.data.team.environment.application}
+{#if App.data}
+	{@const app = App.data.team.environment.application}
 
 	<div class="wrapper">
 		<div class="app-content">
@@ -105,11 +88,11 @@
 						/>. If the deletion is taking too long, contact the Nais team.
 					</Alert>
 				{/if}
-				{#if $App.data.team.environment.application.issues.edges.length > 0}
+				{#if app.issues.edges.length > 0}
 					<div>
 						<Heading as="h3" spacing>Issues</Heading>
 						<List>
-							{#each $App.data.team.environment.application.issues.edges as edge (edge.node.id)}
+							{#each app.issues.edges as edge (edge.node.id)}
 								<IssueListItem item={edge.node} />
 							{/each}
 						</List>
@@ -167,7 +150,7 @@
 					{/each}
 				</div>
 				<div>
-					<Ingresses app={$App.data} />
+					<Ingresses app={App.data} />
 				</div>
 				<div>
 					<NetworkPolicy workload={app} />
@@ -184,7 +167,7 @@
 					<Configs {environment} workload={app.name} {teamSlug} />
 					<Secrets workload={app.name} {environment} {teamSlug} />
 				{/if}
-				<SidebarActivity activityLog={app} direct={app.activityLog} />
+				<SidebarActivity activityLog={app} />
 			</div>
 		</div>
 		<Confirm bind:open={restart} onconfirm={submit}>

@@ -1,39 +1,10 @@
 <script lang="ts">
-	import { graphql } from '$houdini';
 	import GraphErrors from '$lib/ui/GraphErrors.svelte';
+	import { getContextClient } from '$lib/urql/context';
+	import { graphql as gql } from '$lib/urql/gql';
 	import { Heading, HelpText, Loader } from '@nais/ds-svelte-community';
+	import { queryStore } from '@urql/svelte';
 	import AggregatedCostForWorkloads from './AggregatedCostForWorkloads.svelte';
-
-	const costQuery = $derived(
-		graphql(`
-			query AggregatedCostForApplications($team: Slug!, $totalCount: Int) {
-				team(slug: $team) {
-					slug
-					applications(first: $totalCount) {
-						nodes {
-							cost {
-								monthly {
-									series {
-										date
-										sum
-									}
-								}
-							}
-						}
-					}
-				}
-			}
-		`)
-	);
-
-	$effect(() => {
-		costQuery.fetch({
-			variables: {
-				team: teamSlug,
-				totalCount: totalCount
-			}
-		});
-	});
 
 	interface Props {
 		teamSlug: string;
@@ -41,9 +12,42 @@
 	}
 
 	let { teamSlug, totalCount }: Props = $props();
+
+	const AggregatedCostForApplicationsQuery = gql(/* GraphQL */ `
+		query AggregatedCostForApplications($team: Slug!, $totalCount: Int) {
+			team(slug: $team) {
+				slug
+				applications(first: $totalCount) {
+					nodes {
+						cost {
+							monthly {
+								series {
+									date
+									sum
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	`);
+
+	const client = getContextClient();
+
+	const costQuery = $derived(
+		queryStore({
+			client,
+			query: AggregatedCostForApplicationsQuery,
+			variables: { team: teamSlug, totalCount },
+			requestPolicy: 'cache-and-network'
+		})
+	);
+
+	const result = $derived($costQuery);
 </script>
 
-<GraphErrors errors={$costQuery.errors} />
+<GraphErrors errors={result.error?.graphQLErrors ?? null} />
 <div>
 	<div class="heading">
 		<Heading size="small" as="h3">Applications Cost</Heading>
@@ -52,12 +56,12 @@
 		>
 	</div>
 
-	{#if $costQuery.fetching}
+	{#if result.fetching && !result.data}
 		<div class="loading">
 			<Loader size="3xlarge" />
 		</div>
-	{:else if $costQuery.data && $costQuery.data.team.applications.nodes.length > 0}
-		<AggregatedCostForWorkloads nodes={$costQuery.data.team.applications.nodes} />
+	{:else if result.data && result.data.team.applications.nodes.length > 0}
+		<AggregatedCostForWorkloads nodes={result.data.team.applications.nodes} />
 		<a href="/team/{teamSlug}/cost">See cost details</a>
 	{/if}
 </div>

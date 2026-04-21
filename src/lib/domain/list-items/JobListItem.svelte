@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { JobState, type JobRunState$options } from '$houdini';
 	import { envTagVariant } from '$lib/envTagVariant';
 	import SuccessIcon from '$lib/icons/SuccessIcon.svelte';
 	import IconLabel from '$lib/ui/IconLabel.svelte';
@@ -7,6 +6,7 @@
 	import RunningIndicator from '$lib/ui/RunningIndicator.svelte';
 	import Time from '$lib/ui/Time.svelte';
 	import TooltipAlignHack from '$lib/ui/TooltipAlignHack.svelte';
+	import { JobRunState, JobState } from '$lib/urql/gql/graphql';
 	import { getLocalizedCronDescription } from '$lib/utils/cron';
 	import { countIssuesBySeverity } from '$lib/utils/issueCounts';
 	import { Detail, Loader, Tooltip } from '@nais/ds-svelte-community';
@@ -30,19 +30,25 @@
 			teamEnvironment: { environment: { name: string } };
 			team: { slug: string };
 			state: string;
-			schedule: {
-				expression: string;
-				timeZone: string;
-			} | null;
+			schedule?:
+				| {
+						expression: string;
+						timeZone: string;
+				  }
+				| null
+				| undefined;
 			issues: {
 				pageInfo: { totalCount: number };
 				edges: { node: { severity: string } }[];
 			};
-			deployments: { nodes: { createdAt: Date }[] };
+			deployments: { nodes: { createdAt: Date | string }[] };
 			runs: {
 				pageInfo: { totalCount: number };
 				edges: {
-					node: { startTime: Date | null; status: { message: string; state: JobRunState$options } };
+					node: {
+						startTime?: Date | string | null;
+						status: { message: string; state: JobRunState | `${JobRunState}` };
+					};
 				}[];
 			};
 		};
@@ -103,7 +109,10 @@
 
 	<div class="right">
 		{#if job.deployments.nodes.length > 0}
-			{@const timestamp = job.deployments.nodes[0].createdAt}
+			{@const timestamp =
+				job.deployments.nodes[0].createdAt instanceof Date
+					? job.deployments.nodes[0].createdAt
+					: new Date(job.deployments.nodes[0].createdAt)}
 			<Tooltip
 				content="Last deploy - {format(timestamp, 'PPPP', {
 					locale: enGB
@@ -147,10 +156,10 @@
 					</TooltipAlignHack>
 				{/if}
 				{#if lastRun.startTime}
-					<TooltipAlignHack
-						content="Last run - {format(lastRun.startTime, 'PPPP', { locale: enGB })}"
-					>
-						<Detail><Time time={lastRun.startTime} distance={true} /></Detail>
+					{@const lastRunTime =
+						lastRun.startTime instanceof Date ? lastRun.startTime : new Date(lastRun.startTime)}
+					<TooltipAlignHack content="Last run - {format(lastRunTime, 'PPPP', { locale: enGB })}">
+						<Detail><Time time={lastRunTime} distance={true} /></Detail>
 					</TooltipAlignHack>
 				{/if}
 			</div>

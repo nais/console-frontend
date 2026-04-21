@@ -1,11 +1,12 @@
 <script lang="ts">
-	import { CVEOrderField, OrderDirection } from '$houdini';
+	import { page } from '$app/state';
 	import GraphErrors from '$lib/ui/GraphErrors.svelte';
 	import List from '$lib/ui/List.svelte';
 	import ListItem from '$lib/ui/ListItem.svelte';
 	import OrderByMenu from '$lib/ui/OrderByMenu.svelte';
 	import Pagination from '$lib/ui/Pagination.svelte';
-	import { changeParams } from '$lib/utils/searchparams';
+	import { CveOrderField, OrderDirection } from '$lib/urql/gql/graphql';
+	import { cursorPaginationLoaders } from '$lib/urql/pagination';
 	import { severityToVariant } from '$lib/utils/vulnerabilities';
 	import { BodyLong, BodyShort, Detail, Heading, Loader, Tag } from '@nais/ds-svelte-community';
 	import type { PageProps } from './$types';
@@ -15,7 +16,7 @@
 </script>
 
 <div class="wrapper">
-	<GraphErrors errors={$CVES.errors} />
+	<GraphErrors errors={CVES.errors} />
 	<div>
 		<Heading as="h3" spacing>CVE Database</Heading>
 		<BodyLong spacing>
@@ -24,7 +25,7 @@
 			affected workloads.
 		</BodyLong>
 	</div>
-	{#if $CVES.fetching && !$CVES.data}
+	{#if !CVES.data}
 		<div style="display: flex; justify-content: center; align-items: center; height: 500px;">
 			<Loader size="3xlarge" />
 		</div>
@@ -32,17 +33,13 @@
 		<List title="CVEs">
 			{#snippet menu()}
 				<OrderByMenu
-					orderField={CVEOrderField}
-					defaultOrderField={CVEOrderField.CVSS_SCORE}
+					orderField={CveOrderField}
+					defaultOrderField={CveOrderField.CVSS_SCORE}
 					defaultOrderDirection={OrderDirection.DESC}
 				/>
 			{/snippet}
-			{#if $CVES.fetching}
-				<div style="display: flex; justify-content: center; align-items: center; height: 500px;">
-					<Loader size="3xlarge" />
-				</div>
-			{:else if $CVES.data?.cves.nodes}
-				{#each $CVES.data.cves.nodes as cve (cve.identifier)}
+			{#if CVES.data?.cves.nodes}
+				{#each CVES.data.cves.nodes as cve (cve.identifier)}
 					<ListItem href="/vulnerabilities/{cve.identifier}">
 						<div class="cve-row">
 							<div class="cve-main">
@@ -73,30 +70,10 @@
 		</List>
 	{/if}
 
-	{#if $CVES.data?.cves.pageInfo}
+	{#if CVES.data?.cves.pageInfo}
 		<Pagination
-			page={$CVES.data.cves.pageInfo}
-			loaders={{
-				loadPreviousPage: () => {
-					changeParams(
-						{
-							before: $CVES.data?.cves.pageInfo.startCursor ?? '',
-							after: ''
-						},
-						{ noScroll: true }
-					);
-				},
-				loadNextPage: () => {
-					changeParams(
-						{
-							after: $CVES.data?.cves.pageInfo.endCursor ?? '',
-							before: ''
-						},
-						{ noScroll: true }
-					);
-				}
-			}}
-			fetching={$CVES.fetching}
+			page={CVES.data.cves.pageInfo}
+			loaders={cursorPaginationLoaders(page.url, CVES.data.cves.pageInfo)}
 		/>
 	{/if}
 </div>

@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { page } from '$app/state';
 	import { docURL } from '$lib/doc';
 	import ActivityLogListItem from '$lib/domain/list-items/ActivityLogListItem.svelte';
 	import ImageVulnerabilities from '$lib/domain/vulnerability/ImageVulnerabilities.svelte';
@@ -8,6 +9,8 @@
 	import ExternalLink from '$lib/ui/ExternalLink.svelte';
 	import GraphErrors from '$lib/ui/GraphErrors.svelte';
 	import List from '$lib/ui/List.svelte';
+	import Pagination from '$lib/ui/Pagination.svelte';
+	import { cursorPaginationLoaders } from '$lib/urql/pagination';
 	import { parseImage } from '$lib/utils/image';
 	import { BodyShort, CopyButton, Detail, Heading } from '@nais/ds-svelte-community';
 	import type { PageProps } from './$types';
@@ -17,14 +20,14 @@
 	let { JobImageDetails, viewerIsMember } = $derived(data);
 
 	const { registry, repository, name } = $derived(
-		parseImage($JobImageDetails.data?.team.environment.workload.image.name)
+		parseImage(JobImageDetails.data?.team.environment.workload.image.name)
 	);
 </script>
 
-<GraphErrors errors={$JobImageDetails.errors} />
+<GraphErrors errors={JobImageDetails.errors} />
 
-{#if $JobImageDetails.data}
-	{@const workload = $JobImageDetails.data.team.environment.workload}
+{#if JobImageDetails.data}
+	{@const workload = JobImageDetails.data.team.environment.workload}
 	<div class="wrapper">
 		<div class="top">
 			<div>
@@ -32,9 +35,7 @@
 					<div style="display: flex; justify-content: space-between; align-items: center;">
 						<Heading id="image-info-title" as="h3" size="small" spacing>Image</Heading>
 						<CopyButton
-							copyText={$JobImageDetails.data?.team.environment.workload.image.name +
-								':' +
-								$JobImageDetails.data?.team.environment.workload.image.tag}
+							copyText={workload.image.name + ':' + workload.image.tag}
 							size="xsmall"
 							variant="action"
 						/>
@@ -42,8 +43,7 @@
 
 					<div class="image-row">
 						<code>
-							{$JobImageDetails.data?.team.environment.workload.image.name}:{$JobImageDetails.data
-								?.team.environment.workload.image.tag}
+							{workload.image.name}:{workload.image.tag}
 						</code>
 					</div>
 
@@ -102,27 +102,31 @@
 		{#if workload.image.hasSBOM}
 			<div>
 				<ImageVulnerabilities
-					team={$JobImageDetails.data?.team.slug}
-					environment={$JobImageDetails.data?.team.environment.environment.name}
-					workload={$JobImageDetails.data?.team.environment.workload.name}
+					team={JobImageDetails.data.team.slug}
+					environment={JobImageDetails.data.team.environment.environment.name}
+					workload={workload.name}
 					authorized={viewerIsMember}
 				/>
 			</div>
 			<WorkloadVulnerabilityHistoryGraph
-				team={$JobImageDetails.data?.team.slug}
-				environment={$JobImageDetails.data?.team.environment.environment.name}
-				workload={$JobImageDetails.data?.team.environment.workload.name}
+				team={JobImageDetails.data.team.slug}
+				environment={JobImageDetails.data.team.environment.environment.name}
+				workload={workload.name}
 			/>
 			<div>
-				{#if $JobImageDetails.data?.team.environment.workload.image.activityLog.edges.length > 0}
+				{#if workload.image.activityLog.edges.length > 0}
 					<div class="activity-log">
-						<Heading as="h3" size="small" spacing>Image Activity Log</Heading>
-
-						<List>
-							{#each $JobImageDetails.data?.team.environment.workload.image.activityLog.edges || [] as item (item.node.id)}
+						<List title="Image Activity Log">
+							{#each workload.image.activityLog.edges as item (item.node.id)}
 								<ActivityLogListItem item={item.node} />
 							{/each}
 						</List>
+						{#if workload.image.activityLog.pageInfo.hasPreviousPage || workload.image.activityLog.pageInfo.hasNextPage}
+							<Pagination
+								page={workload.image.activityLog.pageInfo}
+								loaders={cursorPaginationLoaders(page.url, workload.image.activityLog.pageInfo)}
+							/>
+						{/if}
 					</div>
 				{:else}
 					<div class="activity-log">
@@ -136,6 +140,11 @@
 {/if}
 
 <style>
+	.wrapper {
+		display: grid;
+		grid-template-columns: 1fr;
+		gap: var(--spacing-layout);
+	}
 	.top {
 		display: grid;
 		grid-template-columns: 1fr 300px;

@@ -1,9 +1,10 @@
 <script lang="ts">
-	import { TeamOrderField } from '$houdini';
+	import { page } from '$app/state';
 	import Pagination from '$lib/ui/Pagination.svelte';
+	import { TeamOrderField } from '$lib/urql/gql/graphql';
+	import { cursorPaginationLoaders } from '$lib/urql/pagination';
 	import { changeParams } from '$lib/utils/searchparams';
 	import {
-		Loader,
 		Table,
 		Tbody,
 		Td,
@@ -19,44 +20,34 @@
 
 	let { Teams, filter } = $derived(data);
 
+	let field = $derived(page.url.searchParams.get('field') ?? TeamOrderField.SLUG);
+	let direction = $derived(page.url.searchParams.get('direction') ?? 'ASC');
+
 	let tableSort = $derived({
-		orderBy: $Teams.variables?.orderBy?.field,
-		direction: $Teams.variables?.orderBy?.direction
+		orderBy: field,
+		direction
 	});
 
 	const tableSortChange = (key: string) => {
+		let newDirection: string;
+		let newField: string;
 		if (key === tableSort.orderBy) {
-			const direction = tableSort.direction === 'ASC' ? 'DESC' : 'ASC';
-			tableSort.direction = direction;
+			newDirection = tableSort.direction === 'ASC' ? 'DESC' : 'ASC';
+			newField = tableSort.orderBy;
 		} else {
-			tableSort.orderBy = TeamOrderField[key as keyof typeof TeamOrderField];
-			tableSort.direction = 'ASC';
+			newField = TeamOrderField[key as keyof typeof TeamOrderField];
+			newDirection = 'ASC';
 		}
 
 		changeParams(
 			{
-				direction: tableSort.direction,
-				field: tableSort.orderBy || TeamOrderField.SLUG
+				direction: newDirection,
+				field: newField || TeamOrderField.SLUG
 			},
 			{
 				noScroll: true
 			}
 		);
-	};
-
-	let after: string = $derived($Teams.variables?.after ?? '');
-	let before: string = $derived($Teams.variables?.before ?? '');
-
-	const changeQuery = (
-		params: {
-			after?: string;
-			before?: string;
-		} = {}
-	) => {
-		changeParams({
-			before: params.before ?? before,
-			after: params.after ?? after
-		});
 	};
 
 	let workloadsToggle = $derived(filter || 'all');
@@ -75,80 +66,60 @@
 	</ToggleGroup>
 </div>
 
-{#if !$Teams.fetching}
-	<Table
-		size="small"
-		zebraStripes
-		sort={{
-			orderBy: tableSort.orderBy || TeamOrderField.SLUG,
-			direction: tableSort.direction === 'ASC' ? 'ascending' : 'descending'
-		}}
-		onsortchange={tableSortChange}
-	>
-		<Thead>
+<Table
+	size="small"
+	zebraStripes
+	sort={{
+		orderBy: tableSort.orderBy || TeamOrderField.SLUG,
+		direction: tableSort.direction === 'ASC' ? 'ascending' : 'descending'
+	}}
+	onsortchange={tableSortChange}
+>
+	<Thead>
+		<Tr>
+			<Th sortable={true} sortKey={TeamOrderField.SLUG} style="width: 32ch;">Team</Th>
+			<Th style="width: 16ch;">Members</Th>
+			<Th>Inventory</Th>
+		</Tr>
+	</Thead>
+	<Tbody>
+		{#each Teams.data?.teams.edges || [] as t (t.node.slug)}
 			<Tr>
-				<Th sortable={true} sortKey={TeamOrderField.SLUG} style="width: 32ch;">Team</Th>
-				<Th style="width: 16ch;">Members</Th>
-				<Th>Inventory</Th>
+				<Td><a href="/team/{t.node.slug}">{t.node.slug}</a></Td>
+				<Td>
+					<a href="/team/{t.node.slug}/members">{t.node.members.pageInfo.totalCount} members</a></Td
+				>
+				<Td>
+					{[
+						t.node.inventoryCounts.applications.total > 0 &&
+							`${t.node.inventoryCounts.applications.total} applications`,
+						t.node.inventoryCounts.jobs.total > 0 && `${t.node.inventoryCounts.jobs.total} jobs`,
+						t.node.inventoryCounts.bigQueryDatasets.total > 0 &&
+							`${t.node.inventoryCounts.bigQueryDatasets.total} BigQuery datasets`,
+						t.node.inventoryCounts.buckets.total > 0 &&
+							`${t.node.inventoryCounts.buckets.total} buckets`,
+						t.node.inventoryCounts.kafkaTopics.total > 0 &&
+							`${t.node.inventoryCounts.kafkaTopics.total} Kafka topics`,
+						t.node.inventoryCounts.openSearches.total > 0 &&
+							`${t.node.inventoryCounts.openSearches.total} OpenSearch instances`,
+						t.node.inventoryCounts.postgresInstances.total > 0 &&
+							`${t.node.inventoryCounts.postgresInstances.total} Postgres instances`,
+						t.node.inventoryCounts.sqlInstances.total > 0 &&
+							`${t.node.inventoryCounts.sqlInstances.total} Cloud SQL instances`,
+						t.node.inventoryCounts.valkeys.total > 0 &&
+							`${t.node.inventoryCounts.valkeys.total} Valkey instances`
+					]
+						.filter(Boolean)
+						.join(', ')}
+				</Td>
 			</Tr>
-		</Thead>
-		<Tbody>
-			{#each $Teams.data?.teams.edges || [] as t (t.node.slug)}
-				<Tr>
-					<Td><a href="/team/{t.node.slug}">{t.node.slug}</a></Td>
-					<Td>
-						<a href="/team/{t.node.slug}/members">{t.node.members.pageInfo.totalCount} members</a
-						></Td
-					>
-					<Td>
-						{[
-							t.node.inventoryCounts.applications.total > 0 &&
-								`${t.node.inventoryCounts.applications.total} applications`,
-							t.node.inventoryCounts.jobs.total > 0 && `${t.node.inventoryCounts.jobs.total} jobs`,
-							t.node.inventoryCounts.bigQueryDatasets.total > 0 &&
-								`${t.node.inventoryCounts.bigQueryDatasets.total} BigQuery datasets`,
-							t.node.inventoryCounts.buckets.total > 0 &&
-								`${t.node.inventoryCounts.buckets.total} buckets`,
-							t.node.inventoryCounts.kafkaTopics.total > 0 &&
-								`${t.node.inventoryCounts.kafkaTopics.total} Kafka topics`,
-							t.node.inventoryCounts.openSearches.total > 0 &&
-								`${t.node.inventoryCounts.openSearches.total} OpenSearch instances`,
-							t.node.inventoryCounts.postgresInstances.total > 0 &&
-								`${t.node.inventoryCounts.postgresInstances.total} Postgres instances`,
-							t.node.inventoryCounts.sqlInstances.total > 0 &&
-								`${t.node.inventoryCounts.sqlInstances.total} Cloud SQL instances`,
-							t.node.inventoryCounts.valkeys.total > 0 &&
-								`${t.node.inventoryCounts.valkeys.total} Valkey instances`
-						]
-							.filter(Boolean)
-							.join(', ')}
-					</Td>
-				</Tr>
-			{/each}
-		</Tbody>
-	</Table>
-{:else}
-	<div style="display: flex; justify-content: center; align-items: center; height: 500px;">
-		<Loader size="3xlarge" />
-	</div>
-{/if}
+		{/each}
+	</Tbody>
+</Table>
 
 <Pagination
-	page={$Teams.data?.teams.pageInfo}
-	loaders={{
-		loadPreviousPage: () => {
-			changeQuery({
-				after: '',
-				before: $Teams.data?.teams.pageInfo.startCursor ?? ''
-			});
-		},
-		loadNextPage: () => {
-			changeQuery({
-				before: '',
-				after: $Teams.data?.teams.pageInfo.endCursor ?? ''
-			});
-		}
-	}}
+	page={Teams.data?.teams.pageInfo}
+	loaders={cursorPaginationLoaders(page.url, Teams.data?.teams.pageInfo)}
 />
 
 <style>

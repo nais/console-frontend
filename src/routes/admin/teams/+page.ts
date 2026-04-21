@@ -1,21 +1,18 @@
-import type { OrderDirection$options, TeamFilter, TeamOrderField$options } from '$houdini';
-import { load_Teams, TeamOrderField } from '$houdini';
+import { urlToOrderDirection, urlToOrderField } from '$lib/ui/OrderByMenu.svelte';
+import { OrderDirection, TeamOrderField, type TeamFilter } from '$lib/urql/gql/graphql';
+import { runQuery } from '$lib/urql/load';
+import { readCursorPagination } from '$lib/urql/pagination';
 import { addPageMeta } from '$lib/utils/pageMeta';
+import { TeamsQuery } from './teams';
 
 const rows = 25;
 
 export async function load(event) {
-	const after = event.url.searchParams.get('after') || '';
-	const before = event.url.searchParams.get('before') || '';
 	let filter = event.url.searchParams.get('filter') || '';
 
 	if (filter !== 'WITHOUT_WORKLOADS' && filter !== 'WITH_WORKLOADS' && filter !== 'ALL') {
 		filter = 'ALL';
 	}
-
-	const field = (event.url.searchParams.get('field') ||
-		TeamOrderField.SLUG) as TeamOrderField$options;
-	const direction = (event.url.searchParams.get('direction') || 'ASC') as OrderDirection$options;
 
 	const hasWorkloads =
 		filter === 'WITHOUT_WORKLOADS' ? false : filter === 'WITH_WORKLOADS' ? true : undefined;
@@ -23,13 +20,13 @@ export async function load(event) {
 	return {
 		filter,
 		...(await addPageMeta(event, { title: 'Teams' })),
-		...(await load_Teams({
-			event,
-			variables: {
-				...(before ? { before, last: rows } : { after, first: rows }),
-				filter: { hasWorkloads } as TeamFilter,
-				orderBy: { field: field, direction: direction }
+		Teams: await runQuery(event, TeamsQuery, {
+			...readCursorPagination(event.url, rows),
+			filter: { hasWorkloads } as TeamFilter,
+			orderBy: {
+				field: urlToOrderField(TeamOrderField, TeamOrderField.SLUG, event.url),
+				direction: urlToOrderDirection(event.url, OrderDirection.ASC)
 			}
-		}))
+		})
 	};
 }

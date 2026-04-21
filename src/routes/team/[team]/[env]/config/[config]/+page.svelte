@@ -1,7 +1,6 @@
 <script lang="ts">
-	import { goto } from '$app/navigation';
+	import { goto, invalidateAll } from '$app/navigation';
 	import { page } from '$app/state';
-	import { ValueEncoding, graphql } from '$houdini';
 	import Confirm from '$lib/ui/Confirm.svelte';
 	import {
 		Alert,
@@ -24,24 +23,33 @@
 	import WorkloadLink from '$lib/domain/workload/WorkloadLink.svelte';
 	import GraphErrors from '$lib/ui/GraphErrors.svelte';
 	import Textarea from '$lib/ui/Textarea.svelte';
+	import { getContextClient } from '$lib/urql/context';
+	import { ValueEncoding } from '$lib/urql/gql/graphql';
 	import { getConfigPermissions } from '$lib/utils/configPermissions';
 	import { DocPencilIcon, DownloadIcon, TrashIcon } from '@nais/ds-svelte-community/icons';
 	import type { PageProps } from './$types';
 	import AddKeyValue from './AddKeyValue.svelte';
+	import {
+		DeleteConfigMutation,
+		RemoveConfigValueMutation,
+		UpdateConfigValueMutation
+	} from './config';
 	import Manifest from './Manifest.svelte';
 	import Metadata from './Metadata.svelte';
 	import Workloads from './Workloads.svelte';
 
 	let { data }: PageProps = $props();
 	let { Config, teamSlug } = $derived(data);
-	let config = $derived($Config.data?.team.environment.config);
-	let viewerIsMember = $derived($Config.data?.team.viewerIsMember ?? false);
-	let isAdmin = $derived($Config.data?.me?.__typename === 'User' ? $Config.data.me.isAdmin : false);
+	let config = $derived(Config.data?.team.environment.config);
+	let viewerIsMember = $derived(Config.data?.team.viewerIsMember ?? false);
+	let isAdmin = $derived(Config.data?.me?.__typename === 'User' ? Config.data.me.isAdmin : false);
 	let permissions = $derived(getConfigPermissions(viewerIsMember, isAdmin));
 	let canMutate = $derived(permissions.canMutate);
 
 	let configName = $derived(page.params.config ?? '');
 	let env = $derived(page.params.env ?? '');
+
+	const client = getContextClient();
 
 	let deleteConfigOpen = $state(false);
 	let deleteValueOpen = $state(false);
@@ -51,127 +59,82 @@
 	let keyToEdit = $state('');
 	let valueToEdit = $state('');
 
-	const updateConfigValue = graphql(`
-		mutation updateConfigValue(
-			$name: String!
-			$team: Slug!
-			$env: String!
-			$value: ConfigValueInput!
-		) {
-			updateConfigValue(
-				input: { environmentName: $env, name: $name, teamSlug: $team, value: $value }
-			) {
-				config {
-					id
-					values {
-						name
-						value
-						encoding
-					}
-					lastModifiedBy {
-						name
-						email
-					}
-					lastModifiedAt
-				}
-			}
-		}
-	`);
+	let updateValueErrors = $state<{ message: string }[] | null>(null);
+	let removeValueErrors = $state<{ message: string }[] | null>(null);
+	let deleteConfigErrors = $state<{ message: string }[] | null>(null);
 
 	const editValueForKey = async () => {
 		if (keyToEdit == '') {
 			return;
 		}
-		await updateConfigValue.mutate({
-			name: configName,
-			team: teamSlug,
-			env: env,
-			value: {
-				name: keyToEdit,
-				value: valueToEdit
-			}
-		});
+		const result = await client
+			.mutation(UpdateConfigValueMutation, {
+				name: configName,
+				team: teamSlug,
+				env: env,
+				value: {
+					name: keyToEdit,
+					value: valueToEdit
+				}
+			})
+			.toPromise();
 
-		if ($updateConfigValue.errors) {
+		if (result.error) {
+			updateValueErrors = result.error.graphQLErrors?.length
+				? result.error.graphQLErrors.map((e) => ({ message: e.message }))
+				: [{ message: result.error.message }];
 			return;
 		}
 
+		updateValueErrors = null;
 		editValueOpen = false;
 		keyToEdit = '';
-		Config.fetch();
+		void invalidateAll();
 	};
-
-	const removeConfigValue = graphql(`
-		mutation removeConfigValue(
-			$configName: String!
-			$team: Slug!
-			$env: String!
-			$valueName: String!
-		) {
-			removeConfigValue(
-				input: {
-					environmentName: $env
-					configName: $configName
-					teamSlug: $team
-					valueName: $valueName
-				}
-			) {
-				config {
-					id
-					values {
-						name
-						value
-						encoding
-					}
-					lastModifiedBy {
-						name
-						email
-					}
-					lastModifiedAt
-				}
-			}
-		}
-	`);
 
 	const deleteValueFromConfig = async () => {
 		if (keyToDelete == '') {
 			return;
 		}
-		await removeConfigValue.mutate({
-			configName: configName,
-			team: teamSlug,
-			env: env,
-			valueName: keyToDelete
-		});
+		const result = await client
+			.mutation(RemoveConfigValueMutation, {
+				configName: configName,
+				team: teamSlug,
+				env: env,
+				valueName: keyToDelete
+			})
+			.toPromise();
 
-		if ($removeConfigValue.errors) {
+		if (result.error) {
+			removeValueErrors = result.error.graphQLErrors?.length
+				? result.error.graphQLErrors.map((e) => ({ message: e.message }))
+				: [{ message: result.error.message }];
 			return;
 		}
 
+		removeValueErrors = null;
 		deleteValueOpen = false;
-		Config.fetch();
 		keyToDelete = '';
+		void invalidateAll();
 	};
 
-	const deleteMutation = graphql(`
-		mutation deleteConfig($name: String!, $team: Slug!, $env: String!) {
-			deleteConfig(input: { name: $name, teamSlug: $team, environmentName: $env }) {
-				configDeleted
-			}
-		}
-	`);
-
 	const deleteConfig = async () => {
-		await deleteMutation.mutate({
-			name: configName,
-			team: teamSlug,
-			env: env
-		});
+		const result = await client
+			.mutation(DeleteConfigMutation, {
+				name: configName,
+				team: teamSlug,
+				env: env
+			})
+			.toPromise();
 
-		if ($deleteMutation.errors) {
+		if (result.error) {
+			deleteConfigErrors = result.error.graphQLErrors?.length
+				? result.error.graphQLErrors.map((e) => ({ message: e.message }))
+				: [{ message: result.error.message }];
 			return;
 		}
 
+		deleteConfigErrors = null;
 		await goto('/team/' + teamSlug + '/configs');
 	};
 
@@ -229,9 +192,9 @@
 	};
 </script>
 
-<GraphErrors errors={$Config.errors} />
+<GraphErrors errors={Config.errors} />
 
-{#if $Config.fetching}
+{#if !Config.data && !Config.errors}
 	<Loader />
 {:else if config}
 	<Confirm
@@ -286,6 +249,7 @@
 			</ul>
 			<br />
 		{/if}
+		<GraphErrors errors={removeValueErrors} />
 
 		Are you sure you want to delete <b>{keyToDelete}</b> from this config?
 	</Confirm>
@@ -293,9 +257,7 @@
 	<div class="wrapper">
 		<div>
 			<div class="alerts">
-				{#if $deleteMutation.errors}
-					<GraphErrors errors={$deleteMutation.errors} />
-				{/if}
+				<GraphErrors errors={deleteConfigErrors} />
 			</div>
 			<div class="data-heading">
 				<div style="display: flex; align-items: center; gap: var(--ax-space-8);">
@@ -402,18 +364,19 @@
 					{env}
 					{configName}
 					onSuccess={() => {
-						Config.fetch();
+						void invalidateAll();
 					}}
 				/>
 			{/if}
 		</div>
 		<div class="sidebar">
-			<Metadata lastModifiedAt={config.lastModifiedAt} lastModifiedBy={config.lastModifiedBy} />
+			<Metadata
+				lastModifiedAt={config.lastModifiedAt ? new Date(config.lastModifiedAt) : null}
+				lastModifiedBy={config.lastModifiedBy ?? null}
+			/>
 			<Workloads workloads={config.workloads} />
 			<Manifest {configName} />
-			{#if config}
-				<SidebarActivity activityLog={config} direct={config.activityLog} />
-			{/if}
+			<SidebarActivity activityLog={config} />
 		</div>
 	</div>
 {/if}
@@ -421,13 +384,13 @@
 	{#snippet header()}
 		<Heading as="h1" size="large">Editing Value of Key <i>{keyToEdit}</i></Heading>
 	{/snippet}
-	{#if ($Config.data?.team.environment.config.workloads.nodes ?? []).length > 0}
+	{#if (Config.data?.team.environment.config.workloads.nodes ?? []).length > 0}
 		<Alert variant="info" size="small">
 			<BodyShort
 				>Editing this config will cause a restart of the applications listed below.</BodyShort
 			>
 			<ul>
-				{#each $Config.data?.team.environment.config.workloads.nodes ?? [] as workload (workload.id)}
+				{#each Config.data?.team.environment.config.workloads.nodes ?? [] as workload (workload.id)}
 					<li><WorkloadLink {workload} /></li>
 				{/each}
 			</ul>
@@ -436,6 +399,7 @@
 	<div class="entry">
 		<Textarea bind:text={valueToEdit} label="Value" description="Example: some-value" />
 	</div>
+	<GraphErrors errors={updateValueErrors} />
 	{#snippet footer()}
 		<Button variant="primary" size="small" onclick={editValueForKey}>Save</Button>
 		<Button variant="secondary" size="small" onclick={cancelEditValue}>Cancel</Button>

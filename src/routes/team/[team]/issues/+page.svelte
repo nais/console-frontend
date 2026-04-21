@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { page } from '$app/state';
-	import { IssueOrderField } from '$houdini';
 	import IssueTypeSeverityFilters from '$lib/domain/issues/IssueTypeSeverityFilters.svelte';
 	import IssueListItem from '$lib/domain/list-items/IssueListItem.svelte';
 	import GraphErrors from '$lib/ui/GraphErrors.svelte';
@@ -8,6 +7,7 @@
 	import ListItem from '$lib/ui/ListItem.svelte';
 	import OrderByMenu from '$lib/ui/OrderByMenu.svelte';
 	import Pagination from '$lib/ui/Pagination.svelte';
+	import { IssueOrderField } from '$lib/urql/gql/graphql';
 	import { changeParams } from '$lib/utils/searchparams';
 	import { Button } from '@nais/ds-svelte-community';
 	import {
@@ -20,15 +20,15 @@
 
 	let { data }: PageProps = $props();
 	let { TeamIssues, TeamIssuesMetadata } = $derived(data);
-	let issues = $derived($TeamIssues.data?.team.issues);
+	let issues = $derived(TeamIssues.data?.team.issues);
 	let issueCount = $derived(issues?.pageInfo.totalCount ?? 0);
-	let totalCount = $derived($TeamIssues.data?.team.total.pageInfo.totalCount ?? 0);
+	let totalCount = $derived(TeamIssues.data?.team.total.pageInfo.totalCount ?? 0);
 
-	let after: string = $derived($TeamIssues.variables?.after ?? '');
-	let before: string = $derived($TeamIssues.variables?.before ?? '');
+	let after: string = $derived(page.url.searchParams.get('after') ?? '');
+	let before: string = $derived(page.url.searchParams.get('before') ?? '');
 
 	const allEnvs = $derived(
-		$TeamIssuesMetadata.data?.team.environments.map((env) => env.environment.name) ?? []
+		TeamIssuesMetadata.data?.team.environments.map((env) => env.environment.name) ?? []
 	);
 
 	let filteredEnvs = $derived(page.url.searchParams.get('environments')?.split(',') ?? allEnvs);
@@ -50,17 +50,19 @@
 			before?: string;
 		} = {}
 	) => {
+		const currentEnvironments =
+			filteredEnvs.length === allEnvs.length ? '' : filteredEnvs.join(',');
 		changeParams({
-			environments: params.environments ?? '',
-			severity: params.severity ?? '',
-			issueType: params.issueType ?? '',
+			environments: params.environments ?? currentEnvironments,
+			severity: params.severity ?? page.url.searchParams.get('severity') ?? '',
+			issueType: params.issueType ?? page.url.searchParams.get('issueType') ?? '',
 			before: params.before ?? before,
 			after: params.after ?? after
 		});
 	};
 </script>
 
-<GraphErrors errors={$TeamIssues.errors} />
+<GraphErrors errors={TeamIssues.errors} />
 
 <div class="wrapper">
 	<div>
@@ -83,7 +85,7 @@
 					{/snippet}
 					<ActionMenuGroup label="Environment">
 						<ActionMenuCheckboxItem
-							checked={$TeamIssues.data?.team.environments.every((env) =>
+							checked={TeamIssues.data?.team.environments.every((env) =>
 								filteredEnvs.includes(env.environment.name)
 							)
 								? true
@@ -94,7 +96,7 @@
 						>
 							All environments
 						</ActionMenuCheckboxItem>
-						{#each $TeamIssues.data?.team.environments ?? [] as { environment, id } (id)}
+						{#each TeamIssues.data?.team.environments ?? [] as { environment, id } (id)}
 							<ActionMenuCheckboxItem
 								checked={filteredEnvs.includes(environment.name)}
 								onchange={(checked) =>
@@ -109,8 +111,8 @@
 					<IssueTypeSeverityFilters
 						severity={page.url.searchParams.get('severity') ?? ''}
 						issueType={page.url.searchParams.get('issueType') ?? ''}
-						onSeverityChange={(severity) => changeQuery({ severity })}
-						onIssueTypeChange={(issueType) => changeQuery({ issueType })}
+						onSeverityChange={(severity) => changeQuery({ severity, before: '', after: '' })}
+						onIssueTypeChange={(issueType) => changeQuery({ issueType, before: '', after: '' })}
 					/>
 				</ActionMenu>
 				<OrderByMenu orderField={IssueOrderField} defaultOrderField={IssueOrderField.SEVERITY} />

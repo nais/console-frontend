@@ -1,38 +1,41 @@
+import { urlToOrderDirection, urlToOrderField } from '$lib/ui/OrderByMenu.svelte';
 import {
 	IssueOrderField,
-	load_ApplicationIssues,
+	IssueType,
 	OrderDirection,
-	type IssueFilter
-} from '$houdini';
-import { urlToOrderDirection, urlToOrderField } from '$lib/ui/OrderByMenu.svelte';
+	Severity,
+	type ResourceIssueFilter
+} from '$lib/urql/gql/graphql';
+import { runQuery } from '$lib/urql/load';
+import { readCursorPagination } from '$lib/urql/pagination';
 import { addPageMeta } from '$lib/utils/pageMeta.js';
+import { ApplicationIssuesQuery } from './appIssues';
 
 const rows = 25;
 
 export async function load(event) {
-	const severity: string | undefined = event.url.searchParams.get('severity') || undefined;
-	const issueType: string | undefined = event.url.searchParams.get('issueType') || undefined;
+	const severity = event.url.searchParams.get('severity') || undefined;
+	const issueType = event.url.searchParams.get('issueType') || undefined;
 
-	const after = event.url.searchParams.get('after') || '';
-	const before = event.url.searchParams.get('before') || '';
+	const filter: ResourceIssueFilter = {
+		severity: severity ? (severity as Severity) : undefined,
+		issueType: issueType ? (issueType as IssueType) : undefined
+	};
 
 	return {
 		...(await addPageMeta(event, {
 			title: 'Issues'
 		})),
-		...(await load_ApplicationIssues({
-			event,
-			variables: {
-				team: event.params.team,
-				env: event.params.env,
-				app: event.params.app,
-				filter: { severity, issueType } as IssueFilter,
-				orderBy: {
-					field: urlToOrderField(IssueOrderField, IssueOrderField.SEVERITY, event.url),
-					direction: urlToOrderDirection(event.url, OrderDirection.ASC)
-				},
-				...(before ? { before, last: rows } : { after, first: rows })
-			}
-		}))
+		ApplicationIssues: await runQuery(event, ApplicationIssuesQuery, {
+			team: event.params.team,
+			env: event.params.env,
+			app: event.params.app,
+			filter,
+			orderBy: {
+				field: urlToOrderField(IssueOrderField, IssueOrderField.SEVERITY, event.url),
+				direction: urlToOrderDirection(event.url, OrderDirection.ASC)
+			},
+			...readCursorPagination(event.url, rows)
+		})
 	};
 }

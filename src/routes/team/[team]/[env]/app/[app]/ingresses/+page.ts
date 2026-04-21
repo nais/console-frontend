@@ -1,5 +1,6 @@
-import { load_IngressMetrics } from '$houdini';
+import { runQuery } from '$lib/urql/load';
 import { addPageMeta } from '$lib/utils/pageMeta';
+import { IngressMetricsQuery } from './ingressMetrics';
 
 function getStart(interval: string | null) {
 	switch (interval) {
@@ -27,15 +28,14 @@ export async function load(event) {
 		...(await addPageMeta(event, {
 			title: 'Ingresses'
 		})),
-		...(await load_IngressMetrics({
-			event,
-			variables: {
-				app: event.params.app,
-				env: event.params.env,
-				team: event.params.team,
-				start,
-				end
-			}
-		}))
+		// `Time` scalar is an ISO-8601 string on the wire. Houdini auto-formatted
+		// JS `Date` instances; with urql we serialize explicitly.
+		IngressMetrics: await runQuery(event, IngressMetricsQuery, {
+			app: event.params.app,
+			env: event.params.env,
+			team: event.params.team,
+			start: start.toISOString(),
+			end: end.toISOString()
+		})
 	};
 }

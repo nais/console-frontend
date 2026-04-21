@@ -1,12 +1,13 @@
 <script lang="ts">
-	import GraphErrors from '$lib/ui/GraphErrors.svelte';
+	import { page } from '$app/state';
 	import WorkloadLink from '$lib/domain/workload/WorkloadLink.svelte';
-
-	import { KafkaTopicAclOrderField } from '$houdini';
-	import Pagination from '$lib/ui/Pagination.svelte';
-	import IconLabel from '$lib/ui/IconLabel.svelte';
-	import TooltipAlignHack from '$lib/ui/TooltipAlignHack.svelte';
 	import WarningIcon from '$lib/icons/WarningIcon.svelte';
+	import GraphErrors from '$lib/ui/GraphErrors.svelte';
+	import IconLabel from '$lib/ui/IconLabel.svelte';
+	import Pagination from '$lib/ui/Pagination.svelte';
+	import TooltipAlignHack from '$lib/ui/TooltipAlignHack.svelte';
+	import { KafkaTopicAclOrderField } from '$lib/urql/gql/graphql';
+	import { cursorPaginationLoaders } from '$lib/urql/pagination';
 	import { changeParams } from '$lib/utils/searchparams';
 	import { Heading, Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte-community';
 	import type { PageProps } from './$types';
@@ -14,24 +15,29 @@
 	let { data }: PageProps = $props();
 	let { KafkaTopic } = $derived(data);
 
-	let tableSort = $derived({
-		orderBy: $KafkaTopic.variables?.orderBy?.field,
-		direction: $KafkaTopic.variables?.orderBy?.direction
-	});
+	let currentField = $derived(
+		(page.url.searchParams.get('field') as KafkaTopicAclOrderField | null) ??
+			KafkaTopicAclOrderField.TEAM_SLUG
+	);
+	let currentDirection = $derived(
+		(page.url.searchParams.get('direction') as 'ASC' | 'DESC' | null) ?? 'ASC'
+	);
 
 	const tableSortChange = (key: string) => {
-		if (key === tableSort.orderBy) {
-			const direction = tableSort.direction === 'ASC' ? 'DESC' : 'ASC';
-			tableSort.direction = direction;
+		let direction: 'ASC' | 'DESC';
+		let field: KafkaTopicAclOrderField;
+		if (key === currentField) {
+			direction = currentDirection === 'ASC' ? 'DESC' : 'ASC';
+			field = currentField;
 		} else {
-			tableSort.orderBy = KafkaTopicAclOrderField[key as keyof typeof KafkaTopicAclOrderField];
-			tableSort.direction = 'ASC';
+			field = KafkaTopicAclOrderField[key as keyof typeof KafkaTopicAclOrderField];
+			direction = 'ASC';
 		}
 
 		changeParams(
 			{
-				direction: tableSort.direction,
-				field: tableSort.orderBy || KafkaTopicAclOrderField.TEAM_SLUG
+				direction,
+				field
 			},
 			{
 				noScroll: true
@@ -40,9 +46,9 @@
 	};
 </script>
 
-<GraphErrors errors={$KafkaTopic.errors} />
-{#if $KafkaTopic.data}
-	{@const topic = $KafkaTopic.data.team.environment.kafkaTopic}
+<GraphErrors errors={KafkaTopic.errors} />
+{#if KafkaTopic.data}
+	{@const topic = KafkaTopic.data.team.environment.kafkaTopic}
 
 	<div class="wrapper">
 		<div>
@@ -63,8 +69,8 @@
 				<Table
 					size="small"
 					sort={{
-						orderBy: tableSort.orderBy || KafkaTopicAclOrderField.TEAM_SLUG,
-						direction: tableSort.direction === 'ASC' ? 'ascending' : 'descending'
+						orderBy: currentField,
+						direction: currentDirection === 'ASC' ? 'ascending' : 'descending'
 					}}
 					onsortchange={tableSortChange}
 				>
@@ -111,14 +117,7 @@
 				</Table>
 				<Pagination
 					page={topic.acl.pageInfo}
-					loaders={{
-						loadPreviousPage: () => {
-							KafkaTopic.loadPreviousPage();
-						},
-						loadNextPage: () => {
-							KafkaTopic.loadNextPage();
-						}
-					}}
+					loaders={cursorPaginationLoaders(page.url, topic.acl.pageInfo)}
 				/>
 			</div>
 		</div>

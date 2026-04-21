@@ -2,9 +2,9 @@
 	import { page } from '$app/state';
 	import GraphErrors from '$lib/ui/GraphErrors.svelte';
 
-	import { UtilizationResourceType, type ResourceUtilizationForApp$result } from '$houdini';
 	import AnnotationSeries from '$lib/chart/AnnotationSeries.svelte';
 	import { docURL } from '$lib/doc';
+	import { UtilizationResourceType } from '$lib/urql/gql/graphql';
 	import {
 		euroValueFormatter,
 		formatKubernetesCPU,
@@ -13,6 +13,7 @@
 	import { round, yearlyOverageCost } from '$lib/utils/resources';
 	import { changeParams } from '$lib/utils/searchparams';
 	import { visualizationColors } from '$lib/visualizationColors';
+	import type { ResultOf } from '@graphql-typed-document-node/core';
 	import {
 		BodyLong,
 		BodyShort,
@@ -33,15 +34,65 @@
 	import { AreaChart, Tooltip, type ChartAnnotations } from 'layerchart';
 	import prettyBytes from 'pretty-bytes';
 	import type { PageProps } from './$types';
+	import type { ResourceUtilizationForAppQuery } from './utilization';
 
 	let { data }: PageProps = $props();
-	let { ResourceUtilizationForApp } = $derived(data);
+	let { ResourceUtilizationForApp, start, end } = $derived(data);
 
 	const interval = $derived(page.url.searchParams.get('interval') ?? '7d');
 
+	// `Time` scalar comes through as ISO-8601 strings with urql; the chart
+	// (and the activity-log grouping) want `Date` instances. Normalize the
+	// whole `application` payload once into a `Date`-shaped view that the
+	// rest of the component reads from.
+	type RawApp = NonNullable<
+		ResultOf<typeof ResourceUtilizationForAppQuery>
+	>['team']['environment']['application'];
+	type RawLogNode = RawApp['activityLog']['nodes'][number];
+	// Distributive conditional type so each member of the discriminated
+	// union keeps its own narrow shape (e.g. `appScaled` only exists on
+	// `ApplicationScaledActivityLogEntry`) while we override `createdAt`
+	// from `string` to `Date`.
+	type LogNode = RawLogNode extends infer N
+		? N extends { createdAt: unknown }
+			? Omit<N, 'createdAt'> & { createdAt: Date }
+			: never
+		: never;
+	type SeriesPoint = { timestamp: Date; value: number };
+	type InstanceSeriesPoint = { timestamp: Date; value: number; instance: string };
+
+	const application = $derived.by(() => {
+		const raw = ResourceUtilizationForApp.data?.team.environment.application;
+		if (!raw) return null;
+		const mapPoint = <T extends { timestamp: string }>(
+			p: T
+		): Omit<T, 'timestamp'> & { timestamp: Date } => ({
+			...p,
+			timestamp: new Date(p.timestamp)
+		});
+		return {
+			...raw,
+			activityLog: {
+				...raw.activityLog,
+				nodes: raw.activityLog.nodes.map(
+					(n): LogNode => ({ ...n, createdAt: new Date(n.createdAt) })
+				)
+			},
+			utilization: {
+				...raw.utilization,
+				requested_memory_series: raw.utilization.requested_memory_series.map(mapPoint),
+				limit_memory_series: raw.utilization.limit_memory_series.map(mapPoint),
+				requested_cpu_series: raw.utilization.requested_cpu_series.map(mapPoint),
+				limit_cpu_series: raw.utilization.limit_cpu_series.map(mapPoint),
+				cpu_series: raw.utilization.cpu_series.map(mapPoint),
+				memory_series: raw.utilization.memory_series.map(mapPoint)
+			}
+		};
+	});
+
 	type groupedLogs = {
 		timestamp: number;
-		logs: ResourceUtilizationForApp$result['team']['environment']['application']['activityLog']['nodes'];
+		logs: LogNode[];
 	};
 
 	let chartWidth: number | undefined = $state(undefined);
@@ -51,10 +102,7 @@
 	 * @param activityLog
 	 */
 	function groupedActivityLog(
-		activityLog:
-			| ResourceUtilizationForApp$result['team']['environment']['application']['activityLog']
-			| null
-			| undefined,
+		activityLog: { nodes: LogNode[] } | null | undefined,
 		domain: [Date, Date] | undefined = brushXDomain
 	) {
 		if (!activityLog) {
@@ -79,11 +127,8 @@
 				break;
 		}
 
-		if (!domain && $ResourceUtilizationForApp.variables) {
-			domain = [
-				$ResourceUtilizationForApp.variables.start,
-				$ResourceUtilizationForApp.variables.end
-			];
+		if (!domain) {
+			domain = [start, end];
 		}
 
 		if (domain && chartWidth) {
@@ -114,43 +159,29 @@
 	}
 
 	const cpuReqRecommendation = $derived(
-		$ResourceUtilizationForApp.data?.team.environment.application.utilization.recommendations
-			.cpuRequestCores ?? 0
+		application?.utilization.recommendations.cpuRequestCores ?? 0
 	);
 
-	const cpuReq = $derived(
-		$ResourceUtilizationForApp.data?.team.environment.application.resources.requests.cpu ?? 0
-	);
+	const cpuReq = $derived(application?.resources.requests.cpu ?? 0);
 
-	const cpuLimit = $derived(
-		$ResourceUtilizationForApp.data?.team.environment.application.resources.limits.cpu
-	);
+	const cpuLimit = $derived(application?.resources.limits.cpu);
 
 	const memReqRecommendation = $derived(
-		$ResourceUtilizationForApp.data?.team.environment.application.utilization.recommendations
-			.memoryRequestBytes ?? 0
+		application?.utilization.recommendations.memoryRequestBytes ?? 0
 	);
 
-	const memReq = $derived(
-		$ResourceUtilizationForApp.data?.team.environment.application.resources.requests.memory ?? 0
-	);
-	const memLimit = $derived(
-		$ResourceUtilizationForApp.data?.team.environment.application.resources.limits.memory ?? 0
-	);
+	const memReq = $derived(application?.resources.requests.memory ?? 0);
+	const memLimit = $derived(application?.resources.limits.memory ?? 0);
 	const memLimitRecommendation = $derived(
-		$ResourceUtilizationForApp.data?.team.environment.application.utilization.recommendations
-			.memoryLimitBytes ?? 0
+		application?.utilization.recommendations.memoryLimitBytes ?? 0
 	);
 
-	const memoryChartData = $derived.by(() => {
+	function buildSeries(rows: InstanceSeriesPoint[] | undefined) {
 		return (
-			$ResourceUtilizationForApp.data?.team.environment.application.utilization.memory_series
-				.reduce(
+			rows
+				?.reduce(
 					(acc, d) => {
-						const val = {
-							timestamp: d.timestamp,
-							value: d.value
-						};
+						const val: SeriesPoint = { timestamp: d.timestamp, value: d.value };
 						const existing = acc.find((a) => a.key === d.instance);
 						if (existing) {
 							existing.data.push(val);
@@ -163,103 +194,46 @@
 						}
 						return acc;
 					},
-					[] as { key: string; color: string; data: { timestamp: Date; value: number }[] }[]
+					[] as { key: string; color: string; data: SeriesPoint[] }[]
 				)
 				.filter((d) => d.data.length > 1) ?? []
 		);
-	});
+	}
 
-	const cpuChartData = $derived.by(() => {
-		return (
-			$ResourceUtilizationForApp.data?.team.environment.application.utilization.cpu_series
-				.reduce(
-					(acc, d) => {
-						const val = {
-							timestamp: d.timestamp,
-							value: d.value
-						};
-						const existing = acc.find((a) => a.key === d.instance);
-						if (existing) {
-							existing.data.push(val);
-						} else {
-							acc.push({
-								key: d.instance,
-								color: visualizationColors[acc.length % visualizationColors.length],
-								data: [val]
-							});
-						}
-						return acc;
-					},
-					[] as { key: string; color: string; data: { timestamp: Date; value: number }[] }[]
-				)
-				.filter((d) => d.data.length > 1) ?? []
-		);
-	});
+	const memoryChartData = $derived.by(() => buildSeries(application?.utilization.memory_series));
+	const cpuChartData = $derived.by(() => buildSeries(application?.utilization.cpu_series));
 
 	const memoryMax = $derived.by(() => {
-		let max = Math.max(
-			...($ResourceUtilizationForApp.data?.team.environment.application.utilization.memory_series.map(
-				(d) => d.value
-			) ?? [])
-		);
-
-		$ResourceUtilizationForApp.data?.team.environment.application.utilization.limit_memory_series.forEach(
-			(d) => {
-				if (d.value > max) {
-					max = d.value;
-				}
-			}
-		);
-
-		$ResourceUtilizationForApp.data?.team.environment.application.utilization.requested_memory_series.forEach(
-			(d) => {
-				if (d.value > max) {
-					max = d.value;
-				}
-			}
-		);
+		let max = Math.max(...(application?.utilization.memory_series.map((d) => d.value) ?? []));
+		application?.utilization.limit_memory_series.forEach((d) => {
+			if (d.value > max) max = d.value;
+		});
+		application?.utilization.requested_memory_series.forEach((d) => {
+			if (d.value > max) max = d.value;
+		});
 		return max;
 	});
 
 	const cpuMax = $derived.by(() => {
-		let max = Math.max(
-			...($ResourceUtilizationForApp.data?.team.environment.application.utilization.cpu_series.map(
-				(d) => d.value
-			) ?? [])
-		);
-
-		$ResourceUtilizationForApp.data?.team.environment.application.utilization.limit_cpu_series.forEach(
-			(d) => {
-				if (d.value > max) {
-					max = d.value;
-				}
-			}
-		);
-
-		$ResourceUtilizationForApp.data?.team.environment.application.utilization.requested_cpu_series.forEach(
-			(d) => {
-				if (d.value > max) {
-					max = d.value;
-				}
-			}
-		);
+		let max = Math.max(...(application?.utilization.cpu_series.map((d) => d.value) ?? []));
+		application?.utilization.limit_cpu_series.forEach((d) => {
+			if (d.value > max) max = d.value;
+		});
+		application?.utilization.requested_cpu_series.forEach((d) => {
+			if (d.value > max) max = d.value;
+		});
 		return max;
 	});
 
 	let brushXDomain: [Date, Date] | undefined = $state(undefined);
 
-	const activityLog = $derived(
-		groupedActivityLog(
-			$ResourceUtilizationForApp.data?.team.environment.application.activityLog,
-			brushXDomain
-		)
-	);
+	const activityLog = $derived(groupedActivityLog(application?.activityLog, brushXDomain));
 
 	const annotations: ChartAnnotations = $derived.by(() => {
-		if (!activityLog || !$ResourceUtilizationForApp.variables) return [];
+		if (!activityLog) return [];
 
-		const endTime = $ResourceUtilizationForApp.variables.end.getTime() / 1000;
-		const startTime = $ResourceUtilizationForApp.variables.start.getTime() / 1000;
+		const endTime = end.getTime() / 1000;
+		const startTime = start.getTime() / 1000;
 
 		return activityLog
 			.map((log) => {
@@ -285,11 +259,11 @@
 	});
 </script>
 
-<GraphErrors errors={$ResourceUtilizationForApp.errors} />
+<GraphErrors errors={ResourceUtilizationForApp.errors} />
 
 <div class="wrapper">
-	{#if $ResourceUtilizationForApp.data}
-		{@const utilization = $ResourceUtilizationForApp.data.team.environment.application.utilization}
+	{#if application}
+		{@const utilization = application.utilization}
 		<div class="grid">
 			<div class="card">
 				<Heading as="h2" size="medium" spacing
@@ -297,7 +271,7 @@
 				>
 				<BodyShort spacing
 					>Estimate of annual cost of unutilized CPU for application <strong
-						>{$ResourceUtilizationForApp.data.team.environment.application.name}</strong
+						>{application.name}</strong
 					> calculated from current utilization data.
 				</BodyShort>
 
@@ -308,8 +282,8 @@
 								yearlyOverageCost(
 									UtilizationResourceType.CPU,
 									(cpuReq ?? 0) - (utilization.cpu_series.at(-1)?.value ?? 0),
-									$ResourceUtilizationForApp.data.currentUnitPrices.cpu.value,
-									$ResourceUtilizationForApp.data.currentUnitPrices.memory.value
+									ResourceUtilizationForApp.data!.currentUnitPrices.cpu.value,
+									ResourceUtilizationForApp.data!.currentUnitPrices.memory.value
 								),
 								0
 							),
@@ -324,7 +298,7 @@
 				>
 				<BodyShort spacing
 					>Estimate of annual cost of unutilized memory for application <strong
-						>{$ResourceUtilizationForApp.data.team.environment.application.name}</strong
+						>{application.name}</strong
 					> calculated from current utilization data.</BodyShort
 				>
 
@@ -335,8 +309,8 @@
 								yearlyOverageCost(
 									UtilizationResourceType.MEMORY,
 									memReq - (utilization.memory_series.at(-1)?.value ?? 0),
-									$ResourceUtilizationForApp.data.currentUnitPrices.cpu.value,
-									$ResourceUtilizationForApp.data.currentUnitPrices.memory.value
+									ResourceUtilizationForApp.data!.currentUnitPrices.cpu.value,
+									ResourceUtilizationForApp.data!.currentUnitPrices.memory.value
 								),
 								0
 							),
@@ -346,7 +320,7 @@
 				</div>
 			</div>
 		</div>
-		{#if !$ResourceUtilizationForApp.errors && (!isIn10PercentRange(cpuReq, cpuReqRecommendation) || cpuLimit || !isIn10PercentRange(memReq, memReqRecommendation) || !isIn10PercentRange(memLimit, memLimitRecommendation))}
+		{#if !ResourceUtilizationForApp.errors && (!isIn10PercentRange(cpuReq, cpuReqRecommendation) || cpuLimit || !isIn10PercentRange(memReq, memReqRecommendation) || !isIn10PercentRange(memLimit, memLimitRecommendation))}
 			<Heading as="h2" size="medium" spacing>Resource Settings and Recommendations</Heading>
 			<BodyLong>
 				<div>
@@ -462,10 +436,7 @@
 						}
 					}}
 					yDomain={[0, cpuMax]}
-					xDomain={[
-						$ResourceUtilizationForApp.variables?.start,
-						$ResourceUtilizationForApp.variables?.end
-					]}
+					xDomain={[start, end]}
 					props={{
 						yAxis: {
 							// format: prettyBytes
@@ -623,10 +594,7 @@
 						}
 					}}
 					yDomain={[0, memoryMax]}
-					xDomain={[
-						$ResourceUtilizationForApp.variables?.start,
-						$ResourceUtilizationForApp.variables?.end
-					]}
+					xDomain={[start, end]}
 					props={{
 						yAxis: {
 							format: prettyBytes
@@ -752,7 +720,7 @@
 				</BodyLong>
 			</ReadMore>
 		</div>
-	{:else}
+	{:else if !ResourceUtilizationForApp.errors}
 		<div style="height: 380px; display: flex; justify-content: center; align-items: center;">
 			<Loader size="3xlarge" />
 		</div>

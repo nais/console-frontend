@@ -1,9 +1,11 @@
 <script lang="ts">
-	import { ValueEncoding, graphql, type ValueEncoding$options } from '$houdini';
 	import GraphErrors from '$lib/ui/GraphErrors.svelte';
 	import Textarea from '$lib/ui/Textarea.svelte';
+	import { getContextClient } from '$lib/urql/context';
+	import { ValueEncoding } from '$lib/urql/gql/graphql';
 	import { Alert, Button, Heading, Modal, TextField } from '@nais/ds-svelte-community';
 	import { PlusCircleFillIcon, UploadIcon } from '@nais/ds-svelte-community/icons';
+	import { AddConfigValueMutation } from './config';
 
 	interface Props {
 		initial: { name: string }[];
@@ -41,32 +43,8 @@
 		return '';
 	};
 
-	const addConfigValueMutation = graphql(`
-		mutation addConfigValue(
-			$name: String!
-			$team: Slug!
-			$env: String!
-			$value: ConfigValueInput!
-		) {
-			addConfigValue(
-				input: { environmentName: $env, name: $name, teamSlug: $team, value: $value }
-			) {
-				config {
-					id
-					values {
-						name
-						value
-						encoding
-					}
-					lastModifiedBy {
-						name
-						email
-					}
-					lastModifiedAt
-				}
-			}
-		}
-	`);
+	const client = getContextClient();
+	let mutationErrors = $state<{ message: string }[] | null>(null);
 
 	const isValidUtf8 = (bytes: Uint8Array): boolean => {
 		try {
@@ -86,20 +64,27 @@
 		const submitValue = fileName ? fileValue : value;
 		const submitEncoding = fileName ? fileEncoding : ValueEncoding.PLAIN_TEXT;
 
-		await addConfigValueMutation.mutate({
-			value: {
-				name: key,
-				value: submitValue,
-				encoding: submitEncoding
-			},
-			team: teamSlug,
-			env: env,
-			name: configName
-		});
+		const result = await client
+			.mutation(AddConfigValueMutation, {
+				value: {
+					name: key,
+					value: submitValue,
+					encoding: submitEncoding
+				},
+				team: teamSlug,
+				env: env,
+				name: configName
+			})
+			.toPromise();
 
-		if ($addConfigValueMutation.errors) {
+		if (result.error) {
+			mutationErrors = result.error.graphQLErrors?.length
+				? result.error.graphQLErrors.map((e) => ({ message: e.message }))
+				: [{ message: result.error.message }];
 			return;
 		}
+
+		mutationErrors = null;
 
 		open = false;
 		reset();
@@ -113,7 +98,7 @@
 	let value: string = $state('');
 	let fileName: string = $state('');
 	let fileValue: string = $state('');
-	let fileEncoding: ValueEncoding$options = $state(ValueEncoding.PLAIN_TEXT);
+	let fileEncoding: ValueEncoding = $state(ValueEncoding.PLAIN_TEXT);
 	let fileInput: HTMLInputElement | undefined = $state();
 
 	let hasValue = $derived(fileName ? fileValue !== '' : value !== '');
@@ -237,7 +222,7 @@
 		</div>
 	</div>
 
-	<GraphErrors errors={$addConfigValueMutation.errors} />
+	<GraphErrors errors={mutationErrors} />
 
 	{#snippet footer()}
 		<Button

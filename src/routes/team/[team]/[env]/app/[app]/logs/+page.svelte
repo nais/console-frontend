@@ -6,6 +6,6 @@
 	let { Instances } = $derived(data);
 </script>
 
-{#if $Instances.data}
-	<Logs team={$Instances.data.team} />
+{#if Instances.data}
+	<Logs team={Instances.data.team} />
 {/if}

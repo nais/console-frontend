@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { OrderDirection, ValkeyOrderField } from '$houdini';
+	import { page } from '$app/state';
 	import { docURL } from '$lib/doc';
 	import PersistenceCost from '$lib/domain/cost/PersistenceCost.svelte';
 	import IssueSeverityTags from '$lib/domain/issues/IssueSeverityTags.svelte';
@@ -14,8 +14,9 @@
 	import Pagination from '$lib/ui/Pagination.svelte';
 	import RunningIndicator from '$lib/ui/RunningIndicator.svelte';
 	import TooltipAlignHack from '$lib/ui/TooltipAlignHack.svelte';
+	import { OrderDirection, ValkeyOrderField } from '$lib/urql/gql/graphql';
+	import { cursorPaginationLoaders } from '$lib/urql/pagination';
 	import { countIssuesBySeverity } from '$lib/utils/issueCounts';
-	import { changeParams } from '$lib/utils/searchparams';
 	import { BodyLong, Button } from '@nais/ds-svelte-community';
 	import { CircleFillIcon, PlusIcon } from '@nais/ds-svelte-community/icons';
 	import { endOfYesterday, startOfMonth, subMonths } from 'date-fns';
@@ -26,8 +27,8 @@
 	let { Valkeys, viewerIsMember } = $derived(data);
 
 	let cost = $derived(() => {
-		const costData = $Valkeys.data?.team.cost;
-		const teamSlug = $Valkeys.data?.team.slug;
+		const costData = Valkeys.data?.team.cost;
+		const teamSlug = Valkeys.data?.team.slug;
 
 		if (!costData || !teamSlug) return null;
 
@@ -40,16 +41,16 @@
 
 	let create = $derived({
 		buttonText: 'Create Valkey',
-		url: `/team/${$Valkeys.data?.team.slug}/valkey/create`,
+		url: `/team/${Valkeys.data?.team.slug}/valkey/create`,
 		page: CreatePage,
 		header: 'Create Valkey',
 		viewerIsMember: viewerIsMember
 	});
 </script>
 
-<GraphErrors errors={$Valkeys.errors} />
+<GraphErrors errors={Valkeys.errors} />
 
-{#if $Valkeys.data}
+{#if Valkeys.data}
 	{#snippet createButton()}
 		{#if create && create.viewerIsMember}
 			<div class="button">
@@ -67,7 +68,7 @@
 		{/if}
 	{/snippet}
 
-	{#if $Valkeys.data.team.valkeys.pageInfo.totalCount}
+	{#if Valkeys.data.team.valkeys.pageInfo.totalCount}
 		<div class="content-wrapper">
 			<div>
 				<BodyLong spacing>
@@ -79,7 +80,7 @@
 				</BodyLong>
 
 				{@render createButton()}
-				<List title="{$Valkeys.data.team.valkeys.pageInfo.totalCount} entries">
+				<List title="{Valkeys.data.team.valkeys.pageInfo.totalCount} entries">
 					{#snippet menu()}
 						<OrderByMenu
 							orderField={ValkeyOrderField}
@@ -87,7 +88,7 @@
 							defaultOrderDirection={OrderDirection.DESC}
 						/>
 					{/snippet}
-					{#each $Valkeys.data.team.valkeys.nodes as instance (instance.id)}
+					{#each Valkeys.data.team.valkeys.nodes as instance (instance.id)}
 						<ListItem>
 							<IconLabel
 								as="h4"
@@ -151,22 +152,8 @@
 					{/each}
 				</List>
 				<Pagination
-					page={$Valkeys.data.team.valkeys.pageInfo}
-					loaders={{
-						loadPreviousPage: () =>
-							changeParams(
-								{
-									after: '',
-									before: $Valkeys.data?.team.valkeys.pageInfo.startCursor ?? ''
-								},
-								{ noScroll: true }
-							),
-						loadNextPage: () =>
-							changeParams(
-								{ before: '', after: $Valkeys.data?.team.valkeys.pageInfo.endCursor ?? '' },
-								{ noScroll: true }
-							)
-					}}
+					page={Valkeys.data.team.valkeys.pageInfo}
+					loaders={cursorPaginationLoaders(page.url, Valkeys.data.team.valkeys.pageInfo)}
 				/>
 			</div>
 			<div class="right-column">

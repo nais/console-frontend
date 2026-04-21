@@ -1,0 +1,72 @@
+import { graphql as gql } from '$lib/urql/gql';
+
+export const BigQueryDatasetsQuery = gql(/* GraphQL */ `
+	query BigQuery(
+		$team: Slug!
+		$orderBy: BigQueryDatasetOrder
+		$from: Date!
+		$to: Date!
+		$first: Int
+		$last: Int
+		$before: Cursor
+		$after: Cursor
+	) {
+		team(slug: $team) {
+			slug
+			cost {
+				daily(from: $from, to: $to, filter: { services: ["BigQuery"] }) {
+					series {
+						services {
+							service
+						}
+						date
+						sum
+					}
+				}
+			}
+
+			bigQueryDatasets(
+				first: $first
+				last: $last
+				orderBy: $orderBy
+				before: $before
+				after: $after
+			) {
+				pageInfo {
+					hasNextPage
+					hasPreviousPage
+					pageStart
+					pageEnd
+					totalCount
+					startCursor
+					endCursor
+				}
+				nodes {
+					id
+					__typename
+					name
+					teamEnvironment {
+						environment {
+							name
+						}
+					}
+					team {
+						slug
+					}
+					workload {
+						__typename
+						name
+						teamEnvironment {
+							environment {
+								name
+							}
+						}
+						team {
+							slug
+						}
+					}
+				}
+			}
+		}
+	}
+`);

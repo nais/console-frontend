@@ -1,5 +1,7 @@
 <script lang="ts">
+	import { page } from '$app/state';
 	import Pagination from '$lib/ui/Pagination.svelte';
+	import { cursorPaginationLoaders } from '$lib/urql/pagination';
 	import { Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte-community';
 	import type { PageProps } from './$types';
 
@@ -8,7 +10,7 @@
 	let { AdminUsers } = $derived(data);
 </script>
 
-{#if $AdminUsers.data}
+{#if AdminUsers.data}
 	<Table size="small">
 		<Thead>
 			<Tr>
@@ -19,7 +21,7 @@
 			</Tr>
 		</Thead>
 		<Tbody>
-			{#each $AdminUsers.data.users.nodes || [] as user (user.id)}
+			{#each AdminUsers.data.users.nodes || [] as user (user.id)}
 				<Tr>
 					<Td>{user.name}</Td>
 					<Td>{user.email}</Td>
@@ -35,14 +37,7 @@
 	</Table>
 
 	<Pagination
-		page={$AdminUsers.data.users.pageInfo}
-		loaders={{
-			loadNextPage: () => {
-				AdminUsers.loadNextPage();
-			},
-			loadPreviousPage: () => {
-				AdminUsers.loadPreviousPage();
-			}
-		}}
+		page={AdminUsers.data.users.pageInfo}
+		loaders={cursorPaginationLoaders(page.url, AdminUsers.data.users.pageInfo)}
 	/>
 {/if}

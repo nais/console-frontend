@@ -10,7 +10,7 @@
 	let { TenantVulnerabilites } = $derived(data);
 </script>
 
-<GraphErrors errors={$TenantVulnerabilites.errors} />
+<GraphErrors errors={TenantVulnerabilites.errors} />
 <Heading as="h1" size="large">Security & Vulnerabilities</Heading>
 <div class="cve-search-section">
 	<Heading as="h2" size="xsmall">Search for vulnerability</Heading>

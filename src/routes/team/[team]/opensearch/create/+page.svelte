@@ -1,14 +1,7 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
 	import { page } from '$app/state';
-	import {
-		OpenSearchMajorVersion,
-		type OpenSearchMajorVersion$options,
-		OpenSearchMemory,
-		type OpenSearchMemory$options,
-		OpenSearchTier,
-		type OpenSearchTier$options
-	} from '$houdini';
+	import { OpenSearchMajorVersion, OpenSearchMemory, OpenSearchTier } from '$lib/urql/gql/graphql';
 	import { openSearchPlanCosts, storageRequirements } from '$lib/utils/aivencost';
 	import {
 		Alert,
@@ -20,24 +13,25 @@
 		TextField
 	} from '@nais/ds-svelte-community';
 	import { getTeamContext } from '../../teamContext.svelte';
-	import type { PageProps } from './$houdini';
+	import type { PageProps } from './$types';
 
 	let { data }: PageProps = $props();
 
 	const { CreateOpenSearchEnvironments } = $derived(data);
 
 	const environments = $derived(
-		($CreateOpenSearchEnvironments.data?.team.environments ?? []).filter(
-			(env) => !!env.gcpProjectID
-		)
+		(CreateOpenSearchEnvironments.data?.team.environments ?? []).filter((env) => !!env.gcpProjectID)
 	);
 
 	const form = $derived(page.form);
 
-	let tier = $derived((form?.tier as OpenSearchTier$options) ?? OpenSearchTier.SINGLE_NODE);
+	let tier = $derived(
+		(form?.tier as OpenSearchTier | `${OpenSearchTier}`) ?? OpenSearchTier.SINGLE_NODE
+	);
 
 	let memory = $derived.by(() => {
-		const formMemory = (form?.memory as OpenSearchMemory$options) ?? OpenSearchMemory.GB_4;
+		const formMemory =
+			(form?.memory as OpenSearchMemory | `${OpenSearchMemory}`) ?? OpenSearchMemory.GB_4;
 
 		// prevent invalid memory when tier changes
 		if (tier === OpenSearchTier.HIGH_AVAILABILITY && formMemory === OpenSearchMemory.GB_2) {
@@ -47,7 +41,8 @@
 	});
 
 	let version = $derived(
-		(form?.version as OpenSearchMajorVersion$options) ?? OpenSearchMajorVersion.V3_3
+		(form?.version as OpenSearchMajorVersion | `${OpenSearchMajorVersion}`) ??
+			OpenSearchMajorVersion.V3_3
 	);
 
 	let minStorage = $derived(storageRequirements[tier][memory].min);

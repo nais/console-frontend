@@ -1,8 +1,9 @@
 <script lang="ts">
-	import { fragment, graphql, type ActivityLogEntryFragment } from '$houdini';
+	import { ActivityLogEntryFragment } from '$lib/domain/list-items/activityLogListItem';
 	import { envTagVariant } from '$lib/envTagVariant';
 	import ListItem from '$lib/ui/ListItem.svelte';
 	import Time from '$lib/ui/Time.svelte';
+	import { useFragment, type FragmentType } from '$lib/urql/fragment';
 	import { BodyShort, Tag, Tooltip } from '@nais/ds-svelte-community';
 	import { QuestionmarkIcon } from '@nais/ds-svelte-community/icons';
 	import type { Component } from 'svelte';
@@ -43,203 +44,14 @@
 	import VulnerabilityUpdatedActivityLogEntryText from '../activity/shared/texts/VulnerabilityUpdatedActivityLogEntryText.svelte';
 
 	interface Props {
-		item: ActivityLogEntryFragment;
+		item: FragmentType<typeof ActivityLogEntryFragment>;
 	}
 
 	let { item }: Props = $props();
 
-	let data = $derived(
-		fragment(
-			item,
-			graphql(`
-				fragment ActivityLogEntryFragment on ActivityLogEntry {
-					__typename
-					id
-					createdAt
-					actor
-					createdAt
-					environmentName
-					message
-					resourceName
-					resourceType
-					teamSlug
-					... on ApplicationDeletedActivityLogEntry {
-						__typename
-					}
-					... on ApplicationRestartedActivityLogEntry {
-						__typename
-					}
-					... on ApplicationScaledActivityLogEntry {
-						appScaled: data {
-							newSize
-							direction
-						}
-					}
-					... on ClusterAuditActivityLogEntry {
-						id
-						clusterAuditData: data {
-							action
-							resourceKind
-						}
-					}
-					... on CredentialsActivityLogEntry {
-						credentialsData: data {
-							permission
-							ttl
-						}
-					}
-					... on DeploymentActivityLogEntry {
-						deploymentData: data {
-							triggerURL
-						}
-					}
-					... on JobDeletedActivityLogEntry {
-						__typename
-					}
-					... on JobRunDeletedActivityLogEntry {
-						jobRunDeletedData: data {
-							runName
-						}
-					}
-					... on JobTriggeredActivityLogEntry {
-						__typename
-					}
-					... on OpenSearchCreatedActivityLogEntry {
-						__typename
-					}
-					... on OpenSearchDeletedActivityLogEntry {
-						__typename
-					}
-					... on OpenSearchUpdatedActivityLogEntry {
-						opensearchData: data {
-							updatedFields {
-								field
-								newValue
-								oldValue
-							}
-						}
-					}
-					... on PostgresGrantAccessActivityLogEntry {
-						__typename
-						postgresGrantAccessData: data {
-							grantee
-							until
-						}
-					}
-					... on RepositoryAddedActivityLogEntry {
-						__typename
-					}
-					... on RepositoryRemovedActivityLogEntry {
-						__typename
-					}
-					... on SecretCreatedActivityLogEntry {
-						__typename
-					}
-					... on SecretDeletedActivityLogEntry {
-						__typename
-					}
-					... on SecretValueAddedActivityLogEntry {
-						secretValueAdded: data {
-							valueName
-						}
-					}
-					... on SecretValueRemovedActivityLogEntry {
-						secretValueRemoved: data {
-							valueName
-						}
-					}
-					... on SecretValueUpdatedActivityLogEntry {
-						secretValueUpdated: data {
-							valueName
-						}
-					}
-					... on SecretValuesViewedActivityLogEntry {
-						secretValuesViewed: data {
-							reason
-						}
-					}
-					... on ServiceMaintenanceActivityLogEntry {
-						__typename
-					}
-					... on TeamEnvironmentUpdatedActivityLogEntry {
-						teamEnvironmentUpdated: data {
-							updatedFields {
-								field
-								newValue
-								oldValue
-							}
-						}
-					}
-					... on TeamMemberAddedActivityLogEntry {
-						teamMemberAdded: data {
-							role
-							userEmail
-						}
-					}
-					... on TeamMemberRemovedActivityLogEntry {
-						teamMemberRemoved: data {
-							userEmail
-						}
-					}
-					... on TeamMemberSetRoleActivityLogEntry {
-						teamMemberSetRole: data {
-							role
-							userEmail
-						}
-					}
-					... on TeamUpdatedActivityLogEntry {
-						teamUpdated: data {
-							updatedFields {
-								field
-								newValue
-								oldValue
-							}
-						}
-					}
-					... on UnleashInstanceUpdatedActivityLogEntry {
-						unleashInstanceUpdated: data {
-							allowedTeamSlug
-							revokedTeamSlug
-							updatedReleaseChannel
-						}
-					}
-					... on ValkeyCreatedActivityLogEntry {
-						__typename
-					}
-					... on ValkeyDeletedActivityLogEntry {
-						__typename
-					}
-					... on ValkeyUpdatedActivityLogEntry {
-						valkeyData: data {
-							updatedFields {
-								field
-								newValue
-								oldValue
-							}
-						}
-					}
-					... on VulnerabilityUpdatedActivityLogEntry {
-						__typename
-						vulnerabilityUpdated: data {
-							identifier
-							package
-							severity
-							previousSuppression {
-								reason
-								state
-							}
-							newSuppression {
-								reason
-								state
-							}
-						}
-					}
-				}
-			`)
-		)
-	);
+	const data = $derived(useFragment(ActivityLogEntryFragment, item));
 
-	const Icon = $derived(icons[$data.__typename] || QuestionmarkIcon);
+	const Icon = $derived(icons[data.__typename] || QuestionmarkIcon);
 
 	function textComponent(typename: string): Component<{ data: unknown }> | null {
 		switch (typename) {
@@ -312,30 +124,30 @@
 		}
 	}
 
-	const TextComponent = $derived(textComponent($data.__typename));
+	const TextComponent = $derived(textComponent(data.__typename));
 </script>
 
 <ListItem>
 	<div style="display: flex; gap: 0.5rem; min-width: 0;">
 		<div class="activity-icon">
-			<Tooltip content={activityTooltip($data.__typename)}>
+			<Tooltip content={activityTooltip(data.__typename)}>
 				<Icon size="1em" width="1em" height="1em" />
 			</Tooltip>
 		</div>
 
 		<div style="min-width: 0; overflow-wrap: anywhere;">
 			{#if TextComponent}
-				<TextComponent data={$data} />
+				<TextComponent {data} />
 			{:else}
-				{$data.message}
-				{#if $data.environmentName}
-					in <Tag size="small" variant={envTagVariant($data.environmentName)}>
-						{$data.environmentName}
+				{data.message}
+				{#if data.environmentName}
+					in <Tag size="small" variant={envTagVariant(data.environmentName)}>
+						{data.environmentName}
 					</Tag>.
 				{/if}
 				<BodyShort textColor="subtle" size="small">
-					By {$data.actor}
-					<Time time={$data.createdAt} distance={true} />
+					By {data.actor}
+					<Time time={data.createdAt} distance={true} />
 				</BodyShort>
 			{/if}
 		</div>

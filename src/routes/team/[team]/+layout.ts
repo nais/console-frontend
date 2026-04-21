@@ -1,31 +1,20 @@
-import { load_TeamRoles } from '$houdini';
+import { runQuery } from '$lib/urql/load';
 import { addPageMeta } from '$lib/utils/pageMeta.js';
 import { error } from '@sveltejs/kit';
-import { get } from 'svelte/store';
+import { TeamRolesQuery } from './teamRoles';
 
 export async function load(event) {
-	const roles = await load_TeamRoles({
-		event,
-		variables: { team: event.params.team },
-		blocking: true
-	});
+	const result = await runQuery(event, TeamRolesQuery, { team: event.params.team });
 
-	if (!roles) {
-		error(501, 'Something went wrong when loading the page');
-	}
-
-	const current = get(roles.TeamRoles);
-	if (!current) {
-		error(404, 'Team not found');
-	}
-
-	if (current.errors) {
-		if (current.errors) {
-			if (current.errors[0].message === 'The specified team was not found.') {
-				error(404, 'Team not found');
-			}
+	if (result.errors) {
+		if (result.errors[0].message === 'The specified team was not found.') {
+			error(404, 'Team not found');
 		}
 		error(500, 'Something went wrong when loading the page');
+	}
+
+	if (!result.data) {
+		error(404, 'Team not found');
 	}
 
 	const meta = await addPageMeta(event, {
@@ -42,18 +31,7 @@ export async function load(event) {
 
 	return {
 		...meta,
-		...(current.data
-			? current.data.team
-			: {
-					viewerIsOwner: false,
-					deletionInProgress: false,
-					lastSuccessfulSync: null,
-					viewerIsMember: false,
-					externalResources: { gitHubTeam: null },
-					purpose: '',
-					slackChannel: '',
-					members: { pageInfo: { totalCount: 0 } }
-				}),
+		...result.data.team,
 		teamSlug: event.params.team
 	};
 }

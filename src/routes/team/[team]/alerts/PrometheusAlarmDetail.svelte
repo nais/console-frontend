@@ -1,6 +1,6 @@
 <script lang="ts">
-	import type { AlertState, ValueOf } from '$houdini';
 	import Time from '$lib/ui/Time.svelte';
+	import type { AlertState } from '$lib/urql/gql/graphql';
 	import { Heading, Tag } from '@nais/ds-svelte-community';
 
 	const {
@@ -9,8 +9,8 @@
 	}: {
 		alarm: {
 			summary: string;
-			state: ValueOf<typeof AlertState>;
-			since: Date;
+			state: AlertState | `${AlertState}`;
+			since: Date | string;
 			action: string;
 			consequence: string;
 			value: number;

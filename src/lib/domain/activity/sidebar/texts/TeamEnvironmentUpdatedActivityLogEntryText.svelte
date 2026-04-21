@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { SidebarActivityLogFragment$data } from '$houdini';
+	import type { SidebarActivityLogEntry } from './types';
 	import { envTagVariant } from '$lib/envTagVariant';
 	import Time from '$lib/ui/Time.svelte';
 	import { BodyShort, Tag } from '@nais/ds-svelte-community';
@@ -7,10 +7,7 @@
 	let {
 		data
 	}: {
-		data: Extract<
-			SidebarActivityLogFragment$data['activityLog']['nodes'][number],
-			{ __typename: 'TeamEnvironmentUpdatedActivityLogEntry' }
-		>;
+		data: SidebarActivityLogEntry<'TeamEnvironmentUpdatedActivityLogEntry'>;
 	} = $props();
 </script>
 

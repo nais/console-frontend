@@ -1,23 +1,29 @@
 <script lang="ts">
-	import { type DataProduct$result } from '$houdini';
+	import type { ResultOf } from '@graphql-typed-document-node/core';
 	import { accessor, PieChart, Tooltip } from 'layerchart';
 	import type { PageProps } from './$types';
+	import type { DataProductQuery } from './dataproduct';
 
 	let { data }: PageProps = $props();
 
 	let { DataProduct } = $derived(data);
 
-	function calculateTotals(data: DataProduct$result) {
+	type DataProductResult = NonNullable<ResultOf<typeof DataProductQuery>>;
+
+	function calculateTotals(data: DataProductResult) {
 		const totals: { [key: string]: number } = {};
 
 		data.teams.nodes.forEach((node) => {
 			const counts = node.inventoryCounts;
 
-			for (const [type, { total }] of Object.entries(counts)) {
+			for (const [type, value] of Object.entries(counts)) {
+				if (type === '__typename' || !value || typeof value !== 'object' || !('total' in value)) {
+					continue;
+				}
 				if (!totals[type]) {
 					totals[type] = 0;
 				}
-				totals[type] += total;
+				totals[type] += value.total;
 			}
 		});
 
@@ -25,8 +31,8 @@
 	}
 
 	const chartData = $derived.by(() => {
-		if (!$DataProduct.data) return [];
-		const totals = calculateTotals($DataProduct.data);
+		if (!DataProduct.data) return [];
+		const totals = calculateTotals(DataProduct.data);
 		return Object.entries(totals).map(([name, value]) => ({
 			fruit: name,
 			value
@@ -37,10 +43,10 @@
 </script>
 
 <div class="page">
-	{#if $DataProduct.data}
+	{#if DataProduct.data}
 		<ul>
-			<li>CPU: {$DataProduct.data.currentUnitPrices.cpu.value}</li>
-			<li>MEM:{$DataProduct.data.currentUnitPrices.memory.value}</li>
+			<li>CPU: {DataProduct.data.currentUnitPrices.cpu.value}</li>
+			<li>MEM:{DataProduct.data.currentUnitPrices.memory.value}</li>
 		</ul>
 		<div class="h-175">
 			<PieChart

@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { page } from '$app/state';
 	import { docURL } from '$lib/doc';
 	import ActivityLogListItem from '$lib/domain/list-items/ActivityLogListItem.svelte';
 	import ImageVulnerabilities from '$lib/domain/vulnerability/ImageVulnerabilities.svelte';
@@ -9,6 +10,7 @@
 	import GraphErrors from '$lib/ui/GraphErrors.svelte';
 	import List from '$lib/ui/List.svelte';
 	import Pagination from '$lib/ui/Pagination.svelte';
+	import { cursorPaginationLoaders } from '$lib/urql/pagination';
 	import { parseImage } from '$lib/utils/image';
 	import { BodyShort, CopyButton, Detail, Heading } from '@nais/ds-svelte-community';
 	import type { PageProps } from './$types';
@@ -18,14 +20,14 @@
 	let { ApplicationImageDetails, viewerIsMember } = $derived(data);
 
 	const { registry, repository, name } = $derived(
-		parseImage($ApplicationImageDetails.data?.team.environment.workload.image.name)
+		parseImage(ApplicationImageDetails.data?.team.environment.workload.image.name)
 	);
 </script>
 
-<GraphErrors errors={$ApplicationImageDetails.errors} />
+<GraphErrors errors={ApplicationImageDetails.errors} />
 
-{#if $ApplicationImageDetails.data}
-	{@const workload = $ApplicationImageDetails.data.team.environment.workload}
+{#if ApplicationImageDetails.data}
+	{@const workload = ApplicationImageDetails.data.team.environment.workload}
 	<div class="wrapper">
 		<div class="top">
 			<div>
@@ -33,9 +35,7 @@
 					<div style="display: flex; justify-content: space-between; align-items: center;">
 						<Heading id="image-info-title" as="h3" size="small" spacing>Image</Heading>
 						<CopyButton
-							copyText={$ApplicationImageDetails.data?.team.environment.workload.image.name +
-								':' +
-								$ApplicationImageDetails.data?.team.environment.workload.image.tag}
+							copyText={workload.image.name + ':' + workload.image.tag}
 							size="xsmall"
 							variant="action"
 						/>
@@ -43,8 +43,7 @@
 
 					<div class="image-row">
 						<code>
-							{$ApplicationImageDetails.data?.team.environment.workload.image
-								.name}:{$ApplicationImageDetails.data?.team.environment.workload.image.tag}
+							{workload.image.name}:{workload.image.tag}
 						</code>
 					</div>
 
@@ -103,34 +102,24 @@
 		{#if workload.image.hasSBOM}
 			<div>
 				<ImageVulnerabilities
-					team={$ApplicationImageDetails.data?.team.slug}
-					environment={$ApplicationImageDetails.data?.team.environment.environment.name}
-					workload={$ApplicationImageDetails.data?.team.environment.workload.name}
+					team={ApplicationImageDetails.data.team.slug}
+					environment={ApplicationImageDetails.data.team.environment.environment.name}
+					workload={workload.name}
 					authorized={viewerIsMember}
 				/>
 			</div>
 			<div>
-				{#if $ApplicationImageDetails.data?.team.environment.workload.image.activityLog.edges.length > 0}
+				{#if workload.image.activityLog.edges.length > 0}
 					<div class="activity-log">
 						<List title="Image Activity Log">
-							{#each $ApplicationImageDetails.data?.team.environment.workload.image.activityLog.edges || [] as item (item.node.id)}
+							{#each workload.image.activityLog.edges as item (item.node.id)}
 								<ActivityLogListItem item={item.node} />
 							{/each}
 						</List>
-						{#if $ApplicationImageDetails.data.team.environment.workload.image.activityLog.pageInfo.hasPreviousPage || $ApplicationImageDetails.data.team.environment.workload.image.activityLog.pageInfo.hasNextPage}
+						{#if workload.image.activityLog.pageInfo.hasPreviousPage || workload.image.activityLog.pageInfo.hasNextPage}
 							<Pagination
-								page={$ApplicationImageDetails.data.team.environment.workload.image.activityLog
-									.pageInfo}
-								loaders={{
-									loadNextPage: () => {
-										ApplicationImageDetails.loadNextPage({ first: 10 });
-									},
-									loadPreviousPage: () => {
-										ApplicationImageDetails.loadPreviousPage({
-											last: 10
-										});
-									}
-								}}
+								page={workload.image.activityLog.pageInfo}
+								loaders={cursorPaginationLoaders(page.url, workload.image.activityLog.pageInfo)}
 							/>
 						{/if}
 					</div>
@@ -143,9 +132,9 @@
 			</div>
 			<div>
 				<WorkloadVulnerabilityHistoryGraph
-					team={$ApplicationImageDetails.data?.team.slug}
-					environment={$ApplicationImageDetails.data?.team.environment.environment.name}
-					workload={$ApplicationImageDetails.data?.team.environment.workload.name}
+					team={ApplicationImageDetails.data.team.slug}
+					environment={ApplicationImageDetails.data.team.environment.environment.name}
+					workload={workload.name}
 				/>
 			</div>
 		{/if}

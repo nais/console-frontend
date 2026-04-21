@@ -1,14 +1,14 @@
 <script lang="ts">
 	import { envTagVariant } from '$lib/envTagVariant';
 	import WarningIcon from '$lib/icons/WarningIcon.svelte';
-	import { BriefcaseClockIcon, PackageIcon } from '@nais/ds-svelte-community/icons';
 	import IconLabel from '$lib/ui/IconLabel.svelte';
 	import TooltipAlignHack from '$lib/ui/TooltipAlignHack.svelte';
+	import { BriefcaseClockIcon, PackageIcon } from '@nais/ds-svelte-community/icons';
 
 	interface Props {
 		workload: {
 			name: string;
-			__typename: string | null;
+			__typename: string | null | undefined;
 			teamEnvironment: {
 				environment: { name: string };
 			};

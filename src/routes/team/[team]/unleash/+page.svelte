@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { graphql } from '$houdini';
+	import { invalidateAll } from '$app/navigation';
 	import { docURL } from '$lib/doc';
 	import CpuIcon from '$lib/icons/CpuIcon.svelte';
 	import MemoryIcon from '$lib/icons/MemoryIcon.svelte';
@@ -8,6 +8,7 @@
 	import IconLabel from '$lib/ui/IconLabel.svelte';
 	import Time from '$lib/ui/Time.svelte';
 	import TooltipAlignHack from '$lib/ui/TooltipAlignHack.svelte';
+	import { getContextClient } from '$lib/urql/context';
 	import {
 		Alert,
 		BodyLong,
@@ -41,6 +42,12 @@
 	import { onDestroy } from 'svelte';
 	import type { PageProps } from './$types';
 	import TeamSearchModal from './TeamSearchModal.svelte';
+	import {
+		AllowTeamAccessMutation,
+		CreateUnleashForTeamMutation,
+		RevokeTeamAccessMutation,
+		UpdateUnleashInstanceMutation
+	} from './unleash';
 
 	type GraphQLError = {
 		message: string;
@@ -63,9 +70,17 @@
 	let { data }: PageProps = $props();
 	let { Unleash, UnleashReleaseChannels, teamSlug, viewerIsMember } = $derived(data);
 
+	const client = getContextClient();
+
+	// Local error state for inline mutations (replaces Houdini store-driven errors)
+	let createUnleashErrors = $state<GraphQLError[]>([]);
+	let updateUnleashErrors = $state<GraphQLError[]>([]);
+	let allowTeamAccessErrors = $state<GraphQLError[]>([]);
+	let revokeTeamAccessErrors = $state<GraphQLError[]>([]);
+
 	// Derived state
-	const unleash = $derived($Unleash.data?.team?.unleash);
-	const releaseChannels = $derived($UnleashReleaseChannels.data?.unleashReleaseChannels ?? []);
+	const unleash = $derived(Unleash.data?.team?.unleash);
+	const releaseChannels = $derived(UnleashReleaseChannels.data?.unleashReleaseChannels ?? []);
 	const metrics = $derived(
 		unleash?.metrics ?? {
 			apiTokens: 0,
@@ -77,52 +92,6 @@
 		}
 	);
 	const enabled = $derived(true);
-
-	// GraphQL mutations
-	const createUnleashForTeam = graphql(`
-		mutation createUnleashForTeam($team: Slug!) {
-			createUnleashForTeam(input: { teamSlug: $team }) {
-				unleash {
-					name
-					version
-					releaseChannelName
-					allowedTeams {
-						nodes {
-							slug
-						}
-					}
-					webIngress
-					apiIngress
-					metrics {
-						apiTokens
-						cpuUtilization
-						cpuRequests
-						memoryUtilization
-						memoryRequests
-						toggles
-					}
-					ready
-				}
-			}
-		}
-	`);
-
-	const updateUnleashInstance = graphql(`
-		mutation UpdateUnleashInstance($team: Slug!, $releaseChannel: String!) {
-			updateUnleashInstance(input: { teamSlug: $team, releaseChannel: $releaseChannel }) {
-				unleash {
-					name
-					releaseChannelName
-					releaseChannel {
-						name
-						currentVersion
-						type
-						lastUpdated
-					}
-				}
-			}
-		}
-	`);
 
 	// Component state
 	let releaseChannelLoading = $state(false);
@@ -140,6 +109,16 @@
 		return tagMatch?.[1] ?? imageOrVersion;
 	};
 
+	const errorsFromResult = (
+		result: { error?: { graphQLErrors?: readonly { message: string }[]; message: string } } | null
+	): GraphQLError[] => {
+		if (!result?.error) return [];
+		if (result.error.graphQLErrors?.length) {
+			return result.error.graphQLErrors.map((e) => ({ message: e.message }));
+		}
+		return [{ message: result.error.message }];
+	};
+
 	// Event handlers
 	const updateReleaseChannel = async (e: Event) => {
 		if (!e.target || !(e.target instanceof HTMLSelectElement)) return;
@@ -148,13 +127,18 @@
 
 		releaseChannelLoading = true;
 		try {
-			const result = await updateUnleashInstance.mutate({
-				team: teamSlug,
-				releaseChannel: newChannel
-			});
+			const result = await client
+				.mutation(UpdateUnleashInstanceMutation, {
+					team: teamSlug,
+					releaseChannel: newChannel
+				})
+				.toPromise();
 
-			if (!result.errors) {
-				await Unleash.fetch({ policy: 'CacheAndNetwork' });
+			const errs = errorsFromResult(result);
+			if (errs.length) {
+				updateUnleashErrors = errs;
+			} else {
+				await invalidateAll();
 			}
 		} catch (error) {
 			console.error('Network error updating release channel:', error);
@@ -165,16 +149,18 @@
 
 	const createNewUnleash = async () => {
 		creatingUnleash = true;
-		await createUnleashForTeam.mutate({
-			team: teamSlug
-		});
+		const result = await client
+			.mutation(CreateUnleashForTeamMutation, { team: teamSlug })
+			.toPromise();
 
-		if ($createUnleashForTeam.errors) {
+		const errs = errorsFromResult(result);
+		if (errs.length) {
+			createUnleashErrors = errs;
 			creatingUnleash = false;
 			return;
 		}
 
-		Unleash.fetch({ policy: 'CacheAndNetwork' });
+		await invalidateAll();
 		// Start polling until Unleash is ready
 		startPolling();
 	};
@@ -182,7 +168,7 @@
 	const startPolling = () => {
 		if (pollingInterval) return; // Already polling
 		pollingInterval = window.setInterval(() => {
-			Unleash.fetch({ policy: 'NetworkOnly' });
+			void invalidateAll();
 		}, 3000); // Poll every 3 seconds
 	};
 
@@ -205,35 +191,23 @@
 		stopPolling();
 	});
 
-	const allowTeamAccess = graphql(`
-		mutation AllowTeamAccess($team: Slug!, $allowedTeamSlug: Slug!) {
-			allowTeamAccessToUnleash(input: { teamSlug: $team, allowedTeamSlug: $allowedTeamSlug }) {
-				unleash {
-					name
-				}
-			}
-		}
-	`);
-	const revokeTeamAccess = graphql(`
-		mutation RevokeTeamAccess($team: Slug!, $revokedTeamSlug: Slug!) {
-			revokeTeamAccessToUnleash(input: { teamSlug: $team, revokedTeamSlug: $revokedTeamSlug }) {
-				unleash {
-					name
-				}
-			}
-		}
-	`);
-
 	let removeTeamName = $state('');
 	let removeTeamConfirmOpen = $state(false);
 
-	const removeTeam = (removeTeamName: string) =>
-		revokeTeamAccess
-			.mutate({
+	const removeTeam = async (name: string) => {
+		const result = await client
+			.mutation(RevokeTeamAccessMutation, {
 				team: teamSlug,
-				revokedTeamSlug: removeTeamName
+				revokedTeamSlug: name
 			})
-			.then(() => Unleash.fetch({ policy: 'CacheAndNetwork' }));
+			.toPromise();
+		const errs = errorsFromResult(result);
+		if (errs.length) {
+			revokeTeamAccessErrors = errs;
+		} else {
+			await invalidateAll();
+		}
+	};
 
 	const handleRemoveTeamClick = (teamName: string) => {
 		removeTeamName = teamName;
@@ -242,70 +216,77 @@
 
 	let addTeamModalOpen = $state(false);
 
-	const addTeam = (teamName: string) =>
-		allowTeamAccess
-			.mutate({
+	const addTeam = async (teamName: string) => {
+		const result = await client
+			.mutation(AllowTeamAccessMutation, {
 				team: teamSlug,
 				allowedTeamSlug: teamName
 			})
-			.then(() => Unleash.fetch({ policy: 'CacheAndNetwork' }));
+			.toPromise();
+		const errs = errorsFromResult(result);
+		if (errs.length) {
+			allowTeamAccessErrors = errs;
+		} else {
+			await invalidateAll();
+		}
+	};
 </script>
 
-{#if $Unleash.errors}
+{#if Unleash.errors}
 	<Alert variant="error" size="small" style="margin-bottom: 1rem;">
-		{#each new Set(extractErrorMessages($Unleash.errors)) as error (error)}
+		{#each new Set(extractErrorMessages(Unleash.errors)) as error (error)}
 			{error}<br />
 		{/each}
 	</Alert>
 {/if}
 
-{#if $UnleashReleaseChannels.errors}
+{#if UnleashReleaseChannels.errors}
 	<Alert variant="error" size="small" style="margin-bottom: 1rem;">
-		{#each new Set(extractErrorMessages($UnleashReleaseChannels.errors)) as error (error)}
+		{#each new Set(extractErrorMessages(UnleashReleaseChannels.errors)) as error (error)}
 			{error}<br />
 		{/each}
 	</Alert>
 {/if}
 
-{#if $createUnleashForTeam.errors}
+{#if createUnleashErrors.length}
 	<Alert variant="error" size="small" style="margin-bottom: 1rem;">
-		{#each new Set(extractErrorMessages($createUnleashForTeam.errors)) as error (error)}
+		{#each new Set(extractErrorMessages(createUnleashErrors)) as error (error)}
 			{error}<br />
 		{/each}
-		<Button variant="tertiary" size="small" onclick={() => ($createUnleashForTeam.errors = [])}>
+		<Button variant="tertiary" size="small" onclick={() => (createUnleashErrors = [])}>
 			Dismiss
 		</Button>
 	</Alert>
 {/if}
 
-{#if $updateUnleashInstance.errors}
+{#if updateUnleashErrors.length}
 	<Alert variant="error" size="small" style="margin-bottom: 1rem;">
-		{#each new Set(extractErrorMessages($updateUnleashInstance.errors)) as error (error)}
+		{#each new Set(extractErrorMessages(updateUnleashErrors)) as error (error)}
 			{error}<br />
 		{/each}
-		<Button variant="tertiary" size="small" onclick={() => ($updateUnleashInstance.errors = [])}>
+		<Button variant="tertiary" size="small" onclick={() => (updateUnleashErrors = [])}>
 			Dismiss
 		</Button>
 	</Alert>
 {/if}
 
-{#if $allowTeamAccess.errors}
+{#if allowTeamAccessErrors.length}
 	<Alert variant="error" size="small" style="margin-bottom: 1rem;">
-		{#each new Set(extractErrorMessages($allowTeamAccess.errors)) as error (error)}
+		{#each new Set(extractErrorMessages(allowTeamAccessErrors)) as error (error)}
 			{error}<br />
 		{/each}
-		<Button variant="tertiary" size="small" onclick={() => ($allowTeamAccess.errors = [])}>
+		<Button variant="tertiary" size="small" onclick={() => (allowTeamAccessErrors = [])}>
 			Dismiss
 		</Button>
 	</Alert>
 {/if}
 
-{#if $revokeTeamAccess.errors}
+{#if revokeTeamAccessErrors.length}
 	<Alert variant="error" size="small" style="margin-bottom: 1rem;">
-		{#each new Set(extractErrorMessages($revokeTeamAccess.errors)) as error (error)}
+		{#each new Set(extractErrorMessages(revokeTeamAccessErrors)) as error (error)}
 			{error}<br />
 		{/each}
-		<Button variant="tertiary" size="small" onclick={() => ($revokeTeamAccess.errors = [])}>
+		<Button variant="tertiary" size="small" onclick={() => (revokeTeamAccessErrors = [])}>
 			Dismiss
 		</Button>
 	</Alert>

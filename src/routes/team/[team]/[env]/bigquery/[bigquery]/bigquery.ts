@@ -1,0 +1,51 @@
+import { graphql as gql } from '$lib/urql/gql';
+
+export const BigQueryDatasetQuery = gql(/* GraphQL */ `
+	query BigQueryDataset($environment: String!, $team: Slug!, $name: String!) {
+		team(slug: $team) {
+			slug
+			environment(name: $environment) {
+				bigQueryDataset(name: $name) {
+					__typename
+					cascadingDelete
+					description
+
+					id
+					name
+					status {
+						creationTime
+						lastModifiedTime
+					}
+					teamEnvironment {
+						environment {
+							name
+						}
+					}
+					cost {
+						sum
+					}
+					workload {
+						name
+						__typename
+						teamEnvironment {
+							environment {
+								name
+							}
+						}
+						team {
+							slug
+						}
+					}
+					access {
+						edges {
+							node {
+								role
+								email
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+`);

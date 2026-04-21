@@ -1,16 +1,16 @@
 <script lang="ts">
-	import { RevealSecretValuesStore } from '$houdini';
 	import GraphErrors from '$lib/ui/GraphErrors.svelte';
 	import Textarea from '$lib/ui/Textarea.svelte';
+	import { getContextClient } from '$lib/urql/context';
+	import { ValueEncoding } from '$lib/urql/gql/graphql';
 	import { Alert, BodyShort, Button, Heading, Modal } from '@nais/ds-svelte-community';
 	import { PadlockLockedIcon } from '@nais/ds-svelte-community/icons';
-
-	import type { ValueEncoding$options } from '$houdini';
+	import { RevealSecretValuesMutation } from './secret';
 
 	interface SecretValue {
 		name: string;
 		value: string;
-		encoding: ValueEncoding$options;
+		encoding: ValueEncoding | `${ValueEncoding}`;
 	}
 
 	interface Props {
@@ -33,8 +33,9 @@
 
 	let reason = $state('');
 	let isSubmitting = $state(false);
+	let mutationErrors: { message: string }[] | null = $state(null);
 
-	const revealSecrets = new RevealSecretValuesStore();
+	const client = getContextClient();
 
 	const handleSubmit = async () => {
 		if (reason.length < 10) {
@@ -42,20 +43,30 @@
 		}
 
 		isSubmitting = true;
+		mutationErrors = null;
 
-		await revealSecrets.mutate({
-			input: {
-				name: secretName,
-				environment: environmentName,
-				team: teamSlug,
-				reason: reason
-			}
-		});
+		const result = await client
+			.mutation(RevealSecretValuesMutation, {
+				input: {
+					name: secretName,
+					environment: environmentName,
+					team: teamSlug,
+					reason: reason
+				}
+			})
+			.toPromise();
 
 		isSubmitting = false;
 
-		if (!$revealSecrets.errors && $revealSecrets.data?.viewSecretValues?.values) {
-			onSuccess($revealSecrets.data.viewSecretValues.values);
+		if (result.error) {
+			mutationErrors = result.error.graphQLErrors?.length
+				? result.error.graphQLErrors.map((e) => ({ message: e.message }))
+				: [{ message: result.error.message }];
+			return;
+		}
+
+		if (result.data?.viewSecretValues?.values) {
+			onSuccess(result.data.viewSecretValues.values);
 			handleClose();
 		}
 	};
@@ -85,9 +96,9 @@
 			</BodyShort>
 		</Alert>
 
-		{#if $revealSecrets.errors}
+		{#if mutationErrors}
 			<div class="errors">
-				<GraphErrors errors={$revealSecrets.errors} />
+				<GraphErrors errors={mutationErrors} />
 			</div>
 		{/if}
 

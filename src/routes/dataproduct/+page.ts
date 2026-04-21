@@ -1,9 +1,8 @@
-import { load_DataProduct } from '$houdini';
+import { runQuery } from '$lib/urql/load';
+import { DataProductQuery } from './dataproduct';
 
 export async function load(event) {
 	return {
-		...(await load_DataProduct({
-			event
-		}))
+		DataProduct: await runQuery(event, DataProductQuery, {})
 	};
 }

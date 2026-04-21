@@ -1,13 +1,6 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
-	import {
-		OpenSearchMajorVersion,
-		type OpenSearchMajorVersion$options,
-		OpenSearchMemory,
-		type OpenSearchMemory$options,
-		OpenSearchTier,
-		type OpenSearchTier$options
-	} from '$houdini';
+	import { OpenSearchMajorVersion, OpenSearchMemory, OpenSearchTier } from '$lib/urql/gql/graphql';
 	import { openSearchPlanCosts, storageRequirements } from '$lib/utils/aivencost';
 	import {
 		Alert,
@@ -20,22 +13,22 @@
 		Select,
 		TextField
 	} from '@nais/ds-svelte-community';
-	import type { PageProps } from './$houdini';
+	import type { PageProps } from './$types';
 
 	let { form, data }: PageProps = $props();
 
 	const { UpdateOpenSearchData } = $derived(data);
 
 	let tier = $derived(
-		(form?.tier as OpenSearchTier$options) ??
-			$UpdateOpenSearchData.data?.team.environment.openSearch.tier ??
+		(form?.tier as OpenSearchTier) ??
+			UpdateOpenSearchData.data?.team.environment.openSearch.tier ??
 			OpenSearchTier.SINGLE_NODE
 	);
 
 	let memory = $derived.by(() => {
 		const formMemory =
-			(form?.memory as OpenSearchMemory$options) ??
-			$UpdateOpenSearchData.data?.team.environment.openSearch.memory ??
+			(form?.memory as OpenSearchMemory) ??
+			UpdateOpenSearchData.data?.team.environment.openSearch.memory ??
 			OpenSearchMemory.GB_4;
 
 		// prevent invalid memory when tier changes
@@ -46,8 +39,8 @@
 	});
 
 	let version = $derived(
-		(form?.version as OpenSearchMajorVersion$options) ??
-			$UpdateOpenSearchData.data?.team.environment.openSearch.version.desiredMajor ??
+		(form?.version as OpenSearchMajorVersion) ??
+			UpdateOpenSearchData.data?.team.environment.openSearch.version.desiredMajor ??
 			''
 	);
 
@@ -57,7 +50,7 @@
 	let storage = $derived.by(() => {
 		const formStorage =
 			Number(form?.storageGB) ||
-			$UpdateOpenSearchData.data?.team.environment.openSearch.storageGB ||
+			UpdateOpenSearchData.data?.team.environment.openSearch.storageGB ||
 			minStorage;
 
 		if (formStorage < minStorage || formStorage > maxStorage) {
@@ -76,7 +69,7 @@
 	);
 
 	const tomlManifest =
-		$derived(`[openSearch.${$UpdateOpenSearchData.data?.team.environment.openSearch.name}]
+		$derived(`[openSearch.${UpdateOpenSearchData.data?.team.environment.openSearch.name}]
 tier = "${tier}"
 memory = "${memory}"
 version = "${version}"

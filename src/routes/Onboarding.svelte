@@ -1,10 +1,16 @@
 <script lang="ts">
-	import { graphql } from '$houdini';
 	import TeamListItem from '$lib/domain/list-items/TeamListItem.svelte';
 	import List from '$lib/ui/List.svelte';
 	import Pagination from '$lib/ui/Pagination.svelte';
+	import { getContextClient } from '$lib/urql/context';
 	import { BodyShort, Button, Heading, Loader, Search } from '@nais/ds-svelte-community';
 	import { PlusIcon } from '@nais/ds-svelte-community/icons';
+	import { queryStore } from '@urql/svelte';
+	import {
+		ONBOARDING_PAGE_SIZE,
+		OnboardingTeamSearchQuery,
+		OnboardingTeamsQuery
+	} from './onboarding';
 
 	interface Props {
 		tenantName: string;
@@ -12,98 +18,100 @@
 
 	let { tenantName }: Props = $props();
 
-	const teamSearch = graphql(`
-		query OnboardingTeamSearch($query: String!, $after: Cursor, $before: Cursor) {
-			search(first: 25, after: $after, before: $before, filter: { type: TEAM, query: $query })
-				@paginate {
-				edges {
-					node {
-						... on Team {
-							slug
-							purpose
-						}
-					}
-				}
-				pageInfo {
-					hasNextPage
-					hasPreviousPage
-					pageStart
-					pageEnd
-					totalCount
-					startCursor
-					endCursor
-				}
-			}
-		}
-	`);
-
-	const teamsQuery = graphql(`
-		query OnboardingTeams {
-			teams(first: 25) @paginate {
-				pageInfo {
-					hasNextPage
-					hasPreviousPage
-					pageStart
-					pageEnd
-					totalCount
-					startCursor
-					endCursor
-				}
-				nodes {
-					slug
-					purpose
-				}
-			}
-		}
-	`);
-
-	$effect(() => {
-		teamsQuery.fetch();
-	});
+	const client = getContextClient();
 
 	let teamSearchQuery = $state('');
-	let teamSearchTimeout: ReturnType<typeof setTimeout> | null = null;
+	let activeSearch = $state('');
+	let searchTimeout: ReturnType<typeof setTimeout> | null = null;
 
-	function searchTeam() {
-		if (teamSearchTimeout) {
-			clearTimeout(teamSearchTimeout);
-			teamSearchTimeout = null;
-		}
+	/**
+	 * Pagination cursors are kept in component state rather than the URL.
+	 *
+	 * Onboarding renders inside `+page.svelte`, whose `+page.ts` already
+	 * owns the `?after` / `?before` query params for the `UserTeams`
+	 * pagination. Hijacking those same params here would race with the
+	 * parent route. Since the team-search input itself isn't reflected in
+	 * the URL either, keeping the cursors local is consistent.
+	 */
+	let teamsCursor = $state<{ after?: string; before?: string }>({});
+	let searchCursor = $state<{ after?: string; before?: string }>({});
 
-		if (teamSearchQuery.length > 0) {
-			teamSearchTimeout = setTimeout(() => {
-				teamSearch.fetch({
-					variables: {
-						query: teamSearchQuery,
-						after: null,
-						before: null
-					}
-				});
-			}, 250);
+	function paginationVariables(cursor: { after?: string; before?: string }) {
+		if (cursor.before) {
+			return { last: ONBOARDING_PAGE_SIZE, before: cursor.before };
 		}
+		return { first: ONBOARDING_PAGE_SIZE, after: cursor.after };
 	}
 
-	const teams = $derived(
-		teamSearchQuery === ''
-			? $teamsQuery.data?.teams.nodes
-			: ($teamSearch.data?.search.edges.map((e) => e.node).filter((n) => n.__typename === 'Team') ??
-					$teamsQuery.data?.teams.nodes)
+	const teamsStore = $derived(
+		queryStore({
+			client,
+			query: OnboardingTeamsQuery,
+			variables: paginationVariables(teamsCursor)
+		})
 	);
 
-	const pagination = $derived(
-		$teamSearch.data
+	const searchStore = $derived(
+		queryStore({
+			client,
+			query: OnboardingTeamSearchQuery,
+			variables: {
+				query: activeSearch,
+				...paginationVariables(searchCursor)
+			},
+			pause: activeSearch === ''
+		})
+	);
+
+	function onSearchInput() {
+		if (searchTimeout) {
+			clearTimeout(searchTimeout);
+			searchTimeout = null;
+		}
+
+		searchTimeout = setTimeout(() => {
+			searchCursor = {};
+			activeSearch = teamSearchQuery;
+		}, 250);
+	}
+
+	const teamsResult = $derived($teamsStore);
+	const searchResult = $derived($searchStore);
+
+	const teams = $derived(
+		activeSearch === ''
+			? teamsResult.data?.teams.nodes
+			: (searchResult.data?.search.edges
+					.map((e) => e.node)
+					.filter((n) => n.__typename === 'Team') ?? teamsResult.data?.teams.nodes)
+	);
+
+	const pageInfo = $derived(
+		activeSearch !== '' && searchResult.data
+			? searchResult.data.search.pageInfo
+			: teamsResult.data?.teams.pageInfo
+	);
+
+	const paginationLoaders = $derived(
+		activeSearch === ''
 			? {
-					page: $teamSearch.data.search.pageInfo,
-					loaders: {
-						loadPreviousPage: () => teamSearch.loadPreviousPage(),
-						loadNextPage: () => teamSearch.loadNextPage()
+					loadNextPage: () => {
+						const end = teamsResult.data?.teams.pageInfo.endCursor;
+						if (end) teamsCursor = { after: end };
+					},
+					loadPreviousPage: () => {
+						const start = teamsResult.data?.teams.pageInfo.startCursor;
+						if (start) teamsCursor = { before: start };
 					}
 				}
 			: {
-					page: $teamsQuery.data?.teams.pageInfo,
-					loaders: {
-						loadPreviousPage: () => teamsQuery.loadPreviousPage(),
-						loadNextPage: () => teamsQuery.loadNextPage()
+					loadNextPage: () => {
+						const end = searchResult.data?.search.pageInfo.endCursor;
+						if (end) searchCursor = { after: end };
+					},
+					loadPreviousPage: () => {
+						const start = searchResult.data?.search.pageInfo.startCursor;
+						if (start) searchCursor = { before: start };
 					}
 				}
 	);
@@ -111,7 +119,7 @@
 
 <div class="onboarding">
 	<Heading as="h1" size="xlarge" spacing>Welcome to Nais Console! 🎉</Heading>
-	{#if $teamsQuery.fetching}
+	{#if teamsResult.fetching && !teamsResult.data}
 		<Loader size="3xlarge" />
 	{:else if teams}
 		<div class="content">
@@ -133,7 +141,7 @@
 					<Search
 						bind:value={teamSearchQuery}
 						clearButton={false}
-						oninput={searchTeam}
+						oninput={onSearchInput}
 						label="Team search"
 						hideLabel
 						size="small"
@@ -147,7 +155,7 @@
 							No teams found for query '{teamSearchQuery}'.
 						{/each}
 					</List>
-					<Pagination {...pagination} />
+					<Pagination page={pageInfo} loaders={paginationLoaders} />
 				</div>
 			</div>
 		</div>

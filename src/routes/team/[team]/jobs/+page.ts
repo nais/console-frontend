@@ -1,12 +1,8 @@
-import {
-	JobOrderField,
-	load_Jobs,
-	load_JobsListMetadata,
-	OrderDirection,
-	type TeamJobsFilter
-} from '$houdini';
 import { urlToOrderDirection, urlToOrderField } from '$lib/ui/OrderByMenu.svelte';
+import { JobOrderField, OrderDirection } from '$lib/urql/gql/graphql';
+import { runQuery } from '$lib/urql/load';
 import { addPageMeta } from '$lib/utils/pageMeta';
+import { JobsListMetadataQuery, JobsQuery } from './jobs';
 
 const rows = 25;
 
@@ -22,23 +18,17 @@ export async function load(event) {
 
 	return {
 		...(await addPageMeta(event, { title: 'Jobs' })),
-		...(await load_Jobs({
-			event,
-			variables: {
-				team: event.params.team,
-				filter: { name: filter, environments } as TeamJobsFilter,
-				orderBy: {
-					field: urlToOrderField(JobOrderField, JobOrderField.ISSUES, event.url),
-					direction: urlToOrderDirection(event.url, OrderDirection.DESC)
-				},
-				...(before ? { before, last: rows } : { after, first: rows })
-			}
-		})),
-		...(await load_JobsListMetadata({
-			event,
-			variables: {
-				team: event.params.team
-			}
-		}))
+		Jobs: await runQuery(event, JobsQuery, {
+			team: event.params.team,
+			filter: { name: filter, environments },
+			orderBy: {
+				field: urlToOrderField(JobOrderField, JobOrderField.ISSUES, event.url),
+				direction: urlToOrderDirection(event.url, OrderDirection.DESC)
+			},
+			...(before ? { before, last: rows } : { after, first: rows })
+		}),
+		JobsListMetadata: await runQuery(event, JobsListMetadataQuery, {
+			team: event.params.team
+		})
 	};
 }

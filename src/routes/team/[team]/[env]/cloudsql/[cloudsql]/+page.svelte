@@ -14,14 +14,14 @@
 
 	let { data }: PageProps = $props();
 	let { SqlInstance, viewerIsMember } = $derived(data);
-	let instance = $derived($SqlInstance.data?.team.environment.sqlInstance);
+	let instance = $derived(SqlInstance.data?.team.environment.sqlInstance);
 	let cloudsql = $derived(page.params.cloudsql);
 
 	const distinctErrors = (errors: { message: string }[]) => new Set(errors.map((e) => e.message));
 </script>
 
-{#if $SqlInstance.errors}
-	{#each distinctErrors($SqlInstance.errors) as error (error)}
+{#if SqlInstance.errors}
+	{#each distinctErrors(SqlInstance.errors) as error (error)}
 		<Alert style="margin-bottom: 1rem;" variant="error">
 			{error}
 		</Alert>
@@ -120,7 +120,7 @@
 					<div>
 						<Heading as="h3" size="small">Issues</Heading>
 						<List>
-							{#each $SqlInstance.data?.team.environment.sqlInstance.issues.edges ?? [] as edge (edge.node.id)}
+							{#each instance.issues.edges as edge (edge.node.id)}
 								<IssueListItem item={edge.node} />
 							{:else}
 								<span>No issues found</span>

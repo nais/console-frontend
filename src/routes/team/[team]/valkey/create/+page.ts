@@ -1,6 +1,7 @@
-import { load_CreateValkeyEnvironments } from '$houdini';
+import { runQuery } from '$lib/urql/load';
 import { addPageMeta } from '$lib/utils/pageMeta';
 import { error } from '@sveltejs/kit';
+import { CreateValkeyEnvironmentsQuery } from './createValkey';
 
 export async function load(event) {
 	const { parent } = event;
@@ -21,6 +22,8 @@ export async function load(event) {
 				}
 			]
 		})),
-		...(await load_CreateValkeyEnvironments({ event, variables: { slug: event.params.team } }))
+		CreateValkeyEnvironments: await runQuery(event, CreateValkeyEnvironmentsQuery, {
+			slug: event.params.team
+		})
 	};
 }

@@ -6,6 +6,6 @@
 	let { RunsWithPodNames } = $derived(data);
 </script>
 
-{#if $RunsWithPodNames.data}
-	<JobLogs team={$RunsWithPodNames.data.team} />
+{#if RunsWithPodNames.data}
+	<JobLogs team={RunsWithPodNames.data.team} />
 {/if}

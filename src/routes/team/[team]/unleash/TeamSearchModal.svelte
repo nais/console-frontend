@@ -1,35 +1,10 @@
 <script lang="ts">
-	import { graphql } from '$houdini';
 	import Search from '$lib/domain/search/Search.svelte';
+	import { getContextClient } from '$lib/urql/context';
 	import { Modal } from '@nais/ds-svelte-community';
 	import { PersonGroupIcon } from '@nais/ds-svelte-community/icons';
-
-	const teamSearch = graphql(`
-		query TeamSearch($query: String!) {
-			search(first: 25, filter: { query: $query, type: TEAM }) {
-				edges {
-					node {
-						__typename
-						... on Team {
-							slug
-							purpose
-						}
-					}
-				}
-			}
-		}
-	`);
-
-	const teamsQuery = graphql(`
-		query AllTeams {
-			teams(first: 25) {
-				nodes {
-					slug
-					purpose
-				}
-			}
-		}
-	`);
+	import { queryStore } from '@urql/svelte';
+	import { AllTeamsQuery, TeamSearchQuery } from './unleash';
 
 	let {
 		open = $bindable(),
@@ -45,21 +20,54 @@
 		teamsWithAccess: string[];
 	} = $props();
 
-	let query = $state('');
-	let loading = $state(true);
+	const client = getContextClient();
 
-	teamsQuery.fetch().then(() => (loading = false));
+	let query = $state('');
+	let debouncedQuery = $state('');
+
+	const allTeams = queryStore({
+		client,
+		query: AllTeamsQuery,
+		variables: {}
+	});
+
+	const teamSearch = $derived(
+		queryStore({
+			client,
+			query: TeamSearchQuery,
+			variables: { query: debouncedQuery },
+			pause: !debouncedQuery
+		})
+	);
 
 	$effect(() => {
-		if (query) {
-			loading = true;
-
-			const timeout = setTimeout(() => {
-				teamSearch.fetch({ variables: { query: query } }).then(() => (loading = false));
-			}, 300);
-
-			return () => clearTimeout(timeout);
+		if (!query) {
+			debouncedQuery = '';
+			return;
 		}
+		const timeout = setTimeout(() => {
+			debouncedQuery = query;
+		}, 300);
+		return () => clearTimeout(timeout);
+	});
+
+	const loading = $derived(query ? ($teamSearch.fetching ?? true) : ($allTeams.fetching ?? true));
+
+	type TeamResult = { slug: string; purpose: string };
+
+	const results: TeamResult[] = $derived.by(() => {
+		if (query) {
+			const edges = $teamSearch.data?.search.edges ?? [];
+			const out: TeamResult[] = [];
+			for (const edge of edges) {
+				const n = edge.node;
+				if (n.__typename === 'Team') {
+					out.push({ slug: n.slug, purpose: n.purpose });
+				}
+			}
+			return out;
+		}
+		return ($allTeams.data?.teams.nodes ?? []).map((n) => ({ slug: n.slug, purpose: n.purpose }));
 	});
 </script>
 
@@ -70,11 +78,8 @@
 		bind:query
 		{loading}
 		suggestions={false}
-		results={(query
-			? $teamSearch.data?.search.edges.map((e) => e.node).filter((n) => n.__typename === 'Team')
-			: $teamsQuery.data?.teams.nodes
-		)
-			?.filter((r) => r.slug !== currentTeam)
+		results={results
+			.filter((r) => r.slug !== currentTeam)
 			.map(
 				(result) =>
 					({

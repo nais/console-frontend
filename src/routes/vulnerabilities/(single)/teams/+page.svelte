@@ -1,12 +1,13 @@
 <script lang="ts">
-	import { OrderDirection, TeamOrderField } from '$houdini';
+	import { page } from '$app/state';
 	import GraphErrors from '$lib/ui/GraphErrors.svelte';
 	import IconLabel from '$lib/ui/IconLabel.svelte';
 	import List from '$lib/ui/List.svelte';
 	import ListItem from '$lib/ui/ListItem.svelte';
 	import OrderByMenu from '$lib/ui/OrderByMenu.svelte';
 	import Pagination from '$lib/ui/Pagination.svelte';
-	import { changeParams } from '$lib/utils/searchparams';
+	import { OrderDirection, TeamOrderField } from '$lib/urql/gql/graphql';
+	import { cursorPaginationLoaders } from '$lib/urql/pagination';
 	import { BodyLong, Detail, Heading, Loader, Tooltip } from '@nais/ds-svelte-community';
 	import { CheckmarkIcon, PersonGroupIcon } from '@nais/ds-svelte-community/icons';
 	import type { PageProps } from './$types';
@@ -16,7 +17,7 @@
 </script>
 
 <div class="wrapper">
-	<GraphErrors errors={$TenantVulnerabilites.errors} />
+	<GraphErrors errors={TenantVulnerabilites.errors} />
 	<div>
 		<Heading as="h3" spacing>Team Security Posture</Heading>
 		<BodyLong>
@@ -44,12 +45,12 @@
 				]}
 			/>
 		{/snippet}
-		{#if $TenantVulnerabilites.fetching}
+		{#if !TenantVulnerabilites.data}
 			<div style="display: flex; justify-content: center; align-items: center; height: 500px;">
 				<Loader size="3xlarge" />
 			</div>
 		{:else}
-			{#each $TenantVulnerabilites.data?.teams.nodes ?? [] as team (team.slug)}
+			{#each TenantVulnerabilites.data?.teams.nodes ?? [] as team (team.slug)}
 				<ListItem>
 					<IconLabel
 						label={team.slug}
@@ -197,26 +198,8 @@
 		{/if}
 	</List>
 	<Pagination
-		page={$TenantVulnerabilites.data?.teams.pageInfo}
-		fetching={$TenantVulnerabilites.fetching}
-		loaders={{
-			loadPreviousPage: () =>
-				changeParams(
-					{
-						after: '',
-						before: $TenantVulnerabilites.data?.teams.pageInfo.startCursor ?? ''
-					},
-					{ noScroll: true }
-				),
-			loadNextPage: () =>
-				changeParams(
-					{
-						after: $TenantVulnerabilites.data?.teams.pageInfo.endCursor ?? '',
-						before: ''
-					},
-					{ noScroll: true }
-				)
-		}}
+		page={TenantVulnerabilites.data?.teams.pageInfo}
+		loaders={cursorPaginationLoaders(page.url, TenantVulnerabilites.data?.teams.pageInfo)}
 	/>
 </div>
 

@@ -1,5 +1,6 @@
-import { load_ResourceUtilizationForApp } from '$houdini';
+import { runQuery } from '$lib/urql/load';
 import { addPageMeta } from '$lib/utils/pageMeta';
+import { ResourceUtilizationForAppQuery } from './utilization';
 
 function getStart(interval: string | null) {
 	switch (interval) {
@@ -24,18 +25,22 @@ export async function load(event) {
 
 	return {
 		interval,
+		// Keep the JS `Date` instances around for the chart's xDomain — the
+		// previous Houdini-based component read them off the operation's
+		// `variables`, but with urql we just thread them through `data`.
+		start,
+		end,
 		...(await addPageMeta(event, {
 			title: 'Utilization'
 		})),
-		...(await load_ResourceUtilizationForApp({
-			event,
-			variables: {
-				app: event.params.app,
-				env: event.params.env,
-				team: event.params.team,
-				start,
-				end
-			}
-		}))
+		// `Time` scalar is an ISO-8601 string on the wire. Houdini auto-formatted
+		// JS `Date` instances; with urql we serialize explicitly.
+		ResourceUtilizationForApp: await runQuery(event, ResourceUtilizationForAppQuery, {
+			app: event.params.app,
+			env: event.params.env,
+			team: event.params.team,
+			start: start.toISOString(),
+			end: end.toISOString()
+		})
 	};
 }

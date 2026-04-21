@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { PendingValue } from '$houdini';
 	import CostAreaChart from '$lib/chart/CostAreaChart.svelte';
 	import GraphErrors from '$lib/ui/GraphErrors.svelte';
 	import { changeParams } from '$lib/utils/searchparams';
@@ -10,10 +9,10 @@
 	const { AppCost, interval } = $derived(data);
 </script>
 
-<GraphErrors errors={$AppCost.errors} />
+<GraphErrors errors={AppCost.errors} />
 
 <div class="wrapper">
-	{#if $AppCost.data}
+	{#if AppCost.data}
 		<div class="graph">
 			<div class="heading">
 				<div class="content">
@@ -23,40 +22,40 @@
 					</BodyLong>
 				</div>
 			</div>
-			{#if $AppCost.data && $AppCost.data.team.environment.application.cost.daily !== PendingValue}
-				{#if $AppCost.data.team.environment.application.cost.daily.series.length === 0 && $AppCost.data.team.environment.environment !== PendingValue && $AppCost.data.team.environment.environment.name.search(/-fss/i) > 0}
-					<BodyLong spacing
-						>No cost data available for applications in {$AppCost.data.team.environment.environment
-							.name}.</BodyLong
-					>
-				{:else}
-					<div class="toggles">
-						<ToggleGroup
-							value={interval}
-							onchange={(interval) => changeParams({ interval }, { noScroll: true })}
-						>
-							{#each ['30d', '90d', '6m', '1y'] as interval (interval)}
-								<ToggleGroupItem value={interval}>{interval}</ToggleGroupItem>
-							{/each}
-						</ToggleGroup>
-					</div>
-					<div class="h-125">
-						<CostAreaChart
-							data={$AppCost.data.team.environment.application.cost.daily.series.map((item) => {
-								const ret: { date: Date; [key: string]: number | Date } = { date: item.date };
-								item.services.forEach((service) => {
-									ret[service.service] = service.cost;
-								});
-								return ret;
-							})}
-						/>
-					</div>
-				{/if}
+			{#if AppCost.data.team.environment.application.cost.daily.series.length === 0 && AppCost.data.team.environment.environment.name.search(/-fss/i) > 0}
+				<BodyLong spacing
+					>No cost data available for applications in {AppCost.data.team.environment.environment
+						.name}.</BodyLong
+				>
 			{:else}
-				<div style="display: flex; justify-content: center; align-items: center; height: 500px;">
-					<Loader size="3xlarge" />
+				<div class="toggles">
+					<ToggleGroup
+						value={interval}
+						onchange={(interval) => changeParams({ interval }, { noScroll: true })}
+					>
+						{#each ['30d', '90d', '6m', '1y'] as interval (interval)}
+							<ToggleGroupItem value={interval}>{interval}</ToggleGroupItem>
+						{/each}
+					</ToggleGroup>
+				</div>
+				<div class="h-125">
+					<CostAreaChart
+						data={AppCost.data.team.environment.application.cost.daily.series.map((item) => {
+							const ret: { date: Date; [key: string]: number | Date } = {
+								date: new Date(item.date)
+							};
+							item.services.forEach((service) => {
+								ret[service.service] = service.cost;
+							});
+							return ret;
+						})}
+					/>
 				</div>
 			{/if}
+		</div>
+	{:else if !AppCost.errors}
+		<div style="display: flex; justify-content: center; align-items: center; height: 500px;">
+			<Loader size="3xlarge" />
 		</div>
 	{/if}
 </div>

@@ -1,6 +1,8 @@
 <script lang="ts">
+	import { page } from '$app/state';
 	import Pagination from '$lib/ui/Pagination.svelte';
 	import Time from '$lib/ui/Time.svelte';
+	import { cursorPaginationLoaders } from '$lib/urql/pagination';
 	import { Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte-community';
 	import type { PageProps } from './$types';
 
@@ -9,7 +11,8 @@
 	let { ReconcilerLogs } = $derived(data);
 </script>
 
-{#if $ReconcilerLogs.data && $ReconcilerLogs.data.node?.__typename === 'Reconciler'}
+{#if ReconcilerLogs.data && ReconcilerLogs.data.node?.__typename === 'Reconciler'}
+	{@const node = ReconcilerLogs.data.node}
 	<Table size="small">
 		<Thead>
 			<Tr>
@@ -19,30 +22,21 @@
 			</Tr>
 		</Thead>
 		<Tbody>
-			{#if $ReconcilerLogs.data}
-				{#each $ReconcilerLogs.data.node.errors.nodes as error (error.id)}
-					<Tr>
-						<Td><span class="message">{error.message}</span></Td>
-						<Td><a href="/team/{error.team.slug}">{error.team.slug}</a></Td>
-						<Td><Time time={error.createdAt} distance={true} /></Td>
-					</Tr>
-				{:else}
-					<Tr><Td colspan={999}><em>No reconciler errors at the moment.</em></Td></Tr>
-				{/each}
-			{/if}
+			{#each node.errors.nodes as error (error.id)}
+				<Tr>
+					<Td><span class="message">{error.message}</span></Td>
+					<Td><a href="/team/{error.team.slug}">{error.team.slug}</a></Td>
+					<Td><Time time={error.createdAt} distance={true} /></Td>
+				</Tr>
+			{:else}
+				<Tr><Td colspan={999}><em>No reconciler errors at the moment.</em></Td></Tr>
+			{/each}
 		</Tbody>
 	</Table>
-	{#if $ReconcilerLogs.data.node.errors.pageInfo.hasPreviousPage || $ReconcilerLogs.data.node.errors.pageInfo.hasNextPage}
+	{#if node.errors.pageInfo.hasPreviousPage || node.errors.pageInfo.hasNextPage}
 		<Pagination
-			page={$ReconcilerLogs.data.node.errors.pageInfo}
-			loaders={{
-				loadPreviousPage: () => {
-					ReconcilerLogs.loadPreviousPage();
-				},
-				loadNextPage: () => {
-					ReconcilerLogs.loadNextPage();
-				}
-			}}
+			page={node.errors.pageInfo}
+			loaders={cursorPaginationLoaders(page.url, node.errors.pageInfo)}
 		/>
 	{/if}
 {/if}

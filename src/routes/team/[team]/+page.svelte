@@ -1,13 +1,13 @@
 <script lang="ts">
 	import { page } from '$app/state';
-	import { AlertState } from '$houdini';
 	import TeamOverviewActivityLog from '$lib/domain/activity/team-overview/TeamOverviewActivityLog.svelte';
 	import AggregatedCostForTeam from '$lib/domain/cost/AggregatedCostForTeam.svelte';
-	import PrometheusAlert from '$lib/domain/monitoring/PrometheusAlert.svelte';
 	import CriticalIssues from '$lib/domain/issues/CriticalIssues.svelte';
 	import IssueSummary from '$lib/domain/issues/IssueSummary.svelte';
+	import PrometheusAlert from '$lib/domain/monitoring/PrometheusAlert.svelte';
 	import VulnerabilitySummary from '$lib/domain/vulnerability/VulnerabilitySummary.svelte';
 	import GraphErrors from '$lib/ui/GraphErrors.svelte';
+	import { AlertState } from '$lib/urql/gql/graphql';
 	import { Alert, BodyShort } from '@nais/ds-svelte-community';
 	import type { PageProps } from './$types';
 
@@ -29,13 +29,13 @@
 	</Alert>
 {/if}
 
-<GraphErrors errors={$TeamOverview.errors} />
+<GraphErrors errors={TeamOverview.errors} />
 
-{#if $TeamOverview.data?.team.firingAlerts.pageInfo.totalCount}
+{#if TeamOverview.data?.team.firingAlerts.pageInfo.totalCount}
 	<div class="alerts-wrapper">
 		<PrometheusAlert
 			{teamSlug}
-			alerts={$TeamOverview.data?.team.firingAlerts.nodes}
+			alerts={TeamOverview.data?.team.firingAlerts.nodes}
 			collapsible={false}
 			alertsState={AlertState.FIRING}
 		/>
@@ -51,11 +51,11 @@
 	</div>
 	<div class="summary-cards">
 		<IssueSummary
-			critical={$TeamOverview.data?.team.criticals.pageInfo.totalCount}
-			warning={$TeamOverview.data?.team.warnings.pageInfo.totalCount}
-			todo={$TeamOverview.data?.team.todos.pageInfo.totalCount}
+			critical={TeamOverview.data?.team.criticals.pageInfo.totalCount}
+			warning={TeamOverview.data?.team.warnings.pageInfo.totalCount}
+			todo={TeamOverview.data?.team.todos.pageInfo.totalCount}
 			{teamSlug}
-			loading={$TeamOverview.fetching}
+			loading={false}
 		/>
 		<VulnerabilitySummary {teamSlug} />
 		<TeamOverviewActivityLog {teamSlug} />

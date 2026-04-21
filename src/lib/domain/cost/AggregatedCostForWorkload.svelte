@@ -1,10 +1,20 @@
 <script lang="ts">
-	import { graphql } from '$houdini';
 	import GraphErrors from '$lib/ui/GraphErrors.svelte';
+	import { getContextClient } from '$lib/urql/context';
+	import { graphql as gql } from '$lib/urql/gql';
 	import { euroValueFormatter } from '$lib/utils/formatters';
 	import { BodyShort, Heading, HelpText, Link } from '@nais/ds-svelte-community';
+	import { queryStore } from '@urql/svelte';
 
-	const costQuery = graphql(`
+	interface Props {
+		environment: string;
+		workload: string;
+		teamSlug: string;
+	}
+
+	let { environment, workload, teamSlug }: Props = $props();
+
+	const AggregatedCostQuery = gql(/* GraphQL */ `
 		query AggregatedCost($team: Slug!, $environment: String!, $workload: String!) {
 			team(slug: $team) {
 				slug
@@ -30,23 +40,28 @@
 		}
 	`);
 
-	$effect(() => {
-		costQuery.fetch({
-			variables: {
-				team: teamSlug,
-				environment: environment,
-				workload: workload
-			}
-		});
-	});
+	const client = getContextClient();
 
-	interface Props {
-		environment: string;
-		workload: string;
-		teamSlug: string;
-	}
+	const costQuery = $derived(
+		queryStore({
+			client,
+			query: AggregatedCostQuery,
+			variables: { team: teamSlug, environment, workload },
+			requestPolicy: 'cache-and-network'
+		})
+	);
 
-	let { environment, workload, teamSlug }: Props = $props();
+	const result = $derived($costQuery);
+
+	// `Date` scalar is `YYYY-MM-DD` on the wire (urql codegen surfaces it
+	// as `string`). Normalize to `Date` so the existing date-math helpers
+	// keep working unchanged.
+	const series = $derived(
+		(result.data?.team.environment.workload.cost.monthly.series ?? []).map((s) => ({
+			date: new Date(s.date),
+			sum: s.sum
+		}))
+	);
 
 	function getEstimateForMonth(cost: number, date: Date): number {
 		const daysKnown = date.getDate();
@@ -80,13 +95,12 @@
 		>
 	</div>
 
-	<GraphErrors errors={$costQuery.errors} />
+	<GraphErrors errors={result.error?.graphQLErrors ?? null} />
 
-	{#if $costQuery.data}
-		{@const cost = $costQuery.data.team.environment.workload.cost}
-		{@const factor = getFactor(cost.monthly.series)}
+	{#if result.data}
+		{@const factor = getFactor(series)}
 
-		{#each cost.monthly.series.slice(0, 2) as item (item)}
+		{#each series.slice(0, 2) as item (item.date.toISOString())}
 			{#if item.date.getDate() === new Date(item.date.getFullYear(), item.date.getMonth() + 1, 0).getDate()}
 				<BodyShort>
 					{item.date.toLocaleString('en-GB', { month: 'long' })}:
@@ -97,7 +111,7 @@
 					{item.date.toLocaleString('en-GB', { month: 'long' })}: {euroValueFormatter(
 						getEstimateForMonth(item.sum, item.date)
 					)}
-					{#if cost.monthly.series.length > 1}
+					{#if series.length > 1}
 						{#if factor > 1.0}
 							(<span style="color: var(--ax-bg-danger-strong);">+{factor.toFixed(2)}%</span>)
 						{:else}
@@ -113,10 +127,10 @@
 		{/each}
 
 		<Link
-			href="/team/{$costQuery.data.team.slug}/{$costQuery.data.team.environment.environment
-				.name}/{$costQuery.data.team.environment.workload.__typename === 'Job'
+			href="/team/{result.data.team.slug}/{result.data.team.environment.environment.name}/{result
+				.data.team.environment.workload.__typename === 'Job'
 				? 'job'
-				: 'app'}/{$costQuery.data.team.environment.workload.name}/cost">View details</Link
+				: 'app'}/{result.data.team.environment.workload.name}/cost">View details</Link
 		>
 	{:else}
 		No cost data available

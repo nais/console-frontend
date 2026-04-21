@@ -1,15 +1,15 @@
 <script lang="ts">
-	import { KafkaTopicOrderField, OrderDirection } from '$houdini';
+	import { docURL } from '$lib/doc';
+	import PersistenceCost from '$lib/domain/cost/PersistenceCost.svelte';
+	import PersistenceLink from '$lib/domain/persistence/PersistenceLink.svelte';
+	import { envTagVariant } from '$lib/envTagVariant';
 	import ExternalLink from '$lib/ui/ExternalLink.svelte';
+	import GraphErrors from '$lib/ui/GraphErrors.svelte';
 	import List from '$lib/ui/List.svelte';
 	import ListItem from '$lib/ui/ListItem.svelte';
 	import OrderByMenu from '$lib/ui/OrderByMenu.svelte';
-	import PersistenceCost from '$lib/domain/cost/PersistenceCost.svelte';
-	import PersistenceLink from '$lib/domain/persistence/PersistenceLink.svelte';
-	import { docURL } from '$lib/doc';
-	import { envTagVariant } from '$lib/envTagVariant';
-	import GraphErrors from '$lib/ui/GraphErrors.svelte';
 	import Pagination from '$lib/ui/Pagination.svelte';
+	import { KafkaTopicOrderField, OrderDirection } from '$lib/urql/gql/graphql';
 	import { changeParams } from '$lib/utils/searchparams';
 	import { BodyLong, Tag } from '@nais/ds-svelte-community';
 	import { endOfYesterday, startOfMonth, subMonths } from 'date-fns';
@@ -19,8 +19,8 @@
 	let { KafkaTopics } = $derived(data);
 
 	let cost = $derived(() => {
-		const costData = $KafkaTopics.data?.team.cost;
-		const teamSlug = $KafkaTopics.data?.team.slug;
+		const costData = KafkaTopics.data?.team.cost;
+		const teamSlug = KafkaTopics.data?.team.slug;
 
 		if (!costData || !teamSlug) return null;
 
@@ -32,10 +32,10 @@
 	});
 </script>
 
-<GraphErrors errors={$KafkaTopics.errors} />
+<GraphErrors errors={KafkaTopics.errors} />
 
-{#if $KafkaTopics.data}
-	{#if $KafkaTopics.data.team.kafkaTopics.pageInfo.totalCount}
+{#if KafkaTopics.data}
+	{#if KafkaTopics.data.team.kafkaTopics.pageInfo.totalCount}
 		<div class="content-wrapper">
 			<div>
 				<BodyLong spacing>
@@ -47,7 +47,7 @@
 					>
 				</BodyLong>
 
-				<List title="{$KafkaTopics.data.team.kafkaTopics.pageInfo.totalCount} entries">
+				<List title="{KafkaTopics.data.team.kafkaTopics.pageInfo.totalCount} entries">
 					{#snippet menu()}
 						<OrderByMenu
 							orderField={KafkaTopicOrderField}
@@ -55,7 +55,7 @@
 							defaultOrderDirection={OrderDirection.DESC}
 						/>
 					{/snippet}
-					{#each $KafkaTopics.data.team.kafkaTopics.nodes as instance (instance.id)}
+					{#each KafkaTopics.data.team.kafkaTopics.nodes as instance (instance.id)}
 						<ListItem>
 							<div>
 								<PersistenceLink {instance} />
@@ -67,19 +67,19 @@
 					{/each}
 				</List>
 				<Pagination
-					page={$KafkaTopics.data.team.kafkaTopics.pageInfo}
+					page={KafkaTopics.data.team.kafkaTopics.pageInfo}
 					loaders={{
 						loadPreviousPage: () =>
 							changeParams(
 								{
 									after: '',
-									before: $KafkaTopics.data?.team.kafkaTopics.pageInfo.startCursor ?? ''
+									before: KafkaTopics.data?.team.kafkaTopics.pageInfo.startCursor ?? ''
 								},
 								{ noScroll: true }
 							),
 						loadNextPage: () =>
 							changeParams(
-								{ before: '', after: $KafkaTopics.data?.team.kafkaTopics.pageInfo.endCursor ?? '' },
+								{ before: '', after: KafkaTopics.data?.team.kafkaTopics.pageInfo.endCursor ?? '' },
 								{ noScroll: true }
 							)
 					}}

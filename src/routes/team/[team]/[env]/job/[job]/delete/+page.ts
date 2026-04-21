@@ -1,6 +1,7 @@
-import { load_DeleteJobPage } from '$houdini';
+import { runQuery } from '$lib/urql/load';
 import { addPageMeta } from '$lib/utils/pageMeta';
 import { error } from '@sveltejs/kit';
+import { DeleteJobPageQuery } from './delete';
 
 export async function load(event) {
 	const pd = await event.parent();
@@ -11,13 +12,10 @@ export async function load(event) {
 
 	return {
 		...(await addPageMeta(event, { title: 'Delete' })),
-		...(await load_DeleteJobPage({
-			event,
-			variables: {
-				team: event.params.team,
-				env: event.params.env,
-				job: event.params.job
-			}
-		}))
+		DeleteJobPage: await runQuery(event, DeleteJobPageQuery, {
+			team: event.params.team,
+			env: event.params.env,
+			job: event.params.job
+		})
 	};
 }

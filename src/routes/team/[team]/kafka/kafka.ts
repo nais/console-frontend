@@ -1,0 +1,58 @@
+import { graphql as gql } from '$lib/urql/gql';
+
+export const KafkaTopicsQuery = gql(/* GraphQL */ `
+	query KafkaTopics(
+		$team: Slug!
+		$from: Date!
+		$to: Date!
+		$orderBy: KafkaTopicOrder
+		$first: Int
+		$last: Int
+		$before: Cursor
+		$after: Cursor
+	) {
+		team(slug: $team) {
+			slug
+			cost {
+				daily(
+					from: $from
+					to: $to
+					filter: { services: ["Kafka Shared", "Kafka Tiered Storage"] }
+				) {
+					series {
+						services {
+							service
+						}
+						date
+						sum
+					}
+				}
+			}
+			kafkaTopics(first: $first, last: $last, orderBy: $orderBy, before: $before, after: $after) {
+				pageInfo {
+					hasNextPage
+					hasPreviousPage
+					pageStart
+					pageEnd
+					totalCount
+					startCursor
+					endCursor
+				}
+
+				nodes {
+					id
+					__typename
+					name
+					team {
+						slug
+					}
+					teamEnvironment {
+						environment {
+							name
+						}
+					}
+				}
+			}
+		}
+	}
+`);

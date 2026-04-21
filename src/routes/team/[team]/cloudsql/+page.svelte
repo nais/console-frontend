@@ -3,7 +3,6 @@
 	import List from '$lib/ui/List.svelte';
 	import ListItem from '$lib/ui/ListItem.svelte';
 
-	import { OrderDirection, SqlInstanceOrderField } from '$houdini';
 	import { docURL } from '$lib/doc';
 	import PersistenceCost from '$lib/domain/cost/PersistenceCost.svelte';
 	import IssueSeverityTags from '$lib/domain/issues/IssueSeverityTags.svelte';
@@ -14,6 +13,7 @@
 	import OrderByMenu from '$lib/ui/OrderByMenu.svelte';
 	import Pagination from '$lib/ui/Pagination.svelte';
 	import TooltipAlignHack from '$lib/ui/TooltipAlignHack.svelte';
+	import { OrderDirection, SqlInstanceOrderField } from '$lib/urql/gql/graphql';
 	import { countIssuesBySeverity } from '$lib/utils/issueCounts';
 	import { changeParams } from '$lib/utils/searchparams';
 	import { BodyLong, Loader } from '@nais/ds-svelte-community';
@@ -24,17 +24,18 @@
 	let { data }: PageProps = $props();
 
 	let { SqlInstances } = $derived(data);
+	let result = $derived(SqlInstances);
 </script>
 
-<GraphErrors errors={$SqlInstances.errors} />
+<GraphErrors errors={result.errors} />
 
-{#if $SqlInstances.fetching}
+{#if !result.data && !result.errors}
 	<div class="loading">
 		<Loader size="3xlarge" />
 	</div>
-{:else if $SqlInstances.data && $SqlInstances.data.team.sqlInstances.pageInfo.totalCount > 0}
-	{@const cost = $SqlInstances.data.team.cost}
-	{@const si = $SqlInstances.data.team.sqlInstances}
+{:else if result.data && result.data.team.sqlInstances.pageInfo.totalCount > 0}
+	{@const cost = result.data.team.cost}
+	{@const si = result.data.team.sqlInstances}
 
 	<div class="content-wrapper">
 		<div>
@@ -138,7 +139,7 @@
 				<div>
 					<PersistenceCost
 						pageName="SQL Instances"
-						teamSlug={$SqlInstances.data.team.slug}
+						teamSlug={result.data.team.slug}
 						costData={cost}
 						from={startOfMonth(subMonths(new Date(), 1))}
 						to={endOfYesterday()}

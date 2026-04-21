@@ -1,8 +1,12 @@
-import { load_Configs, OrderDirection, ConfigOrderField, type ConfigFilter } from '$houdini';
 import { urlToOrderDirection, urlToOrderField } from '$lib/ui/OrderByMenu.svelte';
+import { ConfigOrderField, OrderDirection, type ConfigFilter } from '$lib/urql/gql/graphql';
+import { runQuery } from '$lib/urql/load';
+import { readCursorPagination } from '$lib/urql/pagination';
 import { addPageMeta } from '$lib/utils/pageMeta';
+import { ConfigsQuery } from './configs';
 
 const rows = 25;
+
 export async function load(event) {
 	const filter = event.url.searchParams.get('filter') || '';
 	const nameFilter = event.url.searchParams.get('nameFilter') || '';
@@ -17,22 +21,16 @@ export async function load(event) {
 		filterVar = { ...filterVar, name: nameFilter };
 	}
 
-	const after = event.url.searchParams.get('after') || '';
-	const before = event.url.searchParams.get('before') || '';
-
 	return {
 		...(await addPageMeta(event, { title: 'Config' })),
-		...(await load_Configs({
-			event,
-			variables: {
-				team: event.params.team,
-				orderBy: {
-					field: urlToOrderField(ConfigOrderField, ConfigOrderField.NAME, event.url),
-					direction: urlToOrderDirection(event.url, OrderDirection.ASC)
-				},
-				...(before ? { before, last: rows } : { after, first: rows }),
-				filter: filterVar
-			}
-		}))
+		Configs: await runQuery(event, ConfigsQuery, {
+			team: event.params.team,
+			orderBy: {
+				field: urlToOrderField(ConfigOrderField, ConfigOrderField.NAME, event.url),
+				direction: urlToOrderDirection(event.url, OrderDirection.ASC)
+			},
+			...readCursorPagination(event.url, rows),
+			filter: filterVar
+		})
 	};
 }

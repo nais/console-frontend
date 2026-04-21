@@ -1,11 +1,12 @@
 <script lang="ts">
+	import { page } from '$app/state';
 	import { docURL } from '$lib/doc';
 	import DeploymentListItem from '$lib/domain/list-items/DeploymentListItem.svelte';
 	import ExternalLink from '$lib/ui/ExternalLink.svelte';
 	import GraphErrors from '$lib/ui/GraphErrors.svelte';
 	import List from '$lib/ui/List.svelte';
 	import Pagination from '$lib/ui/Pagination.svelte';
-	import { changeParams } from '$lib/utils/searchparams';
+	import { cursorPaginationLoaders } from '$lib/urql/pagination';
 	import { BodyLong } from '@nais/ds-svelte-community';
 	import { format } from 'date-fns';
 	import type { PageProps } from './$types';
@@ -13,30 +14,15 @@
 	let { data }: PageProps = $props();
 
 	let { Deployments } = $derived(data);
-
-	let after: string = $derived($Deployments.variables?.after ?? '');
-	let before: string = $derived($Deployments.variables?.before ?? '');
-
-	const changeQuery = (
-		params: {
-			after?: string;
-			before?: string;
-		} = {}
-	) => {
-		changeParams({
-			before: params.before ?? before,
-			after: params.after ?? after
-		});
-	};
 </script>
 
-<GraphErrors errors={$Deployments.errors} />
+<GraphErrors errors={Deployments.errors} />
 
-{#if $Deployments.data}
+{#if Deployments.data}
 	<div class="wrapper">
 		<div>
 			<BodyLong spacing>
-				{#if $Deployments.data?.team.deployments.pageInfo.totalCount == 0}
+				{#if Deployments.data?.team.deployments.pageInfo.totalCount == 0}
 					<strong>No deployments found.</strong>
 					<ExternalLink href={docURL('/build/')}
 						>Learn more about builds and deployments in Nais.</ExternalLink
@@ -48,42 +34,29 @@
 					>
 				{/if}
 			</BodyLong>
-			{#if $Deployments.data?.team.deployments.pageInfo.totalCount > 0}
+			{#if Deployments.data?.team.deployments.pageInfo.totalCount > 0}
 				<List
-					title="{$Deployments.data.team.deployments.pageInfo.totalCount} deployment{$Deployments
-						.data.team.deployments.pageInfo.totalCount !== 1
+					title="{Deployments.data.team.deployments.pageInfo.totalCount} deployment{Deployments.data
+						.team.deployments.pageInfo.totalCount !== 1
 						? 's'
-						: ''} - showing {$Deployments.data.team.deployments.pageInfo.pageEnd -
-						$Deployments.data.team.deployments.pageInfo.pageStart +
+						: ''} - showing {Deployments.data.team.deployments.pageInfo.pageEnd -
+						Deployments.data.team.deployments.pageInfo.pageStart +
 						1} from {format(
-						$Deployments.data.team.deployments.nodes.at(0)?.createdAt ?? '',
+						Deployments.data.team.deployments.nodes.at(0)?.createdAt ?? '',
 						'dd/MM/yyyy'
 					)} to {format(
-						$Deployments.data.team.deployments.nodes.at(-1)?.createdAt ?? '',
+						Deployments.data.team.deployments.nodes.at(-1)?.createdAt ?? '',
 						'dd/MM/yyyy'
 					)}"
 				>
-					{#each $Deployments.data.team.deployments.nodes as deployment (deployment.id)}
+					{#each Deployments.data.team.deployments.nodes as deployment (deployment.id)}
 						<DeploymentListItem {deployment} showEnv />
 					{/each}
 				</List>
 
 				<Pagination
-					page={$Deployments.data.team.deployments.pageInfo}
-					loaders={{
-						loadPreviousPage: () => {
-							changeQuery({
-								after: '',
-								before: $Deployments.data?.team.deployments.pageInfo.startCursor ?? ''
-							});
-						},
-						loadNextPage: () => {
-							changeQuery({
-								before: '',
-								after: $Deployments.data?.team.deployments.pageInfo.endCursor ?? ''
-							});
-						}
-					}}
+					page={Deployments.data.team.deployments.pageInfo}
+					loaders={cursorPaginationLoaders(page.url, Deployments.data.team.deployments.pageInfo)}
 				/>
 			{/if}
 		</div>

@@ -1,6 +1,7 @@
-import { load_DeleteOpenSearchData } from '$houdini';
+import { runQuery } from '$lib/urql/load';
 import { addPageMeta } from '$lib/utils/pageMeta';
 import { error } from '@sveltejs/kit';
+import { DeleteOpenSearchDataQuery } from './query';
 
 export async function load(event) {
 	const { parent, params } = event;
@@ -18,13 +19,10 @@ export async function load(event) {
 
 	return {
 		...(await addPageMeta(event, { title: 'Delete' })),
-		...(await load_DeleteOpenSearchData({
-			event,
-			variables: {
-				environment: event.params.env,
-				team: event.params.team,
-				name: event.params.opensearch
-			}
-		}))
+		DeleteOpenSearchData: await runQuery(event, DeleteOpenSearchDataQuery, {
+			environment: event.params.env,
+			team: event.params.team,
+			name: event.params.opensearch
+		})
 	};
 }
