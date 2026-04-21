@@ -17,6 +17,7 @@
 	import OpenSearchCreatedActivityLogEntryText from '../sidebar/texts/OpenSearchCreatedActivityLogEntryText.svelte';
 	import OpenSearchDeletedActivityLogEntryText from '../sidebar/texts/OpenSearchDeletedActivityLogEntryText.svelte';
 	import OpenSearchUpdatedActivityLogEntryText from '../sidebar/texts/OpenSearchUpdatedActivityLogEntryText.svelte';
+	import PostgresDeletedActivityLogEntryText from '../sidebar/texts/PostgresDeletedActivityLogEntryText.svelte';
 	import RepositoryAddedActivityLogEntryText from '../sidebar/texts/RepositoryAddedActivityLogEntryText.svelte';
 	import RepositoryRemovedActivityLogEntryText from '../sidebar/texts/RepositoryRemovedActivityLogEntryText.svelte';
 	import ResourceDeletedActivityLogEntryText from '../sidebar/texts/ResourceDeletedActivityLogEntryText.svelte';
@@ -53,6 +54,7 @@
 			ActivityLogActivityType.OPENSEARCH_DELETED,
 			ActivityLogActivityType.OPENSEARCH_UPDATED,
 			ActivityLogActivityType.OPENSEARCH_MAINTENANCE_STARTED,
+			ActivityLogActivityType.POSTGRES_DELETED,
 			ActivityLogActivityType.RECONCILER_CONFIGURED,
 			ActivityLogActivityType.RECONCILER_DISABLED,
 			ActivityLogActivityType.RECONCILER_ENABLED,
@@ -129,6 +131,9 @@
 										oldValue
 									}
 								}
+							}
+							... on PostgresDeletedActivityLogEntry {
+								id
 							}
 							... on SecretValueAddedActivityLogEntry {
 								secretValueAddedData: data {
@@ -217,6 +222,8 @@
 				return OpenSearchDeletedActivityLogEntryText as Component<{ data: unknown }>;
 			case 'OpenSearchUpdatedActivityLogEntry':
 				return OpenSearchUpdatedActivityLogEntryText as Component<{ data: unknown }>;
+			case 'PostgresDeletedActivityLogEntry':
+				return PostgresDeletedActivityLogEntryText as Component<{ data: unknown }>;
 			case 'RepositoryAddedActivityLogEntry':
 				return RepositoryAddedActivityLogEntryText as Component<{ data: unknown }>;
 			case 'RepositoryRemovedActivityLogEntry':

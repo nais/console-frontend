@@ -40,6 +40,9 @@ export function activityTooltip(typename: string): string {
 		case 'OpenSearchDeletedActivityLogEntry':
 		case 'OpenSearchUpdatedActivityLogEntry':
 			return 'OpenSearch';
+		case 'PostgresDeletedActivityLogEntry':
+		case 'PostgresGrantAccessActivityLogEntry':
+			return 'Postgres';
 		case 'ValkeyCreatedActivityLogEntry':
 		case 'ValkeyDeletedActivityLogEntry':
 		case 'ValkeyUpdatedActivityLogEntry':

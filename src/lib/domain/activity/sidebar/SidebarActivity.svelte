@@ -24,6 +24,7 @@
 	import OpenSearchCreatedActivityLogEntryText from './texts/OpenSearchCreatedActivityLogEntryText.svelte';
 	import OpenSearchDeletedActivityLogEntryText from './texts/OpenSearchDeletedActivityLogEntryText.svelte';
 	import OpenSearchUpdatedActivityLogEntryText from './texts/OpenSearchUpdatedActivityLogEntryText.svelte';
+	import PostgresDeletedActivityLogEntryText from './texts/PostgresDeletedActivityLogEntryText.svelte';
 	import RepositoryAddedActivityLogEntryText from './texts/RepositoryAddedActivityLogEntryText.svelte';
 	import RepositoryRemovedActivityLogEntryText from './texts/RepositoryRemovedActivityLogEntryText.svelte';
 	import ResourceDeletedActivityLogEntryText from './texts/ResourceDeletedActivityLogEntryText.svelte';
@@ -221,6 +222,9 @@
 							... on OpenSearchDeletedActivityLogEntry {
 								id
 							}
+							... on PostgresDeletedActivityLogEntry {
+								id
+							}
 							... on OpenSearchUpdatedActivityLogEntry {
 								opensearchData: data {
 									updatedFields {
@@ -304,6 +308,8 @@
 				return OpenSearchDeletedActivityLogEntryText as Component<{ data: unknown }>;
 			case 'OpenSearchUpdatedActivityLogEntry':
 				return OpenSearchUpdatedActivityLogEntryText as Component<{ data: unknown }>;
+			case 'PostgresDeletedActivityLogEntry':
+				return PostgresDeletedActivityLogEntryText as Component<{ data: unknown }>;
 			default:
 				return DefaultText as Component<{ data: unknown }>;
 		}

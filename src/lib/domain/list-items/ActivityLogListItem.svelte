@@ -20,6 +20,7 @@
 	import OpenSearchCreatedActivityLogEntryText from '../activity/shared/texts/OpenSearchCreatedActivityLogEntryText.svelte';
 	import OpenSearchDeletedActivityLogEntryText from '../activity/shared/texts/OpenSearchDeletedActivityLogEntryText.svelte';
 	import OpenSearchUpdatedActivityLogEntryText from '../activity/shared/texts/OpenSearchUpdatedActivityLogEntryText.svelte';
+	import PostgresDeletedActivityLogEntryText from '../activity/shared/texts/PostgresDeletedActivityLogEntryText.svelte';
 	import PostgresGrantAccessActivityLogEntryText from '../activity/shared/texts/PostgresGrantAccessActivityLogEntryText.svelte';
 	import RepositoryAddedActivityLogEntryText from '../activity/shared/texts/RepositoryAddedActivityLogEntryText.svelte';
 	import RepositoryRemovedActivityLogEntryText from '../activity/shared/texts/RepositoryRemovedActivityLogEntryText.svelte';
@@ -117,6 +118,9 @@
 								oldValue
 							}
 						}
+					}
+					... on PostgresDeletedActivityLogEntry {
+						__typename
 					}
 					... on PostgresGrantAccessActivityLogEntry {
 						__typename
@@ -266,6 +270,8 @@
 				return OpenSearchDeletedActivityLogEntryText as Component<{ data: unknown }>;
 			case 'OpenSearchUpdatedActivityLogEntry':
 				return OpenSearchUpdatedActivityLogEntryText as Component<{ data: unknown }>;
+			case 'PostgresDeletedActivityLogEntry':
+				return PostgresDeletedActivityLogEntryText as Component<{ data: unknown }>;
 			case 'PostgresGrantAccessActivityLogEntry':
 				return PostgresGrantAccessActivityLogEntryText as Component<{ data: unknown }>;
 			case 'RepositoryAddedActivityLogEntry':
