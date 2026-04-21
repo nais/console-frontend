@@ -12,7 +12,7 @@
 <script lang="ts" generics="T">
 	import { euroValueFormatter } from '$lib/utils/formatters';
 
-	import { Highlight, LineChart, Tooltip } from 'layerchart';
+	import { LineChart, Tooltip } from 'layerchart';
 	import { SvelteDate } from 'svelte/reactivity';
 	import { euroAxisFormatter } from './util';
 
@@ -88,6 +88,9 @@
 					class: 'stroke-2',
 					motion: 'none'
 				},
+				highlight: {
+					motion: 'none'
+				},
 				yAxis: {
 					format: euroAxisFormatter
 				},
@@ -101,12 +104,6 @@
 				}
 			}}
 		>
-			{#snippet highlight({ visibleSeries, getHighlightProps })}
-				<!-- Disable motion for highlight points -->
-				{#each visibleSeries as s, i (s.key)}
-					<Highlight {...getHighlightProps(s, i)} motion="none" />
-				{/each}
-			{/snippet}
 			{#snippet tooltip()}
 				<!-- More suitable single-value tooltip -->
 				<Tooltip.Root>

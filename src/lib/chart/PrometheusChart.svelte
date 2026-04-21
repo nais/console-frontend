@@ -307,11 +307,11 @@
 		>
 			{#snippet tooltip({ context })}
 				<Tooltip.Root>
-					{#snippet children({ data, payload })}
+					{#snippet children({ data })}
 						<Tooltip.Header>{formatXValue(context.x(data))}</Tooltip.Header>
 						<Tooltip.List>
-							{#each payload.filter((p) => p.value !== undefined) as p, i (p.key ?? i)}
-								<Tooltip.Item label={p.key} color={p.color}>
+							{#each context.tooltipState.series.filter((p) => p.value !== undefined) as p, i (p.key ?? i)}
+								<Tooltip.Item label={p.label ?? p.key} color={p.color}>
 									{formatYValue(p.value)}
 								</Tooltip.Item>
 							{/each}

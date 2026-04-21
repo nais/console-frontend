@@ -126,9 +126,16 @@
 								yAxis: { format: euroAxisFormatter }
 							}}
 						>
-							{#snippet tooltip({ context, visibleSeries })}
+							{#snippet tooltip({ context })}
 								<Tooltip.Root>
-									{#snippet children({ data, payload })}
+									{#snippet children({ data })}
+										{@const visibleSeries = context.series.visibleSeries}
+										{@const payload = context.tooltipState.series.map((s) => ({
+											key: s.key,
+											name: s.label ?? s.key,
+											color: s.color,
+											value: s.value
+										}))}
 										{@const total = sum(visibleSeries, (s) => {
 											const seriesTooltipData = s.data
 												? findRelatedData(s.data, data, context.x)
@@ -136,7 +143,7 @@
 											const valueAccessor = accessor(s.value ?? (s.data ? context.y : s.key));
 											return valueAccessor(seriesTooltipData);
 										})}
-										<Tooltip.Header value={payload[0].label} format={formatDate} />
+										<Tooltip.Header value={data.date} format={formatDate} />
 										<Tooltip.List>
 											{#each sortedPayload(payload) as p, i (p.key ?? i)}
 												<Tooltip.Item label={p.name} color={p.color} valueAlign="right">
@@ -144,7 +151,7 @@
 														{euroValueFormatter(p.value)}
 														({((p.value / total) * 100).toFixed(1)}%)
 													{:else}
-														<span style="opacity:0.5;">${euroValueFormatter(0)}</span>
+														<span style="opacity:0.5;">{euroValueFormatter(0)}</span>
 													{/if}
 												</Tooltip.Item>
 											{/each}

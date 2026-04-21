@@ -6,10 +6,7 @@
 	import type { Snippet } from 'svelte';
 
 	import { Legend } from 'layerchart';
-	import LegendWrapperData, {
-		createLegendContext,
-		type LegendSnippetProps
-	} from './LegendWrapperData.svelte';
+	import LegendWrapperData, { createLegendContext } from './LegendWrapperData.svelte';
 
 	let {
 		children,
@@ -20,15 +17,14 @@
 	const ctx = createLegendContext();
 </script>
 
-{#snippet legendSnippet(data: LegendSnippetProps)}
-	<LegendWrapperData {data} />
+{#snippet legendSnippet()}
+	<LegendWrapperData />
 {/snippet}
 
 <div bind:this={ref}>
-	{#if ctx.data}
-		{@const props = ctx.data.getLegendProps()}
+	{#if ctx.hasLegend}
 		<div class="wrapper">
-			<Legend {...props} />
+			<Legend />
 		</div>
 	{/if}
 	<div class="chart" style="height: {height};">

@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { type DataProduct$result } from '$houdini';
-	import { accessor, PieChart, Tooltip } from 'layerchart';
+	import { PieChart, Tooltip } from 'layerchart';
 	import type { PageProps } from './$types';
 
 	let { data }: PageProps = $props();
@@ -54,17 +54,14 @@
 				}}
 				props={{ pie: { motion: 'tween' } }}
 			>
-				{#snippet tooltip({ series, context })}
+				{#snippet tooltip({ context })}
 					<Tooltip.Root>
 						{#snippet children({ data })}
 							<Tooltip.List>
-								{#each series as s (s.key)}
-									{@const valueAccessor = accessor(s.value ?? s.key)}
-									<Tooltip.Item label={data.fruit} color={context.cScale?.(context.c(data))}>
-										{valueAccessor(data)}
-										{total > 0 ? `(${((valueAccessor(data) / total) * 100).toFixed(2)}%)` : ''}
-									</Tooltip.Item>
-								{/each}
+								<Tooltip.Item label={data.fruit} color={context.cScale?.(context.c(data))}>
+									{data.value}
+									{total > 0 ? `(${((data.value / total) * 100).toFixed(2)}%)` : ''}
+								</Tooltip.Item>
 							</Tooltip.List>
 						{/snippet}
 					</Tooltip.Root>
