@@ -26,9 +26,8 @@
 
 <div bind:this={ref}>
 	{#if ctx.data}
-		{@const props = ctx.data.getLegendProps()}
 		<div class="wrapper">
-			<Legend {...props} />
+			<Legend />
 		</div>
 	{/if}
 	<div class="chart" style="height: {height};">

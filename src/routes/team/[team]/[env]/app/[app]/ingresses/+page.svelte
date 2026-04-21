@@ -9,7 +9,7 @@
 	import { Heading, Loader, ToggleGroup, ToggleGroupItem } from '@nais/ds-svelte-community';
 	import { GlobeIcon, HouseIcon, PadlockLockedIcon } from '@nais/ds-svelte-community/icons';
 	import { LineChart } from 'layerchart';
-	import { tick, type ComponentProps } from 'svelte';
+	import { tick } from 'svelte';
 	import type { PageProps } from './$types';
 
 	let { data }: PageProps = $props();
@@ -29,7 +29,7 @@
 		};
 	};
 
-	function options(input: Series): ComponentProps<LineChart<unknown>> {
+	function options(input: Series) {
 		const rpsData = input.metrics.rps;
 		const epsData = input.metrics.eps;
 

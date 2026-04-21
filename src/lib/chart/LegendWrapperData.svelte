@@ -1,9 +1,8 @@
 <script lang="ts" module>
-	import type { Legend } from 'layerchart';
-	import { getContext, setContext, type ComponentProps } from 'svelte';
+	import { getContext, setContext } from 'svelte';
 
 	export type LegendSnippetProps = {
-		getLegendProps: () => ComponentProps<typeof Legend>;
+		context: unknown;
 	};
 
 	const contextKey = Symbol('legend-context');

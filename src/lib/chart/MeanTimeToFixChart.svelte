@@ -105,9 +105,10 @@
 			}
 		}}
 	>
-		{#snippet tooltip({ series, context })}
+		{#snippet tooltip({ context })}
 			<Tooltip.Root>
 				{#snippet children({ data })}
+					{@const series = context.series.series}
 					<Tooltip.Header>{format(context.x(data), 'dd/MM/yyyy')}</Tooltip.Header>
 					<Tooltip.List>
 						{#each severitiesForChart as severityKey (severityKey)}

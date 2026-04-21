@@ -458,7 +458,7 @@
 					y="value"
 					brush={{
 						onBrushEnd(detail) {
-							brushXDomain = detail.xDomain as [Date, Date];
+							brushXDomain = detail.brush.x as [Date, Date];
 						}
 					}}
 					yDomain={[0, cpuMax]}
@@ -496,7 +496,7 @@
 					{/snippet}
 					{#snippet tooltip({ context })}
 						<Tooltip.Root>
-							{#snippet children({ data, payload })}
+							{#snippet children({ data })}
 								{#if data.annotation}
 									{@const log = data.annotation.details as groupedLogs}
 									{#each log.logs as l (l.id)}
@@ -521,8 +521,8 @@
 									)?.value}
 									<Tooltip.Header>{format(context.x(data), 'dd/MM/yyyy HH:mm')}</Tooltip.Header>
 									<Tooltip.List>
-										{#each payload.filter((p) => p.value && p.value > 0) as p, i (p.key ?? i)}
-											<Tooltip.Item label={p.name} color={p.color} valueAlign="right">
+										{#each context.tooltipState.series.filter((p) => p.value && p.value > 0) as p, i (p.key ?? i)}
+											<Tooltip.Item label={p.label} color={p.color} valueAlign="right">
 												{p.value.toFixed(3)}
 											</Tooltip.Item>
 										{/each}
@@ -619,7 +619,7 @@
 					y="value"
 					brush={{
 						onBrushEnd(detail) {
-							brushXDomain = detail.xDomain as [Date, Date];
+							brushXDomain = detail.brush.x as [Date, Date];
 						}
 					}}
 					yDomain={[0, memoryMax]}
@@ -657,7 +657,7 @@
 					{/snippet}
 					{#snippet tooltip({ context })}
 						<Tooltip.Root>
-							{#snippet children({ data, payload })}
+							{#snippet children({ data })}
 								{#if data.annotation}
 									{@const log = data.annotation.details as groupedLogs}
 									{#each log.logs as l (l.id)}
@@ -682,8 +682,8 @@
 									)?.value}
 									<Tooltip.Header>{format(context.x(data), 'dd/MM/yyyy HH:mm')}</Tooltip.Header>
 									<Tooltip.List>
-										{#each payload.filter((p) => p.value && p.value > 0) as p, i (p.key ?? i)}
-											<Tooltip.Item label={p.name} color={p.color} valueAlign="right">
+										{#each context.tooltipState.series.filter((p) => p.value && p.value > 0) as p, i (p.key ?? i)}
+											<Tooltip.Item label={p.label} color={p.color} valueAlign="right">
 												{prettyBytes(p.value)}
 											</Tooltip.Item>
 										{/each}

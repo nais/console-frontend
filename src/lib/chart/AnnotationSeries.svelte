@@ -72,14 +72,14 @@
 		y1={ctx.yScale(item.value)}
 		x2={ctx.xScale(item.to)}
 		y2={ctx.yScale(item.value)}
-		class={['stroke-surface-content', colorClass]}
+		class={`stroke-surface-content ${colorClass}`}
 	/>
 
 	{#if i == combinedData.length - 1 && label}
 		<Text
 			value={label}
 			{...labelProps(item)}
-			class={['pointer-events-none text-xs', labelColorClass]}
+			class={`pointer-events-none text-xs ${labelColorClass ?? ''}`}
 		/>
 	{/if}
 {/each}
