@@ -522,7 +522,7 @@
 									<Tooltip.Header>{format(context.x(data), 'dd/MM/yyyy HH:mm')}</Tooltip.Header>
 									<Tooltip.List>
 										{#each context.tooltipState.series.filter((p) => p.value && p.value > 0) as p, i (p.key ?? i)}
-											<Tooltip.Item label={p.label} color={p.color} valueAlign="right">
+											<Tooltip.Item label={p.label ?? p.key} color={p.color} valueAlign="right">
 												{p.value.toFixed(3)}
 											</Tooltip.Item>
 										{/each}
@@ -683,7 +683,7 @@
 									<Tooltip.Header>{format(context.x(data), 'dd/MM/yyyy HH:mm')}</Tooltip.Header>
 									<Tooltip.List>
 										{#each context.tooltipState.series.filter((p) => p.value && p.value > 0) as p, i (p.key ?? i)}
-											<Tooltip.Item label={p.label} color={p.color} valueAlign="right">
+											<Tooltip.Item label={p.label ?? p.key} color={p.color} valueAlign="right">
 												{prettyBytes(p.value)}
 											</Tooltip.Item>
 										{/each}

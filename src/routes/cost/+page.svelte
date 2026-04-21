@@ -132,7 +132,7 @@
 										{@const visibleSeries = context.series.visibleSeries}
 										{@const payload = context.tooltipState.series.map((s) => ({
 											key: s.key,
-											name: s.label,
+											name: s.label ?? s.key,
 											color: s.color,
 											value: s.value
 										}))}
