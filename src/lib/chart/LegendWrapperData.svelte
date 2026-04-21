@@ -1,14 +1,12 @@
 <script lang="ts" module>
 	import { getContext, setContext } from 'svelte';
 
-	export type LegendSnippetProps = {
-		context: unknown;
-	};
+	export type LegendSnippetProps = unknown;
 
 	const contextKey = Symbol('legend-context');
 
 	class Context {
-		data: LegendSnippetProps | undefined = $state();
+		hasLegend = $state(false);
 	}
 
 	function getLegendContext() {
@@ -23,15 +21,13 @@
 </script>
 
 <script lang="ts">
-	let {
-		data
-	}: {
-		data: LegendSnippetProps;
-	} = $props();
-
 	const ctx = getLegendContext();
 
 	$effect(() => {
-		ctx.data = data;
+		ctx.hasLegend = true;
+
+		return () => {
+			ctx.hasLegend = false;
+		};
 	});
 </script>
