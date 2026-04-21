@@ -8,7 +8,6 @@
 	import Configs from '$lib/domain/resources/Configs.svelte';
 	import NetworkPolicy from '$lib/domain/resources/NetworkPolicy.svelte';
 	import Secrets from '$lib/domain/resources/Secrets.svelte';
-	import WorkloadVulnerabilitySummary from '$lib/domain/vulnerability/WorkloadVulnerabilitySummary.svelte';
 	import WorkloadDeploy from '$lib/domain/workload/WorkloadDeploy.svelte';
 	import Confirm from '$lib/ui/Confirm.svelte';
 	import GraphErrors from '$lib/ui/GraphErrors.svelte';
@@ -143,6 +142,14 @@
 						</List>
 					</div>
 				{/if}
+				<Schedule
+					schedule={job.schedule}
+					scheduleContext={{
+						team: job.team.slug,
+						environment: job.teamEnvironment.environment.name,
+						job: job.name
+					}}
+				/>
 				<div style="display:flex; flex-direction: column; gap:0.5rem;">
 					<div class="runs-header">
 						<Heading as="h2" size="medium">Runs</Heading>
@@ -176,26 +183,14 @@
 				</div>
 			</div>
 			<div class="sidebar">
-				<Schedule
-					schedule={job.schedule}
-					scheduleContext={{
-						team: job.team.slug,
-						environment: job.teamEnvironment.environment.name,
-						job: job.name
-					}}
-				/>
 				{#if jobName && environment}
 					<AggregatedCostForWorkload workload={jobName} {environment} {teamSlug} />
 				{/if}
-				<div>
-					<Heading as="h2" size="small">Vulnerabilities</Heading>
-					<WorkloadVulnerabilitySummary workload={job} />
-				</div>
 				{#if jobName && environment}
 					<Configs workload={jobName} {environment} {teamSlug} />
 					<Secrets workload={jobName} {environment} {teamSlug} />
 				{/if}
-				<SidebarActivity activityLog={job} />
+				<SidebarActivity activityLog={job} direct={job.activityLog} />
 			</div>
 		</div>
 
