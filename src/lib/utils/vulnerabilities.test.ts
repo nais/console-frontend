@@ -189,10 +189,13 @@ describe('vulnerabilities', () => {
 			});
 		});
 
-		test('PROCESSING with imageUpdatedAt shows elapsed time as label', () => {
+		test('PROCESSING with sbomProcessingStartedAt shows elapsed time as label', () => {
 			const now = new Date();
 			const fiveMinAgo = new Date(now.getTime() - 5 * 60_000);
-			const result = sbomStatusDetails({ status: 'PROCESSING', imageUpdatedAt: fiveMinAgo });
+			const result = sbomStatusDetails({
+				status: 'PROCESSING',
+				sbomProcessingStartedAt: fiveMinAgo
+			});
 			expect(result.label).toBe('Processing for 5 min');
 		});
 	});

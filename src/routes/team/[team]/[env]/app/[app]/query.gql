@@ -11,7 +11,7 @@ query App($app: String!, $team: Slug!, $env: String!) {
 				image {
 					hasSBOM
 					sbomStatus
-					imageUpdatedAt
+					sbomProcessingStartedAt
 					vulnerabilitySummary {
 						critical
 						high

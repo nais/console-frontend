@@ -99,7 +99,7 @@
 	{@const job = $Job.data.team.environment.job}
 	{@const imageStaleness = sbomStatusDetails({
 		status: job.image.sbomStatus,
-		imageUpdatedAt: job.image.imageUpdatedAt,
+		sbomProcessingStartedAt: job.image.sbomProcessingStartedAt,
 		hasVulnerabilityData: !!(job.image.hasSBOM && job.image.vulnerabilitySummary)
 	})}
 	<div class="wrapper">

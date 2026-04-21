@@ -1668,14 +1668,14 @@ type ContainerImage implements ActivityLogger & Node {
   """The globally unique ID of the container image node."""
   id: ID!
 
+  """Name of the container image."""
+  name: String!
+
   """
   The timestamp when the image reference was last updated by a workload.
   Useful as a progress indicator when status is PROCESSING.
   """
-  imageUpdatedAt: Time
-
-  """Name of the container image."""
-  name: String!
+  sbomProcessingStartedAt: Time
 
   """The SBOM pipeline status for this image."""
   sbomStatus: SbomStatus!
@@ -10214,7 +10214,7 @@ type WorkloadVulnerabilitySummary implements Node {
   """
   The timestamp when the workload's image reference was last updated. Useful as a progress indicator when status is PROCESSING.
   """
-  imageUpdatedAt: Time
+  sbomProcessingStartedAt: Time
 
   """The SBOM pipeline status for this workload."""
   sbomStatus: SbomStatus!

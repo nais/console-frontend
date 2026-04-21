@@ -30,7 +30,7 @@
 	{@const hasVulnerabilityData = workload.image.hasSBOM && workload.image.vulnerabilitySummary}
 	{@const imageStaleness = sbomStatusDetails({
 		status: workload.image.sbomStatus,
-		imageUpdatedAt: workload.image.imageUpdatedAt
+		sbomProcessingStartedAt: workload.image.sbomProcessingStartedAt
 	})}
 	<div class="wrapper">
 		<div class="top">
