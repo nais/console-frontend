@@ -151,7 +151,7 @@
 														{euroValueFormatter(p.value)}
 														({((p.value / total) * 100).toFixed(1)}%)
 													{:else}
-														<span style="opacity:0.5;">${euroValueFormatter(0)}</span>
+														<span style="opacity:0.5;">{euroValueFormatter(0)}</span>
 													{/if}
 												</Tooltip.Item>
 											{/each}
