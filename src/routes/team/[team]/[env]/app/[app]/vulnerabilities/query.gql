@@ -24,7 +24,7 @@ query ApplicationImageDetails($team: Slug!, $env: String!, $app: String!)
 					tag
 					hasSBOM
 					sbomStatus
-					imageUpdatedAt
+					sbomProcessingStartedAt
 					activityLog @paginate(mode: SinglePage) {
 						pageInfo {
 							hasNextPage

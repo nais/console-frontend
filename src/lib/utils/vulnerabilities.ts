@@ -9,7 +9,7 @@ export type SbomStatusIconIndicator = 'healthy' | 'processing' | 'warning' | 'no
 
 export interface SbomStatusSource {
 	status: SbomStatus;
-	imageUpdatedAt?: Date | null;
+	sbomProcessingStartedAt?: Date | null;
 	hasVulnerabilityData?: boolean;
 }
 
@@ -34,9 +34,11 @@ const sbomStatusLabels: Record<SbomStatus, string> = {
 	FAILED: 'SBOM processing failed'
 };
 
-export function formatProcessingDuration(imageUpdatedAt: Date | null | undefined): string | null {
-	if (!imageUpdatedAt) return null;
-	const diffMs = Date.now() - imageUpdatedAt.getTime();
+export function formatProcessingDuration(
+	sbomProcessingStartedAt: Date | null | undefined
+): string | null {
+	if (!sbomProcessingStartedAt) return null;
+	const diffMs = Date.now() - sbomProcessingStartedAt.getTime();
 	const diffMin = Math.floor(diffMs / 60_000);
 	if (diffMin < 1) return 'Processing for less than a minute';
 	if (diffMin < 60) return `Processing for ${diffMin} min`;
@@ -57,7 +59,7 @@ export const sbomStatusDetails = (source: SbomStatusSource): SbomStatusDetails =
 			: indicator;
 	const label =
 		indicator === 'processing'
-			? (formatProcessingDuration(source.imageUpdatedAt) ?? baseLabel)
+			? (formatProcessingDuration(source.sbomProcessingStartedAt) ?? baseLabel)
 			: baseLabel;
 	return { status, indicator, iconIndicator, label };
 };
