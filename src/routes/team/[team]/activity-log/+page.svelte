@@ -49,6 +49,10 @@
 			ActivityLogActivityType.OPENSEARCH_UPDATED,
 			ActivityLogActivityType.OPENSEARCH_MAINTENANCE_STARTED
 		],
+		Postgres: [
+			ActivityLogActivityType.POSTGRES_DELETED,
+			ActivityLogActivityType.POSTGRES_GRANT_ACCESS
+		],
 		// Reconciler: [
 		// 	ActivityLogActivityType.RECONCILER_CONFIGURED,
 		// 	ActivityLogActivityType.RECONCILER_DISABLED,

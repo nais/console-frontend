@@ -1,24 +1,18 @@
 <script lang="ts">
+	import type { SidebarActivityLogFragment$data } from '$houdini';
 	import { envTagVariant } from '$lib/envTagVariant';
 	import Time from '$lib/ui/Time.svelte';
 	import { BodyShort, Tag } from '@nais/ds-svelte-community';
-	import { resourceTypeToText } from '../../sidebar/texts/utils';
-	import type { ActivityLogEntry } from './types';
 
 	let {
 		data
 	}: {
-		data: Extract<
-			ActivityLogEntry<string>,
-			{ resourceType: string; resourceName: string; environmentName: string | null }
-		>;
+		data: SidebarActivityLogFragment$data['activityLog']['nodes'][number];
 	} = $props();
 </script>
 
 <div>
-	{resourceTypeToText(data.resourceType)}
-	<strong>{data.resourceName}</strong> deleted
-	{#if data.environmentName}
+	Postgres instance <strong>{data.resourceName}</strong> deleted{#if data.environmentName}
 		in <Tag size="small" variant={envTagVariant(data.environmentName)}>{data.environmentName}</Tag>
 	{/if}.
 

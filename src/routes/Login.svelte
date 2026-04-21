@@ -105,7 +105,7 @@
 		padding: var(--ax-space-20) var(--ax-space-32);
 		background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
 		color: var(--ax-text-success-subtle);
-		border-radius: var(--ax-border-radius-medium);
+		border-radius: var(--ax-radius-8);
 		margin-bottom: var(--ax-space-32);
 		font-size: var(--ax-font-size-xlarge);
 		font-weight: 700;

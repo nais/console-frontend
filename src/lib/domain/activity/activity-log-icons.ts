@@ -5,8 +5,8 @@ import type { Component } from 'svelte';
 import {
 	BranchingIcon,
 	BriefcaseClockIcon,
-	// Fallbacks / misc
 	CogIcon,
+	DatabaseIcon,
 	FileTextIcon,
 	PackageIcon,
 	PadlockLockedIcon,
@@ -92,6 +92,7 @@ export const icons: { [typename: string]: Component } = {
 	/* Security / Audit */
 	VulnerabilityUpdatedActivityLogEntry: VirusIcon,
 	ClusterAuditActivityLogEntry: TerminalIcon,
+	PostgresDeletedActivityLogEntry: DatabaseIcon,
 	PostgresGrantAccessActivityLogEntry: PadlockLockedIcon,
 
 	/* Fallback / infra ops */

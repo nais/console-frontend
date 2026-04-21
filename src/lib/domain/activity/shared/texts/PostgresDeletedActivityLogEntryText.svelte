@@ -7,12 +7,12 @@
 	let {
 		data
 	}: {
-		data: ActivityLogEntry<string>;
+		data: ActivityLogEntry<'PostgresDeletedActivityLogEntry'>;
 	} = $props();
 </script>
 
 <div>
-	{data.message}
+	Postgres instance <strong>{data.resourceName}</strong> was deleted
 
 	{#if data.environmentName}
 		in <Tag size="small" variant={envTagVariant(data.environmentName)}>{data.environmentName}</Tag>

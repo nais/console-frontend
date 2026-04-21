@@ -1,4 +1,4 @@
-export type SecretPermissions = {
+type SecretPermissions = {
 	canMutate: boolean;
 	canRevealValues: boolean;
 	canEditValues: boolean;

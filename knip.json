@@ -3,10 +3,8 @@
 		"houdini-svelte",
 		"pino-pretty",
 		"husky",
-		"@lavamoat/preinstall-always-fail",
-		"npm-check-updates"
+		"@lavamoat/preinstall-always-fail"
 	],
 	"ignoreUnresolved": ["\\$app/.+", "\\$env/.+"],
-	"ignore": ["houdini.config.js", "src/client.ts"],
-	"ignoreFiles": [".ncurc.cjs"]
+	"ignore": ["houdini.config.js", "src/client.ts"]
 }

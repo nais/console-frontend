@@ -1,9 +1,7 @@
 <script lang="ts">
 	import { fragment, graphql, type ActivityLogEntryFragment } from '$houdini';
-	import { envTagVariant } from '$lib/envTagVariant';
 	import ListItem from '$lib/ui/ListItem.svelte';
-	import Time from '$lib/ui/Time.svelte';
-	import { BodyShort, Tag, Tooltip } from '@nais/ds-svelte-community';
+	import { Tooltip } from '@nais/ds-svelte-community';
 	import { QuestionmarkIcon } from '@nais/ds-svelte-community/icons';
 	import type { Component } from 'svelte';
 	import { icons } from '../activity/activity-log-icons';
@@ -14,6 +12,7 @@
 	import ApplicationScaledActivityLogEntryText from '../activity/shared/texts/ApplicationScaledActivityLogEntryText.svelte';
 	import ClusterAuditActivityLogEntryText from '../activity/shared/texts/ClusterAuditActivityLogEntryText.svelte';
 	import CredentialsActivityLogEntryText from '../activity/shared/texts/CredentialsActivityLogEntryText.svelte';
+	import DefaultText from '../activity/shared/texts/DefaultText.svelte';
 	import DeploymentActivityLogEntryText from '../activity/shared/texts/DeploymentActivityLogEntryText.svelte';
 	import JobDeletedActivityLogEntryText from '../activity/shared/texts/JobDeletedActivityLogEntryText.svelte';
 	import JobRunDeletedActivityLogEntryText from '../activity/shared/texts/JobRunDeletedActivityLogEntryText.svelte';
@@ -21,6 +20,7 @@
 	import OpenSearchCreatedActivityLogEntryText from '../activity/shared/texts/OpenSearchCreatedActivityLogEntryText.svelte';
 	import OpenSearchDeletedActivityLogEntryText from '../activity/shared/texts/OpenSearchDeletedActivityLogEntryText.svelte';
 	import OpenSearchUpdatedActivityLogEntryText from '../activity/shared/texts/OpenSearchUpdatedActivityLogEntryText.svelte';
+	import PostgresDeletedActivityLogEntryText from '../activity/shared/texts/PostgresDeletedActivityLogEntryText.svelte';
 	import PostgresGrantAccessActivityLogEntryText from '../activity/shared/texts/PostgresGrantAccessActivityLogEntryText.svelte';
 	import RepositoryAddedActivityLogEntryText from '../activity/shared/texts/RepositoryAddedActivityLogEntryText.svelte';
 	import RepositoryRemovedActivityLogEntryText from '../activity/shared/texts/RepositoryRemovedActivityLogEntryText.svelte';
@@ -118,6 +118,9 @@
 								oldValue
 							}
 						}
+					}
+					... on PostgresDeletedActivityLogEntry {
+						__typename
 					}
 					... on PostgresGrantAccessActivityLogEntry {
 						__typename
@@ -241,7 +244,7 @@
 
 	const Icon = $derived(icons[$data.__typename] || QuestionmarkIcon);
 
-	function textComponent(typename: string): Component<{ data: unknown }> | null {
+	function textComponent(typename: string): Component<{ data: unknown }> {
 		switch (typename) {
 			case 'ApplicationDeletedActivityLogEntry':
 				return ApplicationDeletedActivityLogEntryText as Component<{ data: unknown }>;
@@ -267,6 +270,8 @@
 				return OpenSearchDeletedActivityLogEntryText as Component<{ data: unknown }>;
 			case 'OpenSearchUpdatedActivityLogEntry':
 				return OpenSearchUpdatedActivityLogEntryText as Component<{ data: unknown }>;
+			case 'PostgresDeletedActivityLogEntry':
+				return PostgresDeletedActivityLogEntryText as Component<{ data: unknown }>;
 			case 'PostgresGrantAccessActivityLogEntry':
 				return PostgresGrantAccessActivityLogEntryText as Component<{ data: unknown }>;
 			case 'RepositoryAddedActivityLogEntry':
@@ -308,7 +313,7 @@
 			case 'VulnerabilityUpdatedActivityLogEntry':
 				return VulnerabilityUpdatedActivityLogEntryText as Component<{ data: unknown }>;
 			default:
-				return null;
+				return DefaultText as Component<{ data: unknown }>;
 		}
 	}
 
@@ -324,20 +329,7 @@
 		</div>
 
 		<div style="min-width: 0; overflow-wrap: anywhere;">
-			{#if TextComponent}
-				<TextComponent data={$data} />
-			{:else}
-				{$data.message}
-				{#if $data.environmentName}
-					in <Tag size="small" variant={envTagVariant($data.environmentName)}>
-						{$data.environmentName}
-					</Tag>.
-				{/if}
-				<BodyShort textColor="subtle" size="small">
-					By {$data.actor}
-					<Time time={$data.createdAt} distance={true} />
-				</BodyShort>
-			{/if}
+			<TextComponent data={$data} />
 		</div>
 	</div>
 </ListItem>

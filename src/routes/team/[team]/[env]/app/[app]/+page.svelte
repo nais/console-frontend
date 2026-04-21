@@ -12,14 +12,14 @@
 	import WorkloadDeploy from '$lib/domain/workload/WorkloadDeploy.svelte';
 	import Confirm from '$lib/ui/Confirm.svelte';
 	import GraphErrors from '$lib/ui/GraphErrors.svelte';
+	import IncomingIndicator from '$lib/ui/IncomingIndicator.svelte';
 	import List from '$lib/ui/List.svelte';
+	import RunningIndicator from '$lib/ui/RunningIndicator.svelte';
 	import Time from '$lib/ui/Time.svelte';
 	import { Alert, Button, Heading, Loader, Tag } from '@nais/ds-svelte-community';
 	import { ArrowCirclepathIcon } from '@nais/ds-svelte-community/icons';
 	import type { PageProps } from './$types';
 	import Ingresses from './Ingresses.svelte';
-	import RunningIndicator from '$lib/ui/RunningIndicator.svelte';
-	import IncomingIndicator from '$lib/ui/IncomingIndicator.svelte';
 
 	let { data }: PageProps = $props();
 	let { App, teamSlug, viewerIsMember } = $derived(data);
@@ -242,7 +242,7 @@
 		gap: var(--ax-space-12);
 		padding: var(--ax-space-12) var(--ax-space-16);
 		border: 1px solid var(--ax-border-neutral);
-		border-radius: var(--ax-border-radius-medium);
+		border-radius: var(--ax-radius-8);
 		text-decoration: none;
 		color: inherit;
 	}
