@@ -12,8 +12,7 @@
 </script>
 
 <div>
-	Postgres instance <strong>{data.resourceName}</strong> deleted
-	{#if data.environmentName}
+	Postgres instance <strong>{data.resourceName}</strong> deleted{#if data.environmentName}
 		in <Tag size="small" variant={envTagVariant(data.environmentName)}>{data.environmentName}</Tag>
 	{/if}.
 
