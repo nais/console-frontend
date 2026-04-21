@@ -22,14 +22,10 @@
 				<p style="color: red;">Error: {runConfig.error}</p>
 			{:else}
 				<dl class="details-grid">
-					<div class="details-item">
-						<dt>Schedule</dt>
-						<dd>{runConfig.description}</dd>
-					</div>
-					<div class="details-item">
-						<dt>Next run</dt>
-						<dd>{runConfig.nextRun}</dd>
-					</div>
+					<dt>Schedule</dt>
+					<dd>{runConfig.description}</dd>
+					<dt>Next run</dt>
+					<dd>{runConfig.nextRun}</dd>
 				</dl>
 			{/if}
 		{:else}
@@ -57,9 +53,24 @@
 		width: 100%;
 	}
 
-	.details-item {
-		display: grid;
-		gap: var(--ax-space-2);
+	.details-grid dt:nth-of-type(1) {
+		grid-column: 1;
+		grid-row: 1;
+	}
+
+	.details-grid dd:nth-of-type(1) {
+		grid-column: 1;
+		grid-row: 2;
+	}
+
+	.details-grid dt:nth-of-type(2) {
+		grid-column: 2;
+		grid-row: 1;
+	}
+
+	.details-grid dd:nth-of-type(2) {
+		grid-column: 2;
+		grid-row: 2;
 	}
 
 	dd {
@@ -69,6 +80,12 @@
 	@media (max-width: 800px) {
 		.details-grid {
 			grid-template-columns: 1fr;
+		}
+
+		.details-grid dt,
+		.details-grid dd {
+			grid-column: auto;
+			grid-row: auto;
 		}
 	}
 </style>
