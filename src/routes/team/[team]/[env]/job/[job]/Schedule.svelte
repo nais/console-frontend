@@ -21,11 +21,11 @@
 			{#if runConfig.error}
 				<p style="color: red;">Error: {runConfig.error}</p>
 			{:else}
-				<dl style="margin: 0">
+				<dl class="details-grid">
 					<dt>Schedule</dt>
-					<dd style="margin: 0">{runConfig.description}</dd>
+					<dd>{runConfig.description}</dd>
 					<dt>Next run</dt>
-					<dd style="margin: 0">{runConfig.nextRun}</dd>
+					<dd>{runConfig.nextRun}</dd>
 				</dl>
 			{/if}
 		{:else}
@@ -42,6 +42,27 @@
 		display: flex;
 		flex-direction: column;
 		gap: var(--ax-space-4);
-		align-items: start;
+		width: 100%;
+	}
+
+	.details-grid {
+		margin: 0;
+		display: grid;
+		grid-template-rows: repeat(2, auto);
+		grid-auto-flow: column;
+		grid-auto-columns: 1fr;
+		width: 100%;
+	}
+
+	dd {
+		margin: 0;
+	}
+
+	@media (max-width: 800px) {
+		.details-grid {
+			grid-template-rows: none;
+			grid-auto-flow: row;
+			grid-auto-columns: auto;
+		}
 	}
 </style>

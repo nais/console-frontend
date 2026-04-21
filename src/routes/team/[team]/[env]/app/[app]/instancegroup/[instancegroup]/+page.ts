@@ -5,7 +5,7 @@ export async function load(event) {
 	return {
 		instanceGroupName: event.params.instancegroup,
 		...(await addPageMeta(event, {
-			title: `Instance Group: ${event.params.instancegroup}`
+			title: `${event.params.instancegroup}`
 		})),
 		...(await load_InstanceGroupDetail({
 			event,
