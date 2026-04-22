@@ -180,4 +180,16 @@
 		justify-content: flex-end;
 		margin-bottom: 1rem;
 	}
+
+	/* Mobile responsive layout */
+	@media (max-width: 767px) {
+		.wrapper {
+			grid-template-columns: 1fr;
+			gap: var(--ax-space-24);
+		}
+
+		.search {
+			justify-content: stretch;
+		}
+	}
 </style>
