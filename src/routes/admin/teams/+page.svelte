@@ -76,57 +76,88 @@
 </div>
 
 {#if !$Teams.fetching}
-	<Table
-		size="small"
-		zebraStripes
-		sort={{
-			orderBy: tableSort.orderBy || TeamOrderField.SLUG,
-			direction: tableSort.direction === 'ASC' ? 'ascending' : 'descending'
-		}}
-		onsortchange={tableSortChange}
-	>
-		<Thead>
-			<Tr>
-				<Th sortable={true} sortKey={TeamOrderField.SLUG} style="width: 32ch;">Team</Th>
-				<Th style="width: 16ch;">Members</Th>
-				<Th>Inventory</Th>
-			</Tr>
-		</Thead>
-		<Tbody>
-			{#each $Teams.data?.teams.edges || [] as t (t.node.slug)}
+	<!-- Desktop Table View -->
+	<div class="table-container">
+		<Table
+			size="small"
+			zebraStripes
+			sort={{
+				orderBy: tableSort.orderBy || TeamOrderField.SLUG,
+				direction: tableSort.direction === 'ASC' ? 'ascending' : 'descending'
+			}}
+			onsortchange={tableSortChange}
+		>
+			<Thead>
 				<Tr>
-					<Td><a href="/team/{t.node.slug}">{t.node.slug}</a></Td>
-					<Td>
-						<a href="/team/{t.node.slug}/members">{t.node.members.pageInfo.totalCount} members</a
-						></Td
-					>
-					<Td>
-						{[
-							t.node.inventoryCounts.applications.total > 0 &&
-								`${t.node.inventoryCounts.applications.total} applications`,
-							t.node.inventoryCounts.jobs.total > 0 && `${t.node.inventoryCounts.jobs.total} jobs`,
-							t.node.inventoryCounts.bigQueryDatasets.total > 0 &&
-								`${t.node.inventoryCounts.bigQueryDatasets.total} BigQuery datasets`,
-							t.node.inventoryCounts.buckets.total > 0 &&
-								`${t.node.inventoryCounts.buckets.total} buckets`,
-							t.node.inventoryCounts.kafkaTopics.total > 0 &&
-								`${t.node.inventoryCounts.kafkaTopics.total} Kafka topics`,
-							t.node.inventoryCounts.openSearches.total > 0 &&
-								`${t.node.inventoryCounts.openSearches.total} OpenSearch instances`,
-							t.node.inventoryCounts.postgresInstances.total > 0 &&
-								`${t.node.inventoryCounts.postgresInstances.total} Postgres instances`,
-							t.node.inventoryCounts.sqlInstances.total > 0 &&
-								`${t.node.inventoryCounts.sqlInstances.total} Cloud SQL instances`,
-							t.node.inventoryCounts.valkeys.total > 0 &&
-								`${t.node.inventoryCounts.valkeys.total} Valkey instances`
-						]
-							.filter(Boolean)
-							.join(', ')}
-					</Td>
+					<Th sortable={true} sortKey={TeamOrderField.SLUG} style="width: 32ch;">Team</Th>
+					<Th style="width: 16ch;">Members</Th>
+					<Th>Inventory</Th>
 				</Tr>
-			{/each}
-		</Tbody>
-	</Table>
+			</Thead>
+			<Tbody>
+				{#each $Teams.data?.teams.edges || [] as t (t.node.slug)}
+					<Tr>
+						<Td><a href="/team/{t.node.slug}">{t.node.slug}</a></Td>
+						<Td>
+							<a href="/team/{t.node.slug}/members">{t.node.members.pageInfo.totalCount} members</a
+							></Td
+						>
+						<Td>
+							{[
+								t.node.inventoryCounts.applications.total > 0 &&
+									`${t.node.inventoryCounts.applications.total} applications`,
+								t.node.inventoryCounts.jobs.total > 0 &&
+									`${t.node.inventoryCounts.jobs.total} jobs`,
+								t.node.inventoryCounts.bigQueryDatasets.total > 0 &&
+									`${t.node.inventoryCounts.bigQueryDatasets.total} BigQuery datasets`,
+								t.node.inventoryCounts.buckets.total > 0 &&
+									`${t.node.inventoryCounts.buckets.total} buckets`,
+								t.node.inventoryCounts.kafkaTopics.total > 0 &&
+									`${t.node.inventoryCounts.kafkaTopics.total} Kafka topics`,
+								t.node.inventoryCounts.openSearches.total > 0 &&
+									`${t.node.inventoryCounts.openSearches.total} OpenSearch instances`,
+								t.node.inventoryCounts.postgresInstances.total > 0 &&
+									`${t.node.inventoryCounts.postgresInstances.total} Postgres instances`,
+								t.node.inventoryCounts.sqlInstances.total > 0 &&
+									`${t.node.inventoryCounts.sqlInstances.total} Cloud SQL instances`,
+								t.node.inventoryCounts.valkeys.total > 0 &&
+									`${t.node.inventoryCounts.valkeys.total} Valkey instances`
+							]
+								.filter(Boolean)
+								.join(', ')}
+						</Td>
+					</Tr>
+				{/each}
+			</Tbody>
+		</Table>
+	</div>
+
+	<!-- Mobile Card View -->
+	<div class="card-container">
+		{#each $Teams.data?.teams.edges || [] as t (t.node.slug)}
+			<div class="team-card">
+				<div class="card-header">
+					<a href="/team/{t.node.slug}" class="team-name">{t.node.slug}</a>
+				</div>
+				<div class="card-content">
+					<div class="card-row">
+						<span class="card-label">Members</span>
+						<a href="/team/{t.node.slug}/members" class="card-value">
+							{t.node.members.pageInfo.totalCount}
+						</a>
+					</div>
+					<div class="card-row">
+						<span class="card-label">Inventory</span>
+						<span class="card-value inventory-list">
+							{#each [t.node.inventoryCounts.applications.total > 0 && `${t.node.inventoryCounts.applications.total} app${t.node.inventoryCounts.applications.total !== 1 ? 's' : ''}`, t.node.inventoryCounts.jobs.total > 0 && `${t.node.inventoryCounts.jobs.total} job${t.node.inventoryCounts.jobs.total !== 1 ? 's' : ''}`, t.node.inventoryCounts.bigQueryDatasets.total > 0 && `${t.node.inventoryCounts.bigQueryDatasets.total} BigQuery`, t.node.inventoryCounts.buckets.total > 0 && `${t.node.inventoryCounts.buckets.total} bucket${t.node.inventoryCounts.buckets.total !== 1 ? 's' : ''}`, t.node.inventoryCounts.kafkaTopics.total > 0 && `${t.node.inventoryCounts.kafkaTopics.total} Kafka`, t.node.inventoryCounts.openSearches.total > 0 && `${t.node.inventoryCounts.openSearches.total} OpenSearch`, t.node.inventoryCounts.postgresInstances.total > 0 && `${t.node.inventoryCounts.postgresInstances.total} Postgres`, t.node.inventoryCounts.sqlInstances.total > 0 && `${t.node.inventoryCounts.sqlInstances.total} SQL`, t.node.inventoryCounts.valkeys.total > 0 && `${t.node.inventoryCounts.valkeys.total} Valkey`].filter(Boolean) as item, index (index)}
+								<div class="inventory-item">{item}</div>
+							{/each}
+						</span>
+					</div>
+				</div>
+			</div>
+		{/each}
+	</div>
 {:else}
 	<div style="display: flex; justify-content: center; align-items: center; height: 500px;">
 		<Loader size="3xlarge" />
@@ -158,5 +189,99 @@
 		flex-direction: row;
 		justify-content: flex-end;
 		padding-bottom: var(--spacing-layout);
+	}
+
+	/* Desktop table view */
+	.table-container {
+		display: block;
+	}
+
+	/* Mobile card view */
+	.card-container {
+		display: none;
+		gap: 1rem;
+		flex-direction: column;
+	}
+
+	.team-card {
+		border: 1px solid #d0d0d0;
+		border-radius: 8px;
+		padding: 1rem;
+		background: #fff;
+	}
+
+	.card-header {
+		margin-bottom: 0.75rem;
+		border-bottom: 1px solid #d0d0d0;
+		padding-bottom: 0.75rem;
+	}
+
+	.team-name {
+		font-weight: 600;
+		color: #0067c5;
+		text-decoration: none;
+	}
+
+	.team-name:hover {
+		text-decoration: underline;
+	}
+
+	.card-content {
+		display: flex;
+		flex-direction: column;
+		gap: 0.75rem;
+	}
+
+	.card-row {
+		display: flex;
+		justify-content: space-between;
+		align-items: flex-start;
+		gap: 1rem;
+		font-size: 0.9rem;
+	}
+
+	.card-label {
+		font-weight: 500;
+		color: #666;
+		flex-shrink: 0;
+		min-width: 80px;
+	}
+
+	.card-value {
+		color: #333;
+		text-align: right;
+		flex: 1;
+	}
+
+	:global(.card-value a) {
+		color: #0067c5;
+		text-decoration: none;
+	}
+
+	:global(.card-value a:hover) {
+		text-decoration: underline;
+	}
+
+	.inventory-list {
+		display: flex;
+		flex-direction: column;
+		gap: 0.25rem;
+		align-items: flex-end;
+	}
+
+	.inventory-item {
+		font-size: 0.85rem;
+		color: var(--ax-text-subtle);
+	}
+
+	/* Mobile breakpoint: show cards, hide table */
+	@media (max-width: 767px) {
+		.table-container {
+			display: none;
+		}
+
+		.card-container {
+			display: flex;
+		}
 	}
 </style>
