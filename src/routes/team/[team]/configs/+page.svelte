@@ -251,4 +251,21 @@
 		align-items: end;
 		gap: var(--ax-space-2);
 	}
+
+	/* Mobile responsive layout */
+	@media (max-width: 767px), (max-height: 500px) {
+		.wrapper {
+			grid-template-columns: 1fr;
+			gap: var(--ax-space-24);
+		}
+		.search {
+			justify-content: stretch;
+		}
+		.button {
+			margin-bottom: var(--ax-space-16);
+		}
+		.right {
+			align-items: flex-start;
+		}
+	}
 </style>
