@@ -193,6 +193,11 @@
 		gap: 0;
 	}
 
+	/* Mobile nav trigger is hidden on desktop by default */
+	:global(.mobile-nav-trigger) {
+		display: none;
+	}
+
 	/* Mobile responsive behavior */
 	@media (max-width: 767px) {
 		.logo {
@@ -213,11 +218,6 @@
 		:global(.mobile-nav-trigger) {
 			display: inline-flex;
 		}
-	}
-
-	/* Mobile nav trigger is hidden on desktop by default */
-	:global(.mobile-nav-trigger) {
-		display: none;
 	}
 
 	/* Landscape on mobile phones: keep mobile nav despite wider viewport */
