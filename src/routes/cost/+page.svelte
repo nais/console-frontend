@@ -281,4 +281,21 @@
 		align-items: end;
 		gap: var(--ax-space-24);
 	}
+
+	/* Mobile responsive styles */
+	@media (max-width: 767px) {
+		.heading {
+			flex-direction: column;
+			align-items: flex-start;
+			gap: var(--ax-space-16);
+		}
+
+		.right {
+			gap: var(--ax-space-16);
+		}
+
+		.content {
+			max-width: 100%;
+		}
+	}
 </style>
