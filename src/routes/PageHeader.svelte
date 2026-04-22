@@ -5,7 +5,7 @@
 	import Feedback from '$lib/feedback/Feedback.svelte';
 	import GrafanaIcon from '$lib/icons/GrafanaIcon.svelte';
 	import { themeSwitch } from '$lib/stores/theme.svelte';
-	import { Button, Spacer } from '@nais/ds-svelte-community';
+	import { Spacer } from '@nais/ds-svelte-community';
 	import {
 		ActionMenu,
 		ActionMenuCheckboxItem,
@@ -23,7 +23,8 @@
 		CogIcon,
 		ExternalLinkIcon,
 		LeaveIcon,
-		MenuGridIcon
+		MenuGridIcon,
+		MenuHamburgerIcon
 	} from '@nais/ds-svelte-community/icons';
 	import Logo from '../Logo.svelte';
 
@@ -39,6 +40,17 @@
 	let { user }: Props = $props();
 
 	let feedbackOpen = $state(false);
+
+	const navItems = [
+		{ href: '/utilization', label: 'Utilization' },
+		{ href: '/cost', label: 'Cost' },
+		{ href: '/vulnerabilities', label: 'Vulnerabilities' },
+		{ href: '/deployments', label: 'Deployments' }
+	];
+
+	function isActive(pathname: string) {
+		return page.url.pathname === pathname || page.url.pathname.startsWith(pathname + '/');
+	}
 </script>
 
 <InternalHeader>
@@ -48,44 +60,61 @@
 			<span>Console</span>
 		</div>
 	</InternalHeaderTitle>
-	<InternalHeaderButton
-		as="a"
-		href="/utilization"
-		class={{ active: page.url.pathname === '/utilization' }}
-	>
-		Utilization
-	</InternalHeaderButton>
-	<InternalHeaderButton as="a" href="/cost" class={{ active: page.url.pathname === '/cost' }}>
-		Cost
-	</InternalHeaderButton>
-	<InternalHeaderButton
-		as="a"
-		href="/vulnerabilities"
-		class={{ active: page.url.pathname === '/vulnerabilities' }}
-	>
-		Vulnerabilities
-	</InternalHeaderButton>
-	<InternalHeaderButton
-		as="a"
-		href="/deployments"
-		class={{ active: page.url.pathname === '/deployments' }}
-	>
-		Deployments
-	</InternalHeaderButton>
+	<!-- Desktop navigation (hidden on mobile) -->
+	<div class="desktop-nav">
+		<InternalHeaderButton as="a" href="/utilization" class={{ active: isActive('/utilization') }}>
+			Utilization
+		</InternalHeaderButton>
+		<InternalHeaderButton as="a" href="/cost" class={{ active: isActive('/cost') }}>
+			Cost
+		</InternalHeaderButton>
+		<InternalHeaderButton
+			as="a"
+			href="/vulnerabilities"
+			class={{ active: isActive('/vulnerabilities') }}
+		>
+			Vulnerabilities
+		</InternalHeaderButton>
+		<InternalHeaderButton as="a" href="/deployments" class={{ active: isActive('/deployments') }}>
+			Deployments
+		</InternalHeaderButton>
+	</div>
+
+	<!-- Mobile navigation menu -->
+	<ActionMenu>
+		{#snippet trigger(props)}
+			<InternalHeaderButton class="mobile-nav-trigger" {...props}>
+				<MenuHamburgerIcon title="Navigation" />
+			</InternalHeaderButton>
+		{/snippet}
+		<ActionMenuGroup label="Navigation">
+			{#each navItems as item (item.href)}
+				<ActionMenuItem>
+					<a
+						href={item.href}
+						class="action-menu-link"
+						style:font-weight={isActive(item.href) ? 'bold' : 'normal'}
+					>
+						{item.label}
+					</a>
+				</ActionMenuItem>
+			{/each}
+		</ActionMenuGroup>
+		<ActionMenuDivider />
+		<ActionMenuGroup label="Tools">
+			<ActionMenuItem icon={ChatElipsisIcon}>
+				<button
+					class="action-menu-link"
+					onclick={() => (feedbackOpen = true)}
+					style="background: none; border: none; padding: 0; cursor: pointer; color: inherit; font: inherit;"
+				>
+					Feedback
+				</button>
+			</ActionMenuItem>
+		</ActionMenuGroup>
+	</ActionMenu>
 
 	<Spacer />
-	<div class="feedback-button-wrapper">
-		<Button
-			variant="tertiary-neutral"
-			icon={ChatElipsisIcon}
-			size="small"
-			onclick={() => {
-				feedbackOpen = true;
-			}}
-		>
-			<span style="font-weight: 400">Feedback</span>
-		</Button>
-	</div>
 	{#if feedbackOpen}
 		<Feedback close={() => (feedbackOpen = false)} />
 	{/if}
@@ -156,11 +185,31 @@
 		font-size: 1.5rem;
 		font-weight: 700;
 	}
-	.feedback-button-wrapper {
+
+	/* Desktop navigation */
+	.desktop-nav {
 		display: flex;
-		place-items: center;
-		padding: 0 1rem;
+		gap: 0;
 	}
+
+	/* Mobile responsive behavior */
+	@media (max-width: 767px) {
+		/* Hide desktop nav on mobile */
+		.desktop-nav {
+			display: none;
+		}
+
+		/* Show mobile nav trigger on mobile */
+		:global(.mobile-nav-trigger) {
+			display: inline-flex;
+		}
+	}
+
+	/* Mobile nav trigger is hidden on desktop by default */
+	:global(.mobile-nav-trigger) {
+		display: none;
+	}
+
 	.action-menu-link {
 		color: var(--ax-text-neutral);
 		text-decoration: none;
