@@ -161,17 +161,25 @@
 
 <ListItem>
 	<IconLabel label={pathToFavoriteLabel(path)} icon={StarFillIcon} size="medium" href={path} />
-	<div class="right">
-		<Tooltip placement="bottom" content="Remove from favorites">
-			<Button icon={TrashIcon} onclick={removeFavorite} variant="tertiary-neutral" />
-		</Tooltip>
-	</div>
-	<div class="drag-handle" aria-label="Drag to reorder" title="Drag to reorder">
-		<DragVerticalIcon />
+	<div class="actions">
+		<div class="right">
+			<Tooltip placement="bottom" content="Remove from favorites">
+				<Button icon={TrashIcon} onclick={removeFavorite} variant="tertiary-neutral" />
+			</Tooltip>
+		</div>
+		<div class="drag-handle" aria-label="Drag to reorder" title="Drag to reorder">
+			<DragVerticalIcon />
+		</div>
 	</div>
 </ListItem>
 
 <style>
+	.actions {
+		display: flex;
+		align-items: center;
+		gap: var(--ax-space-4);
+	}
+
 	.right {
 		display: flex;
 		flex-direction: column;
