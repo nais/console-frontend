@@ -1,13 +1,13 @@
 <script lang="ts">
 	import { page } from '$app/state';
 	import { ApplicationOrderField, OrderDirection } from '$houdini';
+	import { docURL } from '$lib/doc';
 	import AggregatedCostForApplications from '$lib/domain/cost/AggregatedCostForApplications.svelte';
-	import ExternalLink from '$lib/ui/ExternalLink.svelte';
 	import AppListItem from '$lib/domain/list-items/AppListItem.svelte';
+	import ExternalLink from '$lib/ui/ExternalLink.svelte';
+	import GraphErrors from '$lib/ui/GraphErrors.svelte';
 	import List from '$lib/ui/List.svelte';
 	import OrderByMenu from '$lib/ui/OrderByMenu.svelte';
-	import { docURL } from '$lib/doc';
-	import GraphErrors from '$lib/ui/GraphErrors.svelte';
 	import Pagination from '$lib/ui/Pagination.svelte';
 	import { changeParams } from '$lib/utils/searchparams';
 	import { BodyLong, Button, Search } from '@nais/ds-svelte-community';
