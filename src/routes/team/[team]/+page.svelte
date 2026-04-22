@@ -69,6 +69,12 @@
 		gap: var(--spacing-layout);
 	}
 
+	@media (max-width: 767px) {
+		.wrapper {
+			grid-template-columns: 1fr;
+		}
+	}
+
 	.main-content {
 		display: flex;
 		flex-direction: column;
@@ -94,5 +100,11 @@
 		gap: var(--spacing-layout);
 		margin-top: calc(-1 * var(--spacing-layout));
 		margin-bottom: var(--spacing-layout);
+	}
+
+	@media (max-width: 767px) {
+		.team-info {
+			grid-template-columns: 1fr;
+		}
 	}
 </style>
