@@ -1,14 +1,14 @@
 <script lang="ts">
 	import { KafkaTopicOrderField, OrderDirection } from '$houdini';
+	import { docURL } from '$lib/doc';
+	import PersistenceCost from '$lib/domain/cost/PersistenceCost.svelte';
+	import PersistenceLink from '$lib/domain/persistence/PersistenceLink.svelte';
+	import { envTagVariant } from '$lib/envTagVariant';
 	import ExternalLink from '$lib/ui/ExternalLink.svelte';
+	import GraphErrors from '$lib/ui/GraphErrors.svelte';
 	import List from '$lib/ui/List.svelte';
 	import ListItem from '$lib/ui/ListItem.svelte';
 	import OrderByMenu from '$lib/ui/OrderByMenu.svelte';
-	import PersistenceCost from '$lib/domain/cost/PersistenceCost.svelte';
-	import PersistenceLink from '$lib/domain/persistence/PersistenceLink.svelte';
-	import { docURL } from '$lib/doc';
-	import { envTagVariant } from '$lib/envTagVariant';
-	import GraphErrors from '$lib/ui/GraphErrors.svelte';
 	import Pagination from '$lib/ui/Pagination.svelte';
 	import { changeParams } from '$lib/utils/searchparams';
 	import { BodyLong, Tag } from '@nais/ds-svelte-community';
