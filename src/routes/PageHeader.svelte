@@ -220,6 +220,26 @@
 		display: none;
 	}
 
+	/* Landscape on mobile phones: keep mobile nav despite wider viewport */
+	@media (max-height: 500px) {
+		.logo {
+			gap: 0.5rem;
+			font-size: 1rem;
+		}
+
+		.logo span {
+			display: none;
+		}
+
+		.desktop-nav {
+			display: none;
+		}
+
+		:global(.mobile-nav-trigger) {
+			display: inline-flex;
+		}
+	}
+
 	.action-menu-link {
 		color: var(--ax-text-neutral);
 		text-decoration: none;
