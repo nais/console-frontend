@@ -192,4 +192,16 @@
 			justify-content: stretch;
 		}
 	}
+
+	/* Landscape on mobile phones: keep single column despite wider viewport */
+	@media (max-height: 500px) {
+		.wrapper {
+			grid-template-columns: 1fr;
+			gap: var(--ax-space-24);
+		}
+
+		.search {
+			justify-content: stretch;
+		}
+	}
 </style>
