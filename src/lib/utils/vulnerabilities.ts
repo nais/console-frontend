@@ -29,7 +29,7 @@ const sbomStatusIndicators: Record<SbomStatus, SbomStatusIndicator> = {
 
 const sbomStatusLabels: Record<SbomStatus, string> = {
 	READY: 'SBOM up to date',
-	PROCESSING: 'Processing',
+	PROCESSING: 'Scanning for vulnerabilities',
 	NO_SBOM: 'No SBOM found',
 	FAILED: 'SBOM processing failed'
 };
@@ -40,13 +40,15 @@ export function formatProcessingDuration(
 	if (!sbomProcessingStartedAt) return null;
 	const diffMs = Date.now() - sbomProcessingStartedAt.getTime();
 	const diffMin = Math.floor(diffMs / 60_000);
-	if (diffMin < 1) return 'Processing for less than a minute';
-	if (diffMin < 60) return `Processing for ${diffMin} min`;
+	if (diffMin < 1) return 'Scanning for vulnerabilities · less than a minute';
+	if (diffMin < 60) return `Scanning for vulnerabilities · ${diffMin} min`;
 	const diffH = Math.floor(diffMin / 60);
 	const remMin = diffMin % 60;
 	if (diffH < 24)
-		return remMin > 0 ? `Processing for ${diffH} h ${remMin} min` : `Processing for ${diffH} h`;
-	return `Processing for ${Math.floor(diffH / 24)} d`;
+		return remMin > 0
+			? `Scanning for vulnerabilities · ${diffH} h ${remMin} min`
+			: `Scanning for vulnerabilities · ${diffH} h`;
+	return `Scanning for vulnerabilities · ${Math.floor(diffH / 24)} d`;
 }
 
 export const sbomStatusDetails = (source: SbomStatusSource): SbomStatusDetails => {
