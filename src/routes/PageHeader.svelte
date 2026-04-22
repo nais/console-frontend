@@ -184,6 +184,7 @@
 		gap: 1rem;
 		font-size: 1.5rem;
 		font-weight: 700;
+		align-items: center;
 	}
 
 	/* Desktop navigation */
@@ -194,6 +195,15 @@
 
 	/* Mobile responsive behavior */
 	@media (max-width: 767px) {
+		.logo {
+			gap: 0.5rem;
+			font-size: 1rem;
+		}
+
+		.logo span {
+			display: none;
+		}
+
 		/* Hide desktop nav on mobile */
 		.desktop-nav {
 			display: none;
