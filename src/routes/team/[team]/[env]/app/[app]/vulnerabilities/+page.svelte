@@ -5,6 +5,7 @@
 	import SbomStatusIcon from '$lib/domain/vulnerability/SbomStatusIcon.svelte';
 	import WorkloadVulnerabilityHistoryGraph from '$lib/domain/vulnerability/WorkloadVulnerabilityHistoryGraph.svelte';
 	import WorkloadVulnerabilitySummary from '$lib/domain/vulnerability/WorkloadVulnerabilitySummary.svelte';
+	import SbomProcessingCard from '$lib/domain/vulnerability/SbomProcessingCard.svelte';
 	import ExternalLink from '$lib/ui/ExternalLink.svelte';
 	import GraphErrors from '$lib/ui/GraphErrors.svelte';
 	import List from '$lib/ui/List.svelte';
@@ -21,6 +22,24 @@
 	const { registry, repository, name } = $derived(
 		parseImage($ApplicationImageDetails.data?.team.environment.workload.image.name)
 	);
+
+	let nextRefresh = $state(10);
+
+	$effect(() => {
+		const status = $ApplicationImageDetails.data?.team.environment.workload.image.sbomStatus;
+		if (status !== 'PROCESSING') return;
+		nextRefresh = 10;
+		const poll = setInterval(() => {
+			ApplicationImageDetails.fetch({ policy: 'NetworkOnly' });
+		}, 10000);
+		const tick = setInterval(() => {
+			nextRefresh = nextRefresh <= 1 ? 10 : nextRefresh - 1;
+		}, 1000);
+		return () => {
+			clearInterval(poll);
+			clearInterval(tick);
+		};
+	});
 </script>
 
 <GraphErrors errors={$ApplicationImageDetails.errors} />
@@ -87,14 +106,23 @@
 					{/if}
 				</section>
 				{#if !hasVulnerabilityData}
-					<Alert variant="info" size="small" fullWidth={false}>
-						{imageStaleness.label}
-						{#if imageStaleness.indicator === 'no-sbom'}
+					{#if imageStaleness.indicator === 'processing'}
+						<SbomProcessingCard
+							sbomProcessingStartedAt={workload.image.sbomProcessingStartedAt}
+							{nextRefresh}
+						/>
+					{:else if imageStaleness.indicator === 'no-sbom'}
+						<Alert variant="info" size="small" fullWidth={false}>
+							{imageStaleness.label}
 							<ExternalLink href={docURL('/services/vulnerabilities/how-to/sbom/')}
 								>Read how to generate an SBOM</ExternalLink
 							>.
-						{/if}
-					</Alert>
+						</Alert>
+					{:else}
+						<Alert variant="info" size="small" fullWidth={false}>
+							{imageStaleness.label}
+						</Alert>
+					{/if}
 				{/if}
 			</div>
 			<div class="cards">
@@ -108,7 +136,7 @@
 							/>
 						</div>
 
-						<WorkloadVulnerabilitySummary {workload} />
+						<WorkloadVulnerabilitySummary {workload} {nextRefresh} />
 					</div>
 				{/if}
 			</div>
