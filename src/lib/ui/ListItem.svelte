@@ -27,6 +27,12 @@
 		text-decoration: none;
 	}
 
+	@media (max-width: 767px), (max-height: 500px) {
+		.list-item {
+			grid-auto-flow: row;
+		}
+	}
+
 	a.list-item:hover {
 		background-color: var(--ax-neutral-300);
 	}
