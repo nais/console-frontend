@@ -303,4 +303,27 @@
 		display: inline-block;
 		align-items: center;
 	}
+
+	/* Mobile responsive styles */
+	@media (max-width: 767px) {
+		.container {
+			gap: var(--ax-space-16);
+			margin-top: var(--ax-space-16);
+		}
+
+		.grid {
+			grid-template-columns: 1fr;
+			column-gap: 0;
+			row-gap: var(--ax-space-16);
+		}
+
+		.card {
+			padding: var(--ax-space-12) var(--ax-space-16);
+		}
+
+		.cost-amount {
+			padding: var(--ax-space-8) var(--ax-space-12);
+			font-size: 1.25rem;
+		}
+	}
 </style>
