@@ -48,4 +48,18 @@
 		display: flex;
 		gap: var(--ax-space-8);
 	}
+
+	/* Mobile responsive layout */
+	@media (max-width: 767px) {
+		.header {
+			flex-direction: column;
+			align-items: flex-start;
+			gap: var(--ax-space-12);
+		}
+
+		.menu {
+			flex-wrap: wrap;
+			width: 100%;
+		}
+	}
 </style>

@@ -115,4 +115,11 @@
 		align-items: end;
 		gap: var(--ax-space-2);
 	}
+
+	/* Mobile responsive layout */
+	@media (max-width: 767px) {
+		.right {
+			align-items: flex-start;
+		}
+	}
 </style>
