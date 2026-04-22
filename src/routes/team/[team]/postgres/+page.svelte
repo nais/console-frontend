@@ -158,4 +158,14 @@
 		height: 300px;
 		width: 100%;
 	}
+
+	/* Mobile responsive layout */
+	@media (max-width: 767px), (max-height: 500px) {
+		.content-wrapper {
+			grid-template-columns: 1fr;
+		}
+		.right {
+			align-items: flex-start;
+		}
+	}
 </style>
