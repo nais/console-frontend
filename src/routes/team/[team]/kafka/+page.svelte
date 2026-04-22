@@ -125,5 +125,12 @@
 			display: grid;
 			gap: var(--ax-space-24);
 		}
+
+		/* Mobile responsive layout */
+		@media (max-width: 767px), (max-height: 500px) {
+			.content-wrapper {
+				grid-template-columns: 1fr;
+			}
+		}
 	</style>
 {/if}
