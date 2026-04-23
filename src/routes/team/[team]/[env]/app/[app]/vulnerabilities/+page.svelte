@@ -23,17 +23,17 @@
 		parseImage($ApplicationImageDetails.data?.team.environment.workload.image.name)
 	);
 
-	let nextRefresh = $state(10);
+	let nextRefresh = $state(20);
 
 	$effect(() => {
 		const status = $ApplicationImageDetails.data?.team.environment.workload.image.sbomStatus;
 		if (status !== 'PROCESSING') return;
-		nextRefresh = 10;
+		nextRefresh = 20;
 		const poll = setInterval(() => {
 			ApplicationImageDetails.fetch({ policy: 'NetworkOnly' });
-		}, 10000);
+		}, 20000);
 		const tick = setInterval(() => {
-			nextRefresh = nextRefresh <= 1 ? 10 : nextRefresh - 1;
+			nextRefresh = nextRefresh <= 1 ? 20 : nextRefresh - 1;
 		}, 1000);
 		return () => {
 			clearInterval(poll);
