@@ -5,7 +5,7 @@ export type SbomStatus = 'PROCESSING' | 'READY' | 'NO_SBOM' | 'FAILED';
 
 export type SbomStatusIndicator = 'healthy' | 'processing' | 'warning' | 'no-sbom';
 
-export type SbomStatusIconIndicator = 'healthy' | 'processing' | 'warning' | 'no-sbom';
+export type SbomStatusIconIndicator = SbomStatusIndicator;
 
 export interface SbomStatusSource {
 	status: SbomStatus;
