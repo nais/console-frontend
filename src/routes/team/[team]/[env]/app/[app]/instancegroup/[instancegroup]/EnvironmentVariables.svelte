@@ -40,62 +40,64 @@
 				</Button>
 			{/if}
 		</div>
-		<Table size="small" zebraStripes>
-			<Thead>
-				<Tr>
-					<Th>Name</Th>
-					<Th>Value</Th>
-					<Th style="white-space: nowrap; min-width: 400px">Source</Th>
-				</Tr>
-			</Thead>
-			<Tbody>
-				{#each envVars as env (env.name)}
+		<div class="table-container">
+			<Table size="small" zebraStripes>
+				<Thead>
 					<Tr>
-						<Td><code>{env.name}</code></Td>
-						<Td>
-							{#if env.source.kind === 'SECRET' && revealedValues.has(env.name)}
-								<span class="env-value">
-									<code>{revealedValues.get(env.name)}</code>
-									<CopyButton size="xsmall" copyText={revealedValues.get(env.name) ?? ''} />
-								</span>
-							{:else if env.source.kind === 'SECRET'}
-								<span class="env-value">
-									<span class="masked">••••••••••••••••</span>
-									{#if viewerIsMember}
-										<Button
-											size="xsmall"
-											variant="tertiary-neutral"
-											icon={EyeIcon}
-											onclick={() => onReveal(env.source.name)}
-										/>
-									{/if}
-								</span>
-							{:else if env.value !== null}
-								<span class="env-value">
-									<code>{env.value}</code>
-									<CopyButton size="xsmall" copyText={env.value} />
-								</span>
-							{:else}
-								<span class="muted">-</span>
-							{/if}
-						</Td>
-						<Td>
-							<span class="source">
-								{env.source.kind === 'SECRET'
-									? 'Secret'
-									: env.source.kind === 'CONFIG'
-										? 'Config'
-										: env.source.kind === 'SPEC'
-											? 'Application manifest'
-											: 'Nais'}
-								{#if (env.source.kind === 'SECRET' || env.source.kind === 'CONFIG') && env.source.name}/
-									{env.source.name}{/if}
-							</span>
-						</Td>
+						<Th>Name</Th>
+						<Th>Value</Th>
+						<Th style="white-space: nowrap; min-width: 400px">Source</Th>
 					</Tr>
-				{/each}
-			</Tbody>
-		</Table>
+				</Thead>
+				<Tbody>
+					{#each envVars as env (env.name)}
+						<Tr>
+							<Td><code>{env.name}</code></Td>
+							<Td>
+								{#if env.source.kind === 'SECRET' && revealedValues.has(env.name)}
+									<span class="env-value">
+										<code>{revealedValues.get(env.name)}</code>
+										<CopyButton size="xsmall" copyText={revealedValues.get(env.name) ?? ''} />
+									</span>
+								{:else if env.source.kind === 'SECRET'}
+									<span class="env-value">
+										<span class="masked">••••••••••••••••</span>
+										{#if viewerIsMember}
+											<Button
+												size="xsmall"
+												variant="tertiary-neutral"
+												icon={EyeIcon}
+												onclick={() => onReveal(env.source.name)}
+											/>
+										{/if}
+									</span>
+								{:else if env.value !== null}
+									<span class="env-value">
+										<code>{env.value}</code>
+										<CopyButton size="xsmall" copyText={env.value} />
+									</span>
+								{:else}
+									<span class="muted">-</span>
+								{/if}
+							</Td>
+							<Td>
+								<span class="source">
+									{env.source.kind === 'SECRET'
+										? 'Secret'
+										: env.source.kind === 'CONFIG'
+											? 'Config'
+											: env.source.kind === 'SPEC'
+												? 'Application manifest'
+												: 'Nais'}
+									{#if (env.source.kind === 'SECRET' || env.source.kind === 'CONFIG') && env.source.name}/
+										{env.source.name}{/if}
+								</span>
+							</Td>
+						</Tr>
+					{/each}
+				</Tbody>
+			</Table>
+		</div>
 	</section>
 {/if}
 
@@ -122,9 +124,15 @@
 		gap: var(--ax-space-4);
 	}
 
+	.table-container {
+		width: 100%;
+		overflow-x: auto;
+	}
+
 	.source {
 		color: var(--ax-text-neutral-subtle);
 		font-size: var(--ax-font-size-small);
+		white-space: nowrap;
 	}
 
 	.muted {
@@ -134,5 +142,17 @@
 	section :global(code) {
 		font-size: var(--ax-font-size-small);
 		color: var(--ax-text-neutral);
+		overflow-wrap: anywhere;
+	}
+
+	@media (max-width: 767px), (max-height: 500px) {
+		.section-header {
+			flex-direction: column;
+			gap: var(--ax-space-8);
+		}
+
+		:global(th[style*='min-width: 400px']) {
+			min-width: 240px !important;
+		}
 	}
 </style>
