@@ -314,7 +314,13 @@
 
 	.table-container {
 		max-width: 100%;
+		min-width: 0;
 		overflow-x: auto;
+	}
+
+	.table-container :global(table) {
+		width: max-content;
+		min-width: 100%;
 	}
 
 	@media (max-width: 767px), (max-height: 500px) {

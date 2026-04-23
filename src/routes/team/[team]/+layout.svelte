@@ -61,5 +61,10 @@
 		display: flex;
 		flex-direction: column;
 		gap: var(--spacing-layout);
+		min-width: 0;
+	}
+
+	.container > div {
+		min-width: 0;
 	}
 </style>
