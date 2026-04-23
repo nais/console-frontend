@@ -63,12 +63,14 @@
 		grid-template-columns: 1fr 300px;
 		gap: 1rem;
 		align-items: start;
+		margin-bottom: var(--ax-space-16);
 	}
 
 	@media (max-width: 767px) {
 		.columns {
 			display: flex;
 			flex-direction: column-reverse;
+			margin-bottom: var(--ax-space-24);
 		}
 	}
 
