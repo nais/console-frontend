@@ -22,30 +22,40 @@
 	);
 </script>
 
-<BarChart
-	{data}
-	padding={{ top: 24, bottom: 120, left: 40, right: 40 }}
-	cRange={[format == 'cpu' ? '#83bff6' : '#91dc75']}
-	x={xKey as string}
-	y={yKey as string}
-	onTooltipClick={!onBarClick
-		? undefined
-		: (event, detail) => {
-				// goto(`/team/${teamSlug}/${detail.data.env}/app/${detail.data.name}/utilization`);
-				onBarClick(detail.data);
-			}}
-	props={{
-		yAxis: {
-			format: formatYAxis
-		},
-		xAxis: {
-			format(value: string) {
-				return truncateString(value, 23);
+<div class="chart-container">
+	<BarChart
+		{data}
+		padding={{ top: 24, bottom: 120, left: 40, right: 40 }}
+		cRange={[format == 'cpu' ? '#83bff6' : '#91dc75']}
+		x={xKey as string}
+		y={yKey as string}
+		onTooltipClick={!onBarClick
+			? undefined
+			: (event, detail) => {
+					// goto(`/team/${teamSlug}/${detail.data.env}/app/${detail.data.name}/utilization`);
+					onBarClick(detail.data);
+				}}
+		props={{
+			yAxis: {
+				format: formatYAxis
 			},
-			tickLabelProps: {
-				rotate: 300,
-				textAnchor: 'end'
+			xAxis: {
+				format(value: string) {
+					return truncateString(value, 23);
+				},
+				tickLabelProps: {
+					rotate: 300,
+					textAnchor: 'end'
+				}
 			}
-		}
-	}}
-/>
+		}}
+	/>
+</div>
+
+<style>
+	.chart-container {
+		width: 100%;
+		min-width: 0;
+		overflow-x: auto;
+	}
+</style>

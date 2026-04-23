@@ -271,6 +271,7 @@
 		display: flex;
 		flex-direction: column;
 		gap: 1rem;
+		min-width: 0;
 	}
 	.grid {
 		margin-top: 1rem;
@@ -278,6 +279,7 @@
 		grid-template-columns: repeat(2, 1fr);
 		column-gap: 1rem;
 		row-gap: 1rem;
+		min-width: 0;
 	}
 
 	.charts-row {
@@ -285,12 +287,14 @@
 		height: 21.875rem;
 		gap: 5rem;
 		padding-left: var(--ax-space-8);
+		min-width: 0;
 	}
 	.card {
 		background-color: var(--ax-bg-sunken);
 		padding: var(--ax-space-16) var(--ax-space-20);
 		border-radius: 12px;
 		align-items: stretch;
+		min-width: 0;
 	}
 
 	.cost-wrapper {
@@ -309,6 +313,7 @@
 	}
 
 	.table-container {
+		max-width: 100%;
 		overflow-x: auto;
 	}
 
@@ -322,6 +327,7 @@
 			height: auto;
 			gap: var(--ax-space-24);
 			padding-left: 0;
+			width: 100%;
 		}
 
 		.cost-amount {
