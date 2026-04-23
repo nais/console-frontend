@@ -157,7 +157,7 @@
 								size="small"
 								type="text"
 								id="repositoryName"
-								style="width: 300px"
+								style="width: min(100%, 300px)"
 								bind:value={repoName}
 								error={inputError ? errorMessage : undefined}
 							>
@@ -195,7 +195,7 @@
 							size="small"
 							type="text"
 							id="filter"
-							style="width: 300px;"
+							style="width: min(100%, 300px)"
 							bind:value={filter}
 							onkeyup={onKeyUp}
 						>
@@ -269,6 +269,7 @@
 		font-size: 1rem;
 		margin: 1rem 0;
 	}
+
 	.right {
 		display: flex;
 		gap: var(--ax-space-6);
@@ -276,5 +277,15 @@
 	}
 	code {
 		font-size: 1rem;
+	}
+
+	@media (max-width: 767px) {
+		.wrapper {
+			grid-template-columns: 1fr;
+		}
+
+		.right {
+			justify-content: flex-start;
+		}
 	}
 </style>

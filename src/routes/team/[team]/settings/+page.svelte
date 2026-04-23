@@ -569,4 +569,31 @@
 		font-size: 0.9rem;
 		text-align: right;
 	}
+
+	@media (max-width: 767px) {
+		.wrapper {
+			grid-template-columns: 1fr;
+		}
+
+		.buttons {
+			flex-wrap: wrap;
+		}
+
+		.button {
+			width: auto;
+		}
+
+		.channel {
+			flex-wrap: wrap;
+		}
+
+		.deletewrapper {
+			flex-direction: column;
+			gap: var(--ax-space-8);
+		}
+
+		.last-sync {
+			text-align: left;
+		}
+	}
 </style>
