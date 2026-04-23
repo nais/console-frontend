@@ -101,45 +101,47 @@
 						{jobs?.pageInfo.totalCount !== totalJobs ? `(of total ${totalJobs})` : ''}"
 			>
 				{#snippet menu()}
-					<ActionMenu>
-						{#snippet trigger(props)}
-							<Button
-								variant="tertiary-neutral"
-								size="small"
-								iconPosition="right"
-								{...props}
-								icon={ChevronDownIcon}
-							>
-								<span style="font-weight: normal">Environment</span>
-							</Button>
-						{/snippet}
-						<ActionMenuCheckboxItem
-							checked={allEnvs.length === filteredEnvs.length
-								? true
-								: filteredEnvs.length > 0
-									? 'indeterminate'
-									: false}
-							onchange={(checked) => (filteredEnvs = checked ? allEnvs : [])}
-						>
-							All environments
-						</ActionMenuCheckboxItem>
-						{#each $Jobs.data?.team.environments ?? [] as { environment, id } (id)}
+					<div class="jobs-list-menu">
+						<ActionMenu>
+							{#snippet trigger(props)}
+								<Button
+									variant="tertiary-neutral"
+									size="small"
+									iconPosition="right"
+									{...props}
+									icon={ChevronDownIcon}
+								>
+									<span style="font-weight: normal">Environment</span>
+								</Button>
+							{/snippet}
 							<ActionMenuCheckboxItem
-								checked={filteredEnvs.includes(environment.name)}
-								onchange={(checked) =>
-									(filteredEnvs = checked
-										? [...filteredEnvs, environment.name]
-										: filteredEnvs.filter((env) => env !== environment.name))}
+								checked={allEnvs.length === filteredEnvs.length
+									? true
+									: filteredEnvs.length > 0
+										? 'indeterminate'
+										: false}
+								onchange={(checked) => (filteredEnvs = checked ? allEnvs : [])}
 							>
-								{environment.name}
+								All environments
 							</ActionMenuCheckboxItem>
-						{/each}
-					</ActionMenu>
-					<OrderByMenu
-						orderField={JobOrderField}
-						defaultOrderField={JobOrderField.ISSUES}
-						defaultOrderDirection={OrderDirection.DESC}
-					/>
+							{#each $Jobs.data?.team.environments ?? [] as { environment, id } (id)}
+								<ActionMenuCheckboxItem
+									checked={filteredEnvs.includes(environment.name)}
+									onchange={(checked) =>
+										(filteredEnvs = checked
+											? [...filteredEnvs, environment.name]
+											: filteredEnvs.filter((env) => env !== environment.name))}
+								>
+									{environment.name}
+								</ActionMenuCheckboxItem>
+							{/each}
+						</ActionMenu>
+						<OrderByMenu
+							orderField={JobOrderField}
+							defaultOrderField={JobOrderField.ISSUES}
+							defaultOrderDirection={OrderDirection.DESC}
+						/>
+					</div>
 				{/snippet}
 				{#each jobs?.nodes ?? [] as job (job.id)}
 					<JobListItem {job} />
@@ -190,6 +192,18 @@
 
 		.search {
 			justify-content: stretch;
+		}
+
+		.jobs-list-menu {
+			display: flex;
+			gap: var(--ax-space-8);
+			flex-wrap: nowrap;
+			overflow-x: auto;
+			max-width: 100%;
+		}
+
+		.jobs-list-menu > * {
+			flex: 0 0 auto;
 		}
 	}
 
