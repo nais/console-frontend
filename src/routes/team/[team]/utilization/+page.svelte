@@ -203,7 +203,7 @@
 			reduce infrastructure costs by optimizing resource requests.
 		</BodyLong>
 
-		<div class="flex h-87.5 gap-20 pl-2">
+		<div class="charts-row">
 			<UtilizationChart data={sortedCpuData} format="cpu" onBarClick={handleBarClick} />
 			<UtilizationChart data={sortedMemoryData} format="memory" onBarClick={handleBarClick} />
 		</div>
@@ -213,54 +213,56 @@
 			costs. Use this overview to identify where you can reduce requests and cut infrastructure
 			spending.
 		</BodyLong>
-		<Table
-			size="small"
-			sort={sortState}
-			onsortchange={(key) => {
-				sortState = sortTable(key, sortState);
-			}}
-		>
-			<Thead>
-				<Tr>
-					<Th sortable={true} sortKey="APPLICATION">Application</Th>
-					<Th sortable={true} sortKey="ENVIRONMENT">Environment</Th>
-					<Th sortable={true} sortKey="CPU">Unutilized CPU</Th>
-					<Th sortable={true} sortKey="MEMORY">Unutilized memory</Th>
-					<Th sortable={true} sortKey="COST">Estimated annual overage cost</Th>
-				</Tr>
-			</Thead>
-			<Tbody>
-				{#each overageTable as overage (overage.id)}
+		<div class="table-container">
+			<Table
+				size="small"
+				sort={sortState}
+				onsortchange={(key) => {
+					sortState = sortTable(key, sortState);
+				}}
+			>
+				<Thead>
 					<Tr>
-						<Td>
-							<WorkloadLink
-								workload={{
-									__typename: overage.type,
-									teamEnvironment: { environment: { name: overage.env } },
-									team: { slug: teamSlug },
-									name: overage.name
-								}}
-							/>
-						</Td>
-						<Td>{overage.env}</Td>
-						<Td
-							>{overage.unusedCpu.toLocaleString('en-GB', {
-								minimumFractionDigits: 2,
-								maximumFractionDigits: 2
-							})}</Td
-						>
-						<Td>{prettyBytes(overage.unusedMem)}</Td>
-						<Td>
-							{euroValueFormatter(overage.estimatedAnnualOverageCost)}
-						</Td>
+						<Th sortable={true} sortKey="APPLICATION">Application</Th>
+						<Th sortable={true} sortKey="ENVIRONMENT">Environment</Th>
+						<Th sortable={true} sortKey="CPU">Unutilized CPU</Th>
+						<Th sortable={true} sortKey="MEMORY">Unutilized memory</Th>
+						<Th sortable={true} sortKey="COST">Estimated annual overage cost</Th>
 					</Tr>
-				{:else}
-					<Tr>
-						<Td colspan={999}>No overage data for team {teamSlug}</Td>
-					</Tr>
-				{/each}
-			</Tbody>
-		</Table>
+				</Thead>
+				<Tbody>
+					{#each overageTable as overage (overage.id)}
+						<Tr>
+							<Td>
+								<WorkloadLink
+									workload={{
+										__typename: overage.type,
+										teamEnvironment: { environment: { name: overage.env } },
+										team: { slug: teamSlug },
+										name: overage.name
+									}}
+								/>
+							</Td>
+							<Td>{overage.env}</Td>
+							<Td
+								>{overage.unusedCpu.toLocaleString('en-GB', {
+									minimumFractionDigits: 2,
+									maximumFractionDigits: 2
+								})}</Td
+							>
+							<Td>{prettyBytes(overage.unusedMem)}</Td>
+							<Td>
+								{euroValueFormatter(overage.estimatedAnnualOverageCost)}
+							</Td>
+						</Tr>
+					{:else}
+						<Tr>
+							<Td colspan={999}>No overage data for team {teamSlug}</Td>
+						</Tr>
+					{/each}
+				</Tbody>
+			</Table>
+		</div>
 	{/if}
 </div>
 
@@ -276,6 +278,13 @@
 		grid-template-columns: repeat(2, 1fr);
 		column-gap: 1rem;
 		row-gap: 1rem;
+	}
+
+	.charts-row {
+		display: flex;
+		height: 21.875rem;
+		gap: 5rem;
+		padding-left: var(--ax-space-8);
 	}
 	.card {
 		background-color: var(--ax-bg-sunken);
@@ -297,5 +306,27 @@
 		display: inline-block;
 		align-items: center;
 		padding: var(--ax-space-8) var(--ax-space-32);
+	}
+
+	.table-container {
+		overflow-x: auto;
+	}
+
+	@media (max-width: 767px), (max-height: 500px) {
+		.grid {
+			grid-template-columns: 1fr;
+		}
+
+		.charts-row {
+			flex-direction: column;
+			height: auto;
+			gap: var(--ax-space-24);
+			padding-left: 0;
+		}
+
+		.cost-amount {
+			font-size: var(--ax-font-size-large);
+			padding: var(--ax-space-8) var(--ax-space-20);
+		}
 	}
 </style>

@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { PendingValue } from '$houdini';
-	import GraphErrors from '$lib/ui/GraphErrors.svelte';
 	import CostAreaChart from '$lib/chart/CostAreaChart.svelte';
+	import GraphErrors from '$lib/ui/GraphErrors.svelte';
 	import { changeParams } from '$lib/utils/searchparams';
 	import {
 		BodyLong,
