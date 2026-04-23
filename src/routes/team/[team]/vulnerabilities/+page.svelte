@@ -65,8 +65,21 @@
 		align-items: start;
 	}
 
+	@media (max-width: 767px) {
+		.columns {
+			grid-template-columns: 1fr;
+		}
+	}
+
 	.graphs {
 		display: grid;
 		gap: var(--ax-space-32);
+	}
+
+	@media (max-width: 767px) {
+		.heading {
+			flex-direction: column;
+			align-items: flex-start;
+		}
 	}
 </style>
