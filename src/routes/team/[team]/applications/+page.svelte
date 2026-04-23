@@ -109,47 +109,49 @@
 						{apps?.pageInfo.totalCount !== totalApplications ? `(of total ${totalApplications})` : ''}"
 			>
 				{#snippet menu()}
-					<ActionMenu>
-						{#snippet trigger(props)}
-							<Button
-								variant="tertiary-neutral"
-								size="small"
-								iconPosition="right"
-								{...props}
-								icon={ChevronDownIcon}
-							>
-								<span style="font-weight: normal">Environment</span>
-							</Button>
-						{/snippet}
-						<ActionMenuCheckboxItem
-							checked={$ApplicationsListMetadata.data?.team.environments.every((env) =>
-								filteredEnvs.includes(env.environment.name)
-							)
-								? true
-								: filteredEnvs.length > 0
-									? 'indeterminate'
-									: false}
-							onchange={(checked) => (filteredEnvs = checked ? allEnvs : [])}
-						>
-							All environments
-						</ActionMenuCheckboxItem>
-						{#each $ApplicationsListMetadata.data?.team.environments ?? [] as { environment, id } (id)}
+					<div class="applications-list-menu">
+						<ActionMenu>
+							{#snippet trigger(props)}
+								<Button
+									variant="tertiary-neutral"
+									size="small"
+									iconPosition="right"
+									{...props}
+									icon={ChevronDownIcon}
+								>
+									<span style="font-weight: normal">Environment</span>
+								</Button>
+							{/snippet}
 							<ActionMenuCheckboxItem
-								checked={filteredEnvs.includes(environment.name)}
-								onchange={(checked) =>
-									(filteredEnvs = checked
-										? [...filteredEnvs, environment.name]
-										: filteredEnvs.filter((env) => env !== environment.name))}
+								checked={$ApplicationsListMetadata.data?.team.environments.every((env) =>
+									filteredEnvs.includes(env.environment.name)
+								)
+									? true
+									: filteredEnvs.length > 0
+										? 'indeterminate'
+										: false}
+								onchange={(checked) => (filteredEnvs = checked ? allEnvs : [])}
 							>
-								{environment.name}
+								All environments
 							</ActionMenuCheckboxItem>
-						{/each}
-					</ActionMenu>
-					<OrderByMenu
-						orderField={ApplicationOrderField}
-						defaultOrderField={ApplicationOrderField.ISSUES}
-						defaultOrderDirection={OrderDirection.DESC}
-					/>
+							{#each $ApplicationsListMetadata.data?.team.environments ?? [] as { environment, id } (id)}
+								<ActionMenuCheckboxItem
+									checked={filteredEnvs.includes(environment.name)}
+									onchange={(checked) =>
+										(filteredEnvs = checked
+											? [...filteredEnvs, environment.name]
+											: filteredEnvs.filter((env) => env !== environment.name))}
+								>
+									{environment.name}
+								</ActionMenuCheckboxItem>
+							{/each}
+						</ActionMenu>
+						<OrderByMenu
+							orderField={ApplicationOrderField}
+							defaultOrderField={ApplicationOrderField.ISSUES}
+							defaultOrderDirection={OrderDirection.DESC}
+						/>
+					</div>
 				{/snippet}
 				{#each apps?.nodes ?? [] as app (app.id)}
 					<AppListItem {app} />
@@ -202,6 +204,18 @@
 
 		.search {
 			justify-content: stretch;
+		}
+
+		.applications-list-menu {
+			display: flex;
+			gap: var(--ax-space-8);
+			flex-wrap: nowrap;
+			overflow-x: auto;
+			max-width: 100%;
+		}
+
+		.applications-list-menu > * {
+			flex: 0 0 auto;
 		}
 	}
 
