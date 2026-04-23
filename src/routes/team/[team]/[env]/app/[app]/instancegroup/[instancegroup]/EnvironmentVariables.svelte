@@ -122,11 +122,16 @@
 		display: flex;
 		align-items: center;
 		gap: var(--ax-space-4);
+		white-space: nowrap;
 	}
 
 	.table-container {
 		width: 100%;
 		overflow-x: auto;
+	}
+
+	.table-container :global(table) {
+		min-width: 720px;
 	}
 
 	.source {
@@ -142,7 +147,9 @@
 	section :global(code) {
 		font-size: var(--ax-font-size-small);
 		color: var(--ax-text-neutral);
-		overflow-wrap: anywhere;
+		overflow-wrap: normal;
+		word-break: normal;
+		white-space: nowrap;
 	}
 
 	@media (max-width: 767px), (max-height: 500px) {
