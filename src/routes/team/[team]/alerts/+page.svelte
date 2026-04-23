@@ -394,4 +394,9 @@
 		align-items: center;
 		gap: var(--ax-space-4);
 	}
+
+	.query-heading :global(h2) {
+		width: 100%;
+		text-align: left;
+	}
 </style>
