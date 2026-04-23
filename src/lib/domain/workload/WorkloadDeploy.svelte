@@ -72,4 +72,12 @@
 		gap: var(--ax-space-12);
 		align-items: center;
 	}
+
+	@media (max-width: 767px), (max-height: 500px) {
+		.wrapper {
+			margin-top: 0;
+			align-items: flex-start;
+			flex-wrap: wrap;
+		}
+	}
 </style>
