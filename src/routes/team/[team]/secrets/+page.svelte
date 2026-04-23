@@ -271,6 +271,7 @@
 		}
 		.right {
 			align-items: flex-end;
+			margin-top: var(--ax-space-6);
 		}
 
 		.secrets-list-menu {
