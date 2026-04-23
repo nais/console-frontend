@@ -27,8 +27,8 @@
 			<Table size="small" zebraStripes>
 				<Thead>
 					<Tr>
-						<Th>Path</Th>
-						<Th>Source</Th>
+						<Th style="min-width: 320px">Path</Th>
+						<Th style="min-width: 260px">Source</Th>
 						<Th style="width: 1%"></Th>
 					</Tr>
 				</Thead>
@@ -93,9 +93,22 @@
 		overflow-x: auto;
 	}
 
+	.table-container :global(table) {
+		min-width: 720px;
+	}
+
+	.table-container :global(th),
+	.table-container :global(td) {
+		white-space: nowrap;
+	}
+
 	section :global(code) {
 		font-size: var(--ax-font-size-small);
 		color: var(--ax-text-neutral);
-		overflow-wrap: anywhere;
+		overflow-wrap: normal;
+		word-break: normal;
+		white-space: nowrap;
+		display: inline-block;
+		min-width: max-content;
 	}
 </style>
