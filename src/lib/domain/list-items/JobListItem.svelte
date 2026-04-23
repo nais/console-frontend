@@ -188,7 +188,13 @@
 	/* Mobile responsive layout */
 	@media (max-width: 767px) {
 		.right {
-			align-items: flex-start;
+			align-items: flex-end;
+		}
+
+		.right :global(.issues-container.stacked) {
+			width: auto;
+			align-items: flex-end;
+			gap: var(--ax-space-8);
 		}
 	}
 </style>
