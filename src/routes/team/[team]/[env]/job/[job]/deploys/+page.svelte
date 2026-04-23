@@ -10,7 +10,6 @@
 	import { extractIdFromUrl } from '$lib/utils/extractIdFromUrl';
 	import { changeParams } from '$lib/utils/searchparams';
 	import { BodyLong, Tag } from '@nais/ds-svelte-community';
-	import { format } from 'date-fns';
 	import { tick } from 'svelte';
 	import type { PageProps } from './$types';
 
@@ -91,45 +90,40 @@
 					>
 				{/if}
 			</BodyLong>
-			<List
-				title="{$JobDeploys.data.team.environment.job.deployments.pageInfo
-					.totalCount} deployment{$JobDeploys.data.team.environment.job.deployments.pageInfo
-					.totalCount !== 1
-					? 's'
-					: ''} - showing {$JobDeploys.data.team.environment.job.deployments.pageInfo.pageEnd -
-					$JobDeploys.data.team.environment.job.deployments.pageInfo.pageStart +
-					1} from {format(
-					$JobDeploys.data.team.environment.job.deployments.nodes.at(0)?.createdAt ?? '',
-					'dd/MM/yyyy'
-				)} to {format(
-					$JobDeploys.data.team.environment.job.deployments.nodes.at(-1)?.createdAt ?? '',
-					'dd/MM/yyyy'
-				)}"
-			>
-				{#each $JobDeploys.data.team.environment.job.deployments.nodes as deployment (deployment.id)}
-					{@const id = extractIdFromUrl(deployment.triggerUrl ?? '')}
-					<div {id} class:highlight-in={id !== '' && highlightId !== '' && id === highlightId}>
-						<DeploymentListItem {deployment} />
-					</div>
-				{/each}
-			</List>
-			<Pagination
-				page={$JobDeploys.data.team.environment.job.deployments.pageInfo}
-				loaders={{
-					loadPreviousPage: () => {
-						changeQuery({
-							after: '',
-							before: $JobDeploys.data?.team.environment.job.deployments.pageInfo.startCursor ?? ''
-						});
-					},
-					loadNextPage: () => {
-						changeQuery({
-							before: '',
-							after: $JobDeploys.data?.team.environment.job.deployments.pageInfo.endCursor ?? ''
-						});
-					}
-				}}
-			/>
+			{#if $JobDeploys.data.team.environment.job.deployments.pageInfo.totalCount != 0}
+				<List
+					title="{$JobDeploys.data.team.environment.job.deployments.pageInfo
+						.totalCount} deployment{$JobDeploys.data.team.environment.job.deployments.pageInfo
+						.totalCount !== 1
+						? 's'
+						: ''}"
+				>
+					{#each $JobDeploys.data.team.environment.job.deployments.nodes as deployment (deployment.id)}
+						{@const id = extractIdFromUrl(deployment.triggerUrl ?? '')}
+						<div {id} class:highlight-in={id !== '' && highlightId !== '' && id === highlightId}>
+							<DeploymentListItem {deployment} />
+						</div>
+					{/each}
+				</List>
+				<Pagination
+					page={$JobDeploys.data.team.environment.job.deployments.pageInfo}
+					loaders={{
+						loadPreviousPage: () => {
+							changeQuery({
+								after: '',
+								before:
+									$JobDeploys.data?.team.environment.job.deployments.pageInfo.startCursor ?? ''
+							});
+						},
+						loadNextPage: () => {
+							changeQuery({
+								before: '',
+								after: $JobDeploys.data?.team.environment.job.deployments.pageInfo.endCursor ?? ''
+							});
+						}
+					}}
+				/>
+			{/if}
 		</div>
 	</div>
 {/if}
@@ -140,6 +134,14 @@
 		grid-template-columns: 1fr 300px;
 		gap: var(--spacing-layout);
 	}
+
+	@media (max-width: 767px), (max-height: 500px) {
+		.wrapper {
+			grid-template-columns: 1fr;
+			gap: var(--ax-space-24);
+		}
+	}
+
 	[id] {
 		transition:
 			background-color 0.8s ease,

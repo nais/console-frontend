@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { PendingValue } from '$houdini';
-	import GraphErrors from '$lib/ui/GraphErrors.svelte';
 	import CostAreaChart from '$lib/chart/CostAreaChart.svelte';
+	import GraphErrors from '$lib/ui/GraphErrors.svelte';
 	import { changeParams } from '$lib/utils/searchparams';
 	import { BodyLong, Loader, ToggleGroup, ToggleGroupItem } from '@nais/ds-svelte-community';
 	import type { PageProps } from './$types';
@@ -22,17 +22,19 @@
 						originates from Google Cloud and Aiven.
 					</BodyLong>
 				</div>
-				<ToggleGroup
-					value={interval}
-					onchange={(interval) => changeParams({ interval }, { noScroll: true })}
-				>
-					{#each ['30d', '90d', '6m', '1y'] as interval (interval)}
-						<ToggleGroupItem value={interval}>{interval}</ToggleGroupItem>
-					{/each}
-				</ToggleGroup>
 			</div>
 			{#if $JobCost.data && $JobCost.data.team.environment.job.cost.daily !== PendingValue}
-				<div class="h-[500px]">
+				<div class="toggles">
+					<ToggleGroup
+						value={interval}
+						onchange={(interval) => changeParams({ interval }, { noScroll: true })}
+					>
+						{#each ['30d', '90d', '6m', '1y'] as interval (interval)}
+							<ToggleGroupItem value={interval}>{interval}</ToggleGroupItem>
+						{/each}
+					</ToggleGroup>
+				</div>
+				<div class="h-125">
 					<CostAreaChart
 						data={$JobCost.data.team.environment.job.cost.daily.series.map((item) => {
 							const ret: { date: Date; [key: string]: number | Date } = { date: item.date };
@@ -67,12 +69,27 @@
 
 	.heading {
 		display: flex;
-		justify-content: space-between;
 		align-items: flex-end;
+		gap: var(--spacing-layout);
+	}
+
+	.toggles {
+		display: flex;
+		justify-content: flex-end;
 		gap: var(--spacing-layout);
 	}
 
 	.content {
 		max-width: 80ch;
+	}
+
+	@media (max-width: 767px), (max-height: 500px) {
+		.heading {
+			align-items: flex-start;
+		}
+
+		.toggles {
+			justify-content: flex-start;
+		}
 	}
 </style>

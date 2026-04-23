@@ -1,6 +1,5 @@
 <script lang="ts">
 	import type { InstanceGroupDetail$result } from '$houdini';
-	import { SvelteMap } from 'svelte/reactivity';
 	import {
 		Button,
 		CopyButton,
@@ -13,6 +12,7 @@
 		Tr
 	} from '@nais/ds-svelte-community';
 	import { EyeIcon, EyeSlashIcon } from '@nais/ds-svelte-community/icons';
+	import { SvelteMap } from 'svelte/reactivity';
 
 	type EnvironmentVariable =
 		InstanceGroupDetail$result['team']['environment']['application']['instanceGroups'][number]['environmentVariables'][number];

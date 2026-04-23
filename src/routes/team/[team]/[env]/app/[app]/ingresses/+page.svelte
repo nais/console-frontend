@@ -164,6 +164,10 @@
 		gap: var(--ax-space-24);
 	}
 
+	.wrapper > * {
+		min-width: 0;
+	}
+
 	.controls {
 		display: flex;
 		justify-content: flex-end;
@@ -171,6 +175,7 @@
 
 	.section {
 		display: grid;
+		min-width: 0;
 		scroll-margin-top: 72px; /* avoids sticky header overlap */
 		border-radius: 12px; /* rounded corners */
 		padding: var(--ax-space-16, 16px); /* inner space */
@@ -179,6 +184,8 @@
 	}
 
 	.chart-wrapper {
+		width: 100%;
+		min-width: 0;
 		padding-block: 0.5rem 1rem; /* a touch more room under the title */
 	}
 

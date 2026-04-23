@@ -151,7 +151,9 @@
 						submit();
 					}}
 				>
-					<TextField label="" hideLabel bind:value={confirmation} style="width: 300px;" />
+					<div class="field-wrapper">
+						<TextField label="" hideLabel bind:value={confirmation} style="width: 100%;" />
+					</div>
 					<Button
 						disabled={confirmation !== expected}
 						variant="danger"
@@ -175,6 +177,11 @@
 		gap: 1rem;
 	}
 
+	.field-wrapper {
+		width: 100%;
+		max-width: 300px;
+	}
+
 	.heading-wrapper {
 		display: flex;
 		gap: var(--ax-space-12);
@@ -191,5 +198,20 @@
 		padding: var(--ax-space-16);
 		border-radius: 8px;
 		border: 1px solid var(--ax-border-danger);
+	}
+
+	@media (max-width: 767px), (max-height: 500px) {
+		form {
+			flex-direction: column;
+			align-items: stretch;
+		}
+
+		.field-wrapper {
+			max-width: none;
+		}
+
+		form :global(button) {
+			width: 100%;
+		}
 	}
 </style>

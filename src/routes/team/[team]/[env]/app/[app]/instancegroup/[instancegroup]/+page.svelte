@@ -1,27 +1,26 @@
 <script lang="ts">
-	import type { InstanceGroupDetail$result } from '$houdini';
+	import type { InstanceGroupDetail$result, ValueEncoding$options } from '$houdini';
+	import { ValueEncoding } from '$houdini';
+	import { pageHeaderState } from '$lib/stores/pageHeaderState.svelte';
 	import GraphErrors from '$lib/ui/GraphErrors.svelte';
 	import Time from '$lib/ui/Time.svelte';
-	import ViewSecretModal from '../../../../secret/[secret]/ViewSecretModal.svelte';
-	import { SvelteMap } from 'svelte/reactivity';
-	import prettyBytes from 'pretty-bytes';
 	import {
 		Alert,
 		BodyShort,
 		Heading,
 		Loader,
 		Table,
+		Tag,
 		Tbody,
 		Td,
 		Th,
 		Thead,
-		Tr,
-		Tag
+		Tr
 	} from '@nais/ds-svelte-community';
-	import { pageHeaderState } from '$lib/stores/pageHeaderState.svelte';
+	import prettyBytes from 'pretty-bytes';
+	import { SvelteMap } from 'svelte/reactivity';
+	import ViewSecretModal from '../../../../secret/[secret]/ViewSecretModal.svelte';
 	import type { PageProps } from './$types';
-	import type { ValueEncoding$options } from '$houdini';
-	import { ValueEncoding } from '$houdini';
 	import EnvironmentVariables from './EnvironmentVariables.svelte';
 	import MountedFiles from './MountedFiles.svelte';
 

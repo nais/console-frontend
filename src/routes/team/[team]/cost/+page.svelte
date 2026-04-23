@@ -42,7 +42,7 @@
 			</div>
 		</div>
 		{#if $TeamCost.data && $TeamCost.data.team.cost !== PendingValue}
-			<div class="mt-4 h-[500px]">
+			<div class="mt-4 h-125">
 				<CostAreaChart
 					data={$TeamCost.data.team.cost.daily.series.map((item) => {
 						const ret: { date: Date; [key: string]: number | Date } = { date: item.date };
