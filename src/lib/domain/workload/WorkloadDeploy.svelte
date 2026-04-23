@@ -1,10 +1,10 @@
 <script lang="ts">
 	import { fragment, graphql, type WorkloadDeploy } from '$houdini';
 	import ExternalLink from '$lib/ui/ExternalLink.svelte';
+	import IconLabel from '$lib/ui/IconLabel.svelte';
 	import Time from '$lib/ui/Time.svelte';
 	import { BodyShort, Tag } from '@nais/ds-svelte-community';
 	import { RocketIcon } from '@nais/ds-svelte-community/icons';
-	import IconLabel from '$lib/ui/IconLabel.svelte';
 
 	interface Props {
 		workload: WorkloadDeploy;

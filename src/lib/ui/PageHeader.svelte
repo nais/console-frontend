@@ -2,10 +2,10 @@
 	import { resolve } from '$app/paths';
 	import { page } from '$app/state';
 	import type { RouteId } from '$app/types';
-	import WarningIcon from '$lib/icons/WarningIcon.svelte';
 	import DangerIcon from '$lib/icons/DangerIcon.svelte';
-	import AddToFavorites from '$lib/ui/AddToFavorites.svelte';
+	import WarningIcon from '$lib/icons/WarningIcon.svelte';
 	import { pageHeaderState } from '$lib/stores/pageHeaderState.svelte';
+	import AddToFavorites from '$lib/ui/AddToFavorites.svelte';
 	import { Heading, Tag } from '@nais/ds-svelte-community';
 
 	const breadcrumbs = $derived(page.data?.meta?.breadcrumbs ?? []);
