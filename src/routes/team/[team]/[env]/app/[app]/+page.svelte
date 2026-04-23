@@ -279,6 +279,10 @@
 			grid-template-columns: 1fr;
 		}
 
+		.workload-deploy-wrapper {
+			margin-top: 0;
+		}
+
 		.instances-header {
 			flex-direction: column;
 			align-items: flex-start;
