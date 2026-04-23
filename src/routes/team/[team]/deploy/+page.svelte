@@ -7,7 +7,6 @@
 	import Pagination from '$lib/ui/Pagination.svelte';
 	import { changeParams } from '$lib/utils/searchparams';
 	import { BodyLong } from '@nais/ds-svelte-community';
-	import { format } from 'date-fns';
 	import type { PageProps } from './$types';
 
 	let { data }: PageProps = $props();
@@ -53,15 +52,7 @@
 					title="{$Deployments.data.team.deployments.pageInfo.totalCount} deployment{$Deployments
 						.data.team.deployments.pageInfo.totalCount !== 1
 						? 's'
-						: ''} - showing {$Deployments.data.team.deployments.pageInfo.pageEnd -
-						$Deployments.data.team.deployments.pageInfo.pageStart +
-						1} from {format(
-						$Deployments.data.team.deployments.nodes.at(0)?.createdAt ?? '',
-						'dd/MM/yyyy'
-					)} to {format(
-						$Deployments.data.team.deployments.nodes.at(-1)?.createdAt ?? '',
-						'dd/MM/yyyy'
-					)}"
+						: ''}"
 				>
 					{#each $Deployments.data.team.deployments.nodes as deployment (deployment.id)}
 						<DeploymentListItem {deployment} showEnv />
