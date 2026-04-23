@@ -196,7 +196,7 @@ describe('vulnerabilities', () => {
 				status: 'PROCESSING',
 				sbomProcessingStartedAt: fiveMinAgo
 			});
-			expect(result.label).toBe('Processing for 5 min');
+			expect(result.label).toBe('Scanning for vulnerabilities · 5 min');
 		});
 	});
 
@@ -211,27 +211,31 @@ describe('vulnerabilities', () => {
 
 		test('returns less than a minute for very recent date', () => {
 			const recent = new Date(Date.now() - 30_000);
-			expect(formatProcessingDuration(recent)).toBe('Processing for less than a minute');
+			expect(formatProcessingDuration(recent)).toBe(
+				'Scanning for vulnerabilities · less than a minute'
+			);
 		});
 
 		test('returns minutes for sub-hour duration', () => {
 			const thirtyMinAgo = new Date(Date.now() - 30 * 60_000);
-			expect(formatProcessingDuration(thirtyMinAgo)).toBe('Processing for 30 min');
+			expect(formatProcessingDuration(thirtyMinAgo)).toBe('Scanning for vulnerabilities · 30 min');
 		});
 
 		test('returns hours and minutes for multi-hour duration', () => {
 			const ninetyMinAgo = new Date(Date.now() - 90 * 60_000);
-			expect(formatProcessingDuration(ninetyMinAgo)).toBe('Processing for 1 h 30 min');
+			expect(formatProcessingDuration(ninetyMinAgo)).toBe(
+				'Scanning for vulnerabilities · 1 h 30 min'
+			);
 		});
 
 		test('returns exact hours when no remainder minutes', () => {
 			const twoHoursAgo = new Date(Date.now() - 2 * 60 * 60_000);
-			expect(formatProcessingDuration(twoHoursAgo)).toBe('Processing for 2 h');
+			expect(formatProcessingDuration(twoHoursAgo)).toBe('Scanning for vulnerabilities · 2 h');
 		});
 
 		test('returns days for multi-day duration', () => {
 			const threeDaysAgo = new Date(Date.now() - 3 * 24 * 60 * 60_000);
-			expect(formatProcessingDuration(threeDaysAgo)).toBe('Processing for 3 d');
+			expect(formatProcessingDuration(threeDaysAgo)).toBe('Scanning for vulnerabilities · 3 d');
 		});
 	});
 });
