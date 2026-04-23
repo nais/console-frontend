@@ -367,7 +367,7 @@
 	</Heading>
 	<div class="wrapper">
 		<div style="display: grid; gap: var(--spacing-layout);">
-			<div class="grid" style="grid-template-columns: 20% 80%;">
+			<div class="info-grid grid">
 				<p><strong>Name</strong></p>
 				<p>{unleash.name}</p>
 
@@ -680,11 +680,20 @@
 		gap: var(--ax-space-4);
 	}
 
+	.info-grid {
+		grid-template-columns: 20% 80%;
+		overflow-wrap: anywhere;
+	}
+
 	/* Mobile responsive layout */
 	@media (max-width: 767px), (max-height: 500px) {
 		.wrapper {
 			grid-template-columns: 1fr;
 			gap: var(--ax-space-24);
+		}
+
+		.info-grid {
+			grid-template-columns: max-content 1fr;
 		}
 	}
 </style>
