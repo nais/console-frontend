@@ -67,7 +67,8 @@
 
 	@media (max-width: 767px) {
 		.columns {
-			grid-template-columns: 1fr;
+			display: flex;
+			flex-direction: column-reverse;
 		}
 	}
 
