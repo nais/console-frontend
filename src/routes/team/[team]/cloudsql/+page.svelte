@@ -196,7 +196,14 @@
 			grid-template-columns: 1fr;
 		}
 		.right {
-			align-items: flex-start;
+			align-items: flex-end;
+			margin-top: var(--ax-space-6);
+		}
+
+		.right :global(.issues-container.inline) {
+			width: auto;
+			justify-content: flex-end;
+			gap: var(--ax-space-8);
 		}
 	}
 </style>
