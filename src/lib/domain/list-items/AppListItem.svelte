@@ -121,5 +121,10 @@
 		.right {
 			align-items: flex-start;
 		}
+
+		.right :global(.issues-container.stacked) {
+			width: auto;
+			align-items: flex-start;
+		}
 	}
 </style>
