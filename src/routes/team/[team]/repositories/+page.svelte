@@ -234,6 +234,7 @@
 														size="xsmall"
 														onclick={() => removeRepository(repo.team.slug, repo.name)}
 														class="remove-btn-icon"
+														aria-label="Remove repository"
 													>
 														{#snippet icon()}
 															<TrashIcon style="color: var(--ax-text-danger-decoration);" />

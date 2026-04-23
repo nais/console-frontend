@@ -204,21 +204,21 @@
 	}
 
 	.team-card {
-		border: 1px solid #d0d0d0;
+		border: 1px solid var(--ax-border-neutral-subtleA);
 		border-radius: 8px;
 		padding: 1rem;
-		background: #fff;
+		background: var(--ax-bg-raised);
 	}
 
 	.card-header {
 		margin-bottom: 0.75rem;
-		border-bottom: 1px solid #d0d0d0;
+		border-bottom: 1px solid var(--ax-border-neutral-subtleA);
 		padding-bottom: 0.75rem;
 	}
 
 	.team-name {
 		font-weight: 600;
-		color: #0067c5;
+		color: var(--ax-text-accent)x-text-accent);
 		text-decoration: none;
 	}
 
@@ -242,19 +242,19 @@
 
 	.card-label {
 		font-weight: 500;
-		color: #666;
+		color: var(--ax-text-subtle);
 		flex-shrink: 0;
 		min-width: 80px;
 	}
 
 	.card-value {
-		color: #333;
+		color: var(--ax-text-neutral);
 		text-align: right;
 		flex: 1;
 	}
 
 	:global(.card-value a) {
-		color: #0067c5;
+		color: var(--ax-text-accent)x-text-accent);
 		text-decoration: none;
 	}
 
