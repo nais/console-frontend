@@ -44,8 +44,8 @@
 			<Table size="small" zebraStripes>
 				<Thead>
 					<Tr>
-						<Th>Name</Th>
-						<Th>Value</Th>
+						<Th style="min-width: 160px">Name</Th>
+						<Th style="min-width: 360px">Value</Th>
 						<Th style="white-space: nowrap; min-width: 400px">Source</Th>
 					</Tr>
 				</Thead>
@@ -134,6 +134,15 @@
 		min-width: 720px;
 	}
 
+	.table-container :global(th),
+	.table-container :global(td) {
+		white-space: nowrap;
+	}
+
+	.table-container :global(tr > td:nth-child(2)) {
+		min-width: 360px;
+	}
+
 	.source {
 		color: var(--ax-text-neutral-subtle);
 		font-size: var(--ax-font-size-small);
@@ -150,6 +159,8 @@
 		overflow-wrap: normal;
 		word-break: normal;
 		white-space: nowrap;
+		display: inline-block;
+		min-width: max-content;
 	}
 
 	@media (max-width: 767px), (max-height: 500px) {
