@@ -216,30 +216,32 @@
 								{/snippet}
 								{#each team.repositories.nodes as repo (repo.id)}
 									<ListItem>
-										<ExternalLink href="https://github.com/{repo.name}">{repo.name}</ExternalLink>
-										{#if viewerIsMember}
-											<div class="right">
-												<Button
-													variant="danger"
-													size="xsmall"
-													onclick={() => removeRepository(repo.team.slug, repo.name)}
-													icon={TrashIcon}
-													class="remove-btn-full"
-												>
-													Remove
-												</Button>
-												<Button
-													variant="tertiary-neutral"
-													size="xsmall"
-													onclick={() => removeRepository(repo.team.slug, repo.name)}
-													class="remove-btn-icon"
-												>
-													{#snippet icon()}
-														<TrashIcon style="color: var(--ax-text-danger-decoration);" />
-													{/snippet}
-												</Button>
-											</div>
-										{/if}
+										<div class="repo-row">
+											<ExternalLink href="https://github.com/{repo.name}">{repo.name}</ExternalLink>
+											{#if viewerIsMember}
+												<div class="right">
+													<Button
+														variant="danger"
+														size="xsmall"
+														onclick={() => removeRepository(repo.team.slug, repo.name)}
+														icon={TrashIcon}
+														class="remove-btn-full"
+													>
+														Remove
+													</Button>
+													<Button
+														variant="tertiary-neutral"
+														size="xsmall"
+														onclick={() => removeRepository(repo.team.slug, repo.name)}
+														class="remove-btn-icon"
+													>
+														{#snippet icon()}
+															<TrashIcon style="color: var(--ax-text-danger-decoration);" />
+														{/snippet}
+													</Button>
+												</div>
+											{/if}
+										</div>
 									</ListItem>
 								{/each}
 							</List>
@@ -286,6 +288,14 @@
 		gap: var(--ax-space-6);
 		align-items: center;
 	}
+
+	.repo-row {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		width: 100%;
+		gap: var(--ax-space-8);
+	}
 	code {
 		font-size: 1rem;
 	}
@@ -293,10 +303,6 @@
 	@media (max-width: 767px) {
 		.wrapper {
 			grid-template-columns: 1fr;
-		}
-
-		.right {
-			justify-self: end;
 		}
 
 		:global(.remove-btn-full) {
