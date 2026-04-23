@@ -272,8 +272,6 @@
 		flex-direction: column;
 		gap: 1rem;
 		min-width: 0;
-		max-width: 100%;
-		overflow-x: clip;
 	}
 	.grid {
 		margin-top: 1rem;
