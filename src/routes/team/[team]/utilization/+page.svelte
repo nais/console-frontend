@@ -272,6 +272,8 @@
 		flex-direction: column;
 		gap: 1rem;
 		min-width: 0;
+		max-width: 100%;
+		overflow-x: clip;
 	}
 	.grid {
 		margin-top: 1rem;
@@ -333,6 +335,15 @@
 		.cost-amount {
 			font-size: var(--ax-font-size-large);
 			padding: var(--ax-space-8) var(--ax-space-20);
+		}
+
+		.card :global(h2) {
+			white-space: normal;
+			overflow-wrap: anywhere;
+		}
+
+		.card :global(p) {
+			overflow-wrap: anywhere;
 		}
 	}
 </style>
