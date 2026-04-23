@@ -538,6 +538,8 @@
 	.deployKey {
 		font-family: monospace;
 		padding-bottom: 1rem;
+		word-break: break-all;
+		overflow-wrap: break-word;
 	}
 
 	.buttons {
