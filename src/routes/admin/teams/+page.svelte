@@ -218,7 +218,7 @@
 
 	.team-name {
 		font-weight: 600;
-		color: var(--ax-text-accent)x-text-accent);
+		color: var(--ax-text-accent);
 		text-decoration: none;
 	}
 
@@ -254,7 +254,7 @@
 	}
 
 	:global(.card-value a) {
-		color: var(--ax-text-accent)x-text-accent);
+		color: var(--ax-text-accent);
 		text-decoration: none;
 	}
 
