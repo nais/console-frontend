@@ -156,6 +156,12 @@
 			.content-wrapper {
 				grid-template-columns: 1fr;
 			}
+
+			.right {
+				align-self: flex-end;
+				justify-content: flex-end;
+				margin-top: var(--ax-space-6);
+			}
 		}
 	</style>
 {/if}

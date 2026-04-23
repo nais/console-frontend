@@ -165,7 +165,8 @@
 			grid-template-columns: 1fr;
 		}
 		.right {
-			align-items: flex-start;
+			align-items: flex-end;
+			margin-top: var(--ax-space-6);
 		}
 	}
 </style>
