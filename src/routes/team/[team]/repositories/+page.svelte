@@ -296,7 +296,7 @@
 		}
 
 		.right {
-			justify-content: flex-start;
+			justify-self: end;
 		}
 
 		:global(.remove-btn-full) {
