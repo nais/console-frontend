@@ -68,6 +68,17 @@ npm run test # Run tests with Vitest
 npm run lockfile-lint # Validate package-lock.json security
 ```
 
+### Mobile responsiveness
+
+The console should remain usable at small viewport widths, with `375px` as the baseline mobile target.
+
+When changing layouts, lists, tables, or chart-heavy pages, validate in responsive mode (for example `375x812`) and ensure:
+
+- No page-level horizontal scrolling on mobile
+- Horizontal overflow is scoped to the component that needs it (for example tables)
+- Two-column desktop layouts collapse to one column on mobile where relevant
+- Touch targets and controls remain usable without overlapping
+
 #### Storybook
 
 The project includes a component library documented with Storybook:
