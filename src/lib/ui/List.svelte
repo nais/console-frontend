@@ -53,22 +53,15 @@
 		text-align: left;
 	}
 
-	/* Mobile responsive layout */
 	@media (max-width: 767px) {
 		.header {
-			flex-direction: column;
-			align-items: flex-start;
-			gap: var(--ax-space-12);
-		}
-
-		.header :global(h3) {
-			width: 100%;
-			text-align: left;
+			flex-wrap: wrap;
+			gap: var(--ax-space-8);
+			padding: var(--ax-space-12) var(--ax-space-16);
 		}
 
 		.menu {
 			flex-wrap: wrap;
-			width: 100%;
 		}
 	}
 </style>
