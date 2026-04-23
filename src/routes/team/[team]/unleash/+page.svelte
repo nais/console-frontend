@@ -695,5 +695,9 @@
 		.info-grid {
 			grid-template-columns: max-content 1fr;
 		}
+
+		.release-channel-row {
+			flex-wrap: wrap;
+		}
 	}
 </style>
