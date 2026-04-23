@@ -679,4 +679,12 @@
 	.utilization-content {
 		gap: var(--ax-space-4);
 	}
+
+	/* Mobile responsive layout */
+	@media (max-width: 767px), (max-height: 500px) {
+		.wrapper {
+			grid-template-columns: 1fr;
+			gap: var(--ax-space-24);
+		}
+	}
 </style>
