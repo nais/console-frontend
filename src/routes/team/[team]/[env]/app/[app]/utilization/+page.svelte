@@ -363,45 +363,47 @@
 				</div>
 			</BodyLong>
 
-			<Table size="small">
-				<Thead>
-					<Tr>
-						<Th>Resource Type</Th>
-						<Th>Current Value</Th>
-						<Th>Recommended Value</Th>
-					</Tr>
-				</Thead>
-				<Tbody>
-					{#if !isIn10PercentRange(cpuReq, cpuReqRecommendation)}
+			<div class="table-container">
+				<Table size="small">
+					<Thead>
 						<Tr>
-							<Td>CPU Request</Td>
-							<Td>{cpuReq ? formatKubernetesCPU(cpuReq) : 'Using default (200m)'}</Td>
-							<Td>{formatKubernetesCPU(cpuReqRecommendation)}</Td>
+							<Th>Resource Type</Th>
+							<Th>Current Value</Th>
+							<Th>Recommended Value</Th>
 						</Tr>
-					{/if}
-					{#if cpuLimit}
-						<Tr>
-							<Td>CPU Limit</Td>
-							<Td>{formatKubernetesCPU(cpuLimit)}</Td>
-							<Td>CPU Limit is generally not recommended</Td>
-						</Tr>
-					{/if}
-					{#if !isIn10PercentRange(memReq, memReqRecommendation)}
-						<Tr>
-							<Td>Memory Request</Td>
-							<Td>{memReq ? formatKubernetesMemory(memReq) : 'Using default (256Mi)'}</Td>
-							<Td>{formatKubernetesMemory(memReqRecommendation)}</Td>
-						</Tr>
-					{/if}
-					{#if !isIn10PercentRange(memLimit, memLimitRecommendation)}
-						<Tr>
-							<Td>Memory Limits</Td>
-							<Td>{memLimit ? formatKubernetesMemory(memLimit) : 'Using default (512Mi)'}</Td>
-							<Td>{formatKubernetesMemory(memLimitRecommendation)}</Td>
-						</Tr>
-					{/if}
-				</Tbody>
-			</Table>
+					</Thead>
+					<Tbody>
+						{#if !isIn10PercentRange(cpuReq, cpuReqRecommendation)}
+							<Tr>
+								<Td>CPU Request</Td>
+								<Td>{cpuReq ? formatKubernetesCPU(cpuReq) : 'Using default (200m)'}</Td>
+								<Td>{formatKubernetesCPU(cpuReqRecommendation)}</Td>
+							</Tr>
+						{/if}
+						{#if cpuLimit}
+							<Tr>
+								<Td>CPU Limit</Td>
+								<Td>{formatKubernetesCPU(cpuLimit)}</Td>
+								<Td>CPU Limit is generally not recommended</Td>
+							</Tr>
+						{/if}
+						{#if !isIn10PercentRange(memReq, memReqRecommendation)}
+							<Tr>
+								<Td>Memory Request</Td>
+								<Td>{memReq ? formatKubernetesMemory(memReq) : 'Using default (256Mi)'}</Td>
+								<Td>{formatKubernetesMemory(memReqRecommendation)}</Td>
+							</Tr>
+						{/if}
+						{#if !isIn10PercentRange(memLimit, memLimitRecommendation)}
+							<Tr>
+								<Td>Memory Limits</Td>
+								<Td>{memLimit ? formatKubernetesMemory(memLimit) : 'Using default (512Mi)'}</Td>
+								<Td>{formatKubernetesMemory(memLimitRecommendation)}</Td>
+							</Tr>
+						{/if}
+					</Tbody>
+				</Table>
+			</div>
 			<ReadMore header="About Resource Recommendations">
 				<div>
 					<p>
@@ -811,6 +813,27 @@
 		:global(.annotation-text) {
 			fill: var(--ax-text-neutral-contrast);
 			font-size: 10px;
+		}
+	}
+
+	.table-container {
+		width: 100%;
+		overflow-x: auto;
+	}
+
+	@media (max-width: 767px), (max-height: 500px) {
+		.grid {
+			grid-template-columns: 1fr;
+		}
+
+		.heading-with-toggle {
+			flex-direction: column;
+			align-items: flex-start;
+			gap: var(--ax-space-8);
+		}
+
+		.cost-amount {
+			font-size: 1.25rem;
 		}
 	}
 </style>

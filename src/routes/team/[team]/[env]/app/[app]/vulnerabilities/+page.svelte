@@ -185,6 +185,7 @@
 		gap: var(--ax-space-8);
 		align-items: center;
 		margin-bottom: var(--ax-space-8);
+		overflow-x: auto;
 	}
 
 	.kv {
@@ -201,5 +202,19 @@
 	}
 	.kv dd {
 		margin: 0;
+	}
+
+	@media (max-width: 767px), (max-height: 500px) {
+		.top {
+			grid-template-columns: 1fr;
+		}
+
+		.cards {
+			padding-bottom: 0;
+		}
+
+		.cards .card {
+			width: 100%;
+		}
 	}
 </style>

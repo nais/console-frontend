@@ -99,6 +99,13 @@
 		gap: var(--spacing-layout);
 	}
 
+	@media (max-width: 767px), (max-height: 500px) {
+		.wrapper {
+			grid-template-columns: 1fr;
+			gap: var(--ax-space-24);
+		}
+	}
+
 	.empty-state {
 		color: var(--ax-text-subtle);
 	}

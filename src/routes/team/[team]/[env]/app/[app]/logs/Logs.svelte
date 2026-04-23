@@ -445,4 +445,19 @@
 		max-width: 4px;
 		border-radius: 0.25rem;
 	}
+
+	@media (max-width: 767px), (max-height: 500px) {
+		.controls {
+			flex-direction: column;
+			gap: var(--ax-space-12);
+		}
+
+		.controls .buttons {
+			flex-wrap: wrap;
+		}
+
+		.chips {
+			grid-template-columns: 1fr;
+		}
+	}
 </style>
