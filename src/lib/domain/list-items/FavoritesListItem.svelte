@@ -185,7 +185,6 @@
 	.actions {
 		display: flex;
 		align-items: center;
-		gap: var(--ax-space-4);
 		flex-shrink: 0;
 	}
 
