@@ -270,4 +270,21 @@
 		font-size: var(--ax-font-size-small);
 		color: var(--ax-text-neutral-subtle);
 	}
+
+	/* Mobile responsive layout */
+	@media (max-width: 767px), (max-height: 500px) {
+		.app-content {
+			grid-template-columns: 1fr;
+		}
+
+		.instances-header {
+			flex-direction: column;
+			align-items: flex-start;
+			gap: var(--ax-space-12);
+		}
+
+		.instances-header :global(button) {
+			width: 100%;
+		}
+	}
 </style>

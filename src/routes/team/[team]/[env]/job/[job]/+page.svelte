@@ -253,4 +253,22 @@
 		margin-top: -2rem;
 		padding-bottom: var(--spacing-layout);
 	}
+
+	/* Mobile responsive layout */
+	@media (max-width: 767px), (max-height: 500px) {
+		.job-content {
+			grid-template-columns: 1fr;
+			gap: var(--spacing-layout);
+		}
+
+		.runs-header {
+			flex-direction: column;
+			align-items: flex-start;
+			gap: var(--ax-space-12);
+		}
+
+		.runs-header :global(button) {
+			width: 100%;
+		}
+	}
 </style>
