@@ -140,11 +140,13 @@
 								{@const warningCount = countIssuesBySeverity(instance.issues?.edges, 'WARNING')}
 								{@const todoCount = countIssuesBySeverity(instance.issues?.edges, 'TODO')}
 
-								<IssueSeverityTags
-									critical={criticalCount}
-									warning={warningCount}
-									todo={todoCount}
-								/>
+								<div class="right">
+									<IssueSeverityTags
+										critical={criticalCount}
+										warning={warningCount}
+										todo={todoCount}
+									/>
+								</div>
 							{/if}
 						</ListItem>
 					{/each}
@@ -256,6 +258,11 @@
 		@media (max-width: 767px), (max-height: 500px) {
 			.content-wrapper {
 				grid-template-columns: 1fr;
+			}
+
+			.right {
+				align-items: flex-end;
+				margin-top: var(--ax-space-6);
 			}
 		}
 	</style>
