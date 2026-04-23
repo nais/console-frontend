@@ -37,6 +37,13 @@
 		grid-template-columns: 25ch auto;
 		gap: 1rem;
 	}
+
+	@media (max-width: 767px), (max-height: 500px) {
+		.item {
+			grid-template-columns: 1fr;
+			gap: var(--ax-space-8);
+		}
+	}
 	.label {
 		display: flex;
 		align-items: center;
