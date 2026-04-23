@@ -224,8 +224,19 @@
 													size="xsmall"
 													onclick={() => removeRepository(repo.team.slug, repo.name)}
 													icon={TrashIcon}
+													class="remove-btn-full"
 												>
 													Remove
+												</Button>
+												<Button
+													variant="tertiary-neutral"
+													size="xsmall"
+													onclick={() => removeRepository(repo.team.slug, repo.name)}
+													class="remove-btn-icon"
+												>
+													{#snippet icon()}
+														<TrashIcon style="color: var(--ax-text-danger-decoration);" />
+													{/snippet}
 												</Button>
 											</div>
 										{/if}
@@ -286,6 +297,16 @@
 
 		.right {
 			justify-content: flex-start;
+		}
+
+		:global(.remove-btn-full) {
+			display: none !important;
+		}
+	}
+
+	@media (min-width: 768px) {
+		:global(.remove-btn-icon) {
+			display: none !important;
 		}
 	}
 </style>
