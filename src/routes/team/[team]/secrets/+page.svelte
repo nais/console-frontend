@@ -142,31 +142,36 @@
 							: ''}"
 				>
 					{#snippet menu()}
-						<ActionMenu>
-							{#snippet trigger(props)}
-								<Button
-									variant="tertiary-neutral"
-									size="small"
-									iconPosition="right"
-									{...props}
-									icon={ChevronDownIcon}
-								>
-									<span style="font-weight: normal">Usage</span>
-								</Button>
-							{/snippet}
-							<ActionMenuRadioGroup label="Filter by usage" value={usage}>
-								<ActionMenuRadioItem value="all" onselect={() => handleInUse('all')}
-									>All</ActionMenuRadioItem
-								>
-								<ActionMenuRadioItem value="inUse" onselect={() => handleInUse('inUse')}
-									>In use</ActionMenuRadioItem
-								>
-								<ActionMenuRadioItem value="notInUse" onselect={() => handleInUse('notInUse')}
-									>Not in use</ActionMenuRadioItem
-								>
-							</ActionMenuRadioGroup>
-						</ActionMenu>
-						<OrderByMenu orderField={SecretOrderField} defaultOrderField={SecretOrderField.NAME} />
+						<div class="secrets-list-menu">
+							<ActionMenu>
+								{#snippet trigger(props)}
+									<Button
+										variant="tertiary-neutral"
+										size="small"
+										iconPosition="right"
+										{...props}
+										icon={ChevronDownIcon}
+									>
+										<span style="font-weight: normal">Usage</span>
+									</Button>
+								{/snippet}
+								<ActionMenuRadioGroup label="Filter by usage" value={usage}>
+									<ActionMenuRadioItem value="all" onselect={() => handleInUse('all')}
+										>All</ActionMenuRadioItem
+									>
+									<ActionMenuRadioItem value="inUse" onselect={() => handleInUse('inUse')}
+										>In use</ActionMenuRadioItem
+									>
+									<ActionMenuRadioItem value="notInUse" onselect={() => handleInUse('notInUse')}
+										>Not in use</ActionMenuRadioItem
+									>
+								</ActionMenuRadioGroup>
+							</ActionMenu>
+							<OrderByMenu
+								orderField={SecretOrderField}
+								defaultOrderField={SecretOrderField.NAME}
+							/>
+						</div>
 					{/snippet}
 					{#if secrets.nodes.length > 0}
 						{#each secrets.nodes as secret (secret.id)}
@@ -265,7 +270,19 @@
 			margin-bottom: var(--ax-space-16);
 		}
 		.right {
-			align-items: flex-start;
+			align-items: flex-end;
+		}
+
+		.secrets-list-menu {
+			display: flex;
+			gap: var(--ax-space-8);
+			flex-wrap: nowrap;
+			overflow-x: auto;
+			max-width: 100%;
+		}
+
+		.secrets-list-menu > * {
+			flex: 0 0 auto;
 		}
 	}
 </style>
