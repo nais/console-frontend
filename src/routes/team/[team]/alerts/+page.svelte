@@ -264,6 +264,18 @@
 		margin-bottom: 1rem;
 	}
 
+	/* Mobile responsive layout */
+	@media (max-width: 767px), (max-height: 500px) {
+		.wrapper {
+			grid-template-columns: 1fr;
+			gap: var(--ax-space-24);
+		}
+
+		.search {
+			justify-content: stretch;
+		}
+	}
+
 	details > summary {
 		list-style: none;
 	}
