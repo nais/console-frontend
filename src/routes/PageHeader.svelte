@@ -5,6 +5,7 @@
 	import Feedback from '$lib/feedback/Feedback.svelte';
 	import GrafanaIcon from '$lib/icons/GrafanaIcon.svelte';
 	import { themeSwitch } from '$lib/stores/theme.svelte';
+	import HeaderActionMenuItem from '$lib/ui/HeaderActionMenuItem.svelte';
 	import { Button, Spacer } from '@nais/ds-svelte-community';
 	import {
 		ActionMenu,
@@ -47,10 +48,6 @@
 		{ href: '/deployments', label: 'Deployments' }
 	];
 
-	const headerActionMenuItemClass =
-		'ds-svelte-action-menu__item aksel-action-menu__item header-action-menu-item';
-	const headerActionMenuMarkerClass = 'aksel-action-menu__marker aksel-action-menu__marker--left';
-
 	function isActive(pathname: string) {
 		return page.url.pathname === pathname || page.url.pathname.startsWith(pathname + '/');
 	}
@@ -89,39 +86,27 @@
 		{/snippet}
 		<ActionMenuGroup label="Navigation">
 			{#each navItems as item (item.href)}
-				<a
+				<HeaderActionMenuItem
 					href={item.href}
-					role="menuitem"
-					class={headerActionMenuItemClass}
-					aria-current={isActive(item.href) ? 'page' : undefined}
-					onclick={closeMenu}
+					active={isActive(item.href)}
+					ariaCurrent={isActive(item.href) ? 'page' : undefined}
+					onSelect={closeMenu}
 				>
-					<span
-						class="action-menu-label"
-						style:font-weight={isActive(item.href) ? 'bold' : 'normal'}
-					>
-						{item.label}
-					</span>
-				</a>
+					{item.label}
+				</HeaderActionMenuItem>
 			{/each}
 		</ActionMenuGroup>
 		<ActionMenuDivider />
 		<ActionMenuGroup label="Tools">
-			<button
-				type="button"
-				role="menuitem"
-				data-marker="left"
-				class={headerActionMenuItemClass}
-				onclick={(event) => {
+			<HeaderActionMenuItem
+				icon={ChatElipsisIcon}
+				onSelect={(event) => {
 					closeMenu(event);
 					feedbackOpen = true;
 				}}
 			>
-				<span class="action-menu-label">Feedback</span>
-				<div aria-hidden="true" class={headerActionMenuMarkerClass}>
-					<ChatElipsisIcon />
-				</div>
-			</button>
+				Feedback
+			</HeaderActionMenuItem>
 		</ActionMenuGroup>
 	</ActionMenu>
 
@@ -149,34 +134,24 @@
 			</InternalHeaderButton>
 		{/snippet}
 		<ActionMenuGroup label="Nais resources">
-			<a
+			<HeaderActionMenuItem
 				href={docURL()}
 				target="_blank"
 				rel="noopener noreferrer"
-				role="menuitem"
-				data-marker="left"
-				class={headerActionMenuItemClass}
-				onclick={closeMenu}
+				icon={BooksIcon}
+				onSelect={closeMenu}
 			>
-				<span class="action-menu-label">Docs <ExternalLinkIcon /></span>
-				<div aria-hidden="true" class={headerActionMenuMarkerClass}>
-					<BooksIcon />
-				</div>
-			</a>
-			<a
+				Docs <ExternalLinkIcon />
+			</HeaderActionMenuItem>
+			<HeaderActionMenuItem
 				href={tenantURL('grafana')}
 				target="_blank"
 				rel="noopener noreferrer"
-				role="menuitem"
-				data-marker="left"
-				class={headerActionMenuItemClass}
-				onclick={closeMenu}
+				icon={GrafanaIcon}
+				onSelect={closeMenu}
 			>
-				<span class="action-menu-label">Grafana <ExternalLinkIcon /></span>
-				<div aria-hidden="true" class={headerActionMenuMarkerClass}>
-					<GrafanaIcon />
-				</div>
-			</a>
+				Grafana <ExternalLinkIcon />
+			</HeaderActionMenuItem>
 		</ActionMenuGroup>
 	</ActionMenu>
 	<ActionMenu>
@@ -185,18 +160,9 @@
 		{/snippet}
 
 		{#if user?.isAdmin}
-			<a
-				href="/admin"
-				role="menuitem"
-				data-marker="left"
-				class={headerActionMenuItemClass}
-				onclick={closeMenu}
-			>
-				<span class="action-menu-label">Admin</span>
-				<div aria-hidden="true" class={headerActionMenuMarkerClass}>
-					<CogIcon />
-				</div>
-			</a>
+			<HeaderActionMenuItem href="/admin" icon={CogIcon} onSelect={closeMenu}>
+				Admin
+			</HeaderActionMenuItem>
 			<ActionMenuDivider />
 		{/if}
 		<ActionMenuCheckboxItem
@@ -211,18 +177,9 @@
 		>
 			Dark theme
 		</ActionMenuCheckboxItem>
-		<a
-			href="/oauth2/logout"
-			role="menuitem"
-			data-marker="left"
-			class={headerActionMenuItemClass}
-			onclick={closeMenu}
-		>
-			<span class="action-menu-label">Logout</span>
-			<div aria-hidden="true" class={headerActionMenuMarkerClass}>
-				<LeaveIcon />
-			</div>
-		</a>
+		<HeaderActionMenuItem href="/oauth2/logout" icon={LeaveIcon} onSelect={closeMenu}>
+			Logout
+		</HeaderActionMenuItem>
 	</ActionMenu>
 </InternalHeader>
 
@@ -302,24 +259,5 @@
 		:global(.mobile-nav-trigger) {
 			display: inline-flex;
 		}
-	}
-
-	.action-menu-label {
-		color: var(--ax-text-neutral);
-		display: inline-flex;
-		align-items: center;
-		gap: var(--ax-space-2);
-	}
-
-	.header-action-menu-item {
-		width: 100%;
-		box-sizing: border-box;
-		background: transparent;
-		border: none;
-		color: inherit;
-		text-decoration: none;
-		text-align: left;
-		font: inherit;
-		cursor: pointer;
 	}
 </style>
