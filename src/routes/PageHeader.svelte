@@ -177,7 +177,12 @@
 		>
 			Dark theme
 		</ActionMenuCheckboxItem>
-		<HeaderActionMenuItem href="/oauth2/logout" icon={LeaveIcon} onSelect={closeMenu}>
+		<HeaderActionMenuItem
+			href="/oauth2/logout"
+			icon={LeaveIcon}
+			onSelect={closeMenu}
+			data-sveltekit-reload
+		>
 			Logout
 		</HeaderActionMenuItem>
 	</ActionMenu>

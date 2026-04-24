@@ -1,7 +1,8 @@
 <script lang="ts">
 	import type { Component, Snippet } from 'svelte';
+	import type { HTMLAnchorAttributes, HTMLButtonAttributes } from 'svelte/elements';
 
-	interface Props {
+	type Props = {
 		href?: string;
 		icon?: Component;
 		active?: boolean;
@@ -10,7 +11,9 @@
 		ariaCurrent?: 'page';
 		onSelect?: (event: MouseEvent) => void;
 		children: Snippet;
-	}
+		class?: string;
+	} & HTMLAnchorAttributes &
+		HTMLButtonAttributes;
 
 	let {
 		href,
@@ -20,7 +23,9 @@
 		rel,
 		ariaCurrent,
 		onSelect,
-		children
+		children,
+		class: className,
+		...restProps
 	}: Props = $props();
 </script>
 
@@ -31,9 +36,15 @@
 		{rel}
 		role="menuitem"
 		data-marker={icon ? 'left' : undefined}
-		class="ds-svelte-action-menu__item aksel-action-menu__item header-action-menu-item"
+		class={[
+			'ds-svelte-action-menu__item',
+			'aksel-action-menu__item',
+			'header-action-menu-item',
+			className
+		]}
 		aria-current={ariaCurrent}
 		onclick={onSelect}
+		{...restProps}
 	>
 		<span class="action-menu-label" style:font-weight={active ? 'bold' : 'normal'}>
 			{@render children()}
@@ -50,8 +61,14 @@
 		type="button"
 		role="menuitem"
 		data-marker={icon ? 'left' : undefined}
-		class="ds-svelte-action-menu__item aksel-action-menu__item header-action-menu-item"
+		class={[
+			'ds-svelte-action-menu__item',
+			'aksel-action-menu__item',
+			'header-action-menu-item',
+			className
+		]}
 		onclick={onSelect}
+		{...restProps}
 	>
 		<span class="action-menu-label" style:font-weight={active ? 'bold' : 'normal'}>
 			{@render children()}
