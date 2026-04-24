@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { goto } from '$app/navigation';
 	import { page } from '$app/state';
 	import { docURL, tenantURL } from '$lib/doc';
 	import SearchButton from '$lib/domain/search/SearchButton.svelte';
@@ -51,6 +52,22 @@
 	function isActive(pathname: string) {
 		return page.url.pathname === pathname || page.url.pathname.startsWith(pathname + '/');
 	}
+
+	function navigateTo(pathname: string) {
+		void goto(pathname);
+	}
+
+	function openExternal(url: string) {
+		if (typeof window !== 'undefined') {
+			window.open(url, '_blank', 'noopener,noreferrer');
+		}
+	}
+
+	function logout() {
+		if (typeof window !== 'undefined') {
+			window.location.assign('/oauth2/logout');
+		}
+	}
 </script>
 
 <InternalHeader>
@@ -78,23 +95,20 @@
 		{/snippet}
 		<ActionMenuGroup label="Navigation">
 			{#each navItems as item (item.href)}
-				<ActionMenuItem>
-					<a
-						href={item.href}
-						class="action-menu-link"
+				<ActionMenuItem onSelect={() => navigateTo(item.href)}>
+					<span
+						class="action-menu-label"
 						style:font-weight={isActive(item.href) ? 'bold' : 'normal'}
 					>
 						{item.label}
-					</a>
+					</span>
 				</ActionMenuItem>
 			{/each}
 		</ActionMenuGroup>
 		<ActionMenuDivider />
 		<ActionMenuGroup label="Tools">
-			<ActionMenuItem icon={ChatElipsisIcon}>
-				<button type="button" class="action-menu-button" onclick={() => (feedbackOpen = true)}>
-					Feedback
-				</button>
+			<ActionMenuItem icon={ChatElipsisIcon} onSelect={() => (feedbackOpen = true)}>
+				<span class="action-menu-label">Feedback</span>
 			</ActionMenuItem>
 		</ActionMenuGroup>
 	</ActionMenu>
@@ -123,20 +137,11 @@
 			</InternalHeaderButton>
 		{/snippet}
 		<ActionMenuGroup label="Nais resources">
-			<ActionMenuItem icon={BooksIcon}>
-				<a href={docURL()} class="action-menu-link" target="_blank" rel="noopener noreferrer">
-					Docs <ExternalLinkIcon /></a
-				>
+			<ActionMenuItem icon={BooksIcon} onSelect={() => openExternal(docURL())}>
+				<span class="action-menu-label">Docs <ExternalLinkIcon /></span>
 			</ActionMenuItem>
-			<ActionMenuItem icon={GrafanaIcon}>
-				<a
-					href={tenantURL('grafana')}
-					class="action-menu-link"
-					target="_blank"
-					rel="noopener noreferrer"
-				>
-					Grafana <ExternalLinkIcon />
-				</a>
+			<ActionMenuItem icon={GrafanaIcon} onSelect={() => openExternal(tenantURL('grafana'))}>
+				<span class="action-menu-label">Grafana <ExternalLinkIcon /></span>
 			</ActionMenuItem>
 		</ActionMenuGroup>
 	</ActionMenu>
@@ -146,10 +151,9 @@
 		{/snippet}
 
 		{#if user?.isAdmin}
-			<ActionMenuItem>
-				<a href="/admin" class="action-menu-link" style="text-decoration: none;"><CogIcon />Admin</a
-				></ActionMenuItem
-			>
+			<ActionMenuItem icon={CogIcon} onSelect={() => navigateTo('/admin')}>
+				<span class="action-menu-label">Admin</span>
+			</ActionMenuItem>
 			<ActionMenuDivider />
 		{/if}
 		<ActionMenuCheckboxItem
@@ -164,11 +168,8 @@
 		>
 			Dark theme
 		</ActionMenuCheckboxItem>
-		<ActionMenuItem>
-			<a href="/oauth2/logout" class="action-menu-link" style="text-decoration: none;">
-				<LeaveIcon />
-				Logout
-			</a>
+		<ActionMenuItem icon={LeaveIcon} onSelect={logout}>
+			<span class="action-menu-label">Logout</span>
 		</ActionMenuItem>
 	</ActionMenu>
 </InternalHeader>
@@ -251,18 +252,10 @@
 		}
 	}
 
-	.action-menu-link {
+	.action-menu-label {
 		color: var(--ax-text-neutral);
-		text-decoration: none;
-	}
-
-	.action-menu-button {
-		background: none;
-		border: none;
-		padding: 0;
-		cursor: pointer;
-		color: var(--ax-text-neutral);
-		font: inherit;
-		text-align: left;
+		display: inline-flex;
+		align-items: center;
+		gap: var(--ax-space-2);
 	}
 </style>
