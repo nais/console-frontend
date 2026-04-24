@@ -157,7 +157,7 @@
 								size="small"
 								type="text"
 								id="repositoryName"
-								style="width: 300px"
+								style="width: min(100%, 300px)"
 								bind:value={repoName}
 								error={inputError ? errorMessage : undefined}
 							>
@@ -195,7 +195,7 @@
 							size="small"
 							type="text"
 							id="filter"
-							style="width: 300px;"
+							style="width: min(100%, 300px)"
 							bind:value={filter}
 							onkeyup={onKeyUp}
 						>
@@ -216,19 +216,35 @@
 								{/snippet}
 								{#each team.repositories.nodes as repo (repo.id)}
 									<ListItem>
-										<ExternalLink href="https://github.com/{repo.name}">{repo.name}</ExternalLink>
-										{#if viewerIsMember}
-											<div class="right">
-												<Button
-													variant="danger"
-													size="xsmall"
-													onclick={() => removeRepository(repo.team.slug, repo.name)}
-													icon={TrashIcon}
-												>
-													Remove
-												</Button>
-											</div>
-										{/if}
+										<div class="repo-row">
+											<ExternalLink href="https://github.com/{repo.name}">{repo.name}</ExternalLink>
+											{#if viewerIsMember}
+												<div class="right">
+													<div class="remove-btn-full">
+														<Button
+															variant="danger"
+															size="xsmall"
+															onclick={() => removeRepository(repo.team.slug, repo.name)}
+															icon={TrashIcon}
+														>
+															Remove
+														</Button>
+													</div>
+													<div class="remove-btn-icon">
+														<Button
+															variant="tertiary-neutral"
+															size="xsmall"
+															onclick={() => removeRepository(repo.team.slug, repo.name)}
+															aria-label="Remove repository"
+														>
+															{#snippet icon()}
+																<TrashIcon style="color: var(--ax-text-danger-decoration);" />
+															{/snippet}
+														</Button>
+													</div>
+												</div>
+											{/if}
+										</div>
 									</ListItem>
 								{/each}
 							</List>
@@ -269,12 +285,37 @@
 		font-size: 1rem;
 		margin: 1rem 0;
 	}
+
 	.right {
 		display: flex;
 		gap: var(--ax-space-6);
 		align-items: center;
 	}
+
+	.repo-row {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		width: 100%;
+		gap: var(--ax-space-8);
+	}
 	code {
 		font-size: 1rem;
+	}
+
+	@media (max-width: 767px) {
+		.wrapper {
+			grid-template-columns: 1fr;
+		}
+
+		.remove-btn-full {
+			display: none;
+		}
+	}
+
+	@media (min-width: 768px) {
+		.remove-btn-icon {
+			display: none;
+		}
 	}
 </style>

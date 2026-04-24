@@ -1,27 +1,26 @@
 <script lang="ts">
-	import type { InstanceGroupDetail$result } from '$houdini';
+	import type { InstanceGroupDetail$result, ValueEncoding$options } from '$houdini';
+	import { ValueEncoding } from '$houdini';
+	import { pageHeaderState } from '$lib/stores/pageHeaderState.svelte';
 	import GraphErrors from '$lib/ui/GraphErrors.svelte';
 	import Time from '$lib/ui/Time.svelte';
-	import ViewSecretModal from '../../../../secret/[secret]/ViewSecretModal.svelte';
-	import { SvelteMap } from 'svelte/reactivity';
-	import prettyBytes from 'pretty-bytes';
 	import {
 		Alert,
 		BodyShort,
 		Heading,
 		Loader,
 		Table,
+		Tag,
 		Tbody,
 		Td,
 		Th,
 		Thead,
-		Tr,
-		Tag
+		Tr
 	} from '@nais/ds-svelte-community';
-	import { pageHeaderState } from '$lib/stores/pageHeaderState.svelte';
+	import prettyBytes from 'pretty-bytes';
+	import { SvelteMap } from 'svelte/reactivity';
+	import ViewSecretModal from '../../../../secret/[secret]/ViewSecretModal.svelte';
 	import type { PageProps } from './$types';
-	import type { ValueEncoding$options } from '$houdini';
-	import { ValueEncoding } from '$houdini';
 	import EnvironmentVariables from './EnvironmentVariables.svelte';
 	import MountedFiles from './MountedFiles.svelte';
 
@@ -210,90 +209,94 @@
 	<Alert variant="warning">Instance group "{instanceGroupName}" not found.</Alert>
 {:else}
 	<div class="page">
-		<Table size="small">
-			<Tbody>
-				<Tr>
-					<Th>Image</Th>
-					<Td><code>{group.image.name}:{group.image.tag}</code></Td>
-				</Tr>
-				{#if incoming || hasFailing}
+		<div class="table-container">
+			<Table size="small">
+				<Tbody>
 					<Tr>
-						<Th>Status</Th>
-						<Td>
-							<span class="status-tags">
-								{#if hasFailing}
-									<Tag size="small" variant="error">Failing</Tag>
-								{/if}
-								{#if incoming}
-									<Tag size="small" variant={role === 'incoming' ? 'alt1' : 'neutral'}>
-										{role === 'incoming' ? 'Incoming' : 'Current'}
-									</Tag>
-								{/if}
-							</span>
-						</Td>
+						<Th>Image</Th>
+						<Td><code>{group.image.name}:{group.image.tag}</code></Td>
 					</Tr>
-				{/if}
-			</Tbody>
-		</Table>
+					{#if incoming || hasFailing}
+						<Tr>
+							<Th>Status</Th>
+							<Td>
+								<span class="status-tags">
+									{#if hasFailing}
+										<Tag size="small" variant="error">Failing</Tag>
+									{/if}
+									{#if incoming}
+										<Tag size="small" variant={role === 'incoming' ? 'alt1' : 'neutral'}>
+											{role === 'incoming' ? 'Incoming' : 'Current'}
+										</Tag>
+									{/if}
+								</span>
+							</Td>
+						</Tr>
+					{/if}
+				</Tbody>
+			</Table>
+		</div>
 
 		{#if group.instances.length > 0}
 			<section>
 				<Heading as="h3" size="small" spacing>
 					Instances ({group.instances.length})
 				</Heading>
-				<Table size="small" zebraStripes>
-					<Thead>
-						<Tr>
-							<Th>Name</Th>
-							<Th>Status</Th>
-							<Th>Message</Th>
-							<Th>Restarts</Th>
-							<Th>Created</Th>
-						</Tr>
-					</Thead>
-					<Tbody>
-						{#each group.instances as instance (instance.id)}
+				<div class="table-container">
+					<Table size="small" zebraStripes>
+						<Thead>
 							<Tr>
-								<Td>
-									<a href="{baseUrl}/logs?instance={instance.name}">{instance.name}</a>
-								</Td>
-								<Td>
-									<Tag
-										size="small"
-										variant={instance.status.state === 'RUNNING'
-											? 'success'
-											: instance.status.state === 'FAILING'
-												? 'error'
-												: instance.status.state === 'TERMINATED'
-													? 'neutral'
-													: 'info'}
-									>
-										{stateName(instance.status.state)}
-									</Tag>
-								</Td>
-								<Td>
-									{#if instance.status.lastExitReason && instance.restarts > 0}
-										<span class="exit-info">
-											Last exit: {instance.status
-												.lastExitReason}{#if instance.status.lastExitCode !== null && instance.status.lastExitCode !== undefined}
-												(code {instance.status
-													.lastExitCode}){/if}{#if instance.status.lastExitTimestamp}, <Time
-													time={instance.status.lastExitTimestamp}
-													distance
-												/>{/if}
-										</span>
-									{:else if instance.status.message && instance.status.message.toLowerCase() !== instance.status.state.toLowerCase()}
-										{instance.status.message}
-									{:else}
-										<span class="muted">-</span>
-									{/if}
-								</Td>
-								<Td>{instance.restarts}</Td>
-								<Td><Time time={instance.created} distance /></Td>
+								<Th>Name</Th>
+								<Th>Status</Th>
+								<Th>Message</Th>
+								<Th>Restarts</Th>
+								<Th>Created</Th>
 							</Tr>
-						{/each}
-					</Tbody>
-				</Table>
+						</Thead>
+						<Tbody>
+							{#each group.instances as instance (instance.id)}
+								<Tr>
+									<Td>
+										<a href="{baseUrl}/logs?instance={instance.name}">{instance.name}</a>
+									</Td>
+									<Td>
+										<Tag
+											size="small"
+											variant={instance.status.state === 'RUNNING'
+												? 'success'
+												: instance.status.state === 'FAILING'
+													? 'error'
+													: instance.status.state === 'TERMINATED'
+														? 'neutral'
+														: 'info'}
+										>
+											{stateName(instance.status.state)}
+										</Tag>
+									</Td>
+									<Td>
+										{#if instance.status.lastExitReason && instance.restarts > 0}
+											<span class="exit-info">
+												Last exit: {instance.status
+													.lastExitReason}{#if instance.status.lastExitCode !== null && instance.status.lastExitCode !== undefined}
+													(code {instance.status
+														.lastExitCode}){/if}{#if instance.status.lastExitTimestamp}, <Time
+														time={instance.status.lastExitTimestamp}
+														distance
+													/>{/if}
+											</span>
+										{:else if instance.status.message && instance.status.message.toLowerCase() !== instance.status.state.toLowerCase()}
+											{instance.status.message}
+										{:else}
+											<span class="muted">-</span>
+										{/if}
+									</Td>
+									<Td>{instance.restarts}</Td>
+									<Td><Time time={instance.created} distance /></Td>
+								</Tr>
+							{/each}
+						</Tbody>
+					</Table>
+				</div>
 			</section>
 		{/if}
 
@@ -316,88 +319,90 @@
 					Request is the guaranteed amount of resources allocated to the application. Limit is the
 					maximum it can use before being throttled (CPU) or terminated (memory).
 				</BodyShort>
-				<Table size="small" zebraStripes>
-					<Thead>
-						<Tr>
-							<Th>Resource</Th>
-							<Th>Request</Th>
-							<Th>Limit</Th>
-							<Th>Usage</Th>
-						</Tr>
-					</Thead>
-					<Tbody>
-						<Tr>
-							<Td>CPU</Td>
-							<Td>
-								<code>
-									{#if application.resources.requests.cpu}
-										{application.resources.requests.cpu.toFixed(3)} CPUs
-									{:else if application.utilization.requested_cpu}
-										{application.utilization.requested_cpu.toFixed(3)} CPUs (default)
-									{:else}
-										Not set
-									{/if}
-								</code>
-							</Td>
-							<Td>
-								<code>
-									{#if application.resources.limits.cpu}
-										{application.resources.limits.cpu.toFixed(3)} CPUs
-									{:else if application.utilization.limit_cpu}
-										{application.utilization.limit_cpu.toFixed(3)} CPUs (default)
-									{:else}
-										Not set
-									{/if}
-								</code>
-							</Td>
-							<Td><code>{usage_cpu_percent.toFixed(1)}%</code></Td>
-						</Tr>
-						<Tr>
-							<Td>Memory</Td>
-							<Td>
-								<code>
-									{#if application.resources.requests.memory !== null}
-										{prettyBytes(application.resources.requests.memory, {
-											locale: 'en',
-											minimumFractionDigits: 2,
-											maximumFractionDigits: 2,
-											binary: true
-										})}
-									{:else}
-										{prettyBytes(application.utilization.requested_memory, {
-											locale: 'en',
-											minimumFractionDigits: 2,
-											maximumFractionDigits: 2,
-											binary: true
-										})} (default)
-									{/if}
-								</code>
-							</Td>
-							<Td>
-								<code>
-									{#if application.resources.limits.memory}
-										{prettyBytes(application.resources.limits.memory, {
-											locale: 'en',
-											minimumFractionDigits: 2,
-											maximumFractionDigits: 2,
-											binary: true
-										})}
-									{:else if application.utilization.limit_memory}
-										{prettyBytes(application.utilization.limit_memory, {
-											locale: 'en',
-											minimumFractionDigits: 2,
-											maximumFractionDigits: 2,
-											binary: true
-										})} (default)
-									{:else}
-										Not set
-									{/if}
-								</code>
-							</Td>
-							<Td><code>{usage_memory_percent.toFixed(1)}%</code></Td>
-						</Tr>
-					</Tbody>
-				</Table>
+				<div class="table-container">
+					<Table size="small" zebraStripes>
+						<Thead>
+							<Tr>
+								<Th>Resource</Th>
+								<Th>Request</Th>
+								<Th>Limit</Th>
+								<Th>Usage</Th>
+							</Tr>
+						</Thead>
+						<Tbody>
+							<Tr>
+								<Td>CPU</Td>
+								<Td>
+									<code>
+										{#if application.resources.requests.cpu}
+											{application.resources.requests.cpu.toFixed(3)} CPUs
+										{:else if application.utilization.requested_cpu}
+											{application.utilization.requested_cpu.toFixed(3)} CPUs (default)
+										{:else}
+											Not set
+										{/if}
+									</code>
+								</Td>
+								<Td>
+									<code>
+										{#if application.resources.limits.cpu}
+											{application.resources.limits.cpu.toFixed(3)} CPUs
+										{:else if application.utilization.limit_cpu}
+											{application.utilization.limit_cpu.toFixed(3)} CPUs (default)
+										{:else}
+											Not set
+										{/if}
+									</code>
+								</Td>
+								<Td><code>{usage_cpu_percent.toFixed(1)}%</code></Td>
+							</Tr>
+							<Tr>
+								<Td>Memory</Td>
+								<Td>
+									<code>
+										{#if application.resources.requests.memory !== null}
+											{prettyBytes(application.resources.requests.memory, {
+												locale: 'en',
+												minimumFractionDigits: 2,
+												maximumFractionDigits: 2,
+												binary: true
+											})}
+										{:else}
+											{prettyBytes(application.utilization.requested_memory, {
+												locale: 'en',
+												minimumFractionDigits: 2,
+												maximumFractionDigits: 2,
+												binary: true
+											})} (default)
+										{/if}
+									</code>
+								</Td>
+								<Td>
+									<code>
+										{#if application.resources.limits.memory}
+											{prettyBytes(application.resources.limits.memory, {
+												locale: 'en',
+												minimumFractionDigits: 2,
+												maximumFractionDigits: 2,
+												binary: true
+											})}
+										{:else if application.utilization.limit_memory}
+											{prettyBytes(application.utilization.limit_memory, {
+												locale: 'en',
+												minimumFractionDigits: 2,
+												maximumFractionDigits: 2,
+												binary: true
+											})} (default)
+										{:else}
+											Not set
+										{/if}
+									</code>
+								</Td>
+								<Td><code>{usage_memory_percent.toFixed(1)}%</code></Td>
+							</Tr>
+						</Tbody>
+					</Table>
+				</div>
 			</section>
 
 			{#if application.resources.scaling}
@@ -405,43 +410,45 @@
 				{#if scaling.minInstances !== scaling.maxInstances}
 					<section>
 						<Heading as="h3" size="small" spacing>Scaling</Heading>
-						<Table size="small" zebraStripes>
-							<Thead>
-								<Tr>
-									<Th>Strategy</Th>
-									<Th>Threshold</Th>
-									<Th>Min instances</Th>
-									<Th>Max instances</Th>
-								</Tr>
-							</Thead>
-							<Tbody>
-								{#if scaling.strategies && scaling.strategies.length > 0}
-									{#each scaling.strategies as strategy (strategy)}
+						<div class="table-container">
+							<Table size="small" zebraStripes>
+								<Thead>
+									<Tr>
+										<Th>Strategy</Th>
+										<Th>Threshold</Th>
+										<Th>Min instances</Th>
+										<Th>Max instances</Th>
+									</Tr>
+								</Thead>
+								<Tbody>
+									{#if scaling.strategies && scaling.strategies.length > 0}
+										{#each scaling.strategies as strategy (strategy)}
+											<Tr>
+												<Td>{renameStrategy(strategy.__typename)}</Td>
+												<Td>
+													<code>
+														{#if strategy.__typename === 'KafkaLagScalingStrategy'}
+															{strategy.threshold}
+														{:else}
+															{strategy.threshold}%
+														{/if}
+													</code>
+												</Td>
+												<Td><code>{scaling.minInstances}</code></Td>
+												<Td><code>{scaling.maxInstances}</code></Td>
+											</Tr>
+										{/each}
+									{:else}
 										<Tr>
-											<Td>{renameStrategy(strategy.__typename)}</Td>
-											<Td>
-												<code>
-													{#if strategy.__typename === 'KafkaLagScalingStrategy'}
-														{strategy.threshold}
-													{:else}
-														{strategy.threshold}%
-													{/if}
-												</code>
-											</Td>
+											<Td>CPU usage</Td>
+											<Td><code>50%</code></Td>
 											<Td><code>{scaling.minInstances}</code></Td>
 											<Td><code>{scaling.maxInstances}</code></Td>
 										</Tr>
-									{/each}
-								{:else}
-									<Tr>
-										<Td>CPU usage</Td>
-										<Td><code>50%</code></Td>
-										<Td><code>{scaling.minInstances}</code></Td>
-										<Td><code>{scaling.maxInstances}</code></Td>
-									</Tr>
-								{/if}
-							</Tbody>
-						</Table>
+									{/if}
+								</Tbody>
+							</Table>
+						</div>
 					</section>
 				{/if}
 			{/if}
@@ -504,11 +511,18 @@
 
 	.exit-info {
 		font-size: var(--ax-font-size-small);
+		overflow-wrap: anywhere;
 	}
 
 	.status-tags {
 		display: flex;
 		gap: var(--ax-space-4);
+		flex-wrap: wrap;
+	}
+
+	.table-container {
+		width: 100%;
+		overflow-x: auto;
 	}
 
 	a {

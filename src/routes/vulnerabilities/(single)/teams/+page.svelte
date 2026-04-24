@@ -294,10 +294,24 @@
 		align-items: center;
 	}
 
+	@media (max-width: 767px) {
+		.grid {
+			grid-template-columns: repeat(3, 1fr);
+		}
+	}
+
 	.right {
 		display: flex;
 		flex-direction: row;
 		align-items: end;
 		gap: var(--ax-space-24);
+	}
+
+	@media (max-width: 767px) {
+		.right {
+			flex-direction: column;
+			align-items: flex-start;
+			gap: var(--ax-space-8);
+		}
 	}
 </style>

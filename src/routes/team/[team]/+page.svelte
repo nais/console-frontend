@@ -3,9 +3,9 @@
 	import { AlertState } from '$houdini';
 	import TeamOverviewActivityLog from '$lib/domain/activity/team-overview/TeamOverviewActivityLog.svelte';
 	import AggregatedCostForTeam from '$lib/domain/cost/AggregatedCostForTeam.svelte';
-	import PrometheusAlert from '$lib/domain/monitoring/PrometheusAlert.svelte';
 	import CriticalIssues from '$lib/domain/issues/CriticalIssues.svelte';
 	import IssueSummary from '$lib/domain/issues/IssueSummary.svelte';
+	import PrometheusAlert from '$lib/domain/monitoring/PrometheusAlert.svelte';
 	import VulnerabilitySummary from '$lib/domain/vulnerability/VulnerabilitySummary.svelte';
 	import GraphErrors from '$lib/ui/GraphErrors.svelte';
 	import { Alert, BodyShort } from '@nais/ds-svelte-community';
@@ -69,6 +69,12 @@
 		gap: var(--spacing-layout);
 	}
 
+	@media (max-width: 767px) {
+		.wrapper {
+			grid-template-columns: 1fr;
+		}
+	}
+
 	.main-content {
 		display: flex;
 		flex-direction: column;
@@ -94,5 +100,11 @@
 		gap: var(--spacing-layout);
 		margin-top: calc(-1 * var(--spacing-layout));
 		margin-bottom: var(--spacing-layout);
+	}
+
+	@media (max-width: 767px) {
+		.team-info {
+			grid-template-columns: 1fr;
+		}
 	}
 </style>

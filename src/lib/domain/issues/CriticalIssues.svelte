@@ -91,4 +91,15 @@
 		padding: var(--ax-space-8) 0;
 		margin-top: var(--ax-space-8);
 	}
+
+	@media (max-width: 767px) {
+		.issues-list :global(.item) {
+			grid-template-columns: 1fr !important;
+			gap: var(--ax-space-4) !important;
+		}
+
+		.issues-list :global(.item .label) {
+			align-items: flex-start !important;
+		}
+	}
 </style>

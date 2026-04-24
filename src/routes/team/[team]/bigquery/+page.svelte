@@ -1,15 +1,15 @@
 <script lang="ts">
 	import { BigQueryDatasetOrderField, OrderDirection } from '$houdini';
-	import ExternalLink from '$lib/ui/ExternalLink.svelte';
-	import List from '$lib/ui/List.svelte';
-	import ListItem from '$lib/ui/ListItem.svelte';
-	import OrderByMenu from '$lib/ui/OrderByMenu.svelte';
+	import { docURL } from '$lib/doc';
 	import PersistenceCost from '$lib/domain/cost/PersistenceCost.svelte';
 	import PersistenceLink from '$lib/domain/persistence/PersistenceLink.svelte';
 	import WorkloadLink from '$lib/domain/workload/WorkloadLink.svelte';
-	import { docURL } from '$lib/doc';
 	import { envTagVariant } from '$lib/envTagVariant';
+	import ExternalLink from '$lib/ui/ExternalLink.svelte';
 	import GraphErrors from '$lib/ui/GraphErrors.svelte';
+	import List from '$lib/ui/List.svelte';
+	import ListItem from '$lib/ui/ListItem.svelte';
+	import OrderByMenu from '$lib/ui/OrderByMenu.svelte';
 	import Pagination from '$lib/ui/Pagination.svelte';
 	import { changeParams } from '$lib/utils/searchparams';
 	import { BodyLong, Tag } from '@nais/ds-svelte-community';
@@ -135,6 +135,19 @@
 		.right-column {
 			display: grid;
 			gap: var(--ax-space-24);
+		}
+
+		/* Mobile responsive layout */
+		@media (max-width: 767px), (max-height: 500px) {
+			.content-wrapper {
+				grid-template-columns: 1fr;
+			}
+
+			.right {
+				align-self: flex-end;
+				justify-content: flex-end;
+				margin-top: var(--ax-space-6);
+			}
 		}
 	</style>
 {/if}

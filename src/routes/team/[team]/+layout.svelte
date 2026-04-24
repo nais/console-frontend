@@ -50,10 +50,21 @@
 		grid-template-columns: 202px 1fr;
 	}
 
+	@media (max-width: 767px) {
+		.main {
+			grid-template-columns: 1fr;
+		}
+	}
+
 	.container {
 		flex-grow: 1;
 		display: flex;
 		flex-direction: column;
 		gap: var(--spacing-layout);
+		min-width: 0;
+	}
+
+	.container > div {
+		min-width: 0;
 	}
 </style>

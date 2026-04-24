@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { PendingValue } from '$houdini';
-	import GraphErrors from '$lib/ui/GraphErrors.svelte';
 	import CostAreaChart from '$lib/chart/CostAreaChart.svelte';
+	import GraphErrors from '$lib/ui/GraphErrors.svelte';
 	import { changeParams } from '$lib/utils/searchparams';
 	import {
 		BodyLong,
@@ -30,17 +30,19 @@
 					every team, plus the total size of the Kafka topics in the team.
 				</BodyLong>
 			</div>
-			<ToggleGroup
-				value={interval}
-				onchange={(interval) => changeParams({ interval }, { noScroll: true })}
-			>
-				{#each ['30d', '90d', '6m', '1y'] as interval (interval)}
-					<ToggleGroupItem value={interval}>{interval}</ToggleGroupItem>
-				{/each}
-			</ToggleGroup>
+			<div class="interval-controls">
+				<ToggleGroup
+					value={interval}
+					onchange={(interval) => changeParams({ interval }, { noScroll: true })}
+				>
+					{#each ['30d', '90d', '6m', '1y'] as interval (interval)}
+						<ToggleGroupItem value={interval}>{interval}</ToggleGroupItem>
+					{/each}
+				</ToggleGroup>
+			</div>
 		</div>
 		{#if $TeamCost.data && $TeamCost.data.team.cost !== PendingValue}
-			<div class="mt-4 h-[500px]">
+			<div class="mt-4 h-125">
 				<CostAreaChart
 					data={$TeamCost.data.team.cost.daily.series.map((item) => {
 						const ret: { date: Date; [key: string]: number | Date } = { date: item.date };
@@ -84,5 +86,28 @@
 
 	.content {
 		max-width: 80ch;
+	}
+
+	.interval-controls {
+		display: flex;
+		justify-content: flex-end;
+	}
+
+	@media (max-width: 767px), (max-height: 500px) {
+		.heading {
+			flex-direction: column;
+			align-items: flex-start;
+			gap: var(--ax-space-12);
+		}
+
+		.content {
+			max-width: 100%;
+		}
+
+		.interval-controls {
+			width: 100%;
+			justify-content: flex-start;
+			overflow-x: auto;
+		}
 	}
 </style>

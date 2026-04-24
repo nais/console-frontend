@@ -189,4 +189,21 @@
 		height: 300px;
 		width: 100%;
 	}
+
+	/* Mobile responsive layout */
+	@media (max-width: 767px), (max-height: 500px) {
+		.content-wrapper {
+			grid-template-columns: 1fr;
+		}
+		.right {
+			align-items: flex-end;
+			margin-top: var(--ax-space-6);
+		}
+
+		.right :global(.issues-container.inline) {
+			width: auto;
+			justify-content: flex-end;
+			gap: var(--ax-space-8);
+		}
+	}
 </style>

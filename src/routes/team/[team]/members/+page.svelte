@@ -214,6 +214,7 @@
 	.item {
 		display: grid;
 		grid-template-columns: 1fr 174px;
+		gap: var(--ax-space-8);
 	}
 	.role-and-buttons {
 		display: flex;
@@ -228,5 +229,23 @@
 	}
 	.role::first-letter {
 		text-transform: uppercase;
+	}
+
+	@media (max-width: 767px) {
+		.content-wrapper {
+			grid-template-columns: 1fr;
+		}
+
+		.button {
+			justify-content: flex-start;
+		}
+
+		.item {
+			grid-template-columns: 1fr;
+		}
+
+		.role-and-buttons {
+			width: 100%;
+		}
 	}
 </style>

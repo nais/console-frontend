@@ -538,6 +538,8 @@
 	.deployKey {
 		font-family: monospace;
 		padding-bottom: 1rem;
+		word-break: break-all;
+		overflow-wrap: break-word;
 	}
 
 	.buttons {
@@ -568,5 +570,32 @@
 		color: var(--ax-text-info-subtle);
 		font-size: 0.9rem;
 		text-align: right;
+	}
+
+	@media (max-width: 767px) {
+		.wrapper {
+			grid-template-columns: 1fr;
+		}
+
+		.buttons {
+			flex-wrap: wrap;
+		}
+
+		.button {
+			width: auto;
+		}
+
+		.channel {
+			flex-wrap: wrap;
+		}
+
+		.deletewrapper {
+			flex-direction: column;
+			gap: var(--ax-space-8);
+		}
+
+		.last-sync {
+			text-align: left;
+		}
 	}
 </style>

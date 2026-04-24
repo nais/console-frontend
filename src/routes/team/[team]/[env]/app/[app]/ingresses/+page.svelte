@@ -94,7 +94,7 @@
 			<Loader size="3xlarge" />
 		</div>
 	{:else if $IngressMetrics.data?.team.environment.application.ingresses && $IngressMetrics.data.team.environment.application.ingresses.length > 0}
-		<div style="display: flex; justify-content: end">
+		<div class="controls">
 			<ToggleGroup
 				value={interval}
 				onchange={(interval) => changeParams({ interval }, { noScroll: true })}
@@ -164,8 +164,18 @@
 		gap: var(--ax-space-24);
 	}
 
+	.wrapper > * {
+		min-width: 0;
+	}
+
+	.controls {
+		display: flex;
+		justify-content: flex-end;
+	}
+
 	.section {
 		display: grid;
+		min-width: 0;
 		scroll-margin-top: 72px; /* avoids sticky header overlap */
 		border-radius: 12px; /* rounded corners */
 		padding: var(--ax-space-16, 16px); /* inner space */
@@ -174,6 +184,14 @@
 	}
 
 	.chart-wrapper {
+		width: 100%;
+		min-width: 0;
 		padding-block: 0.5rem 1rem; /* a touch more room under the title */
+	}
+
+	@media (max-width: 767px), (max-height: 500px) {
+		.controls {
+			justify-content: flex-start;
+		}
 	}
 </style>

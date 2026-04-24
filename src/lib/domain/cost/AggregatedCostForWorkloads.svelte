@@ -1,10 +1,10 @@
 <script lang="ts">
 	import CostChart from '$lib/chart/CostChart.svelte';
+	import { aggregateAndSortCostByDate } from '$lib/domain/cost/cost';
 	import { euroValueFormatter } from '$lib/utils/formatters';
 	import { Detail } from '@nais/ds-svelte-community';
 	import { CaretDownFillIcon, CaretUpFillIcon } from '@nais/ds-svelte-community/icons';
 	import { lastDayOfMonth } from 'date-fns';
-	import { aggregateAndSortCostByDate } from '$lib/domain/cost/cost';
 
 	interface Props {
 		readonly nodes: {
@@ -90,7 +90,7 @@
 		</div>
 	</div>
 
-	<CostChart {data} dateField="date" valueField="sum" class="mt-3 mb-5 h-[180px] w-[93%] pl-[7%]" />
+	<CostChart {data} dateField="date" valueField="sum" class="mt-3 mb-5 h-45 w-[93%] pl-[7%]" />
 {:else}
 	<Detail>Insufficient data to display cost.</Detail>
 {/if}

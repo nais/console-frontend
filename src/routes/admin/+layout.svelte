@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { page } from '$app/state';
-	import PageHeader from '$lib/ui/PageHeader.svelte';
 	import { replacer } from '$lib/replacer';
+	import PageHeader from '$lib/ui/PageHeader.svelte';
 	import Tab from '$lib/ui/Tab.svelte';
 	import Tabs from '$lib/ui/Tabs.svelte';
 	import type { LayoutProps } from './$houdini';
@@ -45,15 +45,17 @@
 
 <div class="page">
 	<PageHeader />
-	<Tabs>
-		{#each nav as { tab, routeId, withSubRoutes } (routeId)}
-			<Tab
-				href={replacer(routeId, {})}
-				active={isActive(currentRoute, routeId, withSubRoutes)}
-				title={tab}
-			/>
-		{/each}
-	</Tabs>
+	<div class="tabs-container">
+		<Tabs>
+			{#each nav as { tab, routeId, withSubRoutes } (routeId)}
+				<Tab
+					href={replacer(routeId, {})}
+					active={isActive(currentRoute, routeId, withSubRoutes)}
+					title={tab}
+				/>
+			{/each}
+		</Tabs>
+	</div>
 	<div class="container">
 		{@render children?.()}
 	</div>
@@ -64,9 +66,25 @@
 		margin-top: var(--spacing-layout);
 		width: 100%;
 	}
+
+	.tabs-container {
+		width: 100%;
+		overflow-x: auto;
+		overscroll-behavior-x: contain;
+		-webkit-overflow-scrolling: touch;
+	}
+
+	.tabs-container :global(.tabs) {
+		min-width: max-content;
+	}
+
+	.tabs-container :global(.tab) {
+		white-space: nowrap;
+	}
+
 	.container {
 		margin: auto;
-		min-width: 1000px;
+		width: 100%;
 		max-width: 1432px;
 	}
 </style>

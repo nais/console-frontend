@@ -8,6 +8,29 @@
 
 :root {
 	--spacing-layout: var(--ax-space-40);
+	--spacing-layout-mobile: var(--ax-space-16);
+}
+
+/* Mobile-first responsive breakpoints */
+@media (max-width: 767px) {
+	/* Phones */
+	:root {
+		--spacing-layout: var(--spacing-layout-mobile);
+	}
+}
+
+@media (min-width: 768px) and (max-width: 1023px) {
+	/* Tablets: 768px to 1023px */
+	:root {
+		--spacing-layout: var(--ax-space-24);
+	}
+}
+
+@media (min-width: 1024px) {
+	/* Desktop and beyond */
+	:root {
+		--spacing-layout: var(--ax-space-40);
+	}
 }
 
 html,

@@ -183,41 +183,45 @@
 					from all services used by the team.
 				</BodyLong>
 
-				<List title="Team Cost Breakdown">
-					{#snippet menu()}
-						<OrderByMenu
-							orderField={TeamOrderField}
-							defaultOrderField={TeamOrderField.ACCUMULATED_COST}
-							onlyInclude={[TeamOrderField.SLUG, TeamOrderField.ACCUMULATED_COST]}
-						/>
-					{/snippet}
-					{#if !$TenantCost.fetching}
-						{#each $TenantCost.data?.teams.nodes ?? [] as team (team.slug)}
-							<ListItem>
-								<IconLabel
-									label={team.slug}
-									href="/team/{team.slug}/cost"
-									icon={PersonGroupIcon}
-									size="large"
-									as="h3"
+				<div class="cost-breakdown-list">
+					<List title="Team Cost Breakdown">
+						{#snippet menu()}
+							<div class="cost-list-menu">
+								<OrderByMenu
+									orderField={TeamOrderField}
+									defaultOrderField={TeamOrderField.ACCUMULATED_COST}
+									onlyInclude={[TeamOrderField.SLUG, TeamOrderField.ACCUMULATED_COST]}
 								/>
-								<div class="right">
-									<BodyShort
-										>{euroValueFormatter(team.cost.monthlySummary.sum, {
-											maximumFractionDigits: 0
-										})}</BodyShort
-									>
-								</div>
-							</ListItem>
-						{/each}
-					{:else}
-						<div
-							style="display: flex; justify-content: center; align-items: center; height: 200px;"
-						>
-							<Loader size="3xlarge" />
-						</div>
-					{/if}
-				</List>
+							</div>
+						{/snippet}
+						{#if !$TenantCost.fetching}
+							{#each $TenantCost.data?.teams.nodes ?? [] as team (team.slug)}
+								<ListItem>
+									<IconLabel
+										label={team.slug}
+										href="/team/{team.slug}/cost"
+										icon={PersonGroupIcon}
+										size="large"
+										as="h3"
+									/>
+									<div class="right">
+										<BodyShort
+											>{euroValueFormatter(team.cost.monthlySummary.sum, {
+												maximumFractionDigits: 0
+											})}</BodyShort
+										>
+									</div>
+								</ListItem>
+							{/each}
+						{:else}
+							<div
+								style="display: flex; justify-content: center; align-items: center; height: 200px;"
+							>
+								<Loader size="3xlarge" />
+							</div>
+						{/if}
+					</List>
+				</div>
 				<Pagination
 					page={$TenantCost.data?.teams.pageInfo}
 					fetching={$TenantCost.fetching}
@@ -275,10 +279,40 @@
 	.content {
 		max-width: 80ch;
 	}
+
+	.cost-list-menu {
+		display: flex;
+	}
 	.right {
 		display: flex;
 		flex-direction: row;
 		align-items: end;
 		gap: var(--ax-space-24);
+	}
+
+	/* Mobile responsive styles */
+	@media (max-width: 767px) {
+		.heading {
+			flex-direction: column;
+			align-items: flex-start;
+			gap: var(--ax-space-16);
+		}
+
+		.right {
+			gap: var(--ax-space-16);
+		}
+
+		.content {
+			max-width: 100%;
+		}
+
+		.cost-breakdown-list :global(.menu) {
+			width: 100%;
+			justify-content: flex-end;
+		}
+
+		.cost-list-menu {
+			justify-content: flex-end;
+		}
 	}
 </style>

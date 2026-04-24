@@ -29,4 +29,12 @@
 		gap: var(--spacing-layout);
 		margin-top: var(--spacing-layout);
 	}
+
+	/* Mobile responsive styles */
+	@media (max-width: 767px) {
+		.wrapper {
+			gap: var(--ax-space-16);
+			margin-top: var(--ax-space-16);
+		}
+	}
 </style>

@@ -194,4 +194,24 @@
 		justify-content: flex-end;
 		margin-bottom: var(--spacing-layout);
 	}
+
+	/* Mobile responsive styles */
+	@media (max-width: 767px) {
+		.container {
+			gap: var(--ax-space-16);
+		}
+
+		.header {
+			flex-direction: column;
+			align-items: flex-start;
+			gap: var(--ax-space-16);
+		}
+
+		.toggles {
+			flex-direction: column;
+			justify-content: flex-start;
+			margin-bottom: var(--ax-space-16);
+			gap: var(--ax-space-8);
+		}
+	}
 </style>

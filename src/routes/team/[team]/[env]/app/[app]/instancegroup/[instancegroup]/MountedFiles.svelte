@@ -23,53 +23,56 @@
 {#if files.length > 0}
 	<section>
 		<Heading as="h3" size="small" spacing>Mounted Files</Heading>
-		<Table size="small" zebraStripes>
-			<Thead>
-				<Tr>
-					<Th>Path</Th>
-					<Th>Source</Th>
-					<Th style="width: 1%"></Th>
-				</Tr>
-			</Thead>
-			<Tbody>
-				{#each files as file (file.path)}
+		<div class="table-container">
+			<Table size="small" zebraStripes>
+				<Thead>
 					<Tr>
-						<Td><code>{file.path}</code></Td>
-						<Td>
-							<span class="source">
-								{file.source.kind === 'CONFIG'
-									? 'Config'
-									: file.source.kind === 'SECRET'
-										? 'Secret'
-										: file.source.kind === 'SPEC'
-											? 'Application manifest'
-											: 'Nais'}
-								{#if file.source.name}/ {file.source.name}{/if}
-							</span>
-						</Td>
-						<Td>
-							{#if file.source.kind === 'CONFIG' && file.content !== null}
-								<Button
-									size="xsmall"
-									variant="tertiary-neutral"
-									icon={DownloadIcon}
-									title="Download {fileNameFromPath(file.path)}"
-									onclick={() => onDownloadConfigMap(file.path, file.content ?? '', file.encoding)}
-								/>
-							{:else if file.source.kind === 'SECRET' && viewerIsMember}
-								<Button
-									size="xsmall"
-									variant="tertiary-neutral"
-									icon={DownloadIcon}
-									title="Download {fileNameFromPath(file.path)}"
-									onclick={() => onDownloadSecret(fileNameFromPath(file.path), file.source.name)}
-								/>
-							{/if}
-						</Td>
+						<Th style="min-width: 320px">Path</Th>
+						<Th style="min-width: 260px">Source</Th>
+						<Th style="width: 1%"></Th>
 					</Tr>
-				{/each}
-			</Tbody>
-		</Table>
+				</Thead>
+				<Tbody>
+					{#each files as file (file.path)}
+						<Tr>
+							<Td><code>{file.path}</code></Td>
+							<Td>
+								<span class="source">
+									{file.source.kind === 'CONFIG'
+										? 'Config'
+										: file.source.kind === 'SECRET'
+											? 'Secret'
+											: file.source.kind === 'SPEC'
+												? 'Application manifest'
+												: 'Nais'}
+									{#if file.source.name}/ {file.source.name}{/if}
+								</span>
+							</Td>
+							<Td>
+								{#if file.source.kind === 'CONFIG' && file.content !== null}
+									<Button
+										size="xsmall"
+										variant="tertiary-neutral"
+										icon={DownloadIcon}
+										title="Download {fileNameFromPath(file.path)}"
+										onclick={() =>
+											onDownloadConfigMap(file.path, file.content ?? '', file.encoding)}
+									/>
+								{:else if file.source.kind === 'SECRET' && viewerIsMember}
+									<Button
+										size="xsmall"
+										variant="tertiary-neutral"
+										icon={DownloadIcon}
+										title="Download {fileNameFromPath(file.path)}"
+										onclick={() => onDownloadSecret(fileNameFromPath(file.path), file.source.name)}
+									/>
+								{/if}
+							</Td>
+						</Tr>
+					{/each}
+				</Tbody>
+			</Table>
+		</div>
 	</section>
 {/if}
 
@@ -82,10 +85,30 @@
 	.source {
 		color: var(--ax-text-neutral-subtle);
 		font-size: var(--ax-font-size-small);
+		white-space: nowrap;
+	}
+
+	.table-container {
+		width: 100%;
+		overflow-x: auto;
+	}
+
+	.table-container :global(table) {
+		min-width: 720px;
+	}
+
+	.table-container :global(th),
+	.table-container :global(td) {
+		white-space: nowrap;
 	}
 
 	section :global(code) {
 		font-size: var(--ax-font-size-small);
 		color: var(--ax-text-neutral);
+		overflow-wrap: normal;
+		word-break: normal;
+		white-space: nowrap;
+		display: inline-block;
+		min-width: max-content;
 	}
 </style>

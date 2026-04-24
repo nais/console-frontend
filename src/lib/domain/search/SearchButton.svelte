@@ -38,4 +38,10 @@
 		color: var(--ax-text-neutral);
 		padding-top: 2px;
 	}
+
+	@media (max-width: 767px), (max-height: 500px) {
+		.hotkey {
+			display: none;
+		}
+	}
 </style>

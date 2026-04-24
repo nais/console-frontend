@@ -260,6 +260,7 @@
 		flex-direction: column;
 		gap: var(--ax-space-2);
 		flex: 1;
+		min-width: 0;
 	}
 
 	.instance-group-status {
@@ -269,5 +270,32 @@
 	.instance-group-meta {
 		font-size: var(--ax-font-size-small);
 		color: var(--ax-text-neutral-subtle);
+		overflow-wrap: anywhere;
+	}
+
+	/* Mobile responsive layout */
+	@media (max-width: 767px), (max-height: 500px) {
+		.app-content {
+			grid-template-columns: 1fr;
+		}
+
+		.workload-deploy-wrapper {
+			margin-top: 0;
+		}
+
+		.instances-header {
+			flex-direction: column;
+			align-items: flex-start;
+			gap: var(--ax-space-12);
+		}
+
+		.instance-group-link {
+			flex-wrap: wrap;
+			align-items: flex-start;
+		}
+
+		.instances-header :global(button) {
+			width: 100%;
+		}
 	}
 </style>

@@ -10,7 +10,6 @@
 	import { extractIdFromUrl } from '$lib/utils/extractIdFromUrl';
 	import { changeParams } from '$lib/utils/searchparams';
 	import { BodyLong, Tag } from '@nais/ds-svelte-community';
-	import { format } from 'date-fns';
 	import { tick } from 'svelte';
 	import type { PageProps } from './$types';
 
@@ -100,16 +99,7 @@
 						.totalCount} deployment{$AppDeploys.data.team.environment.application.deployments
 						.pageInfo.totalCount !== 1
 						? 's'
-						: ''} - showing {$AppDeploys.data.team.environment.application.deployments.pageInfo
-						.pageEnd -
-						$AppDeploys.data.team.environment.application.deployments.pageInfo.pageStart +
-						1} from {format(
-						$AppDeploys.data.team.environment.application.deployments.nodes.at(0)?.createdAt ?? '',
-						'dd/MM/yyyy'
-					)} to {format(
-						$AppDeploys.data.team.environment.application.deployments.nodes.at(-1)?.createdAt ?? '',
-						'dd/MM/yyyy'
-					)}"
+						: ''}"
 				>
 					{#each $AppDeploys.data.team.environment.application.deployments.nodes as deployment (deployment.id)}
 						{@const id = extractIdFromUrl(deployment.triggerUrl ?? '')}
@@ -150,6 +140,14 @@
 		grid-template-columns: 1fr 300px;
 		gap: var(--spacing-layout);
 	}
+
+	@media (max-width: 767px), (max-height: 500px) {
+		.wrapper {
+			grid-template-columns: 1fr;
+			gap: var(--ax-space-24);
+		}
+	}
+
 	[id] {
 		transition:
 			background-color 0.8s ease,

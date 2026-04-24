@@ -216,5 +216,12 @@
 	}
 	code {
 		font-size: 1rem;
+		overflow-wrap: anywhere;
+	}
+
+	@media (max-width: 767px), (max-height: 500px) {
+		.resource-list {
+			grid-template-columns: 1fr;
+		}
 	}
 </style>

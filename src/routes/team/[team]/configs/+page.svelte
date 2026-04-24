@@ -142,31 +142,36 @@
 							: ''}"
 				>
 					{#snippet menu()}
-						<ActionMenu>
-							{#snippet trigger(props)}
-								<Button
-									variant="tertiary-neutral"
-									size="small"
-									iconPosition="right"
-									{...props}
-									icon={ChevronDownIcon}
-								>
-									<span style="font-weight: normal">Usage</span>
-								</Button>
-							{/snippet}
-							<ActionMenuRadioGroup label="Filter by usage" value={usage}>
-								<ActionMenuRadioItem value="all" onselect={() => handleInUse('all')}
-									>All</ActionMenuRadioItem
-								>
-								<ActionMenuRadioItem value="inUse" onselect={() => handleInUse('inUse')}
-									>In use</ActionMenuRadioItem
-								>
-								<ActionMenuRadioItem value="notInUse" onselect={() => handleInUse('notInUse')}
-									>Not in use</ActionMenuRadioItem
-								>
-							</ActionMenuRadioGroup>
-						</ActionMenu>
-						<OrderByMenu orderField={ConfigOrderField} defaultOrderField={ConfigOrderField.NAME} />
+						<div class="configs-list-menu">
+							<ActionMenu>
+								{#snippet trigger(props)}
+									<Button
+										variant="tertiary-neutral"
+										size="small"
+										iconPosition="right"
+										{...props}
+										icon={ChevronDownIcon}
+									>
+										<span style="font-weight: normal">Usage</span>
+									</Button>
+								{/snippet}
+								<ActionMenuRadioGroup label="Filter by usage" value={usage}>
+									<ActionMenuRadioItem value="all" onselect={() => handleInUse('all')}
+										>All</ActionMenuRadioItem
+									>
+									<ActionMenuRadioItem value="inUse" onselect={() => handleInUse('inUse')}
+										>In use</ActionMenuRadioItem
+									>
+									<ActionMenuRadioItem value="notInUse" onselect={() => handleInUse('notInUse')}
+										>Not in use</ActionMenuRadioItem
+									>
+								</ActionMenuRadioGroup>
+							</ActionMenu>
+							<OrderByMenu
+								orderField={ConfigOrderField}
+								defaultOrderField={ConfigOrderField.NAME}
+							/>
+						</div>
 					{/snippet}
 					{#if configs.nodes.length > 0}
 						{#each configs.nodes as config (config.id)}
@@ -250,5 +255,35 @@
 		flex-direction: column;
 		align-items: end;
 		gap: var(--ax-space-2);
+	}
+
+	/* Mobile responsive layout */
+	@media (max-width: 767px), (max-height: 500px) {
+		.wrapper {
+			grid-template-columns: 1fr;
+			gap: var(--ax-space-24);
+		}
+		.search {
+			justify-content: stretch;
+		}
+		.button {
+			margin-bottom: var(--ax-space-16);
+		}
+		.right {
+			align-items: flex-end;
+			margin-top: var(--ax-space-6);
+		}
+
+		.configs-list-menu {
+			display: flex;
+			gap: var(--ax-space-8);
+			flex-wrap: nowrap;
+			overflow-x: auto;
+			max-width: 100%;
+		}
+
+		.configs-list-menu > * {
+			flex: 0 0 auto;
+		}
 	}
 </style>

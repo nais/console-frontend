@@ -21,7 +21,7 @@
 	<LegendWrapperData />
 {/snippet}
 
-<div bind:this={ref}>
+<div class="container" bind:this={ref}>
 	{#if ctx.hasLegend}
 		<div class="wrapper">
 			<Legend />
@@ -33,8 +33,18 @@
 </div>
 
 <style>
+	.container {
+		width: 100%;
+		min-width: 0;
+	}
+
 	.wrapper {
 		margin-bottom: var(--ax-space-16);
+	}
+
+	.chart {
+		width: 100%;
+		min-width: 0;
 	}
 
 	.wrapper :global(.lc-legend-container) {

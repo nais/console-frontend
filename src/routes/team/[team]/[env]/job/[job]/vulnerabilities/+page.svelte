@@ -136,10 +136,21 @@
 {/if}
 
 <style>
+	.wrapper {
+		display: grid;
+		grid-template-columns: 1fr;
+		gap: var(--spacing-layout);
+	}
+	.wrapper > * {
+		min-width: 0;
+	}
 	.top {
 		display: grid;
 		grid-template-columns: 1fr 300px;
 		gap: var(--spacing-layout);
+	}
+	.top > * {
+		min-width: 0;
 	}
 	.cards {
 		display: flex;
@@ -163,6 +174,8 @@
 		gap: var(--ax-space-8);
 		align-items: center;
 		margin-bottom: var(--ax-space-8);
+		max-width: 100%;
+		overflow-x: auto;
 	}
 
 	.kv {
@@ -188,5 +201,19 @@
 	.no-activity {
 		color: var(--ax-text-subtle);
 		font-style: italic;
+	}
+
+	@media (max-width: 767px), (max-height: 500px) {
+		.top {
+			grid-template-columns: 1fr;
+		}
+
+		.cards {
+			padding-bottom: 0;
+		}
+
+		.cards .card {
+			width: 100%;
+		}
 	}
 </style>

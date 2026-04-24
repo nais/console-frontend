@@ -48,4 +48,20 @@
 		display: flex;
 		gap: var(--ax-space-8);
 	}
+
+	.header :global(h3) {
+		text-align: left;
+	}
+
+	@media (max-width: 767px) {
+		.header {
+			flex-wrap: wrap;
+			gap: var(--ax-space-8);
+			padding: var(--ax-space-12) var(--ax-space-16);
+		}
+
+		.menu {
+			flex-wrap: wrap;
+		}
+	}
 </style>

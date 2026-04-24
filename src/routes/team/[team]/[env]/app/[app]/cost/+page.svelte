@@ -88,4 +88,14 @@
 	.content {
 		max-width: 80ch;
 	}
+
+	@media (max-width: 767px), (max-height: 500px) {
+		.heading {
+			align-items: flex-start;
+		}
+
+		.toggles {
+			justify-content: flex-start;
+		}
+	}
 </style>

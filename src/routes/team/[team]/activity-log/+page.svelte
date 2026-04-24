@@ -215,4 +215,10 @@
 		color: var(--ax-text-neutral-subtle);
 		margin-top: var(--ax-space-2);
 	}
+
+	@media (max-width: 767px) {
+		.wrapper {
+			grid-template-columns: 1fr;
+		}
+	}
 </style>

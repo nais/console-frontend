@@ -60,6 +60,58 @@
 	};
 
 	let workloadsToggle = $derived(filter || 'all');
+
+	type InventoryCounts = {
+		applications: { total: number };
+		jobs: { total: number };
+		bigQueryDatasets: { total: number };
+		buckets: { total: number };
+		kafkaTopics: { total: number };
+		openSearches: { total: number };
+		postgresInstances: { total: number };
+		sqlInstances: { total: number };
+		valkeys: { total: number };
+	};
+
+	const inventoryItemsForTeam = (inventoryCounts: InventoryCounts) =>
+		[
+			{
+				total: inventoryCounts.applications.total,
+				label: 'applications'
+			},
+			{
+				total: inventoryCounts.jobs.total,
+				label: 'jobs'
+			},
+			{
+				total: inventoryCounts.bigQueryDatasets.total,
+				label: 'BigQuery datasets'
+			},
+			{
+				total: inventoryCounts.buckets.total,
+				label: 'buckets'
+			},
+			{
+				total: inventoryCounts.kafkaTopics.total,
+				label: 'Kafka topics'
+			},
+			{
+				total: inventoryCounts.openSearches.total,
+				label: 'OpenSearch instances'
+			},
+			{
+				total: inventoryCounts.postgresInstances.total,
+				label: 'Postgres instances'
+			},
+			{
+				total: inventoryCounts.sqlInstances.total,
+				label: 'Cloud SQL instances'
+			},
+			{
+				total: inventoryCounts.valkeys.total,
+				label: 'Valkey instances'
+			}
+		].flatMap((item) => (item.total > 0 ? [`${item.total} ${item.label}`] : []));
 </script>
 
 <div class="toggles">
@@ -76,57 +128,40 @@
 </div>
 
 {#if !$Teams.fetching}
-	<Table
-		size="small"
-		zebraStripes
-		sort={{
-			orderBy: tableSort.orderBy || TeamOrderField.SLUG,
-			direction: tableSort.direction === 'ASC' ? 'ascending' : 'descending'
-		}}
-		onsortchange={tableSortChange}
-	>
-		<Thead>
-			<Tr>
-				<Th sortable={true} sortKey={TeamOrderField.SLUG} style="width: 32ch;">Team</Th>
-				<Th style="width: 16ch;">Members</Th>
-				<Th>Inventory</Th>
-			</Tr>
-		</Thead>
-		<Tbody>
-			{#each $Teams.data?.teams.edges || [] as t (t.node.slug)}
+	<!-- Desktop Table View -->
+	<div class="table-container">
+		<Table
+			size="small"
+			zebraStripes
+			sort={{
+				orderBy: tableSort.orderBy || TeamOrderField.SLUG,
+				direction: tableSort.direction === 'ASC' ? 'ascending' : 'descending'
+			}}
+			onsortchange={tableSortChange}
+		>
+			<Thead>
 				<Tr>
-					<Td><a href="/team/{t.node.slug}">{t.node.slug}</a></Td>
-					<Td>
-						<a href="/team/{t.node.slug}/members">{t.node.members.pageInfo.totalCount} members</a
-						></Td
-					>
-					<Td>
-						{[
-							t.node.inventoryCounts.applications.total > 0 &&
-								`${t.node.inventoryCounts.applications.total} applications`,
-							t.node.inventoryCounts.jobs.total > 0 && `${t.node.inventoryCounts.jobs.total} jobs`,
-							t.node.inventoryCounts.bigQueryDatasets.total > 0 &&
-								`${t.node.inventoryCounts.bigQueryDatasets.total} BigQuery datasets`,
-							t.node.inventoryCounts.buckets.total > 0 &&
-								`${t.node.inventoryCounts.buckets.total} buckets`,
-							t.node.inventoryCounts.kafkaTopics.total > 0 &&
-								`${t.node.inventoryCounts.kafkaTopics.total} Kafka topics`,
-							t.node.inventoryCounts.openSearches.total > 0 &&
-								`${t.node.inventoryCounts.openSearches.total} OpenSearch instances`,
-							t.node.inventoryCounts.postgresInstances.total > 0 &&
-								`${t.node.inventoryCounts.postgresInstances.total} Postgres instances`,
-							t.node.inventoryCounts.sqlInstances.total > 0 &&
-								`${t.node.inventoryCounts.sqlInstances.total} Cloud SQL instances`,
-							t.node.inventoryCounts.valkeys.total > 0 &&
-								`${t.node.inventoryCounts.valkeys.total} Valkey instances`
-						]
-							.filter(Boolean)
-							.join(', ')}
-					</Td>
+					<Th sortable={true} sortKey={TeamOrderField.SLUG} style="width: 32ch;">Team</Th>
+					<Th style="width: 16ch;">Members</Th>
+					<Th>Inventory</Th>
 				</Tr>
-			{/each}
-		</Tbody>
-	</Table>
+			</Thead>
+			<Tbody>
+				{#each $Teams.data?.teams.edges || [] as t (t.node.slug)}
+					<Tr>
+						<Td><a href="/team/{t.node.slug}">{t.node.slug}</a></Td>
+						<Td>
+							<a href="/team/{t.node.slug}/members">{t.node.members.pageInfo.totalCount} members</a
+							></Td
+						>
+						<Td>
+							{inventoryItemsForTeam(t.node.inventoryCounts).join(', ')}
+						</Td>
+					</Tr>
+				{/each}
+			</Tbody>
+		</Table>
+	</div>
 {:else}
 	<div style="display: flex; justify-content: center; align-items: center; height: 500px;">
 		<Loader size="3xlarge" />
@@ -158,5 +193,26 @@
 		flex-direction: row;
 		justify-content: flex-end;
 		padding-bottom: var(--spacing-layout);
+		max-width: 100%;
+		overflow-x: auto;
+	}
+
+	.table-container {
+		max-width: 100%;
+		min-width: 0;
+		overflow-x: auto;
+		overscroll-behavior-x: contain;
+		-webkit-overflow-scrolling: touch;
+	}
+
+	.table-container :global(table) {
+		width: max-content;
+		min-width: 100%;
+	}
+
+	@media (max-width: 767px) {
+		.toggles {
+			justify-content: flex-start;
+		}
 	}
 </style>

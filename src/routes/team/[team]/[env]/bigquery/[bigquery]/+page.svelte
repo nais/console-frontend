@@ -1,10 +1,10 @@
 <script lang="ts">
-	import GraphErrors from '$lib/ui/GraphErrors.svelte';
-	import Time from '$lib/ui/Time.svelte';
-	import IconLabel from '$lib/ui/IconLabel.svelte';
-	import TooltipAlignHack from '$lib/ui/TooltipAlignHack.svelte';
 	import WorkloadLink from '$lib/domain/workload/WorkloadLink.svelte';
 	import WarningIcon from '$lib/icons/WarningIcon.svelte';
+	import GraphErrors from '$lib/ui/GraphErrors.svelte';
+	import IconLabel from '$lib/ui/IconLabel.svelte';
+	import Time from '$lib/ui/Time.svelte';
+	import TooltipAlignHack from '$lib/ui/TooltipAlignHack.svelte';
 	import { euroValueFormatter } from '$lib/utils/formatters';
 	import {
 		BodyShort,
@@ -29,7 +29,7 @@
 	{@const bq = $BigQueryDatasetInstance.data.team.environment.bigQueryDataset}
 
 	<div class="wrapper">
-		<div>
+		<div class="content">
 			<Heading as="h2" spacing>Dataset Details</Heading>
 
 			<BodyShort spacing>{bq.description ? bq.description : 'No description'}</BodyShort>
@@ -72,27 +72,29 @@
 			<Heading as="h3" size="small" spacing>Access</Heading>
 
 			{#if bq.access.edges.length > 0}
-				<Table size="small">
-					<Thead>
-						<Tr>
-							<Th>Access</Th>
-							<Th>ServiceAccount</Th>
-						</Tr>
-					</Thead>
-					<Tbody>
-						{#each bq.access.edges as edge (edge)}
+				<div class="table-container">
+					<Table size="small">
+						<Thead>
 							<Tr>
-								<Td>{edge.node.role}</Td>
-								<Td
-									><div class="email">
-										<span title={edge.node.email}>{edge.node.email}</span>
-										<CopyButton size="xsmall" variant="action" copyText={edge.node.email} />
-									</div>
-								</Td>
+								<Th>Access</Th>
+								<Th>ServiceAccount</Th>
 							</Tr>
-						{/each}
-					</Tbody>
-				</Table>
+						</Thead>
+						<Tbody>
+							{#each bq.access.edges as edge (edge)}
+								<Tr>
+									<Td>{edge.node.role}</Td>
+									<Td>
+										<div class="email">
+											<span title={edge.node.email}>{edge.node.email}</span>
+											<CopyButton size="xsmall" variant="action" copyText={edge.node.email} />
+										</div>
+									</Td>
+								</Tr>
+							{/each}
+						</Tbody>
+					</Table>
+				</div>
 			{:else}
 				<BodyShort>No workloads with configured access</BodyShort>
 			{/if}
@@ -122,15 +124,37 @@
 <style>
 	.wrapper {
 		display: grid;
-		grid-template-columns: 1fr 300px;
+		grid-template-columns: minmax(0, 1fr) 300px;
 		gap: var(--spacing-layout);
+		align-items: start;
+		min-width: 0;
 	}
 
-	*.email {
-		display: grid;
-		grid-template-columns: 1fr 60px;
+	.content {
+		min-width: 0;
 	}
+
+	.table-container {
+		max-width: 100%;
+		min-width: 0;
+		overflow-x: auto;
+	}
+
+	.table-container :global(table) {
+		width: max-content;
+		min-width: 100%;
+	}
+
+	.email {
+		display: grid;
+		grid-template-columns: minmax(0, 1fr) auto;
+		align-items: center;
+		gap: var(--ax-space-4);
+		min-width: 0;
+	}
+
 	.email span {
+		min-width: 0;
 		text-overflow: ellipsis;
 		white-space: nowrap;
 		overflow: hidden;
@@ -140,6 +164,7 @@
 		display: flex;
 		flex-direction: column;
 		gap: var(--spacing-layout);
+		min-width: 0;
 	}
 
 	.inline {
@@ -150,7 +175,9 @@
 
 	dl {
 		display: grid;
-		grid-template-columns: 35% 65%;
+		grid-template-columns: 35% minmax(0, 1fr);
+		gap: var(--ax-space-4) var(--ax-space-8);
+		min-width: 0;
 	}
 
 	dt {
@@ -162,5 +189,33 @@
 
 	dd {
 		margin-inline-start: 0;
+		min-width: 0;
+	}
+
+	@media (max-width: 767px) {
+		.wrapper {
+			grid-template-columns: 1fr;
+		}
+
+		dl {
+			grid-template-columns: 1fr;
+		}
+
+		dd {
+			margin-bottom: var(--ax-space-4);
+		}
+
+		dd:last-child {
+			margin-bottom: 0;
+		}
+
+		.email {
+			grid-template-columns: 1fr;
+		}
+
+		.email span {
+			white-space: normal;
+			overflow-wrap: anywhere;
+		}
 	}
 </style>

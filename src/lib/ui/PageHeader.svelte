@@ -2,10 +2,10 @@
 	import { resolve } from '$app/paths';
 	import { page } from '$app/state';
 	import type { RouteId } from '$app/types';
-	import WarningIcon from '$lib/icons/WarningIcon.svelte';
 	import DangerIcon from '$lib/icons/DangerIcon.svelte';
-	import AddToFavorites from '$lib/ui/AddToFavorites.svelte';
+	import WarningIcon from '$lib/icons/WarningIcon.svelte';
 	import { pageHeaderState } from '$lib/stores/pageHeaderState.svelte';
+	import AddToFavorites from '$lib/ui/AddToFavorites.svelte';
 	import { Heading, Tag } from '@nais/ds-svelte-community';
 
 	const breadcrumbs = $derived(page.data?.meta?.breadcrumbs ?? []);
@@ -39,7 +39,7 @@
 			<AddToFavorites path={page.url.pathname} />
 		</div>
 	{/if}
-	<div style="display: flex; align-items: center; justify-content: space-between;">
+	<div class="header-row">
 		<div class="heading-wrapper">
 			{#if error}
 				<DangerIcon style="font-size: 1.5rem" />
@@ -62,6 +62,13 @@
 		display: flex;
 		flex-direction: column;
 		gap: var(--ax-space-4);
+
+		.header-row {
+			display: flex;
+			align-items: center;
+			justify-content: space-between;
+			gap: var(--ax-space-8);
+		}
 
 		.breadcrumbs-wrapper {
 			display: flex;
@@ -92,6 +99,23 @@
 			display: flex;
 			gap: var(--ax-space-12);
 			align-items: center;
+			flex-wrap: wrap;
+		}
+	}
+
+	@media (max-width: 767px), (max-height: 500px) {
+		.page-header {
+			.breadcrumbs-wrapper {
+				align-items: flex-start;
+			}
+
+			.breadcrumbs-wrapper .breadcrumbs {
+				flex-wrap: wrap;
+			}
+
+			.header-row {
+				align-items: flex-start;
+			}
 		}
 	}
 </style>

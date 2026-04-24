@@ -232,6 +232,17 @@ Use `@nais/ds-svelte-community` components, not custom implementations:
 
 ---
 
+## Responsive UI / Mobile
+
+- New pages and substantial page changes must work on narrow mobile widths, not just desktop layouts.
+- Use existing responsive patterns in the codebase before inventing route-specific mobile solutions.
+- For wide data tables, prefer a horizontal scroll wrapper around the desktop table before introducing a separate mobile card view.
+- Keep pagination outside horizontal scroll containers.
+- Avoid blanket `white-space: nowrap` and large fixed `min-width` rules across entire tables; let value-heavy columns wrap and keep only the columns that need it non-wrapping.
+- If tabs overflow on narrow screens, make the tab row horizontally scrollable and keep labels on a single line.
+
+---
+
 ## Code Quality
 
 ### Before committing and pushing:

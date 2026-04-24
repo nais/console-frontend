@@ -134,4 +134,11 @@
 		gap: var(--ax-space-4);
 		font-size: 16px;
 	}
+
+	@media (max-width: 767px), (max-height: 500px) {
+		.status {
+			align-items: flex-end;
+			margin-top: var(--ax-space-6);
+		}
+	}
 </style>

@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { goto } from '$app/navigation';
 	import { page } from '$app/state';
 	import { docURL, tenantURL } from '$lib/doc';
 	import SearchButton from '$lib/domain/search/SearchButton.svelte';
@@ -23,7 +24,8 @@
 		CogIcon,
 		ExternalLinkIcon,
 		LeaveIcon,
-		MenuGridIcon
+		MenuGridIcon,
+		MenuHamburgerIcon
 	} from '@nais/ds-svelte-community/icons';
 	import Logo from '../Logo.svelte';
 
@@ -39,6 +41,33 @@
 	let { user }: Props = $props();
 
 	let feedbackOpen = $state(false);
+
+	const navItems = [
+		{ href: '/utilization', label: 'Utilization' },
+		{ href: '/cost', label: 'Cost' },
+		{ href: '/vulnerabilities', label: 'Vulnerabilities' },
+		{ href: '/deployments', label: 'Deployments' }
+	];
+
+	function isActive(pathname: string) {
+		return page.url.pathname === pathname || page.url.pathname.startsWith(pathname + '/');
+	}
+
+	function navigateTo(pathname: string) {
+		void goto(pathname);
+	}
+
+	function openExternal(url: string) {
+		if (typeof window !== 'undefined') {
+			window.open(url, '_blank', 'noopener,noreferrer');
+		}
+	}
+
+	function logout() {
+		if (typeof window !== 'undefined') {
+			window.location.assign('/oauth2/logout');
+		}
+	}
 </script>
 
 <InternalHeader>
@@ -48,30 +77,41 @@
 			<span>Console</span>
 		</div>
 	</InternalHeaderTitle>
-	<InternalHeaderButton
-		as="a"
-		href="/utilization"
-		class={{ active: page.url.pathname === '/utilization' }}
-	>
-		Utilization
-	</InternalHeaderButton>
-	<InternalHeaderButton as="a" href="/cost" class={{ active: page.url.pathname === '/cost' }}>
-		Cost
-	</InternalHeaderButton>
-	<InternalHeaderButton
-		as="a"
-		href="/vulnerabilities"
-		class={{ active: page.url.pathname === '/vulnerabilities' }}
-	>
-		Vulnerabilities
-	</InternalHeaderButton>
-	<InternalHeaderButton
-		as="a"
-		href="/deployments"
-		class={{ active: page.url.pathname === '/deployments' }}
-	>
-		Deployments
-	</InternalHeaderButton>
+	<!-- Desktop navigation (hidden on mobile) -->
+	<div class="desktop-nav">
+		{#each navItems as item (item.href)}
+			<InternalHeaderButton as="a" href={item.href} class={{ active: isActive(item.href) }}>
+				{item.label}
+			</InternalHeaderButton>
+		{/each}
+	</div>
+
+	<!-- Mobile navigation menu -->
+	<ActionMenu>
+		{#snippet trigger(props)}
+			<InternalHeaderButton class="mobile-nav-trigger" aria-label="Open navigation menu" {...props}>
+				<MenuHamburgerIcon title="Navigation" />
+			</InternalHeaderButton>
+		{/snippet}
+		<ActionMenuGroup label="Navigation">
+			{#each navItems as item (item.href)}
+				<ActionMenuItem onSelect={() => navigateTo(item.href)}>
+					<span
+						class="action-menu-label"
+						style:font-weight={isActive(item.href) ? 'bold' : 'normal'}
+					>
+						{item.label}
+					</span>
+				</ActionMenuItem>
+			{/each}
+		</ActionMenuGroup>
+		<ActionMenuDivider />
+		<ActionMenuGroup label="Tools">
+			<ActionMenuItem icon={ChatElipsisIcon} onSelect={() => (feedbackOpen = true)}>
+				<span class="action-menu-label">Feedback</span>
+			</ActionMenuItem>
+		</ActionMenuGroup>
+	</ActionMenu>
 
 	<Spacer />
 	<div class="feedback-button-wrapper">
@@ -97,20 +137,11 @@
 			</InternalHeaderButton>
 		{/snippet}
 		<ActionMenuGroup label="Nais resources">
-			<ActionMenuItem icon={BooksIcon}>
-				<a href={docURL()} class="action-menu-link" target="_blank" rel="noopener noreferrer">
-					Docs <ExternalLinkIcon /></a
-				>
+			<ActionMenuItem icon={BooksIcon} onSelect={() => openExternal(docURL())}>
+				<span class="action-menu-label">Docs <ExternalLinkIcon /></span>
 			</ActionMenuItem>
-			<ActionMenuItem icon={GrafanaIcon}>
-				<a
-					href={tenantURL('grafana')}
-					class="action-menu-link"
-					target="_blank"
-					rel="noopener noreferrer"
-				>
-					Grafana <ExternalLinkIcon />
-				</a>
+			<ActionMenuItem icon={GrafanaIcon} onSelect={() => openExternal(tenantURL('grafana'))}>
+				<span class="action-menu-label">Grafana <ExternalLinkIcon /></span>
 			</ActionMenuItem>
 		</ActionMenuGroup>
 	</ActionMenu>
@@ -120,10 +151,9 @@
 		{/snippet}
 
 		{#if user?.isAdmin}
-			<ActionMenuItem>
-				<a href="/admin" class="action-menu-link" style="text-decoration: none;"><CogIcon />Admin</a
-				></ActionMenuItem
-			>
+			<ActionMenuItem icon={CogIcon} onSelect={() => navigateTo('/admin')}>
+				<span class="action-menu-label">Admin</span>
+			</ActionMenuItem>
 			<ActionMenuDivider />
 		{/if}
 		<ActionMenuCheckboxItem
@@ -138,11 +168,8 @@
 		>
 			Dark theme
 		</ActionMenuCheckboxItem>
-		<ActionMenuItem>
-			<a href="/oauth2/logout" class="action-menu-link" style="text-decoration: none;">
-				<LeaveIcon />
-				Logout
-			</a>
+		<ActionMenuItem icon={LeaveIcon} onSelect={logout}>
+			<span class="action-menu-label">Logout</span>
 		</ActionMenuItem>
 	</ActionMenu>
 </InternalHeader>
@@ -155,14 +182,80 @@
 		gap: 1rem;
 		font-size: 1.5rem;
 		font-weight: 700;
+		align-items: center;
 	}
+
 	.feedback-button-wrapper {
 		display: flex;
-		place-items: center;
+		align-items: center;
 		padding: 0 1rem;
 	}
-	.action-menu-link {
+
+	/* Desktop navigation */
+	.desktop-nav {
+		display: flex;
+		gap: 0;
+	}
+
+	/* Mobile nav trigger is hidden on desktop by default */
+	:global(.mobile-nav-trigger) {
+		display: none;
+	}
+
+	/* Mobile responsive behavior */
+	@media (max-width: 767px) {
+		.logo {
+			gap: 0.5rem;
+			font-size: 1rem;
+		}
+
+		.logo span {
+			display: none;
+		}
+
+		/* Hide desktop nav on mobile */
+		.desktop-nav {
+			display: none;
+		}
+
+		.feedback-button-wrapper {
+			display: none;
+		}
+
+		/* Show mobile nav trigger on mobile */
+		:global(.mobile-nav-trigger) {
+			display: inline-flex;
+		}
+	}
+
+	/* Landscape on mobile phones: keep mobile nav despite wider viewport */
+	@media (max-height: 500px) {
+		.logo {
+			gap: 0.5rem;
+			font-size: 1rem;
+		}
+
+		.logo span {
+			display: none;
+		}
+
+		.desktop-nav {
+			display: none;
+		}
+
+		.feedback-button-wrapper {
+			display: none;
+		}
+
+		:global(.mobile-nav-trigger) {
+			display: inline-flex;
+		}
+	}
+
+	.action-menu-label {
 		color: var(--ax-text-neutral);
-		text-decoration: none;
+		display: inline-flex;
+		align-items: center;
+		gap: var(--ax-space-2);
 	}
 </style>

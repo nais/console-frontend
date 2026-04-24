@@ -110,14 +110,16 @@
 		{#each appsByEnv as env (env.id)}
 			<div class="heading">
 				<Heading as="h3" size="small">{env.environment.name}</Heading>
-				<ToggleGroup
-					value={interval}
-					onchange={(interval) => changeParams({ interval }, { noScroll: true })}
-				>
-					{#each ['30d', '90d', '6m', '1y'] as interval (interval)}
-						<ToggleGroupItem value={interval}>{interval}</ToggleGroupItem>
-					{/each}
-				</ToggleGroup>
+				<div class="interval-controls">
+					<ToggleGroup
+						value={interval}
+						onchange={(interval) => changeParams({ interval }, { noScroll: true })}
+					>
+						{#each ['30d', '90d', '6m', '1y'] as interval (interval)}
+							<ToggleGroupItem value={interval}>{interval}</ToggleGroupItem>
+						{/each}
+					</ToggleGroup>
+				</div>
 			</div>
 
 			{#if env.series.length > 0}
@@ -168,5 +170,28 @@
 	}
 	.content {
 		max-width: 80ch;
+	}
+
+	.interval-controls {
+		display: flex;
+		justify-content: flex-end;
+	}
+
+	@media (max-width: 767px), (max-height: 500px) {
+		.heading {
+			flex-direction: column;
+			align-items: flex-start;
+			gap: var(--ax-space-12);
+		}
+
+		.content {
+			max-width: 100%;
+		}
+
+		.interval-controls {
+			width: 100%;
+			justify-content: flex-start;
+			overflow-x: auto;
+		}
 	}
 </style>
