@@ -23,7 +23,7 @@
 			<VulnerabilitySummary {teamSlug} />
 		</div>
 
-		<div>
+		<div class="workloads-section">
 			<div class="heading">
 				<div class="content">
 					<Heading as="h3" size="medium" spacing id="most_vulnerable_workloads"
@@ -45,6 +45,7 @@
 	.wrapper {
 		display: grid;
 		gap: var(--ax-space-32);
+		min-width: 0;
 	}
 
 	.heading {
@@ -52,10 +53,16 @@
 		justify-content: space-between;
 		align-items: flex-end;
 		gap: var(--spacing-layout);
+		min-width: 0;
 	}
 
 	.content {
 		max-width: 80ch;
+		min-width: 0;
+	}
+
+	.workloads-section {
+		min-width: 0;
 	}
 
 	.columns {
@@ -64,6 +71,7 @@
 		gap: 1rem;
 		align-items: start;
 		margin-bottom: var(--ax-space-40);
+		min-width: 0;
 	}
 
 	@media (max-width: 767px) {
@@ -77,6 +85,7 @@
 	.graphs {
 		display: grid;
 		gap: var(--ax-space-32);
+		min-width: 0;
 	}
 
 	@media (max-width: 767px) {
