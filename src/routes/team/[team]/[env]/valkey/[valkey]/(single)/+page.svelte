@@ -102,7 +102,7 @@
 		(x) => !x?.deadline
 	)}
 	<div class="wrapper">
-		<div>
+		<div class="content">
 			{#if !isManagedByConsole}
 				<Alert variant="info" style="margin-bottom: 1rem;">
 					This Valkey instance is managed outside Console.<br />
@@ -114,39 +114,41 @@
 			{/if}
 			<div class="spacing">
 				<Heading as="h3" spacing>Valkey Access List</Heading>
-				<Table
-					size="small"
-					sort={{
-						orderBy: tableSort.orderBy || ValkeyAccessOrderField.WORKLOAD,
-						direction: tableSort.direction === 'ASC' ? 'ascending' : 'descending'
-					}}
-					onsortchange={tableSortChange}
-				>
-					<Thead>
-						<Tr>
-							<Th sortable={true} sortKey={ValkeyAccessOrderField.WORKLOAD}>Workload</Th>
-							<Th sortable={true} sortKey={ValkeyAccessOrderField.ACCESS}>Access level</Th>
-							<Th>Type</Th>
-						</Tr>
-					</Thead>
-					<Tbody>
-						{#each instance.access.edges as edge (edge)}
-							{@const access = edge.node}
+				<div class="table-container">
+					<Table
+						size="small"
+						sort={{
+							orderBy: tableSort.orderBy || ValkeyAccessOrderField.WORKLOAD,
+							direction: tableSort.direction === 'ASC' ? 'ascending' : 'descending'
+						}}
+						onsortchange={tableSortChange}
+					>
+						<Thead>
 							<Tr>
-								<Td>
-									<WorkloadLink workload={access.workload} />
-								</Td>
-								<Td>{access.access}</Td>
+								<Th sortable={true} sortKey={ValkeyAccessOrderField.WORKLOAD}>Workload</Th>
+								<Th sortable={true} sortKey={ValkeyAccessOrderField.ACCESS}>Access level</Th>
+								<Th>Type</Th>
+							</Tr>
+						</Thead>
+						<Tbody>
+							{#each instance.access.edges as edge (edge)}
+								{@const access = edge.node}
+								<Tr>
+									<Td>
+										<WorkloadLink workload={access.workload} />
+									</Td>
+									<Td>{access.access}</Td>
 
-								<Td>{access.workload.__typename}</Td>
-							</Tr>
-						{:else}
-							<Tr>
-								<Td colspan={3}>No access</Td>
-							</Tr>
-						{/each}
-					</Tbody>
-				</Table>
+									<Td>{access.workload.__typename}</Td>
+								</Tr>
+							{:else}
+								<Tr>
+									<Td colspan={3}>No access</Td>
+								</Tr>
+							{/each}
+						</Tbody>
+					</Table>
+				</div>
 				<Pagination
 					page={instance.access.pageInfo}
 					loaders={{
@@ -271,23 +273,54 @@
 <style>
 	.wrapper {
 		display: grid;
-		grid-template-columns: 1fr 300px;
+		grid-template-columns: minmax(0, 1fr) 300px;
 		gap: var(--spacing-layout);
+		align-items: start;
+		min-width: 0;
+	}
+
+	.content {
+		min-width: 0;
 	}
 
 	.spacing {
 		margin-bottom: var(--spacing-layout);
 	}
 
+	.table-container {
+		max-width: 100%;
+		min-width: 0;
+		overflow-x: auto;
+	}
+
+	.table-container :global(table) {
+		width: max-content;
+		min-width: 100%;
+	}
+
 	.service-maintenance-list-heading {
 		display: flex;
+		align-items: flex-start;
 		justify-content: space-between;
 		margin-bottom: var(--ax-space-16);
+		gap: var(--ax-space-4);
+		flex-wrap: wrap;
 	}
 
 	.sidebar {
 		display: flex;
 		flex-direction: column;
 		gap: var(--spacing-layout);
+		min-width: 0;
+	}
+
+	@media (max-width: 767px) {
+		.wrapper {
+			grid-template-columns: 1fr;
+		}
+
+		.service-maintenance-list-heading {
+			flex-direction: column;
+		}
 	}
 </style>

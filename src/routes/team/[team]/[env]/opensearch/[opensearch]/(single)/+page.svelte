@@ -106,7 +106,7 @@
 	)}
 
 	<div class="wrapper">
-		<div>
+		<div class="content">
 			{#if !isManagedByConsole}
 				<Alert variant="info" style="margin-bottom: 1rem;">
 					This OpenSearch instance is managed outside Console.<br />
@@ -120,34 +120,36 @@
 				<Heading as="h2" spacing>OpenSearch Instance Access List</Heading>
 
 				{#if instance.access.edges.length > 0}
-					<Table
-						size="small"
-						sort={{
-							orderBy: tableSort.orderBy || OpenSearchAccessOrderField.WORKLOAD,
-							direction: tableSort.direction === 'ASC' ? 'ascending' : 'descending'
-						}}
-						onsortchange={tableSortChange}
-					>
-						<Thead>
-							<Tr>
-								<Th sortable={true} sortKey={OpenSearchAccessOrderField.WORKLOAD}>Workload</Th>
-								<Th sortable={true} sortKey={OpenSearchAccessOrderField.ACCESS}>Access level</Th>
-								<Th>Type</Th>
-							</Tr>
-						</Thead>
-						<Tbody>
-							{#each instance.access.edges as edge (edge)}
-								{@const access = edge.node}
+					<div class="table-container">
+						<Table
+							size="small"
+							sort={{
+								orderBy: tableSort.orderBy || OpenSearchAccessOrderField.WORKLOAD,
+								direction: tableSort.direction === 'ASC' ? 'ascending' : 'descending'
+							}}
+							onsortchange={tableSortChange}
+						>
+							<Thead>
 								<Tr>
-									<Td>
-										<WorkloadLink workload={access.workload} />
-									</Td>
-									<Td><code>{access.access}</code></Td>
-									<Td>{access.workload.__typename}</Td>
+									<Th sortable={true} sortKey={OpenSearchAccessOrderField.WORKLOAD}>Workload</Th>
+									<Th sortable={true} sortKey={OpenSearchAccessOrderField.ACCESS}>Access level</Th>
+									<Th>Type</Th>
 								</Tr>
-							{/each}
-						</Tbody>
-					</Table>
+							</Thead>
+							<Tbody>
+								{#each instance.access.edges as edge (edge)}
+									{@const access = edge.node}
+									<Tr>
+										<Td>
+											<WorkloadLink workload={access.workload} />
+										</Td>
+										<Td><code>{access.access}</code></Td>
+										<Td>{access.workload.__typename}</Td>
+									</Tr>
+								{/each}
+							</Tbody>
+						</Table>
+					</div>
 					{#if instance.access.pageInfo.hasPreviousPage || instance.access.pageInfo.hasNextPage}
 						<Pagination
 							page={instance.access.pageInfo}
@@ -272,23 +274,54 @@
 <style>
 	.wrapper {
 		display: grid;
-		grid-template-columns: 1fr 300px;
+		grid-template-columns: minmax(0, 1fr) 300px;
 		gap: var(--spacing-layout);
+		align-items: start;
+		min-width: 0;
+	}
+
+	.content {
+		min-width: 0;
 	}
 
 	.spacing {
 		margin-bottom: var(--spacing-layout);
 	}
 
+	.table-container {
+		max-width: 100%;
+		min-width: 0;
+		overflow-x: auto;
+	}
+
+	.table-container :global(table) {
+		width: max-content;
+		min-width: 100%;
+	}
+
 	.service-maintenance-list-heading {
 		display: flex;
+		align-items: flex-start;
 		justify-content: space-between;
 		margin-bottom: var(--ax-space-16);
+		gap: var(--ax-space-4);
+		flex-wrap: wrap;
 	}
 
 	.sidebar {
 		display: flex;
 		flex-direction: column;
 		gap: var(--spacing-layout);
+		min-width: 0;
+	}
+
+	@media (max-width: 767px) {
+		.wrapper {
+			grid-template-columns: 1fr;
+		}
+
+		.service-maintenance-list-heading {
+			flex-direction: column;
+		}
 	}
 </style>

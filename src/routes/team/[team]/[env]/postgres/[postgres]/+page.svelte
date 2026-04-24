@@ -151,7 +151,7 @@ clamp_min(
 	{/each}
 {:else if instance}
 	<div class="wrapper">
-		<div>
+		<div class="content">
 			<div class="summary-grid">
 				<PrometheusUtilizationDonut
 					{environmentName}
@@ -313,8 +313,14 @@ clamp_min(
 <style>
 	.wrapper {
 		display: grid;
-		grid-template-columns: 1fr 300px;
+		grid-template-columns: minmax(0, 1fr) 300px;
 		gap: var(--spacing-layout);
+		align-items: start;
+		min-width: 0;
+	}
+
+	.content {
+		min-width: 0;
 	}
 
 	.summary-grid {
@@ -323,6 +329,7 @@ clamp_min(
 		column-gap: 1rem;
 		row-gap: 1rem;
 		margin-bottom: 1rem;
+		min-width: 0;
 	}
 
 	.details {
@@ -380,6 +387,7 @@ clamp_min(
 		display: flex;
 		flex-direction: column;
 		gap: var(--spacing-layout);
+		min-width: 0;
 	}
 
 	.manifest {
@@ -388,5 +396,28 @@ clamp_min(
 		word-break: break-word;
 		white-space: pre-wrap;
 		margin: 0.5rem 1rem;
+	}
+
+	@media (max-width: 767px) {
+		.wrapper {
+			grid-template-columns: 1fr;
+		}
+
+		.summary-grid {
+			grid-template-columns: 1fr;
+		}
+
+		.settings-list {
+			grid-template-columns: 1fr;
+			gap: var(--ax-space-2);
+		}
+
+		.settings-list dd {
+			margin-bottom: var(--ax-space-4);
+		}
+
+		.settings-list dd:last-child {
+			margin-bottom: 0;
+		}
 	}
 </style>

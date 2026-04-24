@@ -291,7 +291,7 @@
 	</Confirm>
 
 	<div class="wrapper">
-		<div>
+		<div class="content">
 			<div class="alerts">
 				{#if $deleteMutation.errors}
 					<GraphErrors errors={$deleteMutation.errors} />
@@ -321,80 +321,82 @@
 				</div>
 			</div>
 
-			<Table size="small" style="margin-top: 2rem">
-				<Thead>
-					<Tr>
-						<Th>Key</Th>
-						<Th>Value</Th>
-						<Th align="right">Actions</Th>
-					</Tr>
-				</Thead>
-				<Tbody>
-					{#each config.values as entry (entry.name)}
+			<div class="table-container">
+				<Table size="small" style="margin-top: 2rem">
+					<Thead>
 						<Tr>
-							<Td>
-								<p class="key">
-									{entry.name}
-								</p>
-							</Td>
-							<Td>
-								{#if isBinaryValue(entry)}
-									<span class="binary-label">Binary data ({formatBinarySize(entry.value)})</span>
-								{:else}
-									<code class="value">
-										{entry.value}
-									</code>
-								{/if}
-							</Td>
-							<Td style="width: 120px" align="right">
-								<div class="buttons">
+							<Th>Key</Th>
+							<Th>Value</Th>
+							<Th align="right">Actions</Th>
+						</Tr>
+					</Thead>
+					<Tbody>
+						{#each config.values as entry (entry.name)}
+							<Tr>
+								<Td>
+									<p class="key">
+										{entry.name}
+									</p>
+								</Td>
+								<Td>
 									{#if isBinaryValue(entry)}
-										<Button
-											size="small"
-											variant="tertiary"
-											title="Download binary value"
-											onclick={() => downloadBinaryValue(entry.name, entry.value)}
-											icon={DownloadIcon}
-										/>
+										<span class="binary-label">Binary data ({formatBinarySize(entry.value)})</span>
 									{:else}
-										<CopyButton
-											activeText="Value copied"
-											variant="action"
-											size="small"
-											copyText={entry.value}
-										/>
-										{#if canMutate}
+										<code class="value">
+											{entry.value}
+										</code>
+									{/if}
+								</Td>
+								<Td style="width: 120px" align="right">
+									<div class="buttons">
+										{#if isBinaryValue(entry)}
 											<Button
 												size="small"
 												variant="tertiary"
-												title="Edit config value"
-												onclick={() => {
-													openEditValueModal(entry.name, entry.value);
-												}}
-												icon={DocPencilIcon}
+												title="Download binary value"
+												onclick={() => downloadBinaryValue(entry.name, entry.value)}
+												icon={DownloadIcon}
 											/>
+										{:else}
+											<CopyButton
+												activeText="Value copied"
+												variant="action"
+												size="small"
+												copyText={entry.value}
+											/>
+											{#if canMutate}
+												<Button
+													size="small"
+													variant="tertiary"
+													title="Edit config value"
+													onclick={() => {
+														openEditValueModal(entry.name, entry.value);
+													}}
+													icon={DocPencilIcon}
+												/>
+											{/if}
 										{/if}
-									{/if}
-									{#if canMutate}
-										<Button
-											size="small"
-											variant="tertiary-neutral"
-											title="Delete key and value"
-											onclick={() => {
-												openDeleteValueModal(entry.name);
-											}}
-										>
-											{#snippet icon()}
-												<TrashIcon style="color:var(--ax-text-danger-decoration)!important" />
-											{/snippet}
-										</Button>
-									{/if}
-								</div>
-							</Td>
-						</Tr>
-					{/each}
-				</Tbody>
-			</Table>
+										{#if canMutate}
+											<Button
+												size="small"
+												variant="tertiary-neutral"
+												title="Delete key and value"
+												onclick={() => {
+													openDeleteValueModal(entry.name);
+												}}
+											>
+												{#snippet icon()}
+													<TrashIcon style="color:var(--ax-text-danger-decoration)!important" />
+												{/snippet}
+											</Button>
+										{/if}
+									</div>
+								</Td>
+							</Tr>
+						{/each}
+					</Tbody>
+				</Table>
+			</div>
 			{#if canMutate}
 				<AddKeyValue
 					initial={config.values.map((v) => ({ name: v.name }))}
@@ -445,14 +447,21 @@
 <style>
 	.wrapper {
 		display: grid;
-		grid-template-columns: 1fr 300px;
+		grid-template-columns: minmax(0, 1fr) 300px;
 		gap: var(--spacing-layout);
+		align-items: start;
+		min-width: 0;
+	}
+
+	.content {
+		min-width: 0;
 	}
 
 	.sidebar {
 		display: flex;
 		flex-direction: column;
 		gap: var(--ax-space-16);
+		min-width: 0;
 	}
 
 	.buttons {
@@ -469,13 +478,27 @@
 
 	.data-heading {
 		display: flex;
+		align-items: flex-start;
 		justify-content: space-between;
 		gap: 0.5rem;
+		flex-wrap: wrap;
 	}
 
 	.header-buttons {
 		display: flex;
 		gap: var(--ax-space-8);
+		flex-wrap: wrap;
+	}
+
+	.table-container {
+		max-width: 100%;
+		min-width: 0;
+		overflow-x: auto;
+	}
+
+	.table-container :global(table) {
+		width: max-content;
+		min-width: 100%;
 	}
 
 	.value {
@@ -494,5 +517,20 @@
 		list-style: none;
 		margin: 0;
 		padding: 0 0 0 1rem;
+	}
+
+	@media (max-width: 767px) {
+		.wrapper {
+			grid-template-columns: 1fr;
+		}
+
+		.data-heading {
+			flex-direction: column;
+		}
+
+		.header-buttons {
+			width: 100%;
+			justify-content: flex-start;
+		}
 	}
 </style>
