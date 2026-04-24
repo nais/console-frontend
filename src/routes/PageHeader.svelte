@@ -1,18 +1,17 @@
 <script lang="ts">
-	import { goto } from '$app/navigation';
 	import { page } from '$app/state';
 	import { docURL, tenantURL } from '$lib/doc';
 	import SearchButton from '$lib/domain/search/SearchButton.svelte';
 	import Feedback from '$lib/feedback/Feedback.svelte';
 	import GrafanaIcon from '$lib/icons/GrafanaIcon.svelte';
 	import { themeSwitch } from '$lib/stores/theme.svelte';
+	import HeaderActionMenuItem from '$lib/ui/HeaderActionMenuItem.svelte';
 	import { Button, Spacer } from '@nais/ds-svelte-community';
 	import {
 		ActionMenu,
 		ActionMenuCheckboxItem,
 		ActionMenuDivider,
 		ActionMenuGroup,
-		ActionMenuItem,
 		InternalHeader,
 		InternalHeaderButton,
 		InternalHeaderTitle,
@@ -53,20 +52,12 @@
 		return page.url.pathname === pathname || page.url.pathname.startsWith(pathname + '/');
 	}
 
-	function navigateTo(pathname: string) {
-		void goto(pathname);
-	}
+	function closeMenu(event: Event) {
+		const popover = (event.currentTarget as HTMLElement | null)?.closest('[popover]') as
+			| (HTMLElement & { hidePopover?: () => void })
+			| null;
 
-	function openExternal(url: string) {
-		if (typeof window !== 'undefined') {
-			window.open(url, '_blank', 'noopener,noreferrer');
-		}
-	}
-
-	function logout() {
-		if (typeof window !== 'undefined') {
-			window.location.assign('/oauth2/logout');
-		}
+		popover?.hidePopover?.();
 	}
 </script>
 
@@ -95,21 +86,27 @@
 		{/snippet}
 		<ActionMenuGroup label="Navigation">
 			{#each navItems as item (item.href)}
-				<ActionMenuItem onSelect={() => navigateTo(item.href)}>
-					<span
-						class="action-menu-label"
-						style:font-weight={isActive(item.href) ? 'bold' : 'normal'}
-					>
-						{item.label}
-					</span>
-				</ActionMenuItem>
+				<HeaderActionMenuItem
+					href={item.href}
+					active={isActive(item.href)}
+					ariaCurrent={isActive(item.href) ? 'page' : undefined}
+					onSelect={closeMenu}
+				>
+					{item.label}
+				</HeaderActionMenuItem>
 			{/each}
 		</ActionMenuGroup>
 		<ActionMenuDivider />
 		<ActionMenuGroup label="Tools">
-			<ActionMenuItem icon={ChatElipsisIcon} onSelect={() => (feedbackOpen = true)}>
-				<span class="action-menu-label">Feedback</span>
-			</ActionMenuItem>
+			<HeaderActionMenuItem
+				icon={ChatElipsisIcon}
+				onSelect={(event) => {
+					closeMenu(event);
+					feedbackOpen = true;
+				}}
+			>
+				Feedback
+			</HeaderActionMenuItem>
 		</ActionMenuGroup>
 	</ActionMenu>
 
@@ -137,12 +134,24 @@
 			</InternalHeaderButton>
 		{/snippet}
 		<ActionMenuGroup label="Nais resources">
-			<ActionMenuItem icon={BooksIcon} onSelect={() => openExternal(docURL())}>
-				<span class="action-menu-label">Docs <ExternalLinkIcon /></span>
-			</ActionMenuItem>
-			<ActionMenuItem icon={GrafanaIcon} onSelect={() => openExternal(tenantURL('grafana'))}>
-				<span class="action-menu-label">Grafana <ExternalLinkIcon /></span>
-			</ActionMenuItem>
+			<HeaderActionMenuItem
+				href={docURL()}
+				target="_blank"
+				rel="noopener noreferrer"
+				icon={BooksIcon}
+				onSelect={closeMenu}
+			>
+				Docs <ExternalLinkIcon />
+			</HeaderActionMenuItem>
+			<HeaderActionMenuItem
+				href={tenantURL('grafana')}
+				target="_blank"
+				rel="noopener noreferrer"
+				icon={GrafanaIcon}
+				onSelect={closeMenu}
+			>
+				Grafana <ExternalLinkIcon />
+			</HeaderActionMenuItem>
 		</ActionMenuGroup>
 	</ActionMenu>
 	<ActionMenu>
@@ -151,9 +160,9 @@
 		{/snippet}
 
 		{#if user?.isAdmin}
-			<ActionMenuItem icon={CogIcon} onSelect={() => navigateTo('/admin')}>
-				<span class="action-menu-label">Admin</span>
-			</ActionMenuItem>
+			<HeaderActionMenuItem href="/admin" icon={CogIcon} onSelect={closeMenu}>
+				Admin
+			</HeaderActionMenuItem>
 			<ActionMenuDivider />
 		{/if}
 		<ActionMenuCheckboxItem
@@ -168,9 +177,14 @@
 		>
 			Dark theme
 		</ActionMenuCheckboxItem>
-		<ActionMenuItem icon={LeaveIcon} onSelect={logout}>
-			<span class="action-menu-label">Logout</span>
-		</ActionMenuItem>
+		<HeaderActionMenuItem
+			href="/oauth2/logout"
+			icon={LeaveIcon}
+			onSelect={closeMenu}
+			data-sveltekit-reload
+		>
+			Logout
+		</HeaderActionMenuItem>
 	</ActionMenu>
 </InternalHeader>
 
@@ -250,12 +264,5 @@
 		:global(.mobile-nav-trigger) {
 			display: inline-flex;
 		}
-	}
-
-	.action-menu-label {
-		color: var(--ax-text-neutral);
-		display: inline-flex;
-		align-items: center;
-		gap: var(--ax-space-2);
 	}
 </style>
