@@ -231,47 +231,49 @@
 			<div>
 				<Heading as="h2" spacing>CPU and Memory Underutilization per Team</Heading>
 
-				<Table
-					size="small"
-					sort={sortState}
-					onsortchange={(key) => {
-						sortState = sortTable(key as SortBy, sortState);
-					}}
-				>
-					<Thead>
-						<Tr>
-							<Th sortable={true} sortKey="TEAM">Team</Th>
-							<Th sortable={true} sortKey="CPU">Unutilized CPU</Th>
-							<Th sortable={true} sortKey="MEMORY">Unutilized memory</Th>
-							<Th sortable={true} sortKey="COST">Estimated annual overage cost</Th>
-						</Tr>
-					</Thead>
-					<Tbody>
-						{#each overageTable as overage (overage)}
+				<div class="table-container">
+					<Table
+						size="small"
+						sort={sortState}
+						onsortchange={(key) => {
+							sortState = sortTable(key as SortBy, sortState);
+						}}
+					>
+						<Thead>
 							<Tr>
-								<Td>
-									<a href={`/team/${overage.teamSlug}/utilization`}>
-										{overage.teamSlug}
-									</a>
-								</Td>
-								<Td>
-									{overage.unusedCpu.toLocaleString('en-GB', {
-										minimumFractionDigits: 2,
-										maximumFractionDigits: 2
-									})}
-								</Td>
-								<Td>{prettyBytes(overage.unusedMem)}</Td>
-								<Td>
-									{euroValueFormatter(overage.estimatedAnnualOverageCost)}
-								</Td>
+								<Th sortable={true} sortKey="TEAM">Team</Th>
+								<Th sortable={true} sortKey="CPU">Unutilized CPU</Th>
+								<Th sortable={true} sortKey="MEMORY">Unutilized memory</Th>
+								<Th sortable={true} sortKey="COST">Estimated annual overage cost</Th>
 							</Tr>
-						{:else}
-							<Tr>
-								<Td colspan={999}>No overage data for tenant.</Td>
-							</Tr>
-						{/each}
-					</Tbody>
-				</Table>
+						</Thead>
+						<Tbody>
+							{#each overageTable as overage (overage)}
+								<Tr>
+									<Td>
+										<a href={`/team/${overage.teamSlug}/utilization`}>
+											{overage.teamSlug}
+										</a>
+									</Td>
+									<Td>
+										{overage.unusedCpu.toLocaleString('en-GB', {
+											minimumFractionDigits: 2,
+											maximumFractionDigits: 2
+										})}
+									</Td>
+									<Td>{prettyBytes(overage.unusedMem)}</Td>
+									<Td>
+										{euroValueFormatter(overage.estimatedAnnualOverageCost)}
+									</Td>
+								</Tr>
+							{:else}
+								<Tr>
+									<Td colspan={999}>No overage data for tenant.</Td>
+								</Tr>
+							{/each}
+						</Tbody>
+					</Table>
+				</div>
 			</div>
 		{/if}
 	</div>
@@ -283,17 +285,20 @@
 		display: flex;
 		flex-direction: column;
 		gap: var(--spacing-layout);
+		min-width: 0;
 	}
 	.grid {
 		margin-top: 1rem;
 		display: grid;
 		grid-template-columns: repeat(2, 1fr);
 		column-gap: 1rem;
+		min-width: 0;
 	}
 	.card {
 		padding: var(--ax-space-16) var(--ax-space-20);
 		border-radius: 12px;
 		align-items: stretch;
+		min-width: 0;
 	}
 	.cost-amount {
 		background-color: var(--ax-bg-raised);
@@ -302,6 +307,17 @@
 		border-radius: 0.375rem;
 		display: inline-block;
 		align-items: center;
+	}
+
+	.table-container {
+		max-width: 100%;
+		min-width: 0;
+		overflow-x: auto;
+	}
+
+	.table-container :global(table) {
+		width: max-content;
+		min-width: 100%;
 	}
 
 	/* Mobile responsive styles */

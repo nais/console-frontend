@@ -147,5 +147,18 @@
 		grid-template-columns: 50ch auto;
 		align-items: start;
 		gap: var(--ax-space-12);
+		min-width: 0;
+	}
+
+	@media (max-width: 767px), (max-height: 500px) {
+		.grid {
+			grid-template-columns: 1fr;
+			gap: var(--ax-space-8);
+		}
+
+		.status {
+			align-items: flex-end;
+			margin-top: var(--ax-space-6);
+		}
 	}
 </style>
