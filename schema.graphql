@@ -10168,8 +10168,7 @@ interface WorkloadResources {
 
 """
 SBOM metadata for a workload, including pipeline status and processing
-information. Accessed through WorkloadVulnerabilitySummary.sbom and groups
-related SBOM metadata fields together for a cleaner API surface.
+information. Accessed through WorkloadVulnerabilitySummary.
 """
 type WorkloadSbomSummary {
   """Whether the workload has a software bill of materials (SBOM) attached."""
