@@ -23,14 +23,21 @@
 		rel,
 		ariaCurrent,
 		onSelect,
+		onclick: rawOnclick,
 		children,
 		class: className,
 		...restProps
 	}: Props = $props();
+
+	function handleClick(event: MouseEvent) {
+		onSelect?.(event);
+		(rawOnclick as ((event: MouseEvent) => void) | undefined)?.(event);
+	}
 </script>
 
 {#if href}
 	<a
+		{...restProps}
 		{href}
 		{target}
 		{rel}
@@ -43,8 +50,7 @@
 			className
 		]}
 		aria-current={ariaCurrent}
-		onclick={onSelect}
-		{...restProps}
+		onclick={handleClick}
 	>
 		<span class="action-menu-label" style:font-weight={active ? 'bold' : 'normal'}>
 			{@render children()}
@@ -58,6 +64,7 @@
 	</a>
 {:else}
 	<button
+		{...restProps}
 		type="button"
 		role="menuitem"
 		data-marker={icon ? 'left' : undefined}
@@ -67,8 +74,7 @@
 			'header-action-menu-item',
 			className
 		]}
-		onclick={onSelect}
-		{...restProps}
+		onclick={handleClick}
 	>
 		<span class="action-menu-label" style:font-weight={active ? 'bold' : 'normal'}>
 			{@render children()}
