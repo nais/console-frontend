@@ -72,7 +72,7 @@
 	<!-- Mobile navigation menu -->
 	<ActionMenu>
 		{#snippet trigger(props)}
-			<InternalHeaderButton class="mobile-nav-trigger" {...props}>
+			<InternalHeaderButton class="mobile-nav-trigger" aria-label="Open navigation menu" {...props}>
 				<MenuHamburgerIcon title="Navigation" />
 			</InternalHeaderButton>
 		{/snippet}
