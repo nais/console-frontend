@@ -47,6 +47,10 @@
 		{ href: '/deployments', label: 'Deployments' }
 	];
 
+	const headerActionMenuItemClass =
+		'ds-svelte-action-menu__item aksel-action-menu__item header-action-menu-item';
+	const headerActionMenuMarkerClass = 'aksel-action-menu__marker aksel-action-menu__marker--left';
+
 	function isActive(pathname: string) {
 		return page.url.pathname === pathname || page.url.pathname.startsWith(pathname + '/');
 	}
@@ -80,8 +84,7 @@
 				<a
 					href={item.href}
 					role="menuitem"
-					tabindex="0"
-					class="ds-svelte-action-menu__item aksel-action-menu__item header-action-menu-item"
+					class={headerActionMenuItemClass}
 					aria-current={isActive(item.href) ? 'page' : undefined}
 				>
 					<span
@@ -98,13 +101,12 @@
 			<button
 				type="button"
 				role="menuitem"
-				tabindex="0"
 				data-marker="left"
-				class="ds-svelte-action-menu__item aksel-action-menu__item header-action-menu-item"
+				class={headerActionMenuItemClass}
 				onclick={() => (feedbackOpen = true)}
 			>
 				<span class="action-menu-label">Feedback</span>
-				<div aria-hidden="true" class="aksel-action-menu__marker aksel-action-menu__marker--left">
+				<div aria-hidden="true" class={headerActionMenuMarkerClass}>
 					<ChatElipsisIcon />
 				</div>
 			</button>
@@ -140,12 +142,11 @@
 				target="_blank"
 				rel="noopener noreferrer"
 				role="menuitem"
-				tabindex="0"
 				data-marker="left"
-				class="ds-svelte-action-menu__item aksel-action-menu__item header-action-menu-item"
+				class={headerActionMenuItemClass}
 			>
 				<span class="action-menu-label">Docs <ExternalLinkIcon /></span>
-				<div aria-hidden="true" class="aksel-action-menu__marker aksel-action-menu__marker--left">
+				<div aria-hidden="true" class={headerActionMenuMarkerClass}>
 					<BooksIcon />
 				</div>
 			</a>
@@ -154,12 +155,11 @@
 				target="_blank"
 				rel="noopener noreferrer"
 				role="menuitem"
-				tabindex="0"
 				data-marker="left"
-				class="ds-svelte-action-menu__item aksel-action-menu__item header-action-menu-item"
+				class={headerActionMenuItemClass}
 			>
 				<span class="action-menu-label">Grafana <ExternalLinkIcon /></span>
-				<div aria-hidden="true" class="aksel-action-menu__marker aksel-action-menu__marker--left">
+				<div aria-hidden="true" class={headerActionMenuMarkerClass}>
 					<GrafanaIcon />
 				</div>
 			</a>
@@ -171,15 +171,9 @@
 		{/snippet}
 
 		{#if user?.isAdmin}
-			<a
-				href="/admin"
-				role="menuitem"
-				tabindex="0"
-				data-marker="left"
-				class="ds-svelte-action-menu__item aksel-action-menu__item header-action-menu-item"
-			>
+			<a href="/admin" role="menuitem" data-marker="left" class={headerActionMenuItemClass}>
 				<span class="action-menu-label">Admin</span>
-				<div aria-hidden="true" class="aksel-action-menu__marker aksel-action-menu__marker--left">
+				<div aria-hidden="true" class={headerActionMenuMarkerClass}>
 					<CogIcon />
 				</div>
 			</a>
@@ -197,15 +191,9 @@
 		>
 			Dark theme
 		</ActionMenuCheckboxItem>
-		<a
-			href="/oauth2/logout"
-			role="menuitem"
-			tabindex="0"
-			data-marker="left"
-			class="ds-svelte-action-menu__item aksel-action-menu__item header-action-menu-item"
-		>
+		<a href="/oauth2/logout" role="menuitem" data-marker="left" class={headerActionMenuItemClass}>
 			<span class="action-menu-label">Logout</span>
-			<div aria-hidden="true" class="aksel-action-menu__marker aksel-action-menu__marker--left">
+			<div aria-hidden="true" class={headerActionMenuMarkerClass}>
 				<LeaveIcon />
 			</div>
 		</a>
