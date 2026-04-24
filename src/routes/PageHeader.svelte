@@ -5,7 +5,7 @@
 	import Feedback from '$lib/feedback/Feedback.svelte';
 	import GrafanaIcon from '$lib/icons/GrafanaIcon.svelte';
 	import { themeSwitch } from '$lib/stores/theme.svelte';
-	import { Spacer } from '@nais/ds-svelte-community';
+	import { Button, Spacer } from '@nais/ds-svelte-community';
 	import {
 		ActionMenu,
 		ActionMenuCheckboxItem,
@@ -103,11 +103,7 @@
 		<ActionMenuDivider />
 		<ActionMenuGroup label="Tools">
 			<ActionMenuItem icon={ChatElipsisIcon}>
-				<button
-					class="action-menu-link"
-					onclick={() => (feedbackOpen = true)}
-					style="background: none; border: none; padding: 0; cursor: pointer; color: inherit; font: inherit;"
-				>
+				<button type="button" class="action-menu-button" onclick={() => (feedbackOpen = true)}>
 					Feedback
 				</button>
 			</ActionMenuItem>
@@ -115,6 +111,18 @@
 	</ActionMenu>
 
 	<Spacer />
+	<div class="feedback-button-wrapper">
+		<Button
+			variant="tertiary-neutral"
+			icon={ChatElipsisIcon}
+			size="small"
+			onclick={() => {
+				feedbackOpen = true;
+			}}
+		>
+			<span style="font-weight: 400">Feedback</span>
+		</Button>
+	</div>
 	{#if feedbackOpen}
 		<Feedback close={() => (feedbackOpen = false)} />
 	{/if}
@@ -187,6 +195,12 @@
 		align-items: center;
 	}
 
+	.feedback-button-wrapper {
+		display: flex;
+		align-items: center;
+		padding: 0 1rem;
+	}
+
 	/* Desktop navigation */
 	.desktop-nav {
 		display: flex;
@@ -214,6 +228,10 @@
 			display: none;
 		}
 
+		.feedback-button-wrapper {
+			display: none;
+		}
+
 		/* Show mobile nav trigger on mobile */
 		:global(.mobile-nav-trigger) {
 			display: inline-flex;
@@ -235,6 +253,10 @@
 			display: none;
 		}
 
+		.feedback-button-wrapper {
+			display: none;
+		}
+
 		:global(.mobile-nav-trigger) {
 			display: inline-flex;
 		}
@@ -243,5 +265,15 @@
 	.action-menu-link {
 		color: var(--ax-text-neutral);
 		text-decoration: none;
+	}
+
+	.action-menu-button {
+		background: none;
+		border: none;
+		padding: 0;
+		cursor: pointer;
+		color: var(--ax-text-neutral);
+		font: inherit;
+		text-align: left;
 	}
 </style>

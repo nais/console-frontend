@@ -46,7 +46,7 @@
 					<Tr>
 						<Th style="min-width: 160px">Name</Th>
 						<Th style="min-width: 360px">Value</Th>
-						<Th style="white-space: nowrap; min-width: 400px">Source</Th>
+						<Th class="source-column">Source</Th>
 					</Tr>
 				</Thead>
 				<Tbody>
@@ -143,6 +143,11 @@
 		min-width: 360px;
 	}
 
+	.table-container :global(th.source-column) {
+		white-space: nowrap;
+		min-width: 400px;
+	}
+
 	.source {
 		color: var(--ax-text-neutral-subtle);
 		font-size: var(--ax-font-size-small);
@@ -169,8 +174,8 @@
 			gap: var(--ax-space-8);
 		}
 
-		:global(th[style*='min-width: 400px']) {
-			min-width: 240px !important;
+		.table-container :global(th.source-column) {
+			min-width: 240px;
 		}
 	}
 </style>
