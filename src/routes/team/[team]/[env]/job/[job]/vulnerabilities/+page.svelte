@@ -117,9 +117,9 @@
 								>Read how to generate an SBOM</ExternalLink
 							>.
 						</Alert>
-					{:else}
-						<Alert variant="info" size="small" fullWidth={false}>
-							{imageStaleness.label}
+					{:else if imageStaleness.indicator === 'warning'}
+						<Alert variant="warning" size="small" fullWidth={false}>
+							SBOM processing failed — please contact the Nais team on Slack #nais.
 						</Alert>
 					{/if}
 				{/if}
