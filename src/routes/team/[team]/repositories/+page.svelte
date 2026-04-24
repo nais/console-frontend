@@ -220,26 +220,28 @@
 											<ExternalLink href="https://github.com/{repo.name}">{repo.name}</ExternalLink>
 											{#if viewerIsMember}
 												<div class="right">
-													<Button
-														variant="danger"
-														size="xsmall"
-														onclick={() => removeRepository(repo.team.slug, repo.name)}
-														icon={TrashIcon}
-														class="remove-btn-full"
-													>
-														Remove
-													</Button>
-													<Button
-														variant="tertiary-neutral"
-														size="xsmall"
-														onclick={() => removeRepository(repo.team.slug, repo.name)}
-														class="remove-btn-icon"
-														aria-label="Remove repository"
-													>
-														{#snippet icon()}
-															<TrashIcon style="color: var(--ax-text-danger-decoration);" />
-														{/snippet}
-													</Button>
+													<div class="remove-btn-full">
+														<Button
+															variant="danger"
+															size="xsmall"
+															onclick={() => removeRepository(repo.team.slug, repo.name)}
+															icon={TrashIcon}
+														>
+															Remove
+														</Button>
+													</div>
+													<div class="remove-btn-icon">
+														<Button
+															variant="tertiary-neutral"
+															size="xsmall"
+															onclick={() => removeRepository(repo.team.slug, repo.name)}
+															aria-label="Remove repository"
+														>
+															{#snippet icon()}
+																<TrashIcon style="color: var(--ax-text-danger-decoration);" />
+															{/snippet}
+														</Button>
+													</div>
 												</div>
 											{/if}
 										</div>
@@ -306,14 +308,14 @@
 			grid-template-columns: 1fr;
 		}
 
-		:global(.remove-btn-full) {
-			display: none !important;
+		.remove-btn-full {
+			display: none;
 		}
 	}
 
 	@media (min-width: 768px) {
-		:global(.remove-btn-icon) {
-			display: none !important;
+		.remove-btn-icon {
+			display: none;
 		}
 	}
 </style>

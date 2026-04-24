@@ -62,22 +62,11 @@
 	</InternalHeaderTitle>
 	<!-- Desktop navigation (hidden on mobile) -->
 	<div class="desktop-nav">
-		<InternalHeaderButton as="a" href="/utilization" class={{ active: isActive('/utilization') }}>
-			Utilization
-		</InternalHeaderButton>
-		<InternalHeaderButton as="a" href="/cost" class={{ active: isActive('/cost') }}>
-			Cost
-		</InternalHeaderButton>
-		<InternalHeaderButton
-			as="a"
-			href="/vulnerabilities"
-			class={{ active: isActive('/vulnerabilities') }}
-		>
-			Vulnerabilities
-		</InternalHeaderButton>
-		<InternalHeaderButton as="a" href="/deployments" class={{ active: isActive('/deployments') }}>
-			Deployments
-		</InternalHeaderButton>
+		{#each navItems as item (item.href)}
+			<InternalHeaderButton as="a" href={item.href} class={{ active: isActive(item.href) }}>
+				{item.label}
+			</InternalHeaderButton>
+		{/each}
 	</div>
 
 	<!-- Mobile navigation menu -->
