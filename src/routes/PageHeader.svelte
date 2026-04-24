@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { goto } from '$app/navigation';
 	import { page } from '$app/state';
 	import { docURL, tenantURL } from '$lib/doc';
 	import SearchButton from '$lib/domain/search/SearchButton.svelte';
@@ -12,7 +11,6 @@
 		ActionMenuCheckboxItem,
 		ActionMenuDivider,
 		ActionMenuGroup,
-		ActionMenuItem,
 		InternalHeader,
 		InternalHeaderButton,
 		InternalHeaderTitle,
@@ -52,22 +50,6 @@
 	function isActive(pathname: string) {
 		return page.url.pathname === pathname || page.url.pathname.startsWith(pathname + '/');
 	}
-
-	function navigateTo(pathname: string) {
-		void goto(pathname);
-	}
-
-	function openExternal(url: string) {
-		if (typeof window !== 'undefined') {
-			window.open(url, '_blank', 'noopener,noreferrer');
-		}
-	}
-
-	function logout() {
-		if (typeof window !== 'undefined') {
-			window.location.assign('/oauth2/logout');
-		}
-	}
 </script>
 
 <InternalHeader>
@@ -95,21 +77,37 @@
 		{/snippet}
 		<ActionMenuGroup label="Navigation">
 			{#each navItems as item (item.href)}
-				<ActionMenuItem onSelect={() => navigateTo(item.href)}>
+				<a
+					href={item.href}
+					role="menuitem"
+					tabindex="0"
+					class="ds-svelte-action-menu__item aksel-action-menu__item header-action-menu-item"
+					aria-current={isActive(item.href) ? 'page' : undefined}
+				>
 					<span
 						class="action-menu-label"
 						style:font-weight={isActive(item.href) ? 'bold' : 'normal'}
 					>
 						{item.label}
 					</span>
-				</ActionMenuItem>
+				</a>
 			{/each}
 		</ActionMenuGroup>
 		<ActionMenuDivider />
 		<ActionMenuGroup label="Tools">
-			<ActionMenuItem icon={ChatElipsisIcon} onSelect={() => (feedbackOpen = true)}>
+			<button
+				type="button"
+				role="menuitem"
+				tabindex="0"
+				data-marker="left"
+				class="ds-svelte-action-menu__item aksel-action-menu__item header-action-menu-item"
+				onclick={() => (feedbackOpen = true)}
+			>
 				<span class="action-menu-label">Feedback</span>
-			</ActionMenuItem>
+				<div aria-hidden="true" class="aksel-action-menu__marker aksel-action-menu__marker--left">
+					<ChatElipsisIcon />
+				</div>
+			</button>
 		</ActionMenuGroup>
 	</ActionMenu>
 
@@ -137,12 +135,34 @@
 			</InternalHeaderButton>
 		{/snippet}
 		<ActionMenuGroup label="Nais resources">
-			<ActionMenuItem icon={BooksIcon} onSelect={() => openExternal(docURL())}>
+			<a
+				href={docURL()}
+				target="_blank"
+				rel="noopener noreferrer"
+				role="menuitem"
+				tabindex="0"
+				data-marker="left"
+				class="ds-svelte-action-menu__item aksel-action-menu__item header-action-menu-item"
+			>
 				<span class="action-menu-label">Docs <ExternalLinkIcon /></span>
-			</ActionMenuItem>
-			<ActionMenuItem icon={GrafanaIcon} onSelect={() => openExternal(tenantURL('grafana'))}>
+				<div aria-hidden="true" class="aksel-action-menu__marker aksel-action-menu__marker--left">
+					<BooksIcon />
+				</div>
+			</a>
+			<a
+				href={tenantURL('grafana')}
+				target="_blank"
+				rel="noopener noreferrer"
+				role="menuitem"
+				tabindex="0"
+				data-marker="left"
+				class="ds-svelte-action-menu__item aksel-action-menu__item header-action-menu-item"
+			>
 				<span class="action-menu-label">Grafana <ExternalLinkIcon /></span>
-			</ActionMenuItem>
+				<div aria-hidden="true" class="aksel-action-menu__marker aksel-action-menu__marker--left">
+					<GrafanaIcon />
+				</div>
+			</a>
 		</ActionMenuGroup>
 	</ActionMenu>
 	<ActionMenu>
@@ -151,9 +171,18 @@
 		{/snippet}
 
 		{#if user?.isAdmin}
-			<ActionMenuItem icon={CogIcon} onSelect={() => navigateTo('/admin')}>
+			<a
+				href="/admin"
+				role="menuitem"
+				tabindex="0"
+				data-marker="left"
+				class="ds-svelte-action-menu__item aksel-action-menu__item header-action-menu-item"
+			>
 				<span class="action-menu-label">Admin</span>
-			</ActionMenuItem>
+				<div aria-hidden="true" class="aksel-action-menu__marker aksel-action-menu__marker--left">
+					<CogIcon />
+				</div>
+			</a>
 			<ActionMenuDivider />
 		{/if}
 		<ActionMenuCheckboxItem
@@ -168,9 +197,18 @@
 		>
 			Dark theme
 		</ActionMenuCheckboxItem>
-		<ActionMenuItem icon={LeaveIcon} onSelect={logout}>
+		<a
+			href="/oauth2/logout"
+			role="menuitem"
+			tabindex="0"
+			data-marker="left"
+			class="ds-svelte-action-menu__item aksel-action-menu__item header-action-menu-item"
+		>
 			<span class="action-menu-label">Logout</span>
-		</ActionMenuItem>
+			<div aria-hidden="true" class="aksel-action-menu__marker aksel-action-menu__marker--left">
+				<LeaveIcon />
+			</div>
+		</a>
 	</ActionMenu>
 </InternalHeader>
 
@@ -257,5 +295,17 @@
 		display: inline-flex;
 		align-items: center;
 		gap: var(--ax-space-2);
+	}
+
+	.header-action-menu-item {
+		width: 100%;
+		box-sizing: border-box;
+		background: transparent;
+		border: none;
+		color: inherit;
+		text-decoration: none;
+		text-align: left;
+		font: inherit;
+		cursor: pointer;
 	}
 </style>
