@@ -192,11 +192,11 @@
 					</div>
 					<div class="card-row">
 						<span class="card-label">Inventory</span>
-						<span class="card-value inventory-list">
+						<div class="card-value inventory-list">
 							{#each inventoryItemsForTeam(t.node.inventoryCounts, 'mobile') as item (item)}
 								<div class="inventory-item">{item}</div>
 							{/each}
-						</span>
+						</div>
 					</div>
 				</div>
 			</div>
