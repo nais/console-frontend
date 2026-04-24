@@ -60,6 +60,71 @@
 	};
 
 	let workloadsToggle = $derived(filter || 'all');
+
+	type InventoryCounts = {
+		applications: { total: number };
+		jobs: { total: number };
+		bigQueryDatasets: { total: number };
+		buckets: { total: number };
+		kafkaTopics: { total: number };
+		openSearches: { total: number };
+		postgresInstances: { total: number };
+		sqlInstances: { total: number };
+		valkeys: { total: number };
+	};
+
+	const inventoryItemsForTeam = (inventoryCounts: InventoryCounts, variant: 'desktop' | 'mobile') =>
+		[
+			{
+				total: inventoryCounts.applications.total,
+				desktopLabel: 'applications',
+				mobileLabel: inventoryCounts.applications.total === 1 ? 'app' : 'apps'
+			},
+			{
+				total: inventoryCounts.jobs.total,
+				desktopLabel: 'jobs',
+				mobileLabel: inventoryCounts.jobs.total === 1 ? 'job' : 'jobs'
+			},
+			{
+				total: inventoryCounts.bigQueryDatasets.total,
+				desktopLabel: 'BigQuery datasets',
+				mobileLabel: 'BigQuery'
+			},
+			{
+				total: inventoryCounts.buckets.total,
+				desktopLabel: 'buckets',
+				mobileLabel: inventoryCounts.buckets.total === 1 ? 'bucket' : 'buckets'
+			},
+			{
+				total: inventoryCounts.kafkaTopics.total,
+				desktopLabel: 'Kafka topics',
+				mobileLabel: 'Kafka'
+			},
+			{
+				total: inventoryCounts.openSearches.total,
+				desktopLabel: 'OpenSearch instances',
+				mobileLabel: 'OpenSearch'
+			},
+			{
+				total: inventoryCounts.postgresInstances.total,
+				desktopLabel: 'Postgres instances',
+				mobileLabel: 'Postgres'
+			},
+			{
+				total: inventoryCounts.sqlInstances.total,
+				desktopLabel: 'Cloud SQL instances',
+				mobileLabel: 'SQL'
+			},
+			{
+				total: inventoryCounts.valkeys.total,
+				desktopLabel: 'Valkey instances',
+				mobileLabel: 'Valkey'
+			}
+		].flatMap((item) =>
+			item.total > 0
+				? [`${item.total} ${variant === 'desktop' ? item.desktopLabel : item.mobileLabel}`]
+				: []
+		);
 </script>
 
 <div class="toggles">
@@ -103,28 +168,7 @@
 							></Td
 						>
 						<Td>
-							{[
-								t.node.inventoryCounts.applications.total > 0 &&
-									`${t.node.inventoryCounts.applications.total} applications`,
-								t.node.inventoryCounts.jobs.total > 0 &&
-									`${t.node.inventoryCounts.jobs.total} jobs`,
-								t.node.inventoryCounts.bigQueryDatasets.total > 0 &&
-									`${t.node.inventoryCounts.bigQueryDatasets.total} BigQuery datasets`,
-								t.node.inventoryCounts.buckets.total > 0 &&
-									`${t.node.inventoryCounts.buckets.total} buckets`,
-								t.node.inventoryCounts.kafkaTopics.total > 0 &&
-									`${t.node.inventoryCounts.kafkaTopics.total} Kafka topics`,
-								t.node.inventoryCounts.openSearches.total > 0 &&
-									`${t.node.inventoryCounts.openSearches.total} OpenSearch instances`,
-								t.node.inventoryCounts.postgresInstances.total > 0 &&
-									`${t.node.inventoryCounts.postgresInstances.total} Postgres instances`,
-								t.node.inventoryCounts.sqlInstances.total > 0 &&
-									`${t.node.inventoryCounts.sqlInstances.total} Cloud SQL instances`,
-								t.node.inventoryCounts.valkeys.total > 0 &&
-									`${t.node.inventoryCounts.valkeys.total} Valkey instances`
-							]
-								.filter(Boolean)
-								.join(', ')}
+							{inventoryItemsForTeam(t.node.inventoryCounts, 'desktop').join(', ')}
 						</Td>
 					</Tr>
 				{/each}
@@ -149,7 +193,7 @@
 					<div class="card-row">
 						<span class="card-label">Inventory</span>
 						<span class="card-value inventory-list">
-							{#each [t.node.inventoryCounts.applications.total > 0 && `${t.node.inventoryCounts.applications.total} app${t.node.inventoryCounts.applications.total !== 1 ? 's' : ''}`, t.node.inventoryCounts.jobs.total > 0 && `${t.node.inventoryCounts.jobs.total} job${t.node.inventoryCounts.jobs.total !== 1 ? 's' : ''}`, t.node.inventoryCounts.bigQueryDatasets.total > 0 && `${t.node.inventoryCounts.bigQueryDatasets.total} BigQuery`, t.node.inventoryCounts.buckets.total > 0 && `${t.node.inventoryCounts.buckets.total} bucket${t.node.inventoryCounts.buckets.total !== 1 ? 's' : ''}`, t.node.inventoryCounts.kafkaTopics.total > 0 && `${t.node.inventoryCounts.kafkaTopics.total} Kafka`, t.node.inventoryCounts.openSearches.total > 0 && `${t.node.inventoryCounts.openSearches.total} OpenSearch`, t.node.inventoryCounts.postgresInstances.total > 0 && `${t.node.inventoryCounts.postgresInstances.total} Postgres`, t.node.inventoryCounts.sqlInstances.total > 0 && `${t.node.inventoryCounts.sqlInstances.total} SQL`, t.node.inventoryCounts.valkeys.total > 0 && `${t.node.inventoryCounts.valkeys.total} Valkey`].filter(Boolean) as item, index (index)}
+							{#each inventoryItemsForTeam(t.node.inventoryCounts, 'mobile') as item (item)}
 								<div class="inventory-item">{item}</div>
 							{/each}
 						</span>
