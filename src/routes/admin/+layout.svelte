@@ -45,15 +45,17 @@
 
 <div class="page">
 	<PageHeader />
-	<Tabs>
-		{#each nav as { tab, routeId, withSubRoutes } (routeId)}
-			<Tab
-				href={replacer(routeId, {})}
-				active={isActive(currentRoute, routeId, withSubRoutes)}
-				title={tab}
-			/>
-		{/each}
-	</Tabs>
+	<div class="tabs-container">
+		<Tabs>
+			{#each nav as { tab, routeId, withSubRoutes } (routeId)}
+				<Tab
+					href={replacer(routeId, {})}
+					active={isActive(currentRoute, routeId, withSubRoutes)}
+					title={tab}
+				/>
+			{/each}
+		</Tabs>
+	</div>
 	<div class="container">
 		{@render children?.()}
 	</div>
@@ -64,6 +66,22 @@
 		margin-top: var(--spacing-layout);
 		width: 100%;
 	}
+
+	.tabs-container {
+		width: 100%;
+		overflow-x: auto;
+		overscroll-behavior-x: contain;
+		-webkit-overflow-scrolling: touch;
+	}
+
+	.tabs-container :global(.tabs) {
+		min-width: max-content;
+	}
+
+	.tabs-container :global(.tab) {
+		white-space: nowrap;
+	}
+
 	.container {
 		margin: auto;
 		width: 100%;

@@ -73,58 +73,45 @@
 		valkeys: { total: number };
 	};
 
-	const inventoryItemsForTeam = (inventoryCounts: InventoryCounts, variant: 'desktop' | 'mobile') =>
+	const inventoryItemsForTeam = (inventoryCounts: InventoryCounts) =>
 		[
 			{
 				total: inventoryCounts.applications.total,
-				desktopLabel: 'applications',
-				mobileLabel: inventoryCounts.applications.total === 1 ? 'app' : 'apps'
+				label: 'applications'
 			},
 			{
 				total: inventoryCounts.jobs.total,
-				desktopLabel: 'jobs',
-				mobileLabel: inventoryCounts.jobs.total === 1 ? 'job' : 'jobs'
+				label: 'jobs'
 			},
 			{
 				total: inventoryCounts.bigQueryDatasets.total,
-				desktopLabel: 'BigQuery datasets',
-				mobileLabel: 'BigQuery'
+				label: 'BigQuery datasets'
 			},
 			{
 				total: inventoryCounts.buckets.total,
-				desktopLabel: 'buckets',
-				mobileLabel: inventoryCounts.buckets.total === 1 ? 'bucket' : 'buckets'
+				label: 'buckets'
 			},
 			{
 				total: inventoryCounts.kafkaTopics.total,
-				desktopLabel: 'Kafka topics',
-				mobileLabel: 'Kafka'
+				label: 'Kafka topics'
 			},
 			{
 				total: inventoryCounts.openSearches.total,
-				desktopLabel: 'OpenSearch instances',
-				mobileLabel: 'OpenSearch'
+				label: 'OpenSearch instances'
 			},
 			{
 				total: inventoryCounts.postgresInstances.total,
-				desktopLabel: 'Postgres instances',
-				mobileLabel: 'Postgres'
+				label: 'Postgres instances'
 			},
 			{
 				total: inventoryCounts.sqlInstances.total,
-				desktopLabel: 'Cloud SQL instances',
-				mobileLabel: 'SQL'
+				label: 'Cloud SQL instances'
 			},
 			{
 				total: inventoryCounts.valkeys.total,
-				desktopLabel: 'Valkey instances',
-				mobileLabel: 'Valkey'
+				label: 'Valkey instances'
 			}
-		].flatMap((item) =>
-			item.total > 0
-				? [`${item.total} ${variant === 'desktop' ? item.desktopLabel : item.mobileLabel}`]
-				: []
-		);
+		].flatMap((item) => (item.total > 0 ? [`${item.total} ${item.label}`] : []));
 </script>
 
 <div class="toggles">
@@ -168,39 +155,12 @@
 							></Td
 						>
 						<Td>
-							{inventoryItemsForTeam(t.node.inventoryCounts, 'desktop').join(', ')}
+							{inventoryItemsForTeam(t.node.inventoryCounts).join(', ')}
 						</Td>
 					</Tr>
 				{/each}
 			</Tbody>
 		</Table>
-	</div>
-
-	<!-- Mobile Card View -->
-	<div class="card-container">
-		{#each $Teams.data?.teams.edges || [] as t (t.node.slug)}
-			<div class="team-card">
-				<div class="card-header">
-					<a href="/team/{t.node.slug}" class="team-name">{t.node.slug}</a>
-				</div>
-				<div class="card-content">
-					<div class="card-row">
-						<span class="card-label">Members</span>
-						<a href="/team/{t.node.slug}/members" class="card-value">
-							{t.node.members.pageInfo.totalCount}
-						</a>
-					</div>
-					<div class="card-row">
-						<span class="card-label">Inventory</span>
-						<div class="card-value inventory-list">
-							{#each inventoryItemsForTeam(t.node.inventoryCounts, 'mobile') as item (item)}
-								<div class="inventory-item">{item}</div>
-							{/each}
-						</div>
-					</div>
-				</div>
-			</div>
-		{/each}
 	</div>
 {:else}
 	<div style="display: flex; justify-content: center; align-items: center; height: 500px;">
@@ -233,99 +193,26 @@
 		flex-direction: row;
 		justify-content: flex-end;
 		padding-bottom: var(--spacing-layout);
+		max-width: 100%;
+		overflow-x: auto;
 	}
 
-	/* Desktop table view */
 	.table-container {
-		display: block;
+		max-width: 100%;
+		min-width: 0;
+		overflow-x: auto;
+		overscroll-behavior-x: contain;
+		-webkit-overflow-scrolling: touch;
 	}
 
-	/* Mobile card view */
-	.card-container {
-		display: none;
-		gap: 1rem;
-		flex-direction: column;
+	.table-container :global(table) {
+		width: max-content;
+		min-width: 100%;
 	}
 
-	.team-card {
-		border: 1px solid var(--ax-border-neutral-subtleA);
-		border-radius: 8px;
-		padding: 1rem;
-		background: var(--ax-bg-raised);
-	}
-
-	.card-header {
-		margin-bottom: 0.75rem;
-		border-bottom: 1px solid var(--ax-border-neutral-subtleA);
-		padding-bottom: 0.75rem;
-	}
-
-	.team-name {
-		font-weight: 600;
-		color: var(--ax-text-accent);
-		text-decoration: none;
-	}
-
-	.team-name:hover {
-		text-decoration: underline;
-	}
-
-	.card-content {
-		display: flex;
-		flex-direction: column;
-		gap: 0.75rem;
-	}
-
-	.card-row {
-		display: flex;
-		justify-content: space-between;
-		align-items: flex-start;
-		gap: 1rem;
-		font-size: 0.9rem;
-	}
-
-	.card-label {
-		font-weight: 500;
-		color: var(--ax-text-subtle);
-		flex-shrink: 0;
-		min-width: 80px;
-	}
-
-	.card-value {
-		color: var(--ax-text-neutral);
-		text-align: right;
-		flex: 1;
-	}
-
-	:global(.card-value a) {
-		color: var(--ax-text-accent);
-		text-decoration: none;
-	}
-
-	:global(.card-value a:hover) {
-		text-decoration: underline;
-	}
-
-	.inventory-list {
-		display: flex;
-		flex-direction: column;
-		gap: 0.25rem;
-		align-items: flex-end;
-	}
-
-	.inventory-item {
-		font-size: 0.85rem;
-		color: var(--ax-text-subtle);
-	}
-
-	/* Mobile breakpoint: show cards, hide table */
 	@media (max-width: 767px) {
-		.table-container {
-			display: none;
-		}
-
-		.card-container {
-			display: flex;
+		.toggles {
+			justify-content: flex-start;
 		}
 	}
 </style>

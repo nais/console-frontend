@@ -9,30 +9,32 @@
 </script>
 
 {#if $AdminUsers.data}
-	<Table size="small">
-		<Thead>
-			<Tr>
-				<Th>Name</Th>
-				<Th>Email</Th>
-				<Th>External ID</Th>
-				<Th>Nais admin</Th>
-			</Tr>
-		</Thead>
-		<Tbody>
-			{#each $AdminUsers.data.users.nodes || [] as user (user.id)}
+	<div class="table-container">
+		<Table size="small">
+			<Thead>
 				<Tr>
-					<Td>{user.name}</Td>
-					<Td>{user.email}</Td>
-					<Td>{user.externalID}</Td>
-					<Td>{user.isAdmin ? 'Yes' : ''}</Td>
+					<Th>Name</Th>
+					<Th>Email</Th>
+					<Th>External ID</Th>
+					<Th>Nais admin</Th>
 				</Tr>
-			{:else}
-				<Tr>
-					<Td colspan={99}>No users found</Td>
-				</Tr>
-			{/each}
-		</Tbody>
-	</Table>
+			</Thead>
+			<Tbody>
+				{#each $AdminUsers.data.users.nodes || [] as user (user.id)}
+					<Tr>
+						<Td>{user.name}</Td>
+						<Td>{user.email}</Td>
+						<Td>{user.externalID}</Td>
+						<Td>{user.isAdmin ? 'Yes' : ''}</Td>
+					</Tr>
+				{:else}
+					<Tr>
+						<Td colspan={99}>No users found</Td>
+					</Tr>
+				{/each}
+			</Tbody>
+		</Table>
+	</div>
 
 	<Pagination
 		page={$AdminUsers.data.users.pageInfo}
@@ -46,3 +48,18 @@
 		}}
 	/>
 {/if}
+
+<style>
+	.table-container {
+		max-width: 100%;
+		min-width: 0;
+		overflow-x: auto;
+		overscroll-behavior-x: contain;
+		-webkit-overflow-scrolling: touch;
+	}
+
+	.table-container :global(table) {
+		width: max-content;
+		min-width: 100%;
+	}
+</style>
