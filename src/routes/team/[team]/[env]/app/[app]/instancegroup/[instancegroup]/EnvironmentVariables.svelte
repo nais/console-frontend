@@ -44,16 +44,16 @@
 			<Table size="small" zebraStripes>
 				<Thead>
 					<Tr>
-						<Th style="min-width: 160px">Name</Th>
-						<Th style="min-width: 360px">Value</Th>
+						<Th class="name-column">Name</Th>
+						<Th class="value-column">Value</Th>
 						<Th class="source-column">Source</Th>
 					</Tr>
 				</Thead>
 				<Tbody>
 					{#each envVars as env (env.name)}
 						<Tr>
-							<Td><code>{env.name}</code></Td>
-							<Td>
+							<Td class="name-cell"><code>{env.name}</code></Td>
+							<Td class="value-cell">
 								{#if env.source.kind === 'SECRET' && revealedValues.has(env.name)}
 									<span class="env-value">
 										<code>{revealedValues.get(env.name)}</code>
@@ -80,7 +80,7 @@
 									<span class="muted">-</span>
 								{/if}
 							</Td>
-							<Td>
+							<Td class="source-cell">
 								<span class="source">
 									{env.source.kind === 'SECRET'
 										? 'Secret'
@@ -116,36 +116,45 @@
 	.masked {
 		color: var(--ax-text-neutral-subtle);
 		user-select: none;
+		flex: 1 1 auto;
+		min-width: 0;
 	}
 
 	.env-value {
 		display: flex;
 		align-items: center;
 		gap: var(--ax-space-4);
-		white-space: nowrap;
+		min-width: 0;
 	}
 
 	.table-container {
 		width: 100%;
+		min-width: 0;
 		overflow-x: auto;
 	}
 
 	.table-container :global(table) {
-		min-width: 720px;
+		width: 100%;
 	}
 
 	.table-container :global(th),
 	.table-container :global(td) {
-		white-space: nowrap;
+		vertical-align: top;
 	}
 
-	.table-container :global(tr > td:nth-child(2)) {
-		min-width: 360px;
+	.table-container :global(th.name-column),
+	.table-container :global(td.name-cell) {
+		width: 1%;
+		white-space: nowrap;
 	}
 
 	.table-container :global(th.source-column) {
+		width: 1%;
 		white-space: nowrap;
-		min-width: 400px;
+	}
+
+	.table-container :global(td.value-cell) {
+		min-width: 0;
 	}
 
 	.source {
@@ -161,11 +170,23 @@
 	section :global(code) {
 		font-size: var(--ax-font-size-small);
 		color: var(--ax-text-neutral);
-		overflow-wrap: normal;
-		word-break: normal;
+	}
+
+	.table-container :global(td.name-cell code) {
 		white-space: nowrap;
-		display: inline-block;
-		min-width: max-content;
+	}
+
+	.table-container :global(td.value-cell code) {
+		display: block;
+		flex: 1 1 auto;
+		min-width: 0;
+		white-space: normal;
+		overflow-wrap: anywhere;
+		word-break: break-word;
+	}
+
+	.env-value :global(button) {
+		flex-shrink: 0;
 	}
 
 	@media (max-width: 767px), (max-height: 500px) {
@@ -175,7 +196,7 @@
 		}
 
 		.table-container :global(th.source-column) {
-			min-width: 240px;
+			width: 1%;
 		}
 	}
 </style>
