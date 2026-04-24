@@ -54,6 +54,14 @@
 	function isActive(pathname: string) {
 		return page.url.pathname === pathname || page.url.pathname.startsWith(pathname + '/');
 	}
+
+	function closeMenu(event: Event) {
+		const popover = (event.currentTarget as HTMLElement | null)?.closest('[popover]') as
+			| (HTMLElement & { hidePopover?: () => void })
+			| null;
+
+		popover?.hidePopover?.();
+	}
 </script>
 
 <InternalHeader>
@@ -86,6 +94,7 @@
 					role="menuitem"
 					class={headerActionMenuItemClass}
 					aria-current={isActive(item.href) ? 'page' : undefined}
+					onclick={closeMenu}
 				>
 					<span
 						class="action-menu-label"
@@ -103,7 +112,10 @@
 				role="menuitem"
 				data-marker="left"
 				class={headerActionMenuItemClass}
-				onclick={() => (feedbackOpen = true)}
+				onclick={(event) => {
+					closeMenu(event);
+					feedbackOpen = true;
+				}}
 			>
 				<span class="action-menu-label">Feedback</span>
 				<div aria-hidden="true" class={headerActionMenuMarkerClass}>
@@ -144,6 +156,7 @@
 				role="menuitem"
 				data-marker="left"
 				class={headerActionMenuItemClass}
+				onclick={closeMenu}
 			>
 				<span class="action-menu-label">Docs <ExternalLinkIcon /></span>
 				<div aria-hidden="true" class={headerActionMenuMarkerClass}>
@@ -157,6 +170,7 @@
 				role="menuitem"
 				data-marker="left"
 				class={headerActionMenuItemClass}
+				onclick={closeMenu}
 			>
 				<span class="action-menu-label">Grafana <ExternalLinkIcon /></span>
 				<div aria-hidden="true" class={headerActionMenuMarkerClass}>
@@ -171,7 +185,13 @@
 		{/snippet}
 
 		{#if user?.isAdmin}
-			<a href="/admin" role="menuitem" data-marker="left" class={headerActionMenuItemClass}>
+			<a
+				href="/admin"
+				role="menuitem"
+				data-marker="left"
+				class={headerActionMenuItemClass}
+				onclick={closeMenu}
+			>
 				<span class="action-menu-label">Admin</span>
 				<div aria-hidden="true" class={headerActionMenuMarkerClass}>
 					<CogIcon />
@@ -191,7 +211,13 @@
 		>
 			Dark theme
 		</ActionMenuCheckboxItem>
-		<a href="/oauth2/logout" role="menuitem" data-marker="left" class={headerActionMenuItemClass}>
+		<a
+			href="/oauth2/logout"
+			role="menuitem"
+			data-marker="left"
+			class={headerActionMenuItemClass}
+			onclick={closeMenu}
+		>
 			<span class="action-menu-label">Logout</span>
 			<div aria-hidden="true" class={headerActionMenuMarkerClass}>
 				<LeaveIcon />
