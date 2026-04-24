@@ -9,9 +9,11 @@ query App($app: String!, $team: Slug!, $env: String!) {
 					slug
 				}
 				image {
-					hasSBOM
-					sbomStatus
-					sbomProcessingStartedAt
+					sbom {
+						hasSbom
+						status
+						processingStartedAt
+					}
 					vulnerabilitySummary {
 						critical
 						high

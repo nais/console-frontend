@@ -97,9 +97,9 @@
 {#if $App.data}
 	{@const app = $App.data.team.environment.application}
 	{@const imageStaleness = sbomStatusDetails({
-		status: app.image.sbomStatus,
-		sbomProcessingStartedAt: app.image.sbomProcessingStartedAt,
-		hasVulnerabilityData: !!(app.image.hasSBOM && app.image.vulnerabilitySummary)
+		status: app.image.sbom.status,
+		sbomProcessingStartedAt: app.image.sbom.processingStartedAt,
+		hasVulnerabilityData: !!(app.image.sbom.hasSbom && app.image.vulnerabilitySummary)
 	})}
 
 	<div class="wrapper">
