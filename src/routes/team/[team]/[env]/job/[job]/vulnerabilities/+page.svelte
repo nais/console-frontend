@@ -25,7 +25,7 @@
 	let nextRefresh = $state(20);
 
 	$effect(() => {
-		const status = $JobImageDetails.data?.team.environment.workload.image.sbomStatus;
+		const status = $JobImageDetails.data?.team.environment.workload.image.sbom.status;
 		if (status !== 'PROCESSING') return;
 		nextRefresh = 20;
 		const poll = setInterval(() => {
@@ -45,10 +45,10 @@
 
 {#if $JobImageDetails.data}
 	{@const workload = $JobImageDetails.data.team.environment.workload}
-	{@const hasVulnerabilityData = workload.image.hasSBOM && workload.image.vulnerabilitySummary}
+	{@const hasVulnerabilityData = workload.image.sbom.hasSbom && workload.image.vulnerabilitySummary}
 	{@const imageStaleness = sbomStatusDetails({
-		status: workload.image.sbomStatus,
-		sbomProcessingStartedAt: workload.image.sbomProcessingStartedAt
+		status: workload.image.sbom.status,
+		sbomProcessingStartedAt: workload.image.sbom.processingStartedAt
 	})}
 	<div class="wrapper">
 		<div class="top">
@@ -107,7 +107,7 @@
 				{#if !hasVulnerabilityData}
 					{#if imageStaleness.indicator === 'processing'}
 						<SbomProcessingCard
-							sbomProcessingStartedAt={workload.image.sbomProcessingStartedAt}
+							sbomProcessingStartedAt={workload.image.sbom.processingStartedAt}
 							{nextRefresh}
 						/>
 					{:else if imageStaleness.indicator === 'no-sbom'}
