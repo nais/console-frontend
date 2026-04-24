@@ -138,7 +138,7 @@
 			padding: var(--ax-space-8) var(--ax-space-12);
 			border: 1px solid var(--ax-border-neutral-subtleA);
 			border-radius: 6px;
-			background: var(--ax-neutral-000);
+			background: var(--ax-bg-raised);
 			color: var(--ax-text-neutral);
 			font-size: var(--ax-font-size-medium);
 			font-weight: var(--ax-font-weight-bold);
