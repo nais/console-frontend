@@ -10,7 +10,7 @@ export const docURL = (path: string = '') => {
 };
 
 export const tenantURL = (host: string, path: string = '') => {
-	const tn = page.data.tenantName;
+	const tn = page.data.tenantName || 'nav';
 
 	return `https://${host}.${tn}.cloud.nais.io${path}`;
 };

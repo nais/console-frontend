@@ -195,6 +195,28 @@
 			gap: var(--ax-space-8);
 		}
 
+		.table-container {
+			padding-bottom: var(--ax-space-4);
+			overscroll-behavior-x: contain;
+			-webkit-overflow-scrolling: touch;
+		}
+
+		.table-container :global(table) {
+			width: max-content;
+			min-width: 100%;
+		}
+
+		.table-container :global(th.name-column),
+		.table-container :global(td.name-cell),
+		.table-container :global(th.source-column),
+		.table-container :global(td.source-cell) {
+			white-space: nowrap;
+		}
+
+		.table-container :global(td.value-cell) {
+			min-width: 16rem;
+		}
+
 		.table-container :global(th.source-column) {
 			width: 1%;
 		}
