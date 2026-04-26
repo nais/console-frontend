@@ -22,7 +22,11 @@ query ApplicationImageDetails($team: Slug!, $env: String!, $app: String!)
 					id
 					name
 					tag
-					hasSBOM
+					sbom {
+						hasSbom
+						status
+						processingStartedAt
+					}
 					activityLog @paginate(mode: SinglePage) {
 						pageInfo {
 							hasNextPage

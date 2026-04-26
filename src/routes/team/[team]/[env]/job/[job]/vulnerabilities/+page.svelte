@@ -2,14 +2,16 @@
 	import { docURL } from '$lib/doc';
 	import ActivityLogListItem from '$lib/domain/list-items/ActivityLogListItem.svelte';
 	import ImageVulnerabilities from '$lib/domain/vulnerability/ImageVulnerabilities.svelte';
+	import SbomStatusIcon from '$lib/domain/vulnerability/SbomStatusIcon.svelte';
 	import WorkloadVulnerabilityHistoryGraph from '$lib/domain/vulnerability/WorkloadVulnerabilityHistoryGraph.svelte';
 	import WorkloadVulnerabilitySummary from '$lib/domain/vulnerability/WorkloadVulnerabilitySummary.svelte';
-	import WarningIcon from '$lib/icons/WarningIcon.svelte';
+	import SbomProcessingCard from '$lib/domain/vulnerability/SbomProcessingCard.svelte';
 	import ExternalLink from '$lib/ui/ExternalLink.svelte';
 	import GraphErrors from '$lib/ui/GraphErrors.svelte';
 	import List from '$lib/ui/List.svelte';
 	import { parseImage } from '$lib/utils/image';
-	import { BodyShort, CopyButton, Detail, Heading } from '@nais/ds-svelte-community';
+	import { sbomStatusDetails } from '$lib/utils/vulnerabilities';
+	import { Alert, CopyButton, Detail, Heading } from '@nais/ds-svelte-community';
 	import type { PageProps } from './$types';
 
 	let { data }: PageProps = $props();
@@ -19,12 +21,35 @@
 	const { registry, repository, name } = $derived(
 		parseImage($JobImageDetails.data?.team.environment.workload.image.name)
 	);
+
+	let nextRefresh = $state(20);
+
+	$effect(() => {
+		const status = $JobImageDetails.data?.team.environment.workload.image.sbom.status;
+		if (status !== 'PROCESSING') return;
+		nextRefresh = 20;
+		const poll = setInterval(() => {
+			JobImageDetails.fetch({ policy: 'NetworkOnly' });
+		}, 20000);
+		const tick = setInterval(() => {
+			nextRefresh = nextRefresh <= 1 ? 20 : nextRefresh - 1;
+		}, 1000);
+		return () => {
+			clearInterval(poll);
+			clearInterval(tick);
+		};
+	});
 </script>
 
 <GraphErrors errors={$JobImageDetails.errors} />
 
 {#if $JobImageDetails.data}
 	{@const workload = $JobImageDetails.data.team.environment.workload}
+	{@const hasVulnerabilityData = workload.image.sbom.hasSbom && workload.image.vulnerabilitySummary}
+	{@const imageStaleness = sbomStatusDetails({
+		status: workload.image.sbom.status,
+		sbomProcessingStartedAt: workload.image.sbom.processingStartedAt
+	})}
 	<div class="wrapper">
 		<div class="top">
 			<div>
@@ -79,27 +104,43 @@
 						</dl>
 					{/if}
 				</section>
-				{#if !workload.image.hasSBOM}
-					<BodyShort spacing>
-						<WarningIcon class="text-aligned-icon" /> No vulnerability data available. Learn how to generate
-						SBOMs and attestations for your workloads in the
-						<ExternalLink href={docURL('/services/vulnerabilities/how-to/sbom/')}
-							>Nais documentation
-						</ExternalLink>.
-					</BodyShort>
+				{#if !hasVulnerabilityData}
+					{#if imageStaleness.indicator === 'processing'}
+						<SbomProcessingCard
+							sbomProcessingStartedAt={workload.image.sbom.processingStartedAt}
+							{nextRefresh}
+						/>
+					{:else if imageStaleness.indicator === 'no-sbom'}
+						<Alert variant="info" size="small" fullWidth={false}>
+							{imageStaleness.label}
+							<ExternalLink href={docURL('/services/vulnerabilities/how-to/sbom/')}
+								>Read how to generate an SBOM</ExternalLink
+							>.
+						</Alert>
+					{:else if imageStaleness.indicator === 'warning'}
+						<Alert variant="warning" size="small" fullWidth={false}>
+							SBOM processing failed — please contact the Nais team on Slack #nais.
+						</Alert>
+					{/if}
 				{/if}
 			</div>
 			<div class="cards">
-				{#if workload.image.hasSBOM}
+				{#if hasVulnerabilityData}
 					<div class="card">
-						<Heading as="h2" size="small">Summary</Heading>
+						<div style="display: flex; align-items: center; gap: var(--ax-space-4);">
+							<Heading as="h2" size="small">Summary</Heading>
+							<SbomStatusIcon
+								indicator={imageStaleness.iconIndicator}
+								label={imageStaleness.label}
+							/>
+						</div>
 
-						<WorkloadVulnerabilitySummary {workload} />
+						<WorkloadVulnerabilitySummary {workload} {nextRefresh} />
 					</div>
 				{/if}
 			</div>
 		</div>
-		{#if workload.image.hasSBOM}
+		{#if hasVulnerabilityData}
 			<div>
 				<ImageVulnerabilities
 					team={$JobImageDetails.data?.team.slug}

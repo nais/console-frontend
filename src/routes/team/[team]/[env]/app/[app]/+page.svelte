@@ -9,6 +9,8 @@
 	import Configs from '$lib/domain/resources/Configs.svelte';
 	import NetworkPolicy from '$lib/domain/resources/NetworkPolicy.svelte';
 	import Secrets from '$lib/domain/resources/Secrets.svelte';
+	import SbomStatusIcon from '$lib/domain/vulnerability/SbomStatusIcon.svelte';
+	import WorkloadVulnerabilitySummary from '$lib/domain/vulnerability/WorkloadVulnerabilitySummary.svelte';
 	import WorkloadDeploy from '$lib/domain/workload/WorkloadDeploy.svelte';
 	import Confirm from '$lib/ui/Confirm.svelte';
 	import GraphErrors from '$lib/ui/GraphErrors.svelte';
@@ -16,6 +18,7 @@
 	import List from '$lib/ui/List.svelte';
 	import RunningIndicator from '$lib/ui/RunningIndicator.svelte';
 	import Time from '$lib/ui/Time.svelte';
+	import { sbomStatusDetails } from '$lib/utils/vulnerabilities';
 	import { Alert, Button, Heading, Loader, Tag } from '@nais/ds-svelte-community';
 	import { ArrowCirclepathIcon } from '@nais/ds-svelte-community/icons';
 	import type { PageProps } from './$types';
@@ -93,6 +96,11 @@
 {/if}
 {#if $App.data}
 	{@const app = $App.data.team.environment.application}
+	{@const imageStaleness = sbomStatusDetails({
+		status: app.image.sbom.status,
+		sbomProcessingStartedAt: app.image.sbom.processingStartedAt,
+		hasVulnerabilityData: !!(app.image.sbom.hasSbom && app.image.vulnerabilitySummary)
+	})}
 
 	<div class="wrapper">
 		<div class="app-content">
@@ -180,6 +188,13 @@
 				{#if environment}
 					<AggregatedCostForWorkload workload={app.name} {environment} {teamSlug} />
 				{/if}
+				<div>
+					<div style="display: flex; align-items: center; gap: var(--ax-space-4);">
+						<Heading as="h2" size="small">Vulnerabilities</Heading>
+						<SbomStatusIcon indicator={imageStaleness.iconIndicator} label={imageStaleness.label} />
+					</div>
+					<WorkloadVulnerabilitySummary workload={app} />
+				</div>
 				{#if environment}
 					<Configs {environment} workload={app.name} {teamSlug} />
 					<Secrets workload={app.name} {environment} {teamSlug} />
@@ -260,7 +275,6 @@
 		flex-direction: column;
 		gap: var(--ax-space-2);
 		flex: 1;
-		min-width: 0;
 	}
 
 	.instance-group-status {
@@ -270,32 +284,5 @@
 	.instance-group-meta {
 		font-size: var(--ax-font-size-small);
 		color: var(--ax-text-neutral-subtle);
-		overflow-wrap: anywhere;
-	}
-
-	/* Mobile responsive layout */
-	@media (max-width: 767px), (max-height: 500px) {
-		.app-content {
-			grid-template-columns: 1fr;
-		}
-
-		.workload-deploy-wrapper {
-			margin-top: 0;
-		}
-
-		.instances-header {
-			flex-direction: column;
-			align-items: flex-start;
-			gap: var(--ax-space-12);
-		}
-
-		.instance-group-link {
-			flex-wrap: wrap;
-			align-items: flex-start;
-		}
-
-		.instances-header :global(button) {
-			width: 100%;
-		}
 	}
 </style>

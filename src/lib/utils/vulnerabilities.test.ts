@@ -1,4 +1,10 @@
-import { allSeverities, severityToColor, severityToRiskScore } from './vulnerabilities';
+import {
+	allSeverities,
+	formatProcessingDuration,
+	sbomStatusDetails,
+	severityToColor,
+	severityToRiskScore
+} from './vulnerabilities';
 
 describe('vulnerabilities', () => {
 	describe('severityToColor', () => {
@@ -136,6 +142,100 @@ describe('vulnerabilities', () => {
 			// Documents the actual order: Critical(10), High(5), Medium(3), Low(1), Unassigned(5)
 			// Note: Not strictly descending because Unassigned (5) comes after Low (1)
 			expect(scores).toEqual([10, 5, 3, 1, 5]);
+		});
+	});
+
+	describe('SbomStatus helpers', () => {
+		test('READY status returns healthy indicator and SBOM up to date label', () => {
+			expect(sbomStatusDetails({ status: 'READY' })).toEqual({
+				status: 'READY',
+				indicator: 'healthy',
+				iconIndicator: 'healthy',
+				label: 'SBOM up to date'
+			});
+		});
+
+		test('READY status without vulnerability data returns a no-sbom icon indicator', () => {
+			expect(sbomStatusDetails({ status: 'READY', hasVulnerabilityData: false })).toEqual({
+				status: 'READY',
+				indicator: 'healthy',
+				iconIndicator: 'no-sbom',
+				label: 'SBOM up to date'
+			});
+		});
+
+		test('PROCESSING status returns processing indicator', () => {
+			const result = sbomStatusDetails({ status: 'PROCESSING' });
+			expect(result.status).toBe('PROCESSING');
+			expect(result.indicator).toBe('processing');
+			expect(result.iconIndicator).toBe('processing');
+		});
+
+		test('NO_SBOM status returns no-sbom indicator', () => {
+			expect(sbomStatusDetails({ status: 'NO_SBOM' })).toEqual({
+				status: 'NO_SBOM',
+				indicator: 'no-sbom',
+				iconIndicator: 'no-sbom',
+				label: 'No SBOM found'
+			});
+		});
+
+		test('FAILED status returns warning indicator', () => {
+			expect(sbomStatusDetails({ status: 'FAILED' })).toEqual({
+				status: 'FAILED',
+				indicator: 'warning',
+				iconIndicator: 'warning',
+				label: 'SBOM processing failed'
+			});
+		});
+
+		test('PROCESSING with sbomProcessingStartedAt shows elapsed time as label', () => {
+			const now = new Date();
+			const fiveMinAgo = new Date(now.getTime() - 5 * 60_000);
+			const result = sbomStatusDetails({
+				status: 'PROCESSING',
+				sbomProcessingStartedAt: fiveMinAgo
+			});
+			expect(result.label).toBe('Scanning for vulnerabilities · 5 min');
+		});
+	});
+
+	describe('formatProcessingDuration', () => {
+		test('returns null for null input', () => {
+			expect(formatProcessingDuration(null)).toBeNull();
+		});
+
+		test('returns null for undefined input', () => {
+			expect(formatProcessingDuration(undefined)).toBeNull();
+		});
+
+		test('returns less than a minute for very recent date', () => {
+			const recent = new Date(Date.now() - 30_000);
+			expect(formatProcessingDuration(recent)).toBe(
+				'Scanning for vulnerabilities · less than a minute'
+			);
+		});
+
+		test('returns minutes for sub-hour duration', () => {
+			const thirtyMinAgo = new Date(Date.now() - 30 * 60_000);
+			expect(formatProcessingDuration(thirtyMinAgo)).toBe('Scanning for vulnerabilities · 30 min');
+		});
+
+		test('returns hours and minutes for multi-hour duration', () => {
+			const ninetyMinAgo = new Date(Date.now() - 90 * 60_000);
+			expect(formatProcessingDuration(ninetyMinAgo)).toBe(
+				'Scanning for vulnerabilities · 1 h 30 min'
+			);
+		});
+
+		test('returns exact hours when no remainder minutes', () => {
+			const twoHoursAgo = new Date(Date.now() - 2 * 60 * 60_000);
+			expect(formatProcessingDuration(twoHoursAgo)).toBe('Scanning for vulnerabilities · 2 h');
+		});
+
+		test('returns days for multi-day duration', () => {
+			const threeDaysAgo = new Date(Date.now() - 3 * 24 * 60 * 60_000);
+			expect(formatProcessingDuration(threeDaysAgo)).toBe('Scanning for vulnerabilities · 3 d');
 		});
 	});
 });

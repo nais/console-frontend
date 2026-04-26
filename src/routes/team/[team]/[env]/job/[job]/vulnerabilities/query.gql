@@ -20,7 +20,11 @@ query JobImageDetails($team: Slug!, $env: String!, $job: String!) @cache(policy:
 					id
 					name
 					tag
-					hasSBOM
+					sbom {
+						hasSbom
+						status
+						processingStartedAt
+					}
 					activityLog {
 						pageInfo {
 							hasNextPage

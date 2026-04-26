@@ -1660,16 +1660,14 @@ type ContainerImage implements ActivityLogger & Node {
     last: Int
   ): ActivityLogEntryConnection!
 
-  """
-  Whether the image has a software bill of materials (SBOM) attached to it.
-  """
-  hasSBOM: Boolean!
-
   """The globally unique ID of the container image node."""
   id: ID!
 
   """Name of the container image."""
   name: String!
+
+  """SBOM pipeline status and processing information for this image."""
+  sbom: ContainerImageSbom!
 
   """Tag of the container image."""
   tag: String!
@@ -1720,6 +1718,29 @@ type ContainerImage implements ActivityLogger & Node {
     """
     last: Int
   ): ContainerImageWorkloadReferenceConnection!
+}
+
+"""
+SBOM metadata for a container image, including pipeline status and processing
+information. This type is accessed through ContainerImage.sbom.
+"""
+type ContainerImageSbom implements Node {
+  """
+  Whether the image has a software bill of materials (SBOM) attached to it.
+  """
+  hasSbom: Boolean!
+
+  """The globally unique ID of the container image SBOM node."""
+  id: ID!
+
+  """
+  The timestamp when SBOM processing started for this image.
+  Useful as a progress indicator when status is PROCESSING.
+  """
+  processingStartedAt: Time
+
+  """The SBOM pipeline status."""
+  status: SbomStatus!
 }
 
 type ContainerImageWorkloadReference {
@@ -5948,6 +5969,21 @@ type RoleRevokedUserSyncLogEntry implements Node & UserSyncLogEntry {
   userName: String!
 }
 
+"""The SBOM pipeline status for an image or workload."""
+enum SbomStatus {
+  """SBOM generation failed."""
+  FAILED
+
+  """No SBOM is available for this image or workload."""
+  NO_SBOM
+
+  """SBOM generation is in progress."""
+  PROCESSING
+
+  """SBOM data is available."""
+  READY
+}
+
 enum ScalingDirection {
   """The scaling direction is down."""
   DOWN
@@ -10130,6 +10166,23 @@ interface WorkloadResources {
   requests: WorkloadResourceQuantity!
 }
 
+"""
+SBOM metadata for a workload, including pipeline status and processing
+information. Accessed through WorkloadVulnerabilitySummary.
+"""
+type WorkloadSbomSummary {
+  """Whether the workload has a software bill of materials (SBOM) attached."""
+  hasSbom: Boolean!
+
+  """
+  The timestamp when SBOM processing started for this workload. Useful as a progress indicator when status is PROCESSING.
+  """
+  processingStartedAt: Time
+
+  """The SBOM pipeline status for this workload."""
+  status: SbomStatus!
+}
+
 type WorkloadUtilization {
   """Get the current usage for the requested resource type."""
   current(resourceType: UtilizationResourceType!): Float!
@@ -10188,11 +10241,13 @@ input WorkloadUtilizationSeriesInput {
 }
 
 type WorkloadVulnerabilitySummary implements Node {
-  """True if the workload has a software bill of materials (SBOM) attached."""
-  hasSBOM: Boolean!
-
   """The globally unique ID of the workload vulnerability summary node."""
   id: ID!
+
+  """
+  SBOM metadata for this workload, including pipeline status and processing information.
+  """
+  sbom: WorkloadSbomSummary!
 
   """The vulnerability summary for the workload."""
   summary: ImageVulnerabilitySummary!
