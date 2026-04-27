@@ -10249,8 +10249,10 @@ type WorkloadVulnerabilitySummary implements Node {
   """
   sbom: WorkloadSbomSummary!
 
-  """The vulnerability summary for the workload."""
-  summary: ImageVulnerabilitySummary!
+  """
+  The vulnerability summary for the workload. Null when SBOM status is not READY (e.g. PROCESSING, NO_SBOM, FAILED).
+  """
+  summary: ImageVulnerabilitySummary
 
   """The workload"""
   workload: Workload!
