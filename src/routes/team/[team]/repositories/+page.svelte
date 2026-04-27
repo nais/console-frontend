@@ -18,6 +18,7 @@
 		TextField
 	} from '@nais/ds-svelte-community';
 	import { PlusIcon, TrashIcon } from '@nais/ds-svelte-community/icons';
+	import { onDestroy } from 'svelte';
 	import type { PageProps } from './$types';
 
 	let { data }: PageProps = $props();
@@ -81,8 +82,8 @@
 		}
 	};
 
-	let filter = $state($Repositories.variables?.filter?.name ?? '');
 	let currentFilter = $derived($Repositories.variables?.filter?.name ?? '');
+	let filter = $derived(currentFilter);
 	let after: string = $derived($Repositories.variables?.after ?? '');
 	let before: string = $derived($Repositories.variables?.before ?? '');
 	let repositoryAdded = $state(false);
@@ -129,21 +130,22 @@
 		);
 	};
 
-	$effect(() => {
+	const onFilterChange = (newFilter: string) => {
+		filter = newFilter;
+
 		clearSearchTimeout();
 
-		if (filter === currentFilter) {
+		if (newFilter === '') {
+			applyFilter('');
 			return;
 		}
 
 		searchTimeout = setTimeout(() => {
-			applyFilter(filter);
+			applyFilter(newFilter);
 		}, 1000);
+	};
 
-		return () => {
-			clearSearchTimeout();
-		};
-	});
+	onDestroy(clearSearchTimeout);
 
 	const onFilterKeyDown = (event: KeyboardEvent) => {
 		if (event.key === 'Enter') {
@@ -256,6 +258,7 @@
 							width="100%"
 							autocomplete="off"
 							bind:value={filter}
+							onChange={onFilterChange}
 							onkeydown={onFilterKeyDown}
 							onclear={() => {
 								filter = '';
