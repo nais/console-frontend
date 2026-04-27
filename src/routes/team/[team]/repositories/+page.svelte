@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { page } from '$app/state';
 	import { graphql, RepositoryOrderField } from '$houdini';
 	import SidebarActivity from '$lib/domain/activity/sidebar/SidebarActivity.svelte';
 	import ExternalLink from '$lib/ui/ExternalLink.svelte';
@@ -9,7 +8,15 @@
 	import OrderByMenu from '$lib/ui/OrderByMenu.svelte';
 	import Pagination from '$lib/ui/Pagination.svelte';
 	import { changeParams } from '$lib/utils/searchparams';
-	import { Alert, BodyLong, Button, Detail, Heading, TextField } from '@nais/ds-svelte-community';
+	import {
+		Alert,
+		BodyLong,
+		Button,
+		Detail,
+		Heading,
+		Search,
+		TextField
+	} from '@nais/ds-svelte-community';
 	import { PlusIcon, TrashIcon } from '@nais/ds-svelte-community/icons';
 	import type { PageProps } from './$types';
 
@@ -74,46 +81,91 @@
 		}
 	};
 
-	let filter = $state('');
+	let filter = $state($Repositories.variables?.filter?.name ?? '');
+	let currentFilter = $derived($Repositories.variables?.filter?.name ?? '');
+	let after: string = $derived($Repositories.variables?.after ?? '');
+	let before: string = $derived($Repositories.variables?.before ?? '');
 	let repositoryAdded = $state(false);
 	let repositoryRemoved = $state(false);
 	let repoOperatedOn = $state('');
 
-	const handleFilter = () => {
-		if (filter === '') {
-			page.url.searchParams.delete('filter');
-		} else {
-			page.url.searchParams.set('filter', filter);
-		}
-		history.replaceState({}, '', page.url.toString());
-		Repositories.fetch({ variables: { team: teamSlug, filter: { name: filter } } });
+	const changeQuery = (
+		params: {
+			after?: string;
+			before?: string;
+			newFilter?: string;
+		} = {},
+		options = {}
+	) => {
+		changeParams(
+			{
+				before: params.before ?? before,
+				after: params.after ?? after,
+				filter: params.newFilter ?? filter
+			},
+			options
+		);
 	};
 
 	let searchTimeout: ReturnType<typeof setTimeout> | undefined = undefined;
 
-	const onKeyUp = (e: KeyboardEvent) => {
+	const clearSearchTimeout = () => {
 		if (searchTimeout) {
 			clearTimeout(searchTimeout);
+			searchTimeout = undefined;
+		}
+	};
+
+	const applyFilter = (newFilter = filter) => {
+		clearSearchTimeout();
+
+		if (newFilter === currentFilter) {
+			return;
 		}
 
-		if (e.key === 'Enter') {
-			handleFilter();
-			return;
-		} else if (e.key === 'Escape') {
-			filter = '';
-			handleFilter();
+		changeQuery(
+			{ before: '', after: '', newFilter },
+			{ keepFocus: true, noScroll: true, replaceState: true }
+		);
+	};
+
+	$effect(() => {
+		clearSearchTimeout();
+
+		if (filter === currentFilter) {
 			return;
 		}
 
 		searchTimeout = setTimeout(() => {
-			handleFilter();
+			applyFilter(filter);
 		}, 1000);
+
+		return () => {
+			clearSearchTimeout();
+		};
+	});
+
+	const onFilterKeyDown = (event: KeyboardEvent) => {
+		if (event.key === 'Enter') {
+			event.preventDefault();
+			applyFilter();
+			return;
+		}
+
+		if (event.key === 'Escape' && filter !== '') {
+			event.preventDefault();
+			filter = '';
+		}
 	};
 
 	let repoName = $state('');
 
 	let inputError = $state(false);
 	const errorMessage = `Invalid input`;
+
+	const onRepositoryNameInput = () => {
+		inputError = false;
+	};
 </script>
 
 <GraphErrors errors={$Repositories.errors} />
@@ -159,6 +211,7 @@
 								id="repositoryName"
 								style="width: min(100%, 300px)"
 								bind:value={repoName}
+								oninput={onRepositoryNameInput}
 								error={inputError ? errorMessage : undefined}
 							>
 								{#snippet label()}
@@ -190,20 +243,24 @@
 						>
 					</BodyLong>
 				{:else}
-					<form class="input">
-						<TextField
+					<div class="search">
+						<Search
+							clearButton={true}
+							clearButtonLabel="Clear"
+							label="filter repositories"
+							placeholder="Filter by name"
+							hideLabel={true}
 							size="small"
-							type="text"
-							id="filter"
-							style="width: min(100%, 300px)"
+							variant="simple"
+							width="100%"
+							autocomplete="off"
 							bind:value={filter}
-							onkeyup={onKeyUp}
-						>
-							{#snippet label()}
-								Filter repositories
-							{/snippet}
-						</TextField>
-					</form>
+							onkeydown={onFilterKeyDown}
+							onclear={() => {
+								filter = '';
+							}}
+						/>
+					</div>
 
 					<div>
 						<div>
@@ -252,12 +309,12 @@
 								page={team.repositories.pageInfo}
 								loaders={{
 									loadPreviousPage: () =>
-										changeParams({
+										changeQuery({
 											after: '',
 											before: team.repositories.pageInfo.startCursor ?? ''
 										}),
 									loadNextPage: () =>
-										changeParams({ before: '', after: team.repositories.pageInfo.endCursor ?? '' })
+										changeQuery({ before: '', after: team.repositories.pageInfo.endCursor ?? '' })
 								}}
 							/>
 						</div>
@@ -286,6 +343,12 @@
 		margin: 1rem 0;
 	}
 
+	.search {
+		display: flex;
+		justify-content: flex-end;
+		margin-bottom: 1rem;
+	}
+
 	.right {
 		display: flex;
 		gap: var(--ax-space-6);
@@ -308,8 +371,18 @@
 			grid-template-columns: 1fr;
 		}
 
+		.search {
+			justify-content: stretch;
+		}
+
 		.remove-btn-full {
 			display: none;
+		}
+	}
+
+	@media (max-height: 500px) {
+		.search {
+			justify-content: stretch;
 		}
 	}
 

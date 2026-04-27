@@ -5,7 +5,7 @@ import { addPageMeta } from '$lib/utils/pageMeta';
 const rows = 25;
 
 export async function load(event) {
-	const filter = event.url.searchParams.get('filter');
+	const filter: string = event.url.searchParams.get('filter') || '';
 	const after = event.url.searchParams.get('after') || '';
 	const before = event.url.searchParams.get('before') || '';
 
