@@ -98,6 +98,8 @@
 		} = {},
 		options = {}
 	) => {
+		clearSearchTimeout();
+
 		changeParams(
 			{
 				before: params.before ?? before,
