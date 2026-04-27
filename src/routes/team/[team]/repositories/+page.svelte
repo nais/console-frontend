@@ -101,7 +101,7 @@
 			{
 				before: params.before ?? before,
 				after: params.after ?? after,
-				filter: params.newFilter ?? filter
+				filter: params.newFilter ?? currentFilter
 			},
 			options
 		);
@@ -155,6 +155,7 @@
 		if (event.key === 'Escape' && filter !== '') {
 			event.preventDefault();
 			filter = '';
+			applyFilter('');
 		}
 	};
 
@@ -258,6 +259,7 @@
 							onkeydown={onFilterKeyDown}
 							onclear={() => {
 								filter = '';
+								applyFilter('');
 							}}
 						/>
 					</div>
