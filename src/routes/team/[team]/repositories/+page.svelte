@@ -92,20 +92,10 @@
 	let searchContainer = $state<HTMLDivElement | undefined>(undefined);
 	let pendingFocusedFilter = $state<string | undefined>(undefined);
 
-	const debugSearchFocus = (message: string, details: Record<string, unknown> = {}) => {
-		if (!import.meta.env.DEV) {
-			return;
-		}
-
-		console.debug('[repositories-search-focus]', message, details);
-	};
-
 	const focusSearchField = (attemptsLeft = 4) => {
 		const input = searchContainer?.querySelector<HTMLInputElement>('input[type="search"]');
 
 		if (!input) {
-			debugSearchFocus('input missing', { attemptsLeft, currentFilter, pendingFocusedFilter });
-
 			if (attemptsLeft > 0) {
 				requestAnimationFrame(() => {
 					focusSearchField(attemptsLeft - 1);
@@ -120,16 +110,9 @@
 		input.focus();
 
 		if (document.activeElement === input) {
-			debugSearchFocus('focused input', { attemptsLeft, value: input.value });
 			pendingFocusedFilter = undefined;
 			return;
 		}
-
-		debugSearchFocus('focus not retained', {
-			attemptsLeft,
-			activeElement:
-				document.activeElement instanceof HTMLElement ? document.activeElement.tagName : null
-		});
 
 		if (attemptsLeft > 0) {
 			requestAnimationFrame(() => {
@@ -150,8 +133,6 @@
 		if (requestedFilter === undefined || appliedFilter !== requestedFilter || !container) {
 			return;
 		}
-
-		debugSearchFocus('focus armed', { requestedFilter, appliedFilter });
 
 		requestAnimationFrame(() => {
 			focusSearchField();
