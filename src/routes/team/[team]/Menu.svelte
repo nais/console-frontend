@@ -187,7 +187,7 @@
 		}
 	}
 
-	@media (max-width: 767px) {
+	@media (max-width: 767px), (max-height: 500px) {
 		.desktop-menu {
 			display: none;
 		}
