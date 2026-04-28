@@ -4,7 +4,8 @@
 	import IconLabel from './IconLabel.svelte';
 
 	const {
-		items
+		items,
+		onItemSelect
 	}: {
 		items: {
 			label: string;
@@ -12,6 +13,7 @@
 			active?: boolean;
 			count?: number;
 		}[][];
+		onItemSelect?: () => void;
 	} = $props();
 </script>
 
@@ -19,7 +21,7 @@
 	{#each items as group (group)}
 		<div class="list">
 			{#each group as { label: text, href, active, count } (href)}
-				<a {href} class:active>
+				<a {href} class:active onclick={onItemSelect}>
 					<IconLabel>
 						{#snippet label()}
 							<span class="label">

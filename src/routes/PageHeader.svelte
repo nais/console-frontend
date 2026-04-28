@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { afterNavigate } from '$app/navigation';
 	import { page } from '$app/state';
 	import { docURL, tenantURL } from '$lib/doc';
 	import SearchButton from '$lib/domain/search/SearchButton.svelte';
@@ -6,6 +7,7 @@
 	import GrafanaIcon from '$lib/icons/GrafanaIcon.svelte';
 	import { themeSwitch } from '$lib/stores/theme.svelte';
 	import HeaderActionMenuItem from '$lib/ui/HeaderActionMenuItem.svelte';
+	import MobileSideDrawer from '$lib/ui/MobileSideDrawer.svelte';
 	import { Button, Spacer } from '@nais/ds-svelte-community';
 	import {
 		ActionMenu,
@@ -40,6 +42,7 @@
 	let { user }: Props = $props();
 
 	let feedbackOpen = $state(false);
+	let mobileNavOpen = $state(false);
 
 	const navItems = [
 		{ href: '/utilization', label: 'Utilization' },
@@ -59,6 +62,10 @@
 
 		popover?.hidePopover?.();
 	}
+
+	afterNavigate(() => {
+		mobileNavOpen = false;
+	});
 </script>
 
 <InternalHeader>
@@ -77,38 +84,49 @@
 		{/each}
 	</div>
 
-	<!-- Mobile navigation menu -->
-	<ActionMenu>
-		{#snippet trigger(props)}
-			<InternalHeaderButton class="mobile-nav-trigger" aria-label="Open navigation menu" {...props}>
-				<MenuHamburgerIcon title="Navigation" />
-			</InternalHeaderButton>
-		{/snippet}
-		<ActionMenuGroup label="Navigation">
-			{#each navItems as item (item.href)}
-				<HeaderActionMenuItem
-					href={item.href}
-					active={isActive(item.href)}
-					ariaCurrent={isActive(item.href) ? 'page' : undefined}
-					onSelect={closeMenu}
+	<InternalHeaderButton
+		class="mobile-nav-trigger"
+		aria-label="Open navigation menu"
+		aria-expanded={mobileNavOpen}
+		aria-controls="mobile-navigation-drawer"
+		onclick={() => {
+			mobileNavOpen = true;
+		}}
+	>
+		<MenuHamburgerIcon title="Navigation" />
+	</InternalHeaderButton>
+	<MobileSideDrawer bind:open={mobileNavOpen} id="mobile-navigation-drawer" title="Navigation">
+		<nav class="mobile-drawer-nav" aria-label="Navigation">
+			<div class="mobile-drawer-section">
+				{#each navItems as item (item.href)}
+					<a
+						href={item.href}
+						class:active={isActive(item.href)}
+						class="mobile-drawer-link"
+						aria-current={isActive(item.href) ? 'page' : undefined}
+						onclick={() => {
+							mobileNavOpen = false;
+						}}
+					>
+						{item.label}
+					</a>
+				{/each}
+			</div>
+			<div class="mobile-drawer-section">
+				<p class="mobile-drawer-section-label">Tools</p>
+				<button
+					type="button"
+					class="mobile-drawer-link mobile-drawer-button"
+					onclick={() => {
+						mobileNavOpen = false;
+						feedbackOpen = true;
+					}}
 				>
-					{item.label}
-				</HeaderActionMenuItem>
-			{/each}
-		</ActionMenuGroup>
-		<ActionMenuDivider />
-		<ActionMenuGroup label="Tools">
-			<HeaderActionMenuItem
-				icon={ChatElipsisIcon}
-				onSelect={(event) => {
-					closeMenu(event);
-					feedbackOpen = true;
-				}}
-			>
-				Feedback
-			</HeaderActionMenuItem>
-		</ActionMenuGroup>
-	</ActionMenu>
+					Feedback
+				</button>
+			</div>
+		</nav>
+	</MobileSideDrawer>
 
 	<Spacer />
 	<div class="feedback-button-wrapper">
@@ -214,6 +232,65 @@
 	/* Mobile nav trigger is hidden on desktop by default */
 	:global(.mobile-nav-trigger) {
 		display: none;
+	}
+
+	.mobile-drawer-nav {
+		display: flex;
+		flex-direction: column;
+		gap: var(--ax-space-20);
+	}
+
+	.mobile-drawer-section {
+		display: flex;
+		flex-direction: column;
+		gap: var(--ax-space-4);
+	}
+
+	.mobile-drawer-section-label {
+		margin: 0;
+		padding: 0 var(--ax-space-8);
+		color: var(--ax-text-neutral-subtle);
+		font-size: var(--ax-font-size-small);
+		font-weight: var(--ax-font-weight-bold);
+	}
+
+	.mobile-drawer-link {
+		display: flex;
+		align-items: center;
+		width: 100%;
+		min-height: 44px;
+		padding: var(--ax-space-8);
+		border: none;
+		border-radius: 4px;
+		background: transparent;
+		color: inherit;
+		font: inherit;
+		font-weight: var(--ax-font-weight-bold);
+		text-align: left;
+		text-decoration: none;
+		transition: background-color 50ms;
+		cursor: pointer;
+
+		&:focus-visible,
+		&:hover {
+			background-color: color-mix(in oklab, var(--active-color) 60%, transparent);
+			box-shadow: none;
+			color: inherit;
+		}
+
+		&:active {
+			background-color: var(--active-color-strong);
+			box-shadow: none;
+			color: inherit;
+		}
+
+		&.active {
+			background-color: var(--active-color);
+		}
+	}
+
+	.mobile-drawer-button {
+		appearance: none;
 	}
 
 	/* Mobile responsive behavior */

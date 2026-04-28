@@ -1,9 +1,13 @@
 <script lang="ts">
+	import { afterNavigate } from '$app/navigation';
 	import { page } from '$app/state';
 	import { graphql } from '$houdini';
 	import { menuItems } from '$lib/menuItems';
+	import Icon from '$lib/ui/Icon.svelte';
+	import IconLabel from '$lib/ui/IconLabel.svelte';
 	import Menu from '$lib/ui/Menu.svelte';
-	import { setInventoryRefetcher } from './teamContext.svelte';
+	import MobileSideDrawer from '$lib/ui/MobileSideDrawer.svelte';
+	import { getTeamContext, setInventoryRefetcher } from './teamContext.svelte';
 
 	const {
 		member,
@@ -90,61 +94,101 @@
 		})
 	);
 
-	let mobileMenuOpen = $state(false);
+	const teamContext = getTeamContext();
+	const overviewItem = $derived(items[0]?.[0]);
+	const navigationItems = $derived(overviewItem ? items.slice(1) : items);
 
 	const activeLabel = $derived(
 		items.flat().find((item) => item.active)?.label ?? 'Team navigation'
 	);
 
-	$effect(() => {
-		const pathname = page.url.pathname;
-		if (pathname) {
-			mobileMenuOpen = false;
-		}
+	afterNavigate(() => {
+		teamContext.closeMobileMenu();
 	});
 </script>
 
 <nav class="team-menu" aria-label="Team menu">
-	<button
-		type="button"
-		class="mobile-menu-toggle"
-		onclick={() => (mobileMenuOpen = !mobileMenuOpen)}
-		aria-expanded={mobileMenuOpen}
-		aria-controls="team-menu-items"
-	>
-		{activeLabel}
-	</button>
-	<div id="team-menu-items" class:mobile-hidden={!mobileMenuOpen}>
+	<div class="desktop-menu">
 		<Menu {items} />
 	</div>
+	{#if overviewItem}
+		<MobileSideDrawer bind:open={teamContext.mobileMenuOpen} id="team-menu-items">
+			{#snippet headerContent()}
+				<a
+					href={overviewItem.href}
+					class="overview-link"
+					class:active={overviewItem.active}
+					onclick={() => teamContext.closeMobileMenu()}
+				>
+					<IconLabel>
+						{#snippet label()}
+							<span class="label">{overviewItem.label}</span>
+						{/snippet}
+						{#snippet icon()}
+							<span class="icon"><Icon icon={overviewItem.label} /></span>
+						{/snippet}
+					</IconLabel>
+				</a>
+			{/snippet}
+			<Menu items={navigationItems} onItemSelect={() => teamContext.closeMobileMenu()} />
+		</MobileSideDrawer>
+	{:else}
+		<MobileSideDrawer
+			bind:open={teamContext.mobileMenuOpen}
+			id="team-menu-items"
+			title={activeLabel}
+		>
+			<Menu {items} onItemSelect={() => teamContext.closeMobileMenu()} />
+		</MobileSideDrawer>
+	{/if}
 </nav>
 
 <style>
-	.mobile-menu-toggle {
-		display: none;
+	.desktop-menu {
+		display: block;
 	}
 
-	@media (max-width: 767px) {
-		.team-menu {
-			display: flex;
-			flex-direction: column;
-			gap: var(--ax-space-8);
+	.overview-link {
+		display: block;
+		min-width: 0;
+		border-radius: 4px;
+		padding: var(--ax-space-4) var(--ax-space-8);
+		text-decoration: none;
+		color: inherit;
+		transition: background-color 50ms;
+
+		&:focus-visible,
+		&:hover {
+			background-color: color-mix(in oklab, var(--active-color) 60%, transparent);
+			box-shadow: none;
+			color: inherit;
 		}
 
-		.mobile-menu-toggle {
-			display: block;
-			width: 100%;
-			text-align: left;
-			padding: var(--ax-space-8) var(--ax-space-12);
-			border: 1px solid var(--ax-border-neutral-subtleA);
-			border-radius: 6px;
-			background: var(--ax-bg-raised);
-			color: var(--ax-text-neutral);
-			font-size: var(--ax-font-size-medium);
-			font-weight: var(--ax-font-weight-bold);
+		&:active {
+			background-color: var(--active-color-strong);
+			box-shadow: none;
+			color: inherit;
 		}
 
-		.mobile-hidden {
+		&.active {
+			background-color: var(--active-color);
+		}
+
+		&.active .icon {
+			color: var(--ax-text-subtle);
+		}
+
+		&:not(.active) .icon {
+			color: var(--ax-text-subtle);
+		}
+
+		.icon {
+			display: contents;
+		}
+	}
+
+	@media (max-width: 767px), (max-height: 500px) {
+		.desktop-menu {
 			display: none;
 		}
 	}
