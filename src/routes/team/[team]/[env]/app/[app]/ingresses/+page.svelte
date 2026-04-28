@@ -1,7 +1,9 @@
 <script lang="ts">
 	import { page } from '$app/state';
 	import LegendWrapper, { legendSnippet } from '$lib/chart/LegendWrapper.svelte';
+	import { apmURL } from '$lib/doc';
 	import WarningIcon from '$lib/icons/WarningIcon.svelte';
+	import ExternalLink from '$lib/ui/ExternalLink.svelte';
 	import GraphErrors from '$lib/ui/GraphErrors.svelte';
 	import IconLabel from '$lib/ui/IconLabel.svelte';
 	import TooltipAlignHack from '$lib/ui/TooltipAlignHack.svelte';
@@ -95,6 +97,9 @@
 		</div>
 	{:else if $IngressMetrics.data?.team.environment.application.ingresses && $IngressMetrics.data.team.environment.application.ingresses.length > 0}
 		<div class="controls">
+			<ExternalLink href={apmURL(page.params.team!, page.params.app!, 'server')}
+				>View full metrics in APM</ExternalLink
+			>
 			<ToggleGroup
 				value={interval}
 				onchange={(interval) => changeParams({ interval }, { noScroll: true })}
@@ -170,7 +175,10 @@
 
 	.controls {
 		display: flex;
-		justify-content: flex-end;
+		justify-content: space-between;
+		align-items: center;
+		flex-wrap: wrap;
+		gap: var(--ax-space-8);
 	}
 
 	.section {

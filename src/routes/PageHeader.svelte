@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { afterNavigate } from '$app/navigation';
 	import { page } from '$app/state';
-	import { docURL, tenantURL } from '$lib/doc';
+	import { apmServicesURL, docURL, tenantURL } from '$lib/doc';
 	import SearchButton from '$lib/domain/search/SearchButton.svelte';
 	import Feedback from '$lib/feedback/Feedback.svelte';
 	import GrafanaIcon from '$lib/icons/GrafanaIcon.svelte';
@@ -25,6 +25,7 @@
 		CogIcon,
 		ExternalLinkIcon,
 		LeaveIcon,
+		LineGraphIcon,
 		MenuGridIcon,
 		MenuHamburgerIcon
 	} from '@nais/ds-svelte-community/icons';
@@ -160,6 +161,15 @@
 				onSelect={closeMenu}
 			>
 				Docs <ExternalLinkIcon />
+			</HeaderActionMenuItem>
+			<HeaderActionMenuItem
+				href={apmServicesURL()}
+				target="_blank"
+				rel="noopener noreferrer"
+				icon={LineGraphIcon}
+				onSelect={closeMenu}
+			>
+				APM <ExternalLinkIcon />
 			</HeaderActionMenuItem>
 			<HeaderActionMenuItem
 				href={tenantURL('grafana')}

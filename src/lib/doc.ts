@@ -14,3 +14,16 @@ export const tenantURL = (host: string, path: string = '') => {
 
 	return `https://${host}.${tn}.cloud.nais.io${path}`;
 };
+
+export const apmURL = (namespace: string, service: string, tab?: string) => {
+	const params = tab ? `?tab=${tab}` : '';
+	return tenantURL('grafana', `/a/nais-apm-app/services/${namespace}/${service}${params}`);
+};
+
+export const apmNamespaceURL = (namespace: string) => {
+	return tenantURL('grafana', `/a/nais-apm-app/namespaces/${namespace}`);
+};
+
+export const apmServicesURL = () => {
+	return tenantURL('grafana', '/a/nais-apm-app/services');
+};

@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { page } from '$app/state';
 	import { graphql, JobRunState, type JobRunState$options } from '$houdini';
+	import { apmURL } from '$lib/doc';
 	import ExternalLink from '$lib/ui/ExternalLink.svelte';
 	import {
 		createBufferedLogAppender,
@@ -331,6 +332,11 @@
 						<ExternalLink href={logDestination.grafanaURL}>View logs in Grafana</ExternalLink>
 					{/if}
 				{/each}
+				<span style="padding-left: var(--ax-space-8);">
+					<ExternalLink href={apmURL(page.params.team!, page.params.job!, 'traces')}
+						>View traces in APM</ExternalLink
+					>
+				</span>
 			</div>
 		</div>
 	</div>
