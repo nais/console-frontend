@@ -63,8 +63,7 @@
 				},
 				{ label: 'Logs', href: '/team/devteam/dev/app/app-w-all-storage/logs' }
 			],
-			[{ label: 'Manifest', href: '/team/devteam/dev/app/app-w-all-storage/manifest' }],
-			[{ label: 'Delete', href: '/team/devteam/dev/app/app-w-all-storage/delete' }]
+			[{ label: 'Manifest', href: '/team/devteam/dev/app/app-w-all-storage/manifest' }]
 		]}
 	/>
 </Story>
@@ -82,8 +81,7 @@
 				{ label: 'Cost', href: '/team/devteam/dev/app/app-w-all-storage/cost' },
 				{ label: 'Logs', href: '/team/devteam/dev/app/app-w-all-storage/logs' }
 			],
-			[{ label: 'Manifest', href: '/team/devteam/dev/app/app-w-all-storage/manifest' }],
-			[{ label: 'Delete', href: '/team/devteam/dev/app/app-w-all-storage/delete' }]
+			[{ label: 'Manifest', href: '/team/devteam/dev/app/app-w-all-storage/manifest' }]
 		]}
 	/>
 </Story>

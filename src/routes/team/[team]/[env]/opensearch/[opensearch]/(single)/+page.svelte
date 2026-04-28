@@ -116,6 +116,20 @@
 					</ExternalLink>.
 				</Alert>
 			{/if}
+			{#if viewerIsMember && isManagedByConsole}
+				<div class="detail-actions">
+					<Button
+						as="a"
+						variant="danger"
+						size="small"
+						href="/team/{page.params.team}/{page.params.env}/opensearch/{page.params
+							.opensearch}/delete"
+						icon={TrashIcon}
+					>
+						Delete
+					</Button>
+				</div>
+			{/if}
 			<div class="spacing">
 				<Heading as="h2" spacing>OpenSearch Instance Access List</Heading>
 
@@ -252,20 +266,6 @@
 
 			<Manifest openSearch={instance} teamSlug={page.params.team!} />
 
-			{#if viewerIsMember && isManagedByConsole}
-				<Button
-					as="a"
-					variant="danger"
-					size="small"
-					href="/team/{page.params.team}/{page.params.env}/opensearch/{page.params
-						.opensearch}/delete"
-					icon={TrashIcon}
-					class="self-start"
-				>
-					Delete OpenSearch
-				</Button>
-			{/if}
-
 			<SidebarActivity activityLog={instance} direct={instance.activityLog} />
 		</div>
 	</div>
@@ -282,6 +282,14 @@
 
 	.content {
 		min-width: 0;
+	}
+
+	.detail-actions {
+		display: flex;
+		justify-content: flex-end;
+		margin-bottom: var(--ax-space-16);
+		gap: var(--ax-space-8);
+		flex-wrap: wrap;
 	}
 
 	.spacing {
@@ -318,6 +326,11 @@
 	@media (max-width: 767px) {
 		.wrapper {
 			grid-template-columns: 1fr;
+		}
+
+		.detail-actions :global(button),
+		.detail-actions :global(a) {
+			width: 100%;
 		}
 
 		.service-maintenance-list-heading {

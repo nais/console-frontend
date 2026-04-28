@@ -15,6 +15,7 @@
 	import Time from '$lib/ui/Time.svelte';
 	import { generateJobRunName } from '$lib/utils/jobRunName';
 	import { Alert, BodyShort, Button, Heading, Loader } from '@nais/ds-svelte-community';
+	import { TrashIcon } from '@nais/ds-svelte-community/icons';
 	import type { PageProps } from './$types';
 	import Runs from './Runs.svelte';
 	import Schedule from './Schedule.svelte';
@@ -124,6 +125,19 @@
 	<div class="wrapper">
 		<div class="job-content">
 			<div class="main-section">
+				{#if viewerIsMember}
+					<div class="detail-actions">
+						<Button
+							as="a"
+							variant="danger"
+							size="small"
+							href="/team/{page.params.team}/{page.params.env}/job/{page.params.job}/delete"
+							icon={TrashIcon}
+						>
+							Delete
+						</Button>
+					</div>
+				{/if}
 				{#if job.deletionStartedAt}
 					<Alert variant="info" size="small" fullWidth={false}>
 						This job is being deleted. Deletion started <Time
@@ -243,6 +257,13 @@
 		align-items: center;
 	}
 
+	.detail-actions {
+		display: flex;
+		justify-content: flex-end;
+		gap: var(--ax-space-8);
+		flex-wrap: wrap;
+	}
+
 	.sidebar {
 		display: flex;
 		flex-direction: column;
@@ -263,6 +284,11 @@
 
 		.workload-deploy-wrapper {
 			margin-top: 0;
+		}
+
+		.detail-actions :global(button),
+		.detail-actions :global(a) {
+			width: 100%;
 		}
 
 		.runs-header {
