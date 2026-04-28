@@ -14,7 +14,6 @@
 	import List from '$lib/ui/List.svelte';
 	import Time from '$lib/ui/Time.svelte';
 	import { generateJobRunName } from '$lib/utils/jobRunName';
-	import { sbomStatusDetails } from '$lib/utils/vulnerabilities';
 	import { Alert, BodyShort, Button, Heading, Loader } from '@nais/ds-svelte-community';
 	import { TrashIcon } from '@nais/ds-svelte-community/icons';
 	import type { PageProps } from './$types';
