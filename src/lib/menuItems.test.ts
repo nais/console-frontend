@@ -205,16 +205,15 @@ describe('menuItems', () => {
 						label: 'Manifest',
 						href: '/team/devteam/dev/app/app-w-all-storage/manifest'
 					}
-				],
-				[{ label: 'Delete', href: '/team/devteam/dev/app/app-w-all-storage/delete' }]
+				]
 			]);
 		});
 
-		test('when not member', () => {
+		test('does not include delete', () => {
 			expect(
 				menuItems({
 					path: '/team/devteam/dev/job/dataproduct-apps-topics/vulnerabilities',
-					member: false,
+					member: true,
 					isAdmin: false
 				})
 					.flatMap((g) => g)

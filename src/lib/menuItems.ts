@@ -86,8 +86,7 @@ export const menuItems = ({
 				workloadType === 'app' && menuItem('Ingresses', 'ingresses'),
 				menuItem('Logs', 'logs')
 			].filter(Boolean),
-			[menuItem('Manifest', 'manifest')],
-			member && [menuItem('Delete', 'delete')]
+			[menuItem('Manifest', 'manifest')]
 		].filter(Boolean) as { label: string; href: string; active?: boolean }[][];
 	}
 	const [, , team, page] = split;

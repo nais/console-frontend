@@ -17,7 +17,7 @@
 	import RunningIndicator from '$lib/ui/RunningIndicator.svelte';
 	import Time from '$lib/ui/Time.svelte';
 	import { Alert, Button, Heading, Loader, Tag } from '@nais/ds-svelte-community';
-	import { ArrowCirclepathIcon } from '@nais/ds-svelte-community/icons';
+	import { ArrowCirclepathIcon, TrashIcon } from '@nais/ds-svelte-community/icons';
 	import type { PageProps } from './$types';
 	import Ingresses from './Ingresses.svelte';
 
@@ -97,6 +97,19 @@
 	<div class="wrapper">
 		<div class="app-content">
 			<div class="main-section">
+				{#if viewerIsMember}
+					<div class="detail-actions">
+						<Button
+							as="a"
+							variant="danger"
+							size="small"
+							href="/team/{page.params.team}/{page.params.env}/app/{page.params.app}/delete"
+							icon={TrashIcon}
+						>
+							Delete
+						</Button>
+					</div>
+				{/if}
 				{#if app.deletionStartedAt}
 					<Alert variant="info" size="small" fullWidth={false}>
 						This application is being deleted. Deletion started <Time
@@ -225,6 +238,13 @@
 		align-items: center;
 	}
 
+	.detail-actions {
+		display: flex;
+		justify-content: flex-end;
+		gap: var(--ax-space-8);
+		flex-wrap: wrap;
+	}
+
 	.sidebar {
 		display: flex;
 		flex-direction: column;
@@ -281,6 +301,11 @@
 
 		.workload-deploy-wrapper {
 			margin-top: 0;
+		}
+
+		.detail-actions :global(button),
+		.detail-actions :global(a) {
+			width: 100%;
 		}
 
 		.instances-header {

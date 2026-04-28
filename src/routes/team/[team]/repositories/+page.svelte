@@ -334,28 +334,17 @@
 											<ExternalLink href="https://github.com/{repo.name}">{repo.name}</ExternalLink>
 											{#if viewerIsMember}
 												<div class="right">
-													<div class="remove-btn-full">
-														<Button
-															variant="danger"
-															size="xsmall"
-															onclick={() => removeRepository(repo.team.slug, repo.name)}
-															icon={TrashIcon}
-														>
-															Remove
-														</Button>
-													</div>
-													<div class="remove-btn-icon">
-														<Button
-															variant="tertiary-neutral"
-															size="xsmall"
-															onclick={() => removeRepository(repo.team.slug, repo.name)}
-															aria-label="Remove repository"
-														>
-															{#snippet icon()}
-																<TrashIcon style="color: var(--ax-text-danger-decoration);" />
-															{/snippet}
-														</Button>
-													</div>
+													<Button
+														variant="tertiary-neutral"
+														size="xsmall"
+														onclick={() => removeRepository(repo.team.slug, repo.name)}
+														aria-label="Remove repository"
+														title="Remove repository"
+													>
+														{#snippet icon()}
+															<TrashIcon style="color: var(--ax-text-danger-decoration);" />
+														{/snippet}
+													</Button>
 												</div>
 											{/if}
 										</div>
@@ -431,21 +420,11 @@
 		.search {
 			justify-content: stretch;
 		}
-
-		.remove-btn-full {
-			display: none;
-		}
 	}
 
 	@media (max-height: 500px) {
 		.search {
 			justify-content: stretch;
-		}
-	}
-
-	@media (min-width: 768px) {
-		.remove-btn-icon {
-			display: none;
 		}
 	}
 </style>
