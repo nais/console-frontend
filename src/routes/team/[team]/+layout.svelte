@@ -3,6 +3,7 @@
 	import { Alert } from '@nais/ds-svelte-community';
 	import type { LayoutProps } from './$types';
 	import Menu from './Menu.svelte';
+	import MenuTrigger from './MenuTrigger.svelte';
 	import { createTeamContext } from './teamContext.svelte';
 
 	let { data, children }: LayoutProps = $props();
@@ -32,7 +33,11 @@
 	<div class="main">
 		<Menu features={$UserInfo.data?.features} member={viewerIsMember} {teamSlug} {isAdmin} />
 		<div class="container">
-			<PageHeader />
+			<PageHeader>
+				{#snippet beforeBreadcrumbs()}
+					<MenuTrigger />
+				{/snippet}
+			</PageHeader>
 			<div>{@render children?.()}</div>
 		</div>
 	</div>
