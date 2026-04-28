@@ -45,7 +45,8 @@
 
 {#if $JobImageDetails.data}
 	{@const workload = $JobImageDetails.data.team.environment.workload}
-	{@const hasVulnerabilityData = workload.image.sbom.hasSbom && workload.image.vulnerabilitySummary}
+	{@const hasVulnerabilityData =
+		workload.image.sbom.status === 'READY' && workload.image.vulnerabilitySummary}
 	{@const imageStaleness = sbomStatusDetails({
 		status: workload.image.sbom.status,
 		sbomProcessingStartedAt: workload.image.sbom.processingStartedAt

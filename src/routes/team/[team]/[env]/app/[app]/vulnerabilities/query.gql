@@ -23,7 +23,6 @@ query ApplicationImageDetails($team: Slug!, $env: String!, $app: String!)
 					name
 					tag
 					sbom {
-						hasSbom
 						status
 						processingStartedAt
 					}

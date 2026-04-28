@@ -21,7 +21,6 @@ query JobImageDetails($team: Slug!, $env: String!, $job: String!) @cache(policy:
 					name
 					tag
 					sbom {
-						hasSbom
 						status
 						processingStartedAt
 					}

@@ -99,7 +99,7 @@
 	{@const imageStaleness = sbomStatusDetails({
 		status: app.image.sbom.status,
 		sbomProcessingStartedAt: app.image.sbom.processingStartedAt,
-		hasVulnerabilityData: !!(app.image.sbom.hasSbom && app.image.vulnerabilitySummary)
+		hasVulnerabilityData: !!(app.image.sbom.status === 'READY' && app.image.vulnerabilitySummary)
 	})}
 
 	<div class="wrapper">

@@ -10,7 +10,6 @@ query App($app: String!, $team: Slug!, $env: String!) {
 				}
 				image {
 					sbom {
-						hasSbom
 						status
 						processingStartedAt
 					}

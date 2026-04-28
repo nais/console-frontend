@@ -1,10 +1,10 @@
 import type {
 	ImageVulnerabilitySuppressionState$options,
-	SbomStatus$options
+	SBOMStatus$options
 } from '$houdini/graphql/enums';
-import { ImageVulnerabilitySuppressionState, SbomStatus } from '$houdini/graphql/enums';
+import { ImageVulnerabilitySuppressionState, SBOMStatus } from '$houdini/graphql/enums';
 
-export type SbomStatus = SbomStatus$options;
+export type SbomStatus = SBOMStatus$options;
 
 export type SbomStatusIndicator = 'healthy' | 'processing' | 'warning' | 'no-sbom';
 
@@ -24,17 +24,17 @@ export interface SbomStatusDetails {
 }
 
 const sbomStatusIndicators: Record<SbomStatus, SbomStatusIndicator> = {
-	[SbomStatus.READY]: 'healthy',
-	[SbomStatus.PROCESSING]: 'processing',
-	[SbomStatus.NO_SBOM]: 'no-sbom',
-	[SbomStatus.FAILED]: 'warning'
+	[SBOMStatus.READY]: 'healthy',
+	[SBOMStatus.PROCESSING]: 'processing',
+	[SBOMStatus.NO_SBOM]: 'no-sbom',
+	[SBOMStatus.FAILED]: 'warning'
 };
 
 const sbomStatusLabels: Record<SbomStatus, string> = {
-	[SbomStatus.READY]: 'SBOM up to date',
-	[SbomStatus.PROCESSING]: 'Scanning for vulnerabilities',
-	[SbomStatus.NO_SBOM]: 'No SBOM found',
-	[SbomStatus.FAILED]: 'SBOM processing failed'
+	[SBOMStatus.READY]: 'SBOM up to date',
+	[SBOMStatus.PROCESSING]: 'Scanning for vulnerabilities',
+	[SBOMStatus.NO_SBOM]: 'No SBOM found',
+	[SBOMStatus.FAILED]: 'SBOM processing failed'
 };
 
 export function formatProcessingDuration(

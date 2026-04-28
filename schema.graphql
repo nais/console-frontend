@@ -1667,7 +1667,7 @@ type ContainerImage implements ActivityLogger & Node {
   name: String!
 
   """SBOM pipeline status and processing information for this image."""
-  sbom: ContainerImageSbom!
+  sbom: ContainerImageSBOM!
 
   """Tag of the container image."""
   tag: String!
@@ -1724,12 +1724,7 @@ type ContainerImage implements ActivityLogger & Node {
 SBOM metadata for a container image, including pipeline status and processing
 information. This type is accessed through ContainerImage.sbom.
 """
-type ContainerImageSbom implements Node {
-  """
-  Whether the image has a software bill of materials (SBOM) attached to it.
-  """
-  hasSbom: Boolean!
-
+type ContainerImageSBOM implements Node {
   """The globally unique ID of the container image SBOM node."""
   id: ID!
 
@@ -1740,7 +1735,7 @@ type ContainerImageSbom implements Node {
   processingStartedAt: Time
 
   """The SBOM pipeline status."""
-  status: SbomStatus!
+  status: SBOMStatus!
 }
 
 type ContainerImageWorkloadReference {
@@ -5970,7 +5965,7 @@ type RoleRevokedUserSyncLogEntry implements Node & UserSyncLogEntry {
 }
 
 """The SBOM pipeline status for an image or workload."""
-enum SbomStatus {
+enum SBOMStatus {
   """SBOM generation failed."""
   FAILED
 
@@ -10166,23 +10161,6 @@ interface WorkloadResources {
   requests: WorkloadResourceQuantity!
 }
 
-"""
-SBOM metadata for a workload, including pipeline status and processing
-information. Accessed through WorkloadVulnerabilitySummary.
-"""
-type WorkloadSbomSummary {
-  """Whether the workload has a software bill of materials (SBOM) attached."""
-  hasSbom: Boolean!
-
-  """
-  The timestamp when SBOM processing started for this workload. Useful as a progress indicator when status is PROCESSING.
-  """
-  processingStartedAt: Time
-
-  """The SBOM pipeline status for this workload."""
-  status: SbomStatus!
-}
-
 type WorkloadUtilization {
   """Get the current usage for the requested resource type."""
   current(resourceType: UtilizationResourceType!): Float!
@@ -10240,19 +10218,19 @@ input WorkloadUtilizationSeriesInput {
   start: Time!
 }
 
+"""
+SBOM metadata for a workload, including pipeline status and processing
+information. Accessed through WorkloadVulnerabilitySummary.
+"""
 type WorkloadVulnerabilitySummary implements Node {
+  """True if the workload has a software bill of materials (SBOM) attached."""
+  hasSBOM: Boolean! @deprecated(reason: "Use workload { image { sbom { status } } } to check SBOM status.")
+
   """The globally unique ID of the workload vulnerability summary node."""
   id: ID!
 
-  """
-  SBOM metadata for this workload, including pipeline status and processing information.
-  """
-  sbom: WorkloadSbomSummary!
-
-  """
-  The vulnerability summary for the workload. Null when SBOM status is not READY (e.g. PROCESSING, NO_SBOM, FAILED).
-  """
-  summary: ImageVulnerabilitySummary
+  """The vulnerability summary for the workload."""
+  summary: ImageVulnerabilitySummary!
 
   """The workload"""
   workload: Workload!
