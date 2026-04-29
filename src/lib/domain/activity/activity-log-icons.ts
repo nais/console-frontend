@@ -35,15 +35,20 @@ import ValkeyIcon from '$lib/icons/ValkeyIcon.svelte';
  */
 export const icons: { [typename: string]: Component } = {
 	/* Applications (various operations) */
+	ApplicationCreatedActivityLogEntry: PackageIcon,
 	ApplicationDeletedActivityLogEntry: PackageIcon,
 	ApplicationRestartedActivityLogEntry: PackageIcon,
 	ApplicationScaledActivityLogEntry: PackageIcon,
+	ApplicationUpdatedActivityLogEntry: PackageIcon,
 
 	/* Deployments & jobs */
 	DeploymentActivityLogEntry: RocketIcon,
+	ServiceMaintenanceActivityLogEntry: CogIcon,
+	JobCreatedActivityLogEntry: BriefcaseClockIcon,
 	JobTriggeredActivityLogEntry: BriefcaseClockIcon,
 	JobDeletedActivityLogEntry: BriefcaseClockIcon,
 	JobRunDeletedActivityLogEntry: BriefcaseClockIcon,
+	JobUpdatedActivityLogEntry: BriefcaseClockIcon,
 
 	/* Credentials */
 	CredentialsActivityLogEntry: PadlockLockedIcon,
@@ -60,6 +65,7 @@ export const icons: { [typename: string]: Component } = {
 	ConfigCreatedActivityLogEntry: FileTextIcon,
 	ConfigDeletedActivityLogEntry: FileTextIcon,
 	ConfigUpdatedActivityLogEntry: FileTextIcon,
+	GenericKubernetesResourceActivityLogEntry: TerminalIcon,
 
 	/* Repositories */
 	RepositoryAddedActivityLogEntry: BranchingIcon,
@@ -77,6 +83,7 @@ export const icons: { [typename: string]: Component } = {
 
 	/* Unleash */
 	UnleashInstanceCreatedActivityLogEntry: UnleashIcon,
+	UnleashInstanceDeletedActivityLogEntry: UnleashIcon,
 	UnleashInstanceUpdatedActivityLogEntry: UnleashIcon,
 
 	/* Stores */

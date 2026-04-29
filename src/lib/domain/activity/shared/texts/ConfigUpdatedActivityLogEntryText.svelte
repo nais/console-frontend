@@ -1,21 +1,19 @@
 <script lang="ts">
-	import type { SidebarActivityLogFragment$data } from '$houdini';
 	import Time from '$lib/ui/Time.svelte';
 	import { BodyShort } from '@nais/ds-svelte-community';
+	import type { ActivityLogEntry } from './types';
 
 	let {
 		data
 	}: {
-		data: Extract<
-			SidebarActivityLogFragment$data['activityLog']['nodes'][number],
-			{ __typename: 'ConfigUpdatedActivityLogEntry' }
-		>;
+		data: ActivityLogEntry<'ConfigUpdatedActivityLogEntry'>;
 	} = $props();
 
 	const formatFieldName = (field: string): string => {
 		if (field.startsWith('value ')) {
 			return 'key ' + field.slice('value '.length);
 		}
+
 		return field;
 	};
 </script>
@@ -25,8 +23,8 @@
 	{#if data.environmentName}
 		in {data.environmentName}
 	{/if}.
-	{#if data.configUpdatedData.updatedFields.length > 0}
-		{#each data.configUpdatedData.updatedFields as field (field)}
+	{#if data.configUpdated?.updatedFields.length}
+		{#each data.configUpdated.updatedFields as field (field.field)}
 			<strong>{formatFieldName(field.field)}</strong>
 			{#if field.oldValue != null && field.newValue != null}
 				changed from <i>{field.oldValue}</i> to <i>{field.newValue}</i>.

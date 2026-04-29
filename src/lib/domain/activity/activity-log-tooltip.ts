@@ -5,15 +5,21 @@
  */
 export function activityTooltip(typename: string): string {
 	switch (typename) {
+		case 'ApplicationCreatedActivityLogEntry':
 		case 'ApplicationDeletedActivityLogEntry':
 		case 'ApplicationRestartedActivityLogEntry':
 		case 'ApplicationScaledActivityLogEntry':
+		case 'ApplicationUpdatedActivityLogEntry':
 			return 'Application';
 		case 'DeploymentActivityLogEntry':
 			return 'Deployment';
+		case 'ServiceMaintenanceActivityLogEntry':
+			return 'Maintenance';
+		case 'JobCreatedActivityLogEntry':
 		case 'JobTriggeredActivityLogEntry':
 		case 'JobDeletedActivityLogEntry':
 		case 'JobRunDeletedActivityLogEntry':
+		case 'JobUpdatedActivityLogEntry':
 			return 'Job';
 		case 'SecretCreatedActivityLogEntry':
 		case 'SecretDeletedActivityLogEntry':
@@ -28,14 +34,19 @@ export function activityTooltip(typename: string): string {
 		case 'TeamMemberAddedActivityLogEntry':
 		case 'TeamMemberRemovedActivityLogEntry':
 		case 'TeamMemberSetRoleActivityLogEntry':
+		case 'TeamConfirmDeleteKeyActivityLogEntry':
+		case 'TeamCreateDeleteKeyActivityLogEntry':
 		case 'TeamCreatedActivityLogEntry':
 		case 'TeamUpdatedActivityLogEntry':
 		case 'TeamEnvironmentUpdatedActivityLogEntry':
 		case 'TeamDeployKeyUpdatedActivityLogEntry':
 			return 'Team';
 		case 'UnleashInstanceCreatedActivityLogEntry':
+		case 'UnleashInstanceDeletedActivityLogEntry':
 		case 'UnleashInstanceUpdatedActivityLogEntry':
 			return 'Unleash';
+		case 'GenericKubernetesResourceActivityLogEntry':
+			return 'Kubernetes resource';
 		case 'OpenSearchCreatedActivityLogEntry':
 		case 'OpenSearchDeletedActivityLogEntry':
 		case 'OpenSearchUpdatedActivityLogEntry':
