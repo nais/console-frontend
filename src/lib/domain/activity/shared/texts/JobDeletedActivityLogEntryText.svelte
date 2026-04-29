@@ -1,7 +1,7 @@
 <script lang="ts">
 	import Time from '$lib/ui/Time.svelte';
-	import type { ActivityLogEntry } from './types';
 	import { BodyShort } from '@nais/ds-svelte-community';
+	import type { ActivityLogEntry } from './types';
 
 	let {
 		data
