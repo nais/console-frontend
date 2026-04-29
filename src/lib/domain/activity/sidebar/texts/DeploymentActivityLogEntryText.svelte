@@ -20,7 +20,7 @@
 </script>
 
 <div>
-	{#if triggerURL}
+	{#if triggerURL && data.environmentName}
 		<a
 			href="/team/{data.teamSlug}/{data.environmentName}/{workloadType}/{data.resourceName}/deploys?deployId={id}"
 			>Deployed</a

@@ -16,7 +16,9 @@
 
 <div>
 	{capitalizeFirstLetter(data.message.toLowerCase())}
-	in {data.environmentName}
+	{#if data.environmentName}
+		in {data.environmentName}
+	{/if}
 
 	<BodyShort textColor="subtle" size="small">
 		By {data.actor}
