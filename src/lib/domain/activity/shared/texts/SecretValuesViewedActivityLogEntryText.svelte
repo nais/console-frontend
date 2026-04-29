@@ -13,14 +13,18 @@
 
 <div>
 	Viewed secret values for
-	<a
-		href={activityLogResourceLink(
-			data.environmentName ?? '',
-			data.resourceType,
-			data.resourceName,
-			data.teamSlug
-		)}>{data.resourceName}</a
-	>
+	{#if data.environmentName}
+		<a
+			href={activityLogResourceLink(
+				data.environmentName,
+				data.resourceType,
+				data.resourceName,
+				data.teamSlug
+			)}>{data.resourceName}</a
+		>
+	{:else}
+		{data.resourceName}
+	{/if}
 	{#if data.secretValuesViewed?.reason}
 		<BodyShort size="small"><em>Reason: {data.secretValuesViewed.reason}</em></BodyShort>
 	{/if}

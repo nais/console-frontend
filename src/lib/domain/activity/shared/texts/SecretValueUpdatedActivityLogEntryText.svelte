@@ -13,14 +13,18 @@
 
 <div>
 	Value <strong>{data.secretValueUpdated.valueName}</strong> in secret
-	<a
-		href={activityLogResourceLink(
-			data.environmentName ?? '',
-			data.resourceType,
-			data.resourceName,
-			data.teamSlug
-		)}>{data.resourceName}</a
-	>
+	{#if data.environmentName}
+		<a
+			href={activityLogResourceLink(
+				data.environmentName,
+				data.resourceType,
+				data.resourceName,
+				data.teamSlug
+			)}>{data.resourceName}</a
+		>
+	{:else}
+		{data.resourceName}
+	{/if}
 	was updated
 	<BodyShort textColor="subtle" size="small">
 		By {data.actor}

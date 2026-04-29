@@ -12,14 +12,19 @@
 </script>
 
 <div>
-	Application <a
-		href={activityLogResourceLink(
-			data.environmentName ?? '',
-			data.resourceType,
-			data.resourceName,
-			data.teamSlug
-		)}>{data.resourceName}</a
-	>
+	Application
+	{#if data.environmentName}
+		<a
+			href={activityLogResourceLink(
+				data.environmentName,
+				data.resourceType,
+				data.resourceName,
+				data.teamSlug
+			)}>{data.resourceName}</a
+		>
+	{:else}
+		{data.resourceName}
+	{/if}
 	scaled {data.appScaled.direction} to {data.appScaled.newSize} instances
 	{#if data.environmentName}
 		in {data.environmentName}

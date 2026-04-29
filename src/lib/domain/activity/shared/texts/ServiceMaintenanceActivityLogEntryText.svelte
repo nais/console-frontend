@@ -11,12 +11,14 @@
 	} = $props();
 
 	const link = $derived(
-		activityLogResourceLink(
-			data.environmentName ?? '',
-			data.resourceType,
-			data.resourceName,
-			data.teamSlug
-		)
+		data.environmentName
+			? activityLogResourceLink(
+					data.environmentName,
+					data.resourceType,
+					data.resourceName,
+					data.teamSlug
+				)
+			: null
 	);
 
 	const properServiceName = (t: string) =>
@@ -25,7 +27,11 @@
 
 <div>
 	Started maintenance on {properServiceName(data.resourceType)}
-	<a href={link}><strong>{data.resourceName}</strong></a>
+	{#if link}
+		<a href={link}><strong>{data.resourceName}</strong></a>
+	{:else}
+		<strong>{data.resourceName}</strong>
+	{/if}
 
 	{#if data.environmentName}
 		in {data.environmentName}
