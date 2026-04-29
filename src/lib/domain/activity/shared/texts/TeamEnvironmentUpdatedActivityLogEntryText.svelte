@@ -11,16 +11,15 @@
 </script>
 
 <div>
-	{data.message}.
+	{data.message}
+	{#if data.environmentName}
+		in {data.environmentName}
+	{/if}.
 	{#if data.teamEnvironmentUpdated.updatedFields.length > 0}
 		{#each data.teamEnvironmentUpdated.updatedFields as field (field)}
 			<strong>{field.field}</strong>: Changed from <i>{field.oldValue}</i> to
 			<i>{field.newValue}</i>.
 		{/each}
-	{/if}
-
-	{#if data.environmentName}
-		in {data.environmentName}
 	{/if}
 
 	<BodyShort textColor="subtle" size="small">

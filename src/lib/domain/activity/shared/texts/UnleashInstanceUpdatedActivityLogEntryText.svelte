@@ -15,15 +15,20 @@
 <div>
 	{data.message}
 	{#if u.allowedTeamSlug}
-		Allowed <a href="/team/{u.allowedTeamSlug}">{u.allowedTeamSlug}</a> to access the instance.
+		Allowed <a href="/team/{u.allowedTeamSlug}">{u.allowedTeamSlug}</a> to access the instance
+		{#if data.environmentName}
+			in {data.environmentName}
+		{/if}.
 	{:else if u.revokedTeamSlug}
-		Revoked access for <a href="/team/{u.revokedTeamSlug}">{u.revokedTeamSlug}</a> to the instance.
+		Revoked access for <a href="/team/{u.revokedTeamSlug}">{u.revokedTeamSlug}</a> to the instance
+		{#if data.environmentName}
+			in {data.environmentName}
+		{/if}.
 	{:else if u.updatedReleaseChannel}
-		Changed release channel to <strong>{u.updatedReleaseChannel}</strong>.
-	{/if}
-
-	{#if data.environmentName}
-		in {data.environmentName}
+		Changed release channel to <strong>{u.updatedReleaseChannel}</strong>
+		{#if data.environmentName}
+			in {data.environmentName}
+		{/if}.
 	{/if}
 
 	<BodyShort textColor="subtle" size="small">
