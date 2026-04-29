@@ -1660,6 +1660,11 @@ type ContainerImage implements ActivityLogger & Node {
     last: Int
   ): ActivityLogEntryConnection!
 
+  """
+  Whether the image has a software bill of materials (SBOM) attached to it.
+  """
+  hasSBOM: Boolean! @deprecated(reason: "Use sbom { status } == READY to check if an SBOM is attached.")
+
   """The globally unique ID of the container image node."""
   id: ID!
 
@@ -1725,11 +1730,6 @@ SBOM metadata for a container image, including pipeline status and processing
 information. This type is accessed through ContainerImage.sbom.
 """
 type ContainerImageSBOM implements Node {
-  """
-  Whether the image has a software bill of materials (SBOM) attached to it.
-  """
-  hasSBOM: Boolean! @deprecated(reason: "Use status == READY to check if an SBOM is attached.")
-
   """The globally unique ID of the container image SBOM node."""
   id: ID!
 
