@@ -39,7 +39,7 @@
 		padding-top: 2px;
 	}
 
-	@media (max-width: 767px), (max-height: 500px) {
+	@media (max-width: 960px), (max-height: 500px) {
 		.hotkey {
 			display: none;
 		}

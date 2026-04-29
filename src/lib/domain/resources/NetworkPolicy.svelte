@@ -1,12 +1,12 @@
 <script lang="ts">
 	import { fragment, graphql, type NetworkPolicy, type NetworkPolicy$data } from '$houdini';
+	import WorkloadLink from '$lib/domain/workload/WorkloadLink.svelte';
 	import { envTagVariant } from '$lib/envTagVariant';
 	import WarningIcon from '$lib/icons/WarningIcon.svelte';
-	import { Heading, Tag } from '@nais/ds-svelte-community';
-	import { GlobeIcon } from '@nais/ds-svelte-community/icons';
 	import IconLabel from '$lib/ui/IconLabel.svelte';
 	import TooltipAlignHack from '$lib/ui/TooltipAlignHack.svelte';
-	import WorkloadLink from '$lib/domain/workload/WorkloadLink.svelte';
+	import { Heading, Tag } from '@nais/ds-svelte-community';
+	import { GlobeIcon } from '@nais/ds-svelte-community/icons';
 
 	interface Props {
 		workload: NetworkPolicy;
@@ -171,6 +171,7 @@
 		display: grid;
 		grid-template-columns: 1fr 1fr;
 		gap: 2rem;
+		min-width: 0;
 	}
 
 	ul {
@@ -180,5 +181,21 @@
 		display: flex;
 		flex-direction: column;
 		gap: var(--ax-space-4);
+		min-width: 0;
+	}
+
+	li {
+		min-width: 0;
+	}
+
+	li :global(*) {
+		min-width: 0;
+	}
+
+	@media (max-width: 767px), (max-height: 500px) {
+		.grid {
+			grid-template-columns: 1fr;
+			gap: var(--ax-space-24);
+		}
 	}
 </style>
