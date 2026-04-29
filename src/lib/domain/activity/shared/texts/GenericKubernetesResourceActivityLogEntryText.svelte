@@ -23,7 +23,15 @@
 						<code>{field.field}</code>:
 					</dt>
 					<dd>
-						<code>{field.oldValue}</code> -> <code>{field.newValue}</code>
+						{#if field.oldValue != null && field.newValue != null}
+							<code>{field.oldValue}</code> -> <code>{field.newValue}</code>
+						{:else if field.oldValue == null && field.newValue != null}
+							set to <code>{field.newValue}</code>
+						{:else if field.oldValue != null && field.newValue == null}
+							removed (was <code>{field.oldValue}</code>)
+						{:else}
+							changed
+						{/if}
 					</dd>
 				{/each}
 			</dl>

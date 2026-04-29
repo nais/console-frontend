@@ -29,18 +29,28 @@
 	{#if data.environmentName}
 		in {data.environmentName}
 	{/if}.
-	<ReadMore header="Updated fields">
-		<dl>
-			{#each data.jobUpdated.changedFields as field (field.field)}
-				<dt>
-					<code>{field.field}</code>:
-				</dt>
-				<dd>
-					<code>{field.oldValue}</code> -> <code>{field.newValue}</code>
-				</dd>
-			{/each}
-		</dl>
-	</ReadMore>
+	{#if data.jobUpdated.changedFields.length > 0}
+		<ReadMore header="Updated fields">
+			<dl>
+				{#each data.jobUpdated.changedFields as field (field.field)}
+					<dt>
+						<code>{field.field}</code>:
+					</dt>
+					<dd>
+						{#if field.oldValue != null && field.newValue != null}
+							<code>{field.oldValue}</code> -> <code>{field.newValue}</code>
+						{:else if field.oldValue == null && field.newValue != null}
+							set to <code>{field.newValue}</code>
+						{:else if field.oldValue != null && field.newValue == null}
+							removed (was <code>{field.oldValue}</code>)
+						{:else}
+							changed
+						{/if}
+					</dd>
+				{/each}
+			</dl>
+		</ReadMore>
+	{/if}
 
 	<BodyShort textColor="subtle" size="small">
 		By {data.actor}

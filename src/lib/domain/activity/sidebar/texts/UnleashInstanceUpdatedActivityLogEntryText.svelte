@@ -29,6 +29,8 @@
 		Changed release channel to <strong
 			>{data.unleashInstanceUpdatedData.updatedReleaseChannel}</strong
 		>.
+	{:else}
+		.
 	{/if}
 	<BodyShort textColor="subtle" size="small">
 		By {data.actor}
