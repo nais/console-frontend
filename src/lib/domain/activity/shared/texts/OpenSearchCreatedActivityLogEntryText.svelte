@@ -1,8 +1,7 @@
 <script lang="ts">
 	import { resourceTypeToText } from '$lib/domain/activity/sidebar/texts/utils';
-	import { envTagVariant } from '$lib/envTagVariant';
 	import Time from '$lib/ui/Time.svelte';
-	import { BodyShort, Tag } from '@nais/ds-svelte-community';
+	import { BodyShort } from '@nais/ds-svelte-community';
 	import { activityLogResourceLink } from '../../utils';
 	import type { ActivityLogEntry } from './types';
 
@@ -25,7 +24,7 @@
 	>
 	created
 	{#if data.environmentName}
-		in <Tag size="small" variant={envTagVariant(data.environmentName)}>{data.environmentName}</Tag>
+		in {data.environmentName}
 	{/if}.
 
 	<BodyShort textColor="subtle" size="small">
