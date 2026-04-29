@@ -55,7 +55,7 @@
 		grid-template-columns: 202px 1fr;
 	}
 
-	@media (max-width: 768px) {
+	@media (max-width: 768px), (max-height: 500px) {
 		.main {
 			grid-template-columns: 1fr;
 		}
