@@ -41,7 +41,7 @@
 	});
 </script>
 
-<div style="display: flex; align-items: center; gap: var(--ax-space-8);">
+<div class="issue-label">
 	<TooltipAlignHack
 		content={{
 			TODO: 'Todo',
@@ -73,6 +73,35 @@
 </div>
 
 <style>
+	.issue-label {
+		display: flex;
+		align-items: center;
+		gap: var(--ax-space-8);
+		min-width: 0;
+		max-width: 100%;
+	}
+
+	.issue-label :global(.icon-label) {
+		min-width: 0;
+		max-width: 100%;
+	}
+
+	.issue-label :global(.icon-label .content),
+	.issue-label :global(.icon-label .desc) {
+		min-width: 0;
+	}
+
+	.issue-label :global(.icon-label .desc) {
+		flex-wrap: wrap;
+	}
+
+	.issue-label :global(.aksel-detail),
+	.issue-label :global(.aksel-body-short),
+	.issue-label :global(.aksel-heading) {
+		overflow-wrap: anywhere;
+		word-break: break-word;
+	}
+
 	@media (prefers-reduced-motion: reduce) {
 	}
 </style>

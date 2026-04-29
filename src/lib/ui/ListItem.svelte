@@ -22,9 +22,16 @@
 		grid-auto-flow: column;
 		align-items: center;
 		column-gap: var(--ax-space-16);
+		min-width: 0;
+		max-width: 100%;
 		padding: var(--ax-space-16) var(--ax-space-24);
 		color: inherit;
 		text-decoration: none;
+	}
+
+	.list-item > :global(*) {
+		min-width: 0;
+		max-width: 100%;
 	}
 
 	@media (max-width: 767px), (max-height: 500px) {

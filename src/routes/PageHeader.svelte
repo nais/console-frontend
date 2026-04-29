@@ -8,7 +8,7 @@
 	import { themeSwitch } from '$lib/stores/theme.svelte';
 	import HeaderActionMenuItem from '$lib/ui/HeaderActionMenuItem.svelte';
 	import MobileSideDrawer from '$lib/ui/MobileSideDrawer.svelte';
-	import { Button, Spacer } from '@nais/ds-svelte-community';
+	import { Button } from '@nais/ds-svelte-community';
 	import {
 		ActionMenu,
 		ActionMenuCheckboxItem,
@@ -129,17 +129,18 @@
 		</nav>
 	</MobileSideDrawer>
 
-	<Spacer />
+	<div class="header-spacer" aria-hidden="true"></div>
 	<div class="feedback-button-wrapper">
 		<Button
 			variant="tertiary-neutral"
 			icon={ChatElipsisIcon}
 			size="small"
+			aria-label="Feedback"
 			onclick={() => {
 				feedbackOpen = true;
 			}}
 		>
-			<span style="font-weight: 400">Feedback</span>
+			<span class="feedback-button-label">Feedback</span>
 		</Button>
 	</div>
 	{#if feedbackOpen}
@@ -233,10 +234,19 @@
 		padding: 0 1rem;
 	}
 
+	.feedback-button-label {
+		font-weight: 400;
+	}
+
 	/* Desktop navigation */
 	.desktop-nav {
 		display: flex;
 		gap: 0;
+	}
+
+	.header-spacer {
+		flex: 1 1 auto;
+		min-width: 0;
 	}
 
 	/* Mobile nav trigger is hidden on desktop by default */
@@ -303,8 +313,45 @@
 		appearance: none;
 	}
 
+	@media (max-width: 960px) {
+		.logo {
+			gap: 0.75rem;
+			font-size: 1.25rem;
+		}
+
+		.feedback-button-wrapper {
+			padding: 0 var(--ax-space-8);
+		}
+
+		.feedback-button-label {
+			display: none;
+		}
+
+		.desktop-nav :global(.aksel-internalheader__button) {
+			padding-inline: var(--ax-space-8);
+		}
+
+		:global(.aksel-internalheader__user-button) {
+			min-width: 0;
+			max-width: 12rem;
+			padding-inline: var(--ax-space-12);
+			gap: var(--ax-space-8);
+		}
+
+		:global(.aksel-internalheader__user-button > div) {
+			min-width: 0;
+			overflow: hidden;
+		}
+
+		:global(.aksel-internalheader__user-button > div > *) {
+			overflow: hidden;
+			text-overflow: ellipsis;
+			white-space: nowrap;
+		}
+	}
+
 	/* Mobile responsive behavior */
-	@media (max-width: 767px) {
+	@media (max-width: 768px) {
 		.logo {
 			gap: 0.5rem;
 			font-size: 1rem;
