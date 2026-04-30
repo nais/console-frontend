@@ -10,25 +10,19 @@
 	} = $props();
 
 	const u = $derived(data.unleashInstanceUpdated);
+	const environmentSuffix = $derived(data.environmentName ? ` in ${data.environmentName}` : '');
 </script>
 
 <div>
 	{data.message}
 	{#if u.allowedTeamSlug}
-		Allowed <a href="/team/{u.allowedTeamSlug}">{u.allowedTeamSlug}</a> to access the instance
-		{#if data.environmentName}
-			in {data.environmentName}
-		{/if}.
+		Allowed <a href="/team/{u.allowedTeamSlug}">{u.allowedTeamSlug}</a> to access the instance{environmentSuffix}.
 	{:else if u.revokedTeamSlug}
-		Revoked access for <a href="/team/{u.revokedTeamSlug}">{u.revokedTeamSlug}</a> to the instance
-		{#if data.environmentName}
-			in {data.environmentName}
-		{/if}.
+		Revoked access for <a href="/team/{u.revokedTeamSlug}">{u.revokedTeamSlug}</a> to the instance{environmentSuffix}.
 	{:else if u.updatedReleaseChannel}
-		Changed release channel to <strong>{u.updatedReleaseChannel}</strong>
-		{#if data.environmentName}
-			in {data.environmentName}
-		{/if}.
+		Changed release channel to <strong>{u.updatedReleaseChannel}</strong>{environmentSuffix}.
+	{:else}
+		{environmentSuffix}.
 	{/if}
 
 	<BodyShort textColor="subtle" size="small">
