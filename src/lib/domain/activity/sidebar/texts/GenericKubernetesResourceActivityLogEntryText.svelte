@@ -14,10 +14,8 @@
 </script>
 
 <div>
-	Applied {data.genericKubernetesData.kind.toLowerCase()} <strong>{data.resourceName}</strong>
-	{#if data.environmentName}
-		in {data.environmentName}
-	{/if}.
+	Applied {data.genericKubernetesData.kind.toLowerCase()}
+	<strong>{data.resourceName}</strong>{data.environmentName ? ` in ${data.environmentName}` : ''}.
 	{#if data.genericKubernetesData.changedFields.length > 0}
 		{#each data.genericKubernetesData.changedFields as field (field.field)}
 			<strong>{field.field}</strong>

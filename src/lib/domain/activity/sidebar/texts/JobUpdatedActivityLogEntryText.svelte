@@ -28,10 +28,7 @@
 	{:else}
 		{data.resourceName}
 	{/if}
-	updated
-	{#if data.environmentName}
-		in {data.environmentName}
-	{/if}.
+	updated{data.environmentName ? ` in ${data.environmentName}` : ''}.
 	{#if data.jobUpdatedData.changedFields.length > 0}
 		{#each data.jobUpdatedData.changedFields as field (field.field)}
 			<strong>{field.field}</strong>

@@ -28,10 +28,7 @@
 	{:else}
 		{data.resourceName}
 	{/if}
-	created
-	{#if data.environmentName}
-		in {data.environmentName}
-	{/if}.
+	created{data.environmentName ? ` in ${data.environmentName}` : ''}.
 	<BodyShort textColor="subtle" size="small">
 		By {data.actor}
 		<Time time={data.createdAt} distance />
