@@ -14,7 +14,7 @@
 </script>
 
 <div>
-	Updated Unleash instance <strong>{data.resourceName}</strong>
+	Updated Unleash instance <strong>{data.resourceName}</strong>.
 	{#if data.unleashInstanceUpdatedData.allowedTeamSlug}
 		Allowed <a href="/team/{data.unleashInstanceUpdatedData.allowedTeamSlug}"
 			>{data.unleashInstanceUpdatedData.allowedTeamSlug}</a
@@ -29,8 +29,6 @@
 		Changed release channel to <strong
 			>{data.unleashInstanceUpdatedData.updatedReleaseChannel}</strong
 		>.
-	{:else}
-		.
 	{/if}
 	<BodyShort textColor="subtle" size="small">
 		By {data.actor}
