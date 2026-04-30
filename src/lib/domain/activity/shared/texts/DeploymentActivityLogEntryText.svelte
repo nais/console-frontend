@@ -1,7 +1,6 @@
 <script lang="ts">
-	import { envTagVariant } from '$lib/envTagVariant';
 	import Time from '$lib/ui/Time.svelte';
-	import { BodyShort, Tag } from '@nais/ds-svelte-community';
+	import { BodyShort } from '@nais/ds-svelte-community';
 	import { activityLogResourceLink } from '../../utils';
 	import type { ActivityLogEntry } from './types';
 
@@ -18,7 +17,7 @@
 </script>
 
 <div>
-	{#if triggerURL}
+	{#if triggerURL && data.environmentName}
 		<a
 			href="/team/{data.teamSlug}/{data.environmentName}/{workloadType}/{data.resourceName}/deploys?deployId={id}"
 			>Deployed</a
@@ -26,16 +25,20 @@
 	{:else}
 		Deployed
 	{/if}
-	<a
-		href={activityLogResourceLink(
-			data.environmentName ?? '',
-			data.resourceType,
-			data.resourceName,
-			data.teamSlug
-		)}>{data.resourceName}</a
-	>
 	{#if data.environmentName}
-		in <Tag size="small" variant={envTagVariant(data.environmentName)}>{data.environmentName}</Tag>
+		<a
+			href={activityLogResourceLink(
+				data.environmentName,
+				data.resourceType,
+				data.resourceName,
+				data.teamSlug
+			)}>{data.resourceName}</a
+		>
+	{:else}
+		{data.resourceName}
+	{/if}
+	{#if data.environmentName}
+		in {data.environmentName}
 	{/if}
 
 	<BodyShort textColor="subtle" size="small">

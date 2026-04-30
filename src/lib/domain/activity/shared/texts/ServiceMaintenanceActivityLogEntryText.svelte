@@ -1,7 +1,7 @@
 <script lang="ts">
-	import { envTagVariant } from '$lib/envTagVariant';
+	import { resourceTypeToText } from '$lib/domain/activity/sidebar/texts/utils';
 	import Time from '$lib/ui/Time.svelte';
-	import { BodyShort, Tag } from '@nais/ds-svelte-community';
+	import { BodyShort } from '@nais/ds-svelte-community';
 	import { activityLogResourceLink } from '../../utils';
 	import type { ActivityLogEntry } from './types';
 
@@ -12,24 +12,27 @@
 	} = $props();
 
 	const link = $derived(
-		activityLogResourceLink(
-			data.environmentName ?? '',
-			data.resourceType,
-			data.resourceName,
-			data.teamSlug
-		)
+		data.environmentName
+			? activityLogResourceLink(
+					data.environmentName,
+					data.resourceType,
+					data.resourceName,
+					data.teamSlug
+				)
+			: null
 	);
-
-	const properServiceName = (t: string) =>
-		t === 'OPENSEARCH' ? 'OpenSearch' : t === 'VALKEY' ? 'Valkey' : 'service';
 </script>
 
 <div>
-	Started maintenance on {properServiceName(data.resourceType)}
-	<a href={link}><strong>{data.resourceName}</strong></a>
+	Started maintenance on {resourceTypeToText(data.resourceType)}
+	{#if link}
+		<a href={link}><strong>{data.resourceName}</strong></a>
+	{:else}
+		<strong>{data.resourceName}</strong>
+	{/if}
 
 	{#if data.environmentName}
-		in <Tag size="small" variant={envTagVariant(data.environmentName)}>{data.environmentName}</Tag>
+		in {data.environmentName}
 	{/if}
 
 	<BodyShort textColor="subtle" size="small">

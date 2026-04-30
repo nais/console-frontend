@@ -1,7 +1,6 @@
 <script lang="ts">
-	import { envTagVariant } from '$lib/envTagVariant';
 	import Time from '$lib/ui/Time.svelte';
-	import { BodyShort, ReadMore, Tag } from '@nais/ds-svelte-community';
+	import { BodyShort, ReadMore } from '@nais/ds-svelte-community';
 	import { resourceTypeToText } from '../../sidebar/texts/utils';
 	import { activityLogResourceLink } from '../../utils';
 	import type { ActivityLogEntry } from './types';
@@ -15,30 +14,44 @@
 
 <div>
 	{resourceTypeToText(data.resourceType)}
-	<a
-		href={activityLogResourceLink(
-			data.environmentName ?? '',
-			data.resourceType,
-			data.resourceName,
-			data.teamSlug
-		)}>{data.resourceName}</a
-	>
+	{#if data.environmentName}
+		<a
+			href={activityLogResourceLink(
+				data.environmentName,
+				data.resourceType,
+				data.resourceName,
+				data.teamSlug
+			)}>{data.resourceName}</a
+		>
+	{:else}
+		{data.resourceName}
+	{/if}
 	updated
 	{#if data.environmentName}
-		in <Tag size="small" variant={envTagVariant(data.environmentName)}>{data.environmentName}</Tag>
+		in {data.environmentName}
 	{/if}.
-	<ReadMore header="Updated fields">
-		<dl>
-			{#each data.opensearchData.updatedFields as field (field)}
-				<dt>
-					<code>{field.field}</code>:
-				</dt>
-				<dd>
-					<code>{field.oldValue}</code> -> <code>{field.newValue}</code>
-				</dd>
-			{/each}
-		</dl>
-	</ReadMore>
+	{#if data.opensearchData.updatedFields.length > 0}
+		<ReadMore header="Updated fields">
+			<dl>
+				{#each data.opensearchData.updatedFields as field (field)}
+					<dt>
+						<code>{field.field}</code>:
+					</dt>
+					<dd>
+						{#if field.oldValue != null && field.newValue != null}
+							<code>{field.oldValue}</code> -> <code>{field.newValue}</code>
+						{:else if field.oldValue == null && field.newValue != null}
+							set to <code>{field.newValue}</code>
+						{:else if field.oldValue != null && field.newValue == null}
+							removed (was <code>{field.oldValue}</code>)
+						{:else}
+							changed
+						{/if}
+					</dd>
+				{/each}
+			</dl>
+		</ReadMore>
+	{/if}
 
 	<BodyShort textColor="subtle" size="small">
 		By {data.actor}

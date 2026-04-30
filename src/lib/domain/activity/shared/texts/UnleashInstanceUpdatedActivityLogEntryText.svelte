@@ -1,7 +1,6 @@
 <script lang="ts">
-	import { envTagVariant } from '$lib/envTagVariant';
 	import Time from '$lib/ui/Time.svelte';
-	import { BodyShort, Tag } from '@nais/ds-svelte-community';
+	import { BodyShort } from '@nais/ds-svelte-community';
 	import type { ActivityLogEntry } from './types';
 
 	let {
@@ -11,20 +10,19 @@
 	} = $props();
 
 	const u = $derived(data.unleashInstanceUpdated);
+	const environmentSuffix = $derived(data.environmentName ? ` in ${data.environmentName}` : '');
 </script>
 
 <div>
 	{data.message}
 	{#if u.allowedTeamSlug}
-		Allowed <a href="/team/{u.allowedTeamSlug}">{u.allowedTeamSlug}</a> to access the instance.
+		Allowed <a href="/team/{u.allowedTeamSlug}">{u.allowedTeamSlug}</a> to access the instance{environmentSuffix}.
 	{:else if u.revokedTeamSlug}
-		Revoked access for <a href="/team/{u.revokedTeamSlug}">{u.revokedTeamSlug}</a> to the instance.
+		Revoked access for <a href="/team/{u.revokedTeamSlug}">{u.revokedTeamSlug}</a> to the instance{environmentSuffix}.
 	{:else if u.updatedReleaseChannel}
-		Changed release channel to <strong>{u.updatedReleaseChannel}</strong>.
-	{/if}
-
-	{#if data.environmentName}
-		<Tag size="small" variant={envTagVariant(data.environmentName)}>{data.environmentName}</Tag>
+		Changed release channel to <strong>{u.updatedReleaseChannel}</strong>{environmentSuffix}.
+	{:else}
+		{environmentSuffix}.
 	{/if}
 
 	<BodyShort textColor="subtle" size="small">

@@ -1,9 +1,8 @@
 <script lang="ts">
 	import type { SidebarActivityLogFragment$data } from '$houdini';
-	import { envTagVariant } from '$lib/envTagVariant';
 	import Time from '$lib/ui/Time.svelte';
 	import { capitalizeFirstLetter } from '$lib/utils/formatters';
-	import { BodyShort, Tag } from '@nais/ds-svelte-community';
+	import { BodyShort } from '@nais/ds-svelte-community';
 
 	let {
 		data
@@ -17,8 +16,9 @@
 
 <div>
 	{capitalizeFirstLetter(data.message.toLowerCase())}
-	in
-	<Tag size="small" variant={envTagVariant(data.environmentName || '')}>{data.environmentName}</Tag>
+	{#if data.environmentName}
+		in {data.environmentName}
+	{/if}
 
 	<BodyShort textColor="subtle" size="small">
 		By {data.actor}

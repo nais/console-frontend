@@ -1,8 +1,7 @@
 <script lang="ts">
-	import { envTagVariant } from '$lib/envTagVariant';
 	import Time from '$lib/ui/Time.svelte';
+	import { BodyShort } from '@nais/ds-svelte-community';
 	import type { ActivityLogEntry } from './types';
-	import { BodyShort, Tag } from '@nais/ds-svelte-community';
 
 	let {
 		data
@@ -15,7 +14,7 @@
 	Job <strong>{data.resourceName}</strong> was deleted
 
 	{#if data.environmentName}
-		in <Tag size="small" variant={envTagVariant(data.environmentName)}>{data.environmentName}</Tag>
+		in {data.environmentName}
 	{/if}
 
 	<BodyShort textColor="subtle" size="small">

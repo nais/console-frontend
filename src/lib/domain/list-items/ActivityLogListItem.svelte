@@ -8,15 +8,23 @@
 	import { activityTooltip } from '../activity/activity-log-tooltip';
 	import '../activity/activity-log.css';
 	import ApplicationDeletedActivityLogEntryText from '../activity/shared/texts/ApplicationDeletedActivityLogEntryText.svelte';
+	import ApplicationCreatedActivityLogEntryText from '../activity/shared/texts/ApplicationCreatedActivityLogEntryText.svelte';
 	import ApplicationRestartedActivityLogEntryText from '../activity/shared/texts/ApplicationRestartedActivityLogEntryText.svelte';
 	import ApplicationScaledActivityLogEntryText from '../activity/shared/texts/ApplicationScaledActivityLogEntryText.svelte';
+	import ApplicationUpdatedActivityLogEntryText from '../activity/shared/texts/ApplicationUpdatedActivityLogEntryText.svelte';
 	import ClusterAuditActivityLogEntryText from '../activity/shared/texts/ClusterAuditActivityLogEntryText.svelte';
+	import ConfigCreatedActivityLogEntryText from '../activity/shared/texts/ConfigCreatedActivityLogEntryText.svelte';
+	import ConfigDeletedActivityLogEntryText from '../activity/shared/texts/ConfigDeletedActivityLogEntryText.svelte';
+	import ConfigUpdatedActivityLogEntryText from '../activity/shared/texts/ConfigUpdatedActivityLogEntryText.svelte';
 	import CredentialsActivityLogEntryText from '../activity/shared/texts/CredentialsActivityLogEntryText.svelte';
 	import DefaultText from '../activity/shared/texts/DefaultText.svelte';
 	import DeploymentActivityLogEntryText from '../activity/shared/texts/DeploymentActivityLogEntryText.svelte';
+	import GenericKubernetesResourceActivityLogEntryText from '../activity/shared/texts/GenericKubernetesResourceActivityLogEntryText.svelte';
+	import JobCreatedActivityLogEntryText from '../activity/shared/texts/JobCreatedActivityLogEntryText.svelte';
 	import JobDeletedActivityLogEntryText from '../activity/shared/texts/JobDeletedActivityLogEntryText.svelte';
 	import JobRunDeletedActivityLogEntryText from '../activity/shared/texts/JobRunDeletedActivityLogEntryText.svelte';
 	import JobTriggeredActivityLogEntryText from '../activity/shared/texts/JobTriggeredActivityLogEntryText.svelte';
+	import JobUpdatedActivityLogEntryText from '../activity/shared/texts/JobUpdatedActivityLogEntryText.svelte';
 	import OpenSearchCreatedActivityLogEntryText from '../activity/shared/texts/OpenSearchCreatedActivityLogEntryText.svelte';
 	import OpenSearchDeletedActivityLogEntryText from '../activity/shared/texts/OpenSearchDeletedActivityLogEntryText.svelte';
 	import OpenSearchUpdatedActivityLogEntryText from '../activity/shared/texts/OpenSearchUpdatedActivityLogEntryText.svelte';
@@ -31,11 +39,17 @@
 	import SecretValueUpdatedActivityLogEntryText from '../activity/shared/texts/SecretValueUpdatedActivityLogEntryText.svelte';
 	import SecretValuesViewedActivityLogEntryText from '../activity/shared/texts/SecretValuesViewedActivityLogEntryText.svelte';
 	import ServiceMaintenanceActivityLogEntryText from '../activity/shared/texts/ServiceMaintenanceActivityLogEntryText.svelte';
+	import TeamConfirmDeleteKeyActivityLogEntryText from '../activity/shared/texts/TeamConfirmDeleteKeyActivityLogEntryText.svelte';
+	import TeamCreateDeleteKeyActivityLogEntryText from '../activity/shared/texts/TeamCreateDeleteKeyActivityLogEntryText.svelte';
+	import TeamCreatedActivityLogEntryText from '../activity/shared/texts/TeamCreatedActivityLogEntryText.svelte';
+	import TeamDeployKeyUpdatedActivityLogEntryText from '../activity/shared/texts/TeamDeployKeyUpdatedActivityLogEntryText.svelte';
 	import TeamEnvironmentUpdatedActivityLogEntryText from '../activity/shared/texts/TeamEnvironmentUpdatedActivityLogEntryText.svelte';
 	import TeamMemberAddedActivityLogEntryText from '../activity/shared/texts/TeamMemberAddedActivityLogEntryText.svelte';
 	import TeamMemberRemovedActivityLogEntryText from '../activity/shared/texts/TeamMemberRemovedActivityLogEntryText.svelte';
 	import TeamMemberSetRoleActivityLogEntryText from '../activity/shared/texts/TeamMemberSetRoleActivityLogEntryText.svelte';
 	import TeamUpdatedActivityLogEntryText from '../activity/shared/texts/TeamUpdatedActivityLogEntryText.svelte';
+	import UnleashInstanceCreatedActivityLogEntryText from '../activity/shared/texts/UnleashInstanceCreatedActivityLogEntryText.svelte';
+	import UnleashInstanceDeletedActivityLogEntryText from '../activity/shared/texts/UnleashInstanceDeletedActivityLogEntryText.svelte';
 	import UnleashInstanceUpdatedActivityLogEntryText from '../activity/shared/texts/UnleashInstanceUpdatedActivityLogEntryText.svelte';
 	import ValkeyCreatedActivityLogEntryText from '../activity/shared/texts/ValkeyCreatedActivityLogEntryText.svelte';
 	import ValkeyDeletedActivityLogEntryText from '../activity/shared/texts/ValkeyDeletedActivityLogEntryText.svelte';
@@ -66,6 +80,9 @@
 					... on ApplicationDeletedActivityLogEntry {
 						__typename
 					}
+					... on ApplicationCreatedActivityLogEntry {
+						__typename
+					}
 					... on ApplicationRestartedActivityLogEntry {
 						__typename
 					}
@@ -75,11 +92,35 @@
 							direction
 						}
 					}
+					... on ApplicationUpdatedActivityLogEntry {
+						applicationUpdated: data {
+							changedFields {
+								field
+								newValue
+								oldValue
+							}
+						}
+					}
 					... on ClusterAuditActivityLogEntry {
 						id
 						clusterAuditData: data {
 							action
 							resourceKind
+						}
+					}
+					... on ConfigCreatedActivityLogEntry {
+						__typename
+					}
+					... on ConfigDeletedActivityLogEntry {
+						__typename
+					}
+					... on ConfigUpdatedActivityLogEntry {
+						configUpdated: data {
+							updatedFields {
+								field
+								newValue
+								oldValue
+							}
 						}
 					}
 					... on CredentialsActivityLogEntry {
@@ -93,7 +134,20 @@
 							triggerURL
 						}
 					}
+					... on GenericKubernetesResourceActivityLogEntry {
+						genericKubernetesData: data {
+							kind
+							changedFields {
+								field
+								newValue
+								oldValue
+							}
+						}
+					}
 					... on JobDeletedActivityLogEntry {
+						__typename
+					}
+					... on JobCreatedActivityLogEntry {
 						__typename
 					}
 					... on JobRunDeletedActivityLogEntry {
@@ -103,6 +157,15 @@
 					}
 					... on JobTriggeredActivityLogEntry {
 						__typename
+					}
+					... on JobUpdatedActivityLogEntry {
+						jobUpdated: data {
+							changedFields {
+								field
+								newValue
+								oldValue
+							}
+						}
 					}
 					... on OpenSearchCreatedActivityLogEntry {
 						__typename
@@ -164,6 +227,18 @@
 					... on ServiceMaintenanceActivityLogEntry {
 						__typename
 					}
+					... on TeamConfirmDeleteKeyActivityLogEntry {
+						__typename
+					}
+					... on TeamCreateDeleteKeyActivityLogEntry {
+						__typename
+					}
+					... on TeamCreatedActivityLogEntry {
+						__typename
+					}
+					... on TeamDeployKeyUpdatedActivityLogEntry {
+						__typename
+					}
 					... on TeamEnvironmentUpdatedActivityLogEntry {
 						teamEnvironmentUpdated: data {
 							updatedFields {
@@ -205,6 +280,12 @@
 							revokedTeamSlug
 							updatedReleaseChannel
 						}
+					}
+					... on UnleashInstanceCreatedActivityLogEntry {
+						__typename
+					}
+					... on UnleashInstanceDeletedActivityLogEntry {
+						__typename
 					}
 					... on ValkeyCreatedActivityLogEntry {
 						__typename
@@ -248,22 +329,38 @@
 		switch (typename) {
 			case 'ApplicationDeletedActivityLogEntry':
 				return ApplicationDeletedActivityLogEntryText as Component<{ data: unknown }>;
+			case 'ApplicationCreatedActivityLogEntry':
+				return ApplicationCreatedActivityLogEntryText as Component<{ data: unknown }>;
 			case 'ApplicationRestartedActivityLogEntry':
 				return ApplicationRestartedActivityLogEntryText as Component<{ data: unknown }>;
 			case 'ApplicationScaledActivityLogEntry':
 				return ApplicationScaledActivityLogEntryText as Component<{ data: unknown }>;
+			case 'ApplicationUpdatedActivityLogEntry':
+				return ApplicationUpdatedActivityLogEntryText as Component<{ data: unknown }>;
 			case 'ClusterAuditActivityLogEntry':
 				return ClusterAuditActivityLogEntryText as Component<{ data: unknown }>;
+			case 'ConfigCreatedActivityLogEntry':
+				return ConfigCreatedActivityLogEntryText as Component<{ data: unknown }>;
+			case 'ConfigDeletedActivityLogEntry':
+				return ConfigDeletedActivityLogEntryText as Component<{ data: unknown }>;
+			case 'ConfigUpdatedActivityLogEntry':
+				return ConfigUpdatedActivityLogEntryText as Component<{ data: unknown }>;
 			case 'CredentialsActivityLogEntry':
 				return CredentialsActivityLogEntryText as Component<{ data: unknown }>;
 			case 'DeploymentActivityLogEntry':
 				return DeploymentActivityLogEntryText as Component<{ data: unknown }>;
+			case 'GenericKubernetesResourceActivityLogEntry':
+				return GenericKubernetesResourceActivityLogEntryText as Component<{ data: unknown }>;
+			case 'JobCreatedActivityLogEntry':
+				return JobCreatedActivityLogEntryText as Component<{ data: unknown }>;
 			case 'JobDeletedActivityLogEntry':
 				return JobDeletedActivityLogEntryText as Component<{ data: unknown }>;
 			case 'JobRunDeletedActivityLogEntry':
 				return JobRunDeletedActivityLogEntryText as Component<{ data: unknown }>;
 			case 'JobTriggeredActivityLogEntry':
 				return JobTriggeredActivityLogEntryText as Component<{ data: unknown }>;
+			case 'JobUpdatedActivityLogEntry':
+				return JobUpdatedActivityLogEntryText as Component<{ data: unknown }>;
 			case 'OpenSearchCreatedActivityLogEntry':
 				return OpenSearchCreatedActivityLogEntryText as Component<{ data: unknown }>;
 			case 'OpenSearchDeletedActivityLogEntry':
@@ -292,6 +389,14 @@
 				return SecretValuesViewedActivityLogEntryText as Component<{ data: unknown }>;
 			case 'ServiceMaintenanceActivityLogEntry':
 				return ServiceMaintenanceActivityLogEntryText as Component<{ data: unknown }>;
+			case 'TeamConfirmDeleteKeyActivityLogEntry':
+				return TeamConfirmDeleteKeyActivityLogEntryText as Component<{ data: unknown }>;
+			case 'TeamCreateDeleteKeyActivityLogEntry':
+				return TeamCreateDeleteKeyActivityLogEntryText as Component<{ data: unknown }>;
+			case 'TeamCreatedActivityLogEntry':
+				return TeamCreatedActivityLogEntryText as Component<{ data: unknown }>;
+			case 'TeamDeployKeyUpdatedActivityLogEntry':
+				return TeamDeployKeyUpdatedActivityLogEntryText as Component<{ data: unknown }>;
 			case 'TeamEnvironmentUpdatedActivityLogEntry':
 				return TeamEnvironmentUpdatedActivityLogEntryText as Component<{ data: unknown }>;
 			case 'TeamMemberAddedActivityLogEntry':
@@ -302,6 +407,10 @@
 				return TeamMemberSetRoleActivityLogEntryText as Component<{ data: unknown }>;
 			case 'TeamUpdatedActivityLogEntry':
 				return TeamUpdatedActivityLogEntryText as Component<{ data: unknown }>;
+			case 'UnleashInstanceCreatedActivityLogEntry':
+				return UnleashInstanceCreatedActivityLogEntryText as Component<{ data: unknown }>;
+			case 'UnleashInstanceDeletedActivityLogEntry':
+				return UnleashInstanceDeletedActivityLogEntryText as Component<{ data: unknown }>;
 			case 'UnleashInstanceUpdatedActivityLogEntry':
 				return UnleashInstanceUpdatedActivityLogEntryText as Component<{ data: unknown }>;
 			case 'ValkeyCreatedActivityLogEntry':

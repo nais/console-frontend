@@ -37,11 +37,21 @@
 			ActivityLogActivityType.APPLICATION_SCALED
 		],
 		'Cluster Audit': [ActivityLogActivityType.CLUSTER_AUDIT],
+		Config: [
+			ActivityLogActivityType.CONFIG_CREATED,
+			ActivityLogActivityType.CONFIG_DELETED,
+			ActivityLogActivityType.CONFIG_UPDATED
+		],
+		Credentials: [ActivityLogActivityType.CREDENTIALS_CREATED],
 		Deployment: [ActivityLogActivityType.DEPLOYMENT],
 		Job: [
 			ActivityLogActivityType.JOB_DELETED,
 			ActivityLogActivityType.JOB_RUN_DELETED,
 			ActivityLogActivityType.JOB_TRIGGERED
+		],
+		'Kubernetes Resource': [
+			ActivityLogActivityType.GENERIC_KUBERNETES_RESOURCE_CREATED,
+			ActivityLogActivityType.GENERIC_KUBERNETES_RESOURCE_UPDATED
 		],
 		OpenSearch: [
 			ActivityLogActivityType.OPENSEARCH_CREATED,
@@ -89,6 +99,7 @@
 		],
 		Unleash: [
 			ActivityLogActivityType.UNLEASH_INSTANCE_CREATED,
+			ActivityLogActivityType.UNLEASH_INSTANCE_DELETED,
 			ActivityLogActivityType.UNLEASH_INSTANCE_UPDATED
 		],
 		Vulnerability: [ActivityLogActivityType.VULNERABILITY_UPDATED]

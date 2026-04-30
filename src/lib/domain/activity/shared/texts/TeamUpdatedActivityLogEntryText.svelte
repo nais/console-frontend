@@ -1,8 +1,7 @@
 <script lang="ts">
-	import { envTagVariant } from '$lib/envTagVariant';
 	import Time from '$lib/ui/Time.svelte';
+	import { BodyShort } from '@nais/ds-svelte-community';
 	import type { ActivityLogEntry } from './types';
-	import { BodyShort, Tag } from '@nais/ds-svelte-community';
 
 	let {
 		data
@@ -13,14 +12,13 @@
 
 <div>
 	{data.message}
+	{#if data.environmentName}
+		in {data.environmentName}
+	{/if}.
 	{#if data.teamUpdated?.updatedFields.length}
 		{#each data.teamUpdated?.updatedFields as field (field)}
 			{field.field}. Changed from <i>{field.oldValue}</i> to <i>{field.newValue}</i>.
 		{/each}
-	{/if}
-
-	{#if data.environmentName}
-		<Tag size="small" variant={envTagVariant(data.environmentName)}>{data.environmentName}</Tag>
 	{/if}
 
 	<BodyShort textColor="subtle" size="small">
