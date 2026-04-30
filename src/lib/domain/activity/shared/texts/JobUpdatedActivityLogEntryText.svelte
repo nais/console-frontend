@@ -67,7 +67,7 @@
 	}
 
 	code {
-		font-family: monospace;
+		font-family: 'Courier New', Courier, monospace;
 		background-color: var(--ax-bg-neutral-soft);
 		padding: 0.1rem 0.3rem;
 		border-radius: 0.3rem;
