@@ -11,7 +11,8 @@
 </script>
 
 <div>
-	Postgres instance <strong>{data.resourceName}</strong> deleted{#if data.environmentName}
+	Postgres instance <strong>{data.resourceName}</strong> deleted
+	{#if data.environmentName}
 		in {data.environmentName}
 	{/if}.
 
