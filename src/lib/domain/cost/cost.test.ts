@@ -1,4 +1,4 @@
-import { aggregateAndSortCostByDate } from '$lib/domain/cost/cost';
+import { aggregateAndSortCostByDate, prepareMonthlyCostSeries } from '$lib/domain/cost/cost';
 
 describe('aggregateAndSortCostByDate', () => {
 	test('data older than a year', () => {
@@ -268,6 +268,58 @@ describe('aggregateAndSortCostByDate', () => {
 			{ date: dates[2], sum: 2 },
 			{ date: dates[1], sum: 2 },
 			{ date: dates[0], sum: 2 }
+		]);
+	});
+});
+
+describe('prepareMonthlyCostSeries', () => {
+	test('returns an empty array for missing series', () => {
+		expect(prepareMonthlyCostSeries(undefined)).toEqual([]);
+	});
+
+	test('sorts newest-first input and estimates the current month', () => {
+		const aprilTwelfth = new Date(2026, 3, 12);
+		const marchThirtyFirst = new Date(2026, 2, 31);
+		const aprilThirtieth = new Date(2026, 3, 30);
+
+		expect(
+			prepareMonthlyCostSeries([
+				{
+					date: aprilTwelfth,
+					sum: 120
+				},
+				{
+					date: marchThirtyFirst,
+					sum: 240
+				}
+			])
+		).toEqual([
+			{
+				date: marchThirtyFirst,
+				sum: 240
+			},
+			{
+				date: aprilThirtieth,
+				sum: 300
+			}
+		]);
+	});
+
+	test('keeps a completed month unchanged', () => {
+		const marchThirtyFirst = new Date(2026, 2, 31);
+
+		expect(
+			prepareMonthlyCostSeries([
+				{
+					date: marchThirtyFirst,
+					sum: 240
+				}
+			])
+		).toEqual([
+			{
+				date: marchThirtyFirst,
+				sum: 240
+			}
 		]);
 	});
 });

@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { graphql, PendingValue } from '$houdini';
 	import GraphErrors from '$lib/ui/GraphErrors.svelte';
-	import { Heading, HelpText, Loader } from '@nais/ds-svelte-community';
+	import { Heading, Loader } from '@nais/ds-svelte-community';
 	import AggregatedCostForWorkloads from './AggregatedCostForWorkloads.svelte';
 
 	const costQuery = graphql(`
@@ -45,10 +45,6 @@
 <div class="wrapper">
 	<div class="heading">
 		<Heading as="h3" size="small">Jobs Cost</Heading>
-
-		<HelpText title="Aggregated jobs cost"
-			>Aggregated cost for jobs. Current month is estimated.</HelpText
-		>
 	</div>
 	{#if $costQuery.data && $costQuery.data.team !== PendingValue}
 		{#if $costQuery.data.team.jobs.nodes.length > 0}

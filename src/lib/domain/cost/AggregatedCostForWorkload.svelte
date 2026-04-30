@@ -1,8 +1,9 @@
 <script lang="ts">
 	import { graphql } from '$houdini';
+	import CostChart from '$lib/chart/CostChart.svelte';
+	import { prepareMonthlyCostSeries } from '$lib/domain/cost/cost';
 	import GraphErrors from '$lib/ui/GraphErrors.svelte';
-	import { euroValueFormatter } from '$lib/utils/formatters';
-	import { BodyShort, Heading, HelpText, Link } from '@nais/ds-svelte-community';
+	import { Detail, Heading, Link, Loader } from '@nais/ds-svelte-community';
 
 	const costQuery = graphql(`
 		query AggregatedCost($team: Slug!, $environment: String!, $workload: String!) {
@@ -48,76 +49,45 @@
 
 	let { environment, workload, teamSlug }: Props = $props();
 
-	function getEstimateForMonth(cost: number, date: Date): number {
-		const daysKnown = date.getDate();
-		const daysInMonth = new Date(date.getFullYear(), date.getMonth() + 1, 0).getDate();
-		const costPerDay = cost / daysKnown;
-		return costPerDay * daysInMonth;
-	}
+	let data = $derived.by(() => {
+		return prepareMonthlyCostSeries($costQuery.data?.team.environment.workload.cost.monthly.series);
+	});
 
-	function getFactor(cost: { date: Date; sum: number }[]): number {
-		if (cost.length < 1) {
-			return 0;
+	let detailsHref = $derived.by(() => {
+		const team = $costQuery.data?.team;
+		const environmentName = team?.environment.environment.name;
+		const workloadData = team?.environment.workload;
+
+		if (!team || !environmentName || !workloadData) {
+			return undefined;
 		}
-		const daysKnown = cost[0].date.getDate();
-		const estCostPerDay = cost[0].sum / daysKnown;
-		if (cost.length < 2) {
-			return 0;
-		}
-		const retVal = (estCostPerDay / (cost[1].sum / cost[1].date.getDate())) * 100 - 100;
-		if (retVal === Infinity || isNaN(retVal)) {
-			return 0;
-		}
-		return (estCostPerDay / (cost[1].sum / cost[1].date.getDate())) * 100 - 100;
-	}
+
+		const workloadPath = workloadData.__typename === 'Job' ? 'job' : 'app';
+		return `/team/${team.slug}/${environmentName}/${workloadPath}/${workloadData.name}/cost`;
+	});
 </script>
 
 <div class="wrapper">
 	<div class="container">
 		<Heading as="h3" size="small">Cost</Heading>
-		<HelpText title="Aggregated workload cost"
-			>Aggregated cost for workload. Current month is estimated.</HelpText
-		>
 	</div>
 
 	<GraphErrors errors={$costQuery.errors} />
 
-	{#if $costQuery.data}
-		{@const cost = $costQuery.data.team.environment.workload.cost}
-		{@const factor = getFactor(cost.monthly.series)}
-
-		{#each cost.monthly.series.slice(0, 2) as item (item)}
-			{#if item.date.getDate() === new Date(item.date.getFullYear(), item.date.getMonth() + 1, 0).getDate()}
-				<BodyShort>
-					{item.date.toLocaleString('en-GB', { month: 'long' })}:
-					{euroValueFormatter(item.sum)}
-				</BodyShort>
-			{:else}
-				<BodyShort>
-					{item.date.toLocaleString('en-GB', { month: 'long' })}: {euroValueFormatter(
-						getEstimateForMonth(item.sum, item.date)
-					)}
-					{#if cost.monthly.series.length > 1}
-						{#if factor > 1.0}
-							(<span style="color: var(--ax-bg-danger-strong);">+{factor.toFixed(2)}%</span>)
-						{:else}
-							(<span style="color: var(--ax-text-success-subtle);"
-								>-{(1.0 - factor).toFixed(2)}%</span
-							>)
-						{/if}
-					{/if}
-				</BodyShort>
-			{/if}
+	{#if $costQuery.fetching || (!$costQuery.data && !$costQuery.errors?.length)}
+		<div class="loading">
+			<Loader size="3xlarge" />
+		</div>
+	{:else if $costQuery.data}
+		{#if data.length}
+			<CostChart {data} dateField="date" valueField="sum" class="mt-3 mb-5 h-45 w-[93%] pl-[7%]" />
 		{:else}
-			<BodyShort>No cost data available</BodyShort>
-		{/each}
+			<Detail>No cost data available</Detail>
+		{/if}
 
-		<Link
-			href="/team/{$costQuery.data.team.slug}/{$costQuery.data.team.environment.environment
-				.name}/{$costQuery.data.team.environment.workload.__typename === 'Job'
-				? 'job'
-				: 'app'}/{$costQuery.data.team.environment.workload.name}/cost">View details</Link
-		>
+		{#if detailsHref}
+			<Link href={detailsHref}>View details</Link>
+		{/if}
 	{:else}
 		No cost data available
 	{/if}
@@ -135,5 +105,13 @@
 		display: flex;
 		align-items: center;
 		gap: var(--ax-space-4);
+	}
+
+	.loading {
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		height: 200px;
+		width: 100%;
 	}
 </style>

@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { graphql } from '$houdini';
 	import GraphErrors from '$lib/ui/GraphErrors.svelte';
-	import { Heading, HelpText, Loader } from '@nais/ds-svelte-community';
+	import { Heading, Loader } from '@nais/ds-svelte-community';
 	import AggregatedCostForWorkloads from './AggregatedCostForWorkloads.svelte';
 
 	const costQuery = $derived(
@@ -47,9 +47,6 @@
 <div>
 	<div class="heading">
 		<Heading size="small" as="h3">Applications Cost</Heading>
-		<HelpText title="Aggregated workloads cost"
-			>Aggregated cost for workloads. Current month is estimated.</HelpText
-		>
 	</div>
 
 	{#if $costQuery.fetching}
