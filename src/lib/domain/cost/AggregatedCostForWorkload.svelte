@@ -50,15 +50,18 @@
 	let { environment, workload, teamSlug }: Props = $props();
 
 	let data = $derived.by(() => {
-		return prepareMonthlyCostSeries($costQuery.data?.team.environment.workload.cost.monthly.series);
+		return prepareMonthlyCostSeries(
+			$costQuery.data?.team?.environment?.workload?.cost?.monthly?.series
+		);
 	});
 
 	let detailsHref = $derived.by(() => {
 		const team = $costQuery.data?.team;
-		const environmentName = team?.environment.environment.name;
-		const workloadData = team?.environment.workload;
+		const teamEnvironment = team?.environment;
+		const environmentName = teamEnvironment?.environment?.name;
+		const workloadData = teamEnvironment?.workload;
 
-		if (!team || !environmentName || !workloadData) {
+		if (!team?.slug || !environmentName || !workloadData) {
 			return undefined;
 		}
 

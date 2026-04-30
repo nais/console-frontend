@@ -34,9 +34,14 @@ export function prepareMonthlyCostSeries(
 		return [];
 	}
 
+	const currentMonthEnd = lastDayOfMonth(currentMonth.date);
+	if (currentMonth.date.getDate() === currentMonthEnd.getDate()) {
+		return sortedSeries;
+	}
+
 	const preparedSeries = sortedSeries.slice(0, -1);
 	preparedSeries.push({
-		date: lastDayOfMonth(currentMonth.date),
+		date: currentMonthEnd,
 		sum: estimateMonthCost(currentMonth)
 	});
 

@@ -322,4 +322,31 @@ describe('prepareMonthlyCostSeries', () => {
 			}
 		]);
 	});
+
+	test('does not estimate when the newest month is already complete', () => {
+		const februaryTwentyEighth = new Date(2026, 1, 28);
+		const marchThirtyFirst = new Date(2026, 2, 31);
+
+		expect(
+			prepareMonthlyCostSeries([
+				{
+					date: marchThirtyFirst,
+					sum: 240
+				},
+				{
+					date: februaryTwentyEighth,
+					sum: 180
+				}
+			])
+		).toEqual([
+			{
+				date: februaryTwentyEighth,
+				sum: 180
+			},
+			{
+				date: marchThirtyFirst,
+				sum: 240
+			}
+		]);
+	});
 });
