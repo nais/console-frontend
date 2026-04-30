@@ -14,7 +14,7 @@
 </script>
 
 <div>
-	Updated unleash instance <strong>{data.resourceName}</strong>
+	Updated Unleash instance <strong>{data.resourceName}</strong>
 	{#if data.unleashInstanceUpdatedData.allowedTeamSlug}
 		Allowed <a href="/team/{data.unleashInstanceUpdatedData.allowedTeamSlug}"
 			>{data.unleashInstanceUpdatedData.allowedTeamSlug}</a

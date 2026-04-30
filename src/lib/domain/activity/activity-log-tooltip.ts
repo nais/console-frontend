@@ -5,6 +5,10 @@
  */
 export function activityTooltip(typename: string): string {
 	switch (typename) {
+		case 'ConfigCreatedActivityLogEntry':
+		case 'ConfigDeletedActivityLogEntry':
+		case 'ConfigUpdatedActivityLogEntry':
+			return 'Config';
 		case 'ApplicationCreatedActivityLogEntry':
 		case 'ApplicationDeletedActivityLogEntry':
 		case 'ApplicationRestartedActivityLogEntry':

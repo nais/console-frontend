@@ -244,6 +244,13 @@
 									}
 								}
 							}
+							... on UnleashInstanceUpdatedActivityLogEntry {
+								unleashInstanceUpdatedData: data {
+									allowedTeamSlug
+									revokedTeamSlug
+									updatedReleaseChannel
+								}
+							}
 							... on ApplicationRestartedActivityLogEntry {
 								id
 							}
@@ -298,11 +305,13 @@
 							... on UnleashInstanceDeletedActivityLogEntry {
 								id
 							}
-							... on UnleashInstanceUpdatedActivityLogEntry {
-								unleashInstanceUpdatedData: data {
-									allowedTeamSlug
-									revokedTeamSlug
-									updatedReleaseChannel
+							... on OpenSearchUpdatedActivityLogEntry {
+								opensearchData: data {
+									updatedFields {
+										field
+										newValue
+										oldValue
+									}
 								}
 							}
 							... on VulnerabilityUpdatedActivityLogEntry {
@@ -311,21 +320,12 @@
 									package
 									severity
 									previousSuppression {
-										reason
 										state
+										reason
 									}
 									newSuppression {
-										reason
 										state
-									}
-								}
-							}
-							... on OpenSearchUpdatedActivityLogEntry {
-								opensearchData: data {
-									updatedFields {
-										field
-										newValue
-										oldValue
+										reason
 									}
 								}
 							}
@@ -400,6 +400,8 @@
 				return TeamMemberSetRoleActivityLogEntryText as Component<{ data: unknown }>;
 			case 'TeamUpdatedActivityLogEntry':
 				return TeamUpdatedActivityLogEntryText as Component<{ data: unknown }>;
+			case 'UnleashInstanceUpdatedActivityLogEntry':
+				return UnleashInstanceUpdatedActivityLogEntryText as Component<{ data: unknown }>;
 			case 'ClusterAuditActivityLogEntry':
 				return ClusterAuditActivityLogEntryText as Component<{ data: unknown }>;
 			case 'ApplicationDeletedActivityLogEntry':
@@ -431,8 +433,6 @@
 				return UnleashInstanceCreatedActivityLogEntryText as Component<{ data: unknown }>;
 			case 'UnleashInstanceDeletedActivityLogEntry':
 				return UnleashInstanceDeletedActivityLogEntryText as Component<{ data: unknown }>;
-			case 'UnleashInstanceUpdatedActivityLogEntry':
-				return UnleashInstanceUpdatedActivityLogEntryText as Component<{ data: unknown }>;
 			case 'VulnerabilityUpdatedActivityLogEntry':
 				return VulnerabilityUpdatedActivityLogEntryText as Component<{ data: unknown }>;
 			default:

@@ -3,6 +3,7 @@
 	import Time from '$lib/ui/Time.svelte';
 	import { BodyShort } from '@nais/ds-svelte-community';
 	import { activityLogResourceLink } from '../../utils';
+	import { resourceTypeToText } from './utils';
 
 	let {
 		data
@@ -23,13 +24,10 @@
 				)
 			: null
 	);
-
-	const properServiceName = (type: string) =>
-		type === 'OPENSEARCH' ? 'OpenSearch' : type === 'VALKEY' ? 'Valkey' : 'service';
 </script>
 
 <div>
-	Started maintenance on {properServiceName(data.resourceType)}
+	Started maintenance on {resourceTypeToText(data.resourceType)}
 	{#if link}
 		<a href={link}><strong>{data.resourceName}</strong></a>
 	{:else}

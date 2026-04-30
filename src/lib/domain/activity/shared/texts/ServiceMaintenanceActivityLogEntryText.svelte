@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { resourceTypeToText } from '$lib/domain/activity/sidebar/texts/utils';
 	import Time from '$lib/ui/Time.svelte';
 	import { BodyShort } from '@nais/ds-svelte-community';
 	import { activityLogResourceLink } from '../../utils';
@@ -20,13 +21,10 @@
 				)
 			: null
 	);
-
-	const properServiceName = (t: string) =>
-		t === 'OPENSEARCH' ? 'OpenSearch' : t === 'VALKEY' ? 'Valkey' : 'service';
 </script>
 
 <div>
-	Started maintenance on {properServiceName(data.resourceType)}
+	Started maintenance on {resourceTypeToText(data.resourceType)}
 	{#if link}
 		<a href={link}><strong>{data.resourceName}</strong></a>
 	{:else}
