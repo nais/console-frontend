@@ -11,6 +11,6 @@
 </script>
 
 <BodyShort textColor="subtle" size="small">
-	By {actor}
+	by {actor}
 	<Time time={createdAt} distance />
 </BodyShort>
