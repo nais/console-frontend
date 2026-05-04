@@ -9,13 +9,29 @@
 :root {
 	--spacing-layout: var(--ax-space-40);
 	--spacing-layout-mobile: var(--ax-space-16);
-	--surface-shadow-color: rgba(0, 0, 0, 0.6);
-}
+	--surface-shadow-color: rgba(128, 128, 128, 0.6);
+	--surface-icon-color: var(--ax-text-accent);
+	--surface-icon-size: 2.25rem;
+	--surface-icon-glyph-size: 1.5rem;
+	--surface-icon-connector-gap: 2px;
+	--surface-elevated-background: linear-gradient(
+		180deg,
+		var(--ax-bg-accent-moderateA) 0%,
+		var(--ax-bg-accent-softA) 100%
+	);
+	--surface-icon-background: linear-gradient(
+		to bottom right,
+		color-mix(in srgb, var(--surface-icon-color) 25%, var(--ax-bg-default)) 0%,
+		color-mix(in srgb, var(--surface-icon-color) 50%, var(--ax-bg-default)) 100%
+	);
 
-@media (prefers-color-scheme: dark) {
-	:root {
-		--surface-shadow-color: rgba(0, 0, 0, 0.6);
-	}
+	--surface-elevated-shadow:
+		0 10px 15px -10px var(--surface-shadow-color), 0 4px 6px -4px var(--surface-shadow-color),
+		0 0 0 1px var(--ax-border-neutral-subtleA);
+	--surface-icon-shadow:
+		0 0 0 1px color-mix(in srgb, var(--surface-icon-color) 30%, transparent),
+		0 20px 25px -5px color-mix(in srgb, var(--surface-icon-color) 30%, transparent),
+		0 8px 10px -6px color-mix(in srgb, var(--surface-icon-color) 30%, transparent);
 }
 
 :where(
@@ -26,9 +42,27 @@
 	[data-ds-theme='dark'],
 	.ds-theme--dark,
 	.dark,
+	.dark-theme,
 	.aksel-theme.dark
 ) {
-	--surface-shadow-color: rgba(255, 255, 255, 0.6);
+	--surface-shadow-color: rgba(128, 128, 128, 0.22);
+	--surface-elevated-background: linear-gradient(
+		180deg,
+		var(--ax-bg-accent-moderateA) 0%,
+		var(--ax-bg-accent-softA) 100%
+	);
+	--surface-elevated-shadow:
+		0 10px 15px -10px var(--surface-shadow-color), 0 4px 6px -4px var(--surface-shadow-color),
+		0 0 0 1px var(--ax-border-neutral-subtleA);
+	--surface-icon-background: linear-gradient(
+		to bottom right,
+		color-mix(in srgb, var(--surface-icon-color) 18%, var(--ax-bg-default)) 0%,
+		color-mix(in srgb, var(--surface-icon-color) 28%, var(--ax-bg-neutral-soft)) 100%
+	);
+	--surface-icon-shadow:
+		0 0 0 1px color-mix(in srgb, var(--surface-icon-color) 22%, transparent),
+		0 20px 25px -5px color-mix(in srgb, var(--surface-icon-color) 16%, transparent),
+		0 8px 10px -6px color-mix(in srgb, var(--surface-icon-color) 14%, transparent);
 }
 
 /* Mobile-first responsive breakpoints */
@@ -76,6 +110,41 @@ html {
 .aksel-heading--medium .heading-aligned-icon {
 	height: var(--ax-font-line-height-heading-medium);
 	vertical-align: bottom;
+}
+
+.surface-icon {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: var(--surface-icon-size);
+	height: var(--surface-icon-size);
+	flex-shrink: 0;
+	border-radius: var(--ax-radius-8);
+	color: var(--surface-icon-color);
+	background: var(--surface-icon-background);
+	box-shadow: var(--surface-icon-shadow);
+	font-size: var(--surface-icon-glyph-size);
+}
+
+.surface-icon > svg {
+	width: 1em;
+	height: 1em;
+}
+
+.surface-icon.surface-icon-timeline {
+	position: relative;
+	z-index: 1;
+	isolation: isolate;
+}
+
+.surface-icon.surface-icon-timeline::before {
+	content: '';
+	position: absolute;
+	inset: -1px;
+	border-radius: calc(var(--ax-radius-8) + 1px);
+	background: var(--surface-elevated-background);
+	z-index: -1;
+	pointer-events: none;
 }
 
 .search-modal {

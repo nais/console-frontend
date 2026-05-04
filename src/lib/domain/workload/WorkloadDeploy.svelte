@@ -55,7 +55,7 @@
 		</div>
 
 		<div class="content">
-			<div class="icon-shell">
+			<div class="surface-icon">
 				<RocketIcon />
 			</div>
 			<div class="details">
@@ -83,7 +83,7 @@
 			<span class="eyebrow">Latest deployment</span>
 		</div>
 		<div class="content empty-state">
-			<div class="icon-shell">
+			<div class="surface-icon">
 				<RocketIcon />
 			</div>
 			<BodyShort>No deployment metadata found for workload.</BodyShort>
@@ -98,14 +98,8 @@
 		gap: var(--ax-space-16);
 		padding: var(--ax-space-16);
 		border-radius: var(--ax-radius-8);
-		background: linear-gradient(
-			180deg,
-			color-mix(in oklab, var(--ax-bg-default) 40%, var(--ax-bg-neutral-soft)) 0%,
-			var(--ax-bg-neutral-soft) 100%
-		);
-		box-shadow:
-			0 12px 24px -24px var(--surface-shadow-color),
-			0 4px 10px -12px var(--surface-shadow-color);
+		background: var(--surface-elevated-background);
+		box-shadow: var(--surface-elevated-shadow);
 		width: 100%;
 	}
 
@@ -131,18 +125,6 @@
 		gap: var(--ax-space-12);
 		align-items: start;
 		width: 100%;
-	}
-
-	.icon-shell {
-		display: inline-flex;
-		align-items: center;
-		justify-content: center;
-		width: 2.75rem;
-		height: 2.75rem;
-		border-radius: var(--ax-radius-8);
-		background-color: var(--ax-neutral-100);
-		color: var(--ax-text-accent);
-		flex-shrink: 0;
 	}
 
 	.details {

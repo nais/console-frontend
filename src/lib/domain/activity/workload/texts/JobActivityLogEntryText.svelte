@@ -18,19 +18,19 @@
 	const summary = $derived.by(() => {
 		switch (data.__typename) {
 			case 'JobCreatedActivityLogEntry':
-				return 'Created job';
+				return 'Job created';
 			case 'JobDeletedActivityLogEntry':
-				return 'Deleted job';
+				return 'Job deleted';
 			case 'JobRunDeletedActivityLogEntry':
 				return data.jobRunDeleted?.runName
-					? `Deleted run ${data.jobRunDeleted.runName}`
-					: 'Deleted run';
+					? `Run deleted: ${data.jobRunDeleted.runName}`
+					: 'Run deleted';
 			case 'JobTriggeredActivityLogEntry':
-				return 'Triggered job';
+				return 'Job triggered';
 			case 'JobUpdatedActivityLogEntry':
 				return data.jobUpdated?.changedFields?.length
-					? `Updated job: ${summarizeChangedFields(data.jobUpdated.changedFields)}`
-					: 'Updated job';
+					? `Job updated: ${summarizeChangedFields(data.jobUpdated.changedFields)}`
+					: 'Job updated';
 		}
 	});
 </script>

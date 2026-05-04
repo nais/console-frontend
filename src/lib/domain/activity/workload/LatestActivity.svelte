@@ -7,6 +7,7 @@
 	} from '$houdini';
 	import { Button } from '@nais/ds-svelte-community';
 	import { RocketIcon } from '@nais/ds-svelte-community/icons';
+	import { get } from 'svelte/store';
 
 	import { icons } from '../activity-log-icons';
 	import { workloadActivityEntryFragment, workloadLatestActivityFragment } from './fragments';
@@ -18,16 +19,18 @@
 		title?: string;
 	}
 
-	let { activityLog, href, title = 'Latest activity' }: Props = $props();
+	let { activityLog, href, title = 'Latest activities' }: Props = $props();
 
 	const data = $derived(fragment(activityLog, workloadLatestActivityFragment));
-	const latestEntry = $derived($data.activityLog.nodes[0] ?? null);
-	const latestData = $derived(
-		latestEntry
-			? fragment(latestEntry as WorkloadActivityEntryFragment, workloadActivityEntryFragment)
-			: null
+	const latestEntries = $derived.by(() =>
+		$data.activityLog.nodes.map((entry) =>
+			get(fragment(entry as WorkloadActivityEntryFragment, workloadActivityEntryFragment))
+		)
 	);
-	const Icon = $derived($latestData ? icons[$latestData.__typename] || RocketIcon : RocketIcon);
+
+	function activityIcon(entry: WorkloadActivityEntryFragment$data) {
+		return icons[entry.__typename] || RocketIcon;
+	}
 </script>
 
 <div class="card-wrapper">
@@ -35,16 +38,23 @@
 		<span class="eyebrow">{title}</span>
 	</div>
 
-	{#if latestData}
-		<div class="card-content">
-			<div class="card-icon">
-				<Icon />
-			</div>
-			<div class="card-body">
-				<div class="card-copy">
-					<WorkloadActivityText data={$latestData as WorkloadActivityEntryFragment$data} />
+	{#if latestEntries.length > 0}
+		<div class:multi-item={latestEntries.length > 1} class="activity-list">
+			{#each latestEntries as entry (entry.id)}
+				{@const Icon = activityIcon(entry)}
+				<div class="activity-item">
+					<div class="card-content">
+						<div class="surface-icon surface-icon-timeline">
+							<Icon />
+						</div>
+						<div class="card-body">
+							<div class="card-copy">
+								<WorkloadActivityText data={entry} />
+							</div>
+						</div>
+					</div>
 				</div>
-			</div>
+			{/each}
 		</div>
 	{:else}
 		<div class="card-content empty-state">No activity log entries found.</div>
@@ -60,14 +70,8 @@
 		gap: var(--ax-space-16);
 		padding: var(--ax-space-16);
 		border-radius: var(--ax-radius-8);
-		background: linear-gradient(
-			180deg,
-			color-mix(in oklab, var(--ax-bg-default) 40%, var(--ax-bg-neutral-soft)) 0%,
-			var(--ax-bg-neutral-soft) 100%
-		);
-		box-shadow:
-			0 12px 24px -24px var(--surface-shadow-color),
-			0 4px 10px -12px var(--surface-shadow-color);
+		background: var(--surface-elevated-background);
+		box-shadow: var(--surface-elevated-shadow);
 		width: 100%;
 		min-width: 0;
 	}
@@ -96,16 +100,29 @@
 		width: 100%;
 	}
 
-	.card-icon {
-		display: inline-flex;
-		align-items: center;
-		justify-content: center;
-		width: 2.75rem;
-		height: 2.75rem;
-		border-radius: var(--ax-radius-8);
-		background-color: var(--ax-neutral-100);
-		color: var(--ax-text-accent);
-		flex-shrink: 0;
+	.activity-list {
+		display: flex;
+		flex-direction: column;
+		gap: var(--ax-space-12);
+	}
+
+	.activity-item {
+		position: relative;
+	}
+
+	.activity-item:not(:last-child)::before {
+		content: '';
+		position: absolute;
+		left: calc((var(--surface-icon-size) - 2px) / 2);
+		top: calc(var(--surface-icon-size) + var(--surface-icon-connector-gap));
+		bottom: calc(-1 * (var(--ax-space-12) - var(--surface-icon-connector-gap)));
+		width: 2px;
+		background: var(--ax-border-neutral-subtleA);
+	}
+
+	.activity-item :global(.surface-icon-timeline) {
+		position: relative;
+		z-index: 1;
 	}
 
 	.card-body {
@@ -155,6 +172,10 @@
 		.card-content {
 			display: flex;
 			flex-direction: column;
+		}
+
+		.activity-item::before {
+			display: none;
 		}
 
 		.empty-state {

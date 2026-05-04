@@ -39,7 +39,7 @@ query Job($job: String!, $team: Slug!, $env: String!) @cache(policy: NetworkOnly
 					}
 				}
 
-				...WorkloadLatestActivityFragment @with(limit: 1)
+				...WorkloadLatestActivityFragment @with(limit: 3)
 				...JobRuns
 				...Persistence
 				...WorkloadDeploy
