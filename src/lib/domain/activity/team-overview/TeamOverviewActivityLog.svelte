@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { ActivityLogActivityType, graphql, type ActivityLogFilter } from '$houdini';
-	import { Heading, Loader, Tooltip } from '@nais/ds-svelte-community';
+	import { Button, Loader, Tooltip } from '@nais/ds-svelte-community';
 	import { RocketIcon } from '@nais/ds-svelte-community/icons';
 	import type { Component } from 'svelte';
 
@@ -88,7 +88,7 @@
 	const activityLogQuery = graphql(`
 		query TeamOverviewActivityLog($teamSlug: Slug!, $filter: ActivityLogFilter) {
 			team(slug: $teamSlug) {
-				activityLog(first: 10, filter: $filter) {
+				activityLog(first: 3, filter: $filter) {
 					edges {
 						node {
 							id
@@ -258,12 +258,14 @@
 	}
 </script>
 
-<div class="wrapper">
-	<Heading as="h2" size="small" spacing
-		><a href="/team/{teamSlug}/activity-log">Activity log</a></Heading
-	>
+<div class="card-wrapper">
+	<div class="card-header">
+		<span class="eyebrow">Latest Activity</span>
+	</div>
 	{#if $activityLogQuery.fetching || !$activityLogQuery.data}
-		<div style="display: flex; justify-content: center; align-items: center; min-height: 500px;">
+		<div
+			style="display: flex; justify-content: center; align-items: center; min-width: 100%; min-height: 380px;"
+		>
 			<Loader size="3xlarge" />
 		</div>
 	{:else}
@@ -285,16 +287,40 @@
 
 		{#if !$activityLogQuery.fetching && ($activityLogQuery.data?.team?.activityLog.edges || []).length === 0}
 			<p class="empty">No recent activity found.</p>
+		{:else}
+			<Button as="a" href="/team/{teamSlug}/activity-log" variant="tertiary" size="small"
+				>View activity log</Button
+			>
 		{/if}
 	{/if}
 </div>
 
 <style>
-	.wrapper {
+	.card-wrapper {
 		display: flex;
 		flex-direction: column;
-		gap: var(--ax-space-4);
-		min-width: 0;
+		gap: var(--ax-space-16);
+		padding: var(--ax-space-16);
+		border: 1px solid var(--ax-border-subtle);
+		border-radius: var(--ax-radius-8);
+		background-color: var(--ax-bg-default);
+		width: 100%;
+	}
+
+	.card-header {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		gap: var(--ax-space-8);
+	}
+
+	.eyebrow {
+		font-size: var(--ax-font-size-small);
+		font-weight: var(--ax-font-weight-bold);
+		line-height: var(--ax-font-line-height-large);
+		color: var(--ax-text-neutral-subtle);
+		text-transform: uppercase;
+		letter-spacing: 0.04em;
 	}
 
 	.item {
