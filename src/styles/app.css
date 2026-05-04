@@ -9,6 +9,26 @@
 :root {
 	--spacing-layout: var(--ax-space-40);
 	--spacing-layout-mobile: var(--ax-space-16);
+	--surface-shadow-color: rgba(0, 0, 0, 0.6);
+}
+
+@media (prefers-color-scheme: dark) {
+	:root {
+		--surface-shadow-color: rgba(0, 0, 0, 0.6);
+	}
+}
+
+:where(
+	html[data-theme='dark'],
+	body[data-theme='dark'],
+	.navds-theme--dark,
+	.ax-theme--dark,
+	[data-ds-theme='dark'],
+	.ds-theme--dark,
+	.dark,
+	.aksel-theme.dark
+) {
+	--surface-shadow-color: rgba(255, 255, 255, 0.6);
 }
 
 /* Mobile-first responsive breakpoints */

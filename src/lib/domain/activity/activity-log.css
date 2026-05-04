@@ -1,30 +1,3 @@
-/* ---------- Shadow variables ---------- */
-:root,
-html {
-	--activity-shadow: rgba(0, 0, 0, 0.6);
-}
-
-@media (prefers-color-scheme: dark) {
-	:root,
-	html {
-		--activity-shadow: rgba(0, 0, 0, 0.6);
-	}
-}
-
-/* DS Svelte Community + common dark selectors */
-:where(
-	html[data-theme='dark'],
-	body[data-theme='dark'],
-	.navds-theme--dark,
-	.ax-theme--dark,
-	[data-ds-theme='dark'],
-	.ds-theme--dark,
-	.dark,
-	.aksel-theme.dark
-) {
-	--activity-shadow: rgba(255, 255, 255, 0.6);
-}
-
 /* ---------- Timeline layout (optional container helpers) ---------- */
 .activity-list {
 	display: flex;

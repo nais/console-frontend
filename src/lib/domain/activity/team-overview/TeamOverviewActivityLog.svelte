@@ -6,7 +6,6 @@
 
 	import { icons } from '../activity-log-icons';
 	import { activityTooltip } from '../activity-log-tooltip';
-	import '../activity-log.css';
 	import ApplicationRestartedActivityLogEntryText from '../sidebar/texts/ApplicationRestartedActivityLogEntryText.svelte';
 	import ApplicationScaledActivityLogEntryText from '../sidebar/texts/ApplicationScaledActivityLogEntryText.svelte';
 	import ClusterAuditActivityLogEntryText from '../sidebar/texts/ClusterAuditActivityLogEntryText.svelte';
@@ -308,8 +307,8 @@
 			var(--ax-bg-neutral-soft) 100%
 		);
 		box-shadow:
-			0 12px 24px -24px var(--activity-shadow),
-			0 4px 10px -12px var(--activity-shadow);
+			0 12px 24px -24px var(--surface-shadow-color),
+			0 4px 10px -12px var(--surface-shadow-color);
 		width: 100%;
 	}
 

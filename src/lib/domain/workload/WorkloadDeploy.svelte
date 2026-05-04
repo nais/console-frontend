@@ -11,8 +11,6 @@
 	import { BodyShort } from '@nais/ds-svelte-community';
 	import { RocketIcon } from '@nais/ds-svelte-community/icons';
 
-	import '../activity/activity-log.css';
-
 	interface Props {
 		workload: WorkloadDeploy;
 	}
@@ -106,8 +104,8 @@
 			var(--ax-bg-neutral-soft) 100%
 		);
 		box-shadow:
-			0 12px 24px -24px var(--activity-shadow),
-			0 4px 10px -12px var(--activity-shadow);
+			0 12px 24px -24px var(--surface-shadow-color),
+			0 4px 10px -12px var(--surface-shadow-color);
 		width: 100%;
 	}
 
