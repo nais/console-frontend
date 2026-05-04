@@ -2,9 +2,16 @@ pre code.hljs {
 	display: block;
 	overflow-x: auto;
 	padding: 1em;
+	font-size: 14px;
 }
 code.hljs {
 	padding: 3px 5px;
+}
+
+.hljs,
+.hljs pre,
+.hljs code {
+	font-size: 14px;
 }
 /*!
 	Theme: GitHub Dark
