@@ -16,6 +16,7 @@ declare global {
 		interface PageData {
 			meta: {
 				title: string;
+				pageHeaderTitle?: string;
 				breadcrumbs?: { label: string; href?: RouteId }[];
 				tag?: {
 					label: string;
@@ -26,6 +27,7 @@ declare global {
 		interface LayoutData {
 			meta: {
 				title?: string;
+				pageHeaderTitle?: string;
 				breadcrumbs?: { label: string; href?: RouteId }[];
 				tag?: {
 					label: string;

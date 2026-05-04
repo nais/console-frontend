@@ -2,7 +2,7 @@
 	import { onNavigate } from '$app/navigation';
 	import { page } from '$app/state';
 	import { graphql } from '$houdini';
-	import SidebarActivity from '$lib/domain/activity/sidebar/SidebarActivity.svelte';
+	import LatestActivity from '$lib/domain/activity/workload/LatestActivity.svelte';
 	import AggregatedCostForWorkload from '$lib/domain/cost/AggregatedCostForWorkload.svelte';
 	import IssueListItem from '$lib/domain/list-items/IssueListItem.svelte';
 	import Persistence from '$lib/domain/persistence/Persistence.svelte';
@@ -76,13 +76,6 @@
 		});
 	};
 </script>
-
-{#if $App.data}
-	{@const app = $App.data.team.environment.application}
-	<div class="workload-deploy-wrapper">
-		<WorkloadDeploy workload={app} />
-	</div>
-{/if}
 
 <GraphErrors errors={$App.errors} />
 
@@ -190,6 +183,11 @@
 				</div>
 			</div>
 			<div class="sidebar">
+				<WorkloadDeploy workload={app} />
+				<LatestActivity
+					activityLog={app}
+					href="/team/{page.params.team}/{page.params.env}/app/{page.params.app}/activity-log"
+				/>
 				{#if environment}
 					<AggregatedCostForWorkload workload={app.name} {environment} {teamSlug} />
 				{/if}
@@ -197,7 +195,6 @@
 					<Configs {environment} workload={app.name} {teamSlug} />
 					<Secrets workload={app.name} {environment} {teamSlug} />
 				{/if}
-				<SidebarActivity activityLog={app} direct={app.activityLog} />
 			</div>
 		</div>
 		<Confirm bind:open={restart} onconfirm={submit}>
@@ -251,11 +248,6 @@
 		gap: var(--spacing-layout);
 	}
 
-	.workload-deploy-wrapper {
-		margin-top: -2rem;
-		padding-bottom: var(--spacing-layout);
-	}
-
 	.instance-group-link {
 		display: flex;
 		align-items: center;
@@ -297,10 +289,6 @@
 	@media (max-width: 767px), (max-height: 500px) {
 		.app-content {
 			grid-template-columns: 1fr;
-		}
-
-		.workload-deploy-wrapper {
-			margin-top: 0;
 		}
 
 		.detail-actions :global(button),
