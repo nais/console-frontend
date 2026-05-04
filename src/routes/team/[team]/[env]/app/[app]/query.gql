@@ -67,7 +67,7 @@ query App($app: String!, $team: Slug!, $env: String!) {
 					}
 				}
 
-				...WorkloadLatestActivityFragment @with(limit: 1)
+				...WorkloadLatestActivityFragment @with(limit: 3)
 				...Persistence
 				...WorkloadDeploy
 				...NetworkPolicy

@@ -18,24 +18,24 @@
 	const summary = $derived.by(() => {
 		switch (data.__typename) {
 			case 'ApplicationCreatedActivityLogEntry':
-				return 'Created app';
+				return 'App created';
 			case 'ApplicationDeletedActivityLogEntry':
-				return 'Deleted app';
+				return 'App deleted';
 			case 'ApplicationRestartedActivityLogEntry':
-				return 'Restarted app';
+				return 'App restarted';
 			case 'ApplicationScaledActivityLogEntry': {
 				const size = data.appScaled?.newSize;
 				const direction = data.appScaled?.direction?.toLowerCase();
 				if (size == null) {
-					return 'Scaled app';
+					return 'App scaled';
 				}
 
-				return direction ? `Scaled app ${direction} to ${size}` : `Scaled app to ${size}`;
+				return direction ? `App scaled ${direction} to ${size}` : `App scaled to ${size}`;
 			}
 			case 'ApplicationUpdatedActivityLogEntry':
 				return data.applicationUpdated?.changedFields?.length
-					? `Updated app: ${summarizeChangedFields(data.applicationUpdated.changedFields)}`
-					: 'Updated app';
+					? `App updated: ${summarizeChangedFields(data.applicationUpdated.changedFields)}`
+					: 'App updated';
 		}
 	});
 </script>

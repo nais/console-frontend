@@ -1,11 +1,10 @@
 <script lang="ts">
 	import { ActivityLogActivityType, graphql, type ActivityLogFilter } from '$houdini';
-	import { Button, Loader, Tooltip } from '@nais/ds-svelte-community';
+	import { Button, Loader } from '@nais/ds-svelte-community';
 	import { RocketIcon } from '@nais/ds-svelte-community/icons';
 	import type { Component } from 'svelte';
 
 	import { icons } from '../activity-log-icons';
-	import { activityTooltip } from '../activity-log-tooltip';
 	import ApplicationRestartedActivityLogEntryText from '../sidebar/texts/ApplicationRestartedActivityLogEntryText.svelte';
 	import ApplicationScaledActivityLogEntryText from '../sidebar/texts/ApplicationScaledActivityLogEntryText.svelte';
 	import ClusterAuditActivityLogEntryText from '../sidebar/texts/ClusterAuditActivityLogEntryText.svelte';
@@ -268,25 +267,24 @@
 			<Loader size="3xlarge" />
 		</div>
 	{:else}
-		{#each $activityLogQuery.data?.team?.activityLog.edges || [] as { node: entry }, i (entry.id)}
-			{@const Icon = icons[entry.__typename] || RocketIcon}
-			{@const TextComponent = textComponent(entry.__typename)}
-			{@const isLast = i === ($activityLogQuery.data?.team?.activityLog.edges?.length ?? 0) - 1}
-			<div class="item" class:last-item={isLast}>
-				<div class="activity-icon">
-					<Tooltip content={activityTooltip(entry.__typename)}>
-						<Icon size="1em" width="1em" height="1em" />
-					</Tooltip>
-				</div>
-				<div class="content">
-					<TextComponent data={entry} />
-				</div>
-			</div>
-		{/each}
-
-		{#if !$activityLogQuery.fetching && ($activityLogQuery.data?.team?.activityLog.edges || []).length === 0}
+		{@const entries = $activityLogQuery.data?.team?.activityLog.edges || []}
+		{#if entries.length === 0}
 			<p class="empty">No recent activity found.</p>
 		{:else}
+			<div class:multi-item={entries.length > 1} class="activity-list">
+				{#each entries as { node: entry } (entry.id)}
+					{@const Icon = icons[entry.__typename] || RocketIcon}
+					{@const TextComponent = textComponent(entry.__typename)}
+					<div class="item">
+						<div class="surface-icon surface-icon-timeline activity-icon">
+							<Icon size="1em" width="1em" height="1em" />
+						</div>
+						<div class="content">
+							<TextComponent data={entry} />
+						</div>
+					</div>
+				{/each}
+			</div>
 			<Button as="a" href="/team/{teamSlug}/activity-log" variant="tertiary" size="small"
 				>View activity log</Button
 			>
@@ -301,14 +299,8 @@
 		gap: var(--ax-space-16);
 		padding: var(--ax-space-16);
 		border-radius: var(--ax-radius-8);
-		background: linear-gradient(
-			180deg,
-			color-mix(in oklab, var(--ax-bg-default) 40%, var(--ax-bg-neutral-soft)) 0%,
-			var(--ax-bg-neutral-soft) 100%
-		);
-		box-shadow:
-			0 12px 24px -24px var(--surface-shadow-color),
-			0 4px 10px -12px var(--surface-shadow-color);
+		background: var(--surface-elevated-background);
+		box-shadow: var(--surface-elevated-shadow);
 		width: 100%;
 	}
 
@@ -328,30 +320,33 @@
 		letter-spacing: 0.04em;
 	}
 
+	.activity-list {
+		display: flex;
+		flex-direction: column;
+		gap: var(--ax-space-12);
+	}
+
 	.item {
 		display: flex;
 		position: relative;
-		padding-bottom: var(--ax-space-4);
 		gap: var(--ax-space-12);
 		align-items: flex-start;
 	}
 
-	/* vertical timeline line */
-	.item:not(.last-item)::before {
+	.item:not(:last-child)::before {
 		content: '';
 		position: absolute;
-		left: 16px; /* centers under 32px icon */
-		top: 20px;
-		bottom: 0;
+		left: calc((var(--surface-icon-size) - 2px) / 2);
+		top: calc(var(--surface-icon-size) + var(--surface-icon-connector-gap));
+		bottom: calc(-1 * (var(--ax-space-12) - var(--surface-icon-connector-gap)));
 		width: 2px;
 		background: var(--ax-border-neutral-subtleA);
 		z-index: 0;
 	}
 
-	/* Add background to icon to block the line */
-	.item :global(.activity-icon) {
-		background: var(--ax-bg-default);
-		border-radius: 50%;
+	.item :global(.surface-icon-timeline) {
+		position: relative;
+		z-index: 1;
 	}
 
 	.content {
@@ -366,5 +361,11 @@
 		color: var(--ax-text-subtle);
 		padding: var(--ax-space-8) var(--ax-space-4);
 		font-style: italic;
+	}
+
+	@media (max-width: 767px), (max-height: 500px) {
+		.item::before {
+			display: none;
+		}
 	}
 </style>
