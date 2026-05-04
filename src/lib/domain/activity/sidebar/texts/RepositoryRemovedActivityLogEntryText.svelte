@@ -1,7 +1,6 @@
 <script lang="ts">
 	import type { SidebarActivityLogFragment$data } from '$houdini';
-	import Time from '$lib/ui/Time.svelte';
-	import { BodyShort } from '@nais/ds-svelte-community';
+	import Meta from '../../Meta.svelte';
 
 	let {
 		data
@@ -14,8 +13,6 @@
 </script>
 
 <div>
-	<strong>{data.resourceName}</strong> was deauthorized for deploy by {data.actor}<br />
-	<BodyShort textColor="subtle" size="small">
-		<Time time={data.createdAt} distance />
-	</BodyShort>
+	<strong>{data.resourceName}</strong> was deauthorized for deploy.
+	<Meta actor={data.actor} createdAt={data.createdAt} />
 </div>

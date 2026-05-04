@@ -1,5 +1,5 @@
 <script lang="ts">
-	import Meta from './Meta.svelte';
+	import Meta from '../../Meta.svelte';
 	import { summarizeChangedFields } from './helpers';
 	import type { WorkloadActivityEntry } from './types';
 
@@ -42,5 +42,5 @@
 
 <div>
 	{summary}
-	<Meta actor={data.actor} createdAt={data.createdAt} />
+	<Meta actor={data.actor} createdAt={data.createdAt} actorPrefix="by" />
 </div>

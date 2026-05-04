@@ -1,6 +1,6 @@
 <script lang="ts">
-	import Time from '$lib/ui/Time.svelte';
-	import { BodyShort } from '@nais/ds-svelte-community';
+	import Meta from '../../Meta.svelte';
+
 	import { activityLogResourceLink } from '../../utils';
 	import type { ActivityLogEntry } from './types';
 
@@ -41,8 +41,5 @@
 		in {data.environmentName}
 	{/if}
 
-	<BodyShort textColor="subtle" size="small">
-		By {data.actor}
-		<Time time={data.createdAt} distance />
-	</BodyShort>
+	<Meta actor={data.actor} createdAt={data.createdAt} />
 </div>
