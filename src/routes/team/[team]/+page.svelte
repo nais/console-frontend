@@ -50,6 +50,7 @@
 		</div>
 	</div>
 	<div class="summary-cards">
+		<TeamOverviewActivityLog {teamSlug} />
 		<IssueSummary
 			critical={$TeamOverview.data?.team.criticals.pageInfo.totalCount}
 			warning={$TeamOverview.data?.team.warnings.pageInfo.totalCount}
@@ -58,7 +59,6 @@
 			loading={$TeamOverview.fetching}
 		/>
 		<VulnerabilitySummary {teamSlug} />
-		<TeamOverviewActivityLog {teamSlug} />
 	</div>
 </div>
 
@@ -83,7 +83,7 @@
 
 	.summary-cards {
 		display: grid;
-		grid-template-columns: minmax(250px, max-content);
+		grid-template-columns: minmax(0, 1fr);
 		gap: var(--spacing-layout);
 	}
 
