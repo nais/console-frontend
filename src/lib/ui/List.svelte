@@ -21,7 +21,11 @@
 	.list {
 		display: flex;
 		flex-direction: column;
-		gap: 2px;
+		gap: 1px;
+		border-radius: 12px;
+		box-shadow:
+			0 12px 24px -24px var(--surface-shadow-color),
+			0 4px 10px -12px var(--surface-shadow-color);
 
 		.header {
 			background-color: var(--ax-neutral-100);

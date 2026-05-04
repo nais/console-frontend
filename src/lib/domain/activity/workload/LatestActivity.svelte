@@ -9,7 +9,6 @@
 	import { RocketIcon } from '@nais/ds-svelte-community/icons';
 
 	import { icons } from '../activity-log-icons';
-	import '../activity-log.css';
 	import { workloadActivityEntryFragment, workloadLatestActivityFragment } from './fragments';
 	import WorkloadActivityText from './WorkloadActivityText.svelte';
 
@@ -67,8 +66,8 @@
 			var(--ax-bg-neutral-soft) 100%
 		);
 		box-shadow:
-			0 12px 24px -24px var(--activity-shadow),
-			0 4px 10px -12px var(--activity-shadow);
+			0 12px 24px -24px var(--surface-shadow-color),
+			0 4px 10px -12px var(--surface-shadow-color);
 		width: 100%;
 		min-width: 0;
 	}
