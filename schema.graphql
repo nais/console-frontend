@@ -1663,13 +1663,16 @@ type ContainerImage implements ActivityLogger & Node {
   """
   Whether the image has a software bill of materials (SBOM) attached to it.
   """
-  hasSBOM: Boolean!
+  hasSBOM: Boolean! @deprecated(reason: "Use sbom { status } == READY to check if an SBOM is attached.")
 
   """The globally unique ID of the container image node."""
   id: ID!
 
   """Name of the container image."""
   name: String!
+
+  """SBOM pipeline status and processing information for this image."""
+  sbom: ContainerImageSBOM!
 
   """Tag of the container image."""
   tag: String!
@@ -1720,6 +1723,24 @@ type ContainerImage implements ActivityLogger & Node {
     """
     last: Int
   ): ContainerImageWorkloadReferenceConnection!
+}
+
+"""
+SBOM metadata for a container image, including pipeline status and processing
+information. This type is accessed through ContainerImage.sbom.
+"""
+type ContainerImageSBOM implements Node {
+  """The globally unique ID of the container image SBOM node."""
+  id: ID!
+
+  """
+  The timestamp when SBOM processing started for this image.
+  Useful as a progress indicator when status is PROCESSING.
+  """
+  processingStartedAt: Time
+
+  """The SBOM pipeline status."""
+  status: SBOMStatus!
 }
 
 type ContainerImageWorkloadReference {
@@ -5946,6 +5967,21 @@ type RoleRevokedUserSyncLogEntry implements Node & UserSyncLogEntry {
 
   """The name of the user that got a role revoked."""
   userName: String!
+}
+
+"""The SBOM pipeline status for an image or workload."""
+enum SBOMStatus {
+  """SBOM generation failed."""
+  FAILED
+
+  """No SBOM is available for this image or workload."""
+  NO_SBOM
+
+  """SBOM generation is in progress."""
+  PROCESSING
+
+  """SBOM data is available."""
+  READY
 }
 
 enum ScalingDirection {
@@ -10187,9 +10223,13 @@ input WorkloadUtilizationSeriesInput {
   start: Time!
 }
 
+"""
+SBOM metadata for a workload, including pipeline status and processing
+information. Accessed through WorkloadVulnerabilitySummary.
+"""
 type WorkloadVulnerabilitySummary implements Node {
   """True if the workload has a software bill of materials (SBOM) attached."""
-  hasSBOM: Boolean!
+  hasSBOM: Boolean! @deprecated(reason: "Use workload { image { sbom { status } } } to check SBOM status.")
 
   """The globally unique ID of the workload vulnerability summary node."""
   id: ID!

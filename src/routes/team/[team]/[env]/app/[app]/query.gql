@@ -8,6 +8,21 @@ query App($app: String!, $team: Slug!, $env: String!) {
 				team {
 					slug
 				}
+				image {
+					sbom {
+						status
+						processingStartedAt
+					}
+					vulnerabilitySummary {
+						critical
+						high
+						medium
+						low
+						unassigned
+						riskScore
+						lastUpdated
+					}
+				}
 				issues {
 					edges {
 						node {

@@ -115,5 +115,8 @@
 			"@lavamoat/preinstall-always-fail": false,
 			"vite>esbuild": true
 		}
+	},
+	"optionalDependencies": {
+		"@rollup/rollup-darwin-arm64": "4.60.2"
 	}
 }
