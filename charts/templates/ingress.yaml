@@ -22,3 +22,26 @@ spec:
                   number: 80
             path: /
             pathType: Prefix
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: '{{ .Release.Name }}-haproxy'
+  namespace: nais-system
+  annotations:
+    haproxy.org/response-set-header: X-Robots-Tag "noindex"
+    prometheus.io/path: /isAlive
+    prometheus.io/scrape: "true"
+spec:
+  ingressClassName: 'external-haproxy'
+  rules:
+    - host: '{{ .Values.host }}'
+      http:
+        paths:
+          - backend:
+              service:
+                name: '{{ .Release.Name }}'
+                port:
+                  number: 80
+            path: /
+            pathType: Prefix
