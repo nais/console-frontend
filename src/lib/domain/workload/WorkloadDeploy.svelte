@@ -11,6 +11,8 @@
 	import { BodyShort } from '@nais/ds-svelte-community';
 	import { RocketIcon } from '@nais/ds-svelte-community/icons';
 
+	import '../activity/activity-log.css';
+
 	interface Props {
 		workload: WorkloadDeploy;
 	}
@@ -97,9 +99,16 @@
 		flex-direction: column;
 		gap: var(--ax-space-16);
 		padding: var(--ax-space-16);
-		border: 1px solid var(--ax-border-subtle);
 		border-radius: var(--ax-radius-8);
-		background-color: var(--ax-bg-default);
+		background: linear-gradient(
+			180deg,
+			color-mix(in oklab, var(--ax-bg-default) 40%, var(--ax-bg-neutral-soft)) 0%,
+			var(--ax-bg-neutral-soft) 100%
+		);
+		box-shadow:
+			0 12px 24px -24px var(--activity-shadow),
+			0 4px 10px -12px var(--activity-shadow);
+		width: 100%;
 	}
 
 	.header {
