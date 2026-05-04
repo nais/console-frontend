@@ -1,7 +1,6 @@
 <script lang="ts">
 	import type { SidebarActivityLogFragment$data } from '$houdini';
-	import Time from '$lib/ui/Time.svelte';
-	import { BodyShort } from '@nais/ds-svelte-community';
+	import Meta from '../../Meta.svelte';
 
 	let {
 		data
@@ -14,8 +13,6 @@
 </script>
 
 <div>
-	{data.removedData.userEmail} was removed from team by {data.actor}<br />
-	<BodyShort textColor="subtle" size="small">
-		<Time time={data.createdAt} distance />
-	</BodyShort>
+	{data.removedData.userEmail} was removed from team.
+	<Meta actor={data.actor} createdAt={data.createdAt} />
 </div>

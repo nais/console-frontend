@@ -1,5 +1,5 @@
 <script lang="ts">
-	import Meta from './Meta.svelte';
+	import Meta from '../../Meta.svelte';
 	import type { WorkloadActivityEntry } from './types';
 
 	let {
@@ -24,5 +24,5 @@
 	{:else}
 		Deployed
 	{/if}
-	<Meta actor={data.actor} createdAt={data.createdAt} />
+	<Meta actor={data.actor} createdAt={data.createdAt} actorPrefix="by" />
 </div>

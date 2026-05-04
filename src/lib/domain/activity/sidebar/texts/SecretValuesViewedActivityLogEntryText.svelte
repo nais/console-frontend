@@ -1,7 +1,8 @@
 <script lang="ts">
 	import type { SidebarActivityLogFragment$data } from '$houdini';
-	import Time from '$lib/ui/Time.svelte';
 	import { BodyShort } from '@nais/ds-svelte-community';
+	import Meta from '../../Meta.svelte';
+
 	import { activityLogResourceLink } from '../../utils';
 
 	let {
@@ -35,8 +36,5 @@
 		<BodyShort size="small"><em>Reason: {data.secretValuesViewedData.reason}</em></BodyShort>
 	{/if}
 
-	<BodyShort textColor="subtle" size="small">
-		By {data.actor}
-		<Time time={data.createdAt} distance />
-	</BodyShort>
+	<Meta actor={data.actor} createdAt={data.createdAt} />
 </div>

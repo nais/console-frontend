@@ -5,12 +5,14 @@
 	interface Props {
 		actor: string;
 		createdAt: Date;
+		actorPrefix?: string;
 	}
 
-	let { actor, createdAt }: Props = $props();
+	let { actor, createdAt, actorPrefix = 'By' }: Props = $props();
 </script>
 
 <BodyShort textColor="subtle" size="small">
-	by {actor}
+	{actorPrefix}
+	{actor}
 	<Time time={createdAt} distance />
 </BodyShort>
