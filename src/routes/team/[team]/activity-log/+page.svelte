@@ -63,11 +63,6 @@
 			ActivityLogActivityType.POSTGRES_DELETED,
 			ActivityLogActivityType.POSTGRES_GRANT_ACCESS
 		],
-		// Reconciler: [
-		// 	ActivityLogActivityType.RECONCILER_CONFIGURED,
-		// 	ActivityLogActivityType.RECONCILER_DISABLED,
-		// 	ActivityLogActivityType.RECONCILER_ENABLED
-		// ],
 		Repository: [
 			ActivityLogActivityType.REPOSITORY_ADDED,
 			ActivityLogActivityType.REPOSITORY_REMOVED
@@ -135,7 +130,7 @@
 				>
 				<List title="{ae.pageInfo.totalCount} entries">
 					{#snippet menu()}
-						<ActionMenu>
+						<ActionMenu align="end">
 							{#snippet trigger(props)}
 								<Button
 									variant="tertiary-neutral"
@@ -163,7 +158,7 @@
 									filterActivities();
 								}}
 							>
-								All Activities
+								<span class="activity-filter-option-label">All Activities</span>
 							</ActionMenuCheckboxItem>
 							{#each Object.entries(groupedActivities) as [group, types] (group)}
 								{#if filteredGroup(types).length}
@@ -178,7 +173,9 @@
 												filterActivities();
 											}}
 										>
-											{capitalizeFirstLetter(type.split('_').join(' ').toLowerCase())}
+											<span class="activity-filter-option-label">
+												{capitalizeFirstLetter(type.split('_').join(' ').toLowerCase())}
+											</span>
 										</ActionMenuCheckboxItem>
 									{/each}
 								{/if}
@@ -212,7 +209,7 @@
 <style>
 	.wrapper {
 		display: grid;
-		grid-template-columns: 1fr 300px;
+		grid-template-columns: 1fr;
 		gap: var(--spacing-layout);
 	}
 
@@ -225,6 +222,14 @@
 		font-weight: 500;
 		color: var(--ax-text-neutral-subtle);
 		margin-top: var(--ax-space-2);
+	}
+
+	.activity-filter-option-label {
+		display: block;
+		width: 100%;
+		flex: 1 1 auto;
+		min-width: 0;
+		text-align: left;
 	}
 
 	@media (max-width: 767px) {

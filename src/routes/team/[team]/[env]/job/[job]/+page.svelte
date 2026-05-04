@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { page } from '$app/state';
 	import { graphql } from '$houdini';
-	import SidebarActivity from '$lib/domain/activity/sidebar/SidebarActivity.svelte';
+	import LatestActivity from '$lib/domain/activity/workload/LatestActivity.svelte';
 	import AggregatedCostForWorkload from '$lib/domain/cost/AggregatedCostForWorkload.svelte';
 	import IssueListItem from '$lib/domain/list-items/IssueListItem.svelte';
 	import Persistence from '$lib/domain/persistence/Persistence.svelte';
@@ -105,13 +105,6 @@
 	};
 </script>
 
-{#if $Job.data}
-	{@const job = $Job.data.team.environment.job}
-	<div class="workload-deploy-wrapper">
-		<WorkloadDeploy workload={job} />
-	</div>
-{/if}
-
 <GraphErrors errors={$Job.errors} />
 
 {#if $Job.fetching}
@@ -197,6 +190,11 @@
 				</div>
 			</div>
 			<div class="sidebar">
+				<WorkloadDeploy workload={job} />
+				<LatestActivity
+					activityLog={job}
+					href="/team/{page.params.team}/{page.params.env}/job/{page.params.job}/activity-log"
+				/>
 				{#if jobName && environment}
 					<AggregatedCostForWorkload workload={jobName} {environment} {teamSlug} />
 				{/if}
@@ -204,7 +202,6 @@
 					<Configs workload={jobName} {environment} {teamSlug} />
 					<Secrets workload={jobName} {environment} {teamSlug} />
 				{/if}
-				<SidebarActivity activityLog={job} direct={job.activityLog} />
 			</div>
 		</div>
 
@@ -270,20 +267,11 @@
 		gap: var(--spacing-layout);
 	}
 
-	.workload-deploy-wrapper {
-		margin-top: -2rem;
-		padding-bottom: var(--spacing-layout);
-	}
-
 	/* Mobile responsive layout */
 	@media (max-width: 767px), (max-height: 500px) {
 		.job-content {
 			grid-template-columns: 1fr;
 			gap: var(--spacing-layout);
-		}
-
-		.workload-deploy-wrapper {
-			margin-top: 0;
 		}
 
 		.detail-actions :global(button),

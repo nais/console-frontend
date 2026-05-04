@@ -168,56 +168,40 @@ describe('menuItems', () => {
 		});
 	});
 
-	describe('workload menu', () => {
-		test('full', () => {
+	describe('workload detail routes', () => {
+		test('app detail routes keep applications active in the team menu', () => {
 			expect(
 				menuItems({
 					path: '/team/devteam/dev/app/app-w-all-storage/utilization',
 					member: true,
 					isAdmin: false
 				})
-			).toEqual([
-				[{ label: 'App Overview', href: '/team/devteam/dev/app/app-w-all-storage' }],
-				[
-					{
-						label: 'Vulnerabilities',
-						href: '/team/devteam/dev/app/app-w-all-storage/vulnerabilities'
-					},
-					{
-						label: 'Deployments',
-						href: '/team/devteam/dev/app/app-w-all-storage/deploys'
-					},
-					{ label: 'Cost', href: '/team/devteam/dev/app/app-w-all-storage/cost' },
-					{ label: 'Issues', href: '/team/devteam/dev/app/app-w-all-storage/issues' },
-					{
-						label: 'Utilization',
-						href: '/team/devteam/dev/app/app-w-all-storage/utilization',
-						active: true
-					},
-					{
-						href: '/team/devteam/dev/app/app-w-all-storage/ingresses',
-						label: 'Ingresses'
-					},
-					{ label: 'Logs', href: '/team/devteam/dev/app/app-w-all-storage/logs' }
-				],
-				[
-					{
-						label: 'Manifest',
-						href: '/team/devteam/dev/app/app-w-all-storage/manifest'
-					}
-				]
-			]);
+					.flatMap((group) => group)
+					.find((item) => item.label === 'Applications')
+			).toEqual({ label: 'Applications', href: '/team/devteam/applications', active: true });
 		});
 
-		test('does not include delete', () => {
+		test('job detail routes keep jobs active in the team menu', () => {
 			expect(
 				menuItems({
 					path: '/team/devteam/dev/job/dataproduct-apps-topics/vulnerabilities',
 					member: true,
 					isAdmin: false
 				})
-					.flatMap((g) => g)
-					.find((i) => ['Delete'].includes(i.label))
+					.flatMap((group) => group)
+					.find((item) => item.label === 'Jobs')
+			).toEqual({ label: 'Jobs', href: '/team/devteam/jobs', active: true });
+		});
+
+		test('auxiliary workload routes do not add detail menu entries', () => {
+			expect(
+				menuItems({
+					path: '/team/devteam/dev/job/dataproduct-apps-topics/delete',
+					member: true,
+					isAdmin: false
+				})
+					.flatMap((group) => group)
+					.find((item) => item.label === 'Delete')
 			).toBeUndefined();
 		});
 	});

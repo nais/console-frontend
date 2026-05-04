@@ -11,8 +11,21 @@
 
 	const { beforeBreadcrumbs }: { beforeBreadcrumbs?: Snippet } = $props();
 
-	const breadcrumbs = $derived(page.data?.meta?.breadcrumbs ?? []);
-	const heading = $derived(page.data?.meta?.title ?? '');
+	const breadcrumbs = $derived.by(() => {
+		const baseBreadcrumbs = page.data?.meta?.breadcrumbs ?? [];
+		const title = page.data?.meta?.title;
+
+		if (baseBreadcrumbs.length === 0 || !title) {
+			return baseBreadcrumbs;
+		}
+
+		if (baseBreadcrumbs.at(-1)?.label === title) {
+			return baseBreadcrumbs;
+		}
+
+		return [...baseBreadcrumbs, { label: title }];
+	});
+	const heading = $derived(page.data?.meta?.pageHeaderTitle ?? page.data?.meta?.title ?? '');
 	const tag = $derived(page.data?.meta?.tag ?? null);
 	const warning = $derived(pageHeaderState.warning);
 	const error = $derived(pageHeaderState.error);

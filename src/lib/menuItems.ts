@@ -72,24 +72,13 @@ export const menuItems = ({
 				...(count ? { count } : {})
 			};
 		};
-	if (['app', 'job'].includes(split[4])) {
-		const [, , team, env, workloadType, name, page] = split;
-		const menuItem = item(`/team/${team}/${env}/${workloadType}/${name}`, page);
-		return [
-			[menuItem(`${workloadType === 'app' ? 'App' : 'Job'} Overview`)],
-			[
-				menuItem('Vulnerabilities', 'vulnerabilities'),
-				menuItem('Deployments', 'deploys'),
-				menuItem('Cost', 'cost'),
-				menuItem('Issues', 'issues'),
-				workloadType === 'app' && menuItem('Utilization', 'utilization'),
-				workloadType === 'app' && menuItem('Ingresses', 'ingresses'),
-				menuItem('Logs', 'logs')
-			].filter(Boolean),
-			[menuItem('Manifest', 'manifest')]
-		].filter(Boolean) as { label: string; href: string; active?: boolean }[][];
-	}
-	const [, , team, page] = split;
+	const [, , team, topLevelPage, resourceType] = split;
+	const page =
+		topLevelPage && ['app', 'job'].includes(resourceType)
+			? resourceType === 'app'
+				? 'applications'
+				: 'jobs'
+			: topLevelPage;
 	const menuItem = item(`/team/${team}`, page);
 	return [
 		[menuItem('Team Overview')],

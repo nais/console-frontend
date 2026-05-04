@@ -1,0 +1,34 @@
+query ApplicationActivityLog(
+	$team: Slug!
+	$env: String!
+	$app: String!
+	$first: Int
+	$last: Int
+	$before: Cursor
+	$after: Cursor
+	$filter: ActivityLogFilter
+) @cache(policy: NetworkOnly) {
+	team(slug: $team) {
+		environment(name: $env) {
+			application(name: $app) {
+				id
+				name
+				activityLog(first: $first, last: $last, before: $before, after: $after, filter: $filter)
+					@paginate(mode: SinglePage) {
+					pageInfo {
+						hasNextPage
+						hasPreviousPage
+						pageEnd
+						pageStart
+						totalCount
+						startCursor
+						endCursor
+					}
+					nodes {
+						...ActivityLogEntryFragment
+					}
+				}
+			}
+		}
+	}
+}
