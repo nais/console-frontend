@@ -181,6 +181,10 @@
 				<div>
 					<Persistence workload={app} />
 				</div>
+				{#if environment}
+					<Configs {environment} workload={app.name} {teamSlug} />
+					<Secrets workload={app.name} {environment} {teamSlug} />
+				{/if}
 			</div>
 			<div class="sidebar">
 				<WorkloadDeploy workload={app} />
@@ -190,10 +194,6 @@
 				/>
 				{#if environment}
 					<AggregatedCostForWorkload workload={app.name} {environment} {teamSlug} />
-				{/if}
-				{#if environment}
-					<Configs {environment} workload={app.name} {teamSlug} />
-					<Secrets workload={app.name} {environment} {teamSlug} />
 				{/if}
 			</div>
 		</div>
