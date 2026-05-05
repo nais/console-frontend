@@ -15,9 +15,9 @@
 	--surface-icon-glyph-size: 1.5rem;
 	--surface-icon-connector-gap: 2px;
 	--surface-elevated-background: linear-gradient(
-		180deg,
-		var(--ax-bg-accent-moderateA) 0%,
-		var(--ax-bg-accent-softA) 100%
+		105deg,
+		var(--ax-bg-neutral-softA) 50%,
+		color-mix(in srgb, var(--ax-bg-neutral-softA) 25%, var(--ax-bg-moderateA)) 100%
 	);
 	--surface-icon-background: linear-gradient(
 		to bottom right,
@@ -46,11 +46,12 @@
 	.aksel-theme.dark
 ) {
 	--surface-shadow-color: rgba(61, 65, 111, 0.6);
-	--surface-elevated-background: linear-gradient(
+	--surface-elevated-background: var(--ax-bg-neutral-softA);
+	/* --surface-elevated-background: linear-gradient(
 		180deg,
 		var(--ax-bg-accent-moderateA) 0%,
 		var(--ax-bg-accent-softA) 100%
-	);
+	); */
 	--surface-elevated-shadow:
 		0 10px 15px -10px var(--surface-shadow-color), 0 4px 6px -4px var(--surface-shadow-color),
 		0 0 0 1px var(--ax-border-neutral-subtleA);

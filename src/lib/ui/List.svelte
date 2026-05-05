@@ -21,7 +21,6 @@
 	.list {
 		display: flex;
 		flex-direction: column;
-		gap: 1px;
 		border-radius: 12px;
 		box-shadow: var(--surface-elevated-shadow);
 
