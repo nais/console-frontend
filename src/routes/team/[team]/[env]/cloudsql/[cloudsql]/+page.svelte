@@ -8,7 +8,7 @@
 	import List from '$lib/ui/List.svelte';
 	import { euroValueFormatter } from '$lib/utils/formatters';
 	import { Alert, BodyShort, Heading, HelpText } from '@nais/ds-svelte-community';
-	import { WalletIcon } from '@nais/ds-svelte-community/icons';
+	import { PiggybankIcon } from '@nais/ds-svelte-community/icons';
 	import prettyBytes from 'pretty-bytes';
 	import type { PageProps } from './$types';
 
@@ -134,7 +134,7 @@
 		<div class="sidebar">
 			<div>
 				<div class="cost-heading">
-					<IconLabel label="Cost" icon={WalletIcon} size="large" as="h2" />
+					<IconLabel label="Cost" icon={PiggybankIcon} size="large" as="h2" />
 					<HelpText title="Cost details">Total SQL instance cost for the last 30 days</HelpText>
 				</div>
 				<div class="cost-content">

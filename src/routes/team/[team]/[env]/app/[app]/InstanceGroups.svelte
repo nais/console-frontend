@@ -5,7 +5,7 @@
 	import SurfaceCard from '$lib/ui/SurfaceCard.svelte';
 	import Time from '$lib/ui/Time.svelte';
 	import { Button, Tag } from '@nais/ds-svelte-community';
-	import { ArrowCirclepathIcon } from '@nais/ds-svelte-community/icons';
+	import { ArrowCirclepathIcon, CloudSlashIcon } from '@nais/ds-svelte-community/icons';
 
 	type TeamData = NonNullable<App$result['team']>;
 	type EnvironmentData = NonNullable<TeamData['environment']>;
@@ -89,6 +89,12 @@
 				{/if}
 			</div>
 		</a>
+	{:else}
+		<div class="empty-state">
+			<CloudSlashIcon />
+			<span class="empty-title">No running instances</span>
+			<span class="empty-description">This application has no active instance groups</span>
+		</div>
 	{/each}
 </SurfaceCard>
 
@@ -180,5 +186,30 @@
 			align-items: flex-start;
 			gap: var(--ax-space-12);
 		}
+	}
+
+	.empty-state {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		gap: var(--ax-space-8);
+		padding-bottom: var(--ax-space-24);
+		color: var(--ax-text-subtle);
+	}
+
+	.empty-state :global(svg) {
+		width: 2.5rem;
+		height: 2.5rem;
+		opacity: 0.4;
+	}
+
+	.empty-title {
+		font-weight: var(--ax-font-weight-bold);
+		font-size: var(--ax-font-size-medium);
+		color: var(--ax-text-neutral);
+	}
+
+	.empty-description {
+		font-size: var(--ax-font-size-small);
 	}
 </style>
