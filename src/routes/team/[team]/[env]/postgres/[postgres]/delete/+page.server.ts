@@ -50,6 +50,11 @@ export const actions = {
 				success: false,
 				error: 'Failed to delete Postgres'
 			});
+		} else if (res.data.deletePostgres?.postgresDeleted !== true) {
+			return fail(500, {
+				success: false,
+				error: 'Failed to delete Postgres'
+			});
 		}
 
 		return redirect(303, `/team/${params.team}/postgres`);
