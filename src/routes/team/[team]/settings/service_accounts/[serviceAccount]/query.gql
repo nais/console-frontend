@@ -1,0 +1,22 @@
+query ServiceAccountDetail($team: Slug!) @cache(policy: CacheAndNetwork) {
+	team(slug: $team) {
+		serviceAccounts(first: 100) {
+			nodes {
+				id
+				name
+				description
+				createdAt
+				updatedAt
+				lastUsedAt
+				...ServiceAccountRolesFragment
+				...ServiceAccountAuthenticationFragment
+			}
+		}
+		environments {
+			environment {
+				name
+			}
+		}
+	}
+	...AvailableRolesFragment
+}

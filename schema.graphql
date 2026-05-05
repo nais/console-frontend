@@ -180,7 +180,7 @@ enum ActivityLogActivityType {
 }
 
 """Interface for activity log entries."""
-interface ActivityLogEntry {
+interface ActivityLogEntry implements Node {
   """
   The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
   """
@@ -395,8 +395,35 @@ type AddTeamMemberPayload {
   member: TeamMember
 }
 
+input AddWorkloadToServiceAccountInput {
+  """The environment (cluster) the workload is deployed in."""
+  environment: String!
+
+  """The ID of the service account to bind the workload to."""
+  serviceAccountID: ID!
+
+  """
+  The team slug owning the workload. The Kubernetes ServiceAccount is expected to live in this team's
+  namespace.
+  """
+  teamSlug: Slug!
+
+  """
+  The name of the workload. This is also the name of the Kubernetes ServiceAccount the workload runs as.
+  """
+  workloadName: String!
+}
+
+type AddWorkloadToServiceAccountPayload {
+  """The created binding."""
+  binding: ServiceAccountWorkloadBinding
+
+  """The service account that the workload was bound to."""
+  serviceAccount: ServiceAccount
+}
+
 """Alert interface."""
-interface Alert {
+interface Alert implements Node {
   """
   The time in seconds the alert condition must be met before it activates.
   """
@@ -694,6 +721,12 @@ type Application implements ActivityLogger & Node & Workload {
     """
     last: Int
   ): SecretConnection!
+
+  """
+  The Nais service account this application is bound to, if any. Authenticating using the application's
+  Kubernetes ServiceAccount token will then act as this Nais service account.
+  """
+  serviceAccount: ServiceAccount
 
   """
   SQL instances referenced by the application. This does not currently support pagination, but will return all available SQL instances.
@@ -3128,7 +3161,7 @@ type InvalidSpecIssue implements Issue & Node {
   workload: Workload!
 }
 
-interface Issue {
+interface Issue implements Node {
   id: ID!
   message: String!
   severity: Severity!
@@ -3415,6 +3448,12 @@ type Job implements ActivityLogger & Node & Workload {
     """
     last: Int
   ): SecretConnection!
+
+  """
+  The Nais service account this job is bound to, if any. Authenticating using the job's Kubernetes
+  ServiceAccount token will then act as this Nais service account.
+  """
+  serviceAccount: ServiceAccount
 
   """
   SQL instances referenced by the job. This does not currently support pagination, but will return all available SQL instances.
@@ -3917,7 +3956,7 @@ type LastRunFailedIssue implements Issue & Node {
   teamEnvironment: TeamEnvironment!
 }
 
-interface LogDestination {
+interface LogDestination implements Node {
   """The globally unique ID of the log destination."""
   id: ID!
 }
@@ -4127,6 +4166,15 @@ type Mutation {
   """
   addTeamMember(input: AddTeamMemberInput!): AddTeamMemberPayload!
 
+  """
+  Bind a workload (application or job) to a service account, allowing the workload to authenticate against the
+  Nais API as the service account using its Kubernetes ServiceAccount token.
+  
+  Only members of the team that owns the service account may add or remove bindings. The workload's team is not
+  consulted.
+  """
+  addWorkloadToServiceAccount(input: AddWorkloadToServiceAccountInput!): AddWorkloadToServiceAccountPayload!
+
   """Add team to the list of teams that can access the Unleash instance."""
   allowTeamAccessToUnleash(input: AllowTeamAccessToUnleashInput!): AllowTeamAccessToUnleashPayload!
 
@@ -4283,6 +4331,13 @@ type Mutation {
   If the user is not already a member or an owner of the team, the mutation will result in an error.
   """
   removeTeamMember(input: RemoveTeamMemberInput!): RemoveTeamMemberPayload!
+
+  """
+  Remove a workload binding from a service account.
+  
+  Only members of the team that owns the service account may remove bindings.
+  """
+  removeWorkloadFromServiceAccount(input: RemoveWorkloadFromServiceAccountInput!): RemoveWorkloadFromServiceAccountPayload!
 
   """
   Request a key that can be used to trigger a team deletion process
@@ -4818,7 +4873,7 @@ type PageInfo {
   totalCount: Int!
 }
 
-interface Persistence {
+interface Persistence implements Node {
   environment: TeamEnvironment! @deprecated(reason: "Use the `teamEnvironment` field instead.")
   id: ID!
   name: String!
@@ -5159,6 +5214,9 @@ type Query {
 
     """Get items before this cursor."""
     before: Cursor
+
+    """Optional filter to filter the roles by."""
+    filter: RoleFilter
 
     """
     Get the first n items in the connection. This can be used in combination with the after parameter.
@@ -5619,6 +5677,19 @@ type RemoveTeamMemberPayload {
   user: User
 }
 
+input RemoveWorkloadFromServiceAccountInput {
+  """The ID of the binding to remove."""
+  bindingID: ID!
+}
+
+type RemoveWorkloadFromServiceAccountPayload {
+  """True if the binding was removed."""
+  bindingDeleted: Boolean
+
+  """The service account the binding was associated with."""
+  serviceAccount: ServiceAccount
+}
+
 type Repository implements Node {
   """ID of the repository."""
   id: ID!
@@ -5888,6 +5959,11 @@ type RoleEdge {
   node: Role!
 }
 
+input RoleFilter {
+  """Exclude global roles from the results."""
+  excludeGlobalRoles: Boolean
+}
+
 type RoleRevokedFromServiceAccountActivityLogEntry implements ActivityLogEntry & Node {
   """
   The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
@@ -5964,10 +6040,18 @@ input SearchFilter {
   """The query string."""
   query: String!
 
+  """Teams to search in. If not specified, all teams will be searched."""
+  teams: [Slug!]
+
   """
   The type of entities to search for. If not specified, all types will be searched.
   """
   type: SearchType
+
+  """
+  The types of entities to search for. If not specified, all types will be searched.
+  """
+  types: [SearchType!]
 }
 
 """Types that can be searched for."""
@@ -6462,6 +6546,25 @@ type ServiceAccount implements Node {
 
   """When the service account was last updated."""
   updatedAt: Time!
+
+  """The workloads bound to this service account."""
+  workloadBindings(
+    """Get items after this cursor."""
+    after: Cursor
+
+    """Get items before this cursor."""
+    before: Cursor
+
+    """
+    Get the first n items in the connection. This can be used in combination with the after parameter.
+    """
+    first: Int
+
+    """
+    Get the last n items in the connection. This can be used in combination with the before parameter.
+    """
+    last: Int
+  ): ServiceAccountWorkloadBindingConnection!
 }
 
 type ServiceAccountConnection {
@@ -6747,6 +6850,118 @@ type ServiceAccountUpdatedActivityLogEntryDataUpdatedField {
 
   """The old value of the field."""
   oldValue: String
+}
+
+"""
+A binding between a Nais service account and a Nais workload (application or job). When the workload presents its
+Kubernetes ServiceAccount token to the API, the API will authenticate the request as the bound service account.
+
+The binding is identified at authentication time by the workload's environment, namespace (team slug) and the name
+of the Kubernetes ServiceAccount, plus the Kubernetes ServiceAccount UID once it has been observed (trust on first
+use). If the UID changes (for instance because the K8s ServiceAccount has been recreated), the binding is
+considered broken and authentication will fail until the binding is removed and re-added.
+"""
+type ServiceAccountWorkloadBinding implements Node {
+  """When the binding was created."""
+  createdAt: Time!
+
+  """The environment (cluster) the bound workload is deployed in."""
+  environment: String!
+
+  """The globally unique ID of the binding."""
+  id: ID!
+
+  """
+  True if the binding is broken — either the workload no longer exists, or the Kubernetes ServiceAccount UID
+  does not match the value pinned to the binding.
+  """
+  isBroken: Boolean!
+
+  """
+  The UID of the Kubernetes ServiceAccount last seen authenticating using this binding. Null until the first
+  successful authentication (trust on first use).
+  """
+  kubernetesServiceAccountUID: String
+
+  """
+  When the binding was last used to authenticate against the API. Updates are throttled to at most once per
+  minute.
+  """
+  lastUsedAt: Time
+
+  """The service account this binding belongs to."""
+  serviceAccount: ServiceAccount!
+
+  """The team slug owning the bound workload."""
+  teamSlug: Slug!
+
+  """
+  The currently-resolved workload, or null if it can no longer be found in the cluster (for instance because it
+  has been deleted).
+  """
+  workload: Workload
+
+  """The name of the bound workload (and of its Kubernetes ServiceAccount)."""
+  workloadName: String!
+}
+
+type ServiceAccountWorkloadBindingAddedActivityLogEntry implements ActivityLogEntry & Node {
+  actor: String!
+  createdAt: Time!
+  data: ServiceAccountWorkloadBindingAddedActivityLogEntryData!
+  environmentName: String
+  id: ID!
+  message: String!
+  resourceName: String!
+  resourceType: ActivityLogEntryResourceType!
+  teamSlug: Slug
+}
+
+type ServiceAccountWorkloadBindingAddedActivityLogEntryData {
+  """The name of the workload."""
+  workloadName: String!
+
+  """The team slug of the workload."""
+  workloadTeamSlug: String!
+}
+
+type ServiceAccountWorkloadBindingConnection {
+  """A list of edges."""
+  edges: [ServiceAccountWorkloadBindingEdge!]!
+
+  """A list of bindings."""
+  nodes: [ServiceAccountWorkloadBinding!]!
+
+  """Information to aid in pagination."""
+  pageInfo: PageInfo!
+}
+
+type ServiceAccountWorkloadBindingEdge {
+  """A cursor for use in pagination."""
+  cursor: Cursor!
+
+  """The binding."""
+  node: ServiceAccountWorkloadBinding!
+}
+
+type ServiceAccountWorkloadBindingRemovedActivityLogEntry implements ActivityLogEntry & Node {
+  actor: String!
+  createdAt: Time!
+  data: ServiceAccountWorkloadBindingRemovedActivityLogEntryData!
+  environmentName: String
+  id: ID!
+  message: String!
+  resourceName: String!
+  resourceType: ActivityLogEntryResourceType!
+  teamSlug: Slug
+}
+
+type ServiceAccountWorkloadBindingRemovedActivityLogEntryData {
+  """The name of the workload."""
+  workloadName: String!
+
+  """The team slug of the workload."""
+  workloadTeamSlug: String!
 }
 
 type ServiceCostSample {
@@ -7485,6 +7700,25 @@ type Team implements ActivityLogger & Node {
     """Ordering options for items returned from the connection."""
     orderBy: SecretOrder
   ): SecretConnection!
+
+  """Nais service accounts owned by the team."""
+  serviceAccounts(
+    """Get items after this cursor."""
+    after: Cursor
+
+    """Get items before this cursor."""
+    before: Cursor
+
+    """
+    Get the first n items in the connection. This can be used in combination with the after parameter.
+    """
+    first: Int
+
+    """
+    Get the last n items in the connection. This can be used in combination with the before parameter.
+    """
+    last: Int
+  ): ServiceAccountConnection!
   serviceUtilization: TeamServiceUtilization!
 
   """Main Slack channel for the team."""
@@ -9091,7 +9325,7 @@ enum UserOrderField {
 }
 
 """Interface for user sync log entries."""
-interface UserSyncLogEntry {
+interface UserSyncLogEntry implements Node {
   """Creation time of the entry."""
   createdAt: Time!
 
@@ -9761,7 +9995,7 @@ enum Weekday {
 }
 
 """Interface for workloads."""
-interface Workload {
+interface Workload implements ActivityLogger & Node {
   """Activity log associated with the workload."""
   activityLog(
     """Get items after this cursor."""
