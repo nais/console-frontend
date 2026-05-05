@@ -1,7 +1,8 @@
 <script lang="ts">
 	import { graphql } from '$houdini';
-	import IssueListItem from '$lib/domain/list-items/IssueListItem.svelte';
-	import { Button, Heading } from '@nais/ds-svelte-community';
+	import SurfaceCard from '$lib/ui/SurfaceCard.svelte';
+	import { Button } from '@nais/ds-svelte-community';
+	import CriticalIssueRow from './CriticalIssueRow.svelte';
 
 	interface Props {
 		teamSlug: string;
@@ -24,7 +25,7 @@
 						node {
 							id
 							severity
-							...IssueFragment
+							...CriticalIssueRow
 						}
 					}
 				}
@@ -41,65 +42,49 @@
 	}
 
 	const hasCriticalIssues = $derived($teamHealth.data?.team?.issues?.pageInfo?.totalCount ?? 0 > 0);
+	const totalCount = $derived($teamHealth.data?.team?.issues?.pageInfo?.totalCount ?? 0);
 </script>
 
 {#if $teamHealth.data && hasCriticalIssues && !$teamHealth.fetching}
-	<div class="issues-wrapper">
-		{#if ($teamHealth.data?.team?.issues?.edges?.length ?? 0) > 0}
-			<Heading as="h2" size="small" spacing
-				><a href="/team/{teamSlug}/issues?severity=CRITICAL">Critical Issues</a></Heading
-			>
-			<div class="issues-list">
-				{#each $teamHealth.data?.team?.issues?.edges ?? [] as issue (issue.node.id)}
-					<IssueListItem item={issue.node} />
-				{/each}
-			</div>
-		{/if}
+	<SurfaceCard title="Critical issues ({totalCount})">
+		{#snippet headerAside()}
+			<a class="view-all" href="/team/{teamSlug}/issues">View all</a>
+		{/snippet}
+		<div class="issues-list">
+			{#each $teamHealth.data?.team?.issues?.edges ?? [] as issue (issue.node.id)}
+				<CriticalIssueRow issue={issue.node} />
+			{/each}
+		</div>
 
 		{#if $teamHealth.data?.team?.issues?.pageInfo?.hasNextPage}
 			<div class="load-more">
-				<Button variant="tertiary" size="small" onclick={loadMore}>Load more issues</Button>
+				<Button variant="tertiary" size="small" onclick={loadMore}>Load more</Button>
 			</div>
 		{/if}
-	</div>
+	</SurfaceCard>
 {/if}
 
 <style>
-	.issues-wrapper {
-		padding-bottom: var(--ax-space-8);
-	}
-
 	.issues-list {
 		display: flex;
 		flex-direction: column;
+		gap: var(--ax-space-8);
 	}
 
-	/* Remove card backgrounds but preserve tag/badge styling */
-	.issues-list :global(.list-item) {
-		background-color: transparent !important;
-		border: none !important;
-		padding: var(--ax-space-8) 0 !important;
+	.view-all {
+		font-size: var(--ax-font-size-small);
+		font-weight: var(--ax-font-weight-bold);
+		color: var(--ax-text-accent);
+		text-decoration: none;
 	}
 
-	.issues-list :global(.list-item:hover) {
-		background-color: transparent !important;
+	.view-all:hover {
+		text-decoration: underline;
 	}
 
 	.load-more {
 		display: flex;
 		justify-content: center;
-		padding: var(--ax-space-8) 0;
-		margin-top: var(--ax-space-8);
-	}
-
-	@media (max-width: 767px) {
-		.issues-list :global(.item) {
-			grid-template-columns: 1fr !important;
-			gap: var(--ax-space-4) !important;
-		}
-
-		.issues-list :global(.item .label) {
-			align-items: flex-start !important;
-		}
+		padding-top: var(--ax-space-4);
 	}
 </style>

@@ -431,11 +431,11 @@
 
 <ListItem>
 	<div style="display: flex; gap: 0.5rem; min-width: 0;">
-		<div class="activity-icon">
-			<Tooltip content={activityTooltip($data.__typename)}>
+		<Tooltip content={activityTooltip($data.__typename)}>
+			<div class="activity-icon">
 				<Icon size="1em" width="1em" height="1em" />
-			</Tooltip>
-		</div>
+			</div>
+		</Tooltip>
 
 		<div style="min-width: 0; overflow-wrap: anywhere;">
 			<TextComponent data={$data} />

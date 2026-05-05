@@ -97,6 +97,8 @@
 		gap: var(--ax-space-12);
 		align-items: start;
 		width: 100%;
+		--surface-icon-size: 2rem;
+		--surface-icon-glyph-size: 1.1rem;
 	}
 
 	.details {
