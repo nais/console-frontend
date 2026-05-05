@@ -45,7 +45,7 @@
 	.dark-theme,
 	.aksel-theme.dark
 ) {
-	--surface-shadow-color: rgba(128, 128, 128, 0.22);
+	--surface-shadow-color: rgba(61, 65, 111, 0.6);
 	--surface-elevated-background: linear-gradient(
 		180deg,
 		var(--ax-bg-accent-moderateA) 0%,
@@ -56,13 +56,13 @@
 		0 0 0 1px var(--ax-border-neutral-subtleA);
 	--surface-icon-background: linear-gradient(
 		to bottom right,
-		color-mix(in srgb, var(--surface-icon-color) 18%, var(--ax-bg-default)) 0%,
-		color-mix(in srgb, var(--surface-icon-color) 28%, var(--ax-bg-neutral-soft)) 100%
+		color-mix(in srgb, var(--surface-icon-color) 25%, white 33%) 0%,
+		color-mix(in srgb, var(--surface-icon-color) 50%, white 13%) 100%
 	);
 	--surface-icon-shadow:
-		0 0 0 1px color-mix(in srgb, var(--surface-icon-color) 22%, transparent),
-		0 20px 25px -5px color-mix(in srgb, var(--surface-icon-color) 16%, transparent),
-		0 8px 10px -6px color-mix(in srgb, var(--surface-icon-color) 14%, transparent);
+		0 0 0 1px color-mix(in srgb, var(--surface-icon-color) 26%, white 22%),
+		0 20px 25px -5px color-mix(in srgb, var(--surface-icon-color) 18%, transparent),
+		0 8px 10px -6px color-mix(in srgb, var(--surface-icon-color) 16%, transparent);
 }
 
 /* Mobile-first responsive breakpoints */
@@ -135,16 +135,6 @@ html {
 	position: relative;
 	z-index: 1;
 	isolation: isolate;
-}
-
-.surface-icon.surface-icon-timeline::before {
-	content: '';
-	position: absolute;
-	inset: -1px;
-	border-radius: calc(var(--ax-radius-8) + 1px);
-	background: var(--surface-elevated-background);
-	z-index: -1;
-	pointer-events: none;
 }
 
 .search-modal {
