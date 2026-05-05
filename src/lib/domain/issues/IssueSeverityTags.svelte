@@ -17,7 +17,7 @@
 	class:stacked={layout === 'stacked'}
 >
 	{#if critical > 0}
-		<Tag variant="error" size="xsmall">{critical} critical issue{critical > 1 ? 's' : ''}</Tag>
+		<Tag variant="error" size="xsmall">{critical} critical{critical > 1 ? 's' : ''}</Tag>
 	{/if}
 	{#if warning > 0}
 		<Tag variant="warning" size="xsmall">{warning} warning{warning > 1 ? 's' : ''}</Tag>
