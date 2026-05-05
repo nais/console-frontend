@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { ActivityLogActivityType, graphql, type ActivityLogFilter } from '$houdini';
+	import SurfaceCard from '$lib/ui/SurfaceCard.svelte';
 	import { Button, Loader } from '@nais/ds-svelte-community';
 	import { RocketIcon } from '@nais/ds-svelte-community/icons';
 	import type { Component } from 'svelte';
@@ -256,10 +257,7 @@
 	}
 </script>
 
-<div class="card-wrapper">
-	<div class="card-header">
-		<span class="eyebrow">Latest Activity</span>
-	</div>
+<SurfaceCard title="Latest Activity">
 	{#if $activityLogQuery.fetching || !$activityLogQuery.data}
 		<div
 			style="display: flex; justify-content: center; align-items: center; min-width: 100%; min-height: 300px;"
@@ -290,36 +288,9 @@
 			>
 		{/if}
 	{/if}
-</div>
+</SurfaceCard>
 
 <style>
-	.card-wrapper {
-		display: flex;
-		flex-direction: column;
-		gap: var(--ax-space-16);
-		padding: var(--ax-space-16);
-		border-radius: var(--ax-radius-8);
-		background: var(--surface-elevated-background);
-		box-shadow: var(--surface-elevated-shadow);
-		width: 100%;
-	}
-
-	.card-header {
-		display: flex;
-		justify-content: space-between;
-		align-items: center;
-		gap: var(--ax-space-8);
-	}
-
-	.eyebrow {
-		font-size: var(--ax-font-size-small);
-		font-weight: var(--ax-font-weight-bold);
-		line-height: var(--ax-font-line-height-large);
-		color: var(--ax-text-neutral-subtle);
-		text-transform: uppercase;
-		letter-spacing: 0.04em;
-	}
-
 	.activity-list {
 		display: flex;
 		flex-direction: column;
