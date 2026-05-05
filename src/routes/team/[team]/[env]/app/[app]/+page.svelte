@@ -12,34 +12,16 @@
 	import WorkloadDeploy from '$lib/domain/workload/WorkloadDeploy.svelte';
 	import Confirm from '$lib/ui/Confirm.svelte';
 	import GraphErrors from '$lib/ui/GraphErrors.svelte';
-	import IncomingIndicator from '$lib/ui/IncomingIndicator.svelte';
 	import List from '$lib/ui/List.svelte';
-	import RunningIndicator from '$lib/ui/RunningIndicator.svelte';
 	import Time from '$lib/ui/Time.svelte';
-	import { Alert, Button, Heading, Loader, Tag } from '@nais/ds-svelte-community';
-	import { ArrowCirclepathIcon, TrashIcon } from '@nais/ds-svelte-community/icons';
+	import { Alert, Button, Heading, Loader } from '@nais/ds-svelte-community';
+	import { TrashIcon } from '@nais/ds-svelte-community/icons';
 	import type { PageProps } from './$types';
 	import Ingresses from './Ingresses.svelte';
+	import InstanceGroups from './InstanceGroups.svelte';
 
 	let { data }: PageProps = $props();
 	let { App, teamSlug, viewerIsMember } = $derived(data);
-
-	const instanceGroups = $derived($App.data?.team.environment.application.instanceGroups ?? []);
-
-	// The newest group that isn't fully running is "incoming" (a rollout in progress).
-	// Everything else is "current". If there's only one group, it's always current.
-	const incoming = $derived(
-		instanceGroups.length > 1
-			? instanceGroups.reduce((newest, g) =>
-					new Date(g.created) > new Date(newest.created) ? g : newest
-				)
-			: null
-	);
-
-	function groupRole(group: (typeof instanceGroups)[number]) {
-		if (incoming && group.id === incoming.id) return 'incoming';
-		return 'current';
-	}
 
 	const restartAppMutation = () =>
 		graphql(`
@@ -63,6 +45,10 @@
 	let environment = $derived(page.params.env);
 
 	let restart = $state(false);
+
+	const openRestart = () => {
+		restart = true;
+	};
 
 	const submit = () => {
 		if (!application || !environment) {
@@ -121,57 +107,7 @@
 						</List>
 					</div>
 				{/if}
-				<div style="display:flex; flex-direction: column; gap: var(--ax-space-16);">
-					<div class="instances-header">
-						<Heading as="h3" size="medium">Instance groups</Heading>
-						{#if viewerIsMember}
-							<Button
-								variant="secondary"
-								size="small"
-								onclick={() => (restart = true)}
-								icon={ArrowCirclepathIcon}
-								disabled={app.deletionStartedAt !== null}
-							>
-								Restart app
-							</Button>
-						{/if}
-					</div>
-					{#each app.instanceGroups as group (group.id)}
-						{@const role = groupRole(group)}
-						{@const hasFailing = group.instances.some((i) => i.status.state === 'FAILING')}
-
-						<a
-							href="/team/{app.team.slug}/{app.teamEnvironment.environment
-								.name}/app/{app.name}/instancegroup/{group.name}"
-							class="instance-group-link"
-							class:incoming={role === 'incoming'}
-						>
-							{#if role === 'incoming'}
-								<IncomingIndicator />
-							{:else}
-								<RunningIndicator />
-							{/if}
-							<div class="instance-group-info">
-								<span class="instance-group-status">
-									{group.readyInstances}/{group.desiredInstances} running
-								</span>
-								<span class="instance-group-meta">
-									{group.image.tag} &middot; Updated <Time time={group.created} distance />
-								</span>
-							</div>
-							{#if hasFailing}
-								<Tag size="small" variant="error">Failing</Tag>
-							{/if}
-							{#if incoming}
-								{#if role === 'incoming'}
-									<Tag size="small" variant="alt1">Incoming</Tag>
-								{:else}
-									<Tag size="small" variant="neutral">Current</Tag>
-								{/if}
-							{/if}
-						</a>
-					{/each}
-				</div>
+				<InstanceGroups {app} {viewerIsMember} onRestart={openRestart} />
 				<div>
 					<Ingresses app={$App.data} />
 				</div>
@@ -229,12 +165,6 @@
 		gap: var(--spacing-layout);
 	}
 
-	.instances-header {
-		display: flex;
-		justify-content: space-between;
-		align-items: center;
-	}
-
 	.detail-actions {
 		display: flex;
 		justify-content: flex-end;
@@ -248,43 +178,6 @@
 		gap: var(--spacing-layout);
 	}
 
-	.instance-group-link {
-		display: flex;
-		align-items: center;
-		gap: var(--ax-space-12);
-		padding: var(--ax-space-12) var(--ax-space-16);
-		border: 1px solid var(--ax-border-neutral);
-		border-radius: var(--ax-radius-8);
-		text-decoration: none;
-		color: inherit;
-	}
-
-	.instance-group-link:hover {
-		background-color: var(--ax-bg-neutral-moderate-hover);
-	}
-
-	.instance-group-link.incoming {
-		border-style: dashed;
-	}
-
-	.instance-group-info {
-		display: flex;
-		flex-direction: column;
-		gap: var(--ax-space-2);
-		flex: 1;
-		min-width: 0;
-	}
-
-	.instance-group-status {
-		font-weight: var(--ax-font-weight-bold);
-	}
-
-	.instance-group-meta {
-		font-size: var(--ax-font-size-small);
-		color: var(--ax-text-neutral-subtle);
-		overflow-wrap: anywhere;
-	}
-
 	/* Mobile responsive layout */
 	@media (max-width: 767px), (max-height: 500px) {
 		.app-content {
@@ -293,21 +186,6 @@
 
 		.detail-actions :global(button),
 		.detail-actions :global(a) {
-			width: 100%;
-		}
-
-		.instances-header {
-			flex-direction: column;
-			align-items: flex-start;
-			gap: var(--ax-space-12);
-		}
-
-		.instance-group-link {
-			flex-wrap: wrap;
-			align-items: flex-start;
-		}
-
-		.instances-header :global(button) {
 			width: 100%;
 		}
 	}
