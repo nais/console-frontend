@@ -99,7 +99,6 @@
 		gap: var(--ax-space-16);
 		padding: var(--ax-space-16);
 		border-radius: var(--ax-radius-8);
-		/* background: var(--surface-elevated-background); */
 		background: var(--ax-bg-neutral-softA);
 		box-shadow: var(--surface-elevated-shadow);
 		width: 100%;

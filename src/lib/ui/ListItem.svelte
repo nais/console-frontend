@@ -16,7 +16,11 @@
 
 <style>
 	.list-item {
-		background-color: var(--ax-neutral-100);
+		background: linear-gradient(
+			180deg,
+			var(--ax-neutral-100) 97%,
+			color-mix(in srgb, var(--ax-neutral-100) 25%, var(--ax-neutral-200)) 100%
+		);
 		display: grid;
 		grid-template-columns: 1fr;
 		grid-auto-flow: column;
@@ -41,7 +45,12 @@
 	}
 
 	a.list-item:hover {
-		background-color: var(--ax-neutral-300);
+		background: linear-gradient(
+			180deg,
+			var(--ax-neutral-100) 0%,
+			var(--ax-neutral-200) 35%,
+			var(--ax-neutral-300) 100%
+		);
 	}
 
 	a.list-item:focus-visible {
