@@ -20,13 +20,13 @@
 		PackageIcon,
 		PadlockLockedIcon,
 		PersonGroupIcon,
+		PiggybankIcon,
 		QuestionmarkIcon,
 		RocketIcon,
 		ShieldLockIcon,
 		TrashIcon,
 		VirusIcon,
-		VitalsIcon,
-		WalletIcon
+		VitalsIcon
 	} from '@nais/ds-svelte-community/icons';
 
 	const { icon } = $props();
@@ -67,7 +67,7 @@
 			case 'deployments':
 				return RocketIcon;
 			case 'cost':
-				return WalletIcon;
+				return PiggybankIcon;
 			case 'utilization':
 				return LineGraphStackedIcon;
 			case 'vulnerabilities':

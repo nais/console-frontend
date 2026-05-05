@@ -6,8 +6,8 @@
 		GlobeIcon,
 		PackageIcon,
 		PersonGroupIcon,
-		RocketIcon,
-		WalletIcon
+		PiggybankIcon,
+		RocketIcon
 	} from '@nais/ds-svelte-community/icons';
 	import { defineMeta } from '@storybook/addon-svelte-csf';
 	import TooltipAlignHack from './TooltipAlignHack.svelte';
@@ -37,7 +37,7 @@
 </Story>
 
 <Story name="Menu item" asChild>
-	<IconLabel label="Cost" icon={WalletIcon} />
+	<IconLabel label="Cost" icon={PiggybankIcon} />
 </Story>
 
 <Story name="Ingress" asChild>

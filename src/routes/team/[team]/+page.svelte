@@ -1,12 +1,9 @@
 <script lang="ts">
 	import { page } from '$app/state';
-	import { AlertState } from '$houdini';
 	import TeamOverviewActivityLog from '$lib/domain/activity/team-overview/TeamOverviewActivityLog.svelte';
-	import AggregatedCostForTeam from '$lib/domain/cost/AggregatedCostForTeam.svelte';
 	import CriticalIssues from '$lib/domain/issues/CriticalIssues.svelte';
-	import IssueSummary from '$lib/domain/issues/IssueSummary.svelte';
-	import PrometheusAlert from '$lib/domain/monitoring/PrometheusAlert.svelte';
-	import VulnerabilitySummary from '$lib/domain/vulnerability/VulnerabilitySummary.svelte';
+	import TeamInventory from '$lib/domain/team/TeamInventory.svelte';
+	import TeamSummary from '$lib/domain/team/TeamSummary.svelte';
 	import GraphErrors from '$lib/ui/GraphErrors.svelte';
 	import { Alert, BodyShort } from '@nais/ds-svelte-community';
 	import type { PageProps } from './$types';
@@ -31,34 +28,19 @@
 
 <GraphErrors errors={$TeamOverview.errors} />
 
-{#if $TeamOverview.data?.team.firingAlerts.pageInfo.totalCount}
-	<div class="alerts-wrapper">
-		<PrometheusAlert
-			{teamSlug}
-			alerts={$TeamOverview.data?.team.firingAlerts.nodes}
-			collapsible={false}
-			alertsState={AlertState.FIRING}
-		/>
-	</div>
-{/if}
-
 <div class="wrapper">
 	<div class="main-content">
+		<TeamSummary
+			{teamSlug}
+			criticalIssues={$TeamOverview.data?.team.criticals.pageInfo.totalCount ?? 0}
+			firingAlerts={$TeamOverview.data?.team.firingAlerts.pageInfo.totalCount ?? 0}
+			loading={$TeamOverview.fetching}
+		/>
+		<TeamInventory {teamSlug} />
 		<CriticalIssues {teamSlug} />
-		<div>
-			<AggregatedCostForTeam {teamSlug} />
-		</div>
 	</div>
 	<div class="summary-cards">
 		<TeamOverviewActivityLog {teamSlug} />
-		<IssueSummary
-			critical={$TeamOverview.data?.team.criticals.pageInfo.totalCount}
-			warning={$TeamOverview.data?.team.warnings.pageInfo.totalCount}
-			todo={$TeamOverview.data?.team.todos.pageInfo.totalCount}
-			{teamSlug}
-			loading={$TeamOverview.fetching}
-		/>
-		<VulnerabilitySummary {teamSlug} />
 	</div>
 </div>
 
@@ -85,13 +67,7 @@
 		display: grid;
 		grid-template-columns: minmax(0, 1fr);
 		gap: var(--spacing-layout);
-	}
-
-	.alerts-wrapper {
-		display: flex;
-		flex-direction: column;
-		gap: var(--ax-space-8);
-		padding-bottom: var(--spacing-layout);
+		align-self: start;
 	}
 
 	.team-info {
