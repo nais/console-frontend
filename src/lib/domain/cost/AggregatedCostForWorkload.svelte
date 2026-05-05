@@ -3,7 +3,8 @@
 	import CostChart from '$lib/chart/CostChart.svelte';
 	import { prepareMonthlyCostSeries } from '$lib/domain/cost/cost';
 	import GraphErrors from '$lib/ui/GraphErrors.svelte';
-	import { Detail, Heading, Link, Loader } from '@nais/ds-svelte-community';
+	import SurfaceCard from '$lib/ui/SurfaceCard.svelte';
+	import { Detail, Link, Loader } from '@nais/ds-svelte-community';
 
 	const costQuery = graphql(`
 		query AggregatedCost($team: Slug!, $environment: String!, $workload: String!) {
@@ -70,11 +71,7 @@
 	});
 </script>
 
-<div class="wrapper">
-	<div class="container">
-		<Heading as="h3" size="small">Cost</Heading>
-	</div>
-
+<SurfaceCard title="Cost">
 	<GraphErrors errors={$costQuery.errors} />
 
 	{#if $costQuery.fetching || (!$costQuery.data && !$costQuery.errors?.length)}
@@ -92,24 +89,11 @@
 			<Link href={detailsHref}>View details</Link>
 		{/if}
 	{:else}
-		No cost data available
+		<Detail>No cost data available</Detail>
 	{/if}
-</div>
+</SurfaceCard>
 
 <style>
-	.wrapper {
-		display: flex;
-		flex-direction: column;
-		align-items: start;
-		gap: var(--ax-space-4);
-	}
-
-	.container {
-		display: flex;
-		align-items: center;
-		gap: var(--ax-space-4);
-	}
-
 	.loading {
 		display: flex;
 		justify-content: center;

@@ -5,6 +5,7 @@
 		type WorkloadActivityEntryFragment$data,
 		type WorkloadLatestActivityFragment
 	} from '$houdini';
+	import SurfaceCard from '$lib/ui/SurfaceCard.svelte';
 	import { Button } from '@nais/ds-svelte-community';
 	import { RocketIcon } from '@nais/ds-svelte-community/icons';
 	import { get } from 'svelte/store';
@@ -33,11 +34,7 @@
 	}
 </script>
 
-<div class="card-wrapper">
-	<div class="card-header">
-		<span class="eyebrow">{title}</span>
-	</div>
-
+<SurfaceCard {title}>
 	{#if latestEntries.length > 0}
 		<div class:multi-item={latestEntries.length > 1} class="activity-list">
 			{#each latestEntries as entry (entry.id)}
@@ -61,37 +58,9 @@
 	{/if}
 
 	<Button as="a" {href} variant="tertiary" size="small">View activity log</Button>
-</div>
+</SurfaceCard>
 
 <style>
-	.card-wrapper {
-		display: flex;
-		flex-direction: column;
-		gap: var(--ax-space-16);
-		padding: var(--ax-space-16);
-		border-radius: var(--ax-radius-8);
-		background: var(--surface-elevated-background);
-		box-shadow: var(--surface-elevated-shadow);
-		width: 100%;
-		min-width: 0;
-	}
-
-	.card-header {
-		display: flex;
-		justify-content: space-between;
-		align-items: center;
-		gap: var(--ax-space-8);
-	}
-
-	.eyebrow {
-		font-size: var(--ax-font-size-small);
-		font-weight: var(--ax-font-weight-bold);
-		line-height: var(--ax-font-line-height-large);
-		color: var(--ax-text-neutral-subtle);
-		text-transform: uppercase;
-		letter-spacing: 0.04em;
-	}
-
 	.card-content {
 		display: grid;
 		grid-template-columns: auto 1fr;
@@ -165,10 +134,6 @@
 	}
 
 	@media (max-width: 767px), (max-height: 500px) {
-		.card-wrapper {
-			padding: var(--ax-space-12);
-		}
-
 		.card-content {
 			display: flex;
 			flex-direction: column;

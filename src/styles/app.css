@@ -17,21 +17,28 @@
 	--surface-elevated-background: linear-gradient(
 		105deg,
 		var(--ax-bg-neutral-softA) 50%,
-		color-mix(in srgb, var(--ax-bg-neutral-softA) 25%, var(--ax-bg-moderateA)) 100%
+		color-mix(in srgb, var(--ax-bg-neutral-softA) 66%, var(--ax-bg-moderateA)) 100%
+	);
+	--surface-elevated-background-reverse: linear-gradient(
+		285deg,
+		var(--ax-bg-neutral-softA) 50%,
+		color-mix(in srgb, var(--ax-bg-neutral-softA) 66%, var(--ax-bg-moderateA)) 100%
 	);
 	--surface-icon-background: linear-gradient(
 		to bottom right,
-		color-mix(in srgb, var(--surface-icon-color) 25%, var(--ax-bg-default)) 0%,
-		color-mix(in srgb, var(--surface-icon-color) 50%, var(--ax-bg-default)) 100%
+		color-mix(in srgb, var(--surface-icon-color) 16%, var(--ax-bg-default) 84%) 0%,
+		color-mix(in srgb, var(--surface-icon-color) 22%, var(--ax-bg-default) 78%) 48%,
+		color-mix(in srgb, var(--surface-icon-color) 30%, var(--ax-bg-default) 70%) 100%
 	);
 
 	--surface-elevated-shadow:
 		0 10px 15px -10px var(--surface-shadow-color), 0 4px 6px -4px var(--surface-shadow-color),
 		0 0 0 1px var(--ax-border-neutral-subtleA);
 	--surface-icon-shadow:
-		0 0 0 1px color-mix(in srgb, var(--surface-icon-color) 30%, transparent),
-		0 20px 25px -5px color-mix(in srgb, var(--surface-icon-color) 30%, transparent),
-		0 8px 10px -6px color-mix(in srgb, var(--surface-icon-color) 30%, transparent);
+		inset 0 1px 0 color-mix(in srgb, white 92%, var(--surface-icon-color) 8%),
+		0 0 0 1px color-mix(in srgb, var(--surface-icon-color) 20%, white 80%),
+		0 20px 25px -5px color-mix(in srgb, var(--surface-icon-color) 24%, transparent),
+		0 8px 10px -6px color-mix(in srgb, var(--surface-icon-color) 20%, transparent);
 }
 
 :where(
@@ -46,22 +53,28 @@
 	.aksel-theme.dark
 ) {
 	--surface-shadow-color: rgba(61, 65, 111, 0.6);
-	--surface-elevated-background: var(--ax-bg-neutral-softA);
-	/* --surface-elevated-background: linear-gradient(
-		180deg,
-		var(--ax-bg-accent-moderateA) 0%,
-		var(--ax-bg-accent-softA) 100%
-	); */
+	--surface-elevated-background: linear-gradient(
+		105deg,
+		var(--ax-bg-neutral-softA) 50%,
+		color-mix(in srgb, var(--ax-bg-neutral-softA) 66%, var(--ax-bg-moderateA)) 100%
+	);
+	--surface-elevated-background-reverse: linear-gradient(
+		285deg,
+		var(--ax-bg-neutral-softA) 50%,
+		color-mix(in srgb, var(--ax-bg-neutral-softA) 66%, var(--ax-bg-moderateA)) 100%
+	);
 	--surface-elevated-shadow:
 		0 10px 15px -10px var(--surface-shadow-color), 0 4px 6px -4px var(--surface-shadow-color),
 		0 0 0 1px var(--ax-border-neutral-subtleA);
 	--surface-icon-background: linear-gradient(
 		to bottom right,
-		color-mix(in srgb, var(--surface-icon-color) 25%, white 33%) 0%,
-		color-mix(in srgb, var(--surface-icon-color) 50%, white 13%) 100%
+		color-mix(in srgb, var(--surface-icon-color) 14%, white 46%) 0%,
+		color-mix(in srgb, var(--surface-icon-color) 22%, white 38%) 48%,
+		color-mix(in srgb, var(--surface-icon-color) 32%, white 28%) 100%
 	);
 	--surface-icon-shadow:
-		0 0 0 1px color-mix(in srgb, var(--surface-icon-color) 26%, white 22%),
+		inset 0 1px 0 color-mix(in srgb, white 24%, var(--surface-icon-color) 26%),
+		0 0 0 1px color-mix(in srgb, var(--surface-icon-color) 18%, white 32%),
 		0 20px 25px -5px color-mix(in srgb, var(--surface-icon-color) 18%, transparent),
 		0 8px 10px -6px color-mix(in srgb, var(--surface-icon-color) 16%, transparent);
 }

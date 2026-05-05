@@ -7,6 +7,7 @@
 	} from '$houdini';
 	import DeploymentStatus from '$lib/ui/DeploymentStatus.svelte';
 	import ExternalLink from '$lib/ui/ExternalLink.svelte';
+	import SurfaceCard from '$lib/ui/SurfaceCard.svelte';
 	import Time from '$lib/ui/Time.svelte';
 	import { BodyShort } from '@nais/ds-svelte-community';
 	import { RocketIcon } from '@nais/ds-svelte-community/icons';
@@ -47,13 +48,14 @@
 	);
 </script>
 
-<div class="wrapper">
-	{#if deploymentInfo}
-		<div class="header">
-			<span class="eyebrow">Latest deployment</span>
+<SurfaceCard title="Latest deployment">
+	{#snippet headerAside()}
+		{#if deploymentInfo}
 			<DeploymentStatus status={deploymentStatus} />
-		</div>
+		{/if}
+	{/snippet}
 
+	{#if deploymentInfo}
 		<div class="content">
 			<div class="surface-icon">
 				<RocketIcon />
@@ -79,9 +81,6 @@
 			</div>
 		</div>
 	{:else}
-		<div class="header">
-			<span class="eyebrow">Latest deployment</span>
-		</div>
 		<div class="content empty-state">
 			<div class="surface-icon">
 				<RocketIcon />
@@ -89,36 +88,9 @@
 			<BodyShort>No deployment metadata found for workload.</BodyShort>
 		</div>
 	{/if}
-</div>
+</SurfaceCard>
 
 <style>
-	.wrapper {
-		display: flex;
-		flex-direction: column;
-		gap: var(--ax-space-16);
-		padding: var(--ax-space-16);
-		border-radius: var(--ax-radius-8);
-		background: var(--surface-elevated-background);
-		box-shadow: var(--surface-elevated-shadow);
-		width: 100%;
-	}
-
-	.header {
-		display: flex;
-		justify-content: space-between;
-		align-items: center;
-		gap: var(--ax-space-8);
-	}
-
-	.eyebrow {
-		font-size: var(--ax-font-size-small);
-		font-weight: var(--ax-font-weight-bold);
-		line-height: var(--ax-font-line-height-large);
-		color: var(--ax-text-neutral-subtle);
-		text-transform: uppercase;
-		letter-spacing: 0.04em;
-	}
-
 	.content {
 		display: grid;
 		grid-template-columns: auto 1fr;
@@ -160,11 +132,6 @@
 	}
 
 	@media (max-width: 767px), (max-height: 500px) {
-		.wrapper {
-			padding: var(--ax-space-12);
-		}
-
-		.header,
 		.content {
 			grid-template-columns: 1fr;
 		}
