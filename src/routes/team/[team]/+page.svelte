@@ -30,6 +30,7 @@
 
 <div class="wrapper">
 	<div class="main-content">
+		<CriticalIssues {teamSlug} />
 		<TeamSummary
 			{teamSlug}
 			criticalIssues={$TeamOverview.data?.team.criticals.pageInfo.totalCount ?? 0}
@@ -37,7 +38,6 @@
 			loading={$TeamOverview.fetching}
 		/>
 		<TeamInventory {teamSlug} />
-		<CriticalIssues {teamSlug} />
 	</div>
 	<div class="summary-cards">
 		<TeamOverviewActivityLog {teamSlug} />

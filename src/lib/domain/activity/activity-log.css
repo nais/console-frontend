@@ -35,8 +35,12 @@
 	align-items: center;
 	justify-content: center;
 
-	width: 32px;
-	height: 32px;
+	width: 2rem;
+	height: 2rem;
+	font-size: 1.1rem;
 	flex-shrink: 0;
-	color: var(--ax-text-subtle);
+	border-radius: var(--ax-radius-8);
+	color: var(--surface-icon-color);
+	background: var(--surface-icon-background);
+	box-shadow: var(--surface-icon-shadow);
 }

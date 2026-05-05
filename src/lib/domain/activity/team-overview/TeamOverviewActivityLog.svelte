@@ -302,6 +302,8 @@
 		position: relative;
 		gap: var(--ax-space-12);
 		align-items: flex-start;
+		--surface-icon-size: 2rem;
+		--surface-icon-glyph-size: 1.1rem;
 	}
 
 	.item:not(:last-child)::before {

@@ -15,7 +15,12 @@
 	import List from '$lib/ui/List.svelte';
 	import Time from '$lib/ui/Time.svelte';
 	import { Alert, Button, Heading, Loader } from '@nais/ds-svelte-community';
-	import { TrashIcon } from '@nais/ds-svelte-community/icons';
+	import { ActionMenu, ActionMenuItem } from '@nais/ds-svelte-community/experimental';
+	import {
+		ArrowCirclepathIcon,
+		MenuElipsisVerticalIcon,
+		TrashIcon
+	} from '@nais/ds-svelte-community/icons';
 	import type { PageProps } from './$types';
 	import Ingresses from './Ingresses.svelte';
 	import InstanceGroups from './InstanceGroups.svelte';
@@ -78,15 +83,36 @@
 			<div class="main-section">
 				{#if viewerIsMember}
 					<div class="detail-actions">
-						<Button
-							as="a"
-							variant="danger"
-							size="small"
-							href="/team/{page.params.team}/{page.params.env}/app/{page.params.app}/delete"
-							icon={TrashIcon}
-						>
-							Delete
-						</Button>
+						<ActionMenu>
+							{#snippet trigger(props)}
+								<Button
+									variant="tertiary-neutral"
+									size="small"
+									icon={MenuElipsisVerticalIcon}
+									{...props}
+								>
+									Actions
+								</Button>
+							{/snippet}
+							<button
+								class="action-menu-button"
+								onclick={openRestart}
+								disabled={app.deletionStartedAt !== null}
+							>
+								<ActionMenuItem
+									icon={ArrowCirclepathIcon}
+									disabled={app.deletionStartedAt !== null}
+								>
+									Restart app
+								</ActionMenuItem>
+							</button>
+							<a
+								class="action-menu-button"
+								href="/team/{page.params.team}/{page.params.env}/app/{page.params.app}/delete"
+							>
+								<ActionMenuItem icon={TrashIcon} variant="danger">Delete app</ActionMenuItem>
+							</a>
+						</ActionMenu>
 					</div>
 				{/if}
 				{#if app.deletionStartedAt}
@@ -107,7 +133,7 @@
 						</List>
 					</div>
 				{/if}
-				<InstanceGroups {app} {viewerIsMember} onRestart={openRestart} />
+				<InstanceGroups {app} />
 				<div>
 					<Ingresses app={$App.data} />
 				</div>
@@ -170,6 +196,12 @@
 		justify-content: flex-end;
 		gap: var(--ax-space-8);
 		flex-wrap: wrap;
+	}
+
+	.action-menu-button {
+		all: unset;
+		display: contents;
+		cursor: pointer;
 	}
 
 	.sidebar {

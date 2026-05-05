@@ -77,6 +77,8 @@
 
 	.activity-item {
 		position: relative;
+		--surface-icon-size: 2rem;
+		--surface-icon-glyph-size: 1.1rem;
 	}
 
 	.activity-item:not(:last-child)::before {

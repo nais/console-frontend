@@ -4,8 +4,8 @@
 	import RunningIndicator from '$lib/ui/RunningIndicator.svelte';
 	import SurfaceCard from '$lib/ui/SurfaceCard.svelte';
 	import Time from '$lib/ui/Time.svelte';
-	import { Button, Tag } from '@nais/ds-svelte-community';
-	import { ArrowCirclepathIcon, CloudSlashIcon } from '@nais/ds-svelte-community/icons';
+	import { Tag } from '@nais/ds-svelte-community';
+	import { CloudSlashIcon } from '@nais/ds-svelte-community/icons';
 
 	type TeamData = NonNullable<App$result['team']>;
 	type EnvironmentData = NonNullable<TeamData['environment']>;
@@ -14,11 +14,9 @@
 
 	interface Props {
 		app: AppData;
-		viewerIsMember: boolean;
-		onRestart: () => void;
 	}
 
-	let { app, viewerIsMember, onRestart }: Props = $props();
+	let { app }: Props = $props();
 
 	const incoming = $derived.by(() => {
 		if (app.instanceGroups.length <= 1) {
@@ -37,20 +35,6 @@
 </script>
 
 <SurfaceCard title="Instance groups" reverseGradient>
-	{#snippet headerAside()}
-		{#if viewerIsMember}
-			<Button
-				variant="secondary"
-				size="small"
-				onclick={onRestart}
-				icon={ArrowCirclepathIcon}
-				disabled={app.deletionStartedAt !== null}
-			>
-				Restart app
-			</Button>
-		{/if}
-	{/snippet}
-
 	{#each app.instanceGroups as group (group.id)}
 		{@const role = groupRole(group)}
 		{@const hasFailing = group.instances.some((instance) => instance.status.state === 'FAILING')}
