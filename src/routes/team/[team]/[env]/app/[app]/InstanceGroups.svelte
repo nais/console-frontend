@@ -2,6 +2,7 @@
 	import { type App$result } from '$houdini';
 	import IncomingIndicator from '$lib/ui/IncomingIndicator.svelte';
 	import RunningIndicator from '$lib/ui/RunningIndicator.svelte';
+	import SurfaceCard from '$lib/ui/SurfaceCard.svelte';
 	import Time from '$lib/ui/Time.svelte';
 	import { Button, Tag } from '@nais/ds-svelte-community';
 	import { ArrowCirclepathIcon } from '@nais/ds-svelte-community/icons';
@@ -35,9 +36,8 @@
 	}
 </script>
 
-<div class="instance-groups">
-	<div class="instances-header">
-		<h3 class="eyebrow">Instance groups</h3>
+<SurfaceCard title="Instance groups" reverseGradient>
+	{#snippet headerAside()}
 		{#if viewerIsMember}
 			<Button
 				variant="secondary"
@@ -49,7 +49,7 @@
 				Restart app
 			</Button>
 		{/if}
-	</div>
+	{/snippet}
 
 	{#each app.instanceGroups as group (group.id)}
 		{@const role = groupRole(group)}
@@ -90,38 +90,9 @@
 			</div>
 		</a>
 	{/each}
-</div>
+</SurfaceCard>
 
 <style>
-	.instance-groups {
-		display: flex;
-		flex-direction: column;
-		gap: var(--ax-space-16);
-		padding: var(--ax-space-16);
-		border-radius: var(--ax-radius-8);
-		background: var(--ax-bg-neutral-softA);
-		box-shadow: var(--surface-elevated-shadow);
-		width: 100%;
-		min-width: 0;
-	}
-
-	.instances-header {
-		display: flex;
-		justify-content: space-between;
-		align-items: center;
-		gap: var(--ax-space-8);
-	}
-
-	.eyebrow {
-		margin: 0;
-		font-size: var(--ax-font-size-small);
-		font-weight: var(--ax-font-weight-bold);
-		line-height: var(--ax-font-line-height-large);
-		color: var(--ax-text-neutral-subtle);
-		text-transform: uppercase;
-		letter-spacing: 0.04em;
-	}
-
 	.instance-group-link {
 		display: grid;
 		grid-template-columns: auto minmax(0, 1fr) auto;
@@ -148,7 +119,7 @@
 	}
 
 	.instance-group-link.incoming {
-		border: 1px dashed color-mix(in srgb, var(--surface-icon-color) 24%, transparent);
+		border: 1px dashed var(--ax-border-neutral-subtle);
 		box-shadow: none;
 	}
 
@@ -189,16 +160,6 @@
 	}
 
 	@media (max-width: 767px), (max-height: 500px) {
-		.instance-groups {
-			padding: var(--ax-space-12);
-		}
-
-		.instances-header {
-			flex-direction: column;
-			align-items: flex-start;
-			gap: var(--ax-space-12);
-		}
-
 		.instance-group-link {
 			grid-template-columns: auto 1fr;
 			align-items: flex-start;
@@ -210,8 +171,14 @@
 			justify-content: flex-start;
 		}
 
-		.instances-header :global(button) {
+		:global(.header button) {
 			width: 100%;
+		}
+
+		:global(.header) {
+			flex-direction: column;
+			align-items: flex-start;
+			gap: var(--ax-space-12);
 		}
 	}
 </style>
