@@ -1,11 +1,12 @@
 <script lang="ts">
+	import { page } from '$app/state';
 	import PrometheusUtilizationDonut from '$lib/chart/PrometheusUtilizationDonut.svelte';
 	import { docURL } from '$lib/doc';
 	import WorkloadLink from '$lib/domain/workload/WorkloadLink.svelte';
 	import ExternalLink from '$lib/ui/ExternalLink.svelte';
 	import { sanitizePromLabel } from '$lib/utils/formatters';
-	import { Alert, BodyShort, CopyButton, Heading } from '@nais/ds-svelte-community';
-	import { CheckmarkIcon, XMarkIcon } from '@nais/ds-svelte-community/icons';
+	import { Alert, BodyShort, Button, CopyButton, Heading } from '@nais/ds-svelte-community';
+	import { CheckmarkIcon, TrashIcon, XMarkIcon } from '@nais/ds-svelte-community/icons';
 	import type { PageProps } from './$types';
 
 	let { data }: PageProps = $props();
@@ -152,6 +153,19 @@ clamp_min(
 {:else if instance}
 	<div class="wrapper">
 		<div class="content">
+			{#if viewerIsMember}
+				<div class="detail-actions">
+					<Button
+						as="a"
+						variant="danger"
+						size="small"
+						href="/team/{page.params.team}/{page.params.env}/postgres/{page.params.postgres}/delete"
+						icon={TrashIcon}
+					>
+						Delete
+					</Button>
+				</div>
+			{/if}
 			<div class="summary-grid">
 				<PrometheusUtilizationDonut
 					{environmentName}
@@ -323,6 +337,14 @@ clamp_min(
 		min-width: 0;
 	}
 
+	.detail-actions {
+		display: flex;
+		justify-content: flex-end;
+		margin-bottom: var(--ax-space-16);
+		gap: var(--ax-space-8);
+		flex-wrap: wrap;
+	}
+
 	.summary-grid {
 		display: grid;
 		grid-template-columns: repeat(4, 1fr);
@@ -401,6 +423,11 @@ clamp_min(
 	@media (max-width: 767px) {
 		.wrapper {
 			grid-template-columns: 1fr;
+		}
+
+		.detail-actions :global(button),
+		.detail-actions :global(a) {
+			width: 100%;
 		}
 
 		.summary-grid {
