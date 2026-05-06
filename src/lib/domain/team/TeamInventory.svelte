@@ -455,7 +455,7 @@
 	}
 
 	.resource-label {
-		color: var(--ax-text-subtle);
+		color: var(--ax-text-neutral);
 	}
 
 	.resource-count {

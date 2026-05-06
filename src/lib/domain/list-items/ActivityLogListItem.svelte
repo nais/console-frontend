@@ -7,8 +7,8 @@
 	import { icons } from '../activity/activity-log-icons';
 	import { activityTooltip } from '../activity/activity-log-tooltip';
 	import '../activity/activity-log.css';
-	import ApplicationDeletedActivityLogEntryText from '../activity/shared/texts/ApplicationDeletedActivityLogEntryText.svelte';
 	import ApplicationCreatedActivityLogEntryText from '../activity/shared/texts/ApplicationCreatedActivityLogEntryText.svelte';
+	import ApplicationDeletedActivityLogEntryText from '../activity/shared/texts/ApplicationDeletedActivityLogEntryText.svelte';
 	import ApplicationRestartedActivityLogEntryText from '../activity/shared/texts/ApplicationRestartedActivityLogEntryText.svelte';
 	import ApplicationScaledActivityLogEntryText from '../activity/shared/texts/ApplicationScaledActivityLogEntryText.svelte';
 	import ApplicationUpdatedActivityLogEntryText from '../activity/shared/texts/ApplicationUpdatedActivityLogEntryText.svelte';
@@ -430,7 +430,7 @@
 </script>
 
 <ListItem>
-	<div style="display: flex; gap: 0.5rem; min-width: 0;">
+	<div class="activity-log-list-item">
 		<Tooltip content={activityTooltip($data.__typename)}>
 			<div class="activity-icon">
 				<Icon size="1em" width="1em" height="1em" />
@@ -442,3 +442,11 @@
 		</div>
 	</div>
 </ListItem>
+
+<style>
+	.activity-log-list-item {
+		display: flex;
+		align-items: center;
+		gap: var(--ax-space-12);
+	}
+</style>
