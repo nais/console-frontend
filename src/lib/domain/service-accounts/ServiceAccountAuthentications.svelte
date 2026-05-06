@@ -17,10 +17,10 @@
 
 	interface Props {
 		serviceAccount: ServiceAccountAuthenticationFragment;
-		viewerIsMember?: boolean;
+		canManage?: boolean;
 	}
 
-	let { serviceAccount, viewerIsMember = false }: Props = $props();
+	let { serviceAccount, canManage = false }: Props = $props();
 
 	const data = $derived(
 		fragment(
@@ -101,7 +101,7 @@
 	<GraphErrors errors={removeErrors} dismissable />
 
 	{#if totalMethods > 0}
-		{#if viewerIsMember}
+		{#if canManage}
 			<div class="actions">
 				<Button
 					size="small"
@@ -158,7 +158,7 @@
 								Created <Time time={binding.createdAt} distance={true} />
 							</Detail>
 						</Tooltip>
-						{#if viewerIsMember}
+						{#if canManage}
 							<Button
 								size="xsmall"
 								variant="tertiary-neutral"
@@ -214,7 +214,7 @@
 								</Detail>
 							</Tooltip>
 						{/if}
-						{#if viewerIsMember}
+						{#if canManage}
 							<Button
 								size="xsmall"
 								variant="tertiary-neutral"
@@ -236,7 +236,7 @@
 	{:else}
 		<Heading size="small" as="h3">Authentication methods</Heading>
 		<p>No available authentication methods.</p>
-		{#if viewerIsMember}
+		{#if canManage}
 			<div class="actions">
 				<Button
 					size="small"

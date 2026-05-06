@@ -30,14 +30,14 @@
 		serviceAccount,
 		teamSlug,
 		roles,
-		viewerIsMember
+		canManage
 	}: {
 		serviceAccount: ServiceAccountData;
 		environments: { environment: { name: string } }[];
 		teamSlug: string;
 		roles: AvailableRolesFragment;
 		onmutated?: () => void;
-		viewerIsMember: boolean;
+		canManage: boolean;
 	} = $props();
 
 	const deleteServiceAccount = graphql(`
@@ -96,7 +96,7 @@
 			</dd>
 		</dl>
 
-		{#if viewerIsMember}
+		{#if canManage}
 			<div>
 				<Button variant="danger" size="small" onclick={() => (deleteServiceAccountOpen = true)}>
 					{#snippet icon()}
@@ -108,8 +108,8 @@
 		{/if}
 	</section>
 
-	<ServiceAccountRoles serviceAccountRoles={serviceAccount} {roles} {viewerIsMember} />
-	<ServiceAccountAuthentications {serviceAccount} {viewerIsMember} />
+	<ServiceAccountRoles serviceAccountRoles={serviceAccount} {roles} {canManage} />
+	<ServiceAccountAuthentications {serviceAccount} {canManage} />
 </div>
 
 <Confirm

@@ -14,7 +14,8 @@
 		ServiceAccountDetail: query,
 		serviceAccountName,
 		teamSlug,
-		viewerIsMember
+		viewerIsOwner,
+		isAdmin
 	} = $derived(data);
 
 	const serviceAccount = $derived(
@@ -40,7 +41,7 @@
 		{environments}
 		{teamSlug}
 		roles={$query.data!}
-		{viewerIsMember}
+		canManage={viewerIsOwner || isAdmin}
 	/>
 {:else if $query.data}
 	<Alert variant="warning">

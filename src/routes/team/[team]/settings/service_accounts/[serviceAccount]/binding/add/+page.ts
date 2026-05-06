@@ -5,7 +5,7 @@ import { error } from '@sveltejs/kit';
 export async function load(event) {
 	const parent = await event.parent();
 
-	if (!parent.viewerIsMember) {
+	if (!parent.viewerIsOwner && !parent.isAdmin) {
 		error(403, 'You do not have access to this page');
 	}
 

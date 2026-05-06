@@ -10,10 +10,10 @@
 	interface Props {
 		roles: AvailableRolesFragment;
 		serviceAccountRoles: ServiceAccountRolesFragment;
-		viewerIsMember?: boolean;
+		canManage?: boolean;
 	}
 
-	let { roles, serviceAccountRoles, viewerIsMember = false }: Props = $props();
+	let { roles, serviceAccountRoles, canManage = false }: Props = $props();
 
 	const data = $derived(
 		paginatedFragment(
@@ -128,7 +128,7 @@
 <section>
 	<Heading size="small" as="h3">Roles</Heading>
 
-	{#if viewerIsMember}
+	{#if canManage}
 		<Button size="small" variant="secondary" onclick={() => (editable = !editable)}>
 			{editable ? 'Cancel' : 'Edit roles'}
 		</Button>

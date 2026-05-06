@@ -9,7 +9,7 @@
 	import type { PageProps } from './$types';
 
 	let { data }: PageProps = $props();
-	let { TeamServiceAccounts, viewerIsMember, teamSlug } = $derived(data);
+	let { TeamServiceAccounts, viewerIsOwner, isAdmin, teamSlug } = $derived(data);
 
 	const serviceAccounts = $derived($TeamServiceAccounts.data?.team.serviceAccounts);
 
@@ -32,7 +32,7 @@
 		to query or manage the team's resources.
 	</BodyLong>
 
-	{#if viewerIsMember}
+	{#if viewerIsOwner || isAdmin}
 		<div class="actions">
 			<Button
 				size="small"
