@@ -16,6 +16,22 @@ query TeamOverview($team: Slug!) @cache(policy: NetworkOnly) {
 			}
 		}
 
+		criticalIssues: issues(filter: { severity: CRITICAL }) {
+			pageInfo {
+				totalCount
+			}
+		}
+		warningIssues: issues(filter: { severity: WARNING }) {
+			pageInfo {
+				totalCount
+			}
+		}
+		todoIssues: issues(filter: { severity: TODO }) {
+			pageInfo {
+				totalCount
+			}
+		}
+
 		issues(first: 10, orderBy: { field: SEVERITY, direction: ASC }) {
 			pageInfo {
 				totalCount
