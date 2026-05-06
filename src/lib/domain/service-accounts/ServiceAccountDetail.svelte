@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { goto } from '$app/navigation';
 	import {
 		graphql,
 		type AvailableRolesFragment,
@@ -8,7 +9,8 @@
 	import Confirm from '$lib/ui/Confirm.svelte';
 	import GraphErrors from '$lib/ui/GraphErrors.svelte';
 	import Time from '$lib/ui/Time.svelte';
-	import { BodyLong, Heading, Tooltip } from '@nais/ds-svelte-community';
+	import { BodyLong, Button, Heading, Tooltip } from '@nais/ds-svelte-community';
+	import { TrashIcon } from '@nais/ds-svelte-community/icons';
 	import { format } from 'date-fns';
 	import { enGB } from 'date-fns/locale';
 	import ServiceAccountAuthentications from './ServiceAccountAuthentications.svelte';
@@ -83,6 +85,14 @@
 		}
 	`);
 
+	const deleteServiceAccount = graphql(`
+		mutation DeleteServiceAccount($input: DeleteServiceAccountInput!) {
+			deleteServiceAccount(input: $input) {
+				serviceAccountDeleted
+			}
+		}
+	`);
+
 	// --- State ---
 
 	let errors: { message: string }[] | undefined = $state();
@@ -109,6 +119,9 @@
 	let removeWorkloadOpen = $state(false);
 	let bindingToRemove: { id: string; workloadName: string; environment: string } | null =
 		$state(null);
+
+	// Service account deletion state
+	let deleteServiceAccountOpen = $state(false);
 
 	// --- Handlers ---
 
@@ -184,6 +197,18 @@
 		bindingToRemove = null;
 		onmutated?.();
 	}
+
+	async function handleDeleteServiceAccount() {
+		errors = undefined;
+		const res = await deleteServiceAccount.mutate({
+			input: { serviceAccountID: serviceAccount.id }
+		});
+		if (res.errors) {
+			errors = res.errors;
+			return;
+		}
+		await goto(`/team/${teamSlug}/settings/service_accounts`);
+	}
 </script>
 
 <GraphErrors {errors} dismissable />
@@ -218,6 +243,17 @@
 				{/if}
 			</dd>
 		</dl>
+
+		{#if viewerIsMember}
+			<div>
+				<Button variant="danger" size="small" onclick={() => (deleteServiceAccountOpen = true)}>
+					{#snippet icon()}
+						<TrashIcon />
+					{/snippet}
+					Delete service account
+				</Button>
+			</div>
+		{/if}
 	</section>
 
 	<!-- Roles Section -->
@@ -496,6 +532,19 @@
 	Are you sure you want to remove the binding for workload
 	<strong>{bindingToRemove?.workloadName}</strong> in environment
 	<strong>{bindingToRemove?.environment}</strong>?
+</Confirm>
+
+<Confirm
+	bind:open={deleteServiceAccountOpen}
+	confirmText="Delete"
+	variant="danger"
+	onconfirm={handleDeleteServiceAccount}
+>
+	{#snippet header()}
+		<Heading size="small" as="h3">Delete service account</Heading>
+	{/snippet}
+	Are you sure you want to delete the service account <strong>{serviceAccount.name}</strong>? This
+	action cannot be undone. All tokens and workload bindings will be removed.
 </Confirm>
 
 <style>
