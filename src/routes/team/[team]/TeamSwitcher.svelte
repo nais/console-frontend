@@ -3,7 +3,7 @@
 	import { page } from '$app/state';
 	import { graphql } from '$houdini';
 	import { Modal } from '@nais/ds-svelte-community';
-	import { MagnifyingGlassIcon, PersonGroupIcon } from '@nais/ds-svelte-community/icons';
+	import { PersonGroupIcon } from '@nais/ds-svelte-community/icons';
 
 	let { open = $bindable(false) }: { open: boolean } = $props();
 
@@ -38,24 +38,10 @@
 
 	const currentTeam = $derived(page.params.team);
 
-	let query = $state('');
 	let selected = $state(0);
-	let inputEl: HTMLInputElement | undefined = $state();
-
-	const filtered = $derived(
-		query ? teams.filter((t) => t.toLowerCase().includes(query.toLowerCase())) : teams
-	);
 
 	$effect(() => {
 		if (open) {
-			query = '';
-			selected = 0;
-			inputEl?.focus();
-		}
-	});
-
-	$effect(() => {
-		if (filtered.length >= 0) {
 			selected = 0;
 		}
 	});
@@ -70,32 +56,24 @@
 	function onKeydown(e: KeyboardEvent) {
 		if (e.key === 'ArrowDown') {
 			e.preventDefault();
-			selected = Math.min(selected + 1, filtered.length - 1);
+			selected = Math.min(selected + 1, teams.length - 1);
 		} else if (e.key === 'ArrowUp') {
 			e.preventDefault();
 			selected = Math.max(selected - 1, 0);
 		} else if (e.key === 'Enter') {
 			e.preventDefault();
-			const team = filtered[selected];
+			const team = teams[selected];
 			if (team) selectTeam(team);
 		}
 	}
 </script>
 
+<svelte:document onkeydown={open ? onKeydown : undefined} />
+
 <Modal width="small" bind:open class="team-switcher-modal">
 	<div class="team-switcher">
-		<div class="search-field">
-			<MagnifyingGlassIcon />
-			<input
-				type="text"
-				placeholder="Search teams..."
-				bind:value={query}
-				bind:this={inputEl}
-				onkeydown={onKeydown}
-			/>
-		</div>
 		<div class="team-list" role="listbox">
-			{#each filtered as team, i (team)}
+			{#each teams as team, i (team)}
 				<button
 					class="team-item"
 					class:selected={i === selected}
@@ -112,9 +90,6 @@
 					{/if}
 				</button>
 			{/each}
-			{#if filtered.length === 0}
-				<div class="empty">No teams found</div>
-			{/if}
 		</div>
 		<div class="hints">
 			<span><kbd>↑</kbd> <kbd>↓</kbd> navigate</span>
@@ -130,31 +105,7 @@
 		flex-direction: column;
 	}
 
-	.search-field {
-		display: flex;
-		align-items: center;
-		gap: var(--ax-space-8);
-		padding: var(--ax-space-12) var(--ax-space-16);
-		border-bottom: 1px solid var(--ax-border-neutral-subtleA);
-		color: var(--ax-text-subtle);
-
-		input {
-			flex: 1;
-			border: none;
-			outline: none;
-			background: transparent;
-			font-size: var(--ax-font-size-large);
-			color: inherit;
-
-			&::placeholder {
-				color: var(--ax-text-subtle);
-			}
-		}
-	}
-
 	.team-list {
-		max-height: 300px;
-		overflow-y: auto;
 		padding: var(--ax-space-4);
 	}
 
@@ -209,12 +160,6 @@
 		font-weight: var(--ax-font-weight-bold);
 		color: var(--surface-accent-color);
 		text-transform: uppercase;
-	}
-
-	.empty {
-		padding: var(--ax-space-16);
-		text-align: center;
-		color: var(--ax-text-subtle);
 	}
 
 	.hints {
