@@ -4,9 +4,9 @@
 	import { Loader } from '@nais/ds-svelte-community';
 	import {
 		BellDotFillIcon,
-		ExclamationmarkTriangleFillIcon,
 		PiggybankIcon,
-		VirusIcon
+		VirusIcon,
+		VitalsIcon
 	} from '@nais/ds-svelte-community/icons';
 
 	interface Props {
@@ -74,7 +74,7 @@
 		<div class="metrics">
 			<a href="/team/{teamSlug}/issues" class="metric" class:danger={totalIssues > 0}>
 				<div class="metric-icon" class:danger={totalIssues > 0}>
-					<ExclamationmarkTriangleFillIcon />
+					<VitalsIcon />
 				</div>
 				<div class="metric-body">
 					<span class="metric-value">{totalIssues}</span>
