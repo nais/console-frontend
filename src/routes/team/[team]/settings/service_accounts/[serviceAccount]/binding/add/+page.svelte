@@ -13,12 +13,9 @@
 		Tag,
 		TextField
 	} from '@nais/ds-svelte-community';
-	import {
-		BriefcaseClockIcon,
-		CheckmarkIcon,
-		PackageIcon
-	} from '@nais/ds-svelte-community/icons';
+	import { BriefcaseClockIcon, CheckmarkIcon, PackageIcon } from '@nais/ds-svelte-community/icons';
 	import type { PageProps } from './$houdini';
+	import { resolve } from '$app/paths';
 
 	let { data }: PageProps = $props();
 
@@ -88,7 +85,11 @@
 			: []
 	);
 
-	function isAlreadyBound(node: { id: string; name: string; teamEnvironment: { environment: { name: string } } }) {
+	function isAlreadyBound(node: {
+		id: string;
+		name: string;
+		teamEnvironment: { environment: { name: string } };
+	}) {
 		return (
 			addedIds.has(node.id) ||
 			existingBindings.has(`${node.name}:${node.teamEnvironment.environment.name}`)
@@ -97,8 +98,6 @@
 </script>
 
 <div class="page">
-	<Heading size="small" as="h2">Add workload binding</Heading>
-
 	{#if errorMessage}
 		<ErrorMessage>{errorMessage}</ErrorMessage>
 	{/if}
@@ -106,6 +105,18 @@
 	{#if !serviceAccount}
 		<Alert variant="warning">Service account not found.</Alert>
 	{:else}
+		<Button
+			as="a"
+			size="small"
+			variant="secondary"
+			href={resolve('/team/[team]/settings/service_accounts/[serviceAccount]', {
+				team: page.params.team!,
+				serviceAccount: page.params.serviceAccount!
+			})}
+		>
+			Back to service account
+		</Button>
+
 		<TextField
 			size="small"
 			label="Search for workloads"
@@ -136,26 +147,25 @@
 							</div>
 							<Detail>{node.__typename === 'Application' ? 'Application' : 'Job'}</Detail>
 						</div>
-					{#if isAlreadyBound(node)}
-						<Button size="small" variant="tertiary" disabled>
-							{#snippet icon()}<CheckmarkIcon />{/snippet}
-							Added
-						</Button>
-					{:else}
-						<form
-							method="POST"
-							use:enhance={() => {
-								errorMessage = undefined;
-								return async ({ result }) => {
-									if (result.type === 'failure') {
-										errorMessage =
-											(result.data as { error?: string })?.error ?? 'Unknown error';
-									} else if (result.type === 'success') {
-										addedIds = new Set([...addedIds, node.id]);
-									}
-								};
-							}}
-						>
+						{#if isAlreadyBound(node)}
+							<Button size="small" variant="tertiary" disabled>
+								{#snippet icon()}<CheckmarkIcon />{/snippet}
+								Added
+							</Button>
+						{:else}
+							<form
+								method="POST"
+								use:enhance={() => {
+									errorMessage = undefined;
+									return async ({ result }) => {
+										if (result.type === 'failure') {
+											errorMessage = (result.data as { error?: string })?.error ?? 'Unknown error';
+										} else if (result.type === 'success') {
+											addedIds = new Set([...addedIds, node.id]);
+										}
+									};
+								}}
+							>
 								<input type="hidden" name="serviceAccountID" value={serviceAccount.id} />
 								<input type="hidden" name="workloadName" value={node.name} />
 								<input
@@ -163,9 +173,7 @@
 									name="environment"
 									value={node.teamEnvironment.environment.name}
 								/>
-							<Button type="submit" size="small" variant="tertiary">
-								Add
-							</Button>
+								<Button type="submit" size="small" variant="tertiary">Add</Button>
 							</form>
 						{/if}
 					</li>

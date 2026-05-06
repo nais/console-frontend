@@ -28,8 +28,8 @@
 
 <div>
 	<BodyLong spacing>
-		Service accounts are machine-users that can be used to automate parts of the Nais API, such as
-		team creation and managing team members.
+		Service accounts are machine-users that can be used to interact with the Nais API, for example
+		to query or manage the team's resources.
 	</BodyLong>
 
 	{#if viewerIsMember}

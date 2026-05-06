@@ -2,13 +2,15 @@
 	import { enhance } from '$app/forms';
 	import {
 		Alert,
+		BodyLong,
 		Button,
 		CopyButton,
 		ErrorMessage,
-		Heading,
 		TextField
 	} from '@nais/ds-svelte-community';
 	import type { PageProps } from './$houdini';
+	import { resolve } from '$app/paths';
+	import { page } from '$app/state';
 
 	let { data }: PageProps = $props();
 
@@ -25,13 +27,11 @@
 </script>
 
 <div class="page">
-	<Heading size="small" as="h2">Create API token</Heading>
-
 	{#if !serviceAccount}
 		<Alert variant="warning">Service account not found.</Alert>
 	{:else if createdSecret}
 		<Alert variant="success">
-			Token created successfully. Copy the secret below — it will not be shown again.
+			Token created successfully. Copy the secret below - it will not be shown again.
 		</Alert>
 		<div class="token-secret">
 			<code>{createdSecret}</code>
@@ -44,13 +44,34 @@
 			/>
 		</div>
 		<Button
+			as="a"
 			size="small"
 			variant="secondary"
-			onclick={() => history.back()}
+			href={resolve('/team/[team]/settings/service_accounts/[serviceAccount]', {
+				team: page.params.team!,
+				serviceAccount: page.params.serviceAccount!
+			})}
 		>
 			Back to service account
 		</Button>
 	{:else}
+		<BodyLong>
+			API tokens should only be used when you need to authenticate to the Nais API from outside of
+			Nais.
+		</BodyLong>
+		<BodyLong>
+			If you need to authenticate from within Nais, for example from an application or a job, you
+			should
+			<a
+				href={resolve('/team/[team]/settings/service_accounts/[serviceAccount]/binding/add', {
+					team: page.params.team!,
+					serviceAccount: page.params.serviceAccount!
+				})}
+			>
+				create a workload binding for the service account
+			</a> instead.
+		</BodyLong>
+
 		<form
 			method="POST"
 			use:enhance={() => {
@@ -71,20 +92,12 @@
 			{/if}
 
 			<TextField size="small" label="Token name" name="name" required autocomplete="off" />
-			<TextField
-				size="small"
-				label="Description"
-				name="description"
-				required
-				autocomplete="off"
-			/>
+			<TextField size="small" label="Description" name="description" required autocomplete="off" />
 			<TextField size="small" label="Expires at (optional)" name="expiresAt" type="date" />
 
 			<div class="actions">
 				<Button type="submit" size="small">Create token</Button>
-				<Button size="small" variant="tertiary" onclick={() => history.back()}>
-					Cancel
-				</Button>
+				<Button size="small" variant="tertiary" onclick={() => history.back()}>Cancel</Button>
 			</div>
 		</form>
 	{/if}

@@ -26,15 +26,16 @@
 		};
 	}}
 >
-	<BodyLong style="margin-bottom: 1rem;">
+	<BodyLong spacing>
 		{#if teamSlug}
 			This will create a new service account for <span style="font-weight: bold;">{teamSlug}</span>.
 		{:else}
 			This will create a new service account.
 		{/if}
-		<br />
-		All service accounts will have read access to most resources, except secrets ... TODO(thokra): replace
-		me
+	</BodyLong>
+	<BodyLong spacing>
+		All service accounts will by default have read access to everything except secrets. You can
+		grant additional permissions to the service account after it's created.
 	</BodyLong>
 
 	<TextField

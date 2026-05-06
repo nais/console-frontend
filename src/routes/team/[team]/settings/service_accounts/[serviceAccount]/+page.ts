@@ -11,15 +11,11 @@ export async function load(event) {
 
 	return {
 		...(await addPageMeta(event, {
-			title: event.params.serviceAccount,
+			title: 'Service Accounts',
 			breadcrumbs: [
 				{
 					label: 'Settings',
 					href: '/team/[team]/settings'
-				},
-				{
-					label: 'Service Accounts',
-					href: '/team/[team]/settings/service_accounts'
 				}
 			]
 		})),

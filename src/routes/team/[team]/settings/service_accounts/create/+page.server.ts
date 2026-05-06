@@ -55,6 +55,9 @@ export const actions = {
 			});
 		}
 
-		return redirect(303, `/team/${params.team}/settings/service_accounts`);
+		return redirect(
+			303,
+			`/team/${params.team}/settings/service_accounts/${res.data.createServiceAccount.serviceAccount!.name}`
+		);
 	}
 };
