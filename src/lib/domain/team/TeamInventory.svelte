@@ -2,7 +2,7 @@
 	import { graphql } from '$houdini';
 	import SurfaceCard from '$lib/ui/SurfaceCard.svelte';
 	import { Loader } from '@nais/ds-svelte-community';
-	import { BriefcaseClockIcon, ComponentIcon } from '@nais/ds-svelte-community/icons';
+	import { BriefcaseClockIcon, PackageIcon } from '@nais/ds-svelte-community/icons';
 
 	interface Props {
 		teamSlug: string;
@@ -158,7 +158,7 @@
 			<div class="workloads">
 				<a href="/team/{teamSlug}/applications" class="workload-card">
 					<div class="workload-header">
-						<ComponentIcon />
+						<PackageIcon />
 						<span class="workload-label">Applications</span>
 						<span class="workload-total">{appStates.total}</span>
 					</div>
