@@ -181,8 +181,8 @@
 	let title = $derived(getIssueTitle($data.__typename));
 </script>
 
-<a class="issue-row" href={resource.href}>
-	<div class="issue-icon">
+<a class="issue-row surface-interactive" href={resource.href}>
+	<div class="surface-icon">
 		<ExclamationmarkTriangleFillIcon />
 	</div>
 	<VStack gap="space-1">
@@ -197,39 +197,14 @@
 
 <style>
 	.issue-row {
+		--surface-accent-color: var(--ax-text-danger);
+		--surface-icon-size: 2rem;
+		--surface-icon-glyph-size: 1.1rem;
+		--surface-icon-background: color-mix(in srgb, var(--ax-text-danger) 10%, transparent);
+		--surface-icon-shadow: none;
 		display: flex;
 		align-items: center;
 		gap: var(--ax-space-12);
 		padding: var(--ax-space-12);
-		border-radius: var(--ax-radius-8);
-		background: color-mix(in srgb, var(--ax-bg-default) 82%, transparent);
-		box-shadow: 0 0 0 1px var(--ax-border-neutral-subtleA);
-		transition:
-			background-color 120ms ease,
-			box-shadow 120ms ease,
-			transform 120ms ease;
-		text-decoration: none;
-		color: inherit;
-	}
-
-	.issue-row:hover {
-		background: color-mix(in srgb, var(--surface-icon-color) 8%, var(--ax-bg-default));
-		box-shadow:
-			0 0 0 1px color-mix(in srgb, var(--surface-icon-color) 24%, transparent),
-			0 8px 12px -10px var(--surface-shadow-color);
-		transform: translateY(-1px);
-	}
-
-	.issue-icon {
-		display: inline-flex;
-		align-items: center;
-		justify-content: center;
-		width: 2rem;
-		height: 2rem;
-		flex-shrink: 0;
-		border-radius: var(--ax-radius-8);
-		font-size: 1.1rem;
-		color: var(--ax-text-danger);
-		background: color-mix(in srgb, var(--ax-text-danger) 10%, transparent);
 	}
 </style>

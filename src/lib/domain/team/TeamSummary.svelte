@@ -11,12 +11,12 @@
 
 	interface Props {
 		teamSlug: string;
-		criticalIssues?: number;
+		totalIssues?: number;
 		firingAlerts?: number;
 		loading?: boolean;
 	}
 
-	let { teamSlug, criticalIssues = 0, firingAlerts = 0, loading = false }: Props = $props();
+	let { teamSlug, totalIssues = 0, firingAlerts = 0, loading = false }: Props = $props();
 
 	const vulnQuery = graphql(`
 		query TeamSummaryVulnerabilities($team: Slug!) {
@@ -72,17 +72,13 @@
 		</div>
 	{:else}
 		<div class="metrics">
-			<a
-				href="/team/{teamSlug}/issues?severity=CRITICAL"
-				class="metric"
-				class:danger={criticalIssues > 0}
-			>
-				<div class="metric-icon" class:danger={criticalIssues > 0}>
+			<a href="/team/{teamSlug}/issues" class="metric" class:danger={totalIssues > 0}>
+				<div class="metric-icon" class:danger={totalIssues > 0}>
 					<ExclamationmarkTriangleFillIcon />
 				</div>
 				<div class="metric-body">
-					<span class="metric-value">{criticalIssues}</span>
-					<span class="metric-label">Critical issues</span>
+					<span class="metric-value">{totalIssues}</span>
+					<span class="metric-label">Issues</span>
 				</div>
 			</a>
 
@@ -165,9 +161,9 @@
 	}
 
 	.metric:hover {
-		background: color-mix(in srgb, var(--surface-icon-color) 8%, var(--ax-bg-default));
+		background: color-mix(in srgb, var(--surface-accent-color) 8%, var(--ax-bg-default));
 		box-shadow:
-			0 0 0 1px color-mix(in srgb, var(--surface-icon-color) 24%, transparent),
+			0 0 0 1px color-mix(in srgb, var(--surface-accent-color) 24%, transparent),
 			0 8px 12px -10px var(--surface-shadow-color);
 		transform: translateY(-1px);
 	}

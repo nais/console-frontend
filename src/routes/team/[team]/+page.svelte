@@ -33,7 +33,7 @@
 		<CriticalIssues {teamSlug} />
 		<TeamSummary
 			{teamSlug}
-			criticalIssues={$TeamOverview.data?.team.criticals.pageInfo.totalCount ?? 0}
+			totalIssues={$TeamOverview.data?.team.issues.pageInfo.totalCount ?? 0}
 			firingAlerts={$TeamOverview.data?.team.firingAlerts.pageInfo.totalCount ?? 0}
 			loading={$TeamOverview.fetching}
 		/>
