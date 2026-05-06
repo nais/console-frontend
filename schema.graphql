@@ -180,7 +180,7 @@ enum ActivityLogActivityType {
 }
 
 """Interface for activity log entries."""
-interface ActivityLogEntry {
+interface ActivityLogEntry implements Node {
   """
   The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
   """
@@ -396,7 +396,7 @@ type AddTeamMemberPayload {
 }
 
 """Alert interface."""
-interface Alert {
+interface Alert implements Node {
   """
   The time in seconds the alert condition must be met before it activates.
   """
@@ -3128,7 +3128,7 @@ type InvalidSpecIssue implements Issue & Node {
   workload: Workload!
 }
 
-interface Issue {
+interface Issue implements Node {
   id: ID!
   message: String!
   severity: Severity!
@@ -3917,7 +3917,7 @@ type LastRunFailedIssue implements Issue & Node {
   teamEnvironment: TeamEnvironment!
 }
 
-interface LogDestination {
+interface LogDestination implements Node {
   """The globally unique ID of the log destination."""
   id: ID!
 }
@@ -4818,7 +4818,7 @@ type PageInfo {
   totalCount: Int!
 }
 
-interface Persistence {
+interface Persistence implements Node {
   environment: TeamEnvironment! @deprecated(reason: "Use the `teamEnvironment` field instead.")
   id: ID!
   name: String!
@@ -9091,7 +9091,7 @@ enum UserOrderField {
 }
 
 """Interface for user sync log entries."""
-interface UserSyncLogEntry {
+interface UserSyncLogEntry implements Node {
   """Creation time of the entry."""
   createdAt: Time!
 
@@ -9761,7 +9761,7 @@ enum Weekday {
 }
 
 """Interface for workloads."""
-interface Workload {
+interface Workload implements ActivityLogger & Node {
   """Activity log associated with the workload."""
   activityLog(
     """Get items after this cursor."""
