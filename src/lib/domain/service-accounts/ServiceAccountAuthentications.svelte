@@ -1,8 +1,23 @@
 <script lang="ts">
 	import { page } from '$app/state';
 	import { fragment, graphql, type ServiceAccountAuthenticationFragment } from '$houdini';
-	import { Button, Heading, Modal, Search, Tabs } from '@nais/ds-svelte-community';
-	import { ClockDashedIcon, EnvelopeOpenIcon } from '@nais/ds-svelte-community/icons';
+	import SearchComponent from '$lib/domain/search/Search.svelte';
+	import { envTagVariant } from '$lib/envTagVariant';
+	import IconLabel from '$lib/ui/IconLabel.svelte';
+	import List from '$lib/ui/List.svelte';
+	import ListItem from '$lib/ui/ListItem.svelte';
+	import Time from '$lib/ui/Time.svelte';
+	import { Button, Detail, Heading, Modal, Tabs, Tooltip } from '@nais/ds-svelte-community';
+	import {
+		BranchingIcon,
+		BriefcaseClockIcon,
+		ClockDashedIcon,
+		EnvelopeOpenIcon,
+		PackageIcon,
+		TokenIcon
+	} from '@nais/ds-svelte-community/icons';
+	import { format } from 'date-fns';
+	import { enGB } from 'date-fns/locale';
 
 	interface Props {
 		serviceAccount: ServiceAccountAuthenticationFragment;
@@ -82,21 +97,17 @@
 	);
 
 	let showAddModal = $state(false);
-	let searchTimeout: ReturnType<typeof setTimeout> | null = $state(null);
 	let searchString = $state('');
 
-	const search = (e: Event) => {
-		e.preventDefault();
-		searchString = (e.target as HTMLInputElement | null)?.value ?? '';
+	$effect(() => {
+		if (searchString) {
+			const timeout = setTimeout(() => {
+				searchQuery.fetch({ variables: { query: searchString, team: page.params.team ?? '' } });
+			}, 300);
 
-		if (searchTimeout) {
-			clearTimeout(searchTimeout);
+			return () => clearTimeout(timeout);
 		}
-
-		searchTimeout = setTimeout(() => {
-			searchQuery.fetch({ variables: { query: searchString, team: page.params.team ?? '' } });
-		}, 300);
-	};
+	});
 
 	const addWorkloadBindingMutation = graphql(`
 		mutation AddWorkloadBindingTeamSA($input: AddWorkloadToServiceAccountInput!) {
@@ -118,42 +129,100 @@
 			}
 		});
 	};
+
+	const totalMethods = $derived($data.workloadBindings.edges.length + $data.tokens.edges.length);
 </script>
 
 <section>
-	<Heading size="small" as="h3">Authentication methods</Heading>
+	{#if totalMethods > 0}
+		<div class="search">
+			{#if viewerIsMember}
+				<Button size="small" variant="secondary" onclick={() => (showAddModal = true)}
+					>Add new</Button
+				>
+			{/if}
+		</div>
 
-	{#if viewerIsMember}
-		<Button size="small" variant="secondary" onclick={() => (showAddModal = true)}>Add new</Button>
-	{/if}
-	{#if $data.workloadBindings.edges.length > 0 || $data.tokens.edges.length > 0}
-		<p>Service account has the following authentication methods:</p>
-		<ul>
+		<List title="{totalMethods} authentication method{totalMethods !== 1 ? 's' : ''}">
 			{#each $data.workloadBindings.edges as { node: binding } (binding.id)}
-				<li>
-					<strong>Workload binding</strong> to
-					<em>{binding.workload?.__typename === 'Application' ? 'application' : 'job'}</em>
-					<em>{binding.workload?.name}</em> in environment
-					<em>{binding.workload?.teamEnvironment.environment.name}</em> of team
-					<em>{binding.workload?.team.slug}</em>.
-					{#if binding.isBroken}
-						<span style="color: red;">(broken)</span>
-					{/if}
-				</li>
+				<ListItem>
+					<IconLabel
+						as="h4"
+						size="large"
+						label={binding.workload?.name ?? binding.workloadName}
+						icon={BranchingIcon}
+						tag={{
+							label: binding.workload?.teamEnvironment.environment.name ?? binding.environment,
+							variant: envTagVariant(
+								binding.workload?.teamEnvironment.environment.name ?? binding.environment
+							)
+						}}
+						description="Workload binding · {binding.workload?.__typename === 'Application'
+							? 'Application'
+							: 'Job'}{binding.isBroken ? ' · Broken' : ''}"
+					/>
+
+					<div class="right">
+						{#if binding.lastUsedAt}
+							<Tooltip content="Last used - {format(binding.lastUsedAt, 'PPPP', { locale: enGB })}">
+								<Detail>
+									Last used <Time time={binding.lastUsedAt} distance={true} />
+								</Detail>
+							</Tooltip>
+						{:else}
+							<Detail>Never used</Detail>
+						{/if}
+						<Tooltip content="Created - {format(binding.createdAt, 'PPPP', { locale: enGB })}">
+							<Detail>
+								Created <Time time={binding.createdAt} distance={true} />
+							</Detail>
+						</Tooltip>
+					</div>
+				</ListItem>
 			{/each}
+
 			{#each $data.tokens.edges as { node: token } (token.id)}
-				<li>
-					<strong>Token</strong> named <em>{token.name}</em> with description
-					<em>{token.description}</em>.
-				</li>
+				<ListItem>
+					<IconLabel
+						as="h4"
+						size="large"
+						label={token.name}
+						icon={TokenIcon}
+						description="API Token · {token.description}"
+					/>
+
+					<div class="right">
+						{#if token.lastUsedAt}
+							<Tooltip content="Last used - {format(token.lastUsedAt, 'PPPP', { locale: enGB })}">
+								<Detail>
+									Last used <Time time={token.lastUsedAt} distance={true} />
+								</Detail>
+							</Tooltip>
+						{:else}
+							<Detail>Never used</Detail>
+						{/if}
+						{#if token.expiresAt}
+							<Tooltip content="Expires - {format(token.expiresAt, 'PPPP', { locale: enGB })}">
+								<Detail>
+									Expires <Time time={token.expiresAt} distance={true} />
+								</Detail>
+							</Tooltip>
+						{/if}
+					</div>
+				</ListItem>
 			{/each}
-		</ul>
+		</List>
 	{:else}
+		<Heading size="small" as="h3">Authentication methods</Heading>
 		<p>No available authentication methods.</p>
+		{#if viewerIsMember}
+			<Button size="small" variant="secondary" onclick={() => (showAddModal = true)}>Add new</Button
+			>
+		{/if}
 	{/if}
 </section>
 
-<Modal bind:open={showAddModal} header="Add authentication method">
+<Modal width="medium" bind:open={showAddModal} class="search-modal">
 	<Tabs value="workload_binding">
 		<Tabs.List>
 			<Tabs.Tab value="workload_binding">
@@ -167,35 +236,80 @@
 		</Tabs.List>
 
 		<Tabs.Panel value="workload_binding">
-			<Search
-				label="Search for workload"
-				placeholder="Search workloads..."
-				bind:value={searchString}
-				onchange={search}
-			/>
-
-			{#if $searchQuery.data}
-				<ul>
-					{#each $searchQuery.data.search.nodes as node (node.id)}
-						<Button
-							onclick={() => {
-								if (node.__typename === 'Application' || node.__typename === 'Job') {
-									addWorkloadBinding({
-										name: node.name,
-										environment: node.teamEnvironment.environment.name
-									});
+			<SearchComponent
+				close={() => (showAddModal = false)}
+				placeholder="Search for workloads..."
+				bind:query={searchString}
+				loading={$searchQuery.fetching}
+				suggestions={false}
+				helpers={false}
+				results={searchString && $searchQuery.data
+					? $searchQuery.data.search.nodes
+							.filter(
+								(
+									n
+								): n is typeof n & {
+									__typename: 'Application' | 'Job';
+									id: string;
+									name: string;
+									teamEnvironment: { environment: { name: string } };
+								} => n.__typename === 'Application' || n.__typename === 'Job'
+							)
+							.map((node) => ({
+								icon: node.__typename === 'Application' ? PackageIcon : BriefcaseClockIcon,
+								label: node.name,
+								description: node.__typename === 'Application' ? 'Application' : 'Job',
+								tag: {
+									label: node.teamEnvironment.environment.name,
+									variant: envTagVariant(node.teamEnvironment.environment.name)
+								},
+								type: 'button' as const,
+								button: {
+									onclick: () => {
+										addWorkloadBinding({
+											name: node.name,
+											environment: node.teamEnvironment.environment.name
+										});
+									},
+									label: 'Add',
+									variant: 'tertiary' as const
 								}
-							}}
-						>
-							<strong>{node.name}</strong> <br />{node.teamEnvironment.environment.name}
-						</Button><br />
-					{/each}
-				</ul>
-			{:else if searchString.length > 0}
-				<p>Searching...</p>
-			{/if}
+							}))
+					: undefined}
+			/>
 		</Tabs.Panel>
 
 		<Tabs.Panel value="api_token">Create API token</Tabs.Panel>
 	</Tabs>
 </Modal>
+
+<style>
+	section {
+		display: flex;
+		flex-direction: column;
+		gap: var(--ax-space-16);
+	}
+
+	.right {
+		display: flex;
+		flex-direction: column;
+		align-items: end;
+		gap: var(--ax-space-2);
+	}
+
+	.search {
+		display: flex;
+		justify-content: flex-end;
+	}
+
+	:global(.search-modal) {
+		height: 70vh;
+		max-height: 600px;
+	}
+
+	@media (max-width: 767px) {
+		.right {
+			align-items: flex-end;
+		}
+	}
+</style>
