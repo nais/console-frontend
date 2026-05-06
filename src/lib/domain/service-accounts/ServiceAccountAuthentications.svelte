@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { invalidateAll } from '$app/navigation';
+	import { enhance } from '$app/forms';
 	import { page } from '$app/state';
 	import { fragment, graphql, type ServiceAccountAuthenticationFragment } from '$houdini';
 	import SearchComponent from '$lib/domain/search/Search.svelte';
@@ -46,7 +46,7 @@
 			graphql(`
 				fragment ServiceAccountAuthenticationFragment on ServiceAccount {
 					id
-					workloadBindings(first: 20) @list(name: "ServiceAccountWorkloadBindings") {
+					workloadBindings(first: 20) {
 						edges {
 							node {
 								id
@@ -72,7 +72,7 @@
 						}
 					}
 
-					tokens @list(name: "ServiceAccountTokens") {
+					tokens {
 						edges {
 							node {
 								id
@@ -123,60 +123,20 @@
 		}
 	});
 
-	const addWorkloadBindingMutation = graphql(`
-		mutation AddWorkloadBindingTeamSA(
-			$input: AddWorkloadToServiceAccountInput!
-			$serviceAccountID: ID!
-		) {
-			addWorkloadToServiceAccount(input: $input) {
-				binding {
-					...ServiceAccountWorkloadBindings_insert @parentID(value: $serviceAccountID) @prepend
-				}
-			}
-		}
-	`);
-
-	const addWorkloadBinding = ({ name, environment }: { name: string; environment: string }) => {
-		addWorkloadBindingMutation.mutate({
-			input: {
-				serviceAccountID: $data.id,
-				workloadName: name,
-				environment: environment,
-				teamSlug: page.params.team ?? ''
-			},
-			serviceAccountID: $data.id
-		});
-	};
-
-	const createTokenMutation = graphql(`
-		mutation CreateServiceAccountTokenFromAuth(
-			$input: CreateServiceAccountTokenInput!
-			$serviceAccountID: ID!
-		) {
-			createServiceAccountToken(input: $input) {
-				secret
-				serviceAccountToken {
-					...ServiceAccountTokens_insert @parentID(value: $serviceAccountID) @prepend
-				}
-			}
-		}
-	`);
-
-	const deleteTokenMutation = graphql(`
-		mutation DeleteServiceAccountTokenAuth($input: DeleteServiceAccountTokenInput!) {
-			deleteServiceAccountToken(input: $input) {
-				serviceAccountTokenDeleted
-			}
-		}
-	`);
-
-	const removeWorkloadBindingMutation = graphql(`
-		mutation RemoveWorkloadBindingAuth($input: RemoveWorkloadFromServiceAccountInput!) {
-			removeWorkloadFromServiceAccount(input: $input) {
-				bindingDeleted
-			}
-		}
-	`);
+	const filteredSearchResults = $derived(
+		searchString && $searchQuery.data
+			? $searchQuery.data.search.nodes.filter(
+					(
+						n
+					): n is typeof n & {
+						__typename: 'Application' | 'Job';
+						id: string;
+						name: string;
+						teamEnvironment: { environment: { name: string } };
+					} => n.__typename === 'Application' || n.__typename === 'Job'
+				)
+			: []
+	);
 
 	let tokenName = $state('');
 	let tokenDescription = $state('');
@@ -193,57 +153,23 @@
 	let bindingToRemove: { id: string; workloadName: string; environment: string } | null =
 		$state(null);
 
-	async function handleDeleteToken() {
-		if (!tokenToDelete) return;
-		removeErrors = undefined;
-		const res = await deleteTokenMutation.mutate({
-			input: { serviceAccountTokenID: tokenToDelete.id }
-		});
-		if (res.errors) {
-			removeErrors = res.errors;
-			return;
-		}
-		tokenToDelete = null;
-		await invalidateAll();
+	let deleteTokenForm: HTMLFormElement | undefined = $state();
+	let removeBindingForm: HTMLFormElement | undefined = $state();
+
+	function handleDeleteToken() {
+		deleteTokenForm?.requestSubmit();
 	}
 
-	async function handleRemoveBinding() {
-		if (!bindingToRemove) return;
-		removeErrors = undefined;
-		const res = await removeWorkloadBindingMutation.mutate({
-			input: { bindingID: bindingToRemove.id }
-		});
-		if (res.errors) {
-			removeErrors = res.errors;
-			return;
-		}
-		bindingToRemove = null;
-		await invalidateAll();
+	function handleRemoveBinding() {
+		removeBindingForm?.requestSubmit();
 	}
 
-	async function handleCreateToken() {
+	let createTokenForm: HTMLFormElement | undefined = $state();
+
+	function handleCreateToken() {
 		tokenErrors = undefined;
 		tokenCreating = true;
-		const res = await createTokenMutation.mutate({
-			input: {
-				serviceAccountID: $data.id,
-				name: tokenName,
-				description: tokenDescription,
-				...(tokenExpiresAt ? { expiresAt: new Date(tokenExpiresAt) } : {})
-			},
-			serviceAccountID: $data.id
-		});
-		tokenCreating = false;
-
-		if (res.errors) {
-			tokenErrors = res.errors;
-			return;
-		}
-
-		createdTokenSecret = res.data?.createServiceAccountToken.secret ?? null;
-		tokenName = '';
-		tokenDescription = '';
-		tokenExpiresAt = '';
+		createTokenForm?.requestSubmit();
 	}
 
 	const totalMethods = $derived($data.workloadBindings.edges.length + $data.tokens.edges.length);
@@ -339,6 +265,11 @@
 						{:else}
 							<Detail>Never used</Detail>
 						{/if}
+						<Tooltip content="Created - {format(token.createdAt, 'PPPP', { locale: enGB })}">
+							<Detail>
+								Created <Time time={token.createdAt} distance={true} />
+							</Detail>
+						</Tooltip>
 						{#if token.expiresAt}
 							<Tooltip content="Expires - {format(token.expiresAt, 'PPPP', { locale: enGB })}">
 								<Detail>
@@ -396,38 +327,25 @@
 				loading={$searchQuery.fetching}
 				suggestions={false}
 				helpers={false}
-				results={searchString && $searchQuery.data
-					? $searchQuery.data.search.nodes
-							.filter(
-								(
-									n
-								): n is typeof n & {
-									__typename: 'Application' | 'Job';
-									id: string;
-									name: string;
-									teamEnvironment: { environment: { name: string } };
-								} => n.__typename === 'Application' || n.__typename === 'Job'
-							)
-							.map((node) => ({
-								icon: node.__typename === 'Application' ? PackageIcon : BriefcaseClockIcon,
-								label: node.name,
-								description: node.__typename === 'Application' ? 'Application' : 'Job',
-								tag: {
-									label: node.teamEnvironment.environment.name,
-									variant: envTagVariant(node.teamEnvironment.environment.name)
+				results={filteredSearchResults.length > 0
+					? filteredSearchResults.map((node) => ({
+							icon: node.__typename === 'Application' ? PackageIcon : BriefcaseClockIcon,
+							label: node.name,
+							description: node.__typename === 'Application' ? 'Application' : 'Job',
+							tag: {
+								label: node.teamEnvironment.environment.name,
+								variant: envTagVariant(node.teamEnvironment.environment.name)
+							},
+							type: 'button' as const,
+							button: {
+								onclick: () => {
+									const form = document.getElementById(`add-binding-${node.id}`);
+									if (form instanceof HTMLFormElement) form.requestSubmit();
 								},
-								type: 'button' as const,
-								button: {
-									onclick: () => {
-										addWorkloadBinding({
-											name: node.name,
-											environment: node.teamEnvironment.environment.name
-										});
-									},
-									label: 'Add',
-									variant: 'tertiary' as const
-								}
-							}))
+								label: 'Add',
+								variant: 'tertiary' as const
+							}
+						}))
 					: undefined}
 			/>
 		</Tabs.Panel>
@@ -526,6 +444,96 @@
 	<strong>{bindingToRemove?.workloadName}</strong> in environment
 	<strong>{bindingToRemove?.environment}</strong>?
 </Confirm>
+
+{#each filteredSearchResults as node (node.id)}
+	<form
+		id="add-binding-{node.id}"
+		method="POST"
+		action="?/addBinding"
+		use:enhance={() => {
+			return async ({ result, update }) => {
+				if (result.type === 'failure') {
+					tokenErrors = [
+						{ message: (result.data as { error?: string })?.error ?? 'Unknown error' }
+					];
+				}
+				await update();
+			};
+		}}
+		hidden
+	>
+		<input type="hidden" name="serviceAccountID" value={$data.id} />
+		<input type="hidden" name="workloadName" value={node.name} />
+		<input type="hidden" name="environment" value={node.teamEnvironment.environment.name} />
+		<input type="hidden" name="teamSlug" value={page.params.team ?? ''} />
+	</form>
+{/each}
+
+<form
+	bind:this={deleteTokenForm}
+	method="POST"
+	action="?/deleteToken"
+	use:enhance={() => {
+		removeErrors = undefined;
+		return async ({ result, update }) => {
+			if (result.type === 'failure') {
+				removeErrors = [{ message: (result.data as { error?: string })?.error ?? 'Unknown error' }];
+			} else {
+				tokenToDelete = null;
+			}
+			await update();
+		};
+	}}
+	hidden
+>
+	<input type="hidden" name="tokenId" value={tokenToDelete?.id ?? ''} />
+</form>
+
+<form
+	bind:this={removeBindingForm}
+	method="POST"
+	action="?/removeBinding"
+	use:enhance={() => {
+		removeErrors = undefined;
+		return async ({ result, update }) => {
+			if (result.type === 'failure') {
+				removeErrors = [{ message: (result.data as { error?: string })?.error ?? 'Unknown error' }];
+			} else {
+				bindingToRemove = null;
+			}
+			await update();
+		};
+	}}
+	hidden
+>
+	<input type="hidden" name="bindingId" value={bindingToRemove?.id ?? ''} />
+</form>
+
+<form
+	bind:this={createTokenForm}
+	method="POST"
+	action="?/createToken"
+	use:enhance={() => {
+		return async ({ result, update }) => {
+			tokenCreating = false;
+			if (result.type === 'failure') {
+				tokenErrors = [{ message: (result.data as { error?: string })?.error ?? 'Unknown error' }];
+			} else if (result.type === 'success') {
+				createdTokenSecret = (result.data as { secret?: string | null })?.secret ?? null;
+				tokenName = '';
+				tokenDescription = '';
+				tokenExpiresAt = '';
+			}
+			await update();
+		};
+	}}
+	hidden
+>
+	<input type="hidden" name="serviceAccountID" value={$data.id} />
+	<input type="hidden" name="name" value={tokenName} />
+	<input type="hidden" name="description" value={tokenDescription} />
+	<input type="hidden" name="expiresAt" value={tokenExpiresAt} />
+</form>
 
 <style>
 	section {
