@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { Detail } from '@nais/ds-svelte-community';
 	import Icon from './Icon.svelte';
 	import IconLabel from './IconLabel.svelte';
 
@@ -11,7 +10,6 @@
 			label: string;
 			href: string;
 			active?: boolean;
-			count?: number;
 		}[][];
 		onItemSelect?: () => void;
 	} = $props();
@@ -20,9 +18,9 @@
 <div class="menu">
 	{#each items as group (group)}
 		<div class="list">
-			{#each group as { label: text, href, active, count } (href)}
+			{#each group as { label: text, href, active } (href)}
 				<a {href} class:active onclick={onItemSelect}>
-					<IconLabel>
+					<IconLabel size="small">
 						{#snippet label()}
 							<span class="label">
 								{text}
@@ -32,9 +30,6 @@
 							<span class="icon"><Icon icon={text} /></span>
 						{/snippet}
 					</IconLabel>
-					{#if count}
-						<Detail>{count}</Detail>
-					{/if}
 				</a>
 			{/each}
 		</div>
@@ -45,19 +40,19 @@
 	.menu {
 		display: flex;
 		flex-direction: column;
-		gap: var(--ax-space-20);
+		gap: var(--ax-space-12);
 
 		.list {
 			display: flex;
 			flex-direction: column;
-			gap: var(--ax-space-4);
+			gap: var(--ax-space-2);
 		}
 
 		a {
 			display: grid;
 			grid-template-columns: 1fr auto;
 			border-radius: 4px;
-			padding: var(--ax-space-4) var(--ax-space-12) var(--ax-space-4) var(--ax-space-8);
+			padding: var(--ax-space-2) var(--ax-space-8);
 			text-decoration: none;
 			color: inherit;
 			transition: background-color 50ms;
@@ -89,6 +84,7 @@
 
 			.icon {
 				display: contents;
+				font-size: 1rem;
 			}
 		}
 	}

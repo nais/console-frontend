@@ -16,17 +16,17 @@
 		items={[
 			[{ label: 'Team Overview', href: '/team/devteam' }],
 			[
-				{ label: 'Applications', href: '/team/devteam/applications', count: 42 },
-				{ label: 'Jobs', href: '/team/devteam/jobs', count: 1, active: true }
+				{ label: 'Applications', href: '/team/devteam/applications' },
+				{ label: 'Jobs', href: '/team/devteam/jobs', active: true }
 			],
 			[
 				{ label: 'Secrets', href: '/team/devteam/secrets' },
-				{ label: 'Cloud SQL', href: '/team/devteam/cloudsql', count: 7 },
-				{ label: 'Buckets', href: '/team/devteam/buckets', count: 1337 },
-				{ label: 'Valkey', href: '/team/devteam/valkey', count: 11 },
-				{ label: 'OpenSearch', href: '/team/devteam/opensearch', count: 17 },
-				{ label: 'Kafka Topics', href: '/team/devteam/kafka', count: 23 },
-				{ label: 'BigQuery', href: '/team/devteam/bigquery', count: 49 },
+				{ label: 'Cloud SQL', href: '/team/devteam/cloudsql' },
+				{ label: 'Buckets', href: '/team/devteam/buckets' },
+				{ label: 'Valkey', href: '/team/devteam/valkey' },
+				{ label: 'OpenSearch', href: '/team/devteam/opensearch' },
+				{ label: 'Kafka Topics', href: '/team/devteam/kafka' },
+				{ label: 'BigQuery', href: '/team/devteam/bigquery' },
 				{ label: 'Unleash', href: '/team/devteam/unleash' }
 			],
 			[

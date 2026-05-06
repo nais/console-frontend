@@ -7,8 +7,7 @@
 	import { createTeamContext } from './teamContext.svelte';
 
 	let { data, children }: LayoutProps = $props();
-	let { deletionInProgress, lastSuccessfulSync, teamSlug, UserInfo, viewerIsMember } =
-		$derived(data);
+	let { deletionInProgress, lastSuccessfulSync, UserInfo, viewerIsMember } = $derived(data);
 
 	createTeamContext();
 
@@ -31,7 +30,7 @@
 	{/if}
 
 	<div class="main">
-		<Menu features={$UserInfo.data?.features} member={viewerIsMember} {teamSlug} {isAdmin} />
+		<Menu features={$UserInfo.data?.features} member={viewerIsMember} {isAdmin} />
 		<div class="container">
 			<PageHeader>
 				{#snippet beforeBreadcrumbs()}
