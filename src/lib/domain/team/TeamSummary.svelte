@@ -11,12 +11,23 @@
 
 	interface Props {
 		teamSlug: string;
-		totalIssues?: number;
+		criticalIssues?: number;
+		warningIssues?: number;
+		todoIssues?: number;
 		firingAlerts?: number;
 		loading?: boolean;
 	}
 
-	let { teamSlug, totalIssues = 0, firingAlerts = 0, loading = false }: Props = $props();
+	let {
+		teamSlug,
+		criticalIssues = 0,
+		warningIssues = 0,
+		todoIssues = 0,
+		firingAlerts = 0,
+		loading = false
+	}: Props = $props();
+
+	let totalIssues = $derived(criticalIssues + warningIssues + todoIssues);
 
 	const vulnQuery = graphql(`
 		query TeamSummaryVulnerabilities($team: Slug!) {
@@ -59,6 +70,7 @@
 		const previous = series.at(-2)!.cost;
 		if (previous === 0) return null;
 		const change = ((current - previous) / previous) * 100;
+		if (Math.abs(change) < 1) return null;
 		return { current, previous, change };
 	});
 
@@ -72,13 +84,27 @@
 		</div>
 	{:else}
 		<div class="metrics">
-			<a href="/team/{teamSlug}/issues" class="metric" class:danger={totalIssues > 0}>
-				<div class="metric-icon" class:danger={totalIssues > 0}>
+			<a
+				href="/team/{teamSlug}/issues"
+				class="metric"
+				class:danger={criticalIssues > 0}
+				class:warning={!criticalIssues && warningIssues > 0}
+			>
+				<div
+					class="metric-icon"
+					class:danger={criticalIssues > 0}
+					class:warning={!criticalIssues && warningIssues > 0}
+				>
 					<VitalsIcon />
 				</div>
 				<div class="metric-body">
 					<span class="metric-value">{totalIssues}</span>
-					<span class="metric-label">Issues</span>
+					<span class="metric-label">
+						{#if criticalIssues > 0}<span class="pill critical">{criticalIssues} critical</span
+							>{/if}
+						{#if warningIssues > 0}<span class="pill warning">{warningIssues} warning</span>{/if}
+						{#if todoIssues > 0}<span class="pill todo">{todoIssues} todo</span>{/if}
+					</span>
 				</div>
 			</a>
 
@@ -109,9 +135,14 @@
 			<a
 				href="/team/{teamSlug}/cost"
 				class="metric"
-				class:warning={costTrend && costTrend.change > 20}
+				class:warning={costTrend && costTrend.change > 5}
+				class:success={costTrend && costTrend.change < 0}
 			>
-				<div class="metric-icon" class:warning={costTrend && costTrend.change > 20}>
+				<div
+					class="metric-icon"
+					class:warning={costTrend && costTrend.change > 5}
+					class:success={costTrend && costTrend.change < 0}
+				>
 					<PiggybankIcon />
 				</div>
 				<div class="metric-body">
@@ -191,6 +222,11 @@
 		background: color-mix(in srgb, var(--ax-text-warning) 10%, transparent);
 	}
 
+	.metric-icon.success {
+		color: var(--ax-text-success);
+		background: color-mix(in srgb, var(--ax-text-success) 10%, transparent);
+	}
+
 	.metric-body {
 		display: flex;
 		flex-direction: column;
@@ -211,10 +247,39 @@
 		color: var(--ax-text-warning);
 	}
 
+	.metric.success .metric-value {
+		color: var(--ax-text-success);
+	}
+
 	.metric-label {
 		font-size: var(--ax-font-size-small);
 		color: var(--ax-text-neutral-subtle);
 		white-space: nowrap;
+		display: flex;
+		flex-wrap: wrap;
+		gap: var(--ax-space-4);
+	}
+
+	.pill {
+		font-size: var(--ax-font-size-small);
+		font-weight: var(--ax-font-weight-bold);
+		border-radius: var(--ax-radius-8);
+		padding: 0 var(--ax-space-6);
+	}
+
+	.pill.critical {
+		color: var(--ax-text-danger);
+		background: color-mix(in srgb, var(--ax-text-danger-decoration) 12%, transparent);
+	}
+
+	.pill.warning {
+		color: var(--ax-text-warning);
+		background: color-mix(in srgb, var(--ax-text-warning-decoration) 12%, transparent);
+	}
+
+	.pill.todo {
+		color: var(--ax-text-accent);
+		background: color-mix(in srgb, var(--ax-text-accent) 12%, transparent);
 	}
 
 	@media (max-width: 767px), (max-height: 500px) {
