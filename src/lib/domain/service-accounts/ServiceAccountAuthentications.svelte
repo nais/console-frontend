@@ -2,34 +2,16 @@
 	import { enhance } from '$app/forms';
 	import { page } from '$app/state';
 	import { fragment, graphql, type ServiceAccountAuthenticationFragment } from '$houdini';
-	import SearchComponent from '$lib/domain/search/Search.svelte';
 	import { envTagVariant } from '$lib/envTagVariant';
 	import Confirm from '$lib/ui/Confirm.svelte';
 	import GraphErrors from '$lib/ui/GraphErrors.svelte';
 	import IconLabel from '$lib/ui/IconLabel.svelte';
 	import List from '$lib/ui/List.svelte';
 	import ListItem from '$lib/ui/ListItem.svelte';
+	import { pageModalClick } from '$lib/ui/PageModal.svelte';
 	import Time from '$lib/ui/Time.svelte';
-	import {
-		Alert,
-		Button,
-		CopyButton,
-		Detail,
-		Heading,
-		Modal,
-		Tabs,
-		TextField,
-		Tooltip
-	} from '@nais/ds-svelte-community';
-	import {
-		BranchingIcon,
-		BriefcaseClockIcon,
-		ClockDashedIcon,
-		EnvelopeOpenIcon,
-		PackageIcon,
-		TokenIcon,
-		TrashIcon
-	} from '@nais/ds-svelte-community/icons';
+	import { Button, Detail, Heading, Tooltip } from '@nais/ds-svelte-community';
+	import { BranchingIcon, TokenIcon, TrashIcon } from '@nais/ds-svelte-community/icons';
 	import { format } from 'date-fns';
 	import { enGB } from 'date-fns/locale';
 
@@ -89,62 +71,6 @@
 		)
 	);
 
-	const searchQuery = $derived(
-		graphql(`
-			query TeamSAAuthorizationSearch($query: String!, $team: Slug!) {
-				search(filter: { query: $query, types: [APPLICATION, JOB], teams: [$team] }) {
-					nodes {
-						__typename
-						... on Workload {
-							id
-							name
-							teamEnvironment {
-								environment {
-									name
-								}
-							}
-						}
-					}
-				}
-			}
-		`)
-	);
-
-	let showAddModal = $state(false);
-	let searchString = $state('');
-
-	$effect(() => {
-		if (searchString) {
-			const timeout = setTimeout(() => {
-				searchQuery.fetch({ variables: { query: searchString, team: page.params.team ?? '' } });
-			}, 300);
-
-			return () => clearTimeout(timeout);
-		}
-	});
-
-	const filteredSearchResults = $derived(
-		searchString && $searchQuery.data
-			? $searchQuery.data.search.nodes.filter(
-					(
-						n
-					): n is typeof n & {
-						__typename: 'Application' | 'Job';
-						id: string;
-						name: string;
-						teamEnvironment: { environment: { name: string } };
-					} => n.__typename === 'Application' || n.__typename === 'Job'
-				)
-			: []
-	);
-
-	let tokenName = $state('');
-	let tokenDescription = $state('');
-	let tokenExpiresAt = $state('');
-	let tokenCreating = $state(false);
-	let createdTokenSecret: string | null = $state(null);
-	let tokenErrors: { message: string }[] | undefined = $state();
-
 	// Removal state
 	let removeErrors: { message: string }[] | undefined = $state();
 	let deleteTokenOpen = $state(false);
@@ -164,28 +90,39 @@
 		removeBindingForm?.requestSubmit();
 	}
 
-	let createTokenForm: HTMLFormElement | undefined = $state();
-
-	function handleCreateToken() {
-		tokenErrors = undefined;
-		tokenCreating = true;
-		createTokenForm?.requestSubmit();
-	}
-
 	const totalMethods = $derived($data.workloadBindings.edges.length + $data.tokens.edges.length);
+
+	const saPath = $derived(
+		`/team/${page.params.team}/settings/service_accounts/${page.params.serviceAccount}`
+	);
 </script>
 
 <section>
 	<GraphErrors errors={removeErrors} dismissable />
 
 	{#if totalMethods > 0}
-		<div class="search">
-			{#if viewerIsMember}
-				<Button size="small" variant="secondary" onclick={() => (showAddModal = true)}
-					>Add new</Button
+		{#if viewerIsMember}
+			<div class="actions">
+				<Button
+					size="small"
+					variant="secondary"
+					as="a"
+					href="{saPath}/binding/add"
+					onclick={pageModalClick}
 				>
-			{/if}
-		</div>
+					Add workload binding
+				</Button>
+				<Button
+					size="small"
+					variant="secondary"
+					as="a"
+					href="{saPath}/token/create"
+					onclick={pageModalClick}
+				>
+					Create API token
+				</Button>
+			</div>
+		{/if}
 
 		<List title="{totalMethods} authentication method{totalMethods !== 1 ? 's' : ''}">
 			{#each $data.workloadBindings.edges as { node: binding } (binding.id)}
@@ -300,123 +237,29 @@
 		<Heading size="small" as="h3">Authentication methods</Heading>
 		<p>No available authentication methods.</p>
 		{#if viewerIsMember}
-			<Button size="small" variant="secondary" onclick={() => (showAddModal = true)}>Add new</Button
-			>
+			<div class="actions">
+				<Button
+					size="small"
+					variant="secondary"
+					as="a"
+					href="{saPath}/binding/add"
+					onclick={pageModalClick}
+				>
+					Add workload binding
+				</Button>
+				<Button
+					size="small"
+					variant="secondary"
+					as="a"
+					href="{saPath}/token/create"
+					onclick={pageModalClick}
+				>
+					Create API token
+				</Button>
+			</div>
 		{/if}
 	{/if}
 </section>
-
-<Modal width="medium" bind:open={showAddModal} class="search-modal">
-	<Tabs value="workload_binding">
-		<Tabs.List>
-			<Tabs.Tab value="workload_binding">
-				{#snippet icon()}<ClockDashedIcon aria-label="Workload binding" />{/snippet}
-				Workload binding
-			</Tabs.Tab>
-			<Tabs.Tab value="api_token">
-				{#snippet icon()}<EnvelopeOpenIcon aria-label="API Token" />{/snippet}
-				API Token
-			</Tabs.Tab>
-		</Tabs.List>
-
-		<Tabs.Panel value="workload_binding">
-			<SearchComponent
-				close={() => (showAddModal = false)}
-				placeholder="Search for workloads..."
-				bind:query={searchString}
-				loading={$searchQuery.fetching}
-				suggestions={false}
-				helpers={false}
-				results={filteredSearchResults.length > 0
-					? filteredSearchResults.map((node) => ({
-							icon: node.__typename === 'Application' ? PackageIcon : BriefcaseClockIcon,
-							label: node.name,
-							description: node.__typename === 'Application' ? 'Application' : 'Job',
-							tag: {
-								label: node.teamEnvironment.environment.name,
-								variant: envTagVariant(node.teamEnvironment.environment.name)
-							},
-							type: 'button' as const,
-							button: {
-								onclick: () => {
-									const form = document.getElementById(`add-binding-${node.id}`);
-									if (form instanceof HTMLFormElement) form.requestSubmit();
-								},
-								label: 'Add',
-								variant: 'tertiary' as const
-							}
-						}))
-					: undefined}
-			/>
-		</Tabs.Panel>
-
-		<Tabs.Panel value="api_token">
-			{#if createdTokenSecret}
-				<div class="token-created">
-					<Alert variant="success">
-						Token created successfully. Copy the secret below — it will not be shown again.
-					</Alert>
-					<div class="token-secret">
-						<code>{createdTokenSecret}</code>
-						<CopyButton
-							text="Copy"
-							activeText="Copied"
-							variant="action"
-							copyText={createdTokenSecret}
-							size="small"
-						/>
-					</div>
-					<Button
-						size="small"
-						variant="secondary"
-						onclick={() => {
-							createdTokenSecret = null;
-							showAddModal = false;
-						}}
-					>
-						Done
-					</Button>
-				</div>
-			{:else}
-				<div class="token-form">
-					{#if tokenErrors}
-						<Alert variant="error">
-							{#each tokenErrors as err (err.message)}
-								<p>{err.message}</p>
-							{/each}
-						</Alert>
-					{/if}
-					<TextField size="small" label="Token name" bind:value={tokenName} autocomplete="off" />
-					<TextField
-						size="small"
-						label="Description"
-						bind:value={tokenDescription}
-						autocomplete="off"
-					/>
-					<TextField
-						size="small"
-						label="Expires at (optional)"
-						type="date"
-						bind:value={tokenExpiresAt}
-					/>
-					<div class="token-form-actions">
-						<Button
-							size="small"
-							onclick={handleCreateToken}
-							loading={tokenCreating}
-							disabled={!tokenName || !tokenDescription}
-						>
-							Create token
-						</Button>
-						<Button size="small" variant="tertiary" onclick={() => (showAddModal = false)}>
-							Cancel
-						</Button>
-					</div>
-				</div>
-			{/if}
-		</Tabs.Panel>
-	</Tabs>
-</Modal>
 
 <Confirm
 	bind:open={deleteTokenOpen}
@@ -444,30 +287,6 @@
 	<strong>{bindingToRemove?.workloadName}</strong> in environment
 	<strong>{bindingToRemove?.environment}</strong>?
 </Confirm>
-
-{#each filteredSearchResults as node (node.id)}
-	<form
-		id="add-binding-{node.id}"
-		method="POST"
-		action="?/addBinding"
-		use:enhance={() => {
-			return async ({ result, update }) => {
-				if (result.type === 'failure') {
-					tokenErrors = [
-						{ message: (result.data as { error?: string })?.error ?? 'Unknown error' }
-					];
-				}
-				await update();
-			};
-		}}
-		hidden
-	>
-		<input type="hidden" name="serviceAccountID" value={$data.id} />
-		<input type="hidden" name="workloadName" value={node.name} />
-		<input type="hidden" name="environment" value={node.teamEnvironment.environment.name} />
-		<input type="hidden" name="teamSlug" value={page.params.team ?? ''} />
-	</form>
-{/each}
 
 <form
 	bind:this={deleteTokenForm}
@@ -509,32 +328,6 @@
 	<input type="hidden" name="bindingId" value={bindingToRemove?.id ?? ''} />
 </form>
 
-<form
-	bind:this={createTokenForm}
-	method="POST"
-	action="?/createToken"
-	use:enhance={() => {
-		return async ({ result, update }) => {
-			tokenCreating = false;
-			if (result.type === 'failure') {
-				tokenErrors = [{ message: (result.data as { error?: string })?.error ?? 'Unknown error' }];
-			} else if (result.type === 'success') {
-				createdTokenSecret = (result.data as { secret?: string | null })?.secret ?? null;
-				tokenName = '';
-				tokenDescription = '';
-				tokenExpiresAt = '';
-			}
-			await update();
-		};
-	}}
-	hidden
->
-	<input type="hidden" name="serviceAccountID" value={$data.id} />
-	<input type="hidden" name="name" value={tokenName} />
-	<input type="hidden" name="description" value={tokenDescription} />
-	<input type="hidden" name="expiresAt" value={tokenExpiresAt} />
-</form>
-
 <style>
 	section {
 		display: flex;
@@ -549,53 +342,14 @@
 		gap: var(--ax-space-2);
 	}
 
-	.search {
+	.actions {
 		display: flex;
-		justify-content: flex-end;
-	}
-
-	:global(.search-modal) {
-		height: 70vh;
-		max-height: 600px;
+		gap: var(--ax-space-8);
 	}
 
 	@media (max-width: 767px) {
 		.right {
 			align-items: flex-end;
 		}
-	}
-
-	.token-form {
-		display: flex;
-		flex-direction: column;
-		gap: var(--ax-space-16);
-		padding: var(--ax-space-24);
-	}
-
-	.token-form-actions {
-		display: flex;
-		gap: var(--ax-space-8);
-	}
-
-	.token-created {
-		display: flex;
-		flex-direction: column;
-		gap: var(--ax-space-16);
-		padding: var(--ax-space-24);
-	}
-
-	.token-secret {
-		display: flex;
-		align-items: center;
-		gap: var(--ax-space-8);
-		background-color: var(--ax-bg-sunken);
-		padding: var(--ax-space-12);
-		border-radius: 8px;
-		overflow-x: auto;
-	}
-
-	.token-secret code {
-		font-size: var(--ax-font-size-small);
-		word-break: break-all;
 	}
 </style>
