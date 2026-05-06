@@ -7,7 +7,17 @@
 	import List from '$lib/ui/List.svelte';
 	import ListItem from '$lib/ui/ListItem.svelte';
 	import Time from '$lib/ui/Time.svelte';
-	import { Button, Detail, Heading, Modal, Tabs, Tooltip } from '@nais/ds-svelte-community';
+	import {
+		Alert,
+		Button,
+		CopyButton,
+		Detail,
+		Heading,
+		Modal,
+		Tabs,
+		TextField,
+		Tooltip
+	} from '@nais/ds-svelte-community';
 	import {
 		BranchingIcon,
 		BriefcaseClockIcon,
@@ -32,7 +42,7 @@
 			graphql(`
 				fragment ServiceAccountAuthenticationFragment on ServiceAccount {
 					id
-					workloadBindings(first: 20) {
+					workloadBindings(first: 20) @list(name: "ServiceAccountWorkloadBindings") {
 						edges {
 							node {
 								id
@@ -58,7 +68,7 @@
 						}
 					}
 
-					tokens {
+					tokens @list(name: "ServiceAccountTokens") {
 						edges {
 							node {
 								id
@@ -110,10 +120,13 @@
 	});
 
 	const addWorkloadBindingMutation = graphql(`
-		mutation AddWorkloadBindingTeamSA($input: AddWorkloadToServiceAccountInput!) {
+		mutation AddWorkloadBindingTeamSA(
+			$input: AddWorkloadToServiceAccountInput!
+			$serviceAccountID: ID!
+		) {
 			addWorkloadToServiceAccount(input: $input) {
-				serviceAccount {
-					updatedAt
+				binding {
+					...ServiceAccountWorkloadBindings_insert @parentID(value: $serviceAccountID) @prepend
 				}
 			}
 		}
@@ -126,9 +139,56 @@
 				workloadName: name,
 				environment: environment,
 				teamSlug: page.params.team ?? ''
-			}
+			},
+			serviceAccountID: $data.id
 		});
 	};
+
+	const createTokenMutation = graphql(`
+		mutation CreateServiceAccountTokenFromAuth(
+			$input: CreateServiceAccountTokenInput!
+			$serviceAccountID: ID!
+		) {
+			createServiceAccountToken(input: $input) {
+				secret
+				serviceAccountToken {
+					...ServiceAccountTokens_insert @parentID(value: $serviceAccountID) @prepend
+				}
+			}
+		}
+	`);
+
+	let tokenName = $state('');
+	let tokenDescription = $state('');
+	let tokenExpiresAt = $state('');
+	let tokenCreating = $state(false);
+	let createdTokenSecret: string | null = $state(null);
+	let tokenErrors: { message: string }[] | undefined = $state();
+
+	async function handleCreateToken() {
+		tokenErrors = undefined;
+		tokenCreating = true;
+		const res = await createTokenMutation.mutate({
+			input: {
+				serviceAccountID: $data.id,
+				name: tokenName,
+				description: tokenDescription,
+				...(tokenExpiresAt ? { expiresAt: new Date(tokenExpiresAt) } : {})
+			},
+			serviceAccountID: $data.id
+		});
+		tokenCreating = false;
+
+		if (res.errors) {
+			tokenErrors = res.errors;
+			return;
+		}
+
+		createdTokenSecret = res.data?.createServiceAccountToken.secret ?? null;
+		tokenName = '';
+		tokenDescription = '';
+		tokenExpiresAt = '';
+	}
 
 	const totalMethods = $derived($data.workloadBindings.edges.length + $data.tokens.edges.length);
 </script>
@@ -279,7 +339,71 @@
 			/>
 		</Tabs.Panel>
 
-		<Tabs.Panel value="api_token">Create API token</Tabs.Panel>
+		<Tabs.Panel value="api_token">
+			{#if createdTokenSecret}
+				<div class="token-created">
+					<Alert variant="success">
+						Token created successfully. Copy the secret below — it will not be shown again.
+					</Alert>
+					<div class="token-secret">
+						<code>{createdTokenSecret}</code>
+						<CopyButton
+							text="Copy"
+							activeText="Copied"
+							variant="action"
+							copyText={createdTokenSecret}
+							size="small"
+						/>
+					</div>
+					<Button
+						size="small"
+						variant="secondary"
+						onclick={() => {
+							createdTokenSecret = null;
+							showAddModal = false;
+						}}
+					>
+						Done
+					</Button>
+				</div>
+			{:else}
+				<div class="token-form">
+					{#if tokenErrors}
+						<Alert variant="error">
+							{#each tokenErrors as err (err.message)}
+								<p>{err.message}</p>
+							{/each}
+						</Alert>
+					{/if}
+					<TextField size="small" label="Token name" bind:value={tokenName} autocomplete="off" />
+					<TextField
+						size="small"
+						label="Description"
+						bind:value={tokenDescription}
+						autocomplete="off"
+					/>
+					<TextField
+						size="small"
+						label="Expires at (optional)"
+						type="date"
+						bind:value={tokenExpiresAt}
+					/>
+					<div class="token-form-actions">
+						<Button
+							size="small"
+							onclick={handleCreateToken}
+							loading={tokenCreating}
+							disabled={!tokenName || !tokenDescription}
+						>
+							Create token
+						</Button>
+						<Button size="small" variant="tertiary" onclick={() => (showAddModal = false)}>
+							Cancel
+						</Button>
+					</div>
+				</div>
+			{/if}
+		</Tabs.Panel>
 	</Tabs>
 </Modal>
 
@@ -311,5 +435,39 @@
 		.right {
 			align-items: flex-end;
 		}
+	}
+
+	.token-form {
+		display: flex;
+		flex-direction: column;
+		gap: var(--ax-space-16);
+		padding: var(--ax-space-24);
+	}
+
+	.token-form-actions {
+		display: flex;
+		gap: var(--ax-space-8);
+	}
+
+	.token-created {
+		display: flex;
+		flex-direction: column;
+		gap: var(--ax-space-16);
+		padding: var(--ax-space-24);
+	}
+
+	.token-secret {
+		display: flex;
+		align-items: center;
+		gap: var(--ax-space-8);
+		background-color: var(--ax-bg-sunken);
+		padding: var(--ax-space-12);
+		border-radius: 8px;
+		overflow-x: auto;
+	}
+
+	.token-secret code {
+		font-size: var(--ax-font-size-small);
+		word-break: break-all;
 	}
 </style>
