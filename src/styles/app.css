@@ -26,7 +26,7 @@
 	);
 	--surface-icon-background: linear-gradient(
 		to bottom right,
-		white 20%,
+		var(--ax-bg-default) 20%,
 		var(--ax-bg-brand-blue-moderate) 100%
 	);
 
@@ -50,6 +50,7 @@
 	.dark-theme,
 	.aksel-theme.dark
 ) {
+	--surface-accent-color: var(--ax-text-brand-blue-subtle);
 	--surface-shadow-color: rgba(61, 65, 111, 0.6);
 	--surface-elevated-background: linear-gradient(
 		105deg,
@@ -66,9 +67,8 @@
 		0 0 0 1px var(--ax-border-neutral-subtleA);
 	--surface-icon-background: linear-gradient(
 		to bottom right,
-		color-mix(in srgb, var(--surface-accent-color) 20%, var(--ax-bg-default) 80%) 0%,
-		color-mix(in srgb, var(--surface-accent-color) 30%, var(--ax-bg-default) 70%) 48%,
-		color-mix(in srgb, var(--surface-accent-color) 40%, var(--ax-bg-default) 60%) 100%
+		var(--ax-bg-default) 20%,
+		var(--ax-bg-brand-blue-softA) 100%
 	);
 	--surface-icon-shadow:
 		inset 0 1px 0 color-mix(in srgb, var(--ax-bg-default) 74%, var(--surface-accent-color) 26%),
