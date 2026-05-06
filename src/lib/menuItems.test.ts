@@ -114,46 +114,6 @@ describe('menuItems', () => {
 			).toBeUndefined();
 		});
 
-		test('inventory', () => {
-			const res = menuItems({
-				path: '/team/tbd/jobs',
-				features,
-				member: true,
-				isAdmin: false,
-				inventory: {
-					applications: { total: 42 },
-					jobs: { total: 1 },
-					sqlInstances: { total: 7 },
-					buckets: { total: 1337 },
-					valkeys: { total: 11 },
-					openSearches: { total: 17 },
-					kafkaTopics: { total: 23 },
-					bigQueryDatasets: { total: 49 },
-					postgresInstances: { total: 7 },
-					secrets: { total: 3 },
-					configs: { total: 5 }
-				}
-			});
-
-			expect(
-				res
-					.flatMap((g) => g)
-					.filter((i) => i.count)
-					.map((i) => ({ label: i.label, count: i.count }))
-			).toEqual([
-				{ label: 'Applications', count: 42 },
-				{ label: 'Jobs', count: 1 },
-				{ label: 'Secrets', count: 3 },
-				{ label: 'Config', count: 5 },
-				{ label: 'Cloud SQL', count: 7 },
-				{ label: 'Postgres', count: 7 },
-				{ label: 'Buckets', count: 1337 },
-				{ label: 'Valkey', count: 11 },
-				{ label: 'OpenSearch', count: 17 },
-				{ label: 'Kafka Topics', count: 23 },
-				{ label: 'BigQuery', count: 49 }
-			]);
-		});
 		test('show settings when admin', () => {
 			expect(
 				menuItems({

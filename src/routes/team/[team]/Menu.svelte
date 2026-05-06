@@ -1,19 +1,17 @@
 <script lang="ts">
 	import { afterNavigate } from '$app/navigation';
 	import { page } from '$app/state';
-	import { graphql } from '$houdini';
 	import { menuItems } from '$lib/menuItems';
 	import Icon from '$lib/ui/Icon.svelte';
 	import IconLabel from '$lib/ui/IconLabel.svelte';
 	import Menu from '$lib/ui/Menu.svelte';
 	import MobileSideDrawer from '$lib/ui/MobileSideDrawer.svelte';
-	import { getTeamContext, setInventoryRefetcher } from './teamContext.svelte';
+	import { getTeamContext } from './teamContext.svelte';
 
 	const {
 		member,
 		isAdmin,
-		features,
-		teamSlug
+		features
 	}: {
 		member: boolean;
 		isAdmin: boolean;
@@ -23,72 +21,12 @@
 			kafka: { enabled: boolean };
 			openSearch: { enabled: boolean };
 		};
-		teamSlug: string;
 	} = $props();
-
-	const Inventory = graphql(`
-		query Inventory($team: Slug!) @cache(policy: CacheAndNetwork) {
-			team(slug: $team) {
-				inventoryCounts {
-					applications {
-						total
-					}
-					jobs {
-						total
-					}
-					sqlInstances {
-						total
-					}
-					buckets {
-						total
-					}
-					valkeys {
-						total
-					}
-					openSearches {
-						total
-					}
-					kafkaTopics {
-						total
-					}
-					bigQueryDatasets {
-						total
-					}
-					postgresInstances {
-						total
-					}
-					secrets {
-						total
-					}
-					configs {
-						total
-					}
-				}
-			}
-		}
-	`);
-
-	$effect(() => {
-		Inventory.fetch({
-			variables: {
-				team: teamSlug
-			}
-		});
-	});
-
-	setInventoryRefetcher(() => {
-		Inventory.fetch({
-			variables: {
-				team: teamSlug
-			}
-		});
-	});
 
 	const items = $derived(
 		menuItems({
 			path: page.url.pathname,
 			member,
-			inventory: $Inventory.fetching ? undefined : $Inventory.data?.team.inventoryCounts,
 			features,
 			isAdmin
 		})

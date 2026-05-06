@@ -2,7 +2,6 @@ export const menuItems = ({
 	path,
 	features,
 	member,
-	inventory,
 	isAdmin
 }: {
 	path: string;
@@ -13,54 +12,14 @@ export const menuItems = ({
 		openSearch: { enabled: boolean };
 	};
 	member: boolean;
-	inventory?: {
-		applications: { total: number };
-		jobs: { total: number };
-		sqlInstances: { total: number };
-		buckets: { total: number };
-		valkeys: { total: number };
-		openSearches: { total: number };
-		kafkaTopics: { total: number };
-		bigQueryDatasets: { total: number };
-		postgresInstances: { total: number };
-		secrets: { total: number };
-		configs: { total: number };
-	};
 	isAdmin: boolean;
-}): { label: string; href: string; active?: boolean; count?: number }[][] => {
+}): { label: string; href: string; active?: boolean }[][] => {
 	const split = path.split('/');
-
-	const getInventory = (pageName?: string) => {
-		const pageNameToInventory = {
-			applications: 'applications',
-			jobs: 'jobs',
-			cloudsql: 'sqlInstances',
-			buckets: 'buckets',
-			valkey: 'valkeys',
-			opensearch: 'openSearches',
-			kafka: 'kafkaTopics',
-			bigquery: 'bigQueryDatasets',
-			postgres: 'postgresInstances',
-			secrets: 'secrets',
-			configs: 'configs'
-		} as const;
-
-		if (pageName === 'applications' || pageName === 'jobs') {
-			const { total } = inventory?.[pageName] ?? {};
-			return {
-				count: total
-			};
-		}
-		return {
-			count: inventory?.[pageNameToInventory[pageName as keyof typeof pageNameToInventory]]?.total
-		};
-	};
 
 	const item =
 		(baseUrl: string, page: string) =>
 		(label: string, pageName?: string, matchSubPath?: string) => {
 			const href = pageName ? `${baseUrl}/${pageName}` : baseUrl;
-			const { count } = getInventory(pageName);
 			const active =
 				(matchSubPath && path.startsWith(`/team/${team}/${page}/${matchSubPath}/`)) ||
 				pageName === page;
@@ -68,8 +27,7 @@ export const menuItems = ({
 			return {
 				label,
 				href,
-				...(active ? { active } : {}),
-				...(count ? { count } : {})
+				...(active ? { active } : {})
 			};
 		};
 	const [, , team, topLevelPage, resourceType] = split;
