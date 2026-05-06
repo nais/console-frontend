@@ -326,9 +326,9 @@
 	}
 
 	.workload-card:hover {
-		background: color-mix(in srgb, var(--surface-icon-color) 8%, var(--ax-bg-default));
+		background: color-mix(in srgb, var(--surface-accent-color) 8%, var(--ax-bg-default));
 		box-shadow:
-			0 0 0 1px color-mix(in srgb, var(--surface-icon-color) 24%, transparent),
+			0 0 0 1px color-mix(in srgb, var(--surface-accent-color) 24%, transparent),
 			0 8px 12px -10px var(--surface-shadow-color);
 		transform: translateY(-1px);
 	}
@@ -450,8 +450,8 @@
 	}
 
 	.resource-item:hover {
-		background: color-mix(in srgb, var(--surface-icon-color) 8%, var(--ax-bg-default));
-		box-shadow: 0 0 0 1px color-mix(in srgb, var(--surface-icon-color) 24%, transparent);
+		background: color-mix(in srgb, var(--surface-accent-color) 8%, var(--ax-bg-default));
+		box-shadow: 0 0 0 1px color-mix(in srgb, var(--surface-accent-color) 24%, transparent);
 	}
 
 	.resource-label {
