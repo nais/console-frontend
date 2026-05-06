@@ -1,7 +1,6 @@
 <script lang="ts">
 	import { fragment, graphql, type CriticalIssueRow } from '$houdini';
-	import { envTagVariant } from '$lib/envTagVariant';
-	import { Tag } from '@nais/ds-svelte-community';
+	import { BodyLong, Heading, VStack } from '@nais/ds-svelte-community';
 	import { ExclamationmarkTriangleFillIcon } from '@nais/ds-svelte-community/icons';
 
 	interface Props {
@@ -183,75 +182,54 @@
 </script>
 
 <a class="issue-row" href={resource.href}>
-	<div class="issue-severity-icon">
+	<div class="issue-icon">
 		<ExclamationmarkTriangleFillIcon />
 	</div>
-	<div class="issue-body">
-		<span class="issue-title">{title}</span>
-		<div class="issue-resource">
-			<span class="issue-resource-name">{resource.name}</span>
-			<Tag size="xsmall" variant={envTagVariant($data.teamEnvironment.environment.name)}>
-				{$data.teamEnvironment.environment.name}
-			</Tag>
-		</div>
-		<span class="issue-message">{$data.message}</span>
-	</div>
+	<VStack gap="space-1">
+		<Heading size="xsmall" level="2">
+			{title} for {resource.name} in {$data.teamEnvironment.environment.name}
+		</Heading>
+		<BodyLong size="small">
+			{$data.message}
+		</BodyLong>
+	</VStack>
 </a>
 
 <style>
 	.issue-row {
 		display: flex;
-		align-items: flex-start;
-		gap: var(--ax-space-8);
+		align-items: center;
+		gap: var(--ax-space-12);
 		padding: var(--ax-space-12);
 		border-radius: var(--ax-radius-8);
-		background: linear-gradient(to right, var(--ax-bg-danger-soft), var(--ax-bg-default));
-		border: 1px solid var(--ax-border-neutral-subtleA);
-		box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.04);
+		background: color-mix(in srgb, var(--ax-bg-default) 82%, transparent);
+		box-shadow: 0 0 0 1px var(--ax-border-neutral-subtleA);
+		transition:
+			background-color 120ms ease,
+			box-shadow 120ms ease,
+			transform 120ms ease;
 		text-decoration: none;
 		color: inherit;
 	}
 
 	.issue-row:hover {
-		box-shadow: 0 2px 6px 0 rgba(0, 0, 0, 0.08);
+		background: color-mix(in srgb, var(--surface-icon-color) 8%, var(--ax-bg-default));
+		box-shadow:
+			0 0 0 1px color-mix(in srgb, var(--surface-icon-color) 24%, transparent),
+			0 8px 12px -10px var(--surface-shadow-color);
+		transform: translateY(-1px);
 	}
 
-	.issue-severity-icon {
-		color: var(--ax-text-danger);
-		display: flex;
-		flex-shrink: 0;
-		padding-top: 2px;
-	}
-
-	.issue-body {
-		display: flex;
-		flex-direction: column;
-		gap: var(--ax-space-2);
-		min-width: 0;
-		flex: 1;
-	}
-
-	.issue-title {
-		font-weight: var(--ax-font-weight-bold);
-		color: var(--ax-text-neutral);
-	}
-
-	.issue-resource {
-		display: flex;
+	.issue-icon {
+		display: inline-flex;
 		align-items: center;
-		gap: var(--ax-space-6);
-		flex-wrap: wrap;
-	}
-
-	.issue-resource-name {
-		font-size: var(--ax-font-size-small);
-		color: var(--ax-text-neutral);
-		font-family: monospace;
-	}
-
-	.issue-message {
-		font-size: var(--ax-font-size-small);
-		color: var(--ax-text-neutral);
-		overflow-wrap: anywhere;
+		justify-content: center;
+		width: 2rem;
+		height: 2rem;
+		flex-shrink: 0;
+		border-radius: var(--ax-radius-8);
+		font-size: 1.1rem;
+		color: var(--ax-text-danger);
+		background: color-mix(in srgb, var(--ax-text-danger) 10%, transparent);
 	}
 </style>
