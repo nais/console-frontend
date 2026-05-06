@@ -234,6 +234,73 @@ Use `@nais/ds-svelte-community` components, not custom implementations:
 
 ---
 
+## Design Guidelines
+
+This project layers project-level design conventions on top of the `@nais/ds-svelte-community` design system. Always prefer design system components and `--ax-*` tokens first; the `--surface-*` variables are project extensions that compose them.
+
+### Surface System
+
+Global CSS custom properties and utility classes defined in `src/styles/app.css`:
+
+- `--surface-accent-color` — brand accent (uses `--ax-text-brand-blue`), with dark mode override
+- `--surface-icon-size` / `--surface-icon-glyph-size` — icon container and glyph sizing (default `2.25rem` / `1.5rem`)
+- `--surface-elevated-background` / `--surface-elevated-shadow` — gradient background and layered shadow for elevated cards
+- `--surface-icon-background` / `--surface-icon-shadow` — gradient fill and inset shadow for icon containers
+
+Global utility classes:
+
+- `.surface-icon` — rounded icon container with gradient background and shadow. Override `--surface-icon-size` locally for compact contexts (e.g., `2rem` in sidebar cards).
+- `.surface-icon-timeline` — adds `position: relative; z-index: 1` so timeline connector lines render behind the icon.
+- `.surface-interactive` — hoverable card/link surface with subtle border, lift-on-hover transform, and accent tint.
+
+### SurfaceCard Component
+
+Use `SurfaceCard` (`$lib/ui/SurfaceCard.svelte`) for elevated content sections:
+
+- Props: `title` (uppercase eyebrow label), `headerAside` (snippet), `reverseGradient`
+- Applies `--surface-elevated-background` and `--surface-elevated-shadow`
+- Use for dashboard widgets, sidebar cards, and overview panels
+
+### Tab Navigation Pattern
+
+Use `Tabs`, `TabList`, `Tab` from `@nais/ds-svelte-community` for route-based sub-navigation:
+
+- Size: `"small"`
+- Render tabs as anchor links: `<Tab as="a" href={...}>`
+- Define tabs as a `$derived` array of `{ value, label, href }` where `value` is the SvelteKit route ID
+- Match active tab via `page.route.id`
+- Hide the tab bar when the current route doesn't match any tab (`visibleTabs` pattern)
+- See `src/routes/team/[team]/[env]/app/[app]/+layout.svelte` for reference
+
+### Timeline / Activity Log Pattern
+
+For vertical timelines with icon nodes:
+
+- Use `.surface-icon.surface-icon-timeline` for each icon node
+- Timeline connector: `::before` pseudo-element on `.activity-item:not(:last-child)` — a 2px vertical line using `--ax-border-neutral-subtleA`
+- Hide the connector on the last child and on mobile (`@media (max-width: 767px)`)
+- Override `--surface-icon-size` to `2rem` in compact card contexts
+- Map GraphQL `__typename` to icon components via a shared `Record<string, Component>` (see `src/lib/domain/activity/activity-log-icons.ts`)
+
+### Dynamic Component Dispatch
+
+When rendering type-specific content from GraphQL unions:
+
+- Create a lookup function that maps `__typename` → Svelte component
+- All variant components share a common props interface (e.g., `{ data: FragmentType }`)
+- Provide a `DefaultText` fallback for unknown or new types
+- See `src/lib/domain/activity/workload/textComponent.ts` for reference
+
+### Key Rules
+
+1. **Components first**: Use `@nais/ds-svelte-community` components (`Button`, `Tabs`, `Alert`, `Tooltip`, `Table`, etc.) before building custom HTML
+2. **Tokens first**: Use `--ax-*` tokens for spacing, colors, borders, and radii — never hardcode raw values
+3. **Surface variables compose tokens**: The `--surface-*` variables are project-level abstractions built from `--ax-*` tokens — do not bypass them with raw color values
+4. **Icons**: Import from `@nais/ds-svelte-community/icons` or `$lib/icons/` — never use inline SVGs
+5. **Dark mode**: The surface system handles dark mode via CSS selectors on the root element; do not add separate dark-mode overrides for surface properties
+
+---
+
 ## Responsive UI / Mobile
 
 - New pages and substantial page changes must work on narrow mobile widths, not just desktop layouts.
