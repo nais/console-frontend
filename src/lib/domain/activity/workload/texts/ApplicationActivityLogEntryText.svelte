@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { BodyLong } from '@nais/ds-svelte-community';
 	import Meta from '../../Meta.svelte';
 	import { summarizeChangedFields } from './helpers';
 	import type { WorkloadActivityEntry } from './types';
@@ -40,7 +41,7 @@
 	});
 </script>
 
-<div>
+<BodyLong size="small">
 	{summary}
-	<Meta actor={data.actor} createdAt={data.createdAt} actorPrefix="by" />
-</div>
+	<Meta actor={data.actor} createdAt={data.createdAt} />
+</BodyLong>

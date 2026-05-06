@@ -327,6 +327,7 @@
 		min-width: 0;
 		overflow-wrap: anywhere;
 		padding-top: var(--ax-space-1);
+		font-size: var(--ax-font-size-medium);
 	}
 
 	.empty {

@@ -24,5 +24,5 @@
 	{:else}
 		Deployed
 	{/if}
-	<Meta actor={data.actor} createdAt={data.createdAt} actorPrefix="by" />
+	<Meta actor={data.actor} createdAt={data.createdAt} />
 </div>

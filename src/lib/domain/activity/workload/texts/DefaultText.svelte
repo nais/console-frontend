@@ -8,5 +8,5 @@
 
 <div>
 	{data.message || 'Activity recorded'}
-	<Meta actor={data.actor} createdAt={data.createdAt} actorPrefix="by" />
+	<Meta actor={data.actor} createdAt={data.createdAt} />
 </div>
