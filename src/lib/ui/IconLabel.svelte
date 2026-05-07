@@ -11,6 +11,7 @@
 		icon,
 		description,
 		tag,
+		tagSize = 'small',
 		onclick,
 		...rest
 	}: {
@@ -22,6 +23,7 @@
 			label: string;
 			variant: TagProps['variant'];
 		};
+		tagSize?: 'xsmall' | 'small' | 'medium';
 		onclick?: () => void;
 	} & (
 		| {
@@ -80,7 +82,7 @@
 		{#if tag || description}
 			<div class="desc">
 				{#if tag}
-					<Tag size="small" variant={tag.variant}>{tag.label}</Tag>
+					<Tag size={tagSize} variant={tag.variant}>{tag.label}</Tag>
 				{/if}
 				{#if description}
 					<Detail>{@render componentOrString(description)}</Detail>

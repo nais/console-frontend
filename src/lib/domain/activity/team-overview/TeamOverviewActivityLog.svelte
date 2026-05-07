@@ -1,7 +1,8 @@
 <script lang="ts">
 	import { ActivityLogActivityType, graphql, type ActivityLogFilter } from '$houdini';
 	import SurfaceCard from '$lib/ui/SurfaceCard.svelte';
-	import { Button, Loader } from '@nais/ds-svelte-community';
+	import SurfaceCardAction from '$lib/ui/SurfaceCardAction.svelte';
+	import { Loader } from '@nais/ds-svelte-community';
 	import { RocketIcon } from '@nais/ds-svelte-community/icons';
 	import type { Component } from 'svelte';
 
@@ -283,9 +284,7 @@
 					</div>
 				{/each}
 			</div>
-			<Button as="a" href="/team/{teamSlug}/activity-log" variant="tertiary" size="small"
-				>View activity log</Button
-			>
+		<SurfaceCardAction href="/team/{teamSlug}/activity-log" label="View activity log" />
 		{/if}
 	{/if}
 </SurfaceCard>
