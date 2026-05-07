@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { envTagVariant } from '$lib/envTagVariant';
 	import IssuePills from '$lib/domain/issues/IssuePills.svelte';
+	import { envTagVariant } from '$lib/envTagVariant';
 	import IconLabel from '$lib/ui/IconLabel.svelte';
 	import ListItem from '$lib/ui/ListItem.svelte';
 	import RunningIndicator from '$lib/ui/RunningIndicator.svelte';
@@ -79,7 +79,12 @@
 				{@const warningCount = countIssuesBySeverity(app.issues.edges, 'WARNING')}
 				{@const todoCount = countIssuesBySeverity(app.issues.edges, 'TODO')}
 
-				<IssuePills critical={criticalCount} warning={warningCount} todo={todoCount} direction="column" />
+				<IssuePills
+					critical={criticalCount}
+					warning={warningCount}
+					todo={todoCount}
+					direction="column"
+				/>
 			{/if}
 		</div>
 
