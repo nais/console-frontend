@@ -1,6 +1,5 @@
 <script lang="ts">
 	import Time from '$lib/ui/Time.svelte';
-	import { BodyShort } from '@nais/ds-svelte-community';
 
 	interface Props {
 		actor: string;
@@ -10,8 +9,16 @@
 	let { actor, createdAt }: Props = $props();
 </script>
 
-<BodyShort textColor="subtle" size="small">
-	by
+<p class="meta">
 	{actor}
 	<Time time={createdAt} distance />
-</BodyShort>
+</p>
+
+<style>
+	.meta {
+		font-size: var(--ax-font-size-small);
+		line-height: var(--ax-font-line-height-large);
+		color: var(--ax-text-neutral-subtle);
+		margin: 0;
+	}
+</style>

@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { graphql } from '$houdini';
+	import IssuePills from '$lib/domain/issues/IssuePills.svelte';
 	import SurfaceCard from '$lib/ui/SurfaceCard.svelte';
 	import { Loader } from '@nais/ds-svelte-community';
 	import {
@@ -100,10 +101,7 @@
 				<div class="metric-body">
 					<span class="metric-value">{totalIssues}</span>
 					<span class="metric-label">
-						{#if criticalIssues > 0}<span class="pill critical">{criticalIssues} critical</span
-							>{/if}
-						{#if warningIssues > 0}<span class="pill warning">{warningIssues} warning</span>{/if}
-						{#if todoIssues > 0}<span class="pill todo">{todoIssues} todo</span>{/if}
+						<IssuePills critical={criticalIssues} warning={warningIssues} todo={todoIssues} />
 					</span>
 				</div>
 			</a>
@@ -258,28 +256,6 @@
 		display: flex;
 		flex-wrap: wrap;
 		gap: var(--ax-space-4);
-	}
-
-	.pill {
-		font-size: var(--ax-font-size-small);
-		font-weight: var(--ax-font-weight-bold);
-		border-radius: var(--ax-radius-8);
-		padding: 0 var(--ax-space-6);
-	}
-
-	.pill.critical {
-		color: var(--ax-text-danger);
-		background: color-mix(in srgb, var(--ax-text-danger-decoration) 12%, transparent);
-	}
-
-	.pill.warning {
-		color: var(--ax-text-warning);
-		background: color-mix(in srgb, var(--ax-text-warning-decoration) 12%, transparent);
-	}
-
-	.pill.todo {
-		color: var(--ax-text-accent);
-		background: color-mix(in srgb, var(--ax-text-accent) 12%, transparent);
 	}
 
 	@media (max-width: 767px), (max-height: 500px) {

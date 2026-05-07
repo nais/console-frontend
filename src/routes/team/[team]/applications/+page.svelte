@@ -5,6 +5,7 @@
 	import AggregatedCostForApplications from '$lib/domain/cost/AggregatedCostForApplications.svelte';
 	import AppListItem from '$lib/domain/list-items/AppListItem.svelte';
 	import ExternalLink from '$lib/ui/ExternalLink.svelte';
+	import SurfaceCard from '$lib/ui/SurfaceCard.svelte';
 	import GraphErrors from '$lib/ui/GraphErrors.svelte';
 	import List from '$lib/ui/List.svelte';
 	import OrderByMenu from '$lib/ui/OrderByMenu.svelte';
@@ -172,7 +173,9 @@
 	</div>
 	<div class="right-column">
 		{#if totalApplications > 0}
-			<AggregatedCostForApplications {teamSlug} totalCount={totalApplications} />
+			<SurfaceCard title="Cost" reverseGradient>
+				<AggregatedCostForApplications {teamSlug} totalCount={totalApplications} />
+			</SurfaceCard>
 		{/if}
 	</div>
 </div>
@@ -187,6 +190,7 @@
 	.right-column {
 		display: grid;
 		gap: var(--ax-space-24);
+		align-content: start;
 	}
 
 	.search {

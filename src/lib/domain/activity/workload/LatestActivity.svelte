@@ -6,7 +6,7 @@
 		type WorkloadLatestActivityFragment
 	} from '$houdini';
 	import SurfaceCard from '$lib/ui/SurfaceCard.svelte';
-	import { Button } from '@nais/ds-svelte-community';
+	import SurfaceCardAction from '$lib/ui/SurfaceCardAction.svelte';
 	import { RocketIcon } from '@nais/ds-svelte-community/icons';
 	import { get } from 'svelte/store';
 
@@ -57,7 +57,7 @@
 		<div class="card-content empty-state">No activity log entries found.</div>
 	{/if}
 
-	<Button as="a" {href} variant="tertiary" size="small">View activity log</Button>
+	<SurfaceCardAction {href} label="View activity log" />
 </SurfaceCard>
 
 <style>
@@ -109,7 +109,7 @@
 		display: flex;
 		flex-direction: column;
 		gap: var(--ax-space-4);
-		font-size: var(--ax-font-size-large);
+		font-size: var(--ax-font-size-medium);
 		line-height: var(--ax-font-line-height-large);
 		color: var(--ax-text-neutral);
 		overflow-wrap: anywhere;

@@ -28,7 +28,7 @@
 		column-gap: var(--ax-space-16);
 		min-width: 0;
 		max-width: 100%;
-		padding: var(--ax-space-16) var(--ax-space-24);
+		padding: var(--ax-space-12) var(--ax-space-16);
 		color: inherit;
 		text-decoration: none;
 	}

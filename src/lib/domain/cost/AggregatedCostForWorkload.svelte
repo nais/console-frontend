@@ -4,7 +4,8 @@
 	import { prepareMonthlyCostSeries } from '$lib/domain/cost/cost';
 	import GraphErrors from '$lib/ui/GraphErrors.svelte';
 	import SurfaceCard from '$lib/ui/SurfaceCard.svelte';
-	import { Detail, Link, Loader } from '@nais/ds-svelte-community';
+	import SurfaceCardAction from '$lib/ui/SurfaceCardAction.svelte';
+	import { Detail, Loader } from '@nais/ds-svelte-community';
 
 	const costQuery = graphql(`
 		query AggregatedCost($team: Slug!, $environment: String!, $workload: String!) {
@@ -86,7 +87,7 @@
 		{/if}
 
 		{#if detailsHref}
-			<Link href={detailsHref}>View details</Link>
+			<SurfaceCardAction href={detailsHref} label="View details" />
 		{/if}
 	{:else}
 		<Detail>No cost data available</Detail>

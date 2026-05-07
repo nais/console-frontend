@@ -1,7 +1,8 @@
 <script lang="ts">
 	import { graphql } from '$houdini';
 	import GraphErrors from '$lib/ui/GraphErrors.svelte';
-	import { Heading, Loader } from '@nais/ds-svelte-community';
+	import SurfaceCardAction from '$lib/ui/SurfaceCardAction.svelte';
+	import { Loader } from '@nais/ds-svelte-community';
 	import AggregatedCostForWorkloads from './AggregatedCostForWorkloads.svelte';
 
 	const costQuery = $derived(
@@ -45,17 +46,13 @@
 
 <GraphErrors errors={$costQuery.errors} />
 <div>
-	<div class="heading">
-		<Heading size="small" as="h3">Applications Cost</Heading>
-	</div>
-
 	{#if $costQuery.fetching}
 		<div class="loading">
 			<Loader size="3xlarge" />
 		</div>
 	{:else if $costQuery.data && $costQuery.data.team.applications.nodes.length > 0}
 		<AggregatedCostForWorkloads nodes={$costQuery.data.team.applications.nodes} />
-		<a href="/team/{teamSlug}/cost">See cost details</a>
+		<SurfaceCardAction href="/team/{teamSlug}/cost" label="See cost details" />
 	{/if}
 </div>
 
@@ -66,11 +63,5 @@
 		align-items: center;
 		height: 200px;
 		width: 100%;
-	}
-
-	.heading {
-		display: flex;
-		gap: var(--ax-space-8);
-		align-items: center;
 	}
 </style>

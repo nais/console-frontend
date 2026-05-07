@@ -2,15 +2,16 @@
 	import {
 		fragment,
 		graphql,
+		DeploymentStatusState,
 		type DeploymentStatusState$options,
 		type WorkloadDeploy
 	} from '$houdini';
-	import DeploymentStatus from '$lib/ui/DeploymentStatus.svelte';
-	import ExternalLink from '$lib/ui/ExternalLink.svelte';
+	import Meta from '$lib/domain/activity/Meta.svelte';
+	import GitHubIcon from '$lib/icons/GitHubIcon.svelte';
+	import Pill from '$lib/ui/Pill.svelte';
 	import SurfaceCard from '$lib/ui/SurfaceCard.svelte';
-	import Time from '$lib/ui/Time.svelte';
-	import { BodyShort } from '@nais/ds-svelte-community';
-	import { RocketIcon } from '@nais/ds-svelte-community/icons';
+	import { BodyShort, Tooltip } from '@nais/ds-svelte-community';
+	import { ExternalLinkIcon } from '@nais/ds-svelte-community/icons';
 
 	interface Props {
 		workload: WorkloadDeploy;
@@ -27,6 +28,9 @@
 						nodes {
 							createdAt
 							repository
+							commitSha
+							deployerUsername
+							triggerUrl
 							statuses {
 								nodes {
 									state
@@ -46,105 +50,101 @@
 	let deploymentStatus: 'UNKNOWN' | DeploymentStatusState$options = $derived.by(
 		() => deploymentInfo?.statuses.nodes[0]?.state ?? 'UNKNOWN'
 	);
+
+	let statusPill: {
+		variant: 'success' | 'critical' | 'warning' | 'info' | 'neutral';
+		label: string;
+	} = $derived.by(() => {
+		switch (deploymentStatus) {
+			case DeploymentStatusState.SUCCESS:
+				return { variant: 'success', label: 'Success' };
+			case DeploymentStatusState.IN_PROGRESS:
+				return { variant: 'info', label: 'In progress' };
+			case DeploymentStatusState.FAILURE:
+				return { variant: 'critical', label: 'Failed' };
+			case DeploymentStatusState.ERROR:
+				return { variant: 'critical', label: 'Error' };
+			default:
+				return { variant: 'neutral', label: 'Unknown' };
+		}
+	});
+
+	let workflowUrl = $derived.by(() => {
+		if (deploymentInfo?.triggerUrl) return deploymentInfo.triggerUrl;
+		if (deploymentInfo?.repository) return `https://github.com/${deploymentInfo.repository}`;
+		return null;
+	});
 </script>
 
 <SurfaceCard title="Latest deployment">
 	{#snippet headerAside()}
 		{#if deploymentInfo}
-			<DeploymentStatus status={deploymentStatus} />
+			<Pill variant={statusPill.variant}>{statusPill.label}</Pill>
 		{/if}
 	{/snippet}
 
 	{#if deploymentInfo}
-		<div class="content">
-			<div class="surface-icon">
-				<RocketIcon />
-			</div>
-			<div class="details">
-				{#if deploymentInfo.repository}
-					<div class="repo">
-						<ExternalLink href="https://github.com/{deploymentInfo.repository}">
-							{deploymentInfo.repository}
-						</ExternalLink>
-					</div>
-				{:else}
-					<div class="repo fallback">Deployment metadata</div>
-				{/if}
+		<div class="details">
+			{#if deploymentInfo.repository}
+				<span class="workflow-row">
+					<GitHubIcon size="14px" />
+					<span class="repo-name">{deploymentInfo.repository}</span>
+					{#if workflowUrl}
+						<Tooltip content="View workflow on GitHub" placement="top">
+							<a href={workflowUrl} target="_blank" rel="noopener noreferrer" class="workflow-icon">
+								<ExternalLinkIcon />
+							</a>
+						</Tooltip>
+					{/if}
+				</span>
+			{/if}
 
-				{#if deploymentInfo.createdAt}
-					<div class="meta">
-						<BodyShort size="small"
-							><Time time={deploymentInfo.createdAt} distance={true} /></BodyShort
-						>
-					</div>
-				{/if}
-			</div>
+			{#if deploymentInfo.deployerUsername && deploymentInfo.createdAt}
+				<Meta actor={deploymentInfo.deployerUsername} createdAt={deploymentInfo.createdAt} />
+			{:else if deploymentInfo.createdAt}
+				<Meta actor="unknown" createdAt={deploymentInfo.createdAt} />
+			{/if}
 		</div>
 	{:else}
-		<div class="content empty-state">
-			<div class="surface-icon">
-				<RocketIcon />
-			</div>
-			<BodyShort>No deployment metadata found for workload.</BodyShort>
-		</div>
+		<BodyShort size="small">No deployment metadata found for workload.</BodyShort>
 	{/if}
 </SurfaceCard>
 
 <style>
-	.content {
-		display: grid;
-		grid-template-columns: auto 1fr;
-		gap: var(--ax-space-12);
-		align-items: start;
-		width: 100%;
-		--surface-icon-size: 2rem;
-		--surface-icon-glyph-size: 1.1rem;
-	}
-
 	.details {
 		display: flex;
 		flex-direction: column;
-		gap: var(--ax-space-4);
+		gap: var(--ax-space-2);
 		min-width: 0;
 	}
 
-	.repo,
-	.repo.fallback {
-		font-size: var(--ax-font-size-large);
-		font-weight: var(--ax-font-weight-bold);
+	.workflow-row {
+		display: inline-flex;
+		align-items: center;
+		gap: var(--ax-space-4);
+		font-size: var(--ax-font-size-medium);
 		line-height: var(--ax-font-line-height-large);
-		overflow-wrap: anywhere;
 	}
 
-	.repo :global(a) {
-		color: inherit;
+	.repo-name {
+		font-weight: var(--ax-font-weight-bold);
+		color: var(--ax-text-neutral);
+	}
+
+	.workflow-icon {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		color: var(--ax-text-neutral-subtle);
 		text-decoration: none;
 	}
 
-	.repo :global(a:hover) {
-		text-decoration: underline;
-	}
-
-	.meta {
-		color: var(--ax-text-neutral-subtle);
-	}
-
-	.empty-state {
+	.workflow-row :global(.ds-svelte-tooltip-wrapper) {
+		display: inline-flex;
 		align-items: center;
 	}
 
-	@media (max-width: 767px), (max-height: 500px) {
-		.content {
-			grid-template-columns: 1fr;
-		}
-
-		.content {
-			display: flex;
-			flex-direction: column;
-		}
-
-		.empty-state {
-			align-items: flex-start;
-		}
+	.workflow-icon:hover {
+		color: var(--ax-text-neutral);
 	}
 </style>

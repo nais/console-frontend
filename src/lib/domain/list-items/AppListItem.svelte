@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { envTagVariant } from '$lib/envTagVariant';
+	import IssuePills from '$lib/domain/issues/IssuePills.svelte';
 	import IconLabel from '$lib/ui/IconLabel.svelte';
 	import ListItem from '$lib/ui/ListItem.svelte';
 	import RunningIndicator from '$lib/ui/RunningIndicator.svelte';
@@ -10,7 +11,6 @@
 	import { CircleFillIcon, RocketIcon } from '@nais/ds-svelte-community/icons';
 	import { format } from 'date-fns';
 	import { enGB } from 'date-fns/locale';
-	import IssueSeverityTags from '../issues/IssueSeverityTags.svelte';
 
 	const {
 		app
@@ -40,14 +40,14 @@
 	<div class="app-row">
 		<div class="primary">
 			<IconLabel
-				as="h4"
 				href="/team/{app.team.slug}/{app.teamEnvironment.environment.name}/app/{app.name}"
-				size="large"
+				size="medium"
 				label={app.name}
 				tag={{
 					label: app.teamEnvironment.environment.name,
 					variant: envTagVariant(app.teamEnvironment.environment.name)
 				}}
+				tagSize="xsmall"
 			>
 				{#snippet icon()}
 					<TooltipAlignHack
@@ -61,11 +61,11 @@
 							<RunningIndicator />
 						{:else if app.state === 'NOT_RUNNING'}
 							<CircleFillIcon
-								style="width: 24px; color: light-dark(var(--ax-bg-danger-strong), var(--ax-bg-danger-strong)); font-size: 0.7rem"
+								style="width: 24px; color: var(--ax-bg-danger-strong); font-size: 11.5px"
 							/>
 						{:else}
 							<CircleFillIcon
-								style="width: 24px; color: light-dark(var(--ax-text-neutral-decoration), var(--ax-text-neutral-decoration)); font-size: 0.7rem"
+								style="width: 24px; color: var(--ax-text-neutral-decoration); font-size: 11.5px"
 							/>
 						{/if}
 					</TooltipAlignHack>
@@ -79,12 +79,7 @@
 				{@const warningCount = countIssuesBySeverity(app.issues.edges, 'WARNING')}
 				{@const todoCount = countIssuesBySeverity(app.issues.edges, 'TODO')}
 
-				<IssueSeverityTags
-					critical={criticalCount}
-					warning={warningCount}
-					todo={todoCount}
-					layout="inline"
-				/>
+				<IssuePills critical={criticalCount} warning={warningCount} todo={todoCount} direction="column" />
 			{/if}
 		</div>
 
@@ -123,10 +118,10 @@
 <style>
 	.app-row {
 		display: grid;
-		grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) 11rem;
+		grid-template-columns: minmax(0, 1fr) max-content 8.5rem;
 		align-items: center;
-		column-gap: var(--ax-space-24);
-		min-block-size: 5rem;
+		column-gap: var(--ax-space-16);
+		min-block-size: 3rem;
 		width: 100%;
 	}
 
@@ -154,7 +149,7 @@
 	.right {
 		display: grid;
 		grid-template-rows: auto auto;
-		inline-size: 11rem;
+		inline-size: 8.5rem;
 		justify-items: end;
 		align-items: end;
 		row-gap: var(--ax-space-2);
@@ -181,17 +176,6 @@
 		justify-content: flex-end;
 	}
 
-	.issues-slot :global(.issues-container.inline) {
-		width: 100%;
-		flex-wrap: nowrap;
-		justify-content: flex-end;
-		gap: var(--ax-space-8);
-	}
-
-	.issues-slot :global(.aksel-tag) {
-		white-space: nowrap;
-	}
-
 	/* Mobile responsive layout */
 	@media (max-width: 767px) {
 		.app-row {
@@ -210,12 +194,6 @@
 
 		.issues-slot {
 			justify-content: flex-end;
-		}
-
-		.issues-slot :global(.issues-container.inline) {
-			flex-wrap: wrap;
-			justify-content: flex-end;
-			gap: var(--ax-space-8);
 		}
 	}
 </style>
