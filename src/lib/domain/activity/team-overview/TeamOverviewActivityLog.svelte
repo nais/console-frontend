@@ -284,7 +284,7 @@
 					</div>
 				{/each}
 			</div>
-		<SurfaceCardAction href="/team/{teamSlug}/activity-log" label="View activity log" />
+			<SurfaceCardAction href="/team/{teamSlug}/activity-log" label="View activity log" />
 		{/if}
 	{/if}
 </SurfaceCard>
