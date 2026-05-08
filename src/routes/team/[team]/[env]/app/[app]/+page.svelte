@@ -141,9 +141,6 @@
 				{#if environment}
 					<CostOverviewChart workload={app.name} {environment} {teamSlug} />
 				{/if}
-				<div>
-					<Persistence workload={app} />
-				</div>
 			</div>
 			<div class="sidebar">
 				<WorkloadDeploy workload={app} />
@@ -151,6 +148,7 @@
 					activityLog={app}
 					href="/team/{page.params.team}/{page.params.env}/app/{page.params.app}/activity-log"
 				/>
+				<Persistence workload={app} />
 				{#if environment}
 					<Configs {environment} workload={app.name} {teamSlug} />
 					<Secrets workload={app.name} {environment} {teamSlug} />
