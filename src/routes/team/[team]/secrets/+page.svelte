@@ -239,6 +239,7 @@
 		display: grid;
 		grid-template-columns: 1fr 300px;
 		gap: var(--spacing-layout);
+		align-items: start;
 	}
 	.button {
 		display: flex;
