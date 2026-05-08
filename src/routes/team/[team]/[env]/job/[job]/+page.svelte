@@ -198,7 +198,7 @@
 					<Runs {job} ondelete={viewerIsMember ? handleDeleteRun : undefined} />
 				</SurfaceCard>
 				{#if jobName && environment}
-					<CostOverviewChart workload={jobName} {environment} {teamSlug} workloadType="job" />
+					<CostOverviewChart workload={jobName} {environment} {teamSlug} />
 				{/if}
 			</div>
 			<div class="sidebar">
