@@ -1,16 +1,16 @@
 <script lang="ts">
 	import { page } from '$app/state';
 	import { graphql } from '$houdini';
-	import LatestActivity from '$lib/domain/activity/workload/LatestActivity.svelte';
+	import WorkloadActivityCard from '$lib/domain/activity/WorkloadActivityCard.svelte';
 	import CostOverviewChart from '$lib/domain/cost/CostOverviewChart.svelte';
 	import IssueListItem from '$lib/domain/list-items/IssueListItem.svelte';
 	import Persistence from '$lib/domain/persistence/Persistence.svelte';
 	import Configs from '$lib/domain/resources/Configs.svelte';
 	import Manifest from '$lib/domain/resources/Manifest.svelte';
 	import Secrets from '$lib/domain/resources/Secrets.svelte';
+	import JobResources from '$lib/domain/workload/JobResources.svelte';
 	import WorkloadDeploy from '$lib/domain/workload/WorkloadDeploy.svelte';
 	import WorkloadHealth from '$lib/domain/workload/WorkloadHealth.svelte';
-	import JobResources from '$lib/domain/workload/JobResources.svelte';
 	import Confirm from '$lib/ui/Confirm.svelte';
 	import GraphErrors from '$lib/ui/GraphErrors.svelte';
 	import List from '$lib/ui/List.svelte';
@@ -225,10 +225,15 @@
 			<div class="sidebar">
 				<WorkloadDeploy workload={job} />
 				<JobResources requests={job.resources.requests} limits={job.resources.limits} />
-				<LatestActivity
-					activityLog={job}
-					href="/team/{page.params.team}/{page.params.env}/job/{page.params.job}/activity-log"
-				/>
+				{#if environment && jobName}
+					<WorkloadActivityCard
+						{teamSlug}
+						env={environment}
+						workload={jobName}
+						workloadType="job"
+						viewAllHref="/team/{teamSlug}/{environment}/job/{jobName}/activity-log"
+					/>
+				{/if}
 				<Persistence workload={job} />
 				{#if jobName && environment}
 					<Configs workload={jobName} {environment} {teamSlug} />

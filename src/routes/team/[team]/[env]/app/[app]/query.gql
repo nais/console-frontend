@@ -74,7 +74,6 @@ query App($app: String!, $team: Slug!, $env: String!) {
 					}
 				}
 
-				...WorkloadLatestActivityFragment @with(limit: 3)
 				...Persistence
 				...WorkloadDeploy
 				...Manifest

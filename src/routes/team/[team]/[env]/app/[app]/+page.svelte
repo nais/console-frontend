@@ -2,7 +2,7 @@
 	import { onNavigate } from '$app/navigation';
 	import { page } from '$app/state';
 	import { graphql } from '$houdini';
-	import LatestActivity from '$lib/domain/activity/workload/LatestActivity.svelte';
+	import WorkloadActivityCard from '$lib/domain/activity/WorkloadActivityCard.svelte';
 	import CostOverviewChart from '$lib/domain/cost/CostOverviewChart.svelte';
 	import IssueListItem from '$lib/domain/list-items/IssueListItem.svelte';
 	import Persistence from '$lib/domain/persistence/Persistence.svelte';
@@ -165,10 +165,15 @@
 			</div>
 			<div class="sidebar">
 				<WorkloadDeploy workload={app} />
-				<LatestActivity
-					activityLog={app}
-					href="/team/{page.params.team}/{page.params.env}/app/{page.params.app}/activity-log"
-				/>
+				{#if environment && application}
+					<WorkloadActivityCard
+						{teamSlug}
+						env={environment}
+						workload={application}
+						workloadType="app"
+						viewAllHref="/team/{teamSlug}/{environment}/app/{application}/activity-log"
+					/>
+				{/if}
 				<Persistence workload={app} />
 				{#if environment}
 					<Configs {environment} workload={app.name} {teamSlug} />

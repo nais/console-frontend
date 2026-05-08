@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { page } from '$app/state';
-	import TeamOverviewActivityLog from '$lib/domain/activity/team-overview/TeamOverviewActivityLog.svelte';
+	import TeamActivityCard from '$lib/domain/activity/TeamActivityCard.svelte';
 	import CriticalIssues from '$lib/domain/issues/CriticalIssues.svelte';
 	import TeamInventory from '$lib/domain/team/TeamInventory.svelte';
 	import TeamSummary from '$lib/domain/team/TeamSummary.svelte';
@@ -42,7 +42,11 @@
 		<TeamInventory {teamSlug} />
 	</div>
 	<div class="summary-cards">
-		<TeamOverviewActivityLog {teamSlug} />
+		<TeamActivityCard
+			{teamSlug}
+			viewAllHref="/team/{teamSlug}/activity-log"
+			title="Latest Activity"
+		/>
 	</div>
 </div>
 

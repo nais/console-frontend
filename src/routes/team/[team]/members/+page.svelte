@@ -1,13 +1,12 @@
 <script lang="ts">
-	import { graphql, TeamMemberOrderField } from '$houdini';
-	import SidebarActivity from '$lib/domain/activity/sidebar/SidebarActivity.svelte';
+	import { ActivityLogActivityType, graphql, TeamMemberOrderField } from '$houdini';
+	import TeamActivityCard from '$lib/domain/activity/TeamActivityCard.svelte';
 	import Confirm from '$lib/ui/Confirm.svelte';
 	import GraphErrors from '$lib/ui/GraphErrors.svelte';
 	import List from '$lib/ui/List.svelte';
 	import ListItem from '$lib/ui/ListItem.svelte';
 	import OrderByMenu from '$lib/ui/OrderByMenu.svelte';
 	import Pagination from '$lib/ui/Pagination.svelte';
-	import SurfaceCard from '$lib/ui/SurfaceCard.svelte';
 	import { changeParams } from '$lib/utils/searchparams';
 	import { BodyShort, Button, Heading } from '@nais/ds-svelte-community';
 	import { PencilIcon, PlusIcon, TrashIcon } from '@nais/ds-svelte-community/icons';
@@ -162,9 +161,17 @@
 		</div>
 		<!--div>Here be documentation of teams, members and roles</div-->
 		<div class="right-column">
-			<SurfaceCard title="Activity">
-				<SidebarActivity hideTitle activityLog={team} direct={$Members.data?.team.activityLog} />
-			</SurfaceCard>
+			<TeamActivityCard
+				teamSlug={team.slug}
+				viewAllHref="/team/{team.slug}/activity-log"
+				filter={{
+					activityTypes: [
+						ActivityLogActivityType.TEAM_MEMBER_REMOVED,
+						ActivityLogActivityType.TEAM_MEMBER_ADDED,
+						ActivityLogActivityType.TEAM_MEMBER_SET_ROLE
+					]
+				}}
+			/>
 		</div>
 	</div>
 	{#if team}

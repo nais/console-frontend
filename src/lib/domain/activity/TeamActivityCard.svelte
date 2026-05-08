@@ -1,31 +1,32 @@
 <script lang="ts">
-	import {
-		fragment,
-		graphql,
-		type SidebarActivityLogFragment,
-		type SidebarActivityLogFragment$data
-	} from '$houdini';
-	import { Heading } from '@nais/ds-svelte-community';
+	import { type ActivityLogFilter, graphql } from '$houdini';
+	import SurfaceCard from '$lib/ui/SurfaceCard.svelte';
+	import { Loader } from '@nais/ds-svelte-community';
 
-	import ActivityTimeline from '../ActivityTimeline.svelte';
-	import { sidebarTextComponent } from './textComponent';
+	import ActivityTimeline from './ActivityTimeline.svelte';
+	import { sidebarTextComponent } from './sidebar/textComponent';
 
 	interface Props {
-		activityLog: SidebarActivityLogFragment;
-		direct?: SidebarActivityLogFragment$data['activityLog'];
-		hideTitle?: boolean;
+		teamSlug: string;
+		filter?: ActivityLogFilter;
+		viewAllHref: string;
+		title?: string;
 	}
 
-	let { activityLog, direct, hideTitle = false }: Props = $props();
+	let { teamSlug, filter, viewAllHref, title = 'Activity' }: Props = $props();
 
-	const data = $derived(
-		fragment(
-			activityLog,
-			graphql(`
-				fragment SidebarActivityLogFragment on ActivityLogger
-				@arguments(filter: { type: "ActivityLogFilter" }, limit: { type: "Int" }) {
-					activityLog(first: $limit, filter: $filter) {
-						nodes {
+	const first = 5;
+
+	const activityQuery = graphql(`
+		query TeamActivityCard($teamSlug: Slug!, $first: Int!, $filter: ActivityLogFilter) {
+			team(slug: $teamSlug) {
+				activityLog(first: $first, filter: $filter) @paginate(mode: Infinite) {
+					pageInfo {
+						endCursor
+						hasNextPage
+					}
+					edges {
+						node {
 							id
 							actor
 							message
@@ -76,7 +77,6 @@
 									resourceKind
 								}
 							}
-
 							... on RepositoryAddedActivityLogEntry {
 								id
 							}
@@ -285,31 +285,65 @@
 						}
 					}
 				}
-			`)
-		)
-	);
+			}
+		}
+	`);
 
-	const list = $derived(data && $data ? $data.activityLog.nodes : (direct?.nodes ?? []));
+	$effect(() => {
+		activityQuery.fetch({ variables: { teamSlug, first, filter } });
+	});
+
+	let loadingMore = $state(false);
+
+	async function loadMore() {
+		loadingMore = true;
+		await activityQuery.loadNextPage({ first });
+		loadingMore = false;
+	}
+
+	const entries = $derived(($activityQuery.data?.team?.activityLog.edges ?? []).map((e) => e.node));
+	const hasNextPage = $derived(
+		$activityQuery.data?.team?.activityLog.pageInfo.hasNextPage ?? false
+	);
 </script>
 
-<div class="wrapper">
-	{#if !hideTitle}
-		<Heading as="h3" size="small">Activity</Heading>
+<SurfaceCard {title}>
+	{#snippet headerAside()}
+		<a class="view-all" href={viewAllHref}>View all</a>
+	{/snippet}
+
+	{#if $activityQuery.fetching && entries.length === 0}
+		<div class="loader">
+			<Loader size="3xlarge" />
+		</div>
+	{:else}
+		<ActivityTimeline
+			{entries}
+			{hasNextPage}
+			loading={loadingMore}
+			{loadMore}
+			textComponentFn={sidebarTextComponent}
+		/>
 	{/if}
-	<ActivityTimeline
-		entries={list}
-		hasNextPage={false}
-		loading={false}
-		loadMore={() => {}}
-		textComponentFn={sidebarTextComponent}
-	/>
-</div>
+</SurfaceCard>
 
 <style>
-	.wrapper {
+	.view-all {
+		font-size: var(--ax-font-size-small);
+		font-weight: var(--ax-font-weight-bold);
+		color: var(--ax-text-accent);
+		text-decoration: none;
+	}
+
+	.view-all:hover {
+		text-decoration: underline;
+	}
+
+	.loader {
 		display: flex;
-		flex-direction: column;
-		gap: var(--ax-space-4);
-		min-width: 0;
+		justify-content: center;
+		align-items: center;
+		min-width: 100%;
+		min-height: 200px;
 	}
 </style>
