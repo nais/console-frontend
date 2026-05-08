@@ -126,11 +126,13 @@
 			display: grid;
 			gap: var(--ax-space-24);
 			grid-template-columns: 1fr 300px;
+			align-items: start;
 		}
 
 		.right-column {
 			display: grid;
 			gap: var(--ax-space-24);
+			align-content: start;
 		}
 
 		/* Mobile responsive layout */
