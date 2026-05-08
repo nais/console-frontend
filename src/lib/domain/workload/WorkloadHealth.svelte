@@ -10,6 +10,7 @@
 		VirusIcon,
 		VitalsIcon
 	} from '@nais/ds-svelte-community/icons';
+	import { subDays } from 'date-fns';
 
 	interface Props {
 		teamSlug: string;
@@ -78,14 +79,15 @@
 	`);
 
 	const costQuery = graphql(`
-		query WorkloadHealthCost($team: Slug!, $env: String!, $app: String!)
+		query WorkloadHealthCost($team: Slug!, $env: String!, $app: String!, $from: Date!, $to: Date!)
 		@cache(policy: CacheAndNetwork) {
 			team(slug: $team) {
 				environment(name: $env) {
 					application(name: $app) {
 						cost {
-							monthly {
+							daily(from: $from, to: $to) {
 								series {
+									date
 									sum
 								}
 							}
@@ -97,14 +99,15 @@
 	`);
 
 	const jobCostQuery = graphql(`
-		query WorkloadHealthJobCost($team: Slug!, $env: String!, $job: String!)
+		query WorkloadHealthJobCost($team: Slug!, $env: String!, $job: String!, $from: Date!, $to: Date!)
 		@cache(policy: CacheAndNetwork) {
 			team(slug: $team) {
 				environment(name: $env) {
 					job(name: $job) {
 						cost {
-							monthly {
+							daily(from: $from, to: $to) {
 								series {
+									date
 									sum
 								}
 							}
@@ -116,12 +119,18 @@
 	`);
 
 	$effect(() => {
+		const to = subDays(new Date(), 2);
+		const from = subDays(to, 60);
 		if (workloadType === 'app') {
 			vulnQuery.fetch({ variables: { team: teamSlug, env: environment, app: workload } });
-			costQuery.fetch({ variables: { team: teamSlug, env: environment, app: workload } });
+			costQuery.fetch({
+				variables: { team: teamSlug, env: environment, app: workload, from, to }
+			});
 		} else {
 			jobVulnQuery.fetch({ variables: { team: teamSlug, env: environment, job: workload } });
-			jobCostQuery.fetch({ variables: { team: teamSlug, env: environment, job: workload } });
+			jobCostQuery.fetch({
+				variables: { team: teamSlug, env: environment, job: workload, from, to }
+			});
 		}
 	});
 
@@ -135,11 +144,14 @@
 	let costTrend = $derived.by(() => {
 		const series =
 			workloadType === 'app'
-				? $costQuery.data?.team?.environment?.application?.cost?.monthly?.series
-				: $jobCostQuery.data?.team?.environment?.job?.cost?.monthly?.series;
+				? $costQuery.data?.team?.environment?.application?.cost?.daily?.series
+				: $jobCostQuery.data?.team?.environment?.job?.cost?.daily?.series;
 		if (!series || series.length < 2) return null;
-		const current = series.at(-1)!.sum;
-		const previous = series.at(-2)!.sum;
+
+		const midpoint = Math.floor(series.length / 2);
+		const previous = series.slice(0, midpoint).reduce((sum, d) => sum + d.sum, 0);
+		const current = series.slice(midpoint).reduce((sum, d) => sum + d.sum, 0);
+
 		if (previous === 0) return null;
 		const change = ((current - previous) / previous) * 100;
 		if (Math.abs(change) < 1) return null;
