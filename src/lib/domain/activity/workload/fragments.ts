@@ -61,13 +61,3 @@ export const workloadActivityEntryFragment = graphql(`
 		}
 	}
 `);
-
-export const workloadLatestActivityFragment = graphql(`
-	fragment WorkloadLatestActivityFragment on ActivityLogger @arguments(limit: { type: "Int" }) {
-		activityLog(first: $limit) {
-			nodes {
-				...WorkloadActivityEntryFragment
-			}
-		}
-	}
-`);

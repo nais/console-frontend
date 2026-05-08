@@ -35,8 +35,5 @@ query Repositories(
 				}
 			}
 		}
-		...SidebarActivityLogFragment
-			@with(filter: { activityTypes: [REPOSITORY_ADDED, REPOSITORY_REMOVED] })
-			@mask_disable
 	}
 }

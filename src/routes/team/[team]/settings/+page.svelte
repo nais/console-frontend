@@ -2,13 +2,14 @@
 	import { browser } from '$app/environment';
 	import { resolve } from '$app/paths';
 	import {
+		ActivityLogActivityType,
+		graphql,
 		type GetTeamDeleteKey$input,
 		type GetTeamDeleteKey$result,
-		graphql,
 		type QueryResult
 	} from '$houdini';
 	import { docURL } from '$lib/doc';
-	import SidebarActivity from '$lib/domain/activity/sidebar/SidebarActivity.svelte';
+	import TeamActivityCard from '$lib/domain/activity/TeamActivityCard.svelte';
 	import SlackIcon from '$lib/icons/SlackIcon.svelte';
 	import WarningIcon from '$lib/icons/WarningIcon.svelte';
 	import ExternalLink from '$lib/ui/ExternalLink.svelte';
@@ -371,9 +372,19 @@
 				</dl>
 			</div>
 			{#if $TeamSettings.data?.team}
-				<SidebarActivity
-					activityLog={$TeamSettings.data.team}
-					direct={$TeamSettings.data.team.activityLog}
+				<TeamActivityCard
+					{teamSlug}
+					viewAllHref="/team/{teamSlug}/activity-log"
+					filter={{
+						activityTypes: [
+							ActivityLogActivityType.TEAM_DEPLOY_KEY_UPDATED,
+							ActivityLogActivityType.TEAM_CREATED,
+							ActivityLogActivityType.TEAM_UPDATED,
+							ActivityLogActivityType.TEAM_ENVIRONMENT_UPDATED,
+							ActivityLogActivityType.TEAM_CONFIRM_DELETE_KEY,
+							ActivityLogActivityType.TEAM_CREATE_DELETE_KEY
+						]
+					}}
 				/>
 			{/if}
 		</div>

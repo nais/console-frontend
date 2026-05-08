@@ -99,8 +99,13 @@
 	`);
 
 	const jobCostQuery = graphql(`
-		query WorkloadHealthJobCost($team: Slug!, $env: String!, $job: String!, $from: Date!, $to: Date!)
-		@cache(policy: CacheAndNetwork) {
+		query WorkloadHealthJobCost(
+			$team: Slug!
+			$env: String!
+			$job: String!
+			$from: Date!
+			$to: Date!
+		) @cache(policy: CacheAndNetwork) {
 			team(slug: $team) {
 				environment(name: $env) {
 					job(name: $job) {

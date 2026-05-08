@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { graphql, RepositoryOrderField } from '$houdini';
-	import SidebarActivity from '$lib/domain/activity/sidebar/SidebarActivity.svelte';
+	import { ActivityLogActivityType, graphql, RepositoryOrderField } from '$houdini';
+	import TeamActivityCard from '$lib/domain/activity/TeamActivityCard.svelte';
 	import GitHubIcon from '$lib/icons/GitHubIcon.svelte';
 	import ExternalLink from '$lib/ui/ExternalLink.svelte';
 	import GraphErrors from '$lib/ui/GraphErrors.svelte';
@@ -8,7 +8,6 @@
 	import ListItem from '$lib/ui/ListItem.svelte';
 	import OrderByMenu from '$lib/ui/OrderByMenu.svelte';
 	import Pagination from '$lib/ui/Pagination.svelte';
-	import SurfaceCard from '$lib/ui/SurfaceCard.svelte';
 	import { changeParams } from '$lib/utils/searchparams';
 	import {
 		Alert,
@@ -376,13 +375,16 @@
 			{/if}
 		</div>
 		<div class="right-column">
-			<SurfaceCard title="Activity">
-				<SidebarActivity
-					hideTitle
-					activityLog={$Repositories.data.team}
-					direct={$Repositories.data.team.activityLog}
-				/>
-			</SurfaceCard>
+			<TeamActivityCard
+				{teamSlug}
+				viewAllHref="/team/{teamSlug}/activity-log"
+				filter={{
+					activityTypes: [
+						ActivityLogActivityType.REPOSITORY_ADDED,
+						ActivityLogActivityType.REPOSITORY_REMOVED
+					]
+				}}
+			/>
 		</div>
 	</div>
 {/if}

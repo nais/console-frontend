@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { page } from '$app/state';
-	import { SecretOrderField } from '$houdini';
-	import SidebarActivity from '$lib/domain/activity/sidebar/SidebarActivity.svelte';
+	import { ActivityLogActivityType, SecretOrderField } from '$houdini';
+	import TeamActivityCard from '$lib/domain/activity/TeamActivityCard.svelte';
 	import { envTagVariant } from '$lib/envTagVariant';
 	import GraphErrors from '$lib/ui/GraphErrors.svelte';
 	import IconLabel from '$lib/ui/IconLabel.svelte';
@@ -9,7 +9,6 @@
 	import ListItem from '$lib/ui/ListItem.svelte';
 	import OrderByMenu from '$lib/ui/OrderByMenu.svelte';
 	import Pagination from '$lib/ui/Pagination.svelte';
-	import SurfaceCard from '$lib/ui/SurfaceCard.svelte';
 	import Time from '$lib/ui/Time.svelte';
 	import { changeParams } from '$lib/utils/searchparams';
 	import { getSecretPermissions } from '$lib/utils/secretPermissions';
@@ -227,13 +226,20 @@
 			</div>
 		</div>
 		<div class="right-column">
-			<SurfaceCard title="Activity">
-				<SidebarActivity
-					hideTitle
-					activityLog={$Secrets.data.team}
-					direct={$Secrets.data.team.activityLog}
-				/>
-			</SurfaceCard>
+			<TeamActivityCard
+				{teamSlug}
+				viewAllHref="/team/{teamSlug}/activity-log"
+				filter={{
+					activityTypes: [
+						ActivityLogActivityType.SECRET_CREATED,
+						ActivityLogActivityType.SECRET_VALUE_ADDED,
+						ActivityLogActivityType.SECRET_VALUE_UPDATED,
+						ActivityLogActivityType.SECRET_VALUE_REMOVED,
+						ActivityLogActivityType.SECRET_DELETED,
+						ActivityLogActivityType.SECRET_VALUES_VIEWED
+					]
+				}}
+			/>
 		</div>
 	</div>
 	{#if createSecretOpen}
