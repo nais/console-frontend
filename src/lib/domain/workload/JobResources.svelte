@@ -1,6 +1,6 @@
 <script lang="ts">
 	import SurfaceCard from '$lib/ui/SurfaceCard.svelte';
-	import { CpuIcon, DatabaseIcon } from '@nais/ds-svelte-community/icons';
+	import { CpuIcon, FloppydiskIcon } from '@nais/ds-svelte-community/icons';
 	import prettyBytes from 'pretty-bytes';
 
 	interface Props {
@@ -15,30 +15,17 @@
 	const DEFAULT_MEMORY_REQUEST = 268435456; // 256 MiB
 	const DEFAULT_MEMORY_LIMIT = 536870912; // 512 MiB
 
-	function formatCpu(
-		value: number | null | undefined,
-		fallback: number
-	): { text: string; isDefault: boolean } {
-		if (value === null || value === undefined) {
-			return { text: fallback.toFixed(2), isDefault: true };
-		}
-		return { text: value.toFixed(2), isDefault: false };
+	function formatCpu(value: number | null | undefined, fallback: number): string {
+		return (value ?? fallback).toFixed(2);
 	}
 
-	function formatMemory(
-		value: number | null | undefined,
-		fallback: number
-	): { text: string; isDefault: boolean } {
-		const v = value ?? fallback;
-		return {
-			text: prettyBytes(v, {
-				locale: 'en',
-				minimumFractionDigits: 0,
-				maximumFractionDigits: 1,
-				binary: true
-			}),
-			isDefault: value === null || value === undefined
-		};
+	function formatMemory(value: number | null | undefined, fallback: number): string {
+		return prettyBytes(value ?? fallback, {
+			locale: 'en',
+			minimumFractionDigits: 0,
+			maximumFractionDigits: 1,
+			binary: true
+		});
 	}
 
 	let cpuReq = $derived(formatCpu(requests.cpu, DEFAULT_CPU_REQUEST));
@@ -50,7 +37,7 @@
 <SurfaceCard title="Resources">
 	<div class="resources">
 		<div class="resource-row">
-			<div class="resource-icon">
+			<div class="surface-icon">
 				<CpuIcon />
 			</div>
 			<div class="resource-details">
@@ -58,29 +45,29 @@
 				<div class="resource-values">
 					<span class="resource-entry">
 						<span class="entry-label">Req</span>
-						<code>{cpuReq.text}</code>
+						<code>{cpuReq}</code>
 					</span>
 					<span class="resource-entry">
 						<span class="entry-label">Lim</span>
-						<code>{cpuLim.text}</code>
+						<code>{cpuLim}</code>
 					</span>
 				</div>
 			</div>
 		</div>
 		<div class="resource-row">
-			<div class="resource-icon">
-				<DatabaseIcon />
+			<div class="surface-icon">
+				<FloppydiskIcon />
 			</div>
 			<div class="resource-details">
 				<span class="resource-label">Memory</span>
 				<div class="resource-values">
 					<span class="resource-entry">
 						<span class="entry-label">Req</span>
-						<code>{memReq.text}</code>
+						<code>{memReq}</code>
 					</span>
 					<span class="resource-entry">
 						<span class="entry-label">Lim</span>
-						<code>{memLim.text}</code>
+						<code>{memLim}</code>
 					</span>
 				</div>
 			</div>
@@ -90,6 +77,8 @@
 
 <style>
 	.resources {
+		--surface-icon-size: 2rem;
+		--surface-icon-glyph-size: 1.1rem;
 		display: flex;
 		flex-direction: column;
 		gap: var(--ax-space-12);
@@ -99,19 +88,6 @@
 		display: flex;
 		align-items: center;
 		gap: var(--ax-space-12);
-	}
-
-	.resource-icon {
-		display: inline-flex;
-		align-items: center;
-		justify-content: center;
-		width: 2rem;
-		height: 2rem;
-		flex-shrink: 0;
-		border-radius: var(--ax-radius-8);
-		font-size: 1.1rem;
-		color: var(--ax-text-neutral-subtle);
-		background: color-mix(in srgb, var(--ax-text-neutral-subtle) 10%, transparent);
 	}
 
 	.resource-details {
