@@ -92,12 +92,13 @@
 			$data.networkPolicy.outbound.external.length > 0
 	);
 
-	interface FlatRule {
-		direction: 'inbound' | 'outbound';
-		kind: 'workload' | 'external';
-		rule?: NetworkPolicyRule;
-		external?: NetworkPolicy$data['networkPolicy']['outbound']['external'][0];
-	}
+	type FlatRule =
+		| { direction: 'inbound' | 'outbound'; kind: 'workload'; rule: NetworkPolicyRule }
+		| {
+				direction: 'outbound';
+				kind: 'external';
+				external: NetworkPolicy$data['networkPolicy']['outbound']['external'][0];
+		  };
 
 	let flatRules = $derived.by(() => {
 		const rules: FlatRule[] = [];
@@ -140,7 +141,7 @@
 <SurfaceCard title="Network policy" reverseGradient>
 	{#if hasPolicy}
 		<ul class="rules">
-			{#each flatRules as entry (entry)}
+			{#each flatRules as entry, i (`${entry.direction}-${entry.kind}-${i}`)}
 				<li class="rule">
 					<span class="direction" class:inbound={entry.direction === 'inbound'}>
 						{#if entry.direction === 'inbound'}
@@ -152,14 +153,14 @@
 					</span>
 
 					<span class="target">
-						{#if entry.kind === 'external' && entry.external}
+						{#if entry.kind === 'external'}
 							<IconLabel
 								label={entry.external.ports.length > 0
 									? `${entry.external.target}:${entry.external.ports.join(', ')}`
 									: entry.external.target}
 								icon={GlobeIcon}
 							/>
-						{:else if entry.rule}
+						{:else}
 							{@render workloadRule(entry.rule)}
 						{/if}
 					</span>
@@ -167,9 +168,9 @@
 					<span class="status">
 						{#if entry.kind === 'external'}
 							<Pill variant="neutral">External</Pill>
-						{:else if entry.rule?.mutual}
+						{:else if entry.rule.mutual}
 							<Pill variant="success">Mutual</Pill>
-						{:else if entry.rule}
+						{:else}
 							<TooltipAlignHack
 								content={entry.direction === 'inbound'
 									? `${entry.rule.targetWorkloadName} is missing outbound policy to ${$data.name}`
@@ -248,11 +249,5 @@
 
 	.wildcard {
 		color: var(--ax-text-neutral-subtle);
-	}
-
-	@media (max-width: 767px), (max-height: 500px) {
-		.status {
-			display: none;
-		}
 	}
 </style>
