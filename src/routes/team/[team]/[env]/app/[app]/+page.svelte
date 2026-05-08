@@ -10,9 +10,11 @@
 	import Manifest from '$lib/domain/resources/Manifest.svelte';
 	import Secrets from '$lib/domain/resources/Secrets.svelte';
 	import WorkloadDeploy from '$lib/domain/workload/WorkloadDeploy.svelte';
+	import WorkloadHealth from '$lib/domain/workload/WorkloadHealth.svelte';
 	import Confirm from '$lib/ui/Confirm.svelte';
 	import GraphErrors from '$lib/ui/GraphErrors.svelte';
 	import List from '$lib/ui/List.svelte';
+	import SurfaceCard from '$lib/ui/SurfaceCard.svelte';
 	import Time from '$lib/ui/Time.svelte';
 	import { Alert, Button, Heading, Loader, Modal } from '@nais/ds-svelte-community';
 	import { ActionMenu, ActionMenuItem } from '@nais/ds-svelte-community/experimental';
@@ -78,6 +80,7 @@
 {/if}
 {#if $App.data}
 	{@const app = $App.data.team.environment.application}
+	{@const criticalEdges = app.issues.edges.filter((e) => e.node.severity === 'CRITICAL')}
 
 	<div class="wrapper">
 		<div class="app-content">
@@ -127,16 +130,34 @@
 						/>. If the deletion is taking too long, contact the Nais team.
 					</Alert>
 				{/if}
-				{#if $App.data.team.environment.application.issues.edges.length > 0}
-					<div>
-						<Heading as="h3" spacing>Issues</Heading>
+				{#if criticalEdges.length > 0}
+					<SurfaceCard title="Critical issues ({criticalEdges.length})" reverseGradient>
+						{#snippet headerAside()}
+							<a
+								class="view-all"
+								href="/team/{page.params.team}/{page.params.env}/app/{page.params.app}/issues"
+								>View all</a
+							>
+						{/snippet}
 						<List>
-							{#each $App.data.team.environment.application.issues.edges as edge (edge.node.id)}
+							{#each criticalEdges as edge (edge.node.id)}
 								<IssueListItem item={edge.node} />
 							{/each}
 						</List>
-					</div>
+					</SurfaceCard>
 				{/if}
+				<WorkloadHealth
+					{teamSlug}
+					environment={environment ?? ''}
+					workload={app.name}
+					workloadType="app"
+					criticalIssues={app.criticalIssues.pageInfo.totalCount}
+					warningIssues={app.warningIssues.pageInfo.totalCount}
+					todoIssues={app.todoIssues.pageInfo.totalCount}
+					readyInstances={app.instanceGroups.reduce((sum, g) => sum + g.readyInstances, 0)}
+					desiredInstances={app.instanceGroups.reduce((sum, g) => sum + g.desiredInstances, 0)}
+					loading={$App.fetching}
+				/>
 				<InstanceGroups {app} />
 				{#if environment}
 					<CostOverviewChart workload={app.name} {environment} {teamSlug} />
@@ -204,6 +225,17 @@
 		all: unset;
 		display: contents;
 		cursor: pointer;
+	}
+
+	.view-all {
+		font-size: var(--ax-font-size-small);
+		font-weight: var(--ax-font-weight-bold);
+		color: var(--ax-text-accent);
+		text-decoration: none;
+	}
+
+	.view-all:hover {
+		text-decoration: underline;
 	}
 
 	.sidebar {

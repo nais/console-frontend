@@ -13,9 +13,25 @@ query App($app: String!, $team: Slug!, $env: String!) {
 						node {
 							id
 							__typename
+							severity
 							message
 							...IssueFragment
 						}
+					}
+				}
+				criticalIssues: issues(filter: { severity: CRITICAL }) {
+					pageInfo {
+						totalCount
+					}
+				}
+				warningIssues: issues(filter: { severity: WARNING }) {
+					pageInfo {
+						totalCount
+					}
+				}
+				todoIssues: issues(filter: { severity: TODO }) {
+					pageInfo {
+						totalCount
 					}
 				}
 				teamEnvironment {
