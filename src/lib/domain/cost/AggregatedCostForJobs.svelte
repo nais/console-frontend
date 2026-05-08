@@ -1,7 +1,8 @@
 <script lang="ts">
 	import { graphql, PendingValue } from '$houdini';
 	import GraphErrors from '$lib/ui/GraphErrors.svelte';
-	import { Heading, Loader } from '@nais/ds-svelte-community';
+	import SurfaceCardAction from '$lib/ui/SurfaceCardAction.svelte';
+	import { Loader } from '@nais/ds-svelte-community';
 	import AggregatedCostForWorkloads from './AggregatedCostForWorkloads.svelte';
 
 	const costQuery = graphql(`
@@ -42,13 +43,11 @@
 </script>
 
 <GraphErrors errors={$costQuery.errors} />
-<div class="wrapper">
-	<div class="heading">
-		<Heading as="h3" size="small">Jobs Cost</Heading>
-	</div>
+<div>
 	{#if $costQuery.data && $costQuery.data.team !== PendingValue}
 		{#if $costQuery.data.team.jobs.nodes.length > 0}
 			<AggregatedCostForWorkloads nodes={$costQuery.data.team.jobs.nodes} />
+			<SurfaceCardAction href="/team/{teamSlug}/cost" label="See cost details" />
 		{/if}
 	{:else}
 		<div class="loading">
@@ -58,24 +57,11 @@
 </div>
 
 <style>
-	.wrapper {
-		display: flex;
-		flex-direction: column;
-		align-items: start;
-		gap: var(--ax-space-4);
-	}
-
 	.loading {
 		display: flex;
 		justify-content: center;
 		align-items: center;
 		height: 200px;
 		width: 100%;
-	}
-
-	.heading {
-		display: flex;
-		gap: var(--ax-space-8);
-		align-items: center;
 	}
 </style>

@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { JobState, type JobRunState$options } from '$houdini';
+	import IssuePills from '$lib/domain/issues/IssuePills.svelte';
 	import { envTagVariant } from '$lib/envTagVariant';
 	import SuccessIcon from '$lib/icons/SuccessIcon.svelte';
 	import IconLabel from '$lib/ui/IconLabel.svelte';
@@ -19,7 +20,6 @@
 	import { format } from 'date-fns';
 	import { enGB } from 'date-fns/locale';
 	import ErrorIcon from '../../icons/ErrorIcon.svelte';
-	import IssueSeverityTags from '../issues/IssueSeverityTags.svelte';
 
 	const {
 		job
@@ -66,14 +66,14 @@
 	<div class="job-row">
 		<div class="primary">
 			<IconLabel
-				as="h4"
 				label={job.name}
 				href="/team/{job.team.slug}/{job.teamEnvironment.environment.name}/job/{job.name}"
-				size="large"
+				size="medium"
 				tag={{
 					label: job.teamEnvironment.environment.name,
 					variant: envTagVariant(job.teamEnvironment.environment.name)
 				}}
+				tagSize="xsmall"
 			>
 				{#snippet icon()}
 					<TooltipAlignHack
@@ -110,11 +110,11 @@
 				{@const warningCount = countIssuesBySeverity(job.issues.edges, 'WARNING')}
 				{@const todoCount = countIssuesBySeverity(job.issues.edges, 'TODO')}
 
-				<IssueSeverityTags
+				<IssuePills
 					critical={criticalCount}
 					warning={warningCount}
 					todo={todoCount}
-					layout="inline"
+					direction="column"
 				/>
 			{/if}
 		</div>
@@ -195,10 +195,10 @@
 <style>
 	.job-row {
 		display: grid;
-		grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) 13rem;
+		grid-template-columns: minmax(0, 1fr) max-content 13rem;
 		align-items: center;
-		column-gap: var(--ax-space-24);
-		min-block-size: 5rem;
+		column-gap: var(--ax-space-16);
+		min-block-size: 3rem;
 		width: 100%;
 	}
 
@@ -263,17 +263,6 @@
 		justify-content: flex-end;
 	}
 
-	.issues-slot :global(.issues-container.inline) {
-		width: 100%;
-		flex-wrap: nowrap;
-		justify-content: flex-end;
-		gap: var(--ax-space-8);
-	}
-
-	.issues-slot :global(.aksel-tag) {
-		white-space: nowrap;
-	}
-
 	/* Mobile responsive layout */
 	@media (max-width: 767px) {
 		.job-row {
@@ -292,13 +281,6 @@
 
 		.issues-slot {
 			justify-content: flex-end;
-		}
-
-		.issues-slot :global(.issues-container.inline) {
-			width: auto;
-			flex-wrap: wrap;
-			justify-content: flex-end;
-			gap: var(--ax-space-8);
 		}
 	}
 </style>
