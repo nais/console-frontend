@@ -55,7 +55,7 @@
 						/>
 					{/snippet}
 					{#each $BigQuery.data.team.bigQueryDatasets.nodes as instance (instance.id)}
-						<ListItem>
+						<ListItem interactive>
 							<div>
 								<PersistenceLink {instance} />
 								<Tag size="small" variant={envTagVariant(instance.teamEnvironment.environment.name)}

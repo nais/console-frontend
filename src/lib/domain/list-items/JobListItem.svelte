@@ -62,7 +62,7 @@
 	);
 </script>
 
-<ListItem>
+<ListItem interactive>
 	<div class="job-row">
 		<div class="primary">
 			<IconLabel

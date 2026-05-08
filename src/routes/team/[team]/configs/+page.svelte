@@ -175,7 +175,7 @@
 					{/snippet}
 					{#if configs.nodes.length > 0}
 						{#each configs.nodes as config (config.id)}
-							<ListItem>
+							<ListItem interactive>
 								<IconLabel
 									icon={FileTextIcon}
 									label={config.name}
