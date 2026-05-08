@@ -14,6 +14,11 @@
 			href: resolve('/team/[team]/[env]/app/[app]', page.params as never)
 		},
 		{
+			value: '/team/[team]/[env]/app/[app]/instancegroup/[instancegroup]',
+			label: 'Instance Groups',
+			href: resolve('/team/[team]/[env]/app/[app]/instancegroup', page.params as never)
+		},
+		{
 			value: '/team/[team]/[env]/app/[app]/vulnerabilities',
 			label: 'Vulnerabilities',
 			href: resolve('/team/[team]/[env]/app/[app]/vulnerabilities', page.params as never)
@@ -49,11 +54,16 @@
 			href: resolve('/team/[team]/[env]/app/[app]/activity-log', page.params as never)
 		}
 	] as const);
-	let visibleTabs = $derived(tabs.some((tab) => tab.value === routeId) ? tabs : []);
+	let activeTab = $derived(
+		routeId?.startsWith('/team/[team]/[env]/app/[app]/instancegroup')
+			? '/team/[team]/[env]/app/[app]/instancegroup/[instancegroup]'
+			: routeId
+	);
+	let visibleTabs = $derived(tabs.some((tab) => tab.value === activeTab) ? tabs : []);
 </script>
 
 {#if visibleTabs.length > 0}
-	<Tabs value={routeId} size="small">
+	<Tabs value={activeTab} size="small">
 		<TabList>
 			{#each visibleTabs as tab (tab.value)}
 				<Tab value={tab.value} as="a" href={tab.href}>{tab.label}</Tab>
