@@ -179,6 +179,7 @@
 	.right-column {
 		display: grid;
 		gap: var(--ax-space-24);
+		align-content: start;
 	}
 	.search {
 		display: flex;
