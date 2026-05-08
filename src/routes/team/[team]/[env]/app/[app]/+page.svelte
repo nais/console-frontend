@@ -7,7 +7,6 @@
 	import IssueListItem from '$lib/domain/list-items/IssueListItem.svelte';
 	import Persistence from '$lib/domain/persistence/Persistence.svelte';
 	import Configs from '$lib/domain/resources/Configs.svelte';
-	import NetworkPolicy from '$lib/domain/resources/NetworkPolicy.svelte';
 	import Secrets from '$lib/domain/resources/Secrets.svelte';
 	import WorkloadDeploy from '$lib/domain/workload/WorkloadDeploy.svelte';
 	import Confirm from '$lib/ui/Confirm.svelte';
@@ -22,7 +21,6 @@
 		TrashIcon
 	} from '@nais/ds-svelte-community/icons';
 	import type { PageProps } from './$types';
-	import Ingresses from './Ingresses.svelte';
 	import InstanceGroups from './InstanceGroups.svelte';
 
 	let { data }: PageProps = $props();
@@ -134,12 +132,6 @@
 					</div>
 				{/if}
 				<InstanceGroups {app} />
-				<div>
-					<Ingresses app={$App.data} />
-				</div>
-				<div>
-					<NetworkPolicy workload={app} />
-				</div>
 				<div>
 					<Persistence workload={app} />
 				</div>
