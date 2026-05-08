@@ -9,11 +9,11 @@
 </script>
 
 {#if href}
-	<a {href} class="list-item" class:surface-interactive={interactive}>
+	<a {href} class="list-item" class:interactive>
 		{@render children()}
 	</a>
 {:else}
-	<div class="list-item" class:surface-interactive={interactive}>
+	<div class="list-item" class:interactive>
 		{@render children()}
 	</div>
 {/if}
@@ -48,7 +48,18 @@
 		}
 	}
 
-	a.list-item:not(:global(.surface-interactive)):hover {
+	.interactive {
+		transition:
+			background-color 120ms ease,
+			transform 120ms ease;
+	}
+
+	.interactive:hover {
+		background: color-mix(in srgb, var(--surface-accent-color) 8%, var(--ax-bg-default));
+		transform: translateY(-1px);
+	}
+
+	a.list-item:not(.interactive):hover {
 		background: linear-gradient(
 			180deg,
 			var(--ax-neutral-100) 0%,
