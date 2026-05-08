@@ -7,12 +7,12 @@
 	import Persistence from '$lib/domain/persistence/Persistence.svelte';
 	import Configs from '$lib/domain/resources/Configs.svelte';
 	import Manifest from '$lib/domain/resources/Manifest.svelte';
-	import NetworkPolicy from '$lib/domain/resources/NetworkPolicy.svelte';
 	import Secrets from '$lib/domain/resources/Secrets.svelte';
 	import WorkloadDeploy from '$lib/domain/workload/WorkloadDeploy.svelte';
 	import Confirm from '$lib/ui/Confirm.svelte';
 	import GraphErrors from '$lib/ui/GraphErrors.svelte';
 	import List from '$lib/ui/List.svelte';
+	import SurfaceCard from '$lib/ui/SurfaceCard.svelte';
 	import Time from '$lib/ui/Time.svelte';
 	import { generateJobRunName } from '$lib/utils/jobRunName';
 	import { Alert, BodyShort, Button, Heading, Loader, Modal } from '@nais/ds-svelte-community';
@@ -184,20 +184,19 @@
 						</List>
 					</div>
 				{/if}
-				<Schedule
-					schedule={job.schedule}
-					scheduleContext={{
-						team: job.team.slug,
-						environment: job.teamEnvironment.environment.name,
-						job: job.name
-					}}
-				/>
-				<div>
+				<SurfaceCard title="Schedule" reverseGradient>
+					<Schedule
+						schedule={job.schedule}
+						scheduleContext={{
+							team: job.team.slug,
+							environment: job.teamEnvironment.environment.name,
+							job: job.name
+						}}
+					/>
+				</SurfaceCard>
+				<SurfaceCard title="Runs" reverseGradient>
 					<Runs {job} ondelete={viewerIsMember ? handleDeleteRun : undefined} />
-				</div>
-				<div>
-					<NetworkPolicy workload={job} />
-				</div>
+				</SurfaceCard>
 				{#if jobName && environment}
 					<CostOverviewChart workload={jobName} {environment} {teamSlug} workloadType="job" />
 				{/if}
