@@ -3,17 +3,18 @@
 	import { docURL } from '$lib/doc';
 	import PersistenceCost from '$lib/domain/cost/PersistenceCost.svelte';
 	import CdnBucket from '$lib/domain/persistence/CDNBucket.svelte';
-	import PersistenceLink from '$lib/domain/persistence/PersistenceLink.svelte';
 	import WorkloadLink from '$lib/domain/workload/WorkloadLink.svelte';
 	import { envTagVariant } from '$lib/envTagVariant';
 	import ExternalLink from '$lib/ui/ExternalLink.svelte';
 	import GraphErrors from '$lib/ui/GraphErrors.svelte';
+	import IconLabel from '$lib/ui/IconLabel.svelte';
 	import List from '$lib/ui/List.svelte';
 	import ListItem from '$lib/ui/ListItem.svelte';
 	import OrderByMenu from '$lib/ui/OrderByMenu.svelte';
 	import Pagination from '$lib/ui/Pagination.svelte';
+	import SurfaceCard from '$lib/ui/SurfaceCard.svelte';
 	import { changeParams } from '$lib/utils/searchparams';
-	import { BodyLong, Tag } from '@nais/ds-svelte-community';
+	import { BodyLong } from '@nais/ds-svelte-community';
 	import { endOfYesterday, startOfMonth, subMonths } from 'date-fns';
 	import type { PageProps } from './$types';
 
@@ -58,14 +59,18 @@
 						{/snippet}
 						{#each $Buckets.data.team.buckets.nodes as instance (instance.id)}
 							<ListItem>
-								<div>
-									<PersistenceLink {instance} />
-									<Tag
-										size="small"
-										variant={envTagVariant(instance.teamEnvironment.environment.name)}
-										>{instance.teamEnvironment.environment.name}</Tag
-									>
-								</div>
+								<IconLabel
+									as="h4"
+									href="/team/{instance.team.slug}/{instance.teamEnvironment.environment
+										.name}/bucket/{instance.name}"
+									size="large"
+									icon="bucket"
+									label={instance.name}
+									tag={{
+										label: instance.teamEnvironment.environment.name,
+										variant: envTagVariant(instance.teamEnvironment.environment.name)
+									}}
+								/>
 								{#if instance.workload}
 									<div class="right">
 										Owner: <WorkloadLink workload={instance.workload} hideTeam hideEnv />
@@ -97,7 +102,7 @@
 			<div class="right-column">
 				{#if cost()}
 					{@const costData = cost()!}
-					<div>
+					<SurfaceCard title="Cost">
 						<PersistenceCost
 							pageName={costData.pageName}
 							costData={costData.costData}
@@ -106,7 +111,7 @@
 							to={endOfYesterday()}
 							service="Cloud Storage"
 						/>
-					</div>
+					</SurfaceCard>
 				{/if}
 				{#if $Buckets.data.team.externalResources.cdn?.bucket && viewerIsMember}
 					<div>
