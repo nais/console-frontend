@@ -2,7 +2,8 @@
 	import { graphql } from '$houdini';
 	import GraphErrors from '$lib/ui/GraphErrors.svelte';
 	import IconLabel from '$lib/ui/IconLabel.svelte';
-	import { BodyShort, Heading, Loader } from '@nais/ds-svelte-community';
+	import SurfaceCard from '$lib/ui/SurfaceCard.svelte';
+	import { Loader } from '@nais/ds-svelte-community';
 	import { PadlockLockedIcon } from '@nais/ds-svelte-community/icons';
 
 	const secrets = graphql(`
@@ -47,28 +48,29 @@
 	});
 </script>
 
-<div class="wrapper">
-	<Heading as="h3" size="small">Secrets</Heading>
-	<GraphErrors errors={$secrets.errors} />
+<GraphErrors errors={$secrets.errors} />
 
-	{#if $secrets.fetching}
+{#if $secrets.fetching}
+	<SurfaceCard title="Secrets">
 		<Loader />
-	{:else if $secrets.data && $secrets.data.team.environment.workload.secrets.edges.length > 0}
-		{#each $secrets.data.team.environment.workload.secrets.edges as secret (secret.node.id)}
-			<IconLabel
-				label={secret.node.name}
-				icon={PadlockLockedIcon}
-				href="/team/{$secrets.data.team.slug}/{$secrets.data.team.environment.environment
-					.name}/secret/{secret.node.name}"
-			/>
-		{/each}
-	{:else}
-		<BodyShort>No secrets referenced in nais.yaml.</BodyShort>
-	{/if}
-</div>
+	</SurfaceCard>
+{:else if $secrets.data && $secrets.data.team.environment.workload.secrets.edges.length > 0}
+	<SurfaceCard title="Secrets">
+		<div class="list">
+			{#each $secrets.data.team.environment.workload.secrets.edges as secret (secret.node.id)}
+				<IconLabel
+					label={secret.node.name}
+					icon={PadlockLockedIcon}
+					href="/team/{$secrets.data.team.slug}/{$secrets.data.team.environment.environment
+						.name}/secret/{secret.node.name}"
+				/>
+			{/each}
+		</div>
+	</SurfaceCard>
+{/if}
 
 <style>
-	.wrapper {
+	.list {
 		display: flex;
 		flex-direction: column;
 		gap: var(--ax-space-4);

@@ -3,20 +3,22 @@
 	import { page } from '$app/state';
 	import { graphql } from '$houdini';
 	import LatestActivity from '$lib/domain/activity/workload/LatestActivity.svelte';
-	import AggregatedCostForWorkload from '$lib/domain/cost/AggregatedCostForWorkload.svelte';
+	import CostOverviewChart from '$lib/domain/cost/CostOverviewChart.svelte';
 	import IssueListItem from '$lib/domain/list-items/IssueListItem.svelte';
 	import Persistence from '$lib/domain/persistence/Persistence.svelte';
 	import Configs from '$lib/domain/resources/Configs.svelte';
+	import Manifest from '$lib/domain/resources/Manifest.svelte';
 	import Secrets from '$lib/domain/resources/Secrets.svelte';
 	import WorkloadDeploy from '$lib/domain/workload/WorkloadDeploy.svelte';
 	import Confirm from '$lib/ui/Confirm.svelte';
 	import GraphErrors from '$lib/ui/GraphErrors.svelte';
 	import List from '$lib/ui/List.svelte';
 	import Time from '$lib/ui/Time.svelte';
-	import { Alert, Button, Heading, Loader } from '@nais/ds-svelte-community';
+	import { Alert, Button, Heading, Loader, Modal } from '@nais/ds-svelte-community';
 	import { ActionMenu, ActionMenuItem } from '@nais/ds-svelte-community/experimental';
 	import {
 		ArrowCirclepathIcon,
+		FileTextIcon,
 		MenuElipsisVerticalIcon,
 		TrashIcon
 	} from '@nais/ds-svelte-community/icons';
@@ -48,6 +50,7 @@
 	let environment = $derived(page.params.env);
 
 	let restart = $state(false);
+	let showManifest = $state(false);
 
 	const openRestart = () => {
 		restart = true;
@@ -104,6 +107,9 @@
 									Restart app
 								</ActionMenuItem>
 							</button>
+							<button class="action-menu-button" onclick={() => (showManifest = true)}>
+								<ActionMenuItem icon={FileTextIcon}>View manifest</ActionMenuItem>
+							</button>
 							<a
 								class="action-menu-button"
 								href="/team/{page.params.team}/{page.params.env}/app/{page.params.app}/delete"
@@ -132,13 +138,12 @@
 					</div>
 				{/if}
 				<InstanceGroups {app} />
+				{#if environment}
+					<CostOverviewChart workload={app.name} {environment} {teamSlug} />
+				{/if}
 				<div>
 					<Persistence workload={app} />
 				</div>
-				{#if environment}
-					<Configs {environment} workload={app.name} {teamSlug} />
-					<Secrets workload={app.name} {environment} {teamSlug} />
-				{/if}
 			</div>
 			<div class="sidebar">
 				<WorkloadDeploy workload={app} />
@@ -147,7 +152,8 @@
 					href="/team/{page.params.team}/{page.params.env}/app/{page.params.app}/activity-log"
 				/>
 				{#if environment}
-					<AggregatedCostForWorkload workload={app.name} {environment} {teamSlug} />
+					<Configs {environment} workload={app.name} {teamSlug} />
+					<Secrets workload={app.name} {environment} {teamSlug} />
 				{/if}
 			</div>
 		</div>
@@ -161,6 +167,12 @@
 			<br />
 			Are you sure?
 		</Confirm>
+		<Modal bind:open={showManifest} closeButton width="medium">
+			{#snippet header()}
+				<Heading as="h2" size="small">Manifest &ndash; {application}</Heading>
+			{/snippet}
+			<Manifest workload={app} />
+		</Modal>
 	</div>
 {/if}
 
