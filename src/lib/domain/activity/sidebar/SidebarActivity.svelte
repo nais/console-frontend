@@ -61,9 +61,10 @@
 	interface Props {
 		activityLog: SidebarActivityLogFragment;
 		direct?: SidebarActivityLogFragment$data['activityLog'];
+		hideTitle?: boolean;
 	}
 
-	let { activityLog, direct }: Props = $props();
+	let { activityLog, direct, hideTitle = false }: Props = $props();
 
 	const data = $derived(
 		fragment(
@@ -444,12 +445,14 @@
 </script>
 
 <div class="wrapper">
-	<Heading as="h3" size="small">Activity</Heading>
+	{#if !hideTitle}
+		<Heading as="h3" size="small">Activity</Heading>
+	{/if}
 	{#each list as entry (entry.id)}
 		{@const Icon = icons[entry.__typename] || RocketIcon}
 		{@const TextComponent = textComponent(entry.__typename)}
-		<div class="item">
-			<div class="icon">
+		<div class="activity-item">
+			<div class="surface-icon surface-icon-timeline">
 				<Icon width="75%" height="75%" />
 			</div>
 			<div class="content">
@@ -463,41 +466,31 @@
 
 <style>
 	.wrapper {
+		--surface-icon-size: 2rem;
+		--surface-icon-glyph-size: 1rem;
 		display: flex;
 		flex-direction: column;
 		gap: var(--ax-space-4);
 		min-width: 0;
 	}
-	.item {
+	.activity-item {
 		display: flex;
 		position: relative;
 		padding-bottom: 0.75rem;
-	}
-	.icon {
-		display: flex;
-		justify-content: center;
-		align-items: center;
-		width: 30px;
-		height: 30px;
-		min-width: 30px;
-		min-height: 30px;
-		background: var(--ax-bg-raised);
-		z-index: 1;
-		border-radius: 50%;
 	}
 	.content {
 		flex: 1 1 auto;
 		min-width: 0;
 		overflow-wrap: anywhere;
-		padding: 0 0 0 1rem;
+		padding: 0 0 0 var(--ax-space-8);
 	}
-	.item:not(:last-child)::before {
+	.activity-item:not(:last-child)::before {
 		background: var(--ax-border-neutral-subtleA);
 		content: '';
 		height: 100%;
-		left: 14px;
+		left: calc(var(--surface-icon-size) / 2 - 1px);
 		position: absolute;
-		top: 20px;
+		top: var(--surface-icon-size);
 		width: 2px;
 		z-index: 0;
 	}

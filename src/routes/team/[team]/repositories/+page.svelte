@@ -8,6 +8,7 @@
 	import ListItem from '$lib/ui/ListItem.svelte';
 	import OrderByMenu from '$lib/ui/OrderByMenu.svelte';
 	import Pagination from '$lib/ui/Pagination.svelte';
+	import SurfaceCard from '$lib/ui/SurfaceCard.svelte';
 	import { changeParams } from '$lib/utils/searchparams';
 	import {
 		Alert,
@@ -374,11 +375,14 @@
 				{/if}
 			{/if}
 		</div>
-		<div>
-			<SidebarActivity
-				activityLog={$Repositories.data.team}
-				direct={$Repositories.data.team.activityLog}
-			/>
+		<div class="right-column">
+			<SurfaceCard title="Activity">
+				<SidebarActivity
+					hideTitle
+					activityLog={$Repositories.data.team}
+					direct={$Repositories.data.team.activityLog}
+				/>
+			</SurfaceCard>
 		</div>
 	</div>
 {/if}
@@ -400,6 +404,12 @@
 		display: flex;
 		justify-content: flex-end;
 		margin-bottom: 1rem;
+	}
+
+	.right-column {
+		display: grid;
+		gap: var(--ax-space-16);
+		align-content: start;
 	}
 
 	.right {

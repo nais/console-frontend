@@ -9,6 +9,7 @@
 	import ListItem from '$lib/ui/ListItem.svelte';
 	import OrderByMenu from '$lib/ui/OrderByMenu.svelte';
 	import Pagination from '$lib/ui/Pagination.svelte';
+	import SurfaceCard from '$lib/ui/SurfaceCard.svelte';
 	import Time from '$lib/ui/Time.svelte';
 	import { getConfigPermissions } from '$lib/utils/configPermissions';
 	import { changeParams } from '$lib/utils/searchparams';
@@ -225,8 +226,14 @@
 				/>
 			</div>
 		</div>
-		<div style="margin-top: var(--spacing-layout);">
-			<SidebarActivity activityLog={$Configs.data.team} direct={$Configs.data.team.activityLog} />
+		<div class="right-column">
+			<SurfaceCard title="Activity">
+				<SidebarActivity
+					hideTitle
+					activityLog={$Configs.data.team}
+					direct={$Configs.data.team.activityLog}
+				/>
+			</SurfaceCard>
 		</div>
 	</div>
 	{#if createConfigOpen}
@@ -250,6 +257,11 @@
 		display: flex;
 		justify-content: flex-end;
 		margin-bottom: 1rem;
+	}
+	.right-column {
+		display: grid;
+		gap: var(--ax-space-16);
+		align-content: start;
 	}
 	.right {
 		display: flex;

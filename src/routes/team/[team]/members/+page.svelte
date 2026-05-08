@@ -7,6 +7,7 @@
 	import ListItem from '$lib/ui/ListItem.svelte';
 	import OrderByMenu from '$lib/ui/OrderByMenu.svelte';
 	import Pagination from '$lib/ui/Pagination.svelte';
+	import SurfaceCard from '$lib/ui/SurfaceCard.svelte';
 	import { changeParams } from '$lib/utils/searchparams';
 	import { BodyShort, Button, Heading } from '@nais/ds-svelte-community';
 	import { PencilIcon, PlusIcon, TrashIcon } from '@nais/ds-svelte-community/icons';
@@ -160,8 +161,10 @@
 			/>
 		</div>
 		<!--div>Here be documentation of teams, members and roles</div-->
-		<div>
-			<SidebarActivity activityLog={team} direct={$Members.data?.team.activityLog} />
+		<div class="right-column">
+			<SurfaceCard title="Activity">
+				<SidebarActivity hideTitle activityLog={team} direct={$Members.data?.team.activityLog} />
+			</SurfaceCard>
 		</div>
 	</div>
 	{#if team}
@@ -230,6 +233,11 @@
 	}
 	.role::first-letter {
 		text-transform: uppercase;
+	}
+	.right-column {
+		display: grid;
+		gap: var(--ax-space-16);
+		align-content: start;
 	}
 
 	@media (max-width: 767px), (max-height: 500px) {
