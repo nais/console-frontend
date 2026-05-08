@@ -10,20 +10,41 @@
 
 	let { requests, limits }: Props = $props();
 
-	function formatCpu(value: number | null | undefined): string {
-		if (value === null || value === undefined) return '—';
-		return `${value.toFixed(2)}`;
+	const DEFAULT_CPU_REQUEST = 0.2;
+	const DEFAULT_CPU_LIMIT = 0.5;
+	const DEFAULT_MEMORY_REQUEST = 268435456; // 256 MiB
+	const DEFAULT_MEMORY_LIMIT = 536870912; // 512 MiB
+
+	function formatCpu(
+		value: number | null | undefined,
+		fallback: number
+	): { text: string; isDefault: boolean } {
+		if (value === null || value === undefined) {
+			return { text: fallback.toFixed(2), isDefault: true };
+		}
+		return { text: value.toFixed(2), isDefault: false };
 	}
 
-	function formatMemory(value: number | null | undefined): string {
-		if (value === null || value === undefined) return '—';
-		return prettyBytes(value, {
-			locale: 'en',
-			minimumFractionDigits: 0,
-			maximumFractionDigits: 1,
-			binary: true
-		});
+	function formatMemory(
+		value: number | null | undefined,
+		fallback: number
+	): { text: string; isDefault: boolean } {
+		const v = value ?? fallback;
+		return {
+			text: prettyBytes(v, {
+				locale: 'en',
+				minimumFractionDigits: 0,
+				maximumFractionDigits: 1,
+				binary: true
+			}),
+			isDefault: value === null || value === undefined
+		};
 	}
+
+	let cpuReq = $derived(formatCpu(requests.cpu, DEFAULT_CPU_REQUEST));
+	let cpuLim = $derived(formatCpu(limits.cpu, DEFAULT_CPU_LIMIT));
+	let memReq = $derived(formatMemory(requests.memory, DEFAULT_MEMORY_REQUEST));
+	let memLim = $derived(formatMemory(limits.memory, DEFAULT_MEMORY_LIMIT));
 </script>
 
 <SurfaceCard title="Resources">
@@ -37,11 +58,13 @@
 				<div class="resource-values">
 					<span class="resource-entry">
 						<span class="entry-label">Req</span>
-						<code>{formatCpu(requests.cpu)}</code>
+						<code class:default={cpuReq.isDefault}>{cpuReq.text}</code>
+						{#if cpuReq.isDefault}<span class="default-tag">default</span>{/if}
 					</span>
 					<span class="resource-entry">
 						<span class="entry-label">Lim</span>
-						<code>{formatCpu(limits.cpu)}</code>
+						<code class:default={cpuLim.isDefault}>{cpuLim.text}</code>
+						{#if cpuLim.isDefault}<span class="default-tag">default</span>{/if}
 					</span>
 				</div>
 			</div>
@@ -55,11 +78,13 @@
 				<div class="resource-values">
 					<span class="resource-entry">
 						<span class="entry-label">Req</span>
-						<code>{formatMemory(requests.memory)}</code>
+						<code class:default={memReq.isDefault}>{memReq.text}</code>
+						{#if memReq.isDefault}<span class="default-tag">default</span>{/if}
 					</span>
 					<span class="resource-entry">
 						<span class="entry-label">Lim</span>
-						<code>{formatMemory(limits.memory)}</code>
+						<code class:default={memLim.isDefault}>{memLim.text}</code>
+						{#if memLim.isDefault}<span class="default-tag">default</span>{/if}
 					</span>
 				</div>
 			</div>
@@ -126,5 +151,16 @@
 		font-family: monospace;
 		font-size: var(--ax-font-size-small);
 		color: var(--ax-text-neutral);
+	}
+
+	code.default {
+		color: var(--ax-text-neutral-subtle);
+	}
+
+	.default-tag {
+		font-size: 0.65rem;
+		color: var(--ax-text-neutral-subtle);
+		text-transform: uppercase;
+		letter-spacing: 0.02em;
 	}
 </style>
