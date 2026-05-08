@@ -1,10 +1,8 @@
 <script lang="ts">
 	import { page } from '$app/state';
 	import LegendWrapper, { legendSnippet } from '$lib/chart/LegendWrapper.svelte';
-	import { apmURL } from '$lib/doc';
 	import NetworkPolicy from '$lib/domain/resources/NetworkPolicy.svelte';
 	import WarningIcon from '$lib/icons/WarningIcon.svelte';
-	import ExternalLink from '$lib/ui/ExternalLink.svelte';
 	import GraphErrors from '$lib/ui/GraphErrors.svelte';
 	import SurfaceCard from '$lib/ui/SurfaceCard.svelte';
 	import TooltipAlignHack from '$lib/ui/TooltipAlignHack.svelte';
