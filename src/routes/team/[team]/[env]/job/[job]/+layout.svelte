@@ -19,6 +19,11 @@
 			href: resolve('/team/[team]/[env]/job/[job]/vulnerabilities', page.params as never)
 		},
 		{
+			value: '/team/[team]/[env]/job/[job]/network',
+			label: 'Network',
+			href: resolve('/team/[team]/[env]/job/[job]/network', page.params as never)
+		},
+		{
 			value: '/team/[team]/[env]/job/[job]/deploys',
 			label: 'Deployments',
 			href: resolve('/team/[team]/[env]/job/[job]/deploys', page.params as never)

@@ -1,0 +1,9 @@
+query JobNetworkPolicy($job: String!, $team: Slug!, $env: String!) @cache(policy: NetworkOnly) {
+	team(slug: $team) {
+		environment(name: $env) {
+			job(name: $job) {
+				...NetworkPolicy
+			}
+		}
+	}
+}
