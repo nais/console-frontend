@@ -1,9 +1,9 @@
 <script lang="ts">
 	import { graphql, RepositoryOrderField } from '$houdini';
 	import SidebarActivity from '$lib/domain/activity/sidebar/SidebarActivity.svelte';
+	import GitHubIcon from '$lib/icons/GitHubIcon.svelte';
 	import ExternalLink from '$lib/ui/ExternalLink.svelte';
 	import GraphErrors from '$lib/ui/GraphErrors.svelte';
-	import Icon from '$lib/ui/Icon.svelte';
 	import List from '$lib/ui/List.svelte';
 	import ListItem from '$lib/ui/ListItem.svelte';
 	import OrderByMenu from '$lib/ui/OrderByMenu.svelte';
@@ -333,7 +333,7 @@
 									<ListItem>
 										<div class="repo-row">
 											<div class="repo-name">
-												<Icon icon="repositories" />
+												<GitHubIcon />
 												<ExternalLink href="https://github.com/{repo.name}"
 													>{repo.name}</ExternalLink
 												>
