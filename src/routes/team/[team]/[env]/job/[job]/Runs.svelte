@@ -26,16 +26,6 @@
 						}
 					}
 					name
-					resources {
-						requests {
-							cpu
-							memory
-						}
-						limits {
-							cpu
-							memory
-						}
-					}
 
 					runs(first: 999) @list(name: "All_Runs") {
 						edges {
