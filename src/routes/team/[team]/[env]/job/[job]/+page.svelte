@@ -20,6 +20,7 @@
 	import {
 		FileTextIcon,
 		MenuElipsisVerticalIcon,
+		PlayIcon,
 		TrashIcon
 	} from '@nais/ds-svelte-community/icons';
 	import type { PageProps } from './$types';
@@ -138,6 +139,21 @@
 									Actions
 								</Button>
 							{/snippet}
+							<button
+								class="action-menu-button"
+								disabled={job.deletionStartedAt !== null}
+								onclick={(e: MouseEvent) => {
+									if (e.metaKey || e.ctrlKey) {
+										if (jobName && environment) {
+											submit(generateJobRunName(jobName));
+										}
+									} else {
+										open = true;
+									}
+								}}
+							>
+								<ActionMenuItem icon={PlayIcon}>Trigger run</ActionMenuItem>
+							</button>
 							<button class="action-menu-button" onclick={() => (showManifest = true)}>
 								<ActionMenuItem icon={FileTextIcon}>View manifest</ActionMenuItem>
 							</button>
@@ -176,29 +192,7 @@
 						job: job.name
 					}}
 				/>
-				<div style="display:flex; flex-direction: column; gap:0.5rem;">
-					<div class="runs-header">
-						<Heading as="h2" size="medium">Runs</Heading>
-						{#if viewerIsMember}
-							<Button
-								variant="secondary"
-								size="small"
-								onclick={(e: MouseEvent) => {
-									if (e.metaKey || e.ctrlKey) {
-										if (jobName && environment) {
-											submit(generateJobRunName(jobName));
-										}
-									} else {
-										open = true;
-									}
-								}}
-								disabled={job.deletionStartedAt !== null}
-								title="Click to configure run name, or Cmd/Ctrl+Click to trigger immediately"
-							>
-								Trigger run
-							</Button>
-						{/if}
-					</div>
+				<div>
 					<Runs {job} ondelete={viewerIsMember ? handleDeleteRun : undefined} />
 				</div>
 				<div>
@@ -271,12 +265,6 @@
 		gap: 1rem;
 	}
 
-	.runs-header {
-		display: flex;
-		justify-content: space-between;
-		align-items: center;
-	}
-
 	.detail-actions {
 		display: flex;
 		justify-content: flex-end;
@@ -305,16 +293,6 @@
 
 		.detail-actions :global(button),
 		.detail-actions :global(a) {
-			width: 100%;
-		}
-
-		.runs-header {
-			flex-direction: column;
-			align-items: flex-start;
-			gap: var(--ax-space-12);
-		}
-
-		.runs-header :global(button) {
 			width: 100%;
 		}
 	}
