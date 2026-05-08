@@ -331,7 +331,7 @@
 									/>
 								{/snippet}
 								{#each team.repositories.nodes as repo (repo.id)}
-									<ListItem>
+									<ListItem interactive>
 										<div class="repo-row">
 											<div class="repo-name">
 												<GitHubIcon />
