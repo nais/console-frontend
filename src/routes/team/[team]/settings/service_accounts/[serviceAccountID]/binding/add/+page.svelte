@@ -166,7 +166,6 @@
 									};
 								}}
 							>
-								<input type="hidden" name="serviceAccountID" value={serviceAccount.id} />
 								<input type="hidden" name="workloadName" value={node.name} />
 								<input
 									type="hidden"

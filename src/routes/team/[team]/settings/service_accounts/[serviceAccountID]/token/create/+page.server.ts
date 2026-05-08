@@ -16,12 +16,11 @@ const createTokenMutation = graphql(`
 export const actions = {
 	default: async (event) => {
 		const data = await event.request.formData();
-		const serviceAccountID = data.get('serviceAccountID') as string | null;
 		const name = data.get('name') as string | null;
 		const description = data.get('description') as string | null;
 		const expiresAt = data.get('expiresAt') as string | null;
 
-		if (!serviceAccountID || !name || !description) {
+		if (!name || !description) {
 			return fail(400, {
 				error: 'Name and description are required',
 				name,
@@ -46,7 +45,7 @@ export const actions = {
 		const res = await createTokenMutation.mutate(
 			{
 				input: {
-					serviceAccountID,
+					serviceAccountID: event.params.serviceAccountID,
 					name,
 					description,
 					...(parsedExpiresAt ? { expiresAt: parsedExpiresAt } : {})

@@ -81,8 +81,6 @@
 				};
 			}}
 		>
-			<input type="hidden" name="serviceAccountID" value={serviceAccount.id} />
-
 			{#if errorMessage}
 				<ErrorMessage>{errorMessage}</ErrorMessage>
 			{/if}
