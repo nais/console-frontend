@@ -5,7 +5,14 @@
 		type AvailableRolesFragment,
 		type ServiceAccountRolesFragment
 	} from '$houdini';
-	import { BodyLong, Button, Checkbox, CheckboxGroup, Heading } from '@nais/ds-svelte-community';
+	import {
+		BodyLong,
+		Button,
+		Checkbox,
+		CheckboxGroup,
+		ErrorMessage,
+		Heading
+	} from '@nais/ds-svelte-community';
 
 	interface Props {
 		roles: AvailableRolesFragment;
@@ -131,7 +138,7 @@
 		</Button>
 	{/if}
 	{#if mutationError}
-		<p>{mutationError}</p>
+		<ErrorMessage>{mutationError}</ErrorMessage>
 	{/if}
 	<CheckboxGroup
 		value={list.filter((r) => r.hasRole).map((r) => r.name)}
