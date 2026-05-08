@@ -2,10 +2,11 @@
 	import { page } from '$app/state';
 	import { graphql } from '$houdini';
 	import LatestActivity from '$lib/domain/activity/workload/LatestActivity.svelte';
-	import AggregatedCostForWorkload from '$lib/domain/cost/AggregatedCostForWorkload.svelte';
+	import CostOverviewChart from '$lib/domain/cost/CostOverviewChart.svelte';
 	import IssueListItem from '$lib/domain/list-items/IssueListItem.svelte';
 	import Persistence from '$lib/domain/persistence/Persistence.svelte';
 	import Configs from '$lib/domain/resources/Configs.svelte';
+	import Manifest from '$lib/domain/resources/Manifest.svelte';
 	import NetworkPolicy from '$lib/domain/resources/NetworkPolicy.svelte';
 	import Secrets from '$lib/domain/resources/Secrets.svelte';
 	import WorkloadDeploy from '$lib/domain/workload/WorkloadDeploy.svelte';
@@ -14,8 +15,13 @@
 	import List from '$lib/ui/List.svelte';
 	import Time from '$lib/ui/Time.svelte';
 	import { generateJobRunName } from '$lib/utils/jobRunName';
-	import { Alert, BodyShort, Button, Heading, Loader } from '@nais/ds-svelte-community';
-	import { TrashIcon } from '@nais/ds-svelte-community/icons';
+	import { Alert, BodyShort, Button, Heading, Loader, Modal } from '@nais/ds-svelte-community';
+	import { ActionMenu, ActionMenuItem } from '@nais/ds-svelte-community/experimental';
+	import {
+		FileTextIcon,
+		MenuElipsisVerticalIcon,
+		TrashIcon
+	} from '@nais/ds-svelte-community/icons';
 	import type { PageProps } from './$types';
 	import Runs from './Runs.svelte';
 	import Schedule from './Schedule.svelte';
@@ -81,6 +87,7 @@
 
 	let deleteConfirmOpen = $state(false);
 	let deleteRunName = $state('');
+	let showManifest = $state(false);
 
 	const handleDeleteRun = (runName: string) => {
 		deleteRunName = runName;
@@ -120,15 +127,27 @@
 			<div class="main-section">
 				{#if viewerIsMember}
 					<div class="detail-actions">
-						<Button
-							as="a"
-							variant="danger"
-							size="small"
-							href="/team/{page.params.team}/{page.params.env}/job/{page.params.job}/delete"
-							icon={TrashIcon}
-						>
-							Delete
-						</Button>
+						<ActionMenu>
+							{#snippet trigger(props)}
+								<Button
+									variant="tertiary-neutral"
+									size="small"
+									icon={MenuElipsisVerticalIcon}
+									{...props}
+								>
+									Actions
+								</Button>
+							{/snippet}
+							<button class="action-menu-button" onclick={() => (showManifest = true)}>
+								<ActionMenuItem icon={FileTextIcon}>View manifest</ActionMenuItem>
+							</button>
+							<a
+								class="action-menu-button"
+								href="/team/{page.params.team}/{page.params.env}/job/{page.params.job}/delete"
+							>
+								<ActionMenuItem icon={TrashIcon} variant="danger">Delete job</ActionMenuItem>
+							</a>
+						</ActionMenu>
 					</div>
 				{/if}
 				{#if job.deletionStartedAt}
@@ -188,6 +207,9 @@
 				<div>
 					<Persistence workload={job} />
 				</div>
+				{#if jobName && environment}
+					<CostOverviewChart workload={jobName} {environment} {teamSlug} workloadType="job" />
+				{/if}
 			</div>
 			<div class="sidebar">
 				<WorkloadDeploy workload={job} />
@@ -195,9 +217,6 @@
 					activityLog={job}
 					href="/team/{page.params.team}/{page.params.env}/job/{page.params.job}/activity-log"
 				/>
-				{#if jobName && environment}
-					<AggregatedCostForWorkload workload={jobName} {environment} {teamSlug} />
-				{/if}
 				{#if jobName && environment}
 					<Configs workload={jobName} {environment} {teamSlug} />
 					<Secrets workload={jobName} {environment} {teamSlug} />
@@ -226,6 +245,12 @@
 				Are you sure you want to delete the job run <strong>{deleteRunName}</strong>?
 			</BodyShort>
 		</Confirm>
+		<Modal bind:open={showManifest} closeButton width="medium">
+			{#snippet header()}
+				<Heading as="h2" size="small">Manifest &ndash; {jobName}</Heading>
+			{/snippet}
+			<Manifest workload={job} />
+		</Modal>
 	</div>
 {/if}
 
@@ -259,6 +284,12 @@
 		justify-content: flex-end;
 		gap: var(--ax-space-8);
 		flex-wrap: wrap;
+	}
+
+	.action-menu-button {
+		all: unset;
+		display: contents;
+		cursor: pointer;
 	}
 
 	.sidebar {

@@ -24,11 +24,6 @@
 			href: resolve('/team/[team]/[env]/job/[job]/deploys', page.params as never)
 		},
 		{
-			value: '/team/[team]/[env]/job/[job]/cost',
-			label: 'Cost',
-			href: resolve('/team/[team]/[env]/job/[job]/cost', page.params as never)
-		},
-		{
 			value: '/team/[team]/[env]/job/[job]/issues',
 			label: 'Issues',
 			href: resolve('/team/[team]/[env]/job/[job]/issues', page.params as never)
@@ -42,11 +37,6 @@
 			value: '/team/[team]/[env]/job/[job]/activity-log',
 			label: 'Activity Log',
 			href: resolve('/team/[team]/[env]/job/[job]/activity-log', page.params as never)
-		},
-		{
-			value: '/team/[team]/[env]/job/[job]/manifest',
-			label: 'Manifest',
-			href: resolve('/team/[team]/[env]/job/[job]/manifest', page.params as never)
 		}
 	] as const);
 	let visibleTabs = $derived(tabs.some((tab) => tab.value === routeId) ? tabs : []);
