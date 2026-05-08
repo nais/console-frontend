@@ -140,7 +140,9 @@
 						}}
 						description="Workload binding · {binding.workload?.__typename === 'Application'
 							? 'Application'
-							: 'Job'}{binding.isBroken ? ' · Broken' : ''}"
+							: binding.workload?.__typename === 'Job'
+								? 'Job'
+								: 'Workload'}{binding.isBroken ? ' · Broken' : ''}"
 					/>
 
 					<div class="right">

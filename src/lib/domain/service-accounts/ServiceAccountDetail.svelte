@@ -33,10 +33,8 @@
 		canManage
 	}: {
 		serviceAccount: ServiceAccountData;
-		environments: { environment: { name: string } }[];
 		teamSlug: string;
 		roles: AvailableRolesFragment;
-		onmutated?: () => void;
 		canManage: boolean;
 	} = $props();
 

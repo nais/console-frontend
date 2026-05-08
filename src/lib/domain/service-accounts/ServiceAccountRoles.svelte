@@ -73,6 +73,7 @@
 	`);
 
 	let editable = $state(false);
+	let mutationError = $state<string | undefined>();
 
 	const list = $derived.by(() => {
 		if (!$data.data?.roles || !$actualRoles.data?.roles) {
@@ -90,37 +91,29 @@
 			.sort((a, b) => a.name.localeCompare(b.name));
 	});
 
-	const handleOnChange = (e: Event & { currentTarget: EventTarget & HTMLFieldSetElement }) => {
+	const handleOnChange = async (
+		e: Event & { currentTarget: EventTarget & HTMLFieldSetElement }
+	) => {
+		if (!canManage || !editable) {
+			return;
+		}
+
+		mutationError = undefined;
 		const target = e.target as HTMLInputElement;
 		const roleName = target.value;
 		const hasRole = target.checked;
 
-		if (hasRole) {
-			assignRole
-				.mutate({
-					input: {
-						serviceAccountID: $actualRoles.data?.id ?? '',
-						roleName
-					}
-				})
-				.catch((err) => {
-					// Revert the checkbox state if the mutation fails
-					target.checked = !hasRole;
-					console.error('Failed to assign role:', err);
-				});
-		} else {
-			revokeRole
-				.mutate({
-					input: {
-						serviceAccountID: $actualRoles.data?.id ?? '',
-						roleName
-					}
-				})
-				.catch((err) => {
-					// Revert the checkbox state if the mutation fails
-					target.checked = !hasRole;
-					console.error('Failed to revoke role:', err);
-				});
+		const mutation = hasRole ? assignRole : revokeRole;
+		const result = await mutation.mutate({
+			input: {
+				serviceAccountID: $actualRoles.data?.id ?? '',
+				roleName
+			}
+		});
+
+		if ((result.errors?.length ?? 0) > 0) {
+			target.checked = !hasRole;
+			mutationError = result.errors![0].message;
 		}
 	};
 </script>
@@ -137,13 +130,16 @@
 			{editable ? 'Cancel' : 'Edit roles'}
 		</Button>
 	{/if}
+	{#if mutationError}
+		<p>{mutationError}</p>
+	{/if}
 	<CheckboxGroup
 		value={list.filter((r) => r.hasRole).map((r) => r.name)}
 		legend="Assigned roles"
 		onchange={handleOnChange}
 	>
 		{#each list as role (role.name)}
-			<Checkbox value={role.name} description={role.description} readonly={!editable}>
+			<Checkbox value={role.name} description={role.description} disabled={!editable || !canManage}>
 				{role.name}
 			</Checkbox>
 		{:else}

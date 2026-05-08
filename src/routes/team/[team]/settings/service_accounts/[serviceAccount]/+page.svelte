@@ -21,10 +21,38 @@
 	const serviceAccount = $derived(
 		$query.data?.team.serviceAccounts.nodes.find((sa) => sa.name === serviceAccountName)
 	);
-
-	const environments = $derived($query.data?.team.environments ?? []);
+	const serviceAccountsPage = $derived($query.data?.team.serviceAccounts);
 
 	let modalWasOpen = $state(false);
+	let lookedUpAllPages = $state(false);
+	let requestedCursor: string | null = $state(null);
+
+	$effect(() => {
+		if (serviceAccount) {
+			lookedUpAllPages = true;
+			return;
+		}
+
+		const connection = serviceAccountsPage;
+		if (!connection || $query.fetching) {
+			return;
+		}
+
+		const nextCursor = connection.pageInfo.hasNextPage ? connection.pageInfo.endCursor : null;
+		if (nextCursor && nextCursor !== requestedCursor) {
+			requestedCursor = nextCursor;
+			query.fetch({
+				variables: {
+					team: teamSlug,
+					after: nextCursor
+				}
+			});
+			return;
+		}
+
+		lookedUpAllPages = true;
+	});
+
 	$effect(() => {
 		const isOpen = !!page.state.modalHref;
 		if (modalWasOpen && !isOpen) {
@@ -38,12 +66,11 @@
 {#if serviceAccount}
 	<ServiceAccountDetail
 		{serviceAccount}
-		{environments}
 		{teamSlug}
 		roles={$query.data!}
 		canManage={viewerIsOwner || isAdmin}
 	/>
-{:else if $query.data}
+{:else if lookedUpAllPages}
 	<Alert variant="warning">
 		Service account <strong>{serviceAccountName}</strong> not found.
 	</Alert>

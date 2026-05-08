@@ -21,14 +21,42 @@
 			(sa) => sa.name === data.serviceAccountName
 		)
 	);
+	const serviceAccountsPage = $derived($CreateTokenSALookup.data?.team.serviceAccounts);
 
 	let createdSecret: string | null = $state(null);
 	let errorMessage: string | undefined = $state();
+	let lookedUpAllPages = $state(false);
+	let requestedCursor: string | null = $state(null);
+
+	$effect(() => {
+		if (serviceAccount) {
+			lookedUpAllPages = true;
+			return;
+		}
+
+		const connection = serviceAccountsPage;
+		if (!connection || $CreateTokenSALookup.fetching) {
+			return;
+		}
+
+		const nextCursor = connection.pageInfo.hasNextPage ? connection.pageInfo.endCursor : null;
+		if (nextCursor && nextCursor !== requestedCursor) {
+			requestedCursor = nextCursor;
+			CreateTokenSALookup.fetch({
+				variables: { team: page.params.team!, after: nextCursor }
+			});
+			return;
+		}
+
+		lookedUpAllPages = true;
+	});
 </script>
 
 <div class="page">
-	{#if !serviceAccount}
+	{#if !serviceAccount && lookedUpAllPages}
 		<Alert variant="warning">Service account not found.</Alert>
+	{:else if !serviceAccount}
+		<BodyLong>Looking up service account…</BodyLong>
 	{:else if createdSecret}
 		<Alert variant="success">
 			Token created successfully. Copy the secret below - it will not be shown again.
@@ -97,7 +125,9 @@
 
 			<div class="actions">
 				<Button type="submit" size="small">Create token</Button>
-				<Button size="small" variant="tertiary" onclick={() => history.back()}>Cancel</Button>
+				<Button type="button" size="small" variant="tertiary" onclick={() => history.back()}>
+					Cancel
+				</Button>
 			</div>
 		</form>
 	{/if}

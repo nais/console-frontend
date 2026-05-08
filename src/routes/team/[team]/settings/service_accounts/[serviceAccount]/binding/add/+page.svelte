@@ -26,6 +26,7 @@
 			(sa) => sa.name === data.serviceAccountName
 		)
 	);
+	const serviceAccountsPage = $derived($AddBindingSALookup.data?.team.serviceAccounts);
 
 	const existingBindings = $derived(
 		new Set(
@@ -59,6 +60,31 @@
 	let searchString = $state('');
 	let addedIds: Set<string> = $state(new Set());
 	let errorMessage: string | undefined = $state();
+	let lookedUpAllPages = $state(false);
+	let requestedCursor: string | null = $state(null);
+
+	$effect(() => {
+		if (serviceAccount) {
+			lookedUpAllPages = true;
+			return;
+		}
+
+		const connection = serviceAccountsPage;
+		if (!connection || $AddBindingSALookup.fetching) {
+			return;
+		}
+
+		const nextCursor = connection.pageInfo.hasNextPage ? connection.pageInfo.endCursor : null;
+		if (nextCursor && nextCursor !== requestedCursor) {
+			requestedCursor = nextCursor;
+			AddBindingSALookup.fetch({
+				variables: { team: page.params.team!, after: nextCursor }
+			});
+			return;
+		}
+
+		lookedUpAllPages = true;
+	});
 
 	$effect(() => {
 		if (searchString) {
@@ -102,8 +128,10 @@
 		<ErrorMessage>{errorMessage}</ErrorMessage>
 	{/if}
 
-	{#if !serviceAccount}
+	{#if !serviceAccount && lookedUpAllPages}
 		<Alert variant="warning">Service account not found.</Alert>
+	{:else if !serviceAccount}
+		<BodyLong>Looking up service account…</BodyLong>
 	{:else}
 		<Button
 			as="a"

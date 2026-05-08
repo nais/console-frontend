@@ -1,6 +1,10 @@
-query CreateTokenSALookup($team: Slug!) @cache(policy: CacheAndNetwork) {
+query CreateTokenSALookup($team: Slug!, $after: Cursor) @cache(policy: CacheAndNetwork) {
 	team(slug: $team) {
-		serviceAccounts(first: 100) {
+		serviceAccounts(first: 50, after: $after) {
+			pageInfo {
+				hasNextPage
+				endCursor
+			}
 			nodes {
 				id
 				name

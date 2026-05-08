@@ -30,13 +30,26 @@ export const actions = {
 			});
 		}
 
+		let parsedExpiresAt: Date | undefined;
+		if (expiresAt) {
+			parsedExpiresAt = new Date(expiresAt);
+			if (isNaN(parsedExpiresAt.getTime())) {
+				return fail(400, {
+					error: 'Expires at must be a valid date',
+					name,
+					description,
+					expiresAt
+				});
+			}
+		}
+
 		const res = await createTokenMutation.mutate(
 			{
 				input: {
 					serviceAccountID,
 					name,
 					description,
-					...(expiresAt ? { expiresAt: new Date(expiresAt) } : {})
+					...(parsedExpiresAt ? { expiresAt: parsedExpiresAt } : {})
 				}
 			},
 			{ event }
@@ -46,9 +59,18 @@ export const actions = {
 			return fail(400, { error: res.errors![0].message, name, description, expiresAt });
 		}
 
+		if (!res.data?.createServiceAccountToken) {
+			return fail(500, {
+				error: 'Failed to create token',
+				name,
+				description,
+				expiresAt
+			});
+		}
+
 		return {
 			success: true,
-			secret: res.data?.createServiceAccountToken.secret ?? null
+			secret: res.data.createServiceAccountToken.secret ?? null
 		};
 	}
 };

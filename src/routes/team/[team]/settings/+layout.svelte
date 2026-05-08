@@ -5,9 +5,17 @@
 	import type { LayoutProps } from './$types';
 
 	let { children }: LayoutProps = $props();
+
+	const activeTab = $derived.by(() => {
+		const routeId = page.route.id ?? '';
+		if (routeId.startsWith('/team/[team]/settings/service_accounts')) {
+			return '/team/[team]/settings/service_accounts';
+		}
+		return '/team/[team]/settings';
+	});
 </script>
 
-<Tabs value={page.route.id ?? ''} size="small">
+<Tabs value={activeTab} size="small">
 	<TabList>
 		<Tab
 			value="/team/[team]/settings"

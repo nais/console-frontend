@@ -23,7 +23,11 @@
 </script>
 
 <ListItem
-	href={teamSlug ? `/team/${teamSlug}/settings/service_accounts/${serviceAccount.name}` : undefined}
+	href={
+		teamSlug
+			? `/team/${teamSlug}/settings/service_accounts/${encodeURIComponent(serviceAccount.name)}`
+			: undefined
+	}
 >
 	<IconLabel
 		as="h4"
