@@ -13,8 +13,24 @@ query Job($job: String!, $team: Slug!, $env: String!) @cache(policy: NetworkOnly
 					edges {
 						node {
 							id
+							severity
 							...IssueFragment
 						}
+					}
+				}
+				criticalIssues: issues(filter: { severity: CRITICAL }) {
+					pageInfo {
+						totalCount
+					}
+				}
+				warningIssues: issues(filter: { severity: WARNING }) {
+					pageInfo {
+						totalCount
+					}
+				}
+				todoIssues: issues(filter: { severity: TODO }) {
+					pageInfo {
+						totalCount
 					}
 				}
 				schedule {
@@ -36,6 +52,23 @@ query Job($job: String!, $team: Slug!, $env: String!) @cache(policy: NetworkOnly
 								createdAt
 							}
 						}
+					}
+				}
+				recentRuns: runs(first: 10) {
+					nodes {
+						status {
+							state
+						}
+					}
+				}
+				resources {
+					requests {
+						cpu
+						memory
+					}
+					limits {
+						cpu
+						memory
 					}
 				}
 
