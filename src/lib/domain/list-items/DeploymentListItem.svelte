@@ -1,12 +1,11 @@
 <script lang="ts">
 	import type { DeploymentStatusState, ValueOf } from '$houdini';
-	import { envTagVariant } from '$lib/envTagVariant';
 	import DeploymentStatus from '$lib/ui/DeploymentStatus.svelte';
 	import ExternalLink from '$lib/ui/ExternalLink.svelte';
 	import ListItem from '$lib/ui/ListItem.svelte';
 	import Time from '$lib/ui/Time.svelte';
 	import { isValidSha } from '$lib/utils/isValidSha';
-	import { BodyLong, Tag } from '@nais/ds-svelte-community';
+	import { BodyShort } from '@nais/ds-svelte-community';
 
 	const {
 		deployment,
@@ -42,26 +41,21 @@
 
 <ListItem>
 	<div>
-		<BodyLong size="small" as="div">
+		<BodyShort size="small" as="div">
 			{#if deployment.commitSha && isValidSha(deployment.commitSha) && deployment.deployerUsername}
 				Commit
 				<ExternalLink
 					href="https://github.com/{deployment.repository}/commit/{deployment.commitSha}"
-					><span style="font-family: monospace; font-size: var(--ax-font-size-small)"
-						>{deployment?.commitSha.slice(0, 7)}</span
-					>
+					><code>{deployment?.commitSha.slice(0, 7)}</code>
 				</ExternalLink>
 				by {deployment.deployerUsername} triggered a
 				{#if deployment.triggerUrl}
+					<ExternalLink href={deployment.triggerUrl}>Github action</ExternalLink>
+					<Time time={deployment.createdAt} distance={true} />
 					{#if showEnv}
-						<ExternalLink href={deployment.triggerUrl}>Github action</ExternalLink>
-						<Time time={deployment.createdAt} distance={true} /> to deploy to
-						<Tag size="small" variant={envTagVariant(deployment.environmentName)}>
-							{deployment.environmentName}
-						</Tag>:
+						to deploy to <strong>{deployment.environmentName}</strong>:
 					{:else}
-						<ExternalLink href={deployment.triggerUrl}>Github action</ExternalLink>
-						<Time time={deployment.createdAt} distance={true} /> to deploy:
+						to deploy:
 					{/if}
 				{/if}
 
@@ -71,16 +65,16 @@
 							<li>
 								{#if r.kind === 'Application'}
 									<a href="/team/{deployment.teamSlug}/{deployment.environmentName}/app/{r.name}">
-										<strong>{r.name}</strong>
+										{r.name}
 									</a>
 								{:else if r.kind === 'Naisjob'}
 									<a href="/team/{deployment.teamSlug}/{deployment.environmentName}/job/{r.name}">
-										<strong>{r.name}</strong>
+										{r.name}
 									</a>
 								{:else}
-									<strong>{r.name}</strong>
+									{r.name}
 								{/if}
-								(<code>{r.kind}</code>)
+								<span class="kind">({r.kind})</span>
 							</li>
 						{/each}
 					</ul>
@@ -93,22 +87,22 @@
 							<li>
 								{#if r.kind === 'Application'}
 									<a href="/team/{deployment.teamSlug}/{deployment.environmentName}/app/{r.name}">
-										<strong>{r.name}</strong>
+										{r.name}
 									</a>
 								{:else if r.kind === 'Naisjob'}
 									<a href="/team/{deployment.teamSlug}/{deployment.environmentName}/job/{r.name}">
-										<strong>{r.name}</strong>
+										{r.name}
 									</a>
 								{:else}
-									<strong>{r.name}</strong>
+									{r.name}
 								{/if}
-								(<code>{r.kind}</code>)
+								<span class="kind">({r.kind})</span>
 							</li>
 						{/each}
 					</ul>
 				{/if}
 			{/if}
-		</BodyLong>
+		</BodyShort>
 	</div>
 	<div class="status">
 		{#if deployment.statuses.nodes.length === 0}
@@ -119,20 +113,23 @@
 
 <style>
 	code {
-		font-size: 14px;
+		font-family: monospace;
+		font-size: var(--ax-font-size-small);
 	}
 
 	ul {
-		margin: 0.5rem;
+		margin: var(--ax-space-4) 0 0 0;
+		padding-left: var(--ax-space-16);
+	}
+
+	.kind {
+		color: var(--ax-text-neutral-subtle);
 	}
 
 	.status {
 		display: flex;
-		flex-direction: column;
 		align-items: center;
 		justify-content: center;
-		gap: var(--ax-space-4);
-		font-size: 16px;
 	}
 
 	@media (max-width: 767px), (max-height: 500px) {
