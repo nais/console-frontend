@@ -3,6 +3,7 @@
 	import SidebarActivity from '$lib/domain/activity/sidebar/SidebarActivity.svelte';
 	import ExternalLink from '$lib/ui/ExternalLink.svelte';
 	import GraphErrors from '$lib/ui/GraphErrors.svelte';
+	import Icon from '$lib/ui/Icon.svelte';
 	import List from '$lib/ui/List.svelte';
 	import ListItem from '$lib/ui/ListItem.svelte';
 	import OrderByMenu from '$lib/ui/OrderByMenu.svelte';
@@ -331,7 +332,12 @@
 								{#each team.repositories.nodes as repo (repo.id)}
 									<ListItem>
 										<div class="repo-row">
-											<ExternalLink href="https://github.com/{repo.name}">{repo.name}</ExternalLink>
+											<div class="repo-name">
+												<Icon icon="repositories" />
+												<ExternalLink href="https://github.com/{repo.name}"
+													>{repo.name}</ExternalLink
+												>
+											</div>
 											{#if viewerIsMember}
 												<div class="right">
 													<Button
@@ -382,6 +388,7 @@
 		display: grid;
 		grid-template-columns: 1fr 300px;
 		gap: var(--spacing-layout);
+		align-items: start;
 	}
 
 	.input {
@@ -407,6 +414,11 @@
 		justify-content: space-between;
 		width: 100%;
 		gap: var(--ax-space-8);
+	}
+	.repo-name {
+		display: flex;
+		align-items: center;
+		gap: var(--ax-space-6);
 	}
 	code {
 		font-size: 1rem;

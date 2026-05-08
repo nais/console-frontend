@@ -209,6 +209,7 @@
 		display: grid;
 		gap: var(--ax-space-24);
 		grid-template-columns: 1fr 300px;
+		align-items: start;
 	}
 
 	.item {
