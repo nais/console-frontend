@@ -36,7 +36,7 @@
 	} = $props();
 </script>
 
-<ListItem>
+<ListItem interactive>
 	<div class="app-row">
 		<div class="primary">
 			<IconLabel

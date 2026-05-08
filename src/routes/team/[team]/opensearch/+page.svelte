@@ -88,7 +88,7 @@
 						/>
 					{/snippet}
 					{#each $OpenSearch.data.team.openSearches.nodes as instance (instance.id)}
-						<ListItem>
+						<ListItem interactive>
 							<IconLabel
 								as="h4"
 								href="/team/{instance.team.slug}/{instance.teamEnvironment.environment

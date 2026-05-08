@@ -175,7 +175,7 @@
 					{/snippet}
 					{#if secrets.nodes.length > 0}
 						{#each secrets.nodes as secret (secret.id)}
-							<ListItem>
+							<ListItem interactive>
 								<IconLabel
 									icon={PadlockLockedIcon}
 									label={secret.name}
