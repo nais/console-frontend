@@ -4,6 +4,7 @@
 	import { docURL } from '$lib/doc';
 	import AggregatedCostForApplications from '$lib/domain/cost/AggregatedCostForApplications.svelte';
 	import AppListItem from '$lib/domain/list-items/AppListItem.svelte';
+	import ApplicationStateOverview from '$lib/domain/team/ApplicationStateOverview.svelte';
 	import ExternalLink from '$lib/ui/ExternalLink.svelte';
 	import GraphErrors from '$lib/ui/GraphErrors.svelte';
 	import List from '$lib/ui/List.svelte';
@@ -109,6 +110,9 @@
 					: ''}
 						{apps?.pageInfo.totalCount !== totalApplications ? `(of total ${totalApplications})` : ''}"
 			>
+				{#snippet description()}
+					<ApplicationStateOverview {teamSlug} />
+				{/snippet}
 				{#snippet menu()}
 					<div class="applications-list-menu">
 						<ActionMenu>

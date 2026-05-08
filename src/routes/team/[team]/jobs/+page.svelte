@@ -4,6 +4,7 @@
 	import { docURL } from '$lib/doc';
 	import AggregatedCostForJobs from '$lib/domain/cost/AggregatedCostForJobs.svelte';
 	import JobListItem from '$lib/domain/list-items/JobListItem.svelte';
+	import JobStateOverview from '$lib/domain/team/JobStateOverview.svelte';
 	import ExternalLink from '$lib/ui/ExternalLink.svelte';
 	import GraphErrors from '$lib/ui/GraphErrors.svelte';
 	import List from '$lib/ui/List.svelte';
@@ -101,6 +102,9 @@
 				title="{jobs?.pageInfo.totalCount} job{jobs?.pageInfo.totalCount !== 1 ? 's' : ''}
 						{jobs?.pageInfo.totalCount !== totalJobs ? `(of total ${totalJobs})` : ''}"
 			>
+				{#snippet description()}
+					<JobStateOverview {teamSlug} />
+				{/snippet}
 				{#snippet menu()}
 					<div class="jobs-list-menu">
 						<ActionMenu>

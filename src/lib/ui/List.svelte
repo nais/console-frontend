@@ -2,7 +2,12 @@
 	import { Heading } from '@nais/ds-svelte-community';
 	import type { Snippet } from 'svelte';
 
-	const { title, children, menu }: { title?: string; children: Snippet; menu?: Snippet } = $props();
+	const {
+		title,
+		children,
+		menu,
+		description
+	}: { title?: string; children: Snippet; menu?: Snippet; description?: Snippet } = $props();
 </script>
 
 <div class="list">
@@ -13,6 +18,9 @@
 				<div class="menu">{@render menu()}</div>
 			{/if}
 		</div>
+	{/if}
+	{#if description}
+		<div class="description">{@render description()}</div>
 	{/if}
 	{@render children()}
 </div>
@@ -30,6 +38,11 @@
 			justify-content: space-between;
 			align-items: center;
 			padding: var(--ax-space-16) var(--ax-space-24);
+		}
+
+		.description {
+			padding: var(--ax-space-12) var(--ax-space-24);
+			background-color: var(--ax-neutral-100);
 		}
 
 		:global(> *) {
