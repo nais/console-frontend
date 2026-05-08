@@ -6,7 +6,6 @@
 	import { OrderDirection, SqlInstanceOrderField } from '$houdini';
 	import { docURL } from '$lib/doc';
 	import PersistenceCost from '$lib/domain/cost/PersistenceCost.svelte';
-	import SurfaceCard from '$lib/ui/SurfaceCard.svelte';
 	import IssueSeverityTags from '$lib/domain/issues/IssueSeverityTags.svelte';
 	import { envTagVariant } from '$lib/envTagVariant';
 	import ExternalLink from '$lib/ui/ExternalLink.svelte';
@@ -14,6 +13,7 @@
 	import IconLabel from '$lib/ui/IconLabel.svelte';
 	import OrderByMenu from '$lib/ui/OrderByMenu.svelte';
 	import Pagination from '$lib/ui/Pagination.svelte';
+	import SurfaceCard from '$lib/ui/SurfaceCard.svelte';
 	import TooltipAlignHack from '$lib/ui/TooltipAlignHack.svelte';
 	import { countIssuesBySeverity } from '$lib/utils/issueCounts';
 	import { changeParams } from '$lib/utils/searchparams';
