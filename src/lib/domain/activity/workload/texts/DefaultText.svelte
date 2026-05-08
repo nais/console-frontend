@@ -1,9 +1,8 @@
 <script lang="ts">
-	import type { WorkloadActivityEntryFragment$data } from '$houdini';
-
 	import Meta from '../../Meta.svelte';
+	import type { WorkloadActivityEntry } from './types';
 
-	let { data }: { data: WorkloadActivityEntryFragment$data } = $props();
+	let { data }: { data: WorkloadActivityEntry } = $props();
 </script>
 
 <div>
