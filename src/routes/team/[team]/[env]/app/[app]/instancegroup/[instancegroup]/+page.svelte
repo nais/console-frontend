@@ -1,7 +1,6 @@
 <script lang="ts">
 	import type { InstanceGroupDetail$result, ValueEncoding$options } from '$houdini';
 	import { ValueEncoding } from '$houdini';
-	import { pageHeaderState } from '$lib/stores/pageHeaderState.svelte';
 	import GraphErrors from '$lib/ui/GraphErrors.svelte';
 	import Time from '$lib/ui/Time.svelte';
 	import {
@@ -69,13 +68,6 @@
 	let pendingFileDownload = $state<{ fileName: string; keyName: string } | null>(null);
 
 	const mountErrors = $derived(group?.mountedFiles.filter((f) => f.error !== null) ?? []);
-
-	$effect(() => {
-		pageHeaderState.error = hasFailing;
-		return () => {
-			pageHeaderState.error = false;
-		};
-	});
 
 	// Collect source names that have errors — used to filter out env vars and files from broken sources
 	const erroredSourceNames = $derived(

@@ -2,9 +2,6 @@
 	import { resolve } from '$app/paths';
 	import { page } from '$app/state';
 	import type { RouteId } from '$app/types';
-	import DangerIcon from '$lib/icons/DangerIcon.svelte';
-	import WarningIcon from '$lib/icons/WarningIcon.svelte';
-	import { pageHeaderState } from '$lib/stores/pageHeaderState.svelte';
 	import AddToFavorites from '$lib/ui/AddToFavorites.svelte';
 	import { Heading, Tag } from '@nais/ds-svelte-community';
 	import type { Snippet } from 'svelte';
@@ -27,8 +24,6 @@
 	});
 	const heading = $derived(page.data?.meta?.pageHeaderTitle ?? page.data?.meta?.title ?? '');
 	const tag = $derived(page.data?.meta?.tag ?? null);
-	const warning = $derived(pageHeaderState.warning);
-	const error = $derived(pageHeaderState.error);
 	const resolveUnsafe = resolve as unknown as (
 		href: string,
 		params?: Record<string, string>
@@ -65,11 +60,6 @@
 	{/if}
 	<div class="header-row">
 		<div class="heading-wrapper">
-			{#if error}
-				<DangerIcon style="font-size: 1.5rem" />
-			{:else if warning}
-				<WarningIcon style="font-size: 1.5rem" />
-			{/if}
 			<Heading as="h1" size="xlarge">{heading}</Heading>
 			{#if tag}
 				<Tag variant={tag.variant}>{tag.label}</Tag>
