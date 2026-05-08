@@ -232,7 +232,7 @@
 		text-transform: uppercase;
 	}
 
-	@media (max-width: 767px) {
+	@media (max-width: 767px), (max-height: 500px) {
 		.content-wrapper {
 			grid-template-columns: 1fr;
 		}

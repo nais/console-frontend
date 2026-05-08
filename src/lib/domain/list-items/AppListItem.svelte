@@ -192,6 +192,7 @@
 
 		.right {
 			grid-template-columns: 1fr;
+			inline-size: auto;
 			justify-items: end;
 			row-gap: var(--ax-space-4);
 			column-gap: 0;

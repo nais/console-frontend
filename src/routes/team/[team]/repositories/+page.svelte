@@ -424,17 +424,11 @@
 		font-size: 1rem;
 	}
 
-	@media (max-width: 767px) {
+	@media (max-width: 767px), (max-height: 500px) {
 		.wrapper {
 			grid-template-columns: 1fr;
 		}
 
-		.search {
-			justify-content: stretch;
-		}
-	}
-
-	@media (max-height: 500px) {
 		.search {
 			justify-content: stretch;
 		}
