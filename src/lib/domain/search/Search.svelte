@@ -1,10 +1,10 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
+	import IconLabel from '$lib/ui/IconLabel.svelte';
 	import { Button, Tag, TextField } from '@nais/ds-svelte-community';
 	import type { TagProps } from '@nais/ds-svelte-community/components/Tag/type.js';
 	import { ArrowDownIcon, ArrowDownRightIcon, ArrowUpIcon } from '@nais/ds-svelte-community/icons';
 	import { tick, type Component } from 'svelte';
-	import IconLabel from '$lib/ui/IconLabel.svelte';
 	import ResultSkeleton from './ResultSkeleton.svelte';
 	import Suggestions from './Suggestions.svelte';
 
@@ -19,10 +19,12 @@
 		results,
 		close,
 		suggestions = true,
+		helpers = true,
 		placeholder = 'Search for teams, workloads, or services'
 	}: {
 		placeholder?: string;
 		suggestions?: boolean;
+		helpers?: boolean;
 		query: string;
 		loading?: boolean;
 		results?:
@@ -30,6 +32,7 @@
 					icon: Component;
 					label: string;
 					description: string;
+					tag?: TagType;
 					type: 'button';
 					button: {
 						onclick: () => void;
@@ -124,9 +127,19 @@
 					</a>
 				{:else}
 					<div class="result">
-						<IconLabel icon={result.icon} description={result.description}>
+						<IconLabel icon={result.icon}>
 							{#snippet label()}
 								<span class="label">{result.label}</span>
+							{/snippet}
+							{#snippet description()}
+								{#if result.tag}
+									<div class="description-wrapper">
+										<Tag size="xsmall" variant={result.tag.variant}>{result.tag.label}</Tag>
+										{result.description}
+									</div>
+								{:else}
+									{result.description}
+								{/if}
 							{/snippet}
 						</IconLabel>
 						{#if result.type === 'button'}
@@ -146,21 +159,23 @@
 			<Suggestions />
 		{/if}
 	</div>
-	<div class="helpers">
-		<div>
-			<kbd><ArrowDownIcon /></kbd>
-			<kbd><ArrowUpIcon /></kbd>
-			<span>Move</span>
+	{#if helpers}
+		<div class="helpers">
+			<div>
+				<kbd><ArrowDownIcon /></kbd>
+				<kbd><ArrowUpIcon /></kbd>
+				<span>Move</span>
+			</div>
+			<div>
+				<kbd class="enter"><ArrowDownRightIcon /></kbd>
+				<span>Select</span>
+			</div>
+			<div>
+				<kbd class="escape"><span>esc</span></kbd>
+				<span>Close</span>
+			</div>
 		</div>
-		<div>
-			<kbd class="enter"><ArrowDownRightIcon /></kbd>
-			<span>Select</span>
-		</div>
-		<div>
-			<kbd class="escape"><span>esc</span></kbd>
-			<span>Close</span>
-		</div>
-	</div>
+	{/if}
 </div>
 
 <style>

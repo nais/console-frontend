@@ -1,0 +1,13 @@
+query ServiceAccountDetail($id: ID!) @cache(policy: CacheAndNetwork) {
+	serviceAccount(id: $id) {
+		id
+		name
+		description
+		createdAt
+		updatedAt
+		lastUsedAt
+		...ServiceAccountRolesFragment
+		...ServiceAccountAuthenticationFragment @mask_disable
+	}
+	...AvailableRolesFragment
+}
