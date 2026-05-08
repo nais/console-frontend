@@ -201,7 +201,7 @@
 	<Alert variant="warning">Instance group "{instanceGroupName}" not found.</Alert>
 {:else}
 	<div class="page">
-		<SurfaceCard title="Image">
+		<SurfaceCard title="Image" reverseGradient>
 			{#snippet headerAside()}
 				{#if incoming || hasFailing}
 					<span class="status-tags">
@@ -220,7 +220,7 @@
 		</SurfaceCard>
 
 		{#if group.instances.length > 0}
-			<SurfaceCard title="Instances ({group.instances.length})">
+			<SurfaceCard title="Instances ({group.instances.length})" reverseGradient>
 				<div class="table-container">
 					<Table size="small" zebraStripes>
 						<Thead>
@@ -280,7 +280,7 @@
 		{/if}
 
 		{#if application}
-			<SurfaceCard title="Resources">
+			<SurfaceCard title="Resources" reverseGradient>
 				{#if !isIn50PercentRange(cpuReq, cpuReqRecommendation) || !isIn50PercentRange(memReq, memReqRecommendation)}
 					<Alert variant="info" size="small">
 						CPU and/or memory requests differ by more than 50% from the recommended values. Consider
@@ -383,7 +383,7 @@
 			{#if application.resources.scaling}
 				{@const scaling = application.resources.scaling}
 				{#if scaling.minInstances !== scaling.maxInstances}
-					<SurfaceCard title="Scaling">
+					<SurfaceCard title="Scaling" reverseGradient>
 						<div class="table-container">
 							<Table size="small" zebraStripes>
 								<Thead>

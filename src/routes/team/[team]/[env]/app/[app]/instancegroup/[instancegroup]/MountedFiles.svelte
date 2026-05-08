@@ -1,8 +1,8 @@
 <script lang="ts">
 	import type { InstanceGroupDetail$result } from '$houdini';
+	import SurfaceCard from '$lib/ui/SurfaceCard.svelte';
 	import { Button, Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte-community';
 	import { DownloadIcon } from '@nais/ds-svelte-community/icons';
-	import SurfaceCard from '$lib/ui/SurfaceCard.svelte';
 
 	type MountedFile =
 		InstanceGroupDetail$result['team']['environment']['application']['instanceGroups'][number]['mountedFiles'][number];
@@ -22,7 +22,7 @@
 </script>
 
 {#if files.length > 0}
-	<SurfaceCard title="Mounted Files">
+	<SurfaceCard title="Mounted Files" reverseGradient>
 		<div class="table-container">
 			<Table size="small" zebraStripes>
 				<Thead>

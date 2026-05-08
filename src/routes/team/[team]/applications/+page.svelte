@@ -5,11 +5,11 @@
 	import AggregatedCostForApplications from '$lib/domain/cost/AggregatedCostForApplications.svelte';
 	import AppListItem from '$lib/domain/list-items/AppListItem.svelte';
 	import ExternalLink from '$lib/ui/ExternalLink.svelte';
-	import SurfaceCard from '$lib/ui/SurfaceCard.svelte';
 	import GraphErrors from '$lib/ui/GraphErrors.svelte';
 	import List from '$lib/ui/List.svelte';
 	import OrderByMenu from '$lib/ui/OrderByMenu.svelte';
 	import Pagination from '$lib/ui/Pagination.svelte';
+	import SurfaceCard from '$lib/ui/SurfaceCard.svelte';
 	import { changeParams } from '$lib/utils/searchparams';
 	import { BodyLong, Button, Search } from '@nais/ds-svelte-community';
 	import { ActionMenu, ActionMenuCheckboxItem } from '@nais/ds-svelte-community/experimental';
@@ -173,7 +173,7 @@
 	</div>
 	<div class="right-column">
 		{#if totalApplications > 0}
-			<SurfaceCard title="Cost" reverseGradient>
+			<SurfaceCard title="Cost">
 				<AggregatedCostForApplications {teamSlug} totalCount={totalApplications} />
 			</SurfaceCard>
 		{/if}
