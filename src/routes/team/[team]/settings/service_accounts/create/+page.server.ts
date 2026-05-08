@@ -5,6 +5,7 @@ const mutation = graphql(`
 	mutation CreateServiceAccount($input: CreateServiceAccountInput!) {
 		createServiceAccount(input: $input) {
 			serviceAccount {
+				id
 				name
 			}
 		}
@@ -57,7 +58,7 @@ export const actions = {
 
 		return redirect(
 			303,
-			`/team/${params.team}/settings/service_accounts/${encodeURIComponent(res.data.createServiceAccount.serviceAccount!.name)}`
+			`/team/${params.team}/settings/service_accounts/${res.data.createServiceAccount.serviceAccount!.id}`
 		);
 	}
 };

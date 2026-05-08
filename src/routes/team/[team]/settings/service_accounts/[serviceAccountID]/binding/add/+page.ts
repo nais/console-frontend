@@ -1,4 +1,3 @@
-import { load_AddBindingSALookup } from '$houdini';
 import { addPageMeta } from '$lib/utils/pageMeta';
 import { error } from '@sveltejs/kit';
 
@@ -22,12 +21,10 @@ export async function load(event) {
 					href: '/team/[team]/settings/service_accounts'
 				},
 				{
-					label: event.params.serviceAccount,
-					href: '/team/[team]/settings/service_accounts/[serviceAccount]'
+					label: event.params.serviceAccountID,
+					href: '/team/[team]/settings/service_accounts/[serviceAccountID]'
 				}
 			]
-		})),
-		...(await load_AddBindingSALookup({ event, variables: { team: event.params.team } })),
-		serviceAccountName: event.params.serviceAccount
+		}))
 	};
 }

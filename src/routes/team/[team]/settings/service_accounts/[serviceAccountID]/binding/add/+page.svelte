@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
+	import { resolve } from '$app/paths';
 	import { page } from '$app/state';
 	import { graphql } from '$houdini';
 	import { envTagVariant } from '$lib/envTagVariant';
@@ -15,18 +16,12 @@
 	} from '@nais/ds-svelte-community';
 	import { BriefcaseClockIcon, CheckmarkIcon, PackageIcon } from '@nais/ds-svelte-community/icons';
 	import type { PageProps } from './$houdini';
-	import { resolve } from '$app/paths';
 
 	let { data }: PageProps = $props();
 
-	const { AddBindingSALookup } = $derived(data);
+	const { ServiceAccountDetail } = $derived(data);
 
-	const serviceAccount = $derived(
-		$AddBindingSALookup.data?.team.serviceAccounts.nodes.find(
-			(sa) => sa.name === data.serviceAccountName
-		)
-	);
-	const serviceAccountsPage = $derived($AddBindingSALookup.data?.team.serviceAccounts);
+	const serviceAccount = $derived($ServiceAccountDetail.data?.serviceAccount);
 
 	const existingBindings = $derived(
 		new Set(
@@ -60,31 +55,6 @@
 	let searchString = $state('');
 	let addedIds: Set<string> = $state(new Set());
 	let errorMessage: string | undefined = $state();
-	let lookedUpAllPages = $state(false);
-	let requestedCursor: string | null = $state(null);
-
-	$effect(() => {
-		if (serviceAccount) {
-			lookedUpAllPages = true;
-			return;
-		}
-
-		const connection = serviceAccountsPage;
-		if (!connection || $AddBindingSALookup.fetching) {
-			return;
-		}
-
-		const nextCursor = connection.pageInfo.hasNextPage ? connection.pageInfo.endCursor : null;
-		if (nextCursor && nextCursor !== requestedCursor) {
-			requestedCursor = nextCursor;
-			AddBindingSALookup.fetch({
-				variables: { team: page.params.team!, after: nextCursor }
-			});
-			return;
-		}
-
-		lookedUpAllPages = true;
-	});
 
 	$effect(() => {
 		if (searchString) {
@@ -128,18 +98,16 @@
 		<ErrorMessage>{errorMessage}</ErrorMessage>
 	{/if}
 
-	{#if !serviceAccount && lookedUpAllPages}
+	{#if !serviceAccount}
 		<Alert variant="warning">Service account not found.</Alert>
-	{:else if !serviceAccount}
-		<BodyLong>Looking up service account…</BodyLong>
 	{:else}
 		<Button
 			as="a"
 			size="small"
 			variant="secondary"
-			href={resolve('/team/[team]/settings/service_accounts/[serviceAccount]', {
+			href={resolve('/team/[team]/settings/service_accounts/[serviceAccountID]', {
 				team: page.params.team!,
-				serviceAccount: page.params.serviceAccount!
+				serviceAccountID: page.params.serviceAccountID!
 			})}
 		>
 			Back to service account

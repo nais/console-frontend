@@ -1,5 +1,7 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
+	import { resolve } from '$app/paths';
+	import { page } from '$app/state';
 	import {
 		Alert,
 		BodyLong,
@@ -9,54 +11,20 @@
 		TextField
 	} from '@nais/ds-svelte-community';
 	import type { PageProps } from './$houdini';
-	import { resolve } from '$app/paths';
-	import { page } from '$app/state';
 
 	let { data }: PageProps = $props();
 
-	const { CreateTokenSALookup } = $derived(data);
+	const { ServiceAccountDetail } = $derived(data);
 
-	const serviceAccount = $derived(
-		$CreateTokenSALookup.data?.team.serviceAccounts.nodes.find(
-			(sa) => sa.name === data.serviceAccountName
-		)
-	);
-	const serviceAccountsPage = $derived($CreateTokenSALookup.data?.team.serviceAccounts);
+	const serviceAccount = $derived($ServiceAccountDetail.data?.serviceAccount);
 
 	let createdSecret: string | null = $state(null);
 	let errorMessage: string | undefined = $state();
-	let lookedUpAllPages = $state(false);
-	let requestedCursor: string | null = $state(null);
-
-	$effect(() => {
-		if (serviceAccount) {
-			lookedUpAllPages = true;
-			return;
-		}
-
-		const connection = serviceAccountsPage;
-		if (!connection || $CreateTokenSALookup.fetching) {
-			return;
-		}
-
-		const nextCursor = connection.pageInfo.hasNextPage ? connection.pageInfo.endCursor : null;
-		if (nextCursor && nextCursor !== requestedCursor) {
-			requestedCursor = nextCursor;
-			CreateTokenSALookup.fetch({
-				variables: { team: page.params.team!, after: nextCursor }
-			});
-			return;
-		}
-
-		lookedUpAllPages = true;
-	});
 </script>
 
 <div class="page">
-	{#if !serviceAccount && lookedUpAllPages}
+	{#if !serviceAccount}
 		<Alert variant="warning">Service account not found.</Alert>
-	{:else if !serviceAccount}
-		<BodyLong>Looking up service account…</BodyLong>
 	{:else if createdSecret}
 		<Alert variant="success">
 			Token created successfully. Copy the secret below - it will not be shown again.
@@ -75,9 +43,9 @@
 			as="a"
 			size="small"
 			variant="secondary"
-			href={resolve('/team/[team]/settings/service_accounts/[serviceAccount]', {
+			href={resolve('/team/[team]/settings/service_accounts/[serviceAccountID]', {
 				team: page.params.team!,
-				serviceAccount: page.params.serviceAccount!
+				serviceAccountID: page.params.serviceAccountID!
 			})}
 		>
 			Back to service account
@@ -91,9 +59,9 @@
 			If you need to authenticate from within Nais, for example from an application or a job, you
 			should
 			<a
-				href={resolve('/team/[team]/settings/service_accounts/[serviceAccount]/binding/add', {
+				href={resolve('/team/[team]/settings/service_accounts/[serviceAccountID]/binding/add', {
 					team: page.params.team!,
-					serviceAccount: page.params.serviceAccount!
+					serviceAccountID: page.params.serviceAccountID!
 				})}
 			>
 				create a workload binding for the service account

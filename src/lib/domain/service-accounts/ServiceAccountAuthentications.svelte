@@ -93,7 +93,7 @@
 	const totalMethods = $derived($data.workloadBindings.edges.length + $data.tokens.edges.length);
 
 	const saPath = $derived(
-		`/team/${page.params.team}/settings/service_accounts/${page.params.serviceAccount}`
+		`/team/${page.params.team}/settings/service_accounts/${page.params.serviceAccountID}`
 	);
 </script>
 
@@ -237,7 +237,7 @@
 		</List>
 	{:else}
 		<Heading size="small" as="h3">Authentication methods</Heading>
-		<p>No available authentication methods.</p>
+		<p>No authentication methods configured.</p>
 		{#if canManage}
 			<div class="actions">
 				<Button
