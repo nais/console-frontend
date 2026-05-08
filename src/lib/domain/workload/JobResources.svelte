@@ -45,11 +45,11 @@
 				<div class="resource-values">
 					<span class="resource-entry">
 						<span class="entry-label">Req</span>
-						<code>{cpuReq}</code>
+						<code style="font-size: 0.8em">{cpuReq}</code>
 					</span>
 					<span class="resource-entry">
 						<span class="entry-label">Lim</span>
-						<code>{cpuLim}</code>
+						<code style="font-size: 0.8em">{cpuLim}</code>
 					</span>
 				</div>
 			</div>
@@ -63,11 +63,11 @@
 				<div class="resource-values">
 					<span class="resource-entry">
 						<span class="entry-label">Req</span>
-						<code>{memReq}</code>
+						<code style="font-size: 0.8em">{memReq}</code>
 					</span>
 					<span class="resource-entry">
 						<span class="entry-label">Lim</span>
-						<code>{memLim}</code>
+						<code style="font-size: 0.8em">{memLim}</code>
 					</span>
 				</div>
 			</div>
