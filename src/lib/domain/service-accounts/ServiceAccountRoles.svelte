@@ -137,19 +137,17 @@
 			{editable ? 'Cancel' : 'Edit roles'}
 		</Button>
 	{/if}
-	{#if list}
-		<CheckboxGroup
-			value={list.filter((r) => r.hasRole).map((r) => r.name)}
-			legend="Assigned roles"
-			onchange={handleOnChange}
-		>
-			{#each list as role (role.name)}
-				<Checkbox value={role.name} description={role.description} readonly={!editable}>
-					{role.name}
-				</Checkbox>
-			{/each}
-		</CheckboxGroup>
-	{:else}
-		<p>No available roles found.</p>
-	{/if}
+	<CheckboxGroup
+		value={list.filter((r) => r.hasRole).map((r) => r.name)}
+		legend="Assigned roles"
+		onchange={handleOnChange}
+	>
+		{#each list as role (role.name)}
+			<Checkbox value={role.name} description={role.description} readonly={!editable}>
+				{role.name}
+			</Checkbox>
+		{:else}
+			<p>No available roles found.</p>
+		{/each}
+	</CheckboxGroup>
 </section>
