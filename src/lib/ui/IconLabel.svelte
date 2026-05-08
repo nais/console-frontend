@@ -4,12 +4,14 @@
 	import type { HeadingProps } from '@nais/ds-svelte-community/components/typography/Heading/type.js';
 	import type { Component, Snippet } from 'svelte';
 	import Icon from './Icon.svelte';
+	import TooltipAlignHack from './TooltipAlignHack.svelte';
 
 	const {
 		label,
 		href,
 		icon,
 		description,
+		tooltip,
 		tag,
 		tagSize = 'small',
 		onclick,
@@ -19,6 +21,7 @@
 		href?: string;
 		icon: Snippet | Component | string;
 		description?: Snippet | Component | string;
+		tooltip?: string;
 		tag?: {
 			label: string;
 			variant: TagProps['variant'];
@@ -63,7 +66,18 @@
 		{ 'icon-label--with-desc': !!description }
 	]}
 >
-	{#if typeof icon === 'string'}
+	{#if tooltip}
+		<TooltipAlignHack content={tooltip}>
+			{#if typeof icon === 'string'}
+				<Icon {icon} />
+			{:else if isSnippet(icon)}
+				{@render icon()}
+			{:else}
+				{@const Icon = icon}
+				<Icon />
+			{/if}
+		</TooltipAlignHack>
+	{:else if typeof icon === 'string'}
 		<Icon {icon} />
 	{:else if isSnippet(icon)}
 		{@render icon()}

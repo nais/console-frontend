@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { fragment, graphql, type Persistence } from '$houdini';
 	import IconLabel from '$lib/ui/IconLabel.svelte';
-	import { Heading } from '@nais/ds-svelte-community';
+	import SurfaceCard from '$lib/ui/SurfaceCard.svelte';
 
 	interface Props {
 		workload: Persistence;
@@ -104,18 +104,20 @@
 	);
 
 	const toIconLabel =
-		(urlName: string) => (persistence: { node: { id: string; name: string } }) => ({
+		(urlName: string, tooltip: string) =>
+		(persistence: { node: { id: string; name: string } }) => ({
 			id: persistence.node.id,
 			label: persistence.node.name,
 			href: `/team/${$data.team.slug}/${$data.teamEnvironment.environment.name}/${urlName}/${persistence.node.name}`,
-			icon: urlName
+			icon: urlName,
+			tooltip
 		});
 
 	const persistence = $derived({
-		buckets: $data.buckets.edges.map(toIconLabel('bucket')),
-		bigQuery: $data.bigQueryDatasets.edges.map(toIconLabel('bigquery')),
-		cloudSql: $data.sqlInstances.edges.map(toIconLabel('cloudsql')),
-		postgres: $data.postgresInstances.edges.map(toIconLabel('postgres')),
+		buckets: $data.buckets.edges.map(toIconLabel('bucket', 'Cloud Storage Bucket')),
+		bigQuery: $data.bigQueryDatasets.edges.map(toIconLabel('bigquery', 'BigQuery Dataset')),
+		cloudSql: $data.sqlInstances.edges.map(toIconLabel('cloudsql', 'Cloud SQL')),
+		postgres: $data.postgresInstances.edges.map(toIconLabel('postgres', 'PostgreSQL')),
 		kafka: $data.kafkaTopicAcls.edges
 			.filter((acl) => acl.node.teamName !== '*')
 			.map((e) => e.node)
@@ -124,6 +126,7 @@
 				label: acl.topic.name,
 				href: `/team/${acl.topic.team.slug}/${acl.topic.teamEnvironment.environment.name}/kafka/${acl.topic.name}`,
 				icon: 'kafka',
+				tooltip: 'Kafka',
 				description: acl.access
 			})),
 		openSearch: ($data.openSearch ? [$data.openSearch] : []).map((os) => ({
@@ -131,23 +134,24 @@
 			label: os.name,
 			href: `/team/${$data.team.slug}/${$data.teamEnvironment.environment.name}/opensearch/${os.name}`,
 			icon: 'opensearch',
+			tooltip: 'OpenSearch',
 			description: os.access.edges.find((access) => access.node.workload.name == $data.name)?.node
 				.access
 		})),
-		valkey: $data.valkeys.edges.map(toIconLabel('valkey'))
+		valkey: $data.valkeys.edges.map(toIconLabel('valkey', 'Valkey'))
 	});
 </script>
 
 {#if Object.values(persistence).some((p) => p.length)}
-	<Heading as="h2" size="medium" spacing>Persistence</Heading>
-
-	<div class="content">
-		{#each Object.entries(persistence) as [type, list] (type)}
-			{#each list as persistence (persistence.id)}
-				<IconLabel {...persistence} />
+	<SurfaceCard title="Persistence">
+		<div class="content">
+			{#each Object.entries(persistence) as [type, list] (type)}
+				{#each list as persistence (persistence.id)}
+					<IconLabel {...persistence} />
+				{/each}
 			{/each}
-		{/each}
-	</div>
+		</div>
+	</SurfaceCard>
 {/if}
 
 <style>

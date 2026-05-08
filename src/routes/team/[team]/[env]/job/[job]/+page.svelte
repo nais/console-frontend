@@ -204,9 +204,6 @@
 				<div>
 					<NetworkPolicy workload={job} />
 				</div>
-				<div>
-					<Persistence workload={job} />
-				</div>
 				{#if jobName && environment}
 					<CostOverviewChart workload={jobName} {environment} {teamSlug} workloadType="job" />
 				{/if}
@@ -217,6 +214,7 @@
 					activityLog={job}
 					href="/team/{page.params.team}/{page.params.env}/job/{page.params.job}/activity-log"
 				/>
+				<Persistence workload={job} />
 				{#if jobName && environment}
 					<Configs workload={jobName} {environment} {teamSlug} />
 					<Secrets workload={jobName} {environment} {teamSlug} />
