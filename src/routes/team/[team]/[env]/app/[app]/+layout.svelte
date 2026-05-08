@@ -39,9 +39,9 @@
 			href: resolve('/team/[team]/[env]/app/[app]/utilization', page.params as never)
 		},
 		{
-			value: '/team/[team]/[env]/app/[app]/ingresses',
-			label: 'Ingresses',
-			href: resolve('/team/[team]/[env]/app/[app]/ingresses', page.params as never)
+			value: '/team/[team]/[env]/app/[app]/network',
+			label: 'Network',
+			href: resolve('/team/[team]/[env]/app/[app]/network', page.params as never)
 		},
 		{
 			value: '/team/[team]/[env]/app/[app]/logs',

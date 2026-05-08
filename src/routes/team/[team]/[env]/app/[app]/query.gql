@@ -38,15 +38,6 @@ query App($app: String!, $team: Slug!, $env: String!) {
 					}
 				}
 
-				ingresses {
-					type
-					url
-					metrics {
-						errorsPerSecond
-						requestsPerSecond
-					}
-				}
-
 				instanceGroups {
 					id
 					name
@@ -70,7 +61,6 @@ query App($app: String!, $team: Slug!, $env: String!) {
 				...WorkloadLatestActivityFragment @with(limit: 3)
 				...Persistence
 				...WorkloadDeploy
-				...NetworkPolicy
 				...Manifest
 			}
 		}

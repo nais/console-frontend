@@ -4,8 +4,9 @@
 	import { envTagVariant } from '$lib/envTagVariant';
 	import WarningIcon from '$lib/icons/WarningIcon.svelte';
 	import IconLabel from '$lib/ui/IconLabel.svelte';
+	import SurfaceCard from '$lib/ui/SurfaceCard.svelte';
 	import TooltipAlignHack from '$lib/ui/TooltipAlignHack.svelte';
-	import { Heading, Tag } from '@nais/ds-svelte-community';
+	import { BodyShort, Tag } from '@nais/ds-svelte-community';
 	import { GlobeIcon } from '@nais/ds-svelte-community/icons';
 
 	interface Props {
@@ -80,6 +81,12 @@
 	);
 
 	type NetworkPolicyRule = NetworkPolicy$data['networkPolicy']['inbound' | 'outbound']['rules'][0];
+
+	let hasPolicy = $derived(
+		$data.networkPolicy.inbound.rules.length > 0 ||
+			$data.networkPolicy.outbound.rules.length > 0 ||
+			$data.networkPolicy.outbound.external.length > 0
+	);
 </script>
 
 {#snippet networkPolicyRule(rule: NetworkPolicyRule)}
@@ -90,7 +97,7 @@
 		{:else}
 			in {rule.targetTeamSlug}
 		{/if}
-		in <Tag size="small" variant={envTagVariant($data.teamEnvironment.environment.name)}
+		in <Tag size="xsmall" variant={envTagVariant($data.teamEnvironment.environment.name)}
 			>{$data.teamEnvironment.environment.name}</Tag
 		> can access {$data.name}.
 	{:else if !rule.mutual && rule.targetWorkload}
@@ -111,77 +118,89 @@
 	{/if}
 {/snippet}
 
-{#if $data.networkPolicy.inbound.rules.length > 0 || $data.networkPolicy.outbound.rules.length > 0 || $data.networkPolicy.outbound.external.length > 0}
-	<Heading as="h2" size="medium" spacing>Network Policy</Heading>
-	<div class="grid">
-		<div>
-			<Heading as="h3" size="small" spacing>Inbound</Heading>
-			<ul>
-				{#each $data.networkPolicy.inbound.rules as rule (rule)}
-					<li>
-						{@render networkPolicyRule(rule)}
-					</li>
-				{:else}
-					<li>
-						No inbound network policies configured for this {$data.__typename?.toLowerCase()}.
-					</li>
-				{/each}
-			</ul>
-		</div>
-
-		<div>
-			<Heading as="h3" size="small" spacing>Outbound</Heading>
-			{#if $data.networkPolicy.outbound.rules.length > 0 || $data.networkPolicy.outbound.external.length > 0}
-				<Heading as="h4" size="xsmall" spacing>External</Heading>
+{#if hasPolicy}
+	<SurfaceCard title="Network policy">
+		<div class="grid">
+			<div class="direction">
+				<BodyShort size="small"><strong>Inbound</strong></BodyShort>
 				<ul>
-					{#each Object.entries(Object.groupBy($data.networkPolicy.outbound.external, (e) => e.__typename ?? 'none')) as [type, list = []] (type)}
-						{#each list as external (external)}
-							{#each external.ports as port (port)}
-								<li><IconLabel label="https://{external.target}:{port}" icon={GlobeIcon} /></li>
-							{:else}
-								<li><IconLabel label="https://{external.target}" icon={GlobeIcon} /></li>
-							{/each}
-						{/each}
-					{:else}
+					{#each $data.networkPolicy.inbound.rules as rule (rule)}
 						<li>
-							No external outbound network policies configured for this {$data.__typename?.toLowerCase()}.
+							{@render networkPolicyRule(rule)}
 						</li>
+					{:else}
+						<li class="empty">No inbound policies configured.</li>
 					{/each}
 				</ul>
-				{#if $data.networkPolicy.outbound.rules.length > 0}
-					<Heading as="h4" size="xsmall" spacing>Workloads</Heading>
-					<ul>
-						{#each $data.networkPolicy.outbound.rules as rule (rule)}
-							<li>
-								{@render networkPolicyRule(rule)}
-							</li>
-						{/each}
-					</ul>
+			</div>
+
+			<div class="direction">
+				<BodyShort size="small"><strong>Outbound</strong></BodyShort>
+				{#if $data.networkPolicy.outbound.rules.length > 0 || $data.networkPolicy.outbound.external.length > 0}
+					{#if $data.networkPolicy.outbound.external.length > 0}
+						<BodyShort size="small" textColor="subtle">External</BodyShort>
+						<ul>
+							{#each Object.entries(Object.groupBy($data.networkPolicy.outbound.external, (e) => e.__typename ?? 'none')) as [type, list = []] (type)}
+								{#each list as external (external)}
+									{#each external.ports as port (port)}
+										<li>
+											<IconLabel label="https://{external.target}:{port}" icon={GlobeIcon} />
+										</li>
+									{:else}
+										<li>
+											<IconLabel label="https://{external.target}" icon={GlobeIcon} />
+										</li>
+									{/each}
+								{/each}
+							{/each}
+						</ul>
+					{/if}
+					{#if $data.networkPolicy.outbound.rules.length > 0}
+						<BodyShort size="small" textColor="subtle">Workloads</BodyShort>
+						<ul>
+							{#each $data.networkPolicy.outbound.rules as rule (rule)}
+								<li>
+									{@render networkPolicyRule(rule)}
+								</li>
+							{/each}
+						</ul>
+					{/if}
+				{:else}
+					<BodyShort size="small" textColor="subtle">No outbound policies configured.</BodyShort>
 				{/if}
-			{:else}
-				No outbound network policies configured for this {$data.__typename?.toLowerCase()}.
-			{/if}
+			</div>
 		</div>
-	</div>
+	</SurfaceCard>
+{:else}
+	<SurfaceCard title="Network policy">
+		<BodyShort size="small" textColor="subtle">No network policies configured.</BodyShort>
+	</SurfaceCard>
 {/if}
 
 <style>
 	.grid {
-		margin-top: 1rem;
 		display: grid;
 		grid-template-columns: 1fr 1fr;
-		gap: 2rem;
+		gap: var(--ax-space-24);
+		min-width: 0;
+	}
+
+	.direction {
+		display: flex;
+		flex-direction: column;
+		gap: var(--ax-space-8);
 		min-width: 0;
 	}
 
 	ul {
 		list-style: none;
 		margin: 0;
-		padding: 0 0 1rem 0;
+		padding: 0;
 		display: flex;
 		flex-direction: column;
 		gap: var(--ax-space-4);
 		min-width: 0;
+		font-size: var(--ax-font-size-small);
 	}
 
 	li {
@@ -192,10 +211,14 @@
 		min-width: 0;
 	}
 
+	.empty {
+		color: var(--ax-text-neutral-subtle);
+	}
+
 	@media (max-width: 767px), (max-height: 500px) {
 		.grid {
 			grid-template-columns: 1fr;
-			gap: var(--ax-space-24);
+			gap: var(--ax-space-16);
 		}
 	}
 </style>

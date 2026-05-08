@@ -25,7 +25,7 @@ export async function load(event) {
 	return {
 		interval,
 		...(await addPageMeta(event, {
-			title: 'Ingresses'
+			title: 'Network'
 		})),
 		...(await load_IngressMetrics({
 			event,
