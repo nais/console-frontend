@@ -5,7 +5,7 @@
 		type AvailableRolesFragment,
 		type ServiceAccountRolesFragment
 	} from '$houdini';
-	import { Button, Checkbox, CheckboxGroup, Heading } from '@nais/ds-svelte-community';
+	import { BodyLong, Button, Checkbox, CheckboxGroup, Heading } from '@nais/ds-svelte-community';
 
 	interface Props {
 		roles: AvailableRolesFragment;
@@ -127,6 +127,10 @@
 
 <section>
 	<Heading size="small" as="h3">Roles</Heading>
+	<BodyLong spacing>
+		Service accounts have read access to everything a user has access to, except secrets. You can
+		grant additional roles below.
+	</BodyLong>
 
 	{#if canManage}
 		<Button size="small" variant="secondary" onclick={() => (editable = !editable)}>

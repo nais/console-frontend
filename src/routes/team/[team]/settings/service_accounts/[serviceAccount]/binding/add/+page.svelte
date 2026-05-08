@@ -6,10 +6,10 @@
 	import GraphErrors from '$lib/ui/GraphErrors.svelte';
 	import {
 		Alert,
+		BodyLong,
 		Button,
 		Detail,
 		ErrorMessage,
-		Heading,
 		Tag,
 		TextField
 	} from '@nais/ds-svelte-community';
@@ -116,6 +116,10 @@
 		>
 			Back to service account
 		</Button>
+
+		<BodyLong>
+			Workload bindings allow Nais Workloads to authenticate as this service account.
+		</BodyLong>
 
 		<TextField
 			size="small"

@@ -1,5 +1,4 @@
 import { load_UserInfo } from '$houdini';
-import { error } from '@sveltejs/kit';
 import { get } from 'svelte/store';
 
 export async function load(event) {
