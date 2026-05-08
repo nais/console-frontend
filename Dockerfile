@@ -13,6 +13,7 @@ ENV VITE_GRAPHQL_ENDPOINT=http://nais-api/graphql
 RUN npm run build
 
 FROM node:${NODE_VERSION}-alpine
+RUN apk upgrade --no-cache
 WORKDIR /usr/app
 
 ENV NODE_ENV=production

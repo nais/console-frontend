@@ -1,0 +1,15 @@
+query DeletePostgresData($environment: String!, $team: Slug!, $name: String!)
+@cache(policy: NetworkOnly) {
+	team(slug: $team) {
+		slug
+		environment(name: $environment) {
+			postgresInstance(name: $name) {
+				workloads(first: 1) {
+					pageInfo {
+						totalCount
+					}
+				}
+			}
+		}
+	}
+}
