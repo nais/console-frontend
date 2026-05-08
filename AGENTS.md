@@ -169,6 +169,12 @@ This project uses **Houdini** for GraphQL, not Apollo or other clients.
 - Check for errors: `if ($myQuery.errors) { ... }`
 - Use `$myQuery.fetching` for loading states
 
+### Query Design Rules:
+
+- **Never use `first: <high_number>`** (e.g., `first: 500`, `first: 9999`) to fetch all items in a paginated connection. This is a code smell that means the API is missing a proper resolver.
+- If you need an overview of all items (e.g., all applications for a team), the backend in [nais/api](https://github.com/nais/api) should expose a dedicated field or resolver that returns the full list without requiring pagination hacks.
+- Do not work around missing backend capabilities by over-fetching on the frontend. Instead, flag it as a missing API feature that needs a backend change.
+
 ### Example (.gql file for routes):
 
 ```graphql
