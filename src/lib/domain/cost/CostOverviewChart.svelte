@@ -13,49 +13,21 @@
 		environment: string;
 		workload: string;
 		teamSlug: string;
-		workloadType?: 'app' | 'job';
 	}
 
-	let { environment, workload, teamSlug, workloadType = 'app' }: Props = $props();
+	let { environment, workload, teamSlug }: Props = $props();
 
 	let interval = $state<CostInterval>('30d');
 
-	const appCostQuery = graphql(`
-		query CostOverview($app: String!, $team: Slug!, $env: String!, $from: Date!, $to: Date!)
+	const costQuery = graphql(`
+		query CostOverview($workload: String!, $team: Slug!, $env: String!, $from: Date!, $to: Date!)
 		@cache(policy: NetworkOnly) {
 			team(slug: $team) @loading {
 				environment(name: $env) @loading {
 					environment @loading {
 						name
 					}
-					application(name: $app) @loading {
-						cost @loading {
-							daily(from: $from, to: $to) @loading {
-								series {
-									date
-									services {
-										cost
-										service
-									}
-									sum
-								}
-							}
-						}
-					}
-				}
-			}
-		}
-	`);
-
-	const jobCostQuery = graphql(`
-		query CostOverviewJob($job: String!, $team: Slug!, $env: String!, $from: Date!, $to: Date!)
-		@cache(policy: NetworkOnly) {
-			team(slug: $team) @loading {
-				environment(name: $env) @loading {
-					environment @loading {
-						name
-					}
-					job(name: $job) @loading {
+					workload(name: $workload) @loading {
 						cost @loading {
 							daily(from: $from, to: $to) @loading {
 								series {
@@ -78,18 +50,15 @@
 		const to = subDays(new Date(), 2);
 		const from = getFromForCost(interval, to);
 
-		const variables = {
-			team: teamSlug,
-			env: environment,
-			from,
-			to
-		};
-
-		if (workloadType === 'job') {
-			jobCostQuery.fetch({ variables: { ...variables, job: workload } });
-		} else {
-			appCostQuery.fetch({ variables: { ...variables, app: workload } });
-		}
+		costQuery.fetch({
+			variables: {
+				team: teamSlug,
+				env: environment,
+				workload,
+				from,
+				to
+			}
+		});
 	});
 
 	function onIntervalChange(value: string) {
@@ -97,13 +66,8 @@
 		changeParams({ interval: value }, { noScroll: true });
 	}
 
-	let costQuery = $derived(workloadType === 'job' ? $jobCostQuery : $appCostQuery);
-	let workloadData = $derived(
-		workloadType === 'job'
-			? $jobCostQuery.data?.team?.environment?.job
-			: $appCostQuery.data?.team?.environment?.application
-	);
-	let envName = $derived(costQuery.data?.team?.environment?.environment);
+	let workloadData = $derived($costQuery.data?.team?.environment?.workload);
+	let envName = $derived($costQuery.data?.team?.environment?.environment);
 
 	let services = $derived.by(() => {
 		const daily = workloadData?.cost?.daily;
@@ -131,9 +95,9 @@
 		{/if}
 	{/snippet}
 
-	<GraphErrors errors={costQuery.errors} />
+	<GraphErrors errors={$costQuery.errors} />
 
-	{#if costQuery.fetching && !costQuery.data}
+	{#if $costQuery.fetching && !$costQuery.data}
 		<div class="loading">
 			<Loader size="3xlarge" />
 		</div>
