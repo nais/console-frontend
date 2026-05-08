@@ -9,6 +9,7 @@
 	import List from '$lib/ui/List.svelte';
 	import OrderByMenu from '$lib/ui/OrderByMenu.svelte';
 	import Pagination from '$lib/ui/Pagination.svelte';
+	import SurfaceCard from '$lib/ui/SurfaceCard.svelte';
 	import { changeParams } from '$lib/utils/searchparams';
 	import { BodyLong, Button, Search } from '@nais/ds-svelte-community';
 	import { ActionMenu, ActionMenuCheckboxItem } from '@nais/ds-svelte-community/experimental';
@@ -162,7 +163,9 @@
 	</div>
 	<div class="right-column">
 		{#if totalJobs > 0}
-			<AggregatedCostForJobs {teamSlug} totalCount={totalJobs} />
+			<SurfaceCard title="Cost">
+				<AggregatedCostForJobs {teamSlug} totalCount={totalJobs} />
+			</SurfaceCard>
 		{/if}
 	</div>
 </div>
