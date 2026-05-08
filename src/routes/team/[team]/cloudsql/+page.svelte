@@ -176,6 +176,7 @@
 	.right-column {
 		display: grid;
 		gap: var(--ax-space-24);
+		align-content: start;
 	}
 	code {
 		font-size: 0.9rem;
