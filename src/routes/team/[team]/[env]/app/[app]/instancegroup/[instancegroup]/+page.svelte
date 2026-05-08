@@ -2,11 +2,11 @@
 	import type { InstanceGroupDetail$result, ValueEncoding$options } from '$houdini';
 	import { ValueEncoding } from '$houdini';
 	import GraphErrors from '$lib/ui/GraphErrors.svelte';
+	import SurfaceCard from '$lib/ui/SurfaceCard.svelte';
 	import Time from '$lib/ui/Time.svelte';
 	import {
 		Alert,
 		BodyShort,
-		Heading,
 		Loader,
 		Table,
 		Tag,
@@ -194,46 +194,33 @@
 <GraphErrors errors={$InstanceGroupDetail.errors} />
 
 {#if $InstanceGroupDetail.fetching}
-	<div style="display: flex; justify-content: center; align-items: center; height: 500px;">
+	<div class="loading">
 		<Loader size="3xlarge" />
 	</div>
 {:else if !group}
 	<Alert variant="warning">Instance group "{instanceGroupName}" not found.</Alert>
 {:else}
 	<div class="page">
-		<div class="table-container">
-			<Table size="small">
-				<Tbody>
-					<Tr>
-						<Th>Image</Th>
-						<Td><code>{group.image.name}:{group.image.tag}</code></Td>
-					</Tr>
-					{#if incoming || hasFailing}
-						<Tr>
-							<Th>Status</Th>
-							<Td>
-								<span class="status-tags">
-									{#if hasFailing}
-										<Tag size="small" variant="error">Failing</Tag>
-									{/if}
-									{#if incoming}
-										<Tag size="small" variant={role === 'incoming' ? 'alt1' : 'neutral'}>
-											{role === 'incoming' ? 'Incoming' : 'Current'}
-										</Tag>
-									{/if}
-								</span>
-							</Td>
-						</Tr>
-					{/if}
-				</Tbody>
-			</Table>
-		</div>
+		<SurfaceCard title="Image">
+			{#snippet headerAside()}
+				{#if incoming || hasFailing}
+					<span class="status-tags">
+						{#if hasFailing}
+							<Tag size="small" variant="error">Failing</Tag>
+						{/if}
+						{#if incoming}
+							<Tag size="small" variant={role === 'incoming' ? 'alt1' : 'neutral'}>
+								{role === 'incoming' ? 'Incoming' : 'Current'}
+							</Tag>
+						{/if}
+					</span>
+				{/if}
+			{/snippet}
+			<code>{group.image.name}:{group.image.tag}</code>
+		</SurfaceCard>
 
 		{#if group.instances.length > 0}
-			<section>
-				<Heading as="h3" size="small" spacing>
-					Instances ({group.instances.length})
-				</Heading>
+			<SurfaceCard title="Instances ({group.instances.length})">
 				<div class="table-container">
 					<Table size="small" zebraStripes>
 						<Thead>
@@ -289,13 +276,13 @@
 						</Tbody>
 					</Table>
 				</div>
-			</section>
+			</SurfaceCard>
 		{/if}
 
 		{#if application}
-			<section>
+			<SurfaceCard title="Resources">
 				{#if !isIn50PercentRange(cpuReq, cpuReqRecommendation) || !isIn50PercentRange(memReq, memReqRecommendation)}
-					<Alert variant="info" size="small" style="margin-bottom: var(--ax-space-8);">
+					<Alert variant="info" size="small">
 						CPU and/or memory requests differ by more than 50% from the recommended values. Consider
 						adjusting the requested resources. See the <a href="{baseUrl}/utilization"
 							>utilization</a
@@ -303,11 +290,7 @@
 					</Alert>
 				{/if}
 
-				<Heading as="h3" size="small" spacing>Resources</Heading>
-				<BodyShort
-					size="small"
-					style="color: var(--ax-text-neutral-subtle); margin-bottom: var(--ax-space-4)"
-				>
+				<BodyShort size="small" class="resource-description">
 					Request is the guaranteed amount of resources allocated to the application. Limit is the
 					maximum it can use before being throttled (CPU) or terminated (memory).
 				</BodyShort>
@@ -395,13 +378,12 @@
 						</Tbody>
 					</Table>
 				</div>
-			</section>
+			</SurfaceCard>
 
 			{#if application.resources.scaling}
 				{@const scaling = application.resources.scaling}
 				{#if scaling.minInstances !== scaling.maxInstances}
-					<section>
-						<Heading as="h3" size="small" spacing>Scaling</Heading>
+					<SurfaceCard title="Scaling">
 						<div class="table-container">
 							<Table size="small" zebraStripes>
 								<Thead>
@@ -441,7 +423,7 @@
 								</Tbody>
 							</Table>
 						</div>
-					</section>
+					</SurfaceCard>
 				{/if}
 			{/if}
 		{/if}
@@ -484,17 +466,16 @@
 	.page {
 		display: flex;
 		flex-direction: column;
-		gap: var(--spacing-layout);
-	}
-
-	section {
-		display: flex;
-		flex-direction: column;
+		gap: var(--ax-space-24);
 	}
 
 	.page :global(code) {
 		font-size: var(--ax-font-size-small);
 		color: var(--ax-text-neutral);
+	}
+
+	.page :global(.resource-description) {
+		color: var(--ax-text-neutral-subtle);
 	}
 
 	.muted {
@@ -515,6 +496,13 @@
 	.table-container {
 		width: 100%;
 		overflow-x: auto;
+	}
+
+	.loading {
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		height: 500px;
 	}
 
 	a {
