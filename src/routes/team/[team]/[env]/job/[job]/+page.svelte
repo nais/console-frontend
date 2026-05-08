@@ -207,7 +207,7 @@
 					{succeededRuns}
 					loading={$Job.fetching}
 				/>
-				<SurfaceCard title="Schedule" reverseGradient>
+				<SurfaceCard title="Runs" reverseGradient>
 					<Schedule
 						schedule={job.schedule}
 						scheduleContext={{
@@ -216,8 +216,6 @@
 							job: job.name
 						}}
 					/>
-				</SurfaceCard>
-				<SurfaceCard title="Runs" reverseGradient>
 					<Runs {job} ondelete={viewerIsMember ? handleDeleteRun : undefined} />
 				</SurfaceCard>
 				{#if jobName && environment}

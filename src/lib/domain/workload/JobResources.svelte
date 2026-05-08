@@ -58,13 +58,11 @@
 				<div class="resource-values">
 					<span class="resource-entry">
 						<span class="entry-label">Req</span>
-						<code class:default={cpuReq.isDefault}>{cpuReq.text}</code>
-						{#if cpuReq.isDefault}<span class="default-tag">default</span>{/if}
+						<code>{cpuReq.text}</code>
 					</span>
 					<span class="resource-entry">
 						<span class="entry-label">Lim</span>
-						<code class:default={cpuLim.isDefault}>{cpuLim.text}</code>
-						{#if cpuLim.isDefault}<span class="default-tag">default</span>{/if}
+						<code>{cpuLim.text}</code>
 					</span>
 				</div>
 			</div>
@@ -78,13 +76,11 @@
 				<div class="resource-values">
 					<span class="resource-entry">
 						<span class="entry-label">Req</span>
-						<code class:default={memReq.isDefault}>{memReq.text}</code>
-						{#if memReq.isDefault}<span class="default-tag">default</span>{/if}
+						<code>{memReq.text}</code>
 					</span>
 					<span class="resource-entry">
 						<span class="entry-label">Lim</span>
-						<code class:default={memLim.isDefault}>{memLim.text}</code>
-						{#if memLim.isDefault}<span class="default-tag">default</span>{/if}
+						<code>{memLim.text}</code>
 					</span>
 				</div>
 			</div>
@@ -151,16 +147,5 @@
 		font-family: monospace;
 		font-size: var(--ax-font-size-small);
 		color: var(--ax-text-neutral);
-	}
-
-	code.default {
-		color: var(--ax-text-neutral-subtle);
-	}
-
-	.default-tag {
-		font-size: 0.65rem;
-		color: var(--ax-text-neutral-subtle);
-		text-transform: uppercase;
-		letter-spacing: 0.02em;
 	}
 </style>
