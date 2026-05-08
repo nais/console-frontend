@@ -1,9 +1,9 @@
 <script lang="ts">
 	import type { InstanceGroupDetail$result } from '$houdini';
+	import SurfaceCard from '$lib/ui/SurfaceCard.svelte';
 	import { Button, CopyButton, Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte-community';
 	import { EyeIcon, EyeSlashIcon } from '@nais/ds-svelte-community/icons';
 	import { SvelteMap } from 'svelte/reactivity';
-	import SurfaceCard from '$lib/ui/SurfaceCard.svelte';
 
 	type EnvironmentVariable =
 		InstanceGroupDetail$result['team']['environment']['application']['instanceGroups'][number]['environmentVariables'][number];
@@ -22,7 +22,7 @@
 </script>
 
 {#if envVars.length > 0}
-	<SurfaceCard title="Environment Variables">
+	<SurfaceCard title="Environment Variables" reverseGradient>
 		{#snippet headerAside()}
 			{#if hasSecrets && viewerIsMember && revealedValues.size > 0}
 				<Button size="xsmall" variant="tertiary" icon={EyeSlashIcon} onclick={onHideAll}>

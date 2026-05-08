@@ -260,6 +260,7 @@ Use `SurfaceCard` (`$lib/ui/SurfaceCard.svelte`) for elevated content sections:
 - Props: `title` (uppercase eyebrow label), `headerAside` (snippet), `reverseGradient`
 - Applies `--surface-elevated-background` and `--surface-elevated-shadow`
 - Use for dashboard widgets, sidebar cards, and overview panels
+- **`reverseGradient` convention**: Use `reverseGradient` for main content cards (left column in two-column layouts) and single-column pages. Omit it for sidebar/right-column (300px) cards.
 
 ### Tab Navigation Pattern
 
