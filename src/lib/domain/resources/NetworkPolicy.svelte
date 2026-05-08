@@ -1,13 +1,17 @@
 <script lang="ts">
 	import { fragment, graphql, type NetworkPolicy, type NetworkPolicy$data } from '$houdini';
 	import WorkloadLink from '$lib/domain/workload/WorkloadLink.svelte';
-	import { envTagVariant } from '$lib/envTagVariant';
-	import WarningIcon from '$lib/icons/WarningIcon.svelte';
 	import IconLabel from '$lib/ui/IconLabel.svelte';
+	import Pill from '$lib/ui/Pill.svelte';
 	import SurfaceCard from '$lib/ui/SurfaceCard.svelte';
 	import TooltipAlignHack from '$lib/ui/TooltipAlignHack.svelte';
-	import { BodyShort, Tag } from '@nais/ds-svelte-community';
-	import { GlobeIcon } from '@nais/ds-svelte-community/icons';
+	import { BodyShort } from '@nais/ds-svelte-community';
+	import {
+		ArrowLeftIcon,
+		ArrowRightIcon,
+		GlobeIcon,
+		PackageIcon
+	} from '@nais/ds-svelte-community/icons';
 
 	interface Props {
 		workload: NetworkPolicy;
@@ -87,138 +91,168 @@
 			$data.networkPolicy.outbound.rules.length > 0 ||
 			$data.networkPolicy.outbound.external.length > 0
 	);
+
+	interface FlatRule {
+		direction: 'inbound' | 'outbound';
+		kind: 'workload' | 'external';
+		rule?: NetworkPolicyRule;
+		external?: NetworkPolicy$data['networkPolicy']['outbound']['external'][0];
+	}
+
+	let flatRules = $derived.by(() => {
+		const rules: FlatRule[] = [];
+
+		for (const rule of $data.networkPolicy.inbound.rules) {
+			rules.push({ direction: 'inbound', kind: 'workload', rule });
+		}
+		for (const rule of $data.networkPolicy.outbound.rules) {
+			rules.push({ direction: 'outbound', kind: 'workload', rule });
+		}
+		for (const ext of $data.networkPolicy.outbound.external) {
+			rules.push({ direction: 'outbound', kind: 'external', external: ext });
+		}
+
+		return rules;
+	});
 </script>
 
-{#snippet networkPolicyRule(rule: NetworkPolicyRule)}
+{#snippet workloadRule(rule: NetworkPolicyRule)}
 	{#if rule.targetWorkloadName === '*'}
-		Any workload
-		{#if rule.targetTeamSlug === '*'}
-			in any namespace
-		{:else}
-			in {rule.targetTeamSlug}
-		{/if}
-		in <Tag size="xsmall" variant={envTagVariant($data.teamEnvironment.environment.name)}
-			>{$data.teamEnvironment.environment.name}</Tag
-		> can access {$data.name}.
-	{:else if !rule.mutual && rule.targetWorkload}
-		<WorkloadLink
-			workload={rule.targetWorkload}
-			warning="{rule.targetWorkloadName} is missing outbound policy to {$data.name}"
-		/>
+		<span class="wildcard">
+			Any workload
+			{#if rule.targetTeamSlug === '*'}
+				in any namespace
+			{:else}
+				in {rule.targetTeamSlug}
+			{/if}
+		</span>
 	{:else if rule.targetWorkload}
-		<WorkloadLink workload={rule.targetWorkload} />
+		<WorkloadLink workload={rule.targetWorkload} hideEnv />
 	{:else}
-		<IconLabel label={rule.targetWorkloadName} description={rule.targetTeamSlug}>
-			{#snippet icon()}
-				<TooltipAlignHack content="Invalid workload reference">
-					<WarningIcon />
-				</TooltipAlignHack>
-			{/snippet}
-		</IconLabel>
+		<IconLabel
+			label={rule.targetWorkloadName}
+			description={rule.targetTeamSlug}
+			icon={PackageIcon}
+		/>
 	{/if}
 {/snippet}
 
-{#if hasPolicy}
-	<SurfaceCard title="Network policy">
-		<div class="grid">
-			<div class="direction">
-				<BodyShort size="small"><strong>Inbound</strong></BodyShort>
-				<ul>
-					{#each $data.networkPolicy.inbound.rules as rule (rule)}
-						<li>
-							{@render networkPolicyRule(rule)}
-						</li>
-					{:else}
-						<li class="empty">No inbound policies configured.</li>
-					{/each}
-				</ul>
-			</div>
+<SurfaceCard title="Network policy" reverseGradient>
+	{#if hasPolicy}
+		<ul class="rules">
+			{#each flatRules as entry (entry)}
+				<li class="rule">
+					<span class="direction" class:inbound={entry.direction === 'inbound'}>
+						{#if entry.direction === 'inbound'}
+							<ArrowLeftIcon />
+						{:else}
+							<ArrowRightIcon />
+						{/if}
+						<span class="direction-label">{entry.direction === 'inbound' ? 'IN' : 'OUT'}</span>
+					</span>
 
-			<div class="direction">
-				<BodyShort size="small"><strong>Outbound</strong></BodyShort>
-				{#if $data.networkPolicy.outbound.rules.length > 0 || $data.networkPolicy.outbound.external.length > 0}
-					{#if $data.networkPolicy.outbound.external.length > 0}
-						<BodyShort size="small" textColor="subtle">External</BodyShort>
-						<ul>
-							{#each Object.entries(Object.groupBy($data.networkPolicy.outbound.external, (e) => e.__typename ?? 'none')) as [type, list = []] (type)}
-								{#each list as external (external)}
-									{#each external.ports as port (port)}
-										<li>
-											<IconLabel label="https://{external.target}:{port}" icon={GlobeIcon} />
-										</li>
-									{:else}
-										<li>
-											<IconLabel label="https://{external.target}" icon={GlobeIcon} />
-										</li>
-									{/each}
-								{/each}
-							{/each}
-						</ul>
-					{/if}
-					{#if $data.networkPolicy.outbound.rules.length > 0}
-						<BodyShort size="small" textColor="subtle">Workloads</BodyShort>
-						<ul>
-							{#each $data.networkPolicy.outbound.rules as rule (rule)}
-								<li>
-									{@render networkPolicyRule(rule)}
-								</li>
-							{/each}
-						</ul>
-					{/if}
-				{:else}
-					<BodyShort size="small" textColor="subtle">No outbound policies configured.</BodyShort>
-				{/if}
-			</div>
-		</div>
-	</SurfaceCard>
-{:else}
-	<SurfaceCard title="Network policy">
+					<span class="target">
+						{#if entry.kind === 'external' && entry.external}
+							<IconLabel
+								label={entry.external.ports.length > 0
+									? `${entry.external.target}:${entry.external.ports.join(', ')}`
+									: entry.external.target}
+								icon={GlobeIcon}
+							/>
+						{:else if entry.rule}
+							{@render workloadRule(entry.rule)}
+						{/if}
+					</span>
+
+					<span class="status">
+						{#if entry.kind === 'external'}
+							<Pill variant="neutral">External</Pill>
+						{:else if entry.rule?.mutual}
+							<Pill variant="success">Mutual</Pill>
+						{:else if entry.rule}
+							<TooltipAlignHack
+								content={entry.direction === 'inbound'
+									? `${entry.rule.targetWorkloadName} is missing outbound policy to ${$data.name}`
+									: `${entry.rule.targetWorkloadName} is missing inbound policy from ${$data.name}`}
+							>
+								<Pill variant="warning">One-way</Pill>
+							</TooltipAlignHack>
+						{/if}
+					</span>
+				</li>
+			{/each}
+		</ul>
+	{:else}
 		<BodyShort size="small" textColor="subtle">No network policies configured.</BodyShort>
-	</SurfaceCard>
-{/if}
+	{/if}
+</SurfaceCard>
 
 <style>
-	.grid {
-		display: grid;
-		grid-template-columns: 1fr 1fr;
-		gap: var(--ax-space-24);
-		min-width: 0;
-	}
-
-	.direction {
-		display: flex;
-		flex-direction: column;
-		gap: var(--ax-space-8);
-		min-width: 0;
-	}
-
-	ul {
+	.rules {
 		list-style: none;
 		margin: 0;
 		padding: 0;
 		display: flex;
 		flex-direction: column;
-		gap: var(--ax-space-4);
-		min-width: 0;
+	}
+
+	.rule {
+		display: flex;
+		align-items: center;
+		gap: var(--ax-space-12);
+		padding: var(--ax-space-6) 0;
+		border-bottom: 1px solid var(--ax-border-neutral-subtleA);
 		font-size: var(--ax-font-size-small);
-	}
-
-	li {
 		min-width: 0;
 	}
 
-	li :global(*) {
+	.rule:last-child {
+		border-bottom: none;
+	}
+
+	.direction {
+		display: flex;
+		align-items: center;
+		gap: var(--ax-space-2);
+		color: var(--ax-text-neutral-subtle);
+		font-size: var(--ax-font-size-small);
+		flex-shrink: 0;
+		width: 3.5rem;
+	}
+
+	.direction.inbound {
+		color: var(--ax-text-accent);
+	}
+
+	.direction-label {
+		font-weight: var(--ax-font-weight-bold);
+	}
+
+	.target {
+		flex: 1;
 		min-width: 0;
 	}
 
-	.empty {
+	.target :global(.icon-label) {
+		font-size: 1.25rem;
+	}
+
+	.target :global(*) {
+		min-width: 0;
+	}
+
+	.status {
+		flex-shrink: 0;
+		margin-left: auto;
+	}
+
+	.wildcard {
 		color: var(--ax-text-neutral-subtle);
 	}
 
 	@media (max-width: 767px), (max-height: 500px) {
-		.grid {
-			grid-template-columns: 1fr;
-			gap: var(--ax-space-16);
+		.status {
+			display: none;
 		}
 	}
 </style>
