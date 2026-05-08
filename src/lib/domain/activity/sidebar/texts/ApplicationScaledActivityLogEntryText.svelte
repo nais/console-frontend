@@ -14,7 +14,7 @@
 </script>
 
 <div>
-	Workload
+	Application
 	{#if data.environmentName}
 		<a
 			href={activityLogResourceLink(
