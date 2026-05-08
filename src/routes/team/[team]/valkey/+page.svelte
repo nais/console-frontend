@@ -13,6 +13,7 @@
 	import PageModal, { pageModalClick } from '$lib/ui/PageModal.svelte';
 	import Pagination from '$lib/ui/Pagination.svelte';
 	import RunningIndicator from '$lib/ui/RunningIndicator.svelte';
+	import SurfaceCard from '$lib/ui/SurfaceCard.svelte';
 	import TooltipAlignHack from '$lib/ui/TooltipAlignHack.svelte';
 	import { countIssuesBySeverity } from '$lib/utils/issueCounts';
 	import { changeParams } from '$lib/utils/searchparams';
@@ -174,7 +175,7 @@
 			<div class="right-column">
 				{#if cost()}
 					{@const costData = cost()!}
-					<div>
+					<SurfaceCard title="Cost">
 						<PersistenceCost
 							pageName={costData.pageName}
 							costData={costData.costData}
@@ -183,7 +184,7 @@
 							to={endOfYesterday()}
 							service="Valkey"
 						/>
-					</div>
+					</SurfaceCard>
 				{/if}
 			</div>
 		</div>

@@ -6,6 +6,7 @@
 	import { OrderDirection, SqlInstanceOrderField } from '$houdini';
 	import { docURL } from '$lib/doc';
 	import PersistenceCost from '$lib/domain/cost/PersistenceCost.svelte';
+	import SurfaceCard from '$lib/ui/SurfaceCard.svelte';
 	import IssueSeverityTags from '$lib/domain/issues/IssueSeverityTags.svelte';
 	import { envTagVariant } from '$lib/envTagVariant';
 	import ExternalLink from '$lib/ui/ExternalLink.svelte';
@@ -57,47 +58,45 @@
 				{/snippet}
 				{#each si.nodes as instance (instance.id)}
 					<ListItem>
-						<div>
-							<IconLabel
-								as="h4"
-								href="/team/{instance.team.slug}/{instance.teamEnvironment.environment
-									.name}/cloudsql/{instance.name}"
-								size="large"
-								label={instance.name}
-								tag={{
-									label: instance.teamEnvironment.environment.name,
-									variant: envTagVariant(instance.teamEnvironment.environment.name)
-								}}
-							>
-								{#snippet icon()}
-									<TooltipAlignHack
-										content={{
-											FAILED: 'FAILED',
-											MAINTENANCE: 'MAINTENANCE',
-											PENDING_CREATE: 'PENDING_CREATE',
-											PENDING_DELETE: 'PENDING_DELETE',
-											RUNNABLE: 'RUNNABLE',
-											SUSPENDED: 'SUSPENDED',
-											UNSPECIFIED: 'UNSPECIFIED',
-											STOPPED: 'STOPPED'
-										}[instance.state] ?? ''}
-									>
-										<CircleFillIcon
-											style="color: var({{
-												RUNNABLE: '--ax-bg-success-strong',
-												FAILED: '--ax-bg-danger-strong',
-												MAINTENANCE: '--ax-bg-warning-moderate-pressed',
-												PENDING_CREATE: '--ax-bg-info-strong',
-												PENDING_DELETE: '--ax-bg-info-strong',
-												SUSPENDED: '--ax-bg-info-strong',
-												UNSPECIFIED: '--ax-bg-info-strong',
-												STOPPED: '--ax-bg-info-strong'
-											}[instance.state] ?? '--ax-bg-info-strong'}); font-size: 0.7rem"
-										/>
-									</TooltipAlignHack>
-								{/snippet}
-							</IconLabel>
-						</div>
+						<IconLabel
+							as="h4"
+							href="/team/{instance.team.slug}/{instance.teamEnvironment.environment
+								.name}/cloudsql/{instance.name}"
+							size="large"
+							label={instance.name}
+							tag={{
+								label: instance.teamEnvironment.environment.name,
+								variant: envTagVariant(instance.teamEnvironment.environment.name)
+							}}
+						>
+							{#snippet icon()}
+								<TooltipAlignHack
+									content={{
+										FAILED: 'FAILED',
+										MAINTENANCE: 'MAINTENANCE',
+										PENDING_CREATE: 'PENDING_CREATE',
+										PENDING_DELETE: 'PENDING_DELETE',
+										RUNNABLE: 'RUNNABLE',
+										SUSPENDED: 'SUSPENDED',
+										UNSPECIFIED: 'UNSPECIFIED',
+										STOPPED: 'STOPPED'
+									}[instance.state] ?? ''}
+								>
+									<CircleFillIcon
+										style="color: var({{
+											RUNNABLE: '--ax-bg-success-strong',
+											FAILED: '--ax-bg-danger-strong',
+											MAINTENANCE: '--ax-bg-warning-moderate-pressed',
+											PENDING_CREATE: '--ax-bg-info-strong',
+											PENDING_DELETE: '--ax-bg-info-strong',
+											SUSPENDED: '--ax-bg-info-strong',
+											UNSPECIFIED: '--ax-bg-info-strong',
+											STOPPED: '--ax-bg-info-strong'
+										}[instance.state] ?? '--ax-bg-info-strong'}); font-size: 0.7rem"
+									/>
+								</TooltipAlignHack>
+							{/snippet}
+						</IconLabel>
 
 						<div class="right">
 							{#if instance.workload}
@@ -135,7 +134,7 @@
 		</div>
 		<div class="right-column">
 			{#if cost}
-				<div>
+				<SurfaceCard title="Cost">
 					<PersistenceCost
 						pageName="SQL Instances"
 						teamSlug={$SqlInstances.data.team.slug}
@@ -144,7 +143,7 @@
 						to={endOfYesterday()}
 						service="Cloud SQL"
 					/>
-				</div>
+				</SurfaceCard>
 			{/if}
 		</div>
 	</div>

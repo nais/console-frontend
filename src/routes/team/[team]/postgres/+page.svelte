@@ -67,37 +67,35 @@
 				{/snippet}
 				{#each si.nodes as instance (instance.id)}
 					<ListItem>
-						<div>
-							<IconLabel
-								as="h4"
-								href="/team/{instance.team.slug}/{instance.teamEnvironment.environment
-									.name}/postgres/{instance.name}"
-								size="large"
-								label={instance.name}
-								tag={{
-									label: instance.teamEnvironment.environment.name,
-									variant: envTagVariant(instance.teamEnvironment.environment.name)
-								}}
-							>
-								{#snippet icon()}
-									<TooltipAlignHack
-										content={{
-											DEGRADED: 'DEGRADED',
-											PROGRESSING: 'PROGRESSING',
-											AVAILABLE: 'AVAILABLE'
-										}[instance.state] ?? ''}
-									>
-										<CircleFillIcon
-											style="color: var({{
-												AVAILABLE: '--ax-bg-success-strong',
-												DEGRADED: '--ax-bg-danger-strong',
-												PROGRESSING: '--ax-bg-warning-moderate-pressed'
-											}[instance.state] ?? '--ax-bg-info-strong'}); font-size: 0.7rem"
-										/>
-									</TooltipAlignHack>
-								{/snippet}
-							</IconLabel>
-						</div>
+						<IconLabel
+							as="h4"
+							href="/team/{instance.team.slug}/{instance.teamEnvironment.environment
+								.name}/postgres/{instance.name}"
+							size="large"
+							label={instance.name}
+							tag={{
+								label: instance.teamEnvironment.environment.name,
+								variant: envTagVariant(instance.teamEnvironment.environment.name)
+							}}
+						>
+							{#snippet icon()}
+								<TooltipAlignHack
+									content={{
+										DEGRADED: 'DEGRADED',
+										PROGRESSING: 'PROGRESSING',
+										AVAILABLE: 'AVAILABLE'
+									}[instance.state] ?? ''}
+								>
+									<CircleFillIcon
+										style="color: var({{
+											AVAILABLE: '--ax-bg-success-strong',
+											DEGRADED: '--ax-bg-danger-strong',
+											PROGRESSING: '--ax-bg-warning-moderate-pressed'
+										}[instance.state] ?? '--ax-bg-info-strong'}); font-size: 0.7rem"
+									/>
+								</TooltipAlignHack>
+							{/snippet}
+						</IconLabel>
 
 						<div class="right">
 							<div>Version: <code>{instance.majorVersion}</code></div>

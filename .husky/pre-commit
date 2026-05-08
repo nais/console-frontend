@@ -1,2 +1,2 @@
 #!/bin/bash
-eval "$(mise activate bash --shims)" && npx lint-staged
+eval "$(mise activate bash --shims)" && npx houdini generate && npx lint-staged

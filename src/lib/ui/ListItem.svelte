@@ -1,15 +1,19 @@
 <script lang="ts">
 	import type { Snippet } from 'svelte';
 
-	const { children, href }: { children: Snippet; href?: string } = $props();
+	const {
+		children,
+		href,
+		interactive = false
+	}: { children: Snippet; href?: string; interactive?: boolean } = $props();
 </script>
 
 {#if href}
-	<a {href} class="list-item">
+	<a {href} class="list-item" class:surface-interactive={interactive}>
 		{@render children()}
 	</a>
 {:else}
-	<div class="list-item">
+	<div class="list-item" class:surface-interactive={interactive}>
 		{@render children()}
 	</div>
 {/if}
@@ -44,7 +48,7 @@
 		}
 	}
 
-	a.list-item:hover {
+	a.list-item:not(:global(.surface-interactive)):hover {
 		background: linear-gradient(
 			180deg,
 			var(--ax-neutral-100) 0%,
