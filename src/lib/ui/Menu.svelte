@@ -21,7 +21,7 @@
 		{/if}
 		<div class="list">
 			{#each group as { label: text, href, active } (href)}
-				<a {href} class:active onclick={onItemSelect}>
+				<a {href} class:active aria-current={active ? 'page' : undefined} onclick={onItemSelect}>
 					<span class="icon-box"><Icon icon={text} /></span>
 					<span class="label">{text}</span>
 				</a>
