@@ -9,10 +9,10 @@
 	let { actor, createdAt }: Props = $props();
 </script>
 
-<p class="meta">
+<small class="meta">
 	{actor}
 	<Time time={createdAt} distance />
-</p>
+</small>
 
 <style>
 	.meta {

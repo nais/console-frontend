@@ -54,18 +54,22 @@
 	<SurfaceCard title="Configs">
 		<Loader />
 	</SurfaceCard>
-{:else if $configs.data && $configs.data.team.environment.workload.configs.edges.length > 0}
+{:else if $configs.data}
 	<SurfaceCard title="Configs">
-		<div class="list">
-			{#each $configs.data.team.environment.workload.configs.edges as config (config.node.id)}
-				<IconLabel
-					label={config.node.name}
-					icon={FileTextIcon}
-					href="/team/{$configs.data.team.slug}/{$configs.data.team.environment.environment
-						.name}/config/{config.node.name}"
-				/>
-			{/each}
-		</div>
+		{#if $configs.data.team.environment.workload.configs.edges.length > 0}
+			<div class="list">
+				{#each $configs.data.team.environment.workload.configs.edges as config (config.node.id)}
+					<IconLabel
+						label={config.node.name}
+						icon={FileTextIcon}
+						href="/team/{$configs.data.team.slug}/{$configs.data.team.environment.environment
+							.name}/config/{config.node.name}"
+					/>
+				{/each}
+			</div>
+		{:else}
+			<p>No configs referenced in nais.yaml.</p>
+		{/if}
 	</SurfaceCard>
 {/if}
 
