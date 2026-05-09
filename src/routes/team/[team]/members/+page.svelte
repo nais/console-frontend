@@ -90,7 +90,7 @@
 				{/snippet}
 				{#if $Members.data?.team.members.edges}
 					{#each $Members.data?.team.members.edges as edge (edge.node.user.id + edge.node.role)}
-						<ListItem>
+						<ListItem interactive>
 							<div class="item">
 								<div>
 									<BodyShort size="small">

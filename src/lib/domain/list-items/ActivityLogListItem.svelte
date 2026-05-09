@@ -429,7 +429,7 @@
 	const TextComponent = $derived(textComponent($data.__typename));
 </script>
 
-<ListItem>
+<ListItem interactive>
 	<div class="activity-log-list-item">
 		<Tooltip content={activityTooltip($data.__typename)}>
 			<div class="activity-icon">
