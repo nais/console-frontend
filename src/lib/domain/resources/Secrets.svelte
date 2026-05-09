@@ -54,22 +54,18 @@
 	<SurfaceCard title="Secrets">
 		<Loader />
 	</SurfaceCard>
-{:else if $secrets.data}
+{:else if $secrets.data && $secrets.data.team.environment.workload.secrets.edges.length > 0}
 	<SurfaceCard title="Secrets">
-		{#if $secrets.data.team.environment.workload.secrets.edges.length > 0}
-			<div class="list">
-				{#each $secrets.data.team.environment.workload.secrets.edges as secret (secret.node.id)}
-					<IconLabel
-						label={secret.node.name}
-						icon={PadlockLockedIcon}
-						href="/team/{$secrets.data.team.slug}/{$secrets.data.team.environment.environment
-							.name}/secret/{secret.node.name}"
-					/>
-				{/each}
-			</div>
-		{:else}
-			<p>No secrets referenced in nais.yaml.</p>
-		{/if}
+		<div class="list">
+			{#each $secrets.data.team.environment.workload.secrets.edges as secret (secret.node.id)}
+				<IconLabel
+					label={secret.node.name}
+					icon={PadlockLockedIcon}
+					href="/team/{$secrets.data.team.slug}/{$secrets.data.team.environment.environment
+						.name}/secret/{secret.node.name}"
+				/>
+			{/each}
+		</div>
 	</SurfaceCard>
 {/if}
 
