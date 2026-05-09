@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { fragment, graphql, type IssueFragment, type IssueFragment$data } from '$houdini';
+	import ApplicationRestartLoopIssue from '$lib/domain/issues/ApplicationRestartLoopIssue.svelte';
 	import DefaultIssue from '$lib/domain/issues/DefaultIssue.svelte';
 	import DeprecatedIngressIssue from '$lib/domain/issues/DeprecatedIngressIssue.svelte';
 	import DeprecatedRegistryIssue from '$lib/domain/issues/DeprecatedRegistryIssue.svelte';
@@ -7,7 +8,6 @@
 	import FailedSynchronizationIssue from '$lib/domain/issues/FailedSynchronizationIssue.svelte';
 	import InvalidSpecIssue from '$lib/domain/issues/InvalidSpecIssue.svelte';
 	import LastRunFailedIssue from '$lib/domain/issues/LastRunFailedIssue.svelte';
-	import ApplicationRestartLoopIssue from '$lib/domain/issues/ApplicationRestartLoopIssue.svelte';
 	import NoRunningInstancesIssue from '$lib/domain/issues/NoRunningInstancesIssue.svelte';
 	import OpenSearchIssue from '$lib/domain/issues/OpenSearchIssue.svelte';
 	import SqlInstanceStateIssue from '$lib/domain/issues/SqlInstanceStateIssue.svelte';
