@@ -32,7 +32,7 @@
 	.card {
 		display: flex;
 		flex-direction: column;
-		gap: var(--ax-space-16);
+		gap: var(--ax-space-12);
 		padding: var(--ax-space-16);
 		border-radius: var(--ax-radius-8);
 		background: var(--surface-elevated-background);
