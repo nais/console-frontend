@@ -90,6 +90,7 @@
 					.sort((a, b) => b.sum - a.sum)
 					.slice(0, 10)
 			}))
+			.filter((env) => env.series.length > 0)
 			.toReversed() ?? []
 	);
 </script>
@@ -122,41 +123,37 @@
 				</div>
 			</div>
 
-			{#if env.series.length > 0}
-				<div class="mt-5 mb-12">
-					<LegendWrapper height="500px">
-						<LineChart
-							padding={{ left: 40 }}
-							legend={legendSnippet}
-							series={env.series.map((item, i) => {
-								return {
-									key: item.name!,
-									color: visualizationColors[i % visualizationColors.length],
-									data: item.data.map(([date, value]) => ({
-										date: new Date(date as number),
-										value
-									}))
-								};
-							})}
-							x="date"
-							y="value"
-							props={{
-								spline: {
-									class: 'stroke-2'
-								},
-								yAxis: {
-									format: euroAxisFormatter
-								},
-								xAxis: {
-									format: 'day'
-								}
-							}}
-						/>
-					</LegendWrapper>
-				</div>
-			{:else}
-				<BodyLong>No application cost data available</BodyLong>
-			{/if}
+			<div class="mt-5 mb-12">
+				<LegendWrapper height="500px">
+					<LineChart
+						padding={{ left: 40 }}
+						legend={legendSnippet}
+						series={env.series.map((item, i) => {
+							return {
+								key: item.name!,
+								color: visualizationColors[i % visualizationColors.length],
+								data: item.data.map(([date, value]) => ({
+									date: new Date(date as number),
+									value
+								}))
+							};
+						})}
+						x="date"
+						y="value"
+						props={{
+							spline: {
+								class: 'stroke-2'
+							},
+							yAxis: {
+								format: euroAxisFormatter
+							},
+							xAxis: {
+								format: 'day'
+							}
+						}}
+					/>
+				</LegendWrapper>
+			</div>
 		{/each}
 	{/if}
 </div>
