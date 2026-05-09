@@ -174,7 +174,7 @@
 	}
 </script>
 
-<ListItem>
+<ListItem interactive>
 	{@const IssueComponent = issueComponent($data.__typename)}
 	<IssueComponent data={$data} />
 </ListItem>

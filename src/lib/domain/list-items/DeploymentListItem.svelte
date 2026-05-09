@@ -39,7 +39,7 @@
 	} = $props();
 </script>
 
-<ListItem>
+<ListItem interactive>
 	<div>
 		<BodyShort size="small" as="div">
 			{#if deployment.commitSha && isValidSha(deployment.commitSha) && deployment.deployerUsername}
