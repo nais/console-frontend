@@ -95,7 +95,7 @@
 	}
 
 	@media (max-width: 767px) {
-		.activity-item::before {
+		.activity-item:not(:last-child)::before {
 			display: none;
 		}
 	}
