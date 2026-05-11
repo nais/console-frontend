@@ -62,6 +62,8 @@
 		});
 	};
 
+	// TODO: Replace client-side state filtering with server-side filtering once
+	// nais/api#429 adds `states` to TeamApplicationsFilter.
 	const stateQuery = graphql(`
 		query ApplicationStateOverviewV2($team: Slug!) @cache(policy: CacheAndNetwork) {
 			team(slug: $team) {
@@ -166,7 +168,12 @@
 					/>
 				{/snippet}
 				{#each apps?.nodes ?? [] as app (app.id)}
-					<AppListItem {app} />
+					{@const stateKey =
+						{ RUNNING: 'running', NOT_RUNNING: 'not-running', UNKNOWN: 'unknown' }[app.state] ??
+						'unknown'}
+					{#if activeStatuses.includes(stateKey)}
+						<AppListItem {app} />
+					{/if}
 				{/each}
 			</ListV2>
 			<Pagination
