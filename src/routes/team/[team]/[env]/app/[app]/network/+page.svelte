@@ -77,7 +77,7 @@
 		{@const ingresses = app.ingresses}
 
 		{#if ingresses.length > 0}
-			<SurfaceCard title="Ingresses" reverseGradient>
+			<SurfaceCard title="Ingresses">
 				<Accordion size="small" indent={false}>
 					{#each ingresses as ingress (ingress.url)}
 						<AccordionItem
@@ -155,7 +155,7 @@
 				</Accordion>
 			</SurfaceCard>
 		{:else}
-			<SurfaceCard title="Ingresses" reverseGradient>
+			<SurfaceCard title="Ingresses">
 				<BodyShort size="small" textColor="subtle">No ingresses configured.</BodyShort>
 			</SurfaceCard>
 		{/if}

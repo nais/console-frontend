@@ -5,13 +5,12 @@
 		title?: string;
 		children: Snippet;
 		headerAside?: Snippet;
-		reverseGradient?: boolean;
 	}
 
-	let { title, children, headerAside, reverseGradient = false }: Props = $props();
+	let { title, children, headerAside }: Props = $props();
 </script>
 
-<div class="card" class:reverse={reverseGradient}>
+<div class="card">
 	{#if title || headerAside}
 		<div class="header">
 			{#if title}
@@ -34,15 +33,11 @@
 		flex-direction: column;
 		gap: var(--ax-space-12);
 		padding: var(--ax-space-16);
-		border-radius: var(--ax-radius-8);
-		background: var(--surface-elevated-background);
-		box-shadow: var(--surface-elevated-shadow);
+		/* border-radius: var(--ax-radius-8); */
+		/* background: var(--surface-elevated-background); */
+		/* box-shadow: var(--surface-elevated-shadow); */
 		width: 100%;
 		min-width: 0;
-	}
-
-	.card.reverse {
-		background: var(--surface-elevated-background-reverse, var(--surface-elevated-background));
 	}
 
 	.header {

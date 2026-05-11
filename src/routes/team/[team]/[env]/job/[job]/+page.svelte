@@ -180,7 +180,7 @@
 					</Alert>
 				{/if}
 				{#if criticalEdges.length > 0}
-					<SurfaceCard title="Critical issues ({criticalEdges.length})" reverseGradient>
+					<SurfaceCard title="Critical issues ({criticalEdges.length})">
 						{#snippet headerAside()}
 							<a
 								class="view-all"
@@ -207,7 +207,7 @@
 					{succeededRuns}
 					loading={$Job.fetching}
 				/>
-				<SurfaceCard title="Runs" reverseGradient>
+				<SurfaceCard title="Runs">
 					<Schedule
 						schedule={job.schedule}
 						scheduleContext={{

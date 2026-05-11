@@ -78,7 +78,7 @@
 	let dataLoading = $derived(loading || $vulnQuery.fetching || $costQuery.fetching);
 </script>
 
-<SurfaceCard title="Team health" reverseGradient>
+<SurfaceCard title="Team health">
 	{#if dataLoading}
 		<div class="loading">
 			<Loader size="xlarge" />
