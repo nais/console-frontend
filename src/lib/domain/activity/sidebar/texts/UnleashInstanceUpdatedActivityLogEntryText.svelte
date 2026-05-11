@@ -1,7 +1,7 @@
 <script lang="ts">
+	import type { SidebarActivityLogFragment$data } from '$houdini';
 	import { BodyLong } from '@nais/ds-svelte-community';
 	import Meta from '../../Meta.svelte';
-	import type { SidebarActivityLogFragment$data } from '$houdini';
 
 	let {
 		data
@@ -15,7 +15,7 @@
 
 <div>
 	<BodyLong size="small">
-		Updated Unleash instance <strong>{data.resourceName}</strong>.
+		Updated Unleash instance <a href="/team/{data.teamSlug}/unleash">{data.resourceName}</a>.
 		{#if data.unleashInstanceUpdatedData.allowedTeamSlug}
 			Allowed <a href="/team/{data.unleashInstanceUpdatedData.allowedTeamSlug}"
 				>{data.unleashInstanceUpdatedData.allowedTeamSlug}</a

@@ -16,7 +16,7 @@
 <div>
 	<BodyLong size="small">
 		Added workload <strong>{data.workloadBindingAddedData.workloadName}</strong> to service account
-		<strong>{data.resourceName}</strong>.
+		<a href="/team/{data.teamSlug}/settings/service_accounts">{data.resourceName}</a>.
 	</BodyLong>
 	<Meta actor={data.actor} createdAt={data.createdAt} />
 </div>

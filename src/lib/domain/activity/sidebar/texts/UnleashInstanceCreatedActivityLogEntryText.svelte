@@ -15,7 +15,7 @@
 
 <div>
 	<BodyLong size="small">
-		Unleash instance <strong>{data.resourceName}</strong> created.
+		Unleash instance <a href="/team/{data.teamSlug}/unleash">{data.resourceName}</a> created.
 	</BodyLong>
 	<Meta actor={data.actor} createdAt={data.createdAt} />
 </div>

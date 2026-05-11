@@ -1,7 +1,9 @@
 <script lang="ts">
+	import type { SidebarActivityLogFragment$data } from '$houdini';
 	import { BodyLong } from '@nais/ds-svelte-community';
 	import Meta from '../../Meta.svelte';
-	import type { SidebarActivityLogFragment$data } from '$houdini';
+
+	import { activityLogResourceLink } from '../../utils';
 
 	let {
 		data
@@ -16,7 +18,18 @@
 <div>
 	<BodyLong size="small">
 		Value <strong>{data.secretValueRemovedData.valueName}</strong> removed from secret
-		<strong>{data.resourceName}</strong>
+		{#if data.environmentName}
+			<a
+				href={activityLogResourceLink(
+					data.environmentName,
+					data.resourceType,
+					data.resourceName,
+					data.teamSlug
+				)}>{data.resourceName}</a
+			>
+		{:else}
+			{data.resourceName}
+		{/if}
 		{#if data.environmentName}
 			in {data.environmentName}
 		{/if}.
