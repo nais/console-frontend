@@ -33,6 +33,16 @@
 
 	let filteredEnvs = $derived(page.url.searchParams.get('environments')?.split(',') ?? allEnvs);
 
+	const allStates = ['running', 'completed', 'failed', 'unknown'];
+	let activeStatuses = $derived(page.url.searchParams.get('states')?.split(',') ?? allStates);
+
+	let states = $derived({
+		running: $JobsListMetadata.data?.team.inventoryCounts?.jobs?.running ?? 0,
+		completed: $JobsListMetadata.data?.team.inventoryCounts?.jobs?.completed ?? 0,
+		failed: $JobsListMetadata.data?.team.inventoryCounts?.jobs?.failed ?? 0,
+		unknown: $JobsListMetadata.data?.team.inventoryCounts?.jobs?.unknown ?? 0
+	});
+
 	$effect(() => {
 		const environments = filteredEnvs.length === allEnvs.length ? '' : filteredEnvs.join(',');
 
@@ -47,49 +57,21 @@
 			before?: string;
 			newFilter?: string;
 			environments?: string;
+			states?: string;
 		} = {}
 	) => {
 		const currentEnvironments =
 			filteredEnvs.length === allEnvs.length ? '' : filteredEnvs.join(',');
+		const currentStates =
+			activeStatuses.length === allStates.length ? '' : activeStatuses.join(',');
 		changeParams({
 			before: params.before ?? before,
 			after: params.after ?? after,
 			filter: params.newFilter ?? filter,
-			environments: params.environments ?? currentEnvironments
+			environments: params.environments ?? currentEnvironments,
+			states: params.states ?? currentStates
 		});
 	};
-
-	// TODO: Replace client-side state filtering with server-side filtering once
-	// nais/api#429 adds `states` to TeamJobsFilter.
-	const stateQuery = graphql(`
-		query JobStateOverviewV2($team: Slug!) @cache(policy: CacheAndNetwork) {
-			team(slug: $team) {
-				jobs(first: 500) {
-					nodes {
-						state
-					}
-					pageInfo {
-						totalCount
-					}
-				}
-			}
-		}
-	`);
-
-	$effect(() => {
-		stateQuery.fetch({ variables: { team: teamSlug } });
-	});
-
-	let states = $derived.by(() => {
-		const nodes = $stateQuery.data?.team?.jobs?.nodes ?? [];
-		const running = nodes.filter((n) => n.state === 'RUNNING').length;
-		const completed = nodes.filter((n) => n.state === 'COMPLETED').length;
-		const failed = nodes.filter((n) => n.state === 'FAILED').length;
-		const unknown = nodes.filter((n) => n.state === 'UNKNOWN').length;
-		return { running, completed, failed, unknown };
-	});
-
-	let activeStatuses = $state<string[]>(['running', 'completed', 'failed', 'unknown']);
 
 	const scheduledJobsQuery = graphql(`
 		query JobQueueScheduled($team: Slug!) @cache(policy: CacheAndNetwork) {
@@ -167,7 +149,10 @@
 						failed={states.failed}
 						unknown={states.unknown}
 						{activeStatuses}
-						onchange={(s) => (activeStatuses = s)}
+						onchange={(s) => {
+							const statesValue = s.length === allStates.length ? '' : s.join(',');
+							changeQuery({ states: statesValue, after: '', before: '' });
+						}}
 					/>
 				{/snippet}
 				{#snippet menu()}
@@ -212,13 +197,7 @@
 					/>
 				{/snippet}
 				{#each jobs?.nodes ?? [] as job (job.id)}
-					{@const stateKey =
-						{ RUNNING: 'running', COMPLETED: 'completed', FAILED: 'failed', UNKNOWN: 'unknown' }[
-							job.state
-						] ?? 'unknown'}
-					{#if activeStatuses.includes(stateKey)}
-						<JobListItem {job} />
-					{/if}
+					<JobListItem {job} />
 				{/each}
 			</ListV2>
 			<Pagination
