@@ -63,7 +63,7 @@ export async function addPageMeta<
 		meta: {
 			...parentData.meta,
 			...(title ? { title } : {}),
-			...(pageHeaderTitle ? { pageHeaderTitle } : {}),
+			...(pageHeaderTitle !== undefined ? { pageHeaderTitle } : {}),
 			...(breadcrumbs
 				? { breadcrumbs: [...(parentData.meta?.breadcrumbs ?? []), ...breadcrumbs] }
 				: {}),

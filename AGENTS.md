@@ -120,9 +120,10 @@ Generates Svelte Playground link. Ask user first, and NEVER if code was written 
 2. **Never invent** CSS variable names like `--ax-font-family-mono`, `--ax-color-*`, etc.
 3. **For font-family**: Use `font-family: monospace` directly (not a CSS variable)
 4. **For spacing**: Use the predefined spacing scale, not arbitrary values
-5. **Run validation**: The project’s ESLint configuration includes project checks for missing CSS variables and unused GraphQL files
-6. **When in doubt**: Search existing `.svelte` and `.css` files for similar patterns before creating new styles
-7. **Lists are non-exhaustive**: The design system has more tokens than listed here; use the ESLint checks to confirm
+5. **For text color**: Prefer `--ax-text-neutral` as the default text color. Only use `--ax-text-subtle` when explicitly asked for subdued/secondary text
+6. **Run validation**: The project's ESLint configuration includes project checks for missing CSS variables and unused GraphQL files
+7. **When in doubt**: Search existing `.svelte` and `.css` files for similar patterns before creating new styles
+8. **Lists are non-exhaustive**: The design system has more tokens than listed here; use the ESLint checks to confirm
 
 ---
 

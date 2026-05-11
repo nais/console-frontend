@@ -19,7 +19,7 @@ export async function load(event) {
 	const before = event.url.searchParams.get('before') || '';
 
 	return {
-		...(await addPageMeta(event, { title: 'Applications' })),
+		...(await addPageMeta(event, { title: 'Applications', pageHeaderTitle: '' })),
 		...(await load_Applications({
 			event,
 			variables: {

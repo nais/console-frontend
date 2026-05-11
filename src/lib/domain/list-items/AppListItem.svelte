@@ -1,14 +1,12 @@
 <script lang="ts">
 	import IssuePills from '$lib/domain/issues/IssuePills.svelte';
 	import { envTagVariant } from '$lib/envTagVariant';
-	import IconLabel from '$lib/ui/IconLabel.svelte';
-	import ListItem from '$lib/ui/ListItem.svelte';
+	import ListItemV2 from '$lib/ui/ListItemV2.svelte';
 	import RunningIndicator from '$lib/ui/RunningIndicator.svelte';
 	import Time from '$lib/ui/Time.svelte';
-	import TooltipAlignHack from '$lib/ui/TooltipAlignHack.svelte';
 	import { countIssuesBySeverity } from '$lib/utils/issueCounts';
-	import { Detail, Tooltip } from '@nais/ds-svelte-community';
-	import { CircleFillIcon, RocketIcon } from '@nais/ds-svelte-community/icons';
+	import { Tag, Tooltip } from '@nais/ds-svelte-community';
+	import { RocketIcon } from '@nais/ds-svelte-community/icons';
 	import { format } from 'date-fns';
 	import { enGB } from 'date-fns/locale';
 
@@ -34,172 +32,179 @@
 			};
 		};
 	} = $props();
+
+	const appHref = $derived(
+		`/team/${app.team.slug}/${app.teamEnvironment.environment.name}/app/${app.name}`
+	);
+
+	const statusTooltip = $derived(
+		{
+			RUNNING: 'Application is running',
+			NOT_RUNNING: 'Application is not running',
+			UNKNOWN: 'Unknown status'
+		}[app.state] ?? ''
+	);
+
+	const runningInstances = $derived(
+		app.instances.edges.filter((s) => s.node.status.state === 'RUNNING').length
+	);
 </script>
 
-<ListItem interactive>
+<ListItemV2 interactive>
 	<div class="app-row">
-		<div class="primary">
-			<IconLabel
-				href="/team/{app.team.slug}/{app.teamEnvironment.environment.name}/app/{app.name}"
-				size="medium"
-				label={app.name}
-				tag={{
-					label: app.teamEnvironment.environment.name,
-					variant: envTagVariant(app.teamEnvironment.environment.name)
-				}}
-				tagSize="xsmall"
+		<div class="name-group">
+			<Tooltip content={statusTooltip}>
+				{#if app.state === 'RUNNING'}
+					<span class="status-indicator">
+						<RunningIndicator />
+					</span>
+				{:else}
+					<span
+						class="status-dot"
+						class:not-running={app.state === 'NOT_RUNNING'}
+						class:unknown={app.state !== 'NOT_RUNNING'}
+					></span>
+				{/if}
+			</Tooltip>
+			<a href={appHref} class="app-name">{app.name}</a>
+			<Tag size="xsmall" variant={envTagVariant(app.teamEnvironment.environment.name)}
+				>{app.teamEnvironment.environment.name}</Tag
 			>
-				{#snippet icon()}
-					<TooltipAlignHack
-						content={{
-							RUNNING: 'Application is running',
-							NOT_RUNNING: 'Application is not running',
-							UNKNOWN: 'Unkown status'
-						}[app.state] ?? ''}
-					>
-						{#if app.state === 'RUNNING'}
-							<RunningIndicator />
-						{:else if app.state === 'NOT_RUNNING'}
-							<CircleFillIcon
-								style="width: 24px; color: var(--ax-bg-danger-strong); font-size: 11.5px"
-							/>
-						{:else}
-							<CircleFillIcon
-								style="width: 24px; color: var(--ax-text-neutral-decoration); font-size: 11.5px"
-							/>
-						{/if}
-					</TooltipAlignHack>
-				{/snippet}
-			</IconLabel>
 		</div>
 
-		<div class="meta-slot issues-slot">
+		<div class="issues-cell">
 			{#if app.issues?.pageInfo.totalCount > 0}
 				{@const criticalCount = countIssuesBySeverity(app.issues.edges, 'CRITICAL')}
 				{@const warningCount = countIssuesBySeverity(app.issues.edges, 'WARNING')}
 				{@const todoCount = countIssuesBySeverity(app.issues.edges, 'TODO')}
-
-				<IssuePills
-					critical={criticalCount}
-					warning={warningCount}
-					todo={todoCount}
-					direction="column"
-				/>
+				<IssuePills critical={criticalCount} warning={warningCount} todo={todoCount} />
 			{/if}
 		</div>
 
-		<div class="right">
-			<div class="meta-slot deploy-slot">
-				{#if app.deployments.nodes.length > 0}
-					{@const timestamp = app.deployments.nodes[0].createdAt}
-					<Tooltip
-						content="Last deploy - {format(timestamp, 'PPPP', {
-							locale: enGB
-						})}"
-					>
-						<IconLabel size="small" icon={RocketIcon}>
-							{#snippet label()}
-								<Time time={timestamp} distance={true} />
-							{/snippet}
-						</IconLabel>
-					</Tooltip>
+		<div class="meta-cell">
+			{#if app.deployments.nodes.length > 0}
+				{@const timestamp = app.deployments.nodes[0].createdAt}
+				<Tooltip
+					content="Last deploy — {format(timestamp, 'PPPP', {
+						locale: enGB
+					})}"
+				>
+					<span class="meta-item">
+						<RocketIcon style="font-size: 14px" />
+						<Time time={timestamp} distance={true} />
+					</span>
+				</Tooltip>
+			{/if}
+			<span class="meta-item">
+				{#if app.instances.pageInfo.totalCount === 0}
+					No instances
+				{:else}
+					{runningInstances} / {app.instances.pageInfo.totalCount} running
 				{/if}
-			</div>
-
-			<div class="meta-slot status-slot">
-				<Detail>
-					{#if app.instances.pageInfo.totalCount === 0}
-						No instances
-					{:else}
-						{app.instances.edges.filter((s) => s.node.status.state === 'RUNNING').length} / {app
-							.instances.pageInfo.totalCount} running
-					{/if}
-				</Detail>
-			</div>
+			</span>
 		</div>
 	</div>
-</ListItem>
+</ListItemV2>
 
 <style>
 	.app-row {
 		display: grid;
-		grid-template-columns: minmax(0, 1fr) max-content 8.5rem;
+		grid-template-columns: minmax(0, 1fr) auto auto;
 		align-items: center;
-		column-gap: var(--ax-space-16);
-		min-block-size: 3rem;
+		gap: var(--ax-space-16);
 		width: 100%;
 	}
 
-	.primary {
+	.name-group {
+		display: flex;
+		align-items: center;
+		gap: var(--ax-space-8);
 		min-width: 0;
 	}
 
-	.primary :global(.icon-label) {
-		min-width: 0;
+	.name-group :global(.navds-tag) {
+		white-space: nowrap;
+		flex-shrink: 0;
 	}
 
-	.primary :global(.content) {
-		min-width: 0;
+	.status-indicator {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		flex-shrink: 0;
 	}
 
-	.primary :global(.aksel-heading),
-	.primary :global(.aksel-heading a) {
-		display: block;
-		min-width: 0;
+	.status-dot {
+		width: 10px;
+		height: 10px;
+		border-radius: 50%;
+		flex-shrink: 0;
+	}
+
+	.status-dot.not-running {
+		background-color: var(--ax-bg-danger-strong);
+	}
+
+	.status-dot.unknown {
+		background-color: var(--ax-text-neutral-decoration);
+	}
+
+	.app-name {
+		color: var(--ax-text-neutral);
+		text-decoration: none;
+		font-weight: 500;
 		white-space: nowrap;
 		overflow: hidden;
 		text-overflow: ellipsis;
+		min-width: 0;
+		flex: 1 1 0;
 	}
 
-	.right {
-		display: grid;
-		grid-template-rows: auto auto;
-		inline-size: 8.5rem;
-		justify-items: end;
-		align-items: end;
-		row-gap: var(--ax-space-2);
+	.app-name:hover {
+		text-decoration: underline;
 	}
 
-	.meta-slot {
+	.issues-cell {
 		display: flex;
 		align-items: center;
-		justify-content: flex-end;
-		min-width: 0;
+		flex-shrink: 0;
+	}
+
+	.meta-cell {
+		display: flex;
+		align-items: center;
+		gap: var(--ax-space-12);
+		color: var(--ax-text-neutral);
+		font-size: var(--ax-font-size-small);
+		flex-shrink: 0;
 		white-space: nowrap;
 	}
 
-	.deploy-slot :global(.icon-label) {
-		justify-content: flex-end;
+	.meta-item {
+		display: inline-flex;
+		align-items: center;
+		gap: var(--ax-space-4);
 	}
 
-	.deploy-slot :global(.icon-label > *),
-	.deploy-slot :global(.content) {
-		flex: 0 0 auto;
-	}
-
-	.issues-slot {
-		justify-content: flex-end;
-	}
-
-	/* Mobile responsive layout */
 	@media (max-width: 767px) {
 		.app-row {
 			grid-template-columns: 1fr;
-			align-items: start;
-			min-block-size: auto;
-			row-gap: var(--ax-space-12);
+			gap: var(--ax-space-8);
 		}
 
-		.right {
-			grid-template-columns: 1fr;
-			inline-size: auto;
-			justify-items: end;
-			row-gap: var(--ax-space-4);
-			column-gap: 0;
+		.name-group {
+			flex-wrap: wrap;
 		}
 
-		.issues-slot {
-			justify-content: flex-end;
+		.app-name {
+			flex: 1 1 0;
+			width: auto;
+			min-width: 0;
+		}
+
+		.issues-cell,
+		.meta-cell {
+			justify-content: flex-start;
 		}
 	}
 </style>
