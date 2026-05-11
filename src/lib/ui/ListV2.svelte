@@ -59,9 +59,6 @@
 	.list {
 		display: flex;
 		flex-direction: column;
-		border-radius: var(--ax-radius-8);
-		background: var(--ax-bg-default);
-		box-shadow: var(--surface-elevated-shadow);
 	}
 
 	.header {
