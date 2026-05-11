@@ -282,6 +282,62 @@
 									}
 								}
 							}
+							... on ServiceAccountCreatedActivityLogEntry {
+								id
+							}
+							... on ServiceAccountDeletedActivityLogEntry {
+								id
+							}
+							... on ServiceAccountUpdatedActivityLogEntry {
+								serviceAccountUpdatedData: data {
+									updatedFields {
+										field
+										oldValue
+										newValue
+									}
+								}
+							}
+							... on ServiceAccountTokenCreatedActivityLogEntry {
+								serviceAccountTokenCreatedData: data {
+									tokenName
+								}
+							}
+							... on ServiceAccountTokenDeletedActivityLogEntry {
+								serviceAccountTokenDeletedData: data {
+									tokenName
+								}
+							}
+							... on ServiceAccountTokenUpdatedActivityLogEntry {
+								serviceAccountTokenUpdatedData: data {
+									updatedFields {
+										field
+										oldValue
+										newValue
+									}
+								}
+							}
+							... on RoleAssignedToServiceAccountActivityLogEntry {
+								roleAssignedData: data {
+									roleName
+								}
+							}
+							... on RoleRevokedFromServiceAccountActivityLogEntry {
+								roleRevokedData: data {
+									roleName
+								}
+							}
+							... on ServiceAccountWorkloadBindingAddedActivityLogEntry {
+								workloadBindingAddedData: data {
+									workloadName
+									teamSlug
+								}
+							}
+							... on ServiceAccountWorkloadBindingRemovedActivityLogEntry {
+								workloadBindingRemovedData: data {
+									workloadName
+									teamSlug
+								}
+							}
 						}
 					}
 				}

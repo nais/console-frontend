@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { BodyLong } from '@nais/ds-svelte-community';
 	import Meta from '../../Meta.svelte';
 	import type { SidebarActivityLogFragment$data } from '$houdini';
 
@@ -21,16 +22,18 @@
 </script>
 
 <div>
-	{serviceLabel} credentials created
-	{#if data.resourceName}
-		for <strong>{data.resourceName}</strong>
-	{/if}
-	{#if data.credentialsData.permission}
-		with {data.credentialsData.permission} access
-	{/if}
-	(TTL: {data.credentialsData.ttl})
-	{#if data.environmentName}
-		in {data.environmentName}
-	{/if}
+	<BodyLong size="small">
+		{serviceLabel} credentials created
+		{#if data.resourceName}
+			for <strong>{data.resourceName}</strong>
+		{/if}
+		{#if data.credentialsData.permission}
+			with {data.credentialsData.permission} access
+		{/if}
+		(TTL: {data.credentialsData.ttl})
+		{#if data.environmentName}
+			in {data.environmentName}
+		{/if}.
+	</BodyLong>
 	<Meta actor={data.actor} createdAt={data.createdAt} />
 </div>

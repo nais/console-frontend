@@ -3,39 +3,21 @@
 	import Meta from '../../Meta.svelte';
 	import type { SidebarActivityLogFragment$data } from '$houdini';
 
-	import { activityLogResourceLink } from '../../utils';
-
 	let {
 		data
 	}: {
 		data: Extract<
 			SidebarActivityLogFragment$data['activityLog']['nodes'][number],
-			{ __typename: 'ApplicationUpdatedActivityLogEntry' }
+			{ __typename: 'ServiceAccountUpdatedActivityLogEntry' }
 		>;
 	} = $props();
 </script>
 
 <div>
 	<BodyLong size="small">
-		Application
-		{#if data.environmentName}
-			<a
-				href={activityLogResourceLink(
-					data.environmentName,
-					data.resourceType,
-					data.resourceName,
-					data.teamSlug
-				)}>{data.resourceName}</a
-			>
-		{:else}
-			{data.resourceName}
-		{/if}
-		updated
-		{#if data.environmentName}
-			in {data.environmentName}
-		{/if}.
-		{#if data.applicationUpdatedData.changedFields.length > 0}
-			{#each data.applicationUpdatedData.changedFields as field (field.field)}
+		Service account <strong>{data.resourceName}</strong> updated.
+		{#if data.serviceAccountUpdatedData.updatedFields.length > 0}
+			{#each data.serviceAccountUpdatedData.updatedFields as field (field.field)}
 				<strong>{field.field}</strong>
 				{#if field.oldValue != null && field.newValue != null}
 					changed from <i>{field.oldValue}</i> to <i>{field.newValue}</i>.

@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { BodyLong } from '@nais/ds-svelte-community';
 	import Meta from '../../Meta.svelte';
 	import type { SidebarActivityLogFragment$data } from '$houdini';
 
@@ -10,6 +11,8 @@
 </script>
 
 <div>
-	{data.message}
+	<BodyLong size="small">
+		{data.message}
+	</BodyLong>
 	<Meta actor={data.actor} createdAt={data.createdAt} />
 </div>

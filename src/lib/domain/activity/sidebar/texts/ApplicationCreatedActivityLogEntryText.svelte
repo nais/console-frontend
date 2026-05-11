@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { BodyLong } from '@nais/ds-svelte-community';
 	import Meta from '../../Meta.svelte';
 	import type { SidebarActivityLogFragment$data } from '$houdini';
 
@@ -15,19 +16,21 @@
 </script>
 
 <div>
-	Application
-	{#if data.environmentName}
-		<a
-			href={activityLogResourceLink(
-				data.environmentName,
-				data.resourceType,
-				data.resourceName,
-				data.teamSlug
-			)}>{data.resourceName}</a
-		>
-	{:else}
-		{data.resourceName}
-	{/if}
-	created{data.environmentName ? ` in ${data.environmentName}` : ''}.
+	<BodyLong size="small">
+		Application
+		{#if data.environmentName}
+			<a
+				href={activityLogResourceLink(
+					data.environmentName,
+					data.resourceType,
+					data.resourceName,
+					data.teamSlug
+				)}>{data.resourceName}</a
+			>
+		{:else}
+			{data.resourceName}
+		{/if}
+		created{data.environmentName ? ` in ${data.environmentName}` : ''}.
+	</BodyLong>
 	<Meta actor={data.actor} createdAt={data.createdAt} />
 </div>

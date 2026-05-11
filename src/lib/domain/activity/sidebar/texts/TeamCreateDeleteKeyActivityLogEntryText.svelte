@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { BodyLong } from '@nais/ds-svelte-community';
 	import Meta from '../../Meta.svelte';
 	import type { SidebarActivityLogFragment$data } from '$houdini';
 
@@ -13,6 +14,8 @@
 </script>
 
 <div>
-	Created delete key for team <strong>{data.resourceName}</strong>
+	<BodyLong size="small">
+		Created delete key for team <strong>{data.resourceName}</strong>.
+	</BodyLong>
 	<Meta actor={data.actor} createdAt={data.createdAt} />
 </div>

@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { BodyLong } from '@nais/ds-svelte-community';
 	import Meta from '../../Meta.svelte';
 	import type { SidebarActivityLogFragment$data } from '$houdini';
 
@@ -13,10 +14,12 @@
 </script>
 
 <div>
-	Value <strong>{data.secretValueUpdatedData.valueName}</strong> updated in secret
-	<strong>{data.resourceName}</strong>
-	{#if data.environmentName}
-		in {data.environmentName}
-	{/if}.
+	<BodyLong size="small">
+		Value <strong>{data.secretValueUpdatedData.valueName}</strong> updated in secret
+		<strong>{data.resourceName}</strong>
+		{#if data.environmentName}
+			in {data.environmentName}
+		{/if}.
+	</BodyLong>
 	<Meta actor={data.actor} createdAt={data.createdAt} />
 </div>

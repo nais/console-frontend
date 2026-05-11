@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { BodyLong } from '@nais/ds-svelte-community';
 	import type { SidebarActivityLogFragment$data } from '$houdini';
 	import Meta from '../../Meta.svelte';
 
@@ -13,6 +14,8 @@
 </script>
 
 <div>
-	<strong>{data.resourceName}</strong> was deauthorized for deploy.
+	<BodyLong size="small">
+		<strong>{data.resourceName}</strong> was deauthorized for deploy.
+	</BodyLong>
 	<Meta actor={data.actor} createdAt={data.createdAt} />
 </div>
