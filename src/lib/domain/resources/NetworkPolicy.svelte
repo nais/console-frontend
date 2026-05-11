@@ -138,7 +138,7 @@
 	{/if}
 {/snippet}
 
-<SurfaceCard title="Network policy" reverseGradient>
+<SurfaceCard title="Network policy">
 	{#if hasPolicy}
 		<ul class="rules">
 			{#each flatRules as entry, i (`${entry.direction}-${entry.kind}-${i}`)}

@@ -29,7 +29,7 @@
 	{@const workload = $ApplicationImageDetails.data.team.environment.workload}
 	<div class="wrapper">
 		<div class="top">
-			<SurfaceCard title="Image" reverseGradient>
+			<SurfaceCard title="Image">
 				{#snippet headerAside()}
 					<CopyButton
 						copyText={workload.image.name + ':' + workload.image.tag}

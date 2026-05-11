@@ -181,7 +181,7 @@
 	let title = $derived(workloadType === 'app' ? 'Application health' : 'Job health');
 </script>
 
-<SurfaceCard {title} reverseGradient>
+<SurfaceCard {title}>
 	{#if dataLoading}
 		<div class="loading">
 			<Loader size="xlarge" />

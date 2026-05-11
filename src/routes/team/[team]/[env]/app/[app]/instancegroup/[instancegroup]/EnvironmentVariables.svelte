@@ -22,7 +22,7 @@
 </script>
 
 {#if envVars.length > 0}
-	<SurfaceCard title="Environment Variables" reverseGradient>
+	<SurfaceCard title="Environment Variables">
 		{#snippet headerAside()}
 			{#if hasSecrets && viewerIsMember && revealedValues.size > 0}
 				<Button size="xsmall" variant="tertiary" icon={EyeSlashIcon} onclick={onHideAll}>

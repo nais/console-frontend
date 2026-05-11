@@ -22,7 +22,7 @@
 </script>
 
 {#if files.length > 0}
-	<SurfaceCard title="Mounted Files" reverseGradient>
+	<SurfaceCard title="Mounted Files">
 		<div class="table-container">
 			<Table size="small" zebraStripes>
 				<Thead>

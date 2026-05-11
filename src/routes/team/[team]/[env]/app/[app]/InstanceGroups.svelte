@@ -34,7 +34,7 @@
 	}
 </script>
 
-<SurfaceCard title="Instance groups" reverseGradient>
+<SurfaceCard title="Instance groups">
 	{#each app.instanceGroups as group (group.id)}
 		{@const role = groupRole(group)}
 		{@const hasFailing = group.instances.some((instance) => instance.status.state === 'FAILING')}

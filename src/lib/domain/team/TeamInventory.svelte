@@ -148,7 +148,7 @@
 	});
 </script>
 
-<SurfaceCard title="Inventory" reverseGradient>
+<SurfaceCard title="Inventory">
 	{#if $inventoryQuery.fetching}
 		<div class="loading">
 			<Loader size="xlarge" />

@@ -84,7 +84,7 @@
 	});
 </script>
 
-<SurfaceCard title="Cost" reverseGradient>
+<SurfaceCard title="Cost">
 	{#snippet headerAside()}
 		{#if workloadData?.cost?.daily !== PendingValue && workloadData?.cost?.daily && workloadData.cost.daily.series.length > 0}
 			<ToggleGroup size="small" value={interval} onchange={onIntervalChange}>
