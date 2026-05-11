@@ -3,6 +3,8 @@
 	import { BodyLong } from '@nais/ds-svelte-community';
 	import Meta from '../../Meta.svelte';
 
+	import { activityLogResourceLink } from '../../utils';
+
 	let {
 		data
 	}: {
@@ -24,8 +26,17 @@
 <div>
 	<BodyLong size="small">
 		{serviceLabel} credentials created
-		{#if data.resourceName}
-			for <strong>{data.resourceName}</strong>
+		{#if data.resourceName && data.environmentName}
+			for <a
+				href={activityLogResourceLink(
+					data.environmentName,
+					data.resourceType,
+					data.resourceName,
+					data.teamSlug
+				)}>{data.resourceName}</a
+			>
+		{:else if data.resourceName}
+			for {data.resourceName}
 		{/if}
 		{#if data.credentialsData.permission}
 			with {data.credentialsData.permission} access
