@@ -76,7 +76,9 @@
 						id: string;
 						name: string;
 						teamEnvironment: { environment: { name: string } };
-					} => n.__typename === 'Application' || n.__typename === 'Job'
+					} =>
+						(n.__typename === 'Application' || n.__typename === 'Job') &&
+						!n.teamEnvironment.environment.name.endsWith('-fss')
 				)
 			: []
 	);
