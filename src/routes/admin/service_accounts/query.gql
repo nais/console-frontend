@@ -1,0 +1,22 @@
+query AdminServiceAccounts($first: Int, $last: Int, $before: Cursor, $after: Cursor)
+@cache(policy: CacheAndNetwork) {
+	serviceAccounts(first: $first, last: $last, before: $before, after: $after)
+		@paginate(mode: SinglePage) {
+		pageInfo {
+			totalCount
+			hasNextPage
+			hasPreviousPage
+			pageEnd
+			pageStart
+			startCursor
+			endCursor
+		}
+		nodes {
+			id
+			name
+			description
+			createdAt
+			lastUsedAt
+		}
+	}
+}

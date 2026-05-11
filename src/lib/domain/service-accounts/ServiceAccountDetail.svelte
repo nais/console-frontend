@@ -2,7 +2,6 @@
 	import { goto } from '$app/navigation';
 	import {
 		graphql,
-		type AvailableRolesFragment,
 		type ServiceAccountAuthenticationFragment,
 		type ServiceAccountRolesFragment
 	} from '$houdini';
@@ -16,6 +15,11 @@
 	import ServiceAccountAuthentications from './ServiceAccountAuthentications.svelte';
 	import ServiceAccountRoles from './ServiceAccountRoles.svelte';
 
+	interface Role {
+		name: string;
+		description: string;
+	}
+
 	type ServiceAccountData = {
 		id: string;
 		name: string;
@@ -28,13 +32,13 @@
 
 	const {
 		serviceAccount,
-		teamSlug,
-		roles,
+		basePath,
+		availableRoles,
 		canManage
 	}: {
 		serviceAccount: ServiceAccountData;
-		teamSlug: string;
-		roles: AvailableRolesFragment;
+		basePath: string;
+		availableRoles: Role[];
 		canManage: boolean;
 	} = $props();
 
@@ -58,7 +62,7 @@
 			errors = res.errors;
 			return;
 		}
-		await goto(`/team/${teamSlug}/settings/service_accounts`);
+		await goto(basePath);
 	}
 </script>
 
@@ -106,8 +110,12 @@
 		{/if}
 	</section>
 
-	<ServiceAccountRoles serviceAccountRoles={serviceAccount} {roles} {canManage} />
-	<ServiceAccountAuthentications {serviceAccount} {canManage} />
+	<ServiceAccountRoles serviceAccountRoles={serviceAccount} {availableRoles} {canManage} />
+	<ServiceAccountAuthentications
+		{serviceAccount}
+		{canManage}
+		basePath={`${basePath}/${serviceAccount.id}`}
+	/>
 </div>
 
 <Confirm
