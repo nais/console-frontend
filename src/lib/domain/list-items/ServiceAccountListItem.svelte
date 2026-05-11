@@ -9,7 +9,7 @@
 
 	const {
 		serviceAccount,
-		teamSlug
+		href
 	}: {
 		serviceAccount: {
 			id: string;
@@ -18,13 +18,11 @@
 			createdAt: Date;
 			lastUsedAt: Date | null;
 		};
-		teamSlug?: string;
+		href?: string;
 	} = $props();
 </script>
 
-<ListItem
-	href={teamSlug ? `/team/${teamSlug}/settings/service_accounts/${serviceAccount.id}` : undefined}
->
+<ListItem {href}>
 	<IconLabel
 		as="h4"
 		size="large"

@@ -1,22 +1,15 @@
 <script lang="ts">
-	import { resolve } from '$app/paths';
-	import { page } from '$app/state';
 	import CreateTokenForm from '$lib/domain/service-accounts/CreateTokenForm.svelte';
 	import { Alert } from '@nais/ds-svelte-community';
 	import type { PageProps } from './$houdini';
 
 	let { data }: PageProps = $props();
 
-	const { ServiceAccountDetail } = $derived(data);
+	const { AdminServiceAccountDetail } = $derived(data);
 
-	const serviceAccount = $derived($ServiceAccountDetail.data?.serviceAccount);
+	const serviceAccount = $derived($AdminServiceAccountDetail.data?.serviceAccount);
 
-	const basePath = $derived(
-		resolve('/team/[team]/settings/service_accounts/[serviceAccountID]', {
-			team: page.params.team!,
-			serviceAccountID: page.params.serviceAccountID!
-		})
-	);
+	const basePath = $derived(`/admin/service_accounts/${serviceAccount?.id}`);
 </script>
 
 <div class="page">
