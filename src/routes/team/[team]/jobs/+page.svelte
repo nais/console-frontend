@@ -59,6 +59,8 @@
 		});
 	};
 
+	// TODO: Replace client-side state filtering with server-side filtering once
+	// nais/api#429 adds `states` to TeamJobsFilter.
 	const stateQuery = graphql(`
 		query JobStateOverviewV2($team: Slug!) @cache(policy: CacheAndNetwork) {
 			team(slug: $team) {
@@ -210,7 +212,13 @@
 					/>
 				{/snippet}
 				{#each jobs?.nodes ?? [] as job (job.id)}
-					<JobListItem {job} />
+					{@const stateKey =
+						{ RUNNING: 'running', COMPLETED: 'completed', FAILED: 'failed', UNKNOWN: 'unknown' }[
+							job.state
+						] ?? 'unknown'}
+					{#if activeStatuses.includes(stateKey)}
+						<JobListItem {job} />
+					{/if}
 				{/each}
 			</ListV2>
 			<Pagination
