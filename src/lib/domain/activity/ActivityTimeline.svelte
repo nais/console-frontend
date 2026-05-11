@@ -65,7 +65,9 @@
 		height: 2rem;
 		font-size: 1rem;
 		flex-shrink: 0;
-		color: var(--surface-accent-color);
+		border-radius: var(--ax-radius-8);
+		color: var(--ax-text-brand-blue-decoration);
+		background: var(--ax-bg-brand-blue-softA);
 	}
 
 	.activity-item {
@@ -84,17 +86,16 @@
 	.activity-item:not(:last-child)::before {
 		background: var(--ax-border-neutral-subtleA);
 		content: '';
-		height: 100%;
+		top: calc(2rem + 4px);
+		bottom: calc(-1 * var(--ax-space-4) - 4px);
 		left: calc(1rem - 1px);
 		position: absolute;
-		top: 2rem;
 		width: 2px;
-		z-index: 0;
 	}
 
 	.empty {
 		text-align: center;
-		color: var(--ax-text-subtle);
+		color: var(--ax-text-neutral);
 		padding: var(--ax-space-8) var(--ax-space-4);
 		font-style: italic;
 	}

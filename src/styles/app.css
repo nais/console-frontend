@@ -16,7 +16,7 @@
 	--surface-icon-connector-gap: 2px;
 	--surface-elevated-background: var(--ax-bg-brand-blue-softA);
 	--surface-elevated-background-reverse: var(--ax-bg-brand-blue-softA);
-	--surface-icon-background: color-mix(in srgb, var(--surface-accent-color) 10%, transparent);
+	/* --surface-icon-background: color-mix(in srgb, var(--surface-accent-color) 10%, transparent); */
 
 	--surface-elevated-shadow: 0 0 0 1px
 		color-mix(in srgb, var(--surface-accent-color) 24%, transparent);
@@ -40,7 +40,7 @@
 	--surface-elevated-background-reverse: var(--ax-bg-brand-blue-softA);
 	--surface-elevated-shadow: 0 0 0 1px
 		color-mix(in srgb, var(--surface-accent-color) 24%, transparent);
-	--surface-icon-background: color-mix(in srgb, var(--surface-accent-color) 10%, transparent);
+	/* --surface-icon-background: color-mix(in srgb, var(--surface-accent-color) 10%, transparent); */
 	--surface-icon-shadow: none;
 }
 

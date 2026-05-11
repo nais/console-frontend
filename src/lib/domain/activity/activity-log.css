@@ -37,7 +37,9 @@
 
 	width: 2rem;
 	height: 2rem;
-	font-size: 1.1rem;
+	font-size: 1rem;
 	flex-shrink: 0;
-	color: var(--surface-accent-color);
+	border-radius: var(--ax-radius-8);
+	color: var(--ax-text-brand-blue-decoration);
+	background: var(--ax-bg-brand-blue-softA);
 }
