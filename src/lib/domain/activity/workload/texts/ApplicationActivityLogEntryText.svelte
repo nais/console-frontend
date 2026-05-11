@@ -1,7 +1,6 @@
 <script lang="ts">
 	import { BodyLong } from '@nais/ds-svelte-community';
 	import Meta from '../../Meta.svelte';
-	import { summarizeChangedFields } from './helpers';
 	import type { WorkloadActivityEntry } from './types';
 
 	let {
@@ -15,33 +14,43 @@
 			| 'ApplicationUpdatedActivityLogEntry'
 		>;
 	} = $props();
-
-	const summary = $derived.by(() => {
-		switch (data.__typename) {
-			case 'ApplicationCreatedActivityLogEntry':
-				return 'App created';
-			case 'ApplicationDeletedActivityLogEntry':
-				return 'App deleted';
-			case 'ApplicationRestartedActivityLogEntry':
-				return 'App restarted';
-			case 'ApplicationScaledActivityLogEntry': {
-				const size = data.appScaled?.newSize;
-				const direction = data.appScaled?.direction?.toLowerCase();
-				if (size == null) {
-					return 'App scaled';
-				}
-
-				return direction ? `App scaled ${direction} to ${size}` : `App scaled to ${size}`;
-			}
-			case 'ApplicationUpdatedActivityLogEntry':
-				return data.applicationUpdated?.changedFields?.length
-					? `App updated: ${summarizeChangedFields(data.applicationUpdated.changedFields)}`
-					: 'App updated';
-		}
-	});
 </script>
 
-<BodyLong size="small">
-	{summary}
+<div>
+	<BodyLong size="small">
+		{#if data.__typename === 'ApplicationCreatedActivityLogEntry'}
+			App created.
+		{:else if data.__typename === 'ApplicationDeletedActivityLogEntry'}
+			App deleted.
+		{:else if data.__typename === 'ApplicationRestartedActivityLogEntry'}
+			App restarted.
+		{:else if data.__typename === 'ApplicationScaledActivityLogEntry'}
+			{@const size = data.appScaled?.newSize}
+			{@const direction = data.appScaled?.direction?.toLowerCase()}
+			{#if size != null && direction}
+				App scaled {direction} to {size} replicas.
+			{:else if size != null}
+				App scaled to {size} replicas.
+			{:else}
+				App scaled.
+			{/if}
+		{:else if data.__typename === 'ApplicationUpdatedActivityLogEntry'}
+			App updated.
+			{#if data.applicationUpdatedData?.changedFields?.length}
+				{#each data.applicationUpdatedData.changedFields as field (field.field)}
+					<strong>{field.field}</strong>
+					{#if field.oldValue != null && field.newValue != null}
+						changed from <i>{field.oldValue}</i> to <i>{field.newValue}</i>.
+					{:else if field.oldValue == null && field.newValue != null}
+						set to <i>{field.newValue}</i>.
+					{:else if field.oldValue != null && field.newValue == null}
+						removed (was <i>{field.oldValue}</i>).
+					{:else}
+						changed.
+					{/if}
+				{/each}
+			{/if}
+		{/if}
+	</BodyLong>
 	<Meta actor={data.actor} createdAt={data.createdAt} />
-</BodyLong>
+</div>
