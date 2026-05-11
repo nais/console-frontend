@@ -8284,8 +8284,17 @@ type TeamGoogleGroup {
 
 """Application inventory count for a team."""
 type TeamInventoryCountApplications {
+  """Number of applications in a not running state."""
+  notRunning: Int!
+
+  """Number of applications in a running state."""
+  running: Int!
+
   """Total number of applications."""
   total: Int!
+
+  """Number of applications in an unknown state."""
+  unknown: Int!
 }
 
 type TeamInventoryCountBigQueryDatasets {
@@ -8305,8 +8314,20 @@ type TeamInventoryCountConfigs {
 }
 
 type TeamInventoryCountJobs {
+  """Number of jobs in a completed state."""
+  completed: Int!
+
+  """Number of jobs in a failed state."""
+  failed: Int!
+
+  """Number of jobs in a running state."""
+  running: Int!
+
   """Total number of jobs."""
   total: Int!
+
+  """Number of jobs in an unknown state."""
+  unknown: Int!
 }
 
 type TeamInventoryCountKafkaTopics {

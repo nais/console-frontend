@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { page } from '$app/state';
-	import { ApplicationOrderField, OrderDirection, graphql } from '$houdini';
+	import { ApplicationOrderField, OrderDirection } from '$houdini';
 	import { docURL } from '$lib/doc';
 	import AggregatedCostForApplications from '$lib/domain/cost/AggregatedCostForApplications.svelte';
 	import AppListItem from '$lib/domain/list-items/AppListItem.svelte';
@@ -36,6 +36,15 @@
 
 	let filteredEnvs = $derived(page.url.searchParams.get('environments')?.split(',') ?? allEnvs);
 
+	const allStates = ['running', 'not-running', 'unknown'];
+	let activeStatuses = $derived(page.url.searchParams.get('states')?.split(',') ?? allStates);
+
+	let states = $derived({
+		running: $ApplicationsListMetadata.data?.team.inventoryCounts?.applications?.running ?? 0,
+		notRunning: $ApplicationsListMetadata.data?.team.inventoryCounts?.applications?.notRunning ?? 0,
+		unknown: $ApplicationsListMetadata.data?.team.inventoryCounts?.applications?.unknown ?? 0
+	});
+
 	$effect(() => {
 		const environments = filteredEnvs.length === allEnvs.length ? '' : filteredEnvs.join(',');
 
@@ -50,48 +59,21 @@
 			before?: string;
 			newFilter?: string;
 			environments?: string;
+			states?: string;
 		} = {}
 	) => {
 		const currentEnvironments =
 			filteredEnvs.length === allEnvs.length ? '' : filteredEnvs.join(',');
+		const currentStates =
+			activeStatuses.length === allStates.length ? '' : activeStatuses.join(',');
 		changeParams({
 			before: params.before ?? before,
 			after: params.after ?? after,
 			filter: params.newFilter ?? filter,
-			environments: params.environments ?? currentEnvironments
+			environments: params.environments ?? currentEnvironments,
+			states: params.states ?? currentStates
 		});
 	};
-
-	// TODO: Replace client-side state filtering with server-side filtering once
-	// nais/api#429 adds `states` to TeamApplicationsFilter.
-	const stateQuery = graphql(`
-		query ApplicationStateOverviewV2($team: Slug!) @cache(policy: CacheAndNetwork) {
-			team(slug: $team) {
-				applications(first: 500) {
-					nodes {
-						state
-					}
-					pageInfo {
-						totalCount
-					}
-				}
-			}
-		}
-	`);
-
-	$effect(() => {
-		stateQuery.fetch({ variables: { team: teamSlug } });
-	});
-
-	let states = $derived.by(() => {
-		const nodes = $stateQuery.data?.team?.applications?.nodes ?? [];
-		const running = nodes.filter((n) => n.state === 'RUNNING').length;
-		const notRunning = nodes.filter((n) => n.state === 'NOT_RUNNING').length;
-		const unknown = nodes.filter((n) => n.state === 'UNKNOWN').length;
-		return { running, notRunning, unknown };
-	});
-
-	let activeStatuses = $state<string[]>(['running', 'not-running', 'unknown']);
 </script>
 
 <GraphErrors errors={$Applications.errors} />
@@ -121,7 +103,10 @@
 						notRunning={states.notRunning}
 						unknown={states.unknown}
 						{activeStatuses}
-						onchange={(s) => (activeStatuses = s)}
+						onchange={(s) => {
+							const statesValue = s.length === allStates.length ? '' : s.join(',');
+							changeQuery({ states: statesValue, after: '', before: '' });
+						}}
 					/>
 				{/snippet}
 				{#snippet menu()}
@@ -168,12 +153,7 @@
 					/>
 				{/snippet}
 				{#each apps?.nodes ?? [] as app (app.id)}
-					{@const stateKey =
-						{ RUNNING: 'running', NOT_RUNNING: 'not-running', UNKNOWN: 'unknown' }[app.state] ??
-						'unknown'}
-					{#if activeStatuses.includes(stateKey)}
-						<AppListItem {app} />
-					{/if}
+					<AppListItem {app} />
 				{/each}
 			</ListV2>
 			<Pagination
