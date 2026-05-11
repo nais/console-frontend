@@ -22,6 +22,7 @@ declare global {
 					label: string;
 					variant: TagProps['variant'];
 				};
+				docPath?: string;
 			};
 		}
 		interface LayoutData {
@@ -33,6 +34,7 @@ declare global {
 					label: string;
 					variant: TagProps['variant'];
 				};
+				docPath?: string;
 			};
 		}
 		// interface Platform {}

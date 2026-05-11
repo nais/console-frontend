@@ -3,6 +3,7 @@
 	import { page } from '$app/state';
 	import type { RouteId } from '$app/types';
 	import AddToFavorites from '$lib/ui/AddToFavorites.svelte';
+	import ToTheDocs from '$lib/ui/ToTheDocs.svelte';
 	import { Heading, Tag } from '@nais/ds-svelte-community';
 	import type { Snippet } from 'svelte';
 
@@ -24,6 +25,7 @@
 	});
 	const heading = $derived(page.data?.meta?.pageHeaderTitle ?? page.data?.meta?.title ?? '');
 	const tag = $derived(page.data?.meta?.tag ?? null);
+	const docPath = $derived(page.data?.meta?.docPath ?? null);
 	const resolveUnsafe = resolve as unknown as (
 		href: string,
 		params?: Record<string, string>
@@ -52,7 +54,12 @@
 					{/each}
 				</div>
 			</div>
-			<AddToFavorites path={page.url.pathname} />
+			<div class="actions">
+				<AddToFavorites path={page.url.pathname} />
+				{#if docPath}
+					<ToTheDocs path={docPath} />
+				{/if}
+			</div>
 		</div>
 	{/if}
 	{#if !breadcrumbs.length && beforeBreadcrumbs}
@@ -66,8 +73,15 @@
 					<Tag variant={tag.variant}>{tag.label}</Tag>
 				{/if}
 			</div>
-			{#if breadcrumbs.length === 0}
-				<AddToFavorites path={page.url.pathname} />
+			{#if breadcrumbs.length === 0 || docPath}
+				<div class="actions">
+					{#if breadcrumbs.length === 0}
+						<AddToFavorites path={page.url.pathname} />
+					{/if}
+					{#if docPath}
+						<ToTheDocs path={docPath} />
+					{/if}
+				</div>
 			{/if}
 		</div>
 	{/if}
@@ -84,6 +98,13 @@
 			align-items: center;
 			justify-content: space-between;
 			gap: var(--ax-space-8);
+		}
+
+		.actions {
+			display: flex;
+			align-items: center;
+			gap: var(--ax-space-4);
+			flex-shrink: 0;
 		}
 
 		.breadcrumbs-wrapper {

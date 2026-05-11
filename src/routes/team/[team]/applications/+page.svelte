@@ -1,10 +1,8 @@
 <script lang="ts">
 	import { page } from '$app/state';
 	import { ApplicationOrderField, OrderDirection } from '$houdini';
-	import { docURL } from '$lib/doc';
 	import AggregatedCostForApplications from '$lib/domain/cost/AggregatedCostForApplications.svelte';
 	import AppListItem from '$lib/domain/list-items/AppListItem.svelte';
-	import ExternalLink from '$lib/ui/ExternalLink.svelte';
 	import GraphErrors from '$lib/ui/GraphErrors.svelte';
 	import ListV2 from '$lib/ui/ListV2.svelte';
 	import OrderByMenu from '$lib/ui/OrderByMenu.svelte';
@@ -172,15 +170,6 @@
 		{/if}
 	</div>
 	<div class="right-column">
-		<SurfaceCard title="About">
-			<BodyLong>
-				Applications are long-running processes designed to handle continuous workloads and remain
-				active until stopped or restarted.
-				<ExternalLink href={docURL('/workloads/application')}
-					>Learn more about applications and how to get started.</ExternalLink
-				>
-			</BodyLong>
-		</SurfaceCard>
 		{#if totalApplications > 0}
 			<SurfaceCard title="Cost">
 				<AggregatedCostForApplications {teamSlug} totalCount={totalApplications} />
