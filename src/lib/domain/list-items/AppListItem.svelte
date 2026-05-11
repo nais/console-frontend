@@ -116,7 +116,7 @@
 		min-width: 0;
 	}
 
-	.name-group :global(.navds-tag) {
+	.name-group :global(.aksel-tag) {
 		white-space: nowrap;
 		flex-shrink: 0;
 	}
