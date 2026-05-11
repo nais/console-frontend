@@ -61,6 +61,7 @@ query InstanceGroupDetail($app: String!, $team: Slug!, $env: String!) @cache(pol
 					readyInstances
 					desiredInstances
 					environmentVariables {
+						id
 						name
 						value
 						source {

@@ -3083,7 +3083,10 @@ type InstanceGroup implements Node {
 }
 
 """An environment variable configured for an instance group."""
-type InstanceGroupEnvironmentVariable {
+type InstanceGroupEnvironmentVariable implements Node {
+  """The globally unique ID of the environment variable."""
+  id: ID!
+
   """The name of the environment variable."""
   name: String!
 
