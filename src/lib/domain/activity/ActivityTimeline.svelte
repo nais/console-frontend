@@ -28,7 +28,7 @@
 			{@const Icon = icons[entry.__typename] || RocketIcon}
 			{@const TextComponent = textComponentFn(entry.__typename)}
 			<div class="activity-item">
-				<div class="surface-icon surface-icon-timeline">
+				<div class="activity-icon">
 					<Icon width="75%" height="75%" />
 				</div>
 				<div class="content">
@@ -49,12 +49,23 @@
 
 <style>
 	.timeline {
-		--surface-icon-size: 2rem;
-		--surface-icon-glyph-size: 1rem;
 		display: flex;
 		flex-direction: column;
 		gap: var(--ax-space-4);
 		min-width: 0;
+	}
+
+	.activity-icon {
+		position: relative;
+		z-index: 1;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		width: 2rem;
+		height: 2rem;
+		font-size: 1rem;
+		flex-shrink: 0;
+		color: var(--surface-accent-color);
 	}
 
 	.activity-item {
@@ -74,9 +85,9 @@
 		background: var(--ax-border-neutral-subtleA);
 		content: '';
 		height: 100%;
-		left: calc(var(--surface-icon-size) / 2 - 1px);
+		left: calc(1rem - 1px);
 		position: absolute;
-		top: var(--surface-icon-size);
+		top: 2rem;
 		width: 2px;
 		z-index: 0;
 	}

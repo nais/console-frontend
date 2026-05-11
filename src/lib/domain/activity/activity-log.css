@@ -39,8 +39,5 @@
 	height: 2rem;
 	font-size: 1.1rem;
 	flex-shrink: 0;
-	border-radius: var(--ax-radius-8);
 	color: var(--surface-accent-color);
-	background: var(--surface-icon-background);
-	box-shadow: var(--surface-icon-shadow);
 }
