@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { BodyLong } from '@nais/ds-svelte-community';
 	import type { SidebarActivityLogFragment$data } from '$houdini';
+	import { BodyLong } from '@nais/ds-svelte-community';
 	import Meta from '../../Meta.svelte';
 
 	import { activityLogResourceLink } from '../../utils';

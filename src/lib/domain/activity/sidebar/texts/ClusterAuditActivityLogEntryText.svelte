@@ -1,8 +1,8 @@
 <script lang="ts">
-	import { BodyLong } from '@nais/ds-svelte-community';
-	import Meta from '../../Meta.svelte';
 	import type { SidebarActivityLogFragment$data } from '$houdini';
 	import { capitalizeFirstLetter } from '$lib/utils/formatters';
+	import { BodyLong } from '@nais/ds-svelte-community';
+	import Meta from '../../Meta.svelte';
 
 	let {
 		data

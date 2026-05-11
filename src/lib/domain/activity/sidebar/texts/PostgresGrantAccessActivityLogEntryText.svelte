@@ -1,8 +1,8 @@
 <script lang="ts">
-	import { BodyLong } from '@nais/ds-svelte-community';
-	import Meta from '../../Meta.svelte';
 	import type { SidebarActivityLogFragment$data } from '$houdini';
 	import Time from '$lib/ui/Time.svelte';
+	import { BodyLong } from '@nais/ds-svelte-community';
+	import Meta from '../../Meta.svelte';
 
 	let {
 		data
