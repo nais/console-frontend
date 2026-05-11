@@ -1,18 +1,19 @@
 <script lang="ts">
 	import { page } from '$app/state';
-	import { ApplicationOrderField, OrderDirection } from '$houdini';
+	import { ApplicationOrderField, OrderDirection, graphql } from '$houdini';
 	import { docURL } from '$lib/doc';
 	import AggregatedCostForApplications from '$lib/domain/cost/AggregatedCostForApplications.svelte';
 	import AppListItem from '$lib/domain/list-items/AppListItem.svelte';
-	import ApplicationStateOverview from '$lib/domain/team/ApplicationStateOverview.svelte';
 	import ExternalLink from '$lib/ui/ExternalLink.svelte';
 	import GraphErrors from '$lib/ui/GraphErrors.svelte';
-	import List from '$lib/ui/List.svelte';
+	import ListV2 from '$lib/ui/ListV2.svelte';
 	import OrderByMenu from '$lib/ui/OrderByMenu.svelte';
 	import Pagination from '$lib/ui/Pagination.svelte';
+	import SearchField from '$lib/ui/SearchField.svelte';
+	import StatusFilterPills from '$lib/ui/StatusFilterPills.svelte';
 	import SurfaceCard from '$lib/ui/SurfaceCard.svelte';
 	import { changeParams } from '$lib/utils/searchparams';
-	import { BodyLong, Button, Search } from '@nais/ds-svelte-community';
+	import { BodyLong, Button } from '@nais/ds-svelte-community';
 	import { ActionMenu, ActionMenuCheckboxItem } from '@nais/ds-svelte-community/experimental';
 	import { ChevronDownIcon } from '@nais/ds-svelte-community/icons';
 	import type { PageProps } from './$types';
@@ -60,108 +61,114 @@
 			environments: params.environments ?? currentEnvironments
 		});
 	};
+
+	const stateQuery = graphql(`
+		query ApplicationStateOverviewV2($team: Slug!) @cache(policy: CacheAndNetwork) {
+			team(slug: $team) {
+				applications(first: 500) {
+					nodes {
+						state
+					}
+					pageInfo {
+						totalCount
+					}
+				}
+			}
+		}
+	`);
+
+	$effect(() => {
+		stateQuery.fetch({ variables: { team: teamSlug } });
+	});
+
+	let states = $derived.by(() => {
+		const nodes = $stateQuery.data?.team?.applications?.nodes ?? [];
+		const running = nodes.filter((n) => n.state === 'RUNNING').length;
+		const notRunning = nodes.filter((n) => n.state === 'NOT_RUNNING').length;
+		const unknown = nodes.filter((n) => n.state === 'UNKNOWN').length;
+		return { running, notRunning, unknown };
+	});
+
+	let activeStatuses = $state<string[]>(['running', 'not-running', 'unknown']);
 </script>
 
 <GraphErrors errors={$Applications.errors} />
 
 <div class="wrapper">
 	<div>
-		<BodyLong spacing>
-			{#if totalApplications == 0}
-				<strong>No applications found.</strong>
-			{/if}
-			Applications are long-running processes designed to handle continuous workloads and remain active
-			until stopped or restarted.
-			<ExternalLink href={docURL('/workloads/application')}
-				>Learn more about applications and how to get started.</ExternalLink
-			>
-		</BodyLong>
 		{#if totalApplications > 0}
 			{@const apps = $Applications.data?.team.applications}
-			<div class="search">
-				<form
-					onsubmit={(e) => {
-						e.preventDefault();
-						changeQuery({ newFilter: filter });
-					}}
-				>
-					<Search
-						clearButton={true}
-						clearButtonLabel="Clear"
-						label="filter applications"
-						placeholder="Filter by name"
-						hideLabel={true}
-						size="small"
-						variant="simple"
-						width="100%"
-						autocomplete="off"
-						bind:value={filter}
+
+			<ListV2 title="Apps" count={apps?.pageInfo.totalCount ?? 0}>
+				{#snippet search()}
+					<SearchField
+						value={filter}
+						placeholder="Search apps..."
+						label="Search applications"
+						oninput={(v) => (filter = v)}
+						onsubmit={() => changeQuery({ newFilter: filter })}
 						onclear={() => {
 							filter = '';
 							changeQuery({ newFilter: '' });
 						}}
 					/>
-				</form>
-			</div>
-
-			<List
-				title="{apps?.pageInfo.totalCount ?? 0} application{apps?.pageInfo.totalCount !== 1
-					? 's'
-					: ''}
-						{apps?.pageInfo.totalCount !== totalApplications ? `(of total ${totalApplications})` : ''}"
-			>
-				{#snippet description()}
-					<ApplicationStateOverview {teamSlug} />
+				{/snippet}
+				{#snippet filters()}
+					<StatusFilterPills
+						running={states.running}
+						notRunning={states.notRunning}
+						unknown={states.unknown}
+						{activeStatuses}
+						onchange={(s) => (activeStatuses = s)}
+					/>
 				{/snippet}
 				{#snippet menu()}
-					<div class="applications-list-menu">
-						<ActionMenu>
-							{#snippet trigger(props)}
-								<Button
-									variant="tertiary-neutral"
-									size="small"
-									iconPosition="right"
-									{...props}
-									icon={ChevronDownIcon}
-								>
-									<span style="font-weight: normal">Environment</span>
-								</Button>
-							{/snippet}
-							<ActionMenuCheckboxItem
-								checked={$ApplicationsListMetadata.data?.team.environments.every((env) =>
-									filteredEnvs.includes(env.environment.name)
-								)
-									? true
-									: filteredEnvs.length > 0
-										? 'indeterminate'
-										: false}
-								onchange={(checked) => (filteredEnvs = checked ? allEnvs : [])}
+					<ActionMenu>
+						{#snippet trigger(props)}
+							<Button
+								variant="tertiary-neutral"
+								size="small"
+								iconPosition="right"
+								{...props}
+								icon={ChevronDownIcon}
 							>
-								All environments
+								<span style="font-weight: normal">Environment</span>
+							</Button>
+						{/snippet}
+						<ActionMenuCheckboxItem
+							checked={$ApplicationsListMetadata.data?.team.environments.every((env) =>
+								filteredEnvs.includes(env.environment.name)
+							)
+								? true
+								: filteredEnvs.length > 0
+									? 'indeterminate'
+									: false}
+							onchange={(checked) => (filteredEnvs = checked ? allEnvs : [])}
+						>
+							All environments
+						</ActionMenuCheckboxItem>
+						{#each $ApplicationsListMetadata.data?.team.environments ?? [] as { environment, id } (id)}
+							<ActionMenuCheckboxItem
+								checked={filteredEnvs.includes(environment.name)}
+								onchange={(checked) =>
+									(filteredEnvs = checked
+										? [...filteredEnvs, environment.name]
+										: filteredEnvs.filter((env) => env !== environment.name))}
+							>
+								{environment.name}
 							</ActionMenuCheckboxItem>
-							{#each $ApplicationsListMetadata.data?.team.environments ?? [] as { environment, id } (id)}
-								<ActionMenuCheckboxItem
-									checked={filteredEnvs.includes(environment.name)}
-									onchange={(checked) =>
-										(filteredEnvs = checked
-											? [...filteredEnvs, environment.name]
-											: filteredEnvs.filter((env) => env !== environment.name))}
-								>
-									{environment.name}
-								</ActionMenuCheckboxItem>
-							{/each}
-						</ActionMenu>
-						<OrderByMenu
-							orderField={ApplicationOrderField}
-							defaultOrderField={ApplicationOrderField.ISSUES}
-							defaultOrderDirection={OrderDirection.DESC}
-						/>
-					</div>
+						{/each}
+					</ActionMenu>
+					<OrderByMenu
+						orderField={ApplicationOrderField}
+						defaultOrderField={ApplicationOrderField.ISSUES}
+						defaultOrderDirection={OrderDirection.DESC}
+					/>
 				{/snippet}
 				{#each apps?.nodes ?? [] as app (app.id)}
 					<AppListItem {app} />
 				{/each}
-			</List>
+			</ListV2>
 			<Pagination
 				page={apps?.pageInfo}
 				loaders={{
@@ -173,9 +180,20 @@
 					}
 				}}
 			/>
+		{:else}
+			<BodyLong><strong>No applications found.</strong></BodyLong>
 		{/if}
 	</div>
 	<div class="right-column">
+		<SurfaceCard title="About">
+			<BodyLong>
+				Applications are long-running processes designed to handle continuous workloads and remain
+				active until stopped or restarted.
+				<ExternalLink href={docURL('/workloads/application')}
+					>Learn more about applications and how to get started.</ExternalLink
+				>
+			</BodyLong>
+		</SurfaceCard>
 		{#if totalApplications > 0}
 			<SurfaceCard title="Cost">
 				<AggregatedCostForApplications {teamSlug} totalCount={totalApplications} />
@@ -197,33 +215,11 @@
 		align-content: start;
 	}
 
-	.search {
-		display: flex;
-		justify-content: flex-end;
-		margin-bottom: 1rem;
-	}
-
 	/* Mobile responsive layout */
 	@media (max-width: 767px) {
 		.wrapper {
 			grid-template-columns: 1fr;
 			gap: var(--ax-space-24);
-		}
-
-		.search {
-			justify-content: stretch;
-		}
-
-		.applications-list-menu {
-			display: flex;
-			gap: var(--ax-space-8);
-			flex-wrap: nowrap;
-			overflow-x: auto;
-			max-width: 100%;
-		}
-
-		.applications-list-menu > * {
-			flex: 0 0 auto;
 		}
 	}
 
@@ -232,10 +228,6 @@
 		.wrapper {
 			grid-template-columns: 1fr;
 			gap: var(--ax-space-24);
-		}
-
-		.search {
-			justify-content: stretch;
 		}
 	}
 </style>

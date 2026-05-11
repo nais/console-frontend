@@ -58,17 +58,19 @@
 	{#if !breadcrumbs.length && beforeBreadcrumbs}
 		<div class="breadcrumbs-trigger breadcrumbs-trigger-row">{@render beforeBreadcrumbs()}</div>
 	{/if}
-	<div class="header-row">
-		<div class="heading-wrapper">
-			<Heading as="h1" size="xlarge">{heading}</Heading>
-			{#if tag}
-				<Tag variant={tag.variant}>{tag.label}</Tag>
+	{#if heading}
+		<div class="header-row">
+			<div class="heading-wrapper">
+				<Heading as="h1" size="xlarge">{heading}</Heading>
+				{#if tag}
+					<Tag variant={tag.variant}>{tag.label}</Tag>
+				{/if}
+			</div>
+			{#if breadcrumbs.length === 0}
+				<AddToFavorites path={page.url.pathname} />
 			{/if}
 		</div>
-		{#if breadcrumbs.length === 0}
-			<AddToFavorites path={page.url.pathname} />
-		{/if}
-	</div>
+	{/if}
 </div>
 
 <style>
