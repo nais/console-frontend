@@ -16,6 +16,7 @@
 
 <style>
 	.meta {
+		display: block;
 		font-size: var(--ax-font-size-small);
 		line-height: var(--ax-font-line-height-large);
 		color: var(--ax-text-neutral-subtle);
