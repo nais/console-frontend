@@ -86,8 +86,8 @@
 	.activity-item:not(:last-child)::before {
 		background: var(--ax-border-neutral-subtleA);
 		content: '';
-		top: calc(2rem + 4px);
-		bottom: calc(-1 * var(--ax-space-4) - 4px);
+		top: 2rem;
+		bottom: calc(-1 * var(--ax-space-4));
 		left: calc(1rem - 1px);
 		position: absolute;
 		width: 2px;
