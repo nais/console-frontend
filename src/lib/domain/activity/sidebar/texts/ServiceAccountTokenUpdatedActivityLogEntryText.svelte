@@ -15,8 +15,7 @@
 
 <div>
 	<BodyLong size="small">
-		Token updated for service account
-		<a href="/team/{data.teamSlug}/settings/service_accounts">{data.resourceName}</a>.
+		Token updated for service account <strong>{data.resourceName}</strong>.
 		{#if data.serviceAccountTokenUpdatedData.updatedFields.length > 0}
 			{#each data.serviceAccountTokenUpdatedData.updatedFields as field (field.field)}
 				<strong>{field.field}</strong>

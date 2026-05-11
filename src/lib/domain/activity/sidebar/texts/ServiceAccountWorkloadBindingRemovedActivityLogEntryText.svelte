@@ -16,7 +16,7 @@
 <div>
 	<BodyLong size="small">
 		Removed workload <strong>{data.workloadBindingRemovedData.workloadName}</strong> from service
-		account <a href="/team/{data.teamSlug}/settings/service_accounts">{data.resourceName}</a>.
+		account <strong>{data.resourceName}</strong>.
 	</BodyLong>
 	<Meta actor={data.actor} createdAt={data.createdAt} />
 </div>

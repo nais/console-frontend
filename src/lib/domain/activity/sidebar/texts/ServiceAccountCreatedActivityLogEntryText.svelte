@@ -15,9 +15,7 @@
 
 <div>
 	<BodyLong size="small">
-		Service account <a href="/team/{data.teamSlug}/settings/service_accounts">{data.resourceName}</a
-		>
-		created.
+		Service account <strong>{data.resourceName}</strong> created.
 	</BodyLong>
 	<Meta actor={data.actor} createdAt={data.createdAt} />
 </div>

@@ -16,7 +16,7 @@
 <div>
 	<BodyLong size="small">
 		Token <strong>{data.serviceAccountTokenCreatedData.tokenName}</strong> created for service
-		account <a href="/team/{data.teamSlug}/settings/service_accounts">{data.resourceName}</a>.
+		account <strong>{data.resourceName}</strong>.
 	</BodyLong>
 	<Meta actor={data.actor} createdAt={data.createdAt} />
 </div>
