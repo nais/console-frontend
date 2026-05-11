@@ -37,14 +37,6 @@
 		`/team/${app.team.slug}/${app.teamEnvironment.environment.name}/app/${app.name}`
 	);
 
-	const statusTooltip = $derived(
-		{
-			RUNNING: 'Application is running',
-			NOT_RUNNING: 'Application is not running',
-			UNKNOWN: 'Unknown status'
-		}[app.state] ?? ''
-	);
-
 	const runningInstances = $derived(
 		app.instances.edges.filter((s) => s.node.status.state === 'RUNNING').length
 	);
@@ -53,19 +45,21 @@
 <ListItemV2 interactive>
 	<div class="app-row">
 		<div class="name-group">
-			<Tooltip content={statusTooltip}>
-				{#if app.state === 'RUNNING'}
+			{#if app.state === 'RUNNING'}
+				<Tooltip content="Application is running">
 					<span class="status-indicator">
 						<RunningIndicator />
 					</span>
-				{:else}
-					<span
-						class="status-dot"
-						class:not-running={app.state === 'NOT_RUNNING'}
-						class:unknown={app.state !== 'NOT_RUNNING'}
-					></span>
-				{/if}
-			</Tooltip>
+				</Tooltip>
+			{:else if app.state === 'NOT_RUNNING'}
+				<Tooltip content="Application is not running">
+					<span class="status-dot not-running"></span>
+				</Tooltip>
+			{:else}
+				<Tooltip content="Unknown status">
+					<span class="status-dot unknown"></span>
+				</Tooltip>
+			{/if}
 			<a href={appHref} class="app-name">{app.name}</a>
 			<Tag size="xsmall" variant={envTagVariant(app.teamEnvironment.environment.name)}
 				>{app.teamEnvironment.environment.name}</Tag
@@ -131,21 +125,32 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
+		width: 24px;
+		height: 24px;
 		flex-shrink: 0;
 	}
 
 	.status-dot {
-		width: 10px;
-		height: 10px;
-		border-radius: 50%;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		width: 24px;
+		height: 24px;
 		flex-shrink: 0;
 	}
 
-	.status-dot.not-running {
+	.status-dot::after {
+		content: '';
+		width: 10px;
+		height: 10px;
+		border-radius: 50%;
+	}
+
+	.status-dot.not-running::after {
 		background-color: var(--ax-bg-danger-strong);
 	}
 
-	.status-dot.unknown {
+	.status-dot.unknown::after {
 		background-color: var(--ax-text-neutral-decoration);
 	}
 
@@ -157,7 +162,7 @@
 		overflow: hidden;
 		text-overflow: ellipsis;
 		min-width: 0;
-		flex: 1 1 0;
+		flex: 0 1 auto;
 	}
 
 	.app-name:hover {
