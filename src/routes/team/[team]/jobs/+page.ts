@@ -21,7 +21,7 @@ export async function load(event) {
 	const before = event.url.searchParams.get('before') || '';
 
 	return {
-		...(await addPageMeta(event, { title: 'Jobs' })),
+		...(await addPageMeta(event, { title: 'Jobs', pageHeaderTitle: '' })),
 		...(await load_Jobs({
 			event,
 			variables: {

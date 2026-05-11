@@ -17,12 +17,16 @@
 	const {
 		running = 0,
 		notRunning = 0,
+		completed = 0,
+		failed = 0,
 		unknown = 0,
 		activeStatuses = [],
 		onchange
 	}: {
 		running?: number;
 		notRunning?: number;
+		completed?: number;
+		failed?: number;
 		unknown?: number;
 		activeStatuses?: string[];
 		onchange?: (statuses: string[]) => void;
@@ -38,9 +42,23 @@
 				colorClass: 'success' as const
 			},
 			{
+				key: 'completed',
+				label: 'Completed',
+				count: completed,
+				icon: CheckmarkCircleIcon,
+				colorClass: 'success' as const
+			},
+			{
 				key: 'not-running',
 				label: 'Not running',
 				count: notRunning,
+				icon: XMarkOctagonIcon,
+				colorClass: 'danger' as const
+			},
+			{
+				key: 'failed',
+				label: 'Failed',
+				count: failed,
 				icon: XMarkOctagonIcon,
 				colorClass: 'danger' as const
 			},
