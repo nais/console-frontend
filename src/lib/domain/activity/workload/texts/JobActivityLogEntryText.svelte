@@ -1,7 +1,6 @@
 <script lang="ts">
 	import { BodyLong } from '@nais/ds-svelte-community';
 	import Meta from '../../Meta.svelte';
-	import { summarizeChangedFields } from './helpers';
 	import type { WorkloadActivityEntry } from './types';
 
 	let {
@@ -15,28 +14,39 @@
 			| 'JobUpdatedActivityLogEntry'
 		>;
 	} = $props();
-
-	const summary = $derived.by(() => {
-		switch (data.__typename) {
-			case 'JobCreatedActivityLogEntry':
-				return 'Job created';
-			case 'JobDeletedActivityLogEntry':
-				return 'Job deleted';
-			case 'JobRunDeletedActivityLogEntry':
-				return data.jobRunDeleted?.runName
-					? `Run deleted: ${data.jobRunDeleted.runName}`
-					: 'Run deleted';
-			case 'JobTriggeredActivityLogEntry':
-				return 'Job triggered';
-			case 'JobUpdatedActivityLogEntry':
-				return data.jobUpdated?.changedFields?.length
-					? `Job updated: ${summarizeChangedFields(data.jobUpdated.changedFields)}`
-					: 'Job updated';
-		}
-	});
 </script>
 
-<BodyLong size="medium">
-	{summary}
+<div>
+	<BodyLong size="small">
+		{#if data.__typename === 'JobCreatedActivityLogEntry'}
+			Job created.
+		{:else if data.__typename === 'JobDeletedActivityLogEntry'}
+			Job deleted.
+		{:else if data.__typename === 'JobRunDeletedActivityLogEntry'}
+			{#if data.jobRunDeletedData?.runName}
+				Run <strong>{data.jobRunDeletedData.runName}</strong> deleted.
+			{:else}
+				Run deleted.
+			{/if}
+		{:else if data.__typename === 'JobTriggeredActivityLogEntry'}
+			Job triggered.
+		{:else if data.__typename === 'JobUpdatedActivityLogEntry'}
+			Job updated.
+			{#if data.jobUpdatedData?.changedFields?.length}
+				{#each data.jobUpdatedData.changedFields as field (field.field)}
+					<strong>{field.field}</strong>
+					{#if field.oldValue != null && field.newValue != null}
+						changed from <i>{field.oldValue}</i> to <i>{field.newValue}</i>.
+					{:else if field.oldValue == null && field.newValue != null}
+						set to <i>{field.newValue}</i>.
+					{:else if field.oldValue != null && field.newValue == null}
+						removed (was <i>{field.oldValue}</i>).
+					{:else}
+						changed.
+					{/if}
+				{/each}
+			{/if}
+		{/if}
+	</BodyLong>
 	<Meta actor={data.actor} createdAt={data.createdAt} />
-</BodyLong>
+</div>
