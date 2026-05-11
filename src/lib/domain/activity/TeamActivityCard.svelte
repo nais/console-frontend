@@ -15,6 +15,21 @@
 
 	let { teamSlug, filter, viewAllHref, title = 'Activity' }: Props = $props();
 
+	const viewAllLink = $derived.by(() => {
+		const params = new URLSearchParams();
+		if (filter?.activityTypes?.length) {
+			params.set('activityTypes', filter.activityTypes.join(','));
+		}
+		if (filter?.resourceTypes?.length) {
+			params.set('resourceTypes', filter.resourceTypes.join(','));
+		}
+		if (filter?.environments?.length) {
+			params.set('environments', filter.environments.join(','));
+		}
+		const qs = params.toString();
+		return qs ? `${viewAllHref}?${qs}` : viewAllHref;
+	});
+
 	const first = 5;
 
 	const activityQuery = graphql(`
@@ -365,7 +380,7 @@
 
 <SurfaceCard {title}>
 	{#snippet headerAside()}
-		<a class="view-all" href={viewAllHref}>View all</a>
+		<a class="view-all" href={viewAllLink}>View all</a>
 	{/snippet}
 
 	{#if $activityQuery.fetching && entries.length === 0}
