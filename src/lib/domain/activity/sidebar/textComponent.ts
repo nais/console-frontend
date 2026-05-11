@@ -47,6 +47,16 @@ import ValkeyCreatedActivityLogEntryText from './texts/ValkeyCreatedActivityLogE
 import ValkeyDeletedActivityLogEntryText from './texts/ValkeyDeletedActivityLogEntryText.svelte';
 import ValkeyUpdatedActivityLogEntryText from './texts/ValkeyUpdatedActivityLogEntryText.svelte';
 import VulnerabilityUpdatedActivityLogEntryText from './texts/VulnerabilityUpdatedActivityLogEntryText.svelte';
+import RoleAssignedToServiceAccountActivityLogEntryText from './texts/RoleAssignedToServiceAccountActivityLogEntryText.svelte';
+import RoleRevokedFromServiceAccountActivityLogEntryText from './texts/RoleRevokedFromServiceAccountActivityLogEntryText.svelte';
+import ServiceAccountCreatedActivityLogEntryText from './texts/ServiceAccountCreatedActivityLogEntryText.svelte';
+import ServiceAccountDeletedActivityLogEntryText from './texts/ServiceAccountDeletedActivityLogEntryText.svelte';
+import ServiceAccountUpdatedActivityLogEntryText from './texts/ServiceAccountUpdatedActivityLogEntryText.svelte';
+import ServiceAccountTokenCreatedActivityLogEntryText from './texts/ServiceAccountTokenCreatedActivityLogEntryText.svelte';
+import ServiceAccountTokenDeletedActivityLogEntryText from './texts/ServiceAccountTokenDeletedActivityLogEntryText.svelte';
+import ServiceAccountTokenUpdatedActivityLogEntryText from './texts/ServiceAccountTokenUpdatedActivityLogEntryText.svelte';
+import ServiceAccountWorkloadBindingAddedActivityLogEntryText from './texts/ServiceAccountWorkloadBindingAddedActivityLogEntryText.svelte';
+import ServiceAccountWorkloadBindingRemovedActivityLogEntryText from './texts/ServiceAccountWorkloadBindingRemovedActivityLogEntryText.svelte';
 
 export function sidebarTextComponent(kind: string): Component<{ data: unknown }> {
 	switch (kind) {
@@ -143,6 +153,30 @@ export function sidebarTextComponent(kind: string): Component<{ data: unknown }>
 			return UnleashInstanceDeletedActivityLogEntryText as Component<{ data: unknown }>;
 		case 'VulnerabilityUpdatedActivityLogEntry':
 			return VulnerabilityUpdatedActivityLogEntryText as Component<{ data: unknown }>;
+		case 'ServiceAccountCreatedActivityLogEntry':
+			return ServiceAccountCreatedActivityLogEntryText as Component<{ data: unknown }>;
+		case 'ServiceAccountDeletedActivityLogEntry':
+			return ServiceAccountDeletedActivityLogEntryText as Component<{ data: unknown }>;
+		case 'ServiceAccountUpdatedActivityLogEntry':
+			return ServiceAccountUpdatedActivityLogEntryText as Component<{ data: unknown }>;
+		case 'ServiceAccountTokenCreatedActivityLogEntry':
+			return ServiceAccountTokenCreatedActivityLogEntryText as Component<{ data: unknown }>;
+		case 'ServiceAccountTokenDeletedActivityLogEntry':
+			return ServiceAccountTokenDeletedActivityLogEntryText as Component<{ data: unknown }>;
+		case 'ServiceAccountTokenUpdatedActivityLogEntry':
+			return ServiceAccountTokenUpdatedActivityLogEntryText as Component<{ data: unknown }>;
+		case 'RoleAssignedToServiceAccountActivityLogEntry':
+			return RoleAssignedToServiceAccountActivityLogEntryText as Component<{ data: unknown }>;
+		case 'RoleRevokedFromServiceAccountActivityLogEntry':
+			return RoleRevokedFromServiceAccountActivityLogEntryText as Component<{ data: unknown }>;
+		case 'ServiceAccountWorkloadBindingAddedActivityLogEntry':
+			return ServiceAccountWorkloadBindingAddedActivityLogEntryText as Component<{
+				data: unknown;
+			}>;
+		case 'ServiceAccountWorkloadBindingRemovedActivityLogEntry':
+			return ServiceAccountWorkloadBindingRemovedActivityLogEntryText as Component<{
+				data: unknown;
+			}>;
 		default:
 			return DefaultText as Component<{ data: unknown }>;
 	}
