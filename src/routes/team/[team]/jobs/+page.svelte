@@ -112,11 +112,12 @@
 					name: j.name,
 					env: j.teamEnvironment.environment.name,
 					nextRun: result.nextRun,
+					nextRunDate: result.nextRunDate,
 					description: result.description
 				};
 			})
-			.filter((j) => j.nextRun)
-			.sort((a, b) => (a.nextRun! < b.nextRun! ? -1 : 1))
+			.filter((j) => j.nextRunDate)
+			.sort((a, b) => a.nextRunDate!.getTime() - b.nextRunDate!.getTime())
 			.slice(0, 5);
 	});
 </script>
@@ -212,16 +213,13 @@
 				}}
 			/>
 		{:else}
-			<BodyLong><strong>No jobs found.</strong></BodyLong>
-		{/if}
-	</div>
-	<div class="right-column">
-		<SurfaceCard title="About">
 			<BodyLong>
 				Jobs are used for one-time or scheduled tasks that run to completion and then exit.
 				<ExternalLink href={docURL('/workloads/job')}>Learn more about jobs.</ExternalLink>
 			</BodyLong>
-		</SurfaceCard>
+		{/if}
+	</div>
+	<div class="right-column">
 		{#if jobQueue.length > 0}
 			<SurfaceCard title="Job queue">
 				<ul class="job-queue">
