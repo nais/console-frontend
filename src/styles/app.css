@@ -18,8 +18,9 @@
 	--surface-elevated-background-reverse: var(--ax-bg-brand-blue-softA);
 	/* --surface-icon-background: color-mix(in srgb, var(--surface-accent-color) 10%, transparent); */
 
-	--surface-elevated-shadow: 0 0 0 1px
-		color-mix(in srgb, var(--surface-accent-color) 24%, transparent);
+	--surface-elevated-shadow:
+		0 0 0 1px color-mix(in srgb, var(--surface-accent-color) 24%, transparent),
+		0 2px 8px 0 rgba(0, 0, 0, 0.12), 0 1px 3px 0 rgba(0, 0, 0, 0.08);
 	--surface-icon-shadow: none;
 }
 
@@ -38,8 +39,9 @@
 	--surface-shadow-color: rgba(61, 65, 111, 0.6);
 	--surface-elevated-background: var(--ax-bg-brand-blue-softA);
 	--surface-elevated-background-reverse: var(--ax-bg-brand-blue-softA);
-	--surface-elevated-shadow: 0 0 0 1px
-		color-mix(in srgb, var(--surface-accent-color) 24%, transparent);
+	--surface-elevated-shadow:
+		0 0 0 1px color-mix(in srgb, var(--surface-accent-color) 24%, transparent),
+		0 2px 8px 0 rgba(0, 0, 0, 0.2), 0 1px 3px 0 rgba(0, 0, 0, 0.16);
 	/* --surface-icon-background: color-mix(in srgb, var(--surface-accent-color) 10%, transparent); */
 	--surface-icon-shadow: none;
 }
