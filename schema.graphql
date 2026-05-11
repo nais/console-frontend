@@ -7881,6 +7881,11 @@ input TeamApplicationsFilter {
 
   """Filter by the name of the application."""
   name: String
+
+  """
+  Filter by application state. When provided, only applications matching one of the given states are returned.
+  """
+  states: [ApplicationState!]
 }
 
 type TeamCDN {
@@ -8360,6 +8365,11 @@ input TeamJobsFilter {
 
   """Filter by the name of the job."""
   name: String!
+
+  """
+  Filter by job state. When provided, only jobs matching one of the given states are returned.
+  """
+  states: [JobState!]
 }
 
 type TeamMember {

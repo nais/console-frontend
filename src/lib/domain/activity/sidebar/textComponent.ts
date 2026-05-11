@@ -24,12 +24,22 @@ import PostgresGrantAccessActivityLogEntryText from './texts/PostgresGrantAccess
 import RepositoryAddedActivityLogEntryText from './texts/RepositoryAddedActivityLogEntryText.svelte';
 import RepositoryRemovedActivityLogEntryText from './texts/RepositoryRemovedActivityLogEntryText.svelte';
 import ResourceDeletedActivityLogEntryText from './texts/ResourceDeletedActivityLogEntryText.svelte';
+import RoleAssignedToServiceAccountActivityLogEntryText from './texts/RoleAssignedToServiceAccountActivityLogEntryText.svelte';
+import RoleRevokedFromServiceAccountActivityLogEntryText from './texts/RoleRevokedFromServiceAccountActivityLogEntryText.svelte';
 import SecretCreatedActivityLogEntryText from './texts/SecretCreatedActivityLogEntryText.svelte';
 import SecretDeletedActivityLogEntryText from './texts/SecretDeletedActivityLogEntryText.svelte';
 import SecretValueAddedActivityLogEntryText from './texts/SecretValueAddedActivityLogEntryText.svelte';
 import SecretValueRemovedActivityLogEntryText from './texts/SecretValueRemovedActivityLogEntryText.svelte';
 import SecretValueUpdatedActivityLogEntryText from './texts/SecretValueUpdatedActivityLogEntryText.svelte';
 import SecretValuesViewedActivityLogEntryText from './texts/SecretValuesViewedActivityLogEntryText.svelte';
+import ServiceAccountCreatedActivityLogEntryText from './texts/ServiceAccountCreatedActivityLogEntryText.svelte';
+import ServiceAccountDeletedActivityLogEntryText from './texts/ServiceAccountDeletedActivityLogEntryText.svelte';
+import ServiceAccountTokenCreatedActivityLogEntryText from './texts/ServiceAccountTokenCreatedActivityLogEntryText.svelte';
+import ServiceAccountTokenDeletedActivityLogEntryText from './texts/ServiceAccountTokenDeletedActivityLogEntryText.svelte';
+import ServiceAccountTokenUpdatedActivityLogEntryText from './texts/ServiceAccountTokenUpdatedActivityLogEntryText.svelte';
+import ServiceAccountUpdatedActivityLogEntryText from './texts/ServiceAccountUpdatedActivityLogEntryText.svelte';
+import ServiceAccountWorkloadBindingAddedActivityLogEntryText from './texts/ServiceAccountWorkloadBindingAddedActivityLogEntryText.svelte';
+import ServiceAccountWorkloadBindingRemovedActivityLogEntryText from './texts/ServiceAccountWorkloadBindingRemovedActivityLogEntryText.svelte';
 import ServiceMaintenanceActivityLogEntryText from './texts/ServiceMaintenanceActivityLogEntryText.svelte';
 import TeamConfirmDeleteKeyActivityLogEntryText from './texts/TeamConfirmDeleteKeyActivityLogEntryText.svelte';
 import TeamCreateDeleteKeyActivityLogEntryText from './texts/TeamCreateDeleteKeyActivityLogEntryText.svelte';
@@ -47,16 +57,6 @@ import ValkeyCreatedActivityLogEntryText from './texts/ValkeyCreatedActivityLogE
 import ValkeyDeletedActivityLogEntryText from './texts/ValkeyDeletedActivityLogEntryText.svelte';
 import ValkeyUpdatedActivityLogEntryText from './texts/ValkeyUpdatedActivityLogEntryText.svelte';
 import VulnerabilityUpdatedActivityLogEntryText from './texts/VulnerabilityUpdatedActivityLogEntryText.svelte';
-import RoleAssignedToServiceAccountActivityLogEntryText from './texts/RoleAssignedToServiceAccountActivityLogEntryText.svelte';
-import RoleRevokedFromServiceAccountActivityLogEntryText from './texts/RoleRevokedFromServiceAccountActivityLogEntryText.svelte';
-import ServiceAccountCreatedActivityLogEntryText from './texts/ServiceAccountCreatedActivityLogEntryText.svelte';
-import ServiceAccountDeletedActivityLogEntryText from './texts/ServiceAccountDeletedActivityLogEntryText.svelte';
-import ServiceAccountUpdatedActivityLogEntryText from './texts/ServiceAccountUpdatedActivityLogEntryText.svelte';
-import ServiceAccountTokenCreatedActivityLogEntryText from './texts/ServiceAccountTokenCreatedActivityLogEntryText.svelte';
-import ServiceAccountTokenDeletedActivityLogEntryText from './texts/ServiceAccountTokenDeletedActivityLogEntryText.svelte';
-import ServiceAccountTokenUpdatedActivityLogEntryText from './texts/ServiceAccountTokenUpdatedActivityLogEntryText.svelte';
-import ServiceAccountWorkloadBindingAddedActivityLogEntryText from './texts/ServiceAccountWorkloadBindingAddedActivityLogEntryText.svelte';
-import ServiceAccountWorkloadBindingRemovedActivityLogEntryText from './texts/ServiceAccountWorkloadBindingRemovedActivityLogEntryText.svelte';
 
 export function sidebarTextComponent(kind: string): Component<{ data: unknown }> {
 	switch (kind) {
