@@ -36,6 +36,7 @@
 
 	.list-item:last-child {
 		border-bottom: none;
+		border-radius: 0 0 var(--ax-radius-8) var(--ax-radius-8);
 	}
 
 	.list-item > :global(*) {
