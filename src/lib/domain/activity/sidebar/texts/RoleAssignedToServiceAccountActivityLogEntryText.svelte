@@ -16,7 +16,7 @@
 <div>
 	<BodyLong size="small">
 		Role <strong>{data.roleAssignedData.roleName}</strong> assigned to service account
-		<a href="/team/{data.teamSlug}/settings/service_accounts">{data.resourceName}</a>.
+		<strong>{data.resourceName}</strong>.
 	</BodyLong>
 	<Meta actor={data.actor} createdAt={data.createdAt} />
 </div>

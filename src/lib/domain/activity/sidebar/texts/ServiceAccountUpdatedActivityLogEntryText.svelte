@@ -15,9 +15,7 @@
 
 <div>
 	<BodyLong size="small">
-		Service account <a href="/team/{data.teamSlug}/settings/service_accounts">{data.resourceName}</a
-		>
-		updated.
+		Service account <strong>{data.resourceName}</strong> updated.
 		{#if data.serviceAccountUpdatedData.updatedFields.length > 0}
 			{#each data.serviceAccountUpdatedData.updatedFields as field (field.field)}
 				<strong>{field.field}</strong>

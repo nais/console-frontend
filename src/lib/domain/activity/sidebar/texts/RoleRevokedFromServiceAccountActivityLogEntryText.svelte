@@ -16,7 +16,7 @@
 <div>
 	<BodyLong size="small">
 		Role <strong>{data.roleRevokedData.roleName}</strong> revoked from service account
-		<a href="/team/{data.teamSlug}/settings/service_accounts">{data.resourceName}</a>.
+		<strong>{data.resourceName}</strong>.
 	</BodyLong>
 	<Meta actor={data.actor} createdAt={data.createdAt} />
 </div>
