@@ -222,11 +222,11 @@
 
 	const entries = $derived.by(() => {
 		if (workloadType === 'app') {
-			return ($appActivityQuery.data?.team?.environment?.application?.activityLog.edges ?? []).map(
+			return ($appActivityQuery?.data?.team?.environment?.application?.activityLog.edges ?? []).map(
 				(e) => e.node
 			);
 		}
-		return ($jobActivityQuery.data?.team?.environment?.job?.activityLog.edges ?? []).map(
+		return ($jobActivityQuery?.data?.team?.environment?.job?.activityLog.edges ?? []).map(
 			(e) => e.node
 		);
 	});
@@ -234,17 +234,17 @@
 	const hasNextPage = $derived.by(() => {
 		if (workloadType === 'app') {
 			return (
-				$appActivityQuery.data?.team?.environment?.application?.activityLog.pageInfo.hasNextPage ??
+				$appActivityQuery?.data?.team?.environment?.application?.activityLog.pageInfo.hasNextPage ??
 				false
 			);
 		}
 		return (
-			$jobActivityQuery.data?.team?.environment?.job?.activityLog.pageInfo.hasNextPage ?? false
+			$jobActivityQuery?.data?.team?.environment?.job?.activityLog.pageInfo.hasNextPage ?? false
 		);
 	});
 
 	const fetching = $derived(
-		workloadType === 'app' ? $appActivityQuery.fetching : $jobActivityQuery.fetching
+		workloadType === 'app' ? $appActivityQuery?.fetching : $jobActivityQuery?.fetching
 	);
 </script>
 
