@@ -26,27 +26,36 @@
 	);
 
 	function handleActivityTypesChange(selected: ActivityLogActivityType$options[]) {
-		changeParams({
-			activityTypes: selected.join(','),
-			after: '',
-			before: ''
-		});
+		changeParams(
+			{
+				activityTypes: selected.join(','),
+				after: '',
+				before: ''
+			},
+			{ noScroll: true }
+		);
 	}
 
 	function handleResourceTypesChange(selected: string[]) {
-		changeParams({
-			resourceTypes: selected.join(','),
-			after: '',
-			before: ''
-		});
+		changeParams(
+			{
+				resourceTypes: selected.join(','),
+				after: '',
+				before: ''
+			},
+			{ noScroll: true }
+		);
 	}
 
 	function handleEnvironmentsChange(selected: string[]) {
-		changeParams({
-			environments: selected.join(','),
-			after: '',
-			before: ''
-		});
+		changeParams(
+			{
+				environments: selected.join(','),
+				after: '',
+				before: ''
+			},
+			{ noScroll: true }
+		);
 	}
 </script>
 
@@ -69,16 +78,22 @@
 						page={ae.pageInfo}
 						loaders={{
 							loadPreviousPage: () => {
-								changeParams({
-									after: '',
-									before: ae.pageInfo.startCursor ?? ''
-								});
+								changeParams(
+									{
+										after: '',
+										before: ae.pageInfo.startCursor ?? ''
+									},
+									{ noScroll: true }
+								);
 							},
 							loadNextPage: () => {
-								changeParams({
-									before: '',
-									after: ae.pageInfo.endCursor ?? ''
-								});
+								changeParams(
+									{
+										before: '',
+										after: ae.pageInfo.endCursor ?? ''
+									},
+									{ noScroll: true }
+								);
 							}
 						}}
 					/>

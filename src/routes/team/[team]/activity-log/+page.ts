@@ -16,6 +16,7 @@ export async function load(event) {
 		...(await addPageMeta(event, { title: 'Activity Log' })),
 		...(await load_ActivityLog({
 			event,
+			blocking: true,
 			variables: {
 				team: event.params.team,
 				...(before ? { before, last: rows } : { after: after || undefined, first: rows }),
