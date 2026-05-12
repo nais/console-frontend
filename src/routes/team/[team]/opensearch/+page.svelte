@@ -17,7 +17,7 @@
 	import TooltipAlignHack from '$lib/ui/TooltipAlignHack.svelte';
 	import { countIssuesBySeverity } from '$lib/utils/issueCounts';
 	import { changeParams } from '$lib/utils/searchparams';
-	import { BodyLong, Button } from '@nais/ds-svelte-community';
+	import { Button } from '@nais/ds-svelte-community';
 	import { CircleFillIcon, PlusIcon } from '@nais/ds-svelte-community/icons';
 	import { endOfYesterday, startOfMonth, subMonths } from 'date-fns';
 	import CreatePage from '../opensearch/create/+page.svelte';
@@ -71,15 +71,8 @@
 	{#if $OpenSearch.data.team.openSearches.pageInfo.totalCount}
 		<div class="content-wrapper">
 			<div>
-				<BodyLong spacing>
-					OpenSearch is a distributed search and analytics engine.
-					<ExternalLink href={docURL('/persistence/opensearch')}
-						>Learn more about OpenSearch and how to get started.</ExternalLink
-					>
-				</BodyLong>
-
 				{@render createButton()}
-				<List title="{$OpenSearch.data.team.openSearches.pageInfo.totalCount} entries">
+				<List title="OpenSearch" count={$OpenSearch.data.team.openSearches.pageInfo.totalCount}>
 					{#snippet menu()}
 						<OrderByMenu
 							orderField={OpenSearchOrderField}
@@ -189,15 +182,20 @@
 		</div>
 	{:else}
 		<div class="content-wrapper">
-			<BodyLong as="div">
+			<div>
 				{@render createButton()}
-
-				<strong>No OpenSearch found.</strong> OpenSearch is a distributed search and analytics
-				engine.
-				<ExternalLink href={docURL('/persistence/opensearch')}
-					>Learn more about OpenSearch and how to get started.</ExternalLink
-				>
-			</BodyLong>
+				<List title="OpenSearch" count={0}>
+					<ListItem>
+						<p>
+							No OpenSearch instances found. OpenSearch is a distributed search and analytics
+							engine.
+							<ExternalLink href={docURL('/persistence/opensearch')}
+								>Learn more about OpenSearch and how to get started.</ExternalLink
+							>
+						</p>
+					</ListItem>
+				</List>
+			</div>
 		</div>
 	{/if}
 
