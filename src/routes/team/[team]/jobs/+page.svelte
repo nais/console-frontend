@@ -6,7 +6,7 @@
 	import JobListItem from '$lib/domain/list-items/JobListItem.svelte';
 	import ExternalLink from '$lib/ui/ExternalLink.svelte';
 	import GraphErrors from '$lib/ui/GraphErrors.svelte';
-	import ListV2 from '$lib/ui/ListV2.svelte';
+	import List from '$lib/ui/List.svelte';
 	import OrderByMenu from '$lib/ui/OrderByMenu.svelte';
 	import Pagination from '$lib/ui/Pagination.svelte';
 	import SearchField from '$lib/ui/SearchField.svelte';
@@ -129,7 +129,7 @@
 		{#if totalJobs > 0}
 			{@const jobs = $Jobs.data?.team.jobs}
 
-			<ListV2 title="Jobs" count={jobs?.pageInfo.totalCount ?? 0}>
+			<List title="Jobs" count={jobs?.pageInfo.totalCount ?? 0}>
 				{#snippet search()}
 					<SearchField
 						value={filter}
@@ -200,7 +200,7 @@
 				{#each jobs?.nodes ?? [] as job (job.id)}
 					<JobListItem {job} />
 				{/each}
-			</ListV2>
+			</List>
 			<Pagination
 				page={jobs?.pageInfo}
 				loaders={{

@@ -1,7 +1,7 @@
 <script lang="ts">
 	import IssuePills from '$lib/domain/issues/IssuePills.svelte';
 	import { envTagVariant } from '$lib/envTagVariant';
-	import ListItemV2 from '$lib/ui/ListItemV2.svelte';
+	import ListItem from '$lib/ui/ListItem.svelte';
 	import RunningIndicator from '$lib/ui/RunningIndicator.svelte';
 	import Time from '$lib/ui/Time.svelte';
 	import { countIssuesBySeverity } from '$lib/utils/issueCounts';
@@ -42,7 +42,7 @@
 	);
 </script>
 
-<ListItemV2 interactive>
+<ListItem interactive>
 	<div class="app-row">
 		<div class="name-group">
 			{#if app.state === 'RUNNING'}
@@ -98,7 +98,7 @@
 			</span>
 		</div>
 	</div>
-</ListItemV2>
+</ListItem>
 
 <style>
 	.app-row {
