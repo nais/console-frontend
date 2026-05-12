@@ -7,7 +7,7 @@
 @import './layerchart.css' layer(components);
 
 :root {
-	--spacing-layout: var(--ax-space-40);
+	--spacing-layout: var(--ax-space-24);
 	--spacing-layout-mobile: var(--ax-space-16);
 	--surface-shadow-color: rgba(128, 128, 128, 0.6);
 	--surface-accent-color: var(--ax-text-brand-blue);
