@@ -27,63 +27,67 @@
 {#if $JobImageDetails.data}
 	{@const workload = $JobImageDetails.data.team.environment.workload}
 	<div class="wrapper">
-		<SurfaceCard title="Image">
-			{#snippet headerAside()}
-				<CopyButton
-					copyText={workload.image.name + ':' + workload.image.tag}
-					size="xsmall"
-					variant="action"
-				/>
-			{/snippet}
-
-			{#if registry === '' || repository === '' || name === ''}
-				<dl class="kv">
-					<div>
-						<dt>Name</dt>
-						<dd><code>{workload.image.name}</code></dd>
-					</div>
-					<div>
-						<dt>Tag</dt>
-						<dd><code>{workload.image.tag}</code></dd>
-					</div>
-				</dl>
-			{:else}
-				<dl class="kv">
-					<div>
-						<dt>Registry</dt>
-						<dd><code>{registry}</code></dd>
-					</div>
-					<div>
-						<dt>Repository</dt>
-						<dd><code>{repository}</code></dd>
-					</div>
-					<div>
-						<dt>Name</dt>
-						<dd><code>{name}</code></dd>
-					</div>
-					<div>
-						<dt>Tag</dt>
-						<dd><code>{workload.image.tag}</code></dd>
-					</div>
-				</dl>
+		<div class="top">
+			{#if workload.image.hasSBOM}
+				<SurfaceCard title="Summary" bordered>
+					<WorkloadVulnerabilitySummary {workload} />
+				</SurfaceCard>
 			{/if}
 
-			{#if !workload.image.hasSBOM}
-				<BodyShort size="small" spacing>
-					<WarningIcon class="text-aligned-icon" /> No vulnerability data available. Learn how to generate
-					SBOMs and attestations for your workloads in the
-					<ExternalLink href={docURL('/services/vulnerabilities/how-to/sbom/')}
-						>Nais documentation
-					</ExternalLink>.
-				</BodyShort>
-			{/if}
-		</SurfaceCard>
+			<SurfaceCard title="Image">
+				{#snippet headerAside()}
+					<CopyButton
+						copyText={workload.image.name + ':' + workload.image.tag}
+						size="xsmall"
+						variant="action"
+					/>
+				{/snippet}
+
+				{#if registry === '' || repository === '' || name === ''}
+					<dl class="kv">
+						<div>
+							<dt>Name</dt>
+							<dd><code>{workload.image.name}</code></dd>
+						</div>
+						<div>
+							<dt>Tag</dt>
+							<dd><code>{workload.image.tag}</code></dd>
+						</div>
+					</dl>
+				{:else}
+					<dl class="kv">
+						<div>
+							<dt>Registry</dt>
+							<dd><code>{registry}</code></dd>
+						</div>
+						<div>
+							<dt>Repository</dt>
+							<dd><code>{repository}</code></dd>
+						</div>
+						<div>
+							<dt>Name</dt>
+							<dd><code>{name}</code></dd>
+						</div>
+						<div>
+							<dt>Tag</dt>
+							<dd><code>{workload.image.tag}</code></dd>
+						</div>
+					</dl>
+				{/if}
+
+				{#if !workload.image.hasSBOM}
+					<BodyShort size="small" spacing>
+						<WarningIcon class="text-aligned-icon" /> No vulnerability data available. Learn how to generate
+						SBOMs and attestations for your workloads in the
+						<ExternalLink href={docURL('/services/vulnerabilities/how-to/sbom/')}
+							>Nais documentation
+						</ExternalLink>.
+					</BodyShort>
+				{/if}
+			</SurfaceCard>
+		</div>
 
 		{#if workload.image.hasSBOM}
-			<SurfaceCard title="Summary" bordered>
-				<WorkloadVulnerabilitySummary {workload} />
-			</SurfaceCard>
-
 			<SurfaceCard title="Vulnerabilities">
 				<ImageVulnerabilities
 					team={$JobImageDetails.data?.team.slug}
@@ -124,6 +128,13 @@
 		gap: var(--ax-space-24);
 	}
 
+	.top {
+		display: grid;
+		grid-template-columns: minmax(0, 1fr) 300px;
+		gap: var(--ax-space-24);
+		align-items: start;
+	}
+
 	code {
 		font-size: var(--ax-font-size-small);
 		font-family: monospace;
@@ -149,5 +160,11 @@
 	.kv dd {
 		margin: 0;
 		color: var(--ax-text-neutral-subtle);
+	}
+
+	@media (max-width: 767px), (max-height: 500px) {
+		.top {
+			grid-template-columns: 1fr;
+		}
 	}
 </style>
