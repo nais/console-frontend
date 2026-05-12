@@ -123,6 +123,7 @@
 		justify-content: space-between;
 		align-items: center;
 		gap: var(--ax-space-12);
+		flex-wrap: wrap;
 	}
 
 	.filters-slot {
@@ -136,7 +137,6 @@
 		display: flex;
 		gap: var(--ax-space-8);
 		flex-shrink: 0;
-		margin-left: auto;
 	}
 
 	.items {
