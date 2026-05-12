@@ -110,8 +110,13 @@
 				href="/team/{teamSlug}/vulnerabilities"
 				class="metric"
 				class:danger={criticalVulnerabilities > 0}
+				class:success={criticalVulnerabilities === 0}
 			>
-				<div class="metric-icon" class:danger={criticalVulnerabilities > 0}>
+				<div
+					class="metric-icon"
+					class:danger={criticalVulnerabilities > 0}
+					class:success={criticalVulnerabilities === 0}
+				>
 					<VirusIcon />
 				</div>
 				<div class="metric-body">
@@ -120,8 +125,13 @@
 				</div>
 			</a>
 
-			<a href="/team/{teamSlug}/alerts" class="metric" class:danger={firingAlerts > 0}>
-				<div class="metric-icon" class:danger={firingAlerts > 0}>
+			<a
+				href="/team/{teamSlug}/alerts"
+				class="metric"
+				class:danger={firingAlerts > 0}
+				class:success={firingAlerts === 0}
+			>
+				<div class="metric-icon" class:danger={firingAlerts > 0} class:success={firingAlerts === 0}>
 					<BellDotFillIcon />
 				</div>
 				<div class="metric-body">
@@ -134,12 +144,12 @@
 				href="/team/{teamSlug}/cost"
 				class="metric"
 				class:warning={costTrend && costTrend.change > 5}
-				class:success={costTrend && costTrend.change < 0}
+				class:success={costTrend && costTrend.change <= 5}
 			>
 				<div
 					class="metric-icon"
 					class:warning={costTrend && costTrend.change > 5}
-					class:success={costTrend && costTrend.change < 0}
+					class:success={costTrend && costTrend.change <= 5}
 				>
 					<PiggybankIcon />
 				</div>
@@ -212,17 +222,17 @@
 
 	.metric-icon.danger {
 		color: var(--ax-text-danger);
-		background: color-mix(in srgb, var(--ax-text-danger) 10%, transparent);
+		background: var(--ax-bg-danger-moderate);
 	}
 
 	.metric-icon.warning {
 		color: var(--ax-text-warning);
-		background: color-mix(in srgb, var(--ax-text-warning) 10%, transparent);
+		background: var(--ax-bg-warning-moderate);
 	}
 
 	.metric-icon.success {
 		color: var(--ax-text-success);
-		background: color-mix(in srgb, var(--ax-text-success) 10%, transparent);
+		background: var(--ax-bg-success-moderate);
 	}
 
 	.metric-body {

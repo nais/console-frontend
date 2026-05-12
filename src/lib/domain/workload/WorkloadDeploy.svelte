@@ -8,9 +8,8 @@
 	} from '$houdini';
 	import Meta from '$lib/domain/activity/Meta.svelte';
 	import GitHubIcon from '$lib/icons/GitHubIcon.svelte';
-	import Pill from '$lib/ui/Pill.svelte';
 	import SurfaceCard from '$lib/ui/SurfaceCard.svelte';
-	import { BodyShort, Tooltip } from '@nais/ds-svelte-community';
+	import { BodyShort, Tag, Tooltip } from '@nais/ds-svelte-community';
 	import { ExternalLinkIcon } from '@nais/ds-svelte-community/icons';
 
 	interface Props {
@@ -52,7 +51,7 @@
 	);
 
 	let statusPill: {
-		variant: 'success' | 'critical' | 'warning' | 'info' | 'neutral';
+		variant: 'success' | 'error' | 'warning' | 'info' | 'neutral';
 		label: string;
 	} = $derived.by(() => {
 		switch (deploymentStatus) {
@@ -61,9 +60,9 @@
 			case DeploymentStatusState.IN_PROGRESS:
 				return { variant: 'info', label: 'In progress' };
 			case DeploymentStatusState.FAILURE:
-				return { variant: 'critical', label: 'Failed' };
+				return { variant: 'error', label: 'Failed' };
 			case DeploymentStatusState.ERROR:
-				return { variant: 'critical', label: 'Error' };
+				return { variant: 'error', label: 'Error' };
 			default:
 				return { variant: 'neutral', label: 'Unknown' };
 		}
@@ -79,7 +78,7 @@
 <SurfaceCard title="Latest deployment">
 	{#snippet headerAside()}
 		{#if deploymentInfo}
-			<Pill variant={statusPill.variant}>{statusPill.label}</Pill>
+			<Tag size="xsmall" variant={statusPill.variant}>{statusPill.label}</Tag>
 		{/if}
 	{/snippet}
 
