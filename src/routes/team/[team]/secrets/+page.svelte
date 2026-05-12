@@ -9,16 +9,12 @@
 	import ListItem from '$lib/ui/ListItem.svelte';
 	import OrderByMenu from '$lib/ui/OrderByMenu.svelte';
 	import Pagination from '$lib/ui/Pagination.svelte';
+	import SearchField from '$lib/ui/SearchField.svelte';
 	import Time from '$lib/ui/Time.svelte';
 	import { changeParams } from '$lib/utils/searchparams';
 	import { getSecretPermissions } from '$lib/utils/secretPermissions';
-	import { Button, Detail, Search } from '@nais/ds-svelte-community';
-	import {
-		ActionMenu,
-		ActionMenuRadioGroup,
-		ActionMenuRadioItem
-	} from '@nais/ds-svelte-community/experimental';
-	import { ChevronDownIcon, PadlockLockedIcon, PlusIcon } from '@nais/ds-svelte-community/icons';
+	import { Button, Detail } from '@nais/ds-svelte-community';
+	import { PadlockLockedIcon, PlusIcon } from '@nais/ds-svelte-community/icons';
 	import type { PageProps } from './$types';
 	import CreateSecret, { type EnvironmentType } from './CreateSecret.svelte';
 
@@ -36,19 +32,21 @@
 	let after: string = $derived($Secrets.variables?.after ?? '');
 	let before: string = $derived($Secrets.variables?.before ?? '');
 
-	let usage: 'all' | 'inUse' | 'notInUse' = $derived(
-		(page.url.searchParams.get('filter') as 'all' | 'inUse' | 'notInUse') || 'all'
-	);
+	const allUsages = ['inUse', 'notInUse'];
+	let activeUsages: string[] = $derived.by(() => {
+		const param = page.url.searchParams.get('filter');
+		if (param === 'inUse') return ['inUse'];
+		if (param === 'notInUse') return ['notInUse'];
+		return allUsages;
+	});
 
-	const handleInUse = (value: string) => {
-		const allowed: Array<'all' | 'inUse' | 'notInUse'> = ['all', 'inUse', 'notInUse'];
-		if (allowed.includes(value as 'all' | 'inUse' | 'notInUse')) {
-			if (value === 'all') {
-				changeParams({ filter: '' });
-				return;
-			}
-			changeParams({ filter: value });
-		}
+	const toggleUsage = (key: string) => {
+		const next = activeUsages.includes(key)
+			? activeUsages.filter((s) => s !== key)
+			: [...activeUsages, key];
+		if (next.length === 0) return;
+		const filter = next.length === allUsages.length ? '' : next[0];
+		changeParams({ filter, after: '', before: '' });
 	};
 
 	const changeQuery = (
@@ -106,124 +104,93 @@
 					</Button>
 				</div>
 			{/if}
-			<div class="search">
-				<form
-					onsubmit={(e) => {
-						e.preventDefault();
-						changeQuery({ newFilter: filter });
-					}}
-				>
-					<Search
-						clearButton={true}
-						clearButtonLabel="Clear"
-						label="filter secrets"
+			<List title="Secrets" count={secrets.pageInfo.totalCount}>
+				{#snippet search()}
+					<SearchField
+						value={filter}
 						placeholder="Filter by name"
-						hideLabel={true}
-						size="small"
-						variant="simple"
-						width="100%"
-						autocomplete="off"
-						bind:value={filter}
+						label="Filter secrets"
+						oninput={(v) => (filter = v)}
+						onsubmit={() => changeQuery({ newFilter: filter })}
 						onclear={() => {
 							filter = '';
 							changeQuery({ newFilter: '' });
 						}}
 					/>
-				</form>
-			</div>
-			<div>
-				<List
-					title="{secrets.pageInfo.totalCount} secret{secrets.pageInfo.totalCount > 1
-						? 's'
-						: ''} {usage === 'inUse'
-						? '(showing only secrets in use)'
-						: usage === 'notInUse'
-							? '(showing only secrets not in use)'
-							: ''}"
-				>
-					{#snippet menu()}
-						<div class="secrets-list-menu">
-							<ActionMenu>
-								{#snippet trigger(props)}
-									<Button
-										variant="tertiary-neutral"
-										size="small"
-										iconPosition="right"
-										{...props}
-										icon={ChevronDownIcon}
-									>
-										<span style="font-weight: normal">Usage</span>
-									</Button>
-								{/snippet}
-								<ActionMenuRadioGroup label="Filter by usage" value={usage}>
-									<ActionMenuRadioItem value="all" onselect={() => handleInUse('all')}
-										>All</ActionMenuRadioItem
-									>
-									<ActionMenuRadioItem value="inUse" onselect={() => handleInUse('inUse')}
-										>In use</ActionMenuRadioItem
-									>
-									<ActionMenuRadioItem value="notInUse" onselect={() => handleInUse('notInUse')}
-										>Not in use</ActionMenuRadioItem
-									>
-								</ActionMenuRadioGroup>
-							</ActionMenu>
-							<OrderByMenu
-								orderField={SecretOrderField}
-								defaultOrderField={SecretOrderField.NAME}
+				{/snippet}
+				{#snippet filters()}
+					<div class="usage-pills">
+						<button
+							type="button"
+							class="pill"
+							class:active={activeUsages.includes('inUse')}
+							onclick={() => toggleUsage('inUse')}
+						>
+							In use
+						</button>
+						<button
+							type="button"
+							class="pill"
+							class:active={activeUsages.includes('notInUse')}
+							onclick={() => toggleUsage('notInUse')}
+						>
+							Not in use
+						</button>
+					</div>
+				{/snippet}
+				{#snippet menu()}
+					<OrderByMenu orderField={SecretOrderField} defaultOrderField={SecretOrderField.NAME} />
+				{/snippet}
+				{#if secrets.nodes.length > 0}
+					{#each secrets.nodes as secret (secret.id)}
+						<ListItem interactive>
+							<IconLabel
+								icon={PadlockLockedIcon}
+								label={secret.name}
+								href="/team/{teamSlug}/{secret.teamEnvironment.environment
+									.name}/secret/{secret.name}"
+								tag={{
+									label: secret.teamEnvironment.environment.name,
+									variant: envTagVariant(secret.teamEnvironment.environment.name)
+								}}
 							/>
-						</div>
-					{/snippet}
-					{#if secrets.nodes.length > 0}
-						{#each secrets.nodes as secret (secret.id)}
-							<ListItem interactive>
-								<IconLabel
-									icon={PadlockLockedIcon}
-									label={secret.name}
-									href="/team/{teamSlug}/{secret.teamEnvironment.environment
-										.name}/secret/{secret.name}"
-									tag={{
-										label: secret.teamEnvironment.environment.name,
-										variant: envTagVariant(secret.teamEnvironment.environment.name)
-									}}
-								/>
-								<div class="right">
-									{#if secret.workloads.pageInfo.totalCount > 0}
-										<Detail
-											>Secret is in use by {secret.workloads.pageInfo.totalCount} workload{secret
-												.workloads.pageInfo.totalCount > 1
-												? 's'
-												: ''}</Detail
-										>
-									{:else}
-										<Detail>Secret is not in use</Detail>
-									{/if}
+							<div class="right">
+								{#if secret.workloads.pageInfo.totalCount > 0}
 									<Detail
-										>Last modified:
-										{#if secret.lastModifiedAt}
-											<Time time={secret.lastModifiedAt} distance />
-										{:else}
-											<code>n/a</code>
-										{/if}
-									</Detail>
-								</div>
-							</ListItem>
-						{/each}
-					{:else}
-						<ListItem>No secrets found</ListItem>
-					{/if}
-				</List>
-				<Pagination
-					page={secrets.pageInfo}
-					loaders={{
-						loadPreviousPage: () => {
-							changeQuery({ before: secrets.pageInfo.startCursor ?? '', after: '' });
-						},
-						loadNextPage: () => {
-							changeQuery({ after: secrets.pageInfo.endCursor ?? '', before: '' });
-						}
-					}}
-				/>
-			</div>
+										>Secret is in use by {secret.workloads.pageInfo.totalCount} workload{secret
+											.workloads.pageInfo.totalCount > 1
+											? 's'
+											: ''}</Detail
+									>
+								{:else}
+									<Detail>Secret is not in use</Detail>
+								{/if}
+								<Detail
+									>Last modified:
+									{#if secret.lastModifiedAt}
+										<Time time={secret.lastModifiedAt} distance />
+									{:else}
+										<code>n/a</code>
+									{/if}
+								</Detail>
+							</div>
+						</ListItem>
+					{/each}
+				{:else}
+					<ListItem>No secrets found</ListItem>
+				{/if}
+			</List>
+			<Pagination
+				page={secrets.pageInfo}
+				loaders={{
+					loadPreviousPage: () => {
+						changeQuery({ before: secrets.pageInfo.startCursor ?? '', after: '' });
+					},
+					loadNextPage: () => {
+						changeQuery({ after: secrets.pageInfo.endCursor ?? '', before: '' });
+					}
+				}}
+			/>
 		</div>
 		<div class="right-column">
 			<TeamActivityCard
@@ -259,11 +226,6 @@
 		justify-content: flex-end;
 		margin-bottom: var(--spacing-layout);
 	}
-	.search {
-		display: flex;
-		justify-content: flex-end;
-		margin-bottom: 1rem;
-	}
 	.right-column {
 		display: grid;
 		gap: var(--ax-space-16);
@@ -276,14 +238,53 @@
 		gap: var(--ax-space-2);
 	}
 
-	/* Mobile responsive layout */
+	.usage-pills {
+		display: flex;
+		gap: var(--ax-space-8);
+		align-items: center;
+	}
+
+	.pill {
+		display: inline-flex;
+		align-items: center;
+		gap: var(--ax-space-4);
+		padding: var(--ax-space-4) var(--ax-space-8);
+		border-radius: 9999px;
+		font-size: var(--ax-font-size-small);
+		font-weight: 500;
+		border: 1px solid var(--ax-border-neutral-subtleA);
+		cursor: pointer;
+		transition:
+			background-color 120ms ease,
+			border-color 120ms ease,
+			opacity 120ms ease;
+		line-height: 1.4;
+		color: var(--ax-text-subtle);
+		background: color-mix(in srgb, var(--ax-neutral-200) 50%, transparent);
+	}
+
+	.pill:hover {
+		background: color-mix(in srgb, var(--ax-neutral-200) 80%, transparent);
+	}
+
+	.pill:not(.active) {
+		opacity: 0.5;
+	}
+
+	.pill:not(.active):hover {
+		opacity: 0.75;
+	}
+
+	.pill.active {
+		opacity: 1;
+		background: color-mix(in srgb, var(--ax-neutral-200) 80%, transparent);
+		border-color: var(--ax-text-subtle);
+	}
+
 	@media (max-width: 767px), (max-height: 500px) {
 		.wrapper {
 			grid-template-columns: 1fr;
 			gap: var(--ax-space-24);
-		}
-		.search {
-			justify-content: stretch;
 		}
 		.button {
 			margin-bottom: var(--ax-space-16);
@@ -291,18 +292,6 @@
 		.right {
 			align-items: flex-end;
 			margin-top: var(--ax-space-6);
-		}
-
-		.secrets-list-menu {
-			display: flex;
-			gap: var(--ax-space-8);
-			flex-wrap: nowrap;
-			overflow-x: auto;
-			max-width: 100%;
-		}
-
-		.secrets-list-menu > * {
-			flex: 0 0 auto;
 		}
 	}
 </style>
