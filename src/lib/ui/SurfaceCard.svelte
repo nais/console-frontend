@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { Box } from '@nais/ds-svelte-community';
 	import type { Snippet } from 'svelte';
 
 	interface Props {
@@ -10,11 +11,11 @@
 	let { title, children, headerAside }: Props = $props();
 </script>
 
-<div class="card">
+<Box borderRadius="12" padding="space-16" class="surface-card">
 	{#if title || headerAside}
 		<div class="header">
 			{#if title}
-				<span class="eyebrow">{title}</span>
+				<h2 class="eyebrow">{title}</h2>
 			{/if}
 			{#if headerAside}
 				{@render headerAside()}
@@ -25,17 +26,13 @@
 	<div class="content">
 		{@render children()}
 	</div>
-</div>
+</Box>
 
 <style>
-	.card {
+	:global(.surface-card) {
 		display: flex;
 		flex-direction: column;
 		gap: var(--ax-space-12);
-		padding: var(--ax-space-16);
-		/* border-radius: var(--ax-radius-8); */
-		/* background: var(--surface-elevated-background); */
-		/* box-shadow: var(--surface-elevated-shadow); */
 		width: 100%;
 		min-width: 0;
 	}
@@ -54,6 +51,7 @@
 		color: var(--ax-text-neutral-subtle);
 		text-transform: uppercase;
 		letter-spacing: 0.04em;
+		margin: 0;
 	}
 
 	.content {
@@ -65,7 +63,7 @@
 	}
 
 	@media (max-width: 767px), (max-height: 500px) {
-		.card {
+		:global(.surface-card) {
 			padding: var(--ax-space-12);
 		}
 	}
