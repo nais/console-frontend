@@ -12,7 +12,7 @@
 	import Pagination from '$lib/ui/Pagination.svelte';
 	import TooltipAlignHack from '$lib/ui/TooltipAlignHack.svelte';
 	import { changeParams } from '$lib/utils/searchparams';
-	import { Alert, BodyLong, Loader } from '@nais/ds-svelte-community';
+	import { Alert, Loader } from '@nais/ds-svelte-community';
 	import { CircleFillIcon } from '@nais/ds-svelte-community/icons';
 	import type { PageProps } from './$types';
 
@@ -23,7 +23,6 @@
 		($PostgresInstances.data?.team.inventoryCounts.sqlInstances.total ?? 0) > 0
 	);
 	let cloudSqlTeamSlug = $derived($PostgresInstances.data?.team.slug ?? data.teamSlug);
-	const postgresDocUrl = docURL('/persistence/postgresql');
 </script>
 
 <GraphErrors errors={$PostgresInstances.errors} />
@@ -41,23 +40,14 @@
 	<div class="loading">
 		<Loader size="3xlarge" />
 	</div>
-{:else if $PostgresInstances.data && $PostgresInstances.data.team.postgresInstances.pageInfo.totalCount > 0}
+{:else if $PostgresInstances.data}
 	{@const si = $PostgresInstances.data.team.postgresInstances}
 
 	<div class="content-wrapper">
 		<div>
 			{@render cloudSqlRelocationAlert()}
 
-			<BodyLong spacing>
-				Postgres instances provide managed relational databases in the cloud.
-				<ExternalLink href={postgresDocUrl}
-					>Learn more about Postgres in Nais and how to get started.</ExternalLink
-				>
-			</BodyLong>
-
-			<List
-				title="{si.pageInfo.totalCount} Postgres instance{si.pageInfo.totalCount !== 1 ? 's' : ''}"
-			>
+			<List title="Postgres" count={si.pageInfo.totalCount}>
 				{#snippet menu()}
 					<OrderByMenu
 						orderField={PostgresInstanceOrderField}
@@ -65,43 +55,55 @@
 						defaultOrderDirection={OrderDirection.ASC}
 					/>
 				{/snippet}
-				{#each si.nodes as instance (instance.id)}
-					<ListItem interactive>
-						<IconLabel
-							as="h4"
-							href="/team/{instance.team.slug}/{instance.teamEnvironment.environment
-								.name}/postgres/{instance.name}"
-							size="large"
-							label={instance.name}
-							tag={{
-								label: instance.teamEnvironment.environment.name,
-								variant: envTagVariant(instance.teamEnvironment.environment.name)
-							}}
-						>
-							{#snippet icon()}
-								<TooltipAlignHack
-									content={{
-										DEGRADED: 'DEGRADED',
-										PROGRESSING: 'PROGRESSING',
-										AVAILABLE: 'AVAILABLE'
-									}[instance.state] ?? ''}
-								>
-									<CircleFillIcon
-										style="color: var({{
-											AVAILABLE: '--ax-bg-success-strong',
-											DEGRADED: '--ax-bg-danger-strong',
-											PROGRESSING: '--ax-bg-warning-moderate-pressed'
-										}[instance.state] ?? '--ax-bg-info-strong'}); font-size: 0.7rem"
-									/>
-								</TooltipAlignHack>
-							{/snippet}
-						</IconLabel>
+				{#if si.nodes.length > 0}
+					{#each si.nodes as instance (instance.id)}
+						<ListItem interactive>
+							<IconLabel
+								as="h4"
+								href="/team/{instance.team.slug}/{instance.teamEnvironment.environment
+									.name}/postgres/{instance.name}"
+								size="large"
+								label={instance.name}
+								tag={{
+									label: instance.teamEnvironment.environment.name,
+									variant: envTagVariant(instance.teamEnvironment.environment.name)
+								}}
+							>
+								{#snippet icon()}
+									<TooltipAlignHack
+										content={{
+											DEGRADED: 'DEGRADED',
+											PROGRESSING: 'PROGRESSING',
+											AVAILABLE: 'AVAILABLE'
+										}[instance.state] ?? ''}
+									>
+										<CircleFillIcon
+											style="color: var({{
+												AVAILABLE: '--ax-bg-success-strong',
+												DEGRADED: '--ax-bg-danger-strong',
+												PROGRESSING: '--ax-bg-warning-moderate-pressed'
+											}[instance.state] ?? '--ax-bg-info-strong'}); font-size: 0.7rem"
+										/>
+									</TooltipAlignHack>
+								{/snippet}
+							</IconLabel>
 
-						<div class="right">
-							<div>Version: <code>{instance.majorVersion}</code></div>
-						</div>
+							<div class="right">
+								<div>Version: <code>{instance.majorVersion}</code></div>
+							</div>
+						</ListItem>
+					{/each}
+				{:else}
+					<ListItem>
+						<p>
+							No Postgres instances found. Postgres instances provide managed relational databases
+							in the cloud.
+							<ExternalLink href={docURL('/persistence/postgresql')}
+								>Learn more about Postgres in Nais and how to get started.</ExternalLink
+							>
+						</p>
 					</ListItem>
-				{/each}
+				{/if}
 			</List>
 
 			<Pagination
@@ -113,20 +115,6 @@
 						changeParams({ before: '', after: si.pageInfo.endCursor ?? '' }, { noScroll: true })
 				}}
 			/>
-		</div>
-	</div>
-{:else}
-	<div class="content-wrapper">
-		<div>
-			{@render cloudSqlRelocationAlert()}
-
-			<BodyLong>
-				<strong>No Postgres instances found.</strong> Postgres instances provide managed relational
-				databases in the cloud.
-				<ExternalLink href={postgresDocUrl}
-					>Learn more about Postgres in Nais and how to get started.</ExternalLink
-				>
-			</BodyLong>
 		</div>
 	</div>
 {/if}
