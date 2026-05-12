@@ -66,8 +66,8 @@
 		changeParams({ interval: value }, { noScroll: true });
 	}
 
-	let workloadData = $derived($costQuery.data?.team?.environment?.workload);
-	let envName = $derived($costQuery.data?.team?.environment?.environment);
+	let workloadData = $derived($costQuery?.data?.team?.environment?.workload);
+	let envName = $derived($costQuery?.data?.team?.environment?.environment);
 
 	let services = $derived.by(() => {
 		const daily = workloadData?.cost?.daily;
@@ -95,9 +95,9 @@
 		{/if}
 	{/snippet}
 
-	<GraphErrors errors={$costQuery.errors} />
+	<GraphErrors errors={$costQuery?.errors} />
 
-	{#if $costQuery.fetching && !$costQuery.data}
+	{#if $costQuery?.fetching && !$costQuery?.data}
 		<div class="loading">
 			<Loader size="3xlarge" />
 		</div>

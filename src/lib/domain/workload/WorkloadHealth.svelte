@@ -141,16 +141,16 @@
 
 	let criticalVulnerabilities = $derived(
 		workloadType === 'app'
-			? ($vulnQuery.data?.team?.environment?.application?.image?.vulnerabilitySummary?.critical ??
+			? ($vulnQuery?.data?.team?.environment?.application?.image?.vulnerabilitySummary?.critical ??
 					0)
-			: ($jobVulnQuery.data?.team?.environment?.job?.image?.vulnerabilitySummary?.critical ?? 0)
+			: ($jobVulnQuery?.data?.team?.environment?.job?.image?.vulnerabilitySummary?.critical ?? 0)
 	);
 
 	let costTrend = $derived.by(() => {
 		const series =
 			workloadType === 'app'
-				? $costQuery.data?.team?.environment?.application?.cost?.daily?.series
-				: $jobCostQuery.data?.team?.environment?.job?.cost?.daily?.series;
+				? $costQuery?.data?.team?.environment?.application?.cost?.daily?.series
+				: $jobCostQuery?.data?.team?.environment?.job?.cost?.daily?.series;
 		if (!series || series.length < 2) return null;
 
 		const midpoint = Math.floor(series.length / 2);
@@ -166,8 +166,8 @@
 	let dataLoading = $derived(
 		loading ||
 			(workloadType === 'app'
-				? $vulnQuery.fetching || $costQuery.fetching
-				: $jobVulnQuery.fetching || $jobCostQuery.fetching)
+				? $vulnQuery?.fetching || $costQuery?.fetching
+				: $jobVulnQuery?.fetching || $jobCostQuery?.fetching)
 	);
 
 	let instancesHealthy = $derived(readyInstances >= desiredInstances && desiredInstances > 0);

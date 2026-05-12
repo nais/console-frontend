@@ -61,11 +61,11 @@
 	});
 
 	let criticalVulnerabilities = $derived(
-		$vulnQuery.data?.team?.vulnerabilitySummary?.critical ?? 0
+		$vulnQuery?.data?.team?.vulnerabilitySummary?.critical ?? 0
 	);
 
 	let costTrend = $derived.by(() => {
-		const series = $costQuery.data?.team?.cost?.monthlySummary?.series;
+		const series = $costQuery?.data?.team?.cost?.monthlySummary?.series;
 		if (!series || series.length < 2) return null;
 		const current = series.at(-1)!.cost;
 		const previous = series.at(-2)!.cost;
@@ -75,7 +75,7 @@
 		return { current, previous, change };
 	});
 
-	let dataLoading = $derived(loading || $vulnQuery.fetching || $costQuery.fetching);
+	let dataLoading = $derived(loading || $vulnQuery?.fetching || $costQuery?.fetching);
 </script>
 
 <SurfaceCard title="Team health" bordered>
