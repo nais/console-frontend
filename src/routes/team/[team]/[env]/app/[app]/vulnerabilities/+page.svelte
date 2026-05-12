@@ -89,45 +89,51 @@
 		</div>
 
 		{#if workload.image.hasSBOM}
-			<ImageVulnerabilities
-				team={$ApplicationImageDetails.data?.team.slug}
-				environment={$ApplicationImageDetails.data?.team.environment.environment.name}
-				workload={$ApplicationImageDetails.data?.team.environment.workload.name}
-				authorized={viewerIsMember}
-			/>
+			<SurfaceCard title="Vulnerabilities">
+				<ImageVulnerabilities
+					team={$ApplicationImageDetails.data?.team.slug}
+					environment={$ApplicationImageDetails.data?.team.environment.environment.name}
+					workload={$ApplicationImageDetails.data?.team.environment.workload.name}
+					authorized={viewerIsMember}
+				/>
+			</SurfaceCard>
 
 			{#if $ApplicationImageDetails.data?.team.environment.workload.image.activityLog.edges.length > 0}
-				<List title="Image Activity Log">
-					{#each $ApplicationImageDetails.data?.team.environment.workload.image.activityLog.edges || [] as item (item.node.id)}
-						<ActivityLogListItem item={item.node} />
-					{/each}
-				</List>
-				{#if $ApplicationImageDetails.data.team.environment.workload.image.activityLog.pageInfo.hasPreviousPage || $ApplicationImageDetails.data.team.environment.workload.image.activityLog.pageInfo.hasNextPage}
-					<Pagination
-						page={$ApplicationImageDetails.data.team.environment.workload.image.activityLog
-							.pageInfo}
-						loaders={{
-							loadNextPage: () => {
-								ApplicationImageDetails.loadNextPage({ first: 10 });
-							},
-							loadPreviousPage: () => {
-								ApplicationImageDetails.loadPreviousPage({
-									last: 10
-								});
-							}
-						}}
-					/>
-				{/if}
+				<SurfaceCard title="Image activity log">
+					<List>
+						{#each $ApplicationImageDetails.data?.team.environment.workload.image.activityLog.edges || [] as item (item.node.id)}
+							<ActivityLogListItem item={item.node} />
+						{/each}
+					</List>
+					{#if $ApplicationImageDetails.data.team.environment.workload.image.activityLog.pageInfo.hasPreviousPage || $ApplicationImageDetails.data.team.environment.workload.image.activityLog.pageInfo.hasNextPage}
+						<Pagination
+							page={$ApplicationImageDetails.data.team.environment.workload.image.activityLog
+								.pageInfo}
+							loaders={{
+								loadNextPage: () => {
+									ApplicationImageDetails.loadNextPage({ first: 10 });
+								},
+								loadPreviousPage: () => {
+									ApplicationImageDetails.loadPreviousPage({
+										last: 10
+									});
+								}
+							}}
+						/>
+					{/if}
+				</SurfaceCard>
 			{:else}
 				<BodyShort size="small" textColor="subtle"
 					>No activity log entries found for this image.</BodyShort
 				>
 			{/if}
-			<WorkloadVulnerabilityHistoryGraph
-				team={$ApplicationImageDetails.data?.team.slug}
-				environment={$ApplicationImageDetails.data?.team.environment.environment.name}
-				workload={$ApplicationImageDetails.data?.team.environment.workload.name}
-			/>
+			<SurfaceCard title="Vulnerability history">
+				<WorkloadVulnerabilityHistoryGraph
+					team={$ApplicationImageDetails.data?.team.slug}
+					environment={$ApplicationImageDetails.data?.team.environment.environment.name}
+					workload={$ApplicationImageDetails.data?.team.environment.workload.name}
+				/>
+			</SurfaceCard>
 		{/if}
 	</div>
 {/if}
