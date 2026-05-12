@@ -10,7 +10,11 @@ export async function load(event) {
 	const before = event.url.searchParams.get('before') || '';
 
 	return {
-		...(await addPageMeta(event, { title: 'Buckets' })),
+		...(await addPageMeta(event, {
+			title: 'Buckets',
+			pageHeaderTitle: '',
+			docPath: '/persistence/buckets'
+		})),
 		...(await load_Buckets({
 			event,
 			variables: {

@@ -17,7 +17,7 @@
 	import TooltipAlignHack from '$lib/ui/TooltipAlignHack.svelte';
 	import { countIssuesBySeverity } from '$lib/utils/issueCounts';
 	import { changeParams } from '$lib/utils/searchparams';
-	import { BodyLong, Button } from '@nais/ds-svelte-community';
+	import { Button } from '@nais/ds-svelte-community';
 	import { CircleFillIcon, PlusIcon } from '@nais/ds-svelte-community/icons';
 	import { endOfYesterday, startOfMonth, subMonths } from 'date-fns';
 	import type { PageProps } from './$types';
@@ -71,16 +71,8 @@
 	{#if $Valkeys.data.team.valkeys.pageInfo.totalCount}
 		<div class="content-wrapper">
 			<div>
-				<BodyLong spacing>
-					Valkey is a key value database that is used for storing and querying data. It is a good
-					choice for storing data that is not relational in nature and often used for caching.
-					<ExternalLink href={docURL('/persistence/valkey')}
-						>Learn more about Valkey and how to get started.</ExternalLink
-					>
-				</BodyLong>
-
 				{@render createButton()}
-				<List title="{$Valkeys.data.team.valkeys.pageInfo.totalCount} entries">
+				<List title="Valkey" count={$Valkeys.data.team.valkeys.pageInfo.totalCount}>
 					{#snippet menu()}
 						<OrderByMenu
 							orderField={ValkeyOrderField}
@@ -190,16 +182,21 @@
 		</div>
 	{:else}
 		<div class="content-wrapper">
-			<BodyLong as="div">
+			<div>
 				{@render createButton()}
-
-				<strong>No Valkey instances found.</strong> Valkey is a key value database that is used for
-				storing and querying data. It is a good choice for storing data that is not relational in
-				nature and often used for caching.
-				<ExternalLink href={docURL('/persistence/valkey')}
-					>Learn more about Valkey and how to get started.</ExternalLink
-				>
-			</BodyLong>
+				<List title="Valkey" count={0}>
+					<ListItem>
+						<p>
+							No Valkey instances found. Valkey is a key value database that is used for storing and
+							querying data. It is a good choice for storing data that is not relational in nature
+							and often used for caching.
+							<ExternalLink href={docURL('/persistence/valkey')}
+								>Learn more about Valkey and how to get started.</ExternalLink
+							>
+						</p>
+					</ListItem>
+				</List>
+			</div>
 		</div>
 	{/if}
 

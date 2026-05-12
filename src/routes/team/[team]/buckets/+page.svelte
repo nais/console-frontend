@@ -14,7 +14,6 @@
 	import Pagination from '$lib/ui/Pagination.svelte';
 	import SurfaceCard from '$lib/ui/SurfaceCard.svelte';
 	import { changeParams } from '$lib/utils/searchparams';
-	import { BodyLong } from '@nais/ds-svelte-community';
 	import { endOfYesterday, startOfMonth, subMonths } from 'date-fns';
 	import type { PageProps } from './$types';
 
@@ -38,137 +37,121 @@
 <GraphErrors errors={$Buckets.errors} />
 
 {#if $Buckets.data}
-	{#if $Buckets.data.team.buckets.pageInfo.totalCount || $Buckets.data.team.externalResources.cdn?.bucket}
-		<div class="content-wrapper">
-			<div>
-				<BodyLong spacing>
-					Storage buckets are containers for storing and managing data in the cloud.
-					<ExternalLink href={docURL('/persistence/buckets')}
-						>Learn more about Buckets and how to get started.</ExternalLink
-					>
-				</BodyLong>
-
-				{#if $Buckets.data.team.buckets.pageInfo.totalCount}
-					<List title="{$Buckets.data.team.buckets.pageInfo.totalCount} entries">
-						{#snippet menu()}
-							<OrderByMenu
-								orderField={BucketOrderField}
-								defaultOrderField={BucketOrderField.NAME}
-								defaultOrderDirection={OrderDirection.DESC}
-							/>
-						{/snippet}
-						{#each $Buckets.data.team.buckets.nodes as instance (instance.id)}
-							<ListItem interactive>
-								<IconLabel
-									as="h4"
-									href="/team/{instance.team.slug}/{instance.teamEnvironment.environment
-										.name}/bucket/{instance.name}"
-									size="large"
-									icon="bucket"
-									label={instance.name}
-									tag={{
-										label: instance.teamEnvironment.environment.name,
-										variant: envTagVariant(instance.teamEnvironment.environment.name)
-									}}
-								/>
-								{#if instance.workload}
-									<div class="right">
-										Owner: <WorkloadLink workload={instance.workload} hideTeam hideEnv />
-									</div>
-								{/if}
-							</ListItem>
-						{/each}
-					</List>
-					<Pagination
-						page={$Buckets.data.team.buckets.pageInfo}
-						loaders={{
-							loadPreviousPage: () =>
-								changeParams(
-									{
-										after: '',
-										before: $Buckets.data?.team.buckets.pageInfo.startCursor ?? ''
-									},
-									{ noScroll: true }
-								),
-							loadNextPage: () =>
-								changeParams(
-									{ before: '', after: $Buckets.data?.team.buckets.pageInfo.endCursor ?? '' },
-									{ noScroll: true }
-								)
-						}}
+	<div class="content-wrapper">
+		<div>
+			<List title="Buckets" count={$Buckets.data.team.buckets.pageInfo.totalCount}>
+				{#snippet menu()}
+					<OrderByMenu
+						orderField={BucketOrderField}
+						defaultOrderField={BucketOrderField.NAME}
+						defaultOrderDirection={OrderDirection.DESC}
 					/>
+				{/snippet}
+				{#if $Buckets.data.team.buckets.nodes.length > 0}
+					{#each $Buckets.data.team.buckets.nodes as instance (instance.id)}
+						<ListItem interactive>
+							<IconLabel
+								as="h4"
+								href="/team/{instance.team.slug}/{instance.teamEnvironment.environment
+									.name}/bucket/{instance.name}"
+								size="large"
+								icon="bucket"
+								label={instance.name}
+								tag={{
+									label: instance.teamEnvironment.environment.name,
+									variant: envTagVariant(instance.teamEnvironment.environment.name)
+								}}
+							/>
+							{#if instance.workload}
+								<div class="right">
+									Owner: <WorkloadLink workload={instance.workload} hideTeam hideEnv />
+								</div>
+							{/if}
+						</ListItem>
+					{/each}
+				{:else}
+					<ListItem>
+						<p>
+							No buckets found. Storage buckets are containers for storing and managing data in the
+							cloud.
+							<ExternalLink href={docURL('/persistence/buckets')}
+								>Learn more about Buckets and how to get started.</ExternalLink
+							>
+						</p>
+					</ListItem>
 				{/if}
-			</div>
-			<div class="right-column">
-				{#if cost()}
-					{@const costData = cost()!}
-					<SurfaceCard title="Cost">
-						<PersistenceCost
-							pageName={costData.pageName}
-							costData={costData.costData}
-							teamSlug={costData.teamSlug}
-							from={startOfMonth(subMonths(new Date(), 1))}
-							to={endOfYesterday()}
-							service="Cloud Storage"
-						/>
-					</SurfaceCard>
-				{/if}
-				{#if $Buckets.data.team.externalResources.cdn?.bucket && viewerIsMember}
-					<div>
-						<CdnBucket cdnBucket={$Buckets.data.team.externalResources.cdn.bucket} />
-					</div>
-				{/if}
-			</div>
+			</List>
+			<Pagination
+				page={$Buckets.data.team.buckets.pageInfo}
+				loaders={{
+					loadPreviousPage: () =>
+						changeParams(
+							{
+								after: '',
+								before: $Buckets.data?.team.buckets.pageInfo.startCursor ?? ''
+							},
+							{ noScroll: true }
+						),
+					loadNextPage: () =>
+						changeParams(
+							{ before: '', after: $Buckets.data?.team.buckets.pageInfo.endCursor ?? '' },
+							{ noScroll: true }
+						)
+				}}
+			/>
 		</div>
-	{:else}
-		<div class="content-wrapper">
-			<BodyLong>
-				<strong>No Buckets found.</strong> Storage buckets are containers for storing and managing
-				data in the cloud.
-				<ExternalLink href={docURL('/persistence/buckets')}>
-					Learn more about Buckets and how to get started.
-				</ExternalLink>
-			</BodyLong>
-			<div class="right-column">
-				{#if $Buckets.data.team.externalResources.cdn?.bucket && viewerIsMember}
-					<div>
-						<CdnBucket cdnBucket={$Buckets.data.team.externalResources.cdn.bucket} />
-					</div>
-				{/if}
-			</div>
+		<div class="right-column">
+			{#if cost()}
+				{@const costData = cost()!}
+				<SurfaceCard title="Cost">
+					<PersistenceCost
+						pageName={costData.pageName}
+						costData={costData.costData}
+						teamSlug={costData.teamSlug}
+						from={startOfMonth(subMonths(new Date(), 1))}
+						to={endOfYesterday()}
+						service="Cloud Storage"
+					/>
+				</SurfaceCard>
+			{/if}
+			{#if $Buckets.data.team.externalResources.cdn?.bucket && viewerIsMember}
+				<div>
+					<CdnBucket cdnBucket={$Buckets.data.team.externalResources.cdn.bucket} />
+				</div>
+			{/if}
 		</div>
-	{/if}
-
-	<style>
-		.content-wrapper {
-			display: grid;
-			gap: var(--ax-space-24);
-			grid-template-columns: 1fr 300px;
-			align-items: start;
-		}
-		.right {
-			display: flex;
-			gap: var(--ax-space-6);
-			align-items: center;
-		}
-
-		.right-column {
-			display: grid;
-			gap: var(--ax-space-24);
-			align-content: start;
-		}
-
-		/* Mobile responsive layout */
-		@media (max-width: 767px), (max-height: 500px) {
-			.content-wrapper {
-				grid-template-columns: 1fr;
-			}
-
-			.right {
-				align-self: flex-end;
-				justify-content: flex-end;
-				margin-top: var(--ax-space-6);
-			}
-		}
-	</style>
+	</div>
 {/if}
+
+<style>
+	.content-wrapper {
+		display: grid;
+		gap: var(--ax-space-24);
+		grid-template-columns: 1fr 300px;
+		align-items: start;
+	}
+	.right {
+		display: flex;
+		gap: var(--ax-space-6);
+		align-items: center;
+	}
+
+	.right-column {
+		display: grid;
+		gap: var(--ax-space-24);
+		align-content: start;
+	}
+
+	/* Mobile responsive layout */
+	@media (max-width: 767px), (max-height: 500px) {
+		.content-wrapper {
+			grid-template-columns: 1fr;
+		}
+
+		.right {
+			align-self: flex-end;
+			justify-content: flex-end;
+			margin-top: var(--ax-space-6);
+		}
+	}
+</style>

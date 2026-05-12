@@ -12,7 +12,6 @@
 	import Pagination from '$lib/ui/Pagination.svelte';
 	import SurfaceCard from '$lib/ui/SurfaceCard.svelte';
 	import { changeParams } from '$lib/utils/searchparams';
-	import { BodyLong } from '@nais/ds-svelte-community';
 	import { endOfYesterday, startOfMonth, subMonths } from 'date-fns';
 	import type { PageProps } from './$types';
 
@@ -36,26 +35,17 @@
 <GraphErrors errors={$KafkaTopics.errors} />
 
 {#if $KafkaTopics.data}
-	{#if $KafkaTopics.data.team.kafkaTopics.pageInfo.totalCount}
-		<div class="content-wrapper">
-			<div>
-				<BodyLong spacing>
-					Kafka topics are categories where messages are published and consumed, acting as
-					distributed logs for event streaming.
-
-					<ExternalLink href={docURL('/persistence/kafka')}
-						>Learn more about Kafka and how to get started.</ExternalLink
-					>
-				</BodyLong>
-
-				<List title="{$KafkaTopics.data.team.kafkaTopics.pageInfo.totalCount} entries">
-					{#snippet menu()}
-						<OrderByMenu
-							orderField={KafkaTopicOrderField}
-							defaultOrderField={KafkaTopicOrderField.NAME}
-							defaultOrderDirection={OrderDirection.DESC}
-						/>
-					{/snippet}
+	<div class="content-wrapper">
+		<div>
+			<List title="Kafka" count={$KafkaTopics.data.team.kafkaTopics.pageInfo.totalCount}>
+				{#snippet menu()}
+					<OrderByMenu
+						orderField={KafkaTopicOrderField}
+						defaultOrderField={KafkaTopicOrderField.NAME}
+						defaultOrderDirection={OrderDirection.DESC}
+					/>
+				{/snippet}
+				{#if $KafkaTopics.data.team.kafkaTopics.nodes.length > 0}
 					{#each $KafkaTopics.data.team.kafkaTopics.nodes as instance (instance.id)}
 						<ListItem interactive>
 							<IconLabel
@@ -72,54 +62,53 @@
 							/>
 						</ListItem>
 					{/each}
-				</List>
-				<Pagination
-					page={$KafkaTopics.data.team.kafkaTopics.pageInfo}
-					loaders={{
-						loadPreviousPage: () =>
-							changeParams(
-								{
-									after: '',
-									before: $KafkaTopics.data?.team.kafkaTopics.pageInfo.startCursor ?? ''
-								},
-								{ noScroll: true }
-							),
-						loadNextPage: () =>
-							changeParams(
-								{ before: '', after: $KafkaTopics.data?.team.kafkaTopics.pageInfo.endCursor ?? '' },
-								{ noScroll: true }
-							)
-					}}
-				/>
-			</div>
-			<div class="right-column">
-				{#if cost()}
-					{@const costData = cost()!}
-					<SurfaceCard title="Cost">
-						<PersistenceCost
-							pageName={costData.pageName}
-							costData={costData.costData}
-							teamSlug={costData.teamSlug}
-							from={startOfMonth(subMonths(new Date(), 1))}
-							to={endOfYesterday()}
-							service="Kafka Shared"
-						/>
-					</SurfaceCard>
+				{:else}
+					<ListItem>
+						<p>
+							No Kafka topics found. Kafka topics are categories where messages are published and
+							consumed, acting as distributed logs for event streaming.
+							<ExternalLink href={docURL('/persistence/kafka')}
+								>Learn more about Kafka and how to get started.</ExternalLink
+							>
+						</p>
+					</ListItem>
 				{/if}
-			</div>
+			</List>
+			<Pagination
+				page={$KafkaTopics.data.team.kafkaTopics.pageInfo}
+				loaders={{
+					loadPreviousPage: () =>
+						changeParams(
+							{
+								after: '',
+								before: $KafkaTopics.data?.team.kafkaTopics.pageInfo.startCursor ?? ''
+							},
+							{ noScroll: true }
+						),
+					loadNextPage: () =>
+						changeParams(
+							{ before: '', after: $KafkaTopics.data?.team.kafkaTopics.pageInfo.endCursor ?? '' },
+							{ noScroll: true }
+						)
+				}}
+			/>
 		</div>
-	{:else}
-		<div class="content-wrapper">
-			<BodyLong>
-				<strong>No Kafka topics found.</strong> Kafka topics are categories where messages are
-				published and consumed, acting as distributed logs for event streaming.
-
-				<ExternalLink href={docURL('/persistence/kafka')}
-					>Learn more about Kafka and how to get started.</ExternalLink
-				>
-			</BodyLong>
+		<div class="right-column">
+			{#if cost()}
+				{@const costData = cost()!}
+				<SurfaceCard title="Cost">
+					<PersistenceCost
+						pageName={costData.pageName}
+						costData={costData.costData}
+						teamSlug={costData.teamSlug}
+						from={startOfMonth(subMonths(new Date(), 1))}
+						to={endOfYesterday()}
+						service="Kafka Shared"
+					/>
+				</SurfaceCard>
+			{/if}
 		</div>
-	{/if}
+	</div>
 
 	<style>
 		.content-wrapper {

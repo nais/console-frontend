@@ -10,7 +10,11 @@ export async function load(event) {
 	const before = event.url.searchParams.get('before') || '';
 
 	return {
-		...(await addPageMeta(event, { title: 'Kafka Topics' })),
+		...(await addPageMeta(event, {
+			title: 'Kafka Topics',
+			pageHeaderTitle: '',
+			docPath: '/persistence/kafka'
+		})),
 		...(await load_KafkaTopics({
 			event,
 			variables: {
