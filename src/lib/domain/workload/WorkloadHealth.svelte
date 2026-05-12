@@ -181,7 +181,7 @@
 	let title = $derived(workloadType === 'app' ? 'Application health' : 'Job health');
 </script>
 
-<SurfaceCard {title}>
+<SurfaceCard {title} bordered>
 	{#if dataLoading}
 		<div class="loading">
 			<Loader size="xlarge" />

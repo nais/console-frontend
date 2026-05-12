@@ -46,7 +46,7 @@
 </script>
 
 {#if $teamHealth.data && hasCriticalIssues && !$teamHealth.fetching}
-	<SurfaceCard title="Critical issues ({totalCount})">
+	<SurfaceCard title="Critical issues ({totalCount})" bordered>
 		{#snippet headerAside()}
 			<a class="view-all" href="/team/{teamSlug}/issues">View all</a>
 		{/snippet}

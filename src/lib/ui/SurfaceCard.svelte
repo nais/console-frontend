@@ -6,12 +6,17 @@
 		title?: string;
 		children: Snippet;
 		headerAside?: Snippet;
+		bordered?: boolean;
 	}
 
-	let { title, children, headerAside }: Props = $props();
+	let { title, children, headerAside, bordered = false }: Props = $props();
 </script>
 
-<Box borderRadius="12" padding="space-16" class="surface-card">
+<Box
+	borderRadius="12"
+	padding="space-16"
+	class="surface-card {bordered ? 'surface-card-bordered' : ''}"
+>
 	{#if title || headerAside}
 		<div class="header">
 			{#if title}
@@ -35,6 +40,11 @@
 		gap: var(--ax-space-12);
 		width: 100%;
 		min-width: 0;
+	}
+
+	:global(.surface-card-bordered) {
+		background: var(--ax-bg-neutral-moderateA);
+		box-shadow: var(--surface-elevated-shadow);
 	}
 
 	.header {
