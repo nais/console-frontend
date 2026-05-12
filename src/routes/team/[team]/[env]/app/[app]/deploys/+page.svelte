@@ -59,7 +59,8 @@
 	});
 
 	let latestDeploy = $derived.by(() => {
-		const nodes = $AppDeploys.data?.team.environment.application.deployments.nodes;
+		const nodes =
+			$AppDeploys.data?.team?.environment?.application?.deployments?.nodes;
 		if (!nodes || nodes.length === 0) return null;
 		return nodes[0];
 	});
@@ -67,7 +68,7 @@
 
 <GraphErrors errors={$AppDeploys.errors} />
 
-{#if $AppDeploys.data}
+{#if $AppDeploys.data?.team?.environment?.application}
 	{@const app = $AppDeploys.data.team.environment.application}
 	{@const deploys = app.deployments}
 
