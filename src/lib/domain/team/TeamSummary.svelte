@@ -90,11 +90,13 @@
 				class="metric"
 				class:danger={criticalIssues > 0}
 				class:warning={!criticalIssues && warningIssues > 0}
+				class:success={totalIssues === 0}
 			>
 				<div
 					class="metric-icon"
 					class:danger={criticalIssues > 0}
 					class:warning={!criticalIssues && warningIssues > 0}
+					class:success={totalIssues === 0}
 				>
 					<VitalsIcon />
 				</div>
