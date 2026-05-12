@@ -13,6 +13,7 @@
 	import WorkloadHealth from '$lib/domain/workload/WorkloadHealth.svelte';
 	import Confirm from '$lib/ui/Confirm.svelte';
 	import GraphErrors from '$lib/ui/GraphErrors.svelte';
+	import HeaderActions from '$lib/ui/HeaderActions.svelte';
 	import List from '$lib/ui/List.svelte';
 	import SurfaceCard from '$lib/ui/SurfaceCard.svelte';
 	import Time from '$lib/ui/Time.svelte';
@@ -130,47 +131,48 @@
 	{@const succeededRuns = job.recentRuns.nodes.filter((n) => n.status.state === 'SUCCEEDED').length}
 	<div class="wrapper">
 		<div class="job-content">
-			<div class="main-section">
-				{#if viewerIsMember}
-					<div class="detail-actions">
-						<ActionMenu>
-							{#snippet trigger(props)}
-								<Button
-									variant="tertiary-neutral"
-									size="small"
-									icon={MenuElipsisVerticalIcon}
-									{...props}
-								>
-									Actions
-								</Button>
-							{/snippet}
-							<button
-								class="action-menu-button"
-								disabled={job.deletionStartedAt !== null}
-								onclick={(e: MouseEvent) => {
-									if (e.metaKey || e.ctrlKey) {
-										if (jobName && environment) {
-											submit(generateJobRunName(jobName));
-										}
-									} else {
-										open = true;
+			{#if viewerIsMember}
+				<HeaderActions>
+					<ActionMenu>
+						{#snippet trigger(props)}
+							<Button
+								variant="tertiary-neutral"
+								size="small"
+								icon={MenuElipsisVerticalIcon}
+								{...props}
+							>
+								Actions
+							</Button>
+						{/snippet}
+						<button
+							class="action-menu-button"
+							disabled={job.deletionStartedAt !== null}
+							onclick={(e: MouseEvent) => {
+								if (e.metaKey || e.ctrlKey) {
+									if (jobName && environment) {
+										submit(generateJobRunName(jobName));
 									}
-								}}
-							>
-								<ActionMenuItem icon={PlayIcon}>Trigger run</ActionMenuItem>
-							</button>
-							<button class="action-menu-button" onclick={() => (showManifest = true)}>
-								<ActionMenuItem icon={FileTextIcon}>View manifest</ActionMenuItem>
-							</button>
-							<a
-								class="action-menu-button"
-								href="/team/{page.params.team}/{page.params.env}/job/{page.params.job}/delete"
-							>
-								<ActionMenuItem icon={TrashIcon} variant="danger">Delete job</ActionMenuItem>
-							</a>
-						</ActionMenu>
-					</div>
-				{/if}
+								} else {
+									open = true;
+								}
+							}}
+						>
+							<ActionMenuItem icon={PlayIcon}>Trigger run</ActionMenuItem>
+						</button>
+						<button class="action-menu-button" onclick={() => (showManifest = true)}>
+							<ActionMenuItem icon={FileTextIcon}>View manifest</ActionMenuItem>
+						</button>
+						<a
+							class="action-menu-button"
+							href="/team/{page.params.team}/{page.params.env}/job/{page.params.job}/delete"
+						>
+							<ActionMenuItem icon={TrashIcon} variant="danger">Delete job</ActionMenuItem>
+						</a>
+					</ActionMenu>
+				</HeaderActions>
+			{/if}
+
+			<div class="main-section">
 				{#if job.deletionStartedAt}
 					<Alert variant="info" size="small" fullWidth={false}>
 						This job is being deleted. Deletion started <Time
@@ -291,13 +293,6 @@
 		gap: 1rem;
 	}
 
-	.detail-actions {
-		display: flex;
-		justify-content: flex-end;
-		gap: var(--ax-space-8);
-		flex-wrap: wrap;
-	}
-
 	.action-menu-button {
 		all: unset;
 		display: contents;
@@ -326,11 +321,6 @@
 		.job-content {
 			grid-template-columns: 1fr;
 			gap: var(--spacing-layout);
-		}
-
-		.detail-actions :global(button),
-		.detail-actions :global(a) {
-			width: 100%;
 		}
 	}
 </style>
