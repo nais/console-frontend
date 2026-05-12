@@ -1,4 +1,4 @@
-import { load_ApplicationActivityLog } from '$houdini';
+import { load_ApplicationActivityLog, type ActivityLogFilter } from '$houdini';
 import { addPageMeta } from '$lib/utils/pageMeta';
 
 const rows = 20;
@@ -27,7 +27,7 @@ export async function load(event) {
 					activityTypes,
 					resourceTypes,
 					environments
-				}
+				} as ActivityLogFilter
 			}
 		}))
 	};

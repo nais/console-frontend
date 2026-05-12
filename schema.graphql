@@ -347,8 +347,22 @@ type ActivityLogFacets {
 }
 
 input ActivityLogFilter {
+  """
+  Only include entries whose activity type matches one of these values.
+  Use the available activity type facet values when building this filter. When combined with other fields in this input, entries must match this filter as well as the other selected filters.
+  """
   activityTypes: [ActivityLogActivityType!]
+
+  """
+  Only include entries that belong to one of these environments.
+  When combined with other fields in this input, entries must match this filter as well as the other selected filters.
+  """
   environments: [String!]
+
+  """
+  Only include entries for resources whose type matches one of these values.
+  When combined with other fields in this input, entries must match this filter as well as the other selected filters.
+  """
   resourceTypes: [ActivityLogEntryResourceType!]
 }
 

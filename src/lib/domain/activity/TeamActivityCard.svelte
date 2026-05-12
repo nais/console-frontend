@@ -3,6 +3,7 @@
 	import SurfaceCard from '$lib/ui/SurfaceCard.svelte';
 	import { Loader } from '@nais/ds-svelte-community';
 
+	import { SvelteURLSearchParams } from 'svelte/reactivity';
 	import ActivityTimeline from './ActivityTimeline.svelte';
 	import { sidebarTextComponent } from './sidebar/textComponent';
 
@@ -16,7 +17,7 @@
 	let { teamSlug, filter, viewAllHref, title = 'Activity' }: Props = $props();
 
 	const viewAllLink = $derived.by(() => {
-		const params = new URLSearchParams();
+		const params = new SvelteURLSearchParams();
 		if (filter?.activityTypes?.length) {
 			params.set('activityTypes', filter.activityTypes.join(','));
 		}
