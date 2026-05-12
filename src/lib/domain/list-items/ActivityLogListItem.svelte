@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { fragment, graphql, type ActivityLogEntryFragment } from '$houdini';
-	import ListItemV2 from '$lib/ui/ListItemV2.svelte';
+	import ListItem from '$lib/ui/ListItem.svelte';
 	import { Tooltip } from '@nais/ds-svelte-community';
 	import { QuestionmarkIcon } from '@nais/ds-svelte-community/icons';
 	import type { Component } from 'svelte';
@@ -429,7 +429,7 @@
 	const TextComponent = $derived(textComponent($data.__typename));
 </script>
 
-<ListItemV2 interactive>
+<ListItem interactive>
 	<div class="activity-log-list-item">
 		<Tooltip content={activityTooltip($data.__typename)}>
 			<div class="activity-icon">
@@ -441,7 +441,7 @@
 			<TextComponent data={$data} />
 		</div>
 	</div>
-</ListItemV2>
+</ListItem>
 
 <style>
 	.activity-log-list-item {

@@ -4,7 +4,7 @@
 	import { envTagVariant } from '$lib/envTagVariant';
 	import ErrorIcon from '$lib/icons/ErrorIcon.svelte';
 	import SuccessIcon from '$lib/icons/SuccessIcon.svelte';
-	import ListItemV2 from '$lib/ui/ListItemV2.svelte';
+	import ListItem from '$lib/ui/ListItem.svelte';
 	import RunningIndicator from '$lib/ui/RunningIndicator.svelte';
 	import Time from '$lib/ui/Time.svelte';
 	import { countIssuesBySeverity } from '$lib/utils/issueCounts';
@@ -47,7 +47,7 @@
 	const lastRun = $derived(job.runs.edges.length ? job.runs.edges[0].node : null);
 </script>
 
-<ListItemV2 interactive>
+<ListItem interactive>
 	<div class="job-row">
 		<div class="name-group">
 			{#if job.state === JobState.RUNNING}
@@ -110,7 +110,7 @@
 			{/if}
 		</div>
 	</div>
-</ListItemV2>
+</ListItem>
 
 <style>
 	.job-row {

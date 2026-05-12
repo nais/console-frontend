@@ -4,7 +4,7 @@
 	import AggregatedCostForApplications from '$lib/domain/cost/AggregatedCostForApplications.svelte';
 	import AppListItem from '$lib/domain/list-items/AppListItem.svelte';
 	import GraphErrors from '$lib/ui/GraphErrors.svelte';
-	import ListV2 from '$lib/ui/ListV2.svelte';
+	import List from '$lib/ui/List.svelte';
 	import OrderByMenu from '$lib/ui/OrderByMenu.svelte';
 	import Pagination from '$lib/ui/Pagination.svelte';
 	import SearchField from '$lib/ui/SearchField.svelte';
@@ -81,7 +81,7 @@
 		{#if totalApplications > 0}
 			{@const apps = $Applications.data?.team.applications}
 
-			<ListV2 title="Apps" count={apps?.pageInfo.totalCount ?? 0}>
+			<List title="Apps" count={apps?.pageInfo.totalCount ?? 0}>
 				{#snippet search()}
 					<SearchField
 						value={filter}
@@ -153,7 +153,7 @@
 				{#each apps?.nodes ?? [] as app (app.id)}
 					<AppListItem {app} />
 				{/each}
-			</ListV2>
+			</List>
 			<Pagination
 				page={apps?.pageInfo}
 				loaders={{
