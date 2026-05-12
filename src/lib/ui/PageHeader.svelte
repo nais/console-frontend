@@ -4,7 +4,7 @@
 	import type { RouteId } from '$app/types';
 	import AddToFavorites from '$lib/ui/AddToFavorites.svelte';
 	import { getHeaderActionsContext } from '$lib/ui/headerActionsContext.svelte';
-	import ToTheDocs from '$lib/ui/ToTheDocs.svelte';
+	import DocsLink from '$lib/ui/DocsLink.svelte';
 	import { Heading, Tag } from '@nais/ds-svelte-community';
 	import type { Snippet } from 'svelte';
 
@@ -60,7 +60,7 @@
 			<div class="actions">
 				<AddToFavorites path={page.url.pathname} />
 				{#if docPath}
-					<ToTheDocs path={docPath} />
+					<DocsLink path={docPath} />
 				{/if}
 			</div>
 		</div>
@@ -84,7 +84,7 @@
 					<AddToFavorites path={page.url.pathname} />
 				{/if}
 				{#if docPath}
-					<ToTheDocs path={docPath} />
+					<DocsLink path={docPath} />
 				{/if}
 			</div>
 		</div>
