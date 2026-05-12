@@ -69,11 +69,9 @@
 				<Tab value={tab.value} as="a" href={tab.href}>{tab.label}</Tab>
 			{/each}
 		</TabList>
-
-		<div class="mt-4">
-			{@render children()}
-		</div>
 	</Tabs>
-{:else}
-	{@render children()}
 {/if}
+
+<div class="mt-4">
+	{@render children()}
+</div>
