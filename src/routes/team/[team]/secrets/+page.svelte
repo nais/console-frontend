@@ -2,7 +2,9 @@
 	import { page } from '$app/state';
 	import { ActivityLogActivityType, SecretOrderField } from '$houdini';
 	import TeamActivityCard from '$lib/domain/activity/TeamActivityCard.svelte';
+	import { docURL } from '$lib/doc';
 	import { envTagVariant } from '$lib/envTagVariant';
+	import ExternalLink from '$lib/ui/ExternalLink.svelte';
 	import GraphErrors from '$lib/ui/GraphErrors.svelte';
 	import IconLabel from '$lib/ui/IconLabel.svelte';
 	import List from '$lib/ui/List.svelte';
@@ -177,7 +179,14 @@
 						</ListItem>
 					{/each}
 				{:else}
-					<ListItem>No secrets found</ListItem>
+					<ListItem>
+						<p>
+							No secrets found. Secrets are used to store sensitive data for your applications.
+							<ExternalLink href={docURL('/services/secrets')}
+								>Learn more about secrets in Nais and how to get started.</ExternalLink
+							>
+						</p>
+					</ListItem>
 				{/if}
 			</List>
 			<Pagination

@@ -2,7 +2,9 @@
 	import { page } from '$app/state';
 	import { ActivityLogActivityType, ConfigOrderField } from '$houdini';
 	import TeamActivityCard from '$lib/domain/activity/TeamActivityCard.svelte';
+	import { docURL } from '$lib/doc';
 	import { envTagVariant } from '$lib/envTagVariant';
+	import ExternalLink from '$lib/ui/ExternalLink.svelte';
 	import GraphErrors from '$lib/ui/GraphErrors.svelte';
 	import IconLabel from '$lib/ui/IconLabel.svelte';
 	import List from '$lib/ui/List.svelte';
@@ -177,7 +179,14 @@
 						</ListItem>
 					{/each}
 				{:else}
-					<ListItem>No configs found</ListItem>
+					<ListItem>
+						<p>
+							No configs found. Configs are used to store configuration data for your applications.
+							<ExternalLink href={docURL('/services/config')}
+								>Learn more about configs in Nais and how to get started.</ExternalLink
+							>
+						</p>
+					</ListItem>
 				{/if}
 			</List>
 			<Pagination

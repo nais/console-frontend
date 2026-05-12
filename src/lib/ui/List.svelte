@@ -134,6 +134,10 @@
 	}
 
 	.menu-slot {
+		margin-left: auto;
+	}
+
+	.menu-slot {
 		display: flex;
 		gap: var(--ax-space-8);
 		flex-shrink: 0;

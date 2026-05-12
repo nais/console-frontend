@@ -9,7 +9,11 @@ export async function load(event) {
 	const before = event.url.searchParams.get('before') || '';
 
 	return {
-		...(await addPageMeta(event, { title: 'Postgres Instances' })),
+		...(await addPageMeta(event, {
+			title: 'Postgres Instances',
+			pageHeaderTitle: '',
+			docPath: '/persistence/postgresql'
+		})),
 		...(await load_PostgresInstances({
 			event,
 			variables: {
