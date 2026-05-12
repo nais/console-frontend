@@ -13,6 +13,7 @@
 	import WorkloadHealth from '$lib/domain/workload/WorkloadHealth.svelte';
 	import Confirm from '$lib/ui/Confirm.svelte';
 	import GraphErrors from '$lib/ui/GraphErrors.svelte';
+	import HeaderActions from '$lib/ui/HeaderActions.svelte';
 	import List from '$lib/ui/List.svelte';
 	import SurfaceCard from '$lib/ui/SurfaceCard.svelte';
 	import Time from '$lib/ui/Time.svelte';
@@ -82,46 +83,39 @@
 	{@const app = $App.data.team.environment.application}
 	{@const criticalEdges = app.issues.edges.filter((e) => e.node.severity === 'CRITICAL')}
 
+	{#if viewerIsMember}
+		<HeaderActions>
+			<ActionMenu>
+				{#snippet trigger(props)}
+					<Button variant="tertiary-neutral" size="small" icon={MenuElipsisVerticalIcon} {...props}>
+						Actions
+					</Button>
+				{/snippet}
+				<button
+					class="action-menu-button"
+					onclick={openRestart}
+					disabled={app.deletionStartedAt !== null}
+				>
+					<ActionMenuItem icon={ArrowCirclepathIcon} disabled={app.deletionStartedAt !== null}>
+						Restart app
+					</ActionMenuItem>
+				</button>
+				<button class="action-menu-button" onclick={() => (showManifest = true)}>
+					<ActionMenuItem icon={FileTextIcon}>View manifest</ActionMenuItem>
+				</button>
+				<a
+					class="action-menu-button"
+					href="/team/{page.params.team}/{page.params.env}/app/{page.params.app}/delete"
+				>
+					<ActionMenuItem icon={TrashIcon} variant="danger">Delete app</ActionMenuItem>
+				</a>
+			</ActionMenu>
+		</HeaderActions>
+	{/if}
+
 	<div class="wrapper">
 		<div class="app-content">
 			<div class="main-section">
-				{#if viewerIsMember}
-					<div class="detail-actions">
-						<ActionMenu>
-							{#snippet trigger(props)}
-								<Button
-									variant="tertiary-neutral"
-									size="small"
-									icon={MenuElipsisVerticalIcon}
-									{...props}
-								>
-									Actions
-								</Button>
-							{/snippet}
-							<button
-								class="action-menu-button"
-								onclick={openRestart}
-								disabled={app.deletionStartedAt !== null}
-							>
-								<ActionMenuItem
-									icon={ArrowCirclepathIcon}
-									disabled={app.deletionStartedAt !== null}
-								>
-									Restart app
-								</ActionMenuItem>
-							</button>
-							<button class="action-menu-button" onclick={() => (showManifest = true)}>
-								<ActionMenuItem icon={FileTextIcon}>View manifest</ActionMenuItem>
-							</button>
-							<a
-								class="action-menu-button"
-								href="/team/{page.params.team}/{page.params.env}/app/{page.params.app}/delete"
-							>
-								<ActionMenuItem icon={TrashIcon} variant="danger">Delete app</ActionMenuItem>
-							</a>
-						</ActionMenu>
-					</div>
-				{/if}
 				{#if app.deletionStartedAt}
 					<Alert variant="info" size="small" fullWidth={false}>
 						This application is being deleted. Deletion started <Time
@@ -219,13 +213,6 @@
 		gap: var(--spacing-layout);
 	}
 
-	.detail-actions {
-		display: flex;
-		justify-content: flex-end;
-		gap: var(--ax-space-8);
-		flex-wrap: wrap;
-	}
-
 	.action-menu-button {
 		all: unset;
 		display: contents;
@@ -253,11 +240,6 @@
 	@media (max-width: 767px), (max-height: 500px) {
 		.app-content {
 			grid-template-columns: 1fr;
-		}
-
-		.detail-actions :global(button),
-		.detail-actions :global(a) {
-			width: 100%;
 		}
 	}
 </style>

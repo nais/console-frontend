@@ -3,11 +3,14 @@
 	import { page } from '$app/state';
 	import type { RouteId } from '$app/types';
 	import AddToFavorites from '$lib/ui/AddToFavorites.svelte';
+	import { getHeaderActionsContext } from '$lib/ui/headerActionsContext.svelte';
 	import ToTheDocs from '$lib/ui/ToTheDocs.svelte';
 	import { Heading, Tag } from '@nais/ds-svelte-community';
 	import type { Snippet } from 'svelte';
 
 	const { beforeBreadcrumbs }: { beforeBreadcrumbs?: Snippet } = $props();
+
+	const headerActions = getHeaderActionsContext();
 
 	const breadcrumbs = $derived.by(() => {
 		const baseBreadcrumbs = page.data?.meta?.breadcrumbs ?? [];
@@ -73,16 +76,17 @@
 					<Tag variant={tag.variant}>{tag.label}</Tag>
 				{/if}
 			</div>
-			{#if breadcrumbs.length === 0 || docPath}
-				<div class="actions">
-					{#if breadcrumbs.length === 0}
-						<AddToFavorites path={page.url.pathname} />
-					{/if}
-					{#if docPath}
-						<ToTheDocs path={docPath} />
-					{/if}
-				</div>
-			{/if}
+			<div class="actions">
+				{#if headerActions?.snippet}
+					{@render headerActions.snippet()}
+				{/if}
+				{#if breadcrumbs.length === 0}
+					<AddToFavorites path={page.url.pathname} />
+				{/if}
+				{#if docPath}
+					<ToTheDocs path={docPath} />
+				{/if}
+			</div>
 		</div>
 	{/if}
 </div>

@@ -1,5 +1,6 @@
 <script lang="ts">
 	import PageHeader from '$lib/ui/PageHeader.svelte';
+	import { createHeaderActionsContext } from '$lib/ui/headerActionsContext.svelte';
 	import { Alert } from '@nais/ds-svelte-community';
 	import type { LayoutProps } from './$types';
 	import Menu from './Menu.svelte';
@@ -10,6 +11,7 @@
 	let { deletionInProgress, lastSuccessfulSync, UserInfo, viewerIsMember } = $derived(data);
 
 	createTeamContext();
+	createHeaderActionsContext();
 
 	const isAdmin = $derived(
 		$UserInfo.data?.me.__typename === 'User' ? $UserInfo.data?.me.isAdmin : false
