@@ -7,12 +7,11 @@
 	import { envTagVariant } from '$lib/envTagVariant';
 	import ExternalLink from '$lib/ui/ExternalLink.svelte';
 	import GraphErrors from '$lib/ui/GraphErrors.svelte';
-	import IconLabel from '$lib/ui/IconLabel.svelte';
 	import OrderByMenu from '$lib/ui/OrderByMenu.svelte';
 	import Pagination from '$lib/ui/Pagination.svelte';
 	import TooltipAlignHack from '$lib/ui/TooltipAlignHack.svelte';
 	import { changeParams } from '$lib/utils/searchparams';
-	import { Alert, Loader } from '@nais/ds-svelte-community';
+	import { Alert, Loader, Tag } from '@nais/ds-svelte-community';
 	import { CircleFillIcon } from '@nais/ds-svelte-community/icons';
 	import type { PageProps } from './$types';
 
@@ -58,35 +57,33 @@
 				{#if si.nodes.length > 0}
 					{#each si.nodes as instance (instance.id)}
 						<ListItem interactive>
-							<IconLabel
-								as="h4"
-								href="/team/{instance.team.slug}/{instance.teamEnvironment.environment
-									.name}/postgres/{instance.name}"
-								size="large"
-								label={instance.name}
-								tag={{
-									label: instance.teamEnvironment.environment.name,
-									variant: envTagVariant(instance.teamEnvironment.environment.name)
-								}}
-							>
-								{#snippet icon()}
-									<TooltipAlignHack
-										content={{
-											DEGRADED: 'DEGRADED',
-											PROGRESSING: 'PROGRESSING',
-											AVAILABLE: 'AVAILABLE'
-										}[instance.state] ?? ''}
-									>
-										<CircleFillIcon
-											style="color: var({{
-												AVAILABLE: '--ax-bg-success-strong',
-												DEGRADED: '--ax-bg-danger-strong',
-												PROGRESSING: '--ax-bg-warning-moderate-pressed'
-											}[instance.state] ?? '--ax-bg-info-strong'}); font-size: 0.7rem"
-										/>
-									</TooltipAlignHack>
-								{/snippet}
-							</IconLabel>
+							<div class="name-group">
+								<TooltipAlignHack
+									content={{
+										DEGRADED: 'DEGRADED',
+										PROGRESSING: 'PROGRESSING',
+										AVAILABLE: 'AVAILABLE'
+									}[instance.state] ?? ''}
+								>
+									<CircleFillIcon
+										style="color: var({{
+											AVAILABLE: '--ax-bg-success-strong',
+											DEGRADED: '--ax-bg-danger-strong',
+											PROGRESSING: '--ax-bg-warning-moderate-pressed'
+										}[instance.state] ?? '--ax-bg-info-strong'}); font-size: 0.7rem"
+									/>
+								</TooltipAlignHack>
+								<a
+									href="/team/{instance.team.slug}/{instance.teamEnvironment.environment
+										.name}/postgres/{instance.name}"
+									class="item-name">{instance.name}</a
+								>
+								<Tag
+									size="xsmall"
+									variant={envTagVariant(instance.teamEnvironment.environment.name)}
+									>{instance.teamEnvironment.environment.name}</Tag
+								>
+							</div>
 
 							<div class="right">
 								<div>Version: <code>{instance.majorVersion}</code></div>
@@ -154,5 +151,29 @@
 			align-items: flex-end;
 			margin-top: var(--ax-space-6);
 		}
+	}
+
+	.name-group {
+		display: flex;
+		align-items: center;
+		gap: var(--ax-space-8);
+		min-width: 0;
+	}
+	.name-group :global(.aksel-tag) {
+		white-space: nowrap;
+		flex-shrink: 0;
+	}
+	.item-name {
+		color: var(--ax-text-neutral);
+		text-decoration: none;
+		font-weight: 500;
+		white-space: nowrap;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		min-width: 0;
+		flex: 0 1 auto;
+	}
+	.item-name:hover {
+		text-decoration: underline;
 	}
 </style>

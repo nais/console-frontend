@@ -6,7 +6,6 @@
 	import { envTagVariant } from '$lib/envTagVariant';
 	import ExternalLink from '$lib/ui/ExternalLink.svelte';
 	import GraphErrors from '$lib/ui/GraphErrors.svelte';
-	import IconLabel from '$lib/ui/IconLabel.svelte';
 	import List from '$lib/ui/List.svelte';
 	import ListItem from '$lib/ui/ListItem.svelte';
 	import OrderByMenu from '$lib/ui/OrderByMenu.svelte';
@@ -17,7 +16,7 @@
 	import TooltipAlignHack from '$lib/ui/TooltipAlignHack.svelte';
 	import { countIssuesBySeverity } from '$lib/utils/issueCounts';
 	import { changeParams } from '$lib/utils/searchparams';
-	import { Button } from '@nais/ds-svelte-community';
+	import { Button, Tag } from '@nais/ds-svelte-community';
 	import { CircleFillIcon, PlusIcon } from '@nais/ds-svelte-community/icons';
 	import { endOfYesterday, startOfMonth, subMonths } from 'date-fns';
 	import CreatePage from '../opensearch/create/+page.svelte';
@@ -82,53 +81,45 @@
 					{/snippet}
 					{#each $OpenSearch.data.team.openSearches.nodes as instance (instance.id)}
 						<ListItem interactive>
-							<IconLabel
-								as="h4"
-								href="/team/{instance.team.slug}/{instance.teamEnvironment.environment
-									.name}/opensearch/{instance.name}"
-								size="large"
-								label={instance.name}
-								tag={{
-									label: instance.teamEnvironment.environment.name,
-									variant: envTagVariant(instance.teamEnvironment.environment.name)
-								}}
-							>
-								{#snippet icon()}
-									<TooltipAlignHack
-										content={{
-											RUNNING: 'Instance is running',
-											UNKNOWN: 'Unknown status',
-											POWEROFF: 'Powered off',
-											REBALANCING: 'Rebalancing',
-											REBUILDING: 'Rebuilding'
-										}[instance.state] ?? ''}
-									>
-										{#if instance.state === 'RUNNING'}
-											<RunningIndicator />
-										{:else if instance.state === 'REBALANCING'}
-											<div class="status-indicator rebalancing">
-												<CircleFillIcon />
-											</div>
-										{:else if instance.state === 'REBUILDING'}
-											<div class="status-indicator rebuilding">
-												<CircleFillIcon />
-											</div>
-										{:else if instance.state === 'POWEROFF'}
-											<div
-												style="width: 24px; color: var(--ax-bg-danger-strong); font-size: 0.7rem"
-											>
-												<CircleFillIcon />
-											</div>
-										{:else}
-											<div
-												style="width: 24px; color: var(--ax-bg-info-moderate-pressed); font-size: 0.7rem"
-											>
-												<CircleFillIcon />
-											</div>
-										{/if}
-									</TooltipAlignHack>
-								{/snippet}
-							</IconLabel>
+							<div class="name-group">
+								<TooltipAlignHack
+									content={{
+										RUNNING: 'Instance is running',
+										UNKNOWN: 'Unknown status',
+										POWEROFF: 'Powered off',
+										REBALANCING: 'Rebalancing',
+										REBUILDING: 'Rebuilding'
+									}[instance.state] ?? ''}
+								>
+									{#if instance.state === 'RUNNING'}
+										<RunningIndicator />
+									{:else if instance.state === 'REBALANCING'}
+										<div class="status-indicator rebalancing">
+											<CircleFillIcon />
+										</div>
+									{:else if instance.state === 'REBUILDING'}
+										<div class="status-indicator rebuilding">
+											<CircleFillIcon />
+										</div>
+									{:else if instance.state === 'POWEROFF'}
+										<CircleFillIcon style="color: var(--ax-bg-danger-strong); font-size: 0.7rem" />
+									{:else}
+										<CircleFillIcon
+											style="color: var(--ax-bg-info-moderate-pressed); font-size: 0.7rem"
+										/>
+									{/if}
+								</TooltipAlignHack>
+								<a
+									href="/team/{instance.team.slug}/{instance.teamEnvironment.environment
+										.name}/opensearch/{instance.name}"
+									class="item-name">{instance.name}</a
+								>
+								<Tag
+									size="xsmall"
+									variant={envTagVariant(instance.teamEnvironment.environment.name)}
+									>{instance.teamEnvironment.environment.name}</Tag
+								>
+							</div>
 							{#if (instance.issues?.pageInfo.totalCount ?? 0) > 0}
 								{@const criticalCount = countIssuesBySeverity(instance.issues?.edges, 'CRITICAL')}
 								{@const warningCount = countIssuesBySeverity(instance.issues?.edges, 'WARNING')}
@@ -265,6 +256,30 @@
 				align-items: flex-end;
 				margin-top: var(--ax-space-6);
 			}
+		}
+
+		.name-group {
+			display: flex;
+			align-items: center;
+			gap: var(--ax-space-8);
+			min-width: 0;
+		}
+		.name-group :global(.aksel-tag) {
+			white-space: nowrap;
+			flex-shrink: 0;
+		}
+		.item-name {
+			color: var(--ax-text-neutral);
+			text-decoration: none;
+			font-weight: 500;
+			white-space: nowrap;
+			overflow: hidden;
+			text-overflow: ellipsis;
+			min-width: 0;
+			flex: 0 1 auto;
+		}
+		.item-name:hover {
+			text-decoration: underline;
 		}
 	</style>
 {/if}

@@ -3,15 +3,16 @@
 	import { docURL } from '$lib/doc';
 	import PersistenceCost from '$lib/domain/cost/PersistenceCost.svelte';
 	import { envTagVariant } from '$lib/envTagVariant';
+	import KafkaIcon from '$lib/icons/KafkaIcon.svelte';
 	import ExternalLink from '$lib/ui/ExternalLink.svelte';
 	import GraphErrors from '$lib/ui/GraphErrors.svelte';
-	import IconLabel from '$lib/ui/IconLabel.svelte';
 	import List from '$lib/ui/List.svelte';
 	import ListItem from '$lib/ui/ListItem.svelte';
 	import OrderByMenu from '$lib/ui/OrderByMenu.svelte';
 	import Pagination from '$lib/ui/Pagination.svelte';
 	import SurfaceCard from '$lib/ui/SurfaceCard.svelte';
 	import { changeParams } from '$lib/utils/searchparams';
+	import { Tag } from '@nais/ds-svelte-community';
 	import { endOfYesterday, startOfMonth, subMonths } from 'date-fns';
 	import type { PageProps } from './$types';
 
@@ -48,18 +49,19 @@
 				{#if $KafkaTopics.data.team.kafkaTopics.nodes.length > 0}
 					{#each $KafkaTopics.data.team.kafkaTopics.nodes as instance (instance.id)}
 						<ListItem interactive>
-							<IconLabel
-								as="h4"
-								href="/team/{instance.team.slug}/{instance.teamEnvironment.environment
-									.name}/kafka/{instance.name}"
-								size="large"
-								icon="kafka"
-								label={instance.name}
-								tag={{
-									label: instance.teamEnvironment.environment.name,
-									variant: envTagVariant(instance.teamEnvironment.environment.name)
-								}}
-							/>
+							<div class="name-group">
+								<KafkaIcon style="font-size: 1.25rem; flex-shrink: 0" />
+								<a
+									href="/team/{instance.team.slug}/{instance.teamEnvironment.environment
+										.name}/kafka/{instance.name}"
+									class="item-name">{instance.name}</a
+								>
+								<Tag
+									size="xsmall"
+									variant={envTagVariant(instance.teamEnvironment.environment.name)}
+									>{instance.teamEnvironment.environment.name}</Tag
+								>
+							</div>
 						</ListItem>
 					{/each}
 				{:else}
@@ -124,11 +126,34 @@
 			align-content: start;
 		}
 
-		/* Mobile responsive layout */
 		@media (max-width: 767px), (max-height: 500px) {
 			.content-wrapper {
 				grid-template-columns: 1fr;
 			}
+		}
+
+		.name-group {
+			display: flex;
+			align-items: center;
+			gap: var(--ax-space-8);
+			min-width: 0;
+		}
+		.name-group :global(.aksel-tag) {
+			white-space: nowrap;
+			flex-shrink: 0;
+		}
+		.item-name {
+			color: var(--ax-text-neutral);
+			text-decoration: none;
+			font-weight: 500;
+			white-space: nowrap;
+			overflow: hidden;
+			text-overflow: ellipsis;
+			min-width: 0;
+			flex: 0 1 auto;
+		}
+		.item-name:hover {
+			text-decoration: underline;
 		}
 	</style>
 {/if}
