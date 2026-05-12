@@ -2,10 +2,9 @@
 	import { fragment, graphql, type NetworkPolicy, type NetworkPolicy$data } from '$houdini';
 	import WorkloadLink from '$lib/domain/workload/WorkloadLink.svelte';
 	import IconLabel from '$lib/ui/IconLabel.svelte';
-	import Pill from '$lib/ui/Pill.svelte';
 	import SurfaceCard from '$lib/ui/SurfaceCard.svelte';
 	import TooltipAlignHack from '$lib/ui/TooltipAlignHack.svelte';
-	import { BodyShort } from '@nais/ds-svelte-community';
+	import { BodyShort, Tag } from '@nais/ds-svelte-community';
 	import {
 		ArrowLeftIcon,
 		ArrowRightIcon,
@@ -167,16 +166,16 @@
 
 					<span class="status">
 						{#if entry.kind === 'external'}
-							<Pill variant="neutral">External</Pill>
+							<Tag size="xsmall" variant="neutral">External</Tag>
 						{:else if entry.rule.mutual}
-							<Pill variant="success">Mutual</Pill>
+							<Tag size="xsmall" variant="success">Mutual</Tag>
 						{:else}
 							<TooltipAlignHack
 								content={entry.direction === 'inbound'
 									? `${entry.rule.targetWorkloadName} is missing outbound policy to ${$data.name}`
 									: `${entry.rule.targetWorkloadName} is missing inbound policy from ${$data.name}`}
 							>
-								<Pill variant="warning">One-way</Pill>
+								<Tag size="xsmall" variant="warning">One-way</Tag>
 							</TooltipAlignHack>
 						{/if}
 					</span>

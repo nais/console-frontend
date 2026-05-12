@@ -1,5 +1,5 @@
 <script lang="ts">
-	import Pill from '$lib/ui/Pill.svelte';
+	import { Tag } from '@nais/ds-svelte-community';
 
 	interface Props {
 		critical?: number;
@@ -13,13 +13,13 @@
 
 <div class="pills" class:column={direction === 'column'}>
 	{#if critical > 0}
-		<Pill variant="critical">{critical} critical</Pill>
+		<Tag size="xsmall" variant="error-moderate">{critical} critical</Tag>
 	{/if}
 	{#if warning > 0}
-		<Pill variant="warning">{warning} warning</Pill>
+		<Tag size="xsmall" variant="warning-moderate">{warning} warning</Tag>
 	{/if}
 	{#if todo > 0}
-		<Pill variant="todo">{todo} todo</Pill>
+		<Tag size="xsmall" variant="info-moderate">{todo} todo</Tag>
 	{/if}
 </div>
 
