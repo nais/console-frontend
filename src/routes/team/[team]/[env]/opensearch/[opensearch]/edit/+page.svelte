@@ -21,6 +21,8 @@
 		TextField
 	} from '@nais/ds-svelte-community';
 	import type { PageProps } from './$houdini';
+	import { docURL } from '$lib/doc';
+	import ExternalLink from '$lib/ui/ExternalLink.svelte';
 
 	let { form, data }: PageProps = $props();
 
@@ -85,10 +87,18 @@ storageGB = "${storage}"
 </script>
 
 <form method="POST" use:enhance>
-	<Alert variant="info" size="small"
-		>Changing these settings may cause a restart of this OpenSearch instance.</Alert
-	>
-
+	<Alert variant="info" size="small">
+		<BodyShort size="small">
+			Changing these settings may cause a restart of this OpenSearch instance.
+		</BodyShort>
+		<BodyShort size="small">
+			If you're upgrading major versions, consult the
+			<ExternalLink href={docURL('/persistence/opensearch/how-to/upgrade-major-version')}>
+				migration guide
+			</ExternalLink>
+			first.
+		</BodyShort>
+	</Alert>
 	<Select size="small" label="Desired version" name="version" required bind:value={version}>
 		{#each Object.values(OpenSearchMajorVersion) as opt (opt)}
 			<option value={opt}>{opt}</option>
