@@ -43,8 +43,8 @@
 	}
 
 	:global(.surface-card-bordered) {
-		background: var(--ax-bg-neutral-moderateA);
-		box-shadow: var(--surface-elevated-shadow);
+		background: color-mix(in srgb, var(--ax-border-neutral-subtleA) 15%, var(--ax-bg-default));
+		box-shadow: 0 4px 8px -4px var(--ax-border-neutral-subtleA);
 	}
 
 	.header {
