@@ -7,7 +7,6 @@
 	import WarningIcon from '$lib/icons/WarningIcon.svelte';
 	import ExternalLink from '$lib/ui/ExternalLink.svelte';
 	import GraphErrors from '$lib/ui/GraphErrors.svelte';
-	import List from '$lib/ui/List.svelte';
 	import Pagination from '$lib/ui/Pagination.svelte';
 	import SurfaceCard from '$lib/ui/SurfaceCard.svelte';
 	import { parseImage } from '$lib/utils/image';
@@ -100,11 +99,9 @@
 
 			{#if $ApplicationImageDetails.data?.team.environment.workload.image.activityLog.edges.length > 0}
 				<SurfaceCard title="Image activity log">
-					<List>
-						{#each $ApplicationImageDetails.data?.team.environment.workload.image.activityLog.edges || [] as item (item.node.id)}
-							<ActivityLogListItem item={item.node} />
-						{/each}
-					</List>
+					{#each $ApplicationImageDetails.data?.team.environment.workload.image.activityLog.edges || [] as item (item.node.id)}
+						<ActivityLogListItem item={item.node} />
+					{/each}
 					{#if $ApplicationImageDetails.data.team.environment.workload.image.activityLog.pageInfo.hasPreviousPage || $ApplicationImageDetails.data.team.environment.workload.image.activityLog.pageInfo.hasNextPage}
 						<Pagination
 							page={$ApplicationImageDetails.data.team.environment.workload.image.activityLog

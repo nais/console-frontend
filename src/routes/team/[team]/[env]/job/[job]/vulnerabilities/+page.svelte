@@ -7,7 +7,6 @@
 	import WarningIcon from '$lib/icons/WarningIcon.svelte';
 	import ExternalLink from '$lib/ui/ExternalLink.svelte';
 	import GraphErrors from '$lib/ui/GraphErrors.svelte';
-	import List from '$lib/ui/List.svelte';
 	import SurfaceCard from '$lib/ui/SurfaceCard.svelte';
 	import { parseImage } from '$lib/utils/image';
 	import { BodyShort, CopyButton } from '@nais/ds-svelte-community';
@@ -99,11 +98,9 @@
 
 			{#if $JobImageDetails.data?.team.environment.workload.image.activityLog.edges.length > 0}
 				<SurfaceCard title="Image activity log">
-					<List>
-						{#each $JobImageDetails.data?.team.environment.workload.image.activityLog.edges || [] as item (item.node.id)}
-							<ActivityLogListItem item={item.node} />
-						{/each}
-					</List>
+					{#each $JobImageDetails.data?.team.environment.workload.image.activityLog.edges || [] as item (item.node.id)}
+						<ActivityLogListItem item={item.node} />
+					{/each}
 				</SurfaceCard>
 			{:else}
 				<BodyShort size="small" textColor="subtle"
