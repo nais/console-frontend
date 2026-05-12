@@ -136,9 +136,10 @@
 					<ActionMenu>
 						{#snippet trigger(props)}
 							<Button
-								variant="tertiary-neutral"
+								variant="secondary"
 								size="small"
 								icon={MenuElipsisVerticalIcon}
+								iconPosition="right"
 								{...props}
 							>
 								Actions
