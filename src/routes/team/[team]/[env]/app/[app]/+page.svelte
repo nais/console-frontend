@@ -31,6 +31,14 @@
 	let { data }: PageProps = $props();
 	let { App, teamSlug, viewerIsMember } = $derived(data);
 
+	let appData = $derived(App ? $App.data : undefined);
+	let appErrors = $derived(App ? $App.errors : undefined);
+	let appFetching = $derived(App ? $App.fetching : false);
+	let app = $derived(appData?.team?.environment?.application ?? null);
+	let criticalEdges = $derived(
+		app?.issues.edges.filter((e) => e.node.severity === 'CRITICAL') ?? []
+	);
+
 	const restartAppMutation = () =>
 		graphql(`
 			mutation RestartApp($team: Slug!, $environment: String!, $application: String!) {
@@ -72,16 +80,14 @@
 	};
 </script>
 
-<GraphErrors errors={$App.errors} />
+<GraphErrors errors={appErrors} />
 
-{#if $App.fetching}
+{#if appFetching}
 	<div style="display: flex; justify-content: center; align-items: center; height: 500px;">
 		<Loader size="3xlarge" />
 	</div>
 {/if}
-{#if $App.data}
-	{@const app = $App.data.team.environment.application}
-	{@const criticalEdges = app.issues.edges.filter((e) => e.node.severity === 'CRITICAL')}
+{#if app}
 
 	{#if viewerIsMember}
 		<HeaderActions>
@@ -100,9 +106,9 @@
 				<button
 					class="action-menu-button"
 					onclick={openRestart}
-					disabled={app.deletionStartedAt !== null}
+					disabled={app?.deletionStartedAt !== null}
 				>
-					<ActionMenuItem icon={ArrowCirclepathIcon} disabled={app.deletionStartedAt !== null}>
+					<ActionMenuItem icon={ArrowCirclepathIcon} disabled={app?.deletionStartedAt !== null}>
 						Restart app
 					</ActionMenuItem>
 				</button>
@@ -122,11 +128,11 @@
 	<div class="wrapper">
 		<div class="app-content">
 			<div class="main-section">
-				{#if app.deletionStartedAt}
-					<Alert variant="info" size="small" fullWidth={false}>
-						This application is being deleted. Deletion started <Time
-							time={app.deletionStartedAt}
-							distance
+			{#if app?.deletionStartedAt}
+				<Alert variant="info" size="small" fullWidth={false}>
+					This application is being deleted. Deletion started <Time
+						time={app.deletionStartedAt}
+						distance
 						/>. If the deletion is taking too long, contact the Nais team.
 					</Alert>
 				{/if}
@@ -149,14 +155,14 @@
 				<WorkloadHealth
 					{teamSlug}
 					environment={environment ?? ''}
-					workload={app.name}
+					workload={app?.name ?? ''}
 					workloadType="app"
-					criticalIssues={app.criticalIssues.pageInfo.totalCount}
-					warningIssues={app.warningIssues.pageInfo.totalCount}
-					todoIssues={app.todoIssues.pageInfo.totalCount}
-					readyInstances={app.instanceGroups.reduce((sum, g) => sum + g.readyInstances, 0)}
-					desiredInstances={app.instanceGroups.reduce((sum, g) => sum + g.desiredInstances, 0)}
-					loading={$App.fetching}
+					criticalIssues={app?.criticalIssues.pageInfo.totalCount ?? 0}
+					warningIssues={app?.warningIssues.pageInfo.totalCount ?? 0}
+					todoIssues={app?.todoIssues.pageInfo.totalCount ?? 0}
+					readyInstances={app?.instanceGroups.reduce((sum, g) => sum + g.readyInstances, 0) ?? 0}
+					desiredInstances={app?.instanceGroups.reduce((sum, g) => sum + g.desiredInstances, 0) ?? 0}
+					loading={appFetching}
 				/>
 				<InstanceGroups {app} />
 				{#if environment}
@@ -176,8 +182,8 @@
 				{/if}
 				<Persistence workload={app} />
 				{#if environment}
-					<Configs {environment} workload={app.name} {teamSlug} />
-					<Secrets workload={app.name} {environment} {teamSlug} />
+					<Configs {environment} workload={app?.name ?? ''} {teamSlug} />
+					<Secrets workload={app?.name ?? ''} {environment} {teamSlug} />
 				{/if}
 			</div>
 		</div>
