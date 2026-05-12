@@ -44,7 +44,7 @@
 
 	:global(.surface-card-bordered) {
 		background: color-mix(in srgb, var(--ax-border-neutral-subtleA) 15%, var(--ax-bg-default));
-		box-shadow: 0 4px 8px -4px var(--ax-border-neutral-subtleA);
+		box-shadow: 0 8px 8px -8px var(--ax-border-neutral-subtleA);
 	}
 
 	.header {
