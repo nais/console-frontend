@@ -6,7 +6,7 @@ query Applications(
 	$last: Int
 	$before: Cursor
 	$after: Cursor
-) @cache(policy: CacheAndNetwork) {
+) @cache(policy: CacheAndNetwork, partial: true) {
 	team(slug: $team) {
 		applications(
 			first: $first
@@ -24,6 +24,16 @@ query Applications(
 				pageStart
 				startCursor
 				endCursor
+			}
+			facets {
+				environments {
+					environmentName
+					count
+				}
+				states {
+					state
+					count
+				}
 			}
 			nodes {
 				__typename

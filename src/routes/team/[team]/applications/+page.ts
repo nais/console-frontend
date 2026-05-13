@@ -1,10 +1,8 @@
 import {
 	ApplicationOrderField,
-	ApplicationState,
 	load_Applications,
 	load_ApplicationsListMetadata,
 	OrderDirection,
-	type ApplicationState$options,
 	type TeamApplicationsFilter
 } from '$houdini';
 import { urlToOrderDirection, urlToOrderField } from '$lib/ui/OrderByMenu.svelte';
@@ -12,24 +10,13 @@ import { addPageMeta } from '$lib/utils/pageMeta';
 
 const rows = 25;
 
-const stateMap: Record<string, ApplicationState$options> = {
-	running: ApplicationState.RUNNING,
-	'not-running': ApplicationState.NOT_RUNNING,
-	unknown: ApplicationState.UNKNOWN
-};
-
 export async function load(event) {
 	const filter: string = event.url.searchParams.get('filter') || '';
 	const environments: string[] | undefined =
-		event.url.searchParams.get('environments')?.split(',') || undefined;
+		event.url.searchParams.get('environments')?.split(',').filter(Boolean) || undefined;
 
-	const statesParam = event.url.searchParams.get('states');
-	const states: ApplicationState$options[] | undefined = statesParam
-		? statesParam
-				.split(',')
-				.map((s) => stateMap[s])
-				.filter(Boolean)
-		: undefined;
+	const states: string[] | undefined =
+		event.url.searchParams.get('states')?.split(',').filter(Boolean) || undefined;
 
 	const after = event.url.searchParams.get('after') || '';
 	const before = event.url.searchParams.get('before') || '';
@@ -42,6 +29,7 @@ export async function load(event) {
 		})),
 		...(await load_Applications({
 			event,
+			blocking: true,
 			variables: {
 				team: event.params.team,
 				filter: { name: filter, environments, states } as TeamApplicationsFilter,

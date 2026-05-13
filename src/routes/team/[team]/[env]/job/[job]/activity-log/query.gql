@@ -27,6 +27,20 @@ query JobActivityLog(
 					nodes {
 						...ActivityLogEntryFragment
 					}
+					facets {
+						activityTypes {
+							activityType
+							count
+						}
+						resourceTypes {
+							resourceType
+							count
+						}
+						environments {
+							environmentName
+							count
+						}
+					}
 				}
 			}
 		}
