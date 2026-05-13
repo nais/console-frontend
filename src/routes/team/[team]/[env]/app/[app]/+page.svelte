@@ -88,7 +88,6 @@
 	</div>
 {/if}
 {#if app}
-
 	{#if viewerIsMember}
 		<HeaderActions>
 			<ActionMenu>
@@ -128,11 +127,11 @@
 	<div class="wrapper">
 		<div class="app-content">
 			<div class="main-section">
-			{#if app?.deletionStartedAt}
-				<Alert variant="info" size="small" fullWidth={false}>
-					This application is being deleted. Deletion started <Time
-						time={app.deletionStartedAt}
-						distance
+				{#if app?.deletionStartedAt}
+					<Alert variant="info" size="small" fullWidth={false}>
+						This application is being deleted. Deletion started <Time
+							time={app.deletionStartedAt}
+							distance
 						/>. If the deletion is taking too long, contact the Nais team.
 					</Alert>
 				{/if}
@@ -161,7 +160,8 @@
 					warningIssues={app?.warningIssues.pageInfo.totalCount ?? 0}
 					todoIssues={app?.todoIssues.pageInfo.totalCount ?? 0}
 					readyInstances={app?.instanceGroups.reduce((sum, g) => sum + g.readyInstances, 0) ?? 0}
-					desiredInstances={app?.instanceGroups.reduce((sum, g) => sum + g.desiredInstances, 0) ?? 0}
+					desiredInstances={app?.instanceGroups.reduce((sum, g) => sum + g.desiredInstances, 0) ??
+						0}
 					loading={appFetching}
 				/>
 				<InstanceGroups {app} />

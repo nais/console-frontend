@@ -1,5 +1,5 @@
 query InstanceGroupRedirect($app: String!, $team: Slug!, $env: String!)
-	@cache(policy: NetworkOnly) {
+@cache(policy: NetworkOnly) {
 	team(slug: $team) {
 		environment(name: $env) {
 			application(name: $app) {
