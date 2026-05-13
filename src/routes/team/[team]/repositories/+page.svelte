@@ -1,13 +1,15 @@
 <script lang="ts">
-	import { ActivityLogActivityType, graphql, RepositoryOrderField } from '$houdini';
+	import { page } from '$app/state';
+	import { ActivityLogActivityType, graphql, OrderDirection, RepositoryOrderField } from '$houdini';
 	import TeamActivityCard from '$lib/domain/activity/TeamActivityCard.svelte';
 	import GitHubIcon from '$lib/icons/GitHubIcon.svelte';
 	import ExternalLink from '$lib/ui/ExternalLink.svelte';
 	import GraphErrors from '$lib/ui/GraphErrors.svelte';
 	import List from '$lib/ui/List.svelte';
+	import ListFilters from '$lib/ui/ListFilters.svelte';
 	import ListItem from '$lib/ui/ListItem.svelte';
-	import OrderByMenu from '$lib/ui/OrderByMenu.svelte';
 	import Pagination from '$lib/ui/Pagination.svelte';
+	import SurfaceCard from '$lib/ui/SurfaceCard.svelte';
 	import { changeParams } from '$lib/utils/searchparams';
 	import {
 		Alert,
@@ -25,6 +27,36 @@
 	let { data }: PageProps = $props();
 
 	let { Repositories, teamSlug, viewerIsMember } = $derived(data);
+
+	type RepositoryOrderFieldOptions =
+		(typeof RepositoryOrderField)[keyof typeof RepositoryOrderField];
+	type OrderDirectionOptions = (typeof OrderDirection)[keyof typeof OrderDirection];
+
+	const sortFields: { value: RepositoryOrderFieldOptions; label: string }[] = [
+		{ value: RepositoryOrderField.NAME, label: 'Name' }
+	];
+
+	const currentSortField: RepositoryOrderFieldOptions = $derived(
+		(Object.values(RepositoryOrderField).find((f) =>
+			page.url.searchParams.get('sort')?.startsWith(f)
+		) as RepositoryOrderFieldOptions | undefined) ?? RepositoryOrderField.NAME
+	);
+
+	const currentSortDirection: OrderDirectionOptions = $derived(
+		(Object.values(OrderDirection).find((d) => page.url.searchParams.get('sort')?.endsWith(d)) as
+			| OrderDirectionOptions
+			| undefined) ?? OrderDirection.ASC
+	);
+
+	function setSort(field: RepositoryOrderFieldOptions) {
+		const direction =
+			field === currentSortField
+				? currentSortDirection === OrderDirection.ASC
+					? OrderDirection.DESC
+					: OrderDirection.ASC
+				: OrderDirection.ASC;
+		changeParams({ sort: `${field}-${direction}`, after: '', before: '' });
+	}
 
 	const addRepositoryMutation = graphql(`
 		mutation AddRepository($repository: String!, $team: Slug!) {
@@ -323,12 +355,6 @@
 					<div>
 						<div>
 							<List title="{team.repositories.pageInfo.totalCount} entries">
-								{#snippet menu()}
-									<OrderByMenu
-										orderField={RepositoryOrderField}
-										defaultOrderField={RepositoryOrderField.NAME}
-									/>
-								{/snippet}
 								{#each team.repositories.nodes as repo (repo.id)}
 									<ListItem interactive>
 										<div class="repo-row">
@@ -375,6 +401,14 @@
 			{/if}
 		</div>
 		<div class="right-column">
+			<SurfaceCard title="Filters">
+				<ListFilters
+					{sortFields}
+					{currentSortField}
+					{currentSortDirection}
+					onSort={(field) => setSort(field as RepositoryOrderFieldOptions)}
+				/>
+			</SurfaceCard>
 			<TeamActivityCard
 				{teamSlug}
 				viewAllHref="/team/{teamSlug}/activity-log"

@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { page } from '$app/state';
 	import { OpenSearchOrderField, OrderDirection } from '$houdini';
 	import { docURL } from '$lib/doc';
 	import PersistenceCost from '$lib/domain/cost/PersistenceCost.svelte';
@@ -7,8 +8,8 @@
 	import ExternalLink from '$lib/ui/ExternalLink.svelte';
 	import GraphErrors from '$lib/ui/GraphErrors.svelte';
 	import List from '$lib/ui/List.svelte';
+	import ListFilters from '$lib/ui/ListFilters.svelte';
 	import ListItem from '$lib/ui/ListItem.svelte';
-	import OrderByMenu from '$lib/ui/OrderByMenu.svelte';
 	import PageModal, { pageModalClick } from '$lib/ui/PageModal.svelte';
 	import Pagination from '$lib/ui/Pagination.svelte';
 	import RunningIndicator from '$lib/ui/RunningIndicator.svelte';
@@ -22,8 +23,45 @@
 	import CreatePage from '../opensearch/create/+page.svelte';
 	import type { PageProps } from './$types';
 
+	type OpenSearchOrderFieldOptions =
+		(typeof OpenSearchOrderField)[keyof typeof OpenSearchOrderField];
+	type OrderDirectionOptions = (typeof OrderDirection)[keyof typeof OrderDirection];
+
 	let { data }: PageProps = $props();
 	let { OpenSearch, viewerIsMember } = $derived(data);
+
+	const sortFields: { value: OpenSearchOrderFieldOptions; label: string }[] = [
+		{ value: OpenSearchOrderField.ISSUES, label: 'Issues' },
+		{ value: OpenSearchOrderField.NAME, label: 'Name' },
+		{ value: OpenSearchOrderField.ENVIRONMENT, label: 'Environment' },
+		{ value: OpenSearchOrderField.STATE, label: 'State' }
+	];
+
+	const currentSortField: OpenSearchOrderFieldOptions = $derived(
+		(Object.values(OpenSearchOrderField).find((f) =>
+			page.url.searchParams.get('sort')?.startsWith(f)
+		) as OpenSearchOrderFieldOptions | undefined) ?? OpenSearchOrderField.ISSUES
+	);
+
+	const currentSortDirection: OrderDirectionOptions = $derived(
+		(Object.values(OrderDirection).find((d) => page.url.searchParams.get('sort')?.endsWith(d)) as
+			| OrderDirectionOptions
+			| undefined) ?? OrderDirection.DESC
+	);
+
+	function setSort(field: OpenSearchOrderFieldOptions) {
+		const defaultDirection =
+			field === OpenSearchOrderField.NAME || field === OpenSearchOrderField.ENVIRONMENT
+				? OrderDirection.ASC
+				: OrderDirection.DESC;
+		const direction =
+			field === currentSortField
+				? currentSortDirection === OrderDirection.ASC
+					? OrderDirection.DESC
+					: OrderDirection.ASC
+				: defaultDirection;
+		changeParams({ sort: `${field}-${direction}`, after: '', before: '' });
+	}
 
 	let cost = $derived(() => {
 		const costData = $OpenSearch.data?.team.cost;
@@ -72,13 +110,6 @@
 			<div>
 				{@render createButton()}
 				<List title="OpenSearch" count={$OpenSearch.data.team.openSearches.pageInfo.totalCount}>
-					{#snippet menu()}
-						<OrderByMenu
-							orderField={OpenSearchOrderField}
-							defaultOrderField={OpenSearchOrderField.ISSUES}
-							defaultOrderDirection={OrderDirection.DESC}
-						/>
-					{/snippet}
 					{#each $OpenSearch.data.team.openSearches.nodes as instance (instance.id)}
 						<ListItem interactive>
 							<div class="name-group">
@@ -156,6 +187,14 @@
 				/>
 			</div>
 			<div class="right-column">
+				<SurfaceCard title="Filters">
+					<ListFilters
+						{sortFields}
+						{currentSortField}
+						{currentSortDirection}
+						onSort={(field) => setSort(field as OpenSearchOrderFieldOptions)}
+					/>
+				</SurfaceCard>
 				{#if cost()}
 					{@const costData = cost()!}
 					<SurfaceCard title="Cost">

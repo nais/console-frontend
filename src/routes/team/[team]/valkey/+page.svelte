@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { page } from '$app/state';
 	import { OrderDirection, ValkeyOrderField } from '$houdini';
 	import { docURL } from '$lib/doc';
 	import PersistenceCost from '$lib/domain/cost/PersistenceCost.svelte';
@@ -7,8 +8,8 @@
 	import ExternalLink from '$lib/ui/ExternalLink.svelte';
 	import GraphErrors from '$lib/ui/GraphErrors.svelte';
 	import List from '$lib/ui/List.svelte';
+	import ListFilters from '$lib/ui/ListFilters.svelte';
 	import ListItem from '$lib/ui/ListItem.svelte';
-	import OrderByMenu from '$lib/ui/OrderByMenu.svelte';
 	import PageModal, { pageModalClick } from '$lib/ui/PageModal.svelte';
 	import Pagination from '$lib/ui/Pagination.svelte';
 	import RunningIndicator from '$lib/ui/RunningIndicator.svelte';
@@ -22,8 +23,44 @@
 	import type { PageProps } from './$types';
 	import CreatePage from './create/+page.svelte';
 
+	type ValkeyOrderFieldOptions = (typeof ValkeyOrderField)[keyof typeof ValkeyOrderField];
+	type OrderDirectionOptions = (typeof OrderDirection)[keyof typeof OrderDirection];
+
 	let { data }: PageProps = $props();
 	let { Valkeys, viewerIsMember } = $derived(data);
+
+	const sortFields: { value: ValkeyOrderFieldOptions; label: string }[] = [
+		{ value: ValkeyOrderField.ISSUES, label: 'Issues' },
+		{ value: ValkeyOrderField.NAME, label: 'Name' },
+		{ value: ValkeyOrderField.ENVIRONMENT, label: 'Environment' },
+		{ value: ValkeyOrderField.STATE, label: 'State' }
+	];
+
+	const currentSortField: ValkeyOrderFieldOptions = $derived(
+		(Object.values(ValkeyOrderField).find((f) =>
+			page.url.searchParams.get('sort')?.startsWith(f)
+		) as ValkeyOrderFieldOptions | undefined) ?? ValkeyOrderField.ISSUES
+	);
+
+	const currentSortDirection: OrderDirectionOptions = $derived(
+		(Object.values(OrderDirection).find((d) => page.url.searchParams.get('sort')?.endsWith(d)) as
+			| OrderDirectionOptions
+			| undefined) ?? OrderDirection.DESC
+	);
+
+	function setSort(field: ValkeyOrderFieldOptions) {
+		const defaultDirection =
+			field === ValkeyOrderField.NAME || field === ValkeyOrderField.ENVIRONMENT
+				? OrderDirection.ASC
+				: OrderDirection.DESC;
+		const direction =
+			field === currentSortField
+				? currentSortDirection === OrderDirection.ASC
+					? OrderDirection.DESC
+					: OrderDirection.ASC
+				: defaultDirection;
+		changeParams({ sort: `${field}-${direction}`, after: '', before: '' });
+	}
 
 	let cost = $derived(() => {
 		const costData = $Valkeys.data?.team.cost;
@@ -72,13 +109,6 @@
 			<div>
 				{@render createButton()}
 				<List title="Valkey" count={$Valkeys.data.team.valkeys.pageInfo.totalCount}>
-					{#snippet menu()}
-						<OrderByMenu
-							orderField={ValkeyOrderField}
-							defaultOrderField={ValkeyOrderField.ISSUES}
-							defaultOrderDirection={OrderDirection.DESC}
-						/>
-					{/snippet}
 					{#each $Valkeys.data.team.valkeys.nodes as instance (instance.id)}
 						<ListItem interactive>
 							<div class="name-group">
@@ -156,6 +186,14 @@
 				/>
 			</div>
 			<div class="right-column">
+				<SurfaceCard title="Filters">
+					<ListFilters
+						{sortFields}
+						{currentSortField}
+						{currentSortDirection}
+						onSort={(field) => setSort(field as ValkeyOrderFieldOptions)}
+					/>
+				</SurfaceCard>
 				{#if cost()}
 					{@const costData = cost()!}
 					<SurfaceCard title="Cost">

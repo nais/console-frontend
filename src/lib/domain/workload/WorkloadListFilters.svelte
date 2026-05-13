@@ -1,7 +1,6 @@
 <script lang="ts">
-	import SearchField from '$lib/ui/SearchField.svelte';
+	import ListFilters from '$lib/ui/ListFilters.svelte';
 	import { capitalizeFirstLetter } from '$lib/utils/formatters';
-	import { SortDownIcon, SortUpIcon } from '@nais/ds-svelte-community/icons';
 
 	interface StateFacet {
 		state: string;
@@ -80,44 +79,18 @@
 	}
 </script>
 
-<div class="filters">
-	<div class="filter-section">
-		<SearchField
-			value={filter}
-			placeholder={searchPlaceholder}
-			label={searchLabel}
-			oninput={onFilterInput}
-			onsubmit={onFilterSubmit}
-			onclear={onFilterClear}
-		/>
-	</div>
-
-	<details class="filter-section">
-		<summary class="section-heading">Sort By</summary>
-		<div class="sort-options">
-			{#each sortFields as { value, label } (value)}
-				{@const isActive = currentSortField === value}
-				<button
-					type="button"
-					class="sort-option"
-					class:active={isActive}
-					onclick={() => onSort(value)}
-				>
-					<span class="sort-option-label">{label}</span>
-					{#if isActive}
-						<span class="sort-direction">
-							{#if currentSortDirection === 'ASC'}
-								<SortUpIcon />
-							{:else}
-								<SortDownIcon />
-							{/if}
-						</span>
-					{/if}
-				</button>
-			{/each}
-		</div>
-	</details>
-
+<ListFilters
+	{filter}
+	{searchPlaceholder}
+	{searchLabel}
+	{sortFields}
+	{currentSortField}
+	{currentSortDirection}
+	{onFilterInput}
+	{onFilterSubmit}
+	{onFilterClear}
+	{onSort}
+>
 	{#if states.length > 0}
 		<details class="filter-section">
 			<summary class="section-heading">Status</summary>
@@ -155,15 +128,9 @@
 			</div>
 		</details>
 	{/if}
-</div>
+</ListFilters>
 
 <style>
-	.filters {
-		display: flex;
-		flex-direction: column;
-		gap: var(--ax-space-16);
-	}
-
 	.filter-section {
 		display: flex;
 		flex-direction: column;
@@ -202,41 +169,6 @@
 
 	.filter-section[open] > .section-heading::after {
 		transform: rotate(-135deg);
-	}
-
-	.sort-options {
-		display: flex;
-		flex-direction: column;
-	}
-
-	.sort-option {
-		display: flex;
-		align-items: center;
-		justify-content: space-between;
-		gap: var(--ax-space-8);
-		padding: var(--ax-space-6) var(--ax-space-8);
-		border: none;
-		border-radius: var(--ax-radius-8);
-		background: transparent;
-		font-size: var(--ax-font-size-small);
-		color: var(--ax-text-neutral);
-		cursor: pointer;
-		text-align: left;
-		transition: background-color 120ms ease;
-	}
-
-	.sort-option:hover {
-		background: var(--ax-bg-neutral-moderate);
-	}
-
-	.sort-option.active {
-		font-weight: 600;
-		color: var(--ax-text-accent);
-	}
-
-	.sort-direction {
-		font-size: var(--ax-font-size-small);
-		font-weight: 600;
 	}
 
 	.facet-list {

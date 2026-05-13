@@ -5,11 +5,11 @@
 	import IssueListItem from '$lib/domain/list-items/IssueListItem.svelte';
 	import GraphErrors from '$lib/ui/GraphErrors.svelte';
 	import List from '$lib/ui/List.svelte';
+	import ListFilters from '$lib/ui/ListFilters.svelte';
 	import ListItem from '$lib/ui/ListItem.svelte';
 	import Pagination from '$lib/ui/Pagination.svelte';
 	import SurfaceCard from '$lib/ui/SurfaceCard.svelte';
 	import { changeParams } from '$lib/utils/searchparams';
-	import { SortDownIcon, SortUpIcon } from '@nais/ds-svelte-community/icons';
 	import type { PageProps } from './$types';
 
 	let { data }: PageProps = $props();
@@ -142,43 +142,24 @@
 	</div>
 	<div class="right-column">
 		<SurfaceCard title="Filters">
-			<div class="sidebar-section">
-				<h4 class="section-heading">Sort By</h4>
-				<div class="sort-options">
-					{#each sortFields as { value, label } (value)}
-						{@const isActive = currentSortField === value}
-						<button
-							type="button"
-							class="sort-option"
-							class:active={isActive}
-							onclick={() => setSort(value)}
-						>
-							<span class="sort-option-label">{label}</span>
-							{#if isActive}
-								<span class="sort-direction">
-									{#if currentSortDirection === 'ASC'}
-										<SortUpIcon />
-									{:else}
-										<SortDownIcon />
-									{/if}
-								</span>
-							{/if}
-						</button>
-					{/each}
-				</div>
-			</div>
-
-			<IssuesFacets
-				severities={severityFacets}
-				{issueTypes}
-				environments={allEnvironments}
-				{selectedSeverity}
-				{selectedIssueType}
-				{selectedEnvironments}
-				onSeverityChange={handleSeverityChange}
-				onIssueTypeChange={handleIssueTypeChange}
-				onEnvironmentsChange={handleEnvironmentsChange}
-			/>
+			<ListFilters
+				{sortFields}
+				{currentSortField}
+				{currentSortDirection}
+				onSort={(field) => setSort(field as IssueOrderFieldOptions)}
+			>
+				<IssuesFacets
+					severities={severityFacets}
+					{issueTypes}
+					environments={allEnvironments}
+					{selectedSeverity}
+					{selectedIssueType}
+					{selectedEnvironments}
+					onSeverityChange={handleSeverityChange}
+					onIssueTypeChange={handleIssueTypeChange}
+					onEnvironmentsChange={handleEnvironmentsChange}
+				/>
+			</ListFilters>
 		</SurfaceCard>
 	</div>
 </div>
@@ -194,56 +175,6 @@
 		display: grid;
 		gap: var(--ax-space-24);
 		align-content: start;
-	}
-
-	.sidebar-section {
-		margin-bottom: var(--ax-space-16);
-	}
-
-	.section-heading {
-		font-size: var(--ax-font-size-small);
-		font-weight: 600;
-		color: var(--ax-text-neutral-subtle);
-		margin: 0 0 var(--ax-space-8) 0;
-		text-transform: uppercase;
-		letter-spacing: 0.03em;
-		border-bottom: 1px solid var(--ax-border-neutral-subtleA);
-		padding-bottom: var(--ax-space-8);
-	}
-
-	.sort-options {
-		display: flex;
-		flex-direction: column;
-	}
-
-	.sort-option {
-		display: flex;
-		align-items: center;
-		justify-content: space-between;
-		gap: var(--ax-space-8);
-		padding: var(--ax-space-6) var(--ax-space-8);
-		border: none;
-		border-radius: var(--ax-radius-8);
-		background: transparent;
-		font-size: var(--ax-font-size-small);
-		color: var(--ax-text-neutral);
-		cursor: pointer;
-		text-align: left;
-		transition: background-color 120ms ease;
-	}
-
-	.sort-option:hover {
-		background: var(--ax-bg-neutral-moderate);
-	}
-
-	.sort-option.active {
-		font-weight: 600;
-		color: var(--ax-text-accent);
-	}
-
-	.sort-direction {
-		font-size: var(--ax-font-size-small);
-		font-weight: 600;
 	}
 
 	.empty-state {
