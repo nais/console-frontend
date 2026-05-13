@@ -9,6 +9,7 @@
 		VirusIcon,
 		VitalsIcon
 	} from '@nais/ds-svelte-community/icons';
+	import { AreaChart } from 'layerchart';
 
 	interface Props {
 		teamSlug: string;
@@ -41,13 +42,13 @@
 	`);
 
 	const costQuery = graphql(`
-		query TeamSummaryCost($team: Slug!) {
+		query TeamSummaryCost($team: Slug!, $from: Date!, $to: Date!) {
 			team(slug: $team) {
 				cost {
-					monthlySummary {
+					daily(from: $from, to: $to) {
 						series {
-							cost
 							date
+							sum
 						}
 					}
 				}
@@ -56,8 +57,18 @@
 	`);
 
 	$effect(() => {
+		const to = new Date();
+		to.setDate(to.getDate() - 2);
+		const from = new Date(to);
+		from.setDate(from.getDate() - 60);
 		vulnQuery.fetch({ variables: { team: teamSlug } });
-		costQuery.fetch({ variables: { team: teamSlug } });
+		costQuery.fetch({
+			variables: {
+				team: teamSlug,
+				from: from.toISOString().slice(0, 10),
+				to: to.toISOString().slice(0, 10)
+			}
+		});
 	});
 
 	let criticalVulnerabilities = $derived(
@@ -65,112 +76,185 @@
 	);
 
 	let costTrend = $derived.by(() => {
-		const series = $costQuery?.data?.team?.cost?.monthlySummary?.series;
+		const series = $costQuery?.data?.team?.cost?.daily?.series;
 		if (!series || series.length < 2) return null;
-		const current = series.at(-1)!.cost;
-		const previous = series.at(-2)!.cost;
-		if (previous === 0) return null;
-		const change = ((current - previous) / previous) * 100;
-		return { current, previous, change };
+
+		const now = new Date();
+		const currentMonth = now.getMonth();
+		const currentYear = now.getFullYear();
+
+		const current = series.filter((d) => {
+			const date = new Date(d.date);
+			return date.getMonth() === currentMonth && date.getFullYear() === currentYear;
+		});
+
+		const prevMonth = currentMonth === 0 ? 11 : currentMonth - 1;
+		const prevYear = currentMonth === 0 ? currentYear - 1 : currentYear;
+		const previous = series.filter((d) => {
+			const date = new Date(d.date);
+			return date.getMonth() === prevMonth && date.getFullYear() === prevYear;
+		});
+
+		if (current.length === 0 || previous.length === 0) return null;
+		const currAvg = current.reduce((s, d) => s + d.sum, 0) / current.length;
+		const prevAvg = previous.reduce((s, d) => s + d.sum, 0) / previous.length;
+		if (prevAvg === 0) return null;
+		const change = ((currAvg - prevAvg) / prevAvg) * 100;
+		return { change };
 	});
 
-	let dataLoading = $derived(loading || $vulnQuery?.fetching || $costQuery?.fetching);
+	let sparklineData = $derived.by(() => {
+		const series = $costQuery?.data?.team?.cost?.daily?.series;
+		if (!series || series.length === 0) return [];
+		return series.map((item) => ({ date: item.date, value: item.sum }));
+	});
+
+	let dataLoading = $derived(loading || $vulnQuery?.fetching);
+	let costLoading = $derived($costQuery?.fetching);
+
+	let allSuccess = $derived(
+		totalIssues === 0 &&
+			criticalVulnerabilities === 0 &&
+			firingAlerts === 0 &&
+			(!costTrend || costTrend.change <= 5)
+	);
 </script>
 
-<SurfaceCard title="Team health" bordered>
-	{#if dataLoading}
-		<div class="loading">
-			<Loader size="xlarge" />
-		</div>
-	{:else}
-		<div class="metrics">
-			<a
-				href="/team/{teamSlug}/issues"
-				class="metric"
-				class:danger={criticalIssues > 0}
-				class:warning={!criticalIssues && warningIssues > 0}
-				class:success={totalIssues === 0}
-			>
-				<div
-					class="metric-icon"
+<div class="team-health" class:all-success={allSuccess}>
+	<SurfaceCard title="Team health" bordered>
+		{#if dataLoading}
+			<div class="loading">
+				<Loader size="xlarge" />
+			</div>
+		{:else}
+			<div class="metrics">
+				<a
+					href="/team/{teamSlug}/issues"
+					class="metric"
 					class:danger={criticalIssues > 0}
 					class:warning={!criticalIssues && warningIssues > 0}
 					class:success={totalIssues === 0}
 				>
-					<VitalsIcon />
-				</div>
-				<div class="metric-body">
-					<span class="metric-value">{totalIssues}</span>
-					<span class="metric-label">
-						<IssuePills critical={criticalIssues} warning={warningIssues} todo={todoIssues} />
-					</span>
-				</div>
-			</a>
+					<span class="metric-category">Issues</span>
+					<div
+						class="metric-icon"
+						class:danger={criticalIssues > 0}
+						class:warning={!criticalIssues && warningIssues > 0}
+						class:success={totalIssues === 0}
+					>
+						<VitalsIcon />
+					</div>
+					<div class="metric-body">
+						<span class="metric-value">{totalIssues}</span>
+						<span class="metric-label">
+							<IssuePills critical={criticalIssues} warning={warningIssues} todo={todoIssues} />
+						</span>
+					</div>
+				</a>
 
-			<a
-				href="/team/{teamSlug}/vulnerabilities"
-				class="metric"
-				class:danger={criticalVulnerabilities > 0}
-				class:success={criticalVulnerabilities === 0}
-			>
-				<div
-					class="metric-icon"
+				<a
+					href="/team/{teamSlug}/vulnerabilities"
+					class="metric"
 					class:danger={criticalVulnerabilities > 0}
 					class:success={criticalVulnerabilities === 0}
 				>
-					<VirusIcon />
-				</div>
-				<div class="metric-body">
-					<span class="metric-value">{criticalVulnerabilities}</span>
-					<span class="metric-label">Critical vulns</span>
-				</div>
-			</a>
+					<span class="metric-category">Vulnerabilities</span>
+					<div
+						class="metric-icon"
+						class:danger={criticalVulnerabilities > 0}
+						class:success={criticalVulnerabilities === 0}
+					>
+						<VirusIcon />
+					</div>
+					<div class="metric-body">
+						<span class="metric-value">{criticalVulnerabilities}</span>
+						<span class="metric-label">Critical</span>
+					</div>
+				</a>
 
-			<a
-				href="/team/{teamSlug}/alerts"
-				class="metric"
-				class:danger={firingAlerts > 0}
-				class:success={firingAlerts === 0}
-			>
-				<div class="metric-icon" class:danger={firingAlerts > 0} class:success={firingAlerts === 0}>
-					<BellDotFillIcon />
-				</div>
-				<div class="metric-body">
-					<span class="metric-value">{firingAlerts}</span>
-					<span class="metric-label">Firing alerts</span>
-				</div>
-			</a>
+				<a
+					href="/team/{teamSlug}/alerts"
+					class="metric"
+					class:danger={firingAlerts > 0}
+					class:success={firingAlerts === 0}
+				>
+					<span class="metric-category">Alerts</span>
+					<div
+						class="metric-icon"
+						class:danger={firingAlerts > 0}
+						class:success={firingAlerts === 0}
+					>
+						<BellDotFillIcon />
+					</div>
+					<div class="metric-body">
+						<span class="metric-value">{firingAlerts}</span>
+						<span class="metric-label">Firing</span>
+					</div>
+				</a>
 
-		<a
-			href="/team/{teamSlug}/cost"
-			class="metric"
-			class:warning={costTrend && costTrend.change > 5}
-			class:success={costTrend && costTrend.change <= 5}
-		>
-			<div
-				class="metric-icon"
-				class:warning={costTrend && costTrend.change > 5}
-				class:success={costTrend && costTrend.change <= 5}
-			>
-				<PiggybankIcon />
+				<a
+					href="/team/{teamSlug}/cost"
+					class="metric"
+					class:warning={costTrend && costTrend.change > 5}
+					class:success={costTrend && costTrend.change <= 5}
+				>
+					<span class="metric-category">Cost</span>
+					<div
+						class="metric-icon"
+						class:warning={costTrend && costTrend.change > 5}
+						class:success={costTrend && costTrend.change <= 5}
+					>
+						<PiggybankIcon />
+					</div>
+					<div class="metric-body">
+						{#if costLoading}
+							<span class="metric-value">…</span>
+							<span class="metric-label">Loading</span>
+						{:else if costTrend}
+							<span class="metric-value">
+								{costTrend.change > 0
+									? '+' + costTrend.change.toFixed(0)
+									: Math.round(costTrend.change) === 0
+										? '0'
+										: costTrend.change.toFixed(0)}%
+							</span>
+							<span class="metric-label">vs last month</span>
+						{:else}
+							<span class="metric-value">—</span>
+							<span class="metric-label">Trend unavailable</span>
+						{/if}
+					</div>
+					{#if !costLoading && costTrend && sparklineData.length > 1}
+						<div class="sparkline">
+							<AreaChart
+								data={sparklineData}
+								x="date"
+								y="value"
+								axis={false}
+								grid={false}
+								padding={{ top: 2, bottom: 2, left: 0, right: 0 }}
+								props={{
+									area: { fillOpacity: 1, class: 'sparkline-area' },
+									spline: { class: 'sparkline-line' }
+								}}
+							/>
+						</div>
+					{/if}
+				</a>
 			</div>
-			<div class="metric-body">
-				{#if costTrend}
-					<span class="metric-value">
-						{costTrend.change > 0 ? '+' : ''}{costTrend.change.toFixed(0)}%
-					</span>
-					<span class="metric-label">Cost vs last month</span>
-				{:else}
-					<span class="metric-value">—</span>
-					<span class="metric-label">Cost trend unavailable</span>
-				{/if}
-			</div>
-		</a>
-		</div>
-	{/if}
-</SurfaceCard>
+		{/if}
+	</SurfaceCard>
+</div>
 
 <style>
+	.all-success :global(.surface-card) {
+		background: color-mix(
+			in srgb,
+			var(--ax-bg-success-moderate) 15%,
+			color-mix(in srgb, var(--surface-accent-color) 4%, var(--ax-bg-default))
+		);
+	}
+
 	.loading {
 		display: flex;
 		justify-content: center;
@@ -185,6 +269,7 @@
 	}
 
 	.metric {
+		position: relative;
 		display: flex;
 		align-items: center;
 		gap: var(--ax-space-12);
@@ -198,6 +283,16 @@
 			background-color 120ms ease,
 			box-shadow 120ms ease,
 			transform 120ms ease;
+	}
+
+	.metric-category {
+		position: absolute;
+		top: var(--ax-space-6);
+		right: var(--ax-space-8);
+		font-size: var(--ax-font-size-small);
+		color: var(--ax-text-neutral-subtle);
+		text-transform: uppercase;
+		letter-spacing: 0.03em;
 	}
 
 	.metric:hover {
@@ -267,6 +362,39 @@
 		display: flex;
 		flex-wrap: wrap;
 		gap: var(--ax-space-4);
+	}
+
+	.sparkline {
+		flex: 1;
+		align-self: stretch;
+		min-width: 0;
+		margin-right: var(--ax-space-40);
+	}
+
+	.sparkline :global(.sparkline-line) {
+		stroke: var(--ax-text-success);
+		stroke-width: 1.5;
+		fill: none;
+	}
+
+	.sparkline :global(.sparkline-area) {
+		fill: var(--ax-bg-success-moderate);
+	}
+
+	.metric.warning .sparkline :global(.sparkline-line) {
+		stroke: var(--ax-text-warning);
+	}
+
+	.metric.warning .sparkline :global(.sparkline-area) {
+		fill: var(--ax-bg-warning-moderate);
+	}
+
+	.metric.success .sparkline :global(.sparkline-line) {
+		stroke: var(--ax-text-success);
+	}
+
+	.metric.success .sparkline :global(.sparkline-area) {
+		fill: var(--ax-bg-success-moderate);
 	}
 
 	@media (max-width: 767px), (max-height: 500px) {
