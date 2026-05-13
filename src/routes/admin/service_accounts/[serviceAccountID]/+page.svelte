@@ -9,7 +9,7 @@
 	import CreateTokenPage from './token/create/+page.svelte';
 
 	let { data }: PageProps = $props();
-	let { ServiceAccountDetail: query, teamSlug, viewerIsOwner, isAdmin } = $derived(data);
+	let { AdminServiceAccountDetail: query } = $derived(data);
 
 	const serviceAccount = $derived($query.data?.serviceAccount);
 
@@ -30,9 +30,9 @@
 {#if serviceAccount}
 	<ServiceAccountDetail
 		{serviceAccount}
-		basePath="/team/{teamSlug}/settings/service_accounts"
+		basePath="/admin/service_accounts"
 		{availableRoles}
-		canManage={viewerIsOwner || isAdmin}
+		canManage={true}
 	/>
 {/if}
 

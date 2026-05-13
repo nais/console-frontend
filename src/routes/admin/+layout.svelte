@@ -29,6 +29,11 @@
 			tab: 'Reconcilers',
 			routeId: '/admin/reconcilers',
 			withSubRoutes: false
+		},
+		{
+			tab: 'Service accounts',
+			routeId: '/admin/service_accounts',
+			withSubRoutes: true
 		}
 	];
 

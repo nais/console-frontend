@@ -1,4 +1,4 @@
-query ServiceAccountDetail($id: ID!) @cache(policy: CacheAndNetwork) {
+query AdminServiceAccountDetail($id: ID!) @cache(policy: CacheAndNetwork) {
 	serviceAccount(id: $id) {
 		id
 		name
@@ -9,7 +9,7 @@ query ServiceAccountDetail($id: ID!) @cache(policy: CacheAndNetwork) {
 		...ServiceAccountRolesFragment
 		...ServiceAccountAuthenticationFragment @mask_disable
 	}
-	roles(first: 100, filter: { excludeGlobalRoles: true }) {
+	roles(first: 100, filter: { excludeGlobalRoles: false }) {
 		edges {
 			node {
 				name

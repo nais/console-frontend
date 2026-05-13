@@ -1,10 +1,5 @@
 <script lang="ts">
-	import {
-		graphql,
-		paginatedFragment,
-		type AvailableRolesFragment,
-		type ServiceAccountRolesFragment
-	} from '$houdini';
+	import { graphql, paginatedFragment, type ServiceAccountRolesFragment } from '$houdini';
 	import {
 		BodyLong,
 		Button,
@@ -14,32 +9,19 @@
 		Heading
 	} from '@nais/ds-svelte-community';
 
+	interface Role {
+		name: string;
+		description: string;
+	}
+
 	interface Props {
-		roles: AvailableRolesFragment;
+		availableRoles: Role[];
 		serviceAccountRoles: ServiceAccountRolesFragment;
 		canManage?: boolean;
 	}
 
-	let { roles, serviceAccountRoles, canManage = false }: Props = $props();
+	let { availableRoles, serviceAccountRoles, canManage = false }: Props = $props();
 
-	const data = $derived(
-		paginatedFragment(
-			roles,
-			graphql(`
-				fragment AvailableRolesFragment on Query
-				@arguments(excludeGlobalRoles: { type: "Boolean", default: true }) {
-					roles(first: 20, filter: { excludeGlobalRoles: $excludeGlobalRoles }) @paginate {
-						edges {
-							node {
-								name
-								description
-							}
-						}
-					}
-				}
-			`)
-		)
-	);
 	const actualRoles = $derived(
 		paginatedFragment(
 			serviceAccountRoles,
@@ -83,17 +65,17 @@
 	let mutationError = $state<string | undefined>();
 
 	const list = $derived.by(() => {
-		if (!$data.data?.roles || !$actualRoles.data?.roles) {
+		if (!$actualRoles.data?.roles) {
 			return [];
 		}
 
 		const actualRoleNames = new Set($actualRoles.data.roles.edges.map(({ node }) => node.name));
 
-		return $data.data.roles.edges
-			.map(({ node }) => ({
-				name: node.name,
-				description: node.description,
-				hasRole: actualRoleNames.has(node.name)
+		return availableRoles
+			.map((role) => ({
+				name: role.name,
+				description: role.description,
+				hasRole: actualRoleNames.has(role.name)
 			}))
 			.sort((a, b) => a.name.localeCompare(b.name));
 	});

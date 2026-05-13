@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
-	import { page } from '$app/state';
 	import { fragment, graphql, type ServiceAccountAuthenticationFragment } from '$houdini';
 	import { envTagVariant } from '$lib/envTagVariant';
 	import Confirm from '$lib/ui/Confirm.svelte';
@@ -18,9 +17,10 @@
 	interface Props {
 		serviceAccount: ServiceAccountAuthenticationFragment;
 		canManage?: boolean;
+		basePath: string;
 	}
 
-	let { serviceAccount, canManage = false }: Props = $props();
+	let { serviceAccount, canManage = false, basePath }: Props = $props();
 
 	const data = $derived(
 		fragment(
@@ -92,9 +92,7 @@
 
 	const totalMethods = $derived($data.workloadBindings.edges.length + $data.tokens.edges.length);
 
-	const saPath = $derived(
-		`/team/${page.params.team}/settings/service_accounts/${page.params.serviceAccountID}`
-	);
+	const saPath = $derived(basePath);
 </script>
 
 <section>
@@ -142,7 +140,9 @@
 							? 'Application'
 							: binding.workload?.__typename === 'Job'
 								? 'Job'
-								: 'Workload'}{binding.isBroken ? ' · Broken' : ''}"
+								: 'Workload'} · {binding.workload?.team?.slug ?? binding.teamSlug}{binding.isBroken
+							? ' · Broken'
+							: ''}"
 					/>
 
 					<div class="right">

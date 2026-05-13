@@ -9,12 +9,12 @@
 	import type { PageProps } from './$types';
 
 	let { data }: PageProps = $props();
-	let { TeamServiceAccounts, viewerIsOwner, isAdmin, teamSlug } = $derived(data);
+	let { AdminServiceAccounts } = $derived(data);
 
-	const serviceAccounts = $derived($TeamServiceAccounts.data?.team.serviceAccounts);
+	const serviceAccounts = $derived($AdminServiceAccounts.data?.serviceAccounts);
 
-	const after: string = $derived($TeamServiceAccounts.variables?.after ?? '');
-	const before: string = $derived($TeamServiceAccounts.variables?.before ?? '');
+	const after: string = $derived($AdminServiceAccounts.variables?.after ?? '');
+	const before: string = $derived($AdminServiceAccounts.variables?.before ?? '');
 
 	const changeQuery = (params: { after?: string; before?: string } = {}) => {
 		changeParams({
@@ -24,27 +24,25 @@
 	};
 </script>
 
-<GraphErrors errors={$TeamServiceAccounts.errors} />
+<GraphErrors errors={$AdminServiceAccounts.errors} />
 
 <div>
 	<BodyLong spacing>
-		Service accounts are machine-users that can be used to interact with the Nais API, for example
-		to query or manage the team's resources.
+		Service accounts are machine-users that can be used to interact with the Nais API. Admin service
+		accounts are tenant-wide and not tied to a specific team.
 	</BodyLong>
 
-	{#if viewerIsOwner || isAdmin}
-		<div class="actions">
-			<Button
-				size="small"
-				variant="secondary"
-				icon={PlusIcon}
-				as="a"
-				href="/team/{teamSlug}/settings/service_accounts/create"
-			>
-				Create service account
-			</Button>
-		</div>
-	{/if}
+	<div class="actions">
+		<Button
+			size="small"
+			variant="secondary"
+			icon={PlusIcon}
+			as="a"
+			href="/admin/service_accounts/create"
+		>
+			Create service account
+		</Button>
+	</div>
 
 	{#if serviceAccounts && serviceAccounts.nodes.length > 0}
 		<List
@@ -54,10 +52,7 @@
 				: ''}"
 		>
 			{#each serviceAccounts.nodes as sa (sa.id)}
-				<ServiceAccountListItem
-					serviceAccount={sa}
-					href="/team/{teamSlug}/settings/service_accounts/{sa.id}"
-				/>
+				<ServiceAccountListItem serviceAccount={sa} href="/admin/service_accounts/{sa.id}" />
 			{/each}
 		</List>
 		<Pagination
