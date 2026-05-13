@@ -304,12 +304,6 @@
 		}
 	}
 
-	.stats-grid {
-		display: grid;
-		grid-template-columns: repeat(2, 1fr);
-		gap: var(--ax-space-16);
-	}
-
 	.stat {
 		display: flex;
 		flex-direction: column;
@@ -349,10 +343,6 @@
 	}
 
 	@media (max-width: 767px), (max-height: 500px) {
-		.stats-grid {
-			grid-template-columns: 1fr;
-		}
-
 		.charts-row {
 			flex-direction: column;
 			height: auto;

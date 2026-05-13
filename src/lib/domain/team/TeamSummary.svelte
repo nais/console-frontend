@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { graphql } from '$houdini';
+	import type { TeamSummaryCost$result, TeamSummaryVulnerabilities$result } from '$houdini';
 	import IssuePills from '$lib/domain/issues/IssuePills.svelte';
 	import SurfaceCard from '$lib/ui/SurfaceCard.svelte';
 	import { Loader } from '@nais/ds-svelte-community';
@@ -18,6 +18,9 @@
 		todoIssues?: number;
 		firingAlerts?: number;
 		loading?: boolean;
+		vulnerabilityData?: TeamSummaryVulnerabilities$result | null;
+		costData?: TeamSummaryCost$result | null;
+		costLoading?: boolean;
 	}
 
 	let {
@@ -26,57 +29,20 @@
 		warningIssues = 0,
 		todoIssues = 0,
 		firingAlerts = 0,
-		loading = false
+		loading = false,
+		vulnerabilityData = null,
+		costData = null,
+		costLoading = false
 	}: Props = $props();
 
 	let totalIssues = $derived(criticalIssues + warningIssues + todoIssues);
 
-	const vulnQuery = graphql(`
-		query TeamSummaryVulnerabilities($team: Slug!) {
-			team(slug: $team) {
-				vulnerabilitySummary {
-					critical
-				}
-			}
-		}
-	`);
-
-	const costQuery = graphql(`
-		query TeamSummaryCost($team: Slug!, $from: Date!, $to: Date!) {
-			team(slug: $team) {
-				cost {
-					daily(from: $from, to: $to) {
-						series {
-							date
-							sum
-						}
-					}
-				}
-			}
-		}
-	`);
-
-	$effect(() => {
-		const to = new Date();
-		to.setDate(to.getDate() - 2);
-		const from = new Date(to);
-		from.setDate(from.getDate() - 60);
-		vulnQuery.fetch({ variables: { team: teamSlug } });
-		costQuery.fetch({
-			variables: {
-				team: teamSlug,
-				from: from.toISOString().slice(0, 10),
-				to: to.toISOString().slice(0, 10)
-			}
-		});
-	});
-
 	let criticalVulnerabilities = $derived(
-		$vulnQuery?.data?.team?.vulnerabilitySummary?.critical ?? 0
+		vulnerabilityData?.team?.vulnerabilitySummary?.critical ?? 0
 	);
 
 	let costTrend = $derived.by(() => {
-		const series = $costQuery?.data?.team?.cost?.daily?.series;
+		const series = costData?.team?.cost?.daily?.series;
 		if (!series || series.length < 2) return null;
 
 		const now = new Date();
@@ -104,13 +70,12 @@
 	});
 
 	let sparklineData = $derived.by(() => {
-		const series = $costQuery?.data?.team?.cost?.daily?.series;
+		const series = costData?.team?.cost?.daily?.series;
 		if (!series || series.length === 0) return [];
 		return series.map((item) => ({ date: item.date, value: item.sum }));
 	});
 
-	let dataLoading = $derived(loading || $vulnQuery?.fetching);
-	let costLoading = $derived($costQuery?.fetching);
+	let dataLoading = $derived(loading);
 
 	let allSuccess = $derived(
 		totalIssues === 0 &&

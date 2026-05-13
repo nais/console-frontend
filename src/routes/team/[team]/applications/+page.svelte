@@ -6,7 +6,6 @@
 		type ApplicationOrderField$options,
 		type OrderDirection$options
 	} from '$houdini';
-	import AggregatedCostForApplications from '$lib/domain/cost/AggregatedCostForApplications.svelte';
 	import AppListItem from '$lib/domain/list-items/AppListItem.svelte';
 	import WorkloadListFilters from '$lib/domain/workload/WorkloadListFilters.svelte';
 	import GraphErrors from '$lib/ui/GraphErrors.svelte';
@@ -18,7 +17,7 @@
 	import type { PageProps } from './$types';
 
 	let { data }: PageProps = $props();
-	let { Applications, ApplicationsListMetadata, teamSlug } = $derived(data);
+	let { Applications, ApplicationsListMetadata } = $derived(data);
 
 	let filter = $state($Applications.variables?.filter?.name ?? '');
 
@@ -160,11 +159,6 @@
 				onEnvironmentsChange={handleEnvironmentsChange}
 			/>
 		</SurfaceCard>
-		{#if totalApplications > 0}
-			<SurfaceCard title="Cost">
-				<AggregatedCostForApplications {teamSlug} totalCount={totalApplications} />
-			</SurfaceCard>
-		{/if}
 	</div>
 </div>
 
