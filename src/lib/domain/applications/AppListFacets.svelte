@@ -55,8 +55,8 @@
 
 <div class="facets">
 	{#if states.length > 0}
-		<div class="facet-section">
-			<h4 class="facet-heading">Status</h4>
+		<details class="facet-section" open>
+			<summary class="facet-heading">Status</summary>
 			<div class="facet-list">
 				{#each states as facet (facet.state)}
 					<label class="facet-item">
@@ -70,12 +70,12 @@
 					</label>
 				{/each}
 			</div>
-		</div>
+		</details>
 	{/if}
 
 	{#if environments.length > 0}
-		<div class="facet-section">
-			<h4 class="facet-heading">Environments</h4>
+		<details class="facet-section" open>
+			<summary class="facet-heading">Environments</summary>
 			<div class="facet-list">
 				{#each environments as facet (facet.environmentName)}
 					<label class="facet-item">
@@ -89,7 +89,7 @@
 					</label>
 				{/each}
 			</div>
-		</div>
+		</details>
 	{/if}
 </div>
 
@@ -115,6 +115,30 @@
 		letter-spacing: 0.03em;
 		border-bottom: 1px solid var(--ax-border-neutral-subtleA);
 		padding-bottom: var(--ax-space-8);
+		cursor: pointer;
+		list-style: none;
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+	}
+
+	.facet-heading::-webkit-details-marker {
+		display: none;
+	}
+
+	.facet-heading::after {
+		content: '';
+		width: 0.4em;
+		height: 0.4em;
+		border-right: 2px solid currentColor;
+		border-bottom: 2px solid currentColor;
+		transform: rotate(45deg);
+		transition: transform 150ms ease;
+		flex-shrink: 0;
+	}
+
+	.facet-section[open] > .facet-heading::after {
+		transform: rotate(-135deg);
 	}
 
 	.facet-list {
