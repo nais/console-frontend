@@ -6,16 +6,9 @@ query Jobs(
 	$last: Int
 	$before: Cursor
 	$after: Cursor
-) @cache(policy: NetworkOnly) {
+) @cache(policy: CacheAndNetwork, partial: true) {
 	team(slug: $team) {
 		slug
-		environments {
-			id
-			environment {
-				name
-			}
-		}
-
 		jobs(
 			first: $first
 			last: $last
@@ -32,6 +25,17 @@ query Jobs(
 				pageStart
 				startCursor
 				endCursor
+			}
+
+			facets {
+				environments {
+					environmentName
+					count
+				}
+				states {
+					state
+					count
+				}
 			}
 
 			nodes {

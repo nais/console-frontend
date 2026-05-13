@@ -1,0 +1,160 @@
+<script lang="ts">
+	import { capitalizeFirstLetter } from '$lib/utils/formatters';
+
+	interface StateFacet {
+		state: string;
+		count: number;
+	}
+
+	interface EnvironmentFacet {
+		environmentName: string;
+		count: number;
+	}
+
+	interface Props {
+		states: StateFacet[];
+		environments: EnvironmentFacet[];
+		selectedStates: string[];
+		selectedEnvironments: string[];
+		onStatesChange: (selected: string[]) => void;
+		onEnvironmentsChange: (selected: string[]) => void;
+	}
+
+	let {
+		states,
+		environments,
+		selectedStates,
+		selectedEnvironments,
+		onStatesChange,
+		onEnvironmentsChange
+	}: Props = $props();
+
+	function stateLabel(state: string): string {
+		return capitalizeFirstLetter(state.split('_').join(' ').toLowerCase());
+	}
+
+	const availableStates = $derived(new Set(states.map((f) => f.state)));
+	const availableEnvironments = $derived(new Set(environments.map((f) => f.environmentName)));
+
+	function toggleState(state: string) {
+		const isSelected = selectedStates.includes(state);
+		const next = isSelected
+			? selectedStates.filter((s) => s !== state && availableStates.has(s))
+			: [...selectedStates.filter((s) => availableStates.has(s)), state];
+		onStatesChange(next);
+	}
+
+	function toggleEnvironment(env: string) {
+		const isSelected = selectedEnvironments.includes(env);
+		const next = isSelected
+			? selectedEnvironments.filter((e) => e !== env && availableEnvironments.has(e))
+			: [...selectedEnvironments.filter((e) => availableEnvironments.has(e)), env];
+		onEnvironmentsChange(next);
+	}
+</script>
+
+<div class="facets">
+	{#if states.length > 0}
+		<div class="facet-section">
+			<h4 class="facet-heading">Status</h4>
+			<div class="facet-list">
+				{#each states as facet (facet.state)}
+					<label class="facet-item">
+						<input
+							type="checkbox"
+							checked={selectedStates.includes(facet.state)}
+							onchange={() => toggleState(facet.state)}
+						/>
+						<span class="facet-label">{stateLabel(facet.state)}</span>
+						<span class="facet-count">{facet.count}</span>
+					</label>
+				{/each}
+			</div>
+		</div>
+	{/if}
+
+	{#if environments.length > 0}
+		<div class="facet-section">
+			<h4 class="facet-heading">Environments</h4>
+			<div class="facet-list">
+				{#each environments as facet (facet.environmentName)}
+					<label class="facet-item">
+						<input
+							type="checkbox"
+							checked={selectedEnvironments.includes(facet.environmentName)}
+							onchange={() => toggleEnvironment(facet.environmentName)}
+						/>
+						<span class="facet-label">{facet.environmentName}</span>
+						<span class="facet-count">{facet.count}</span>
+					</label>
+				{/each}
+			</div>
+		</div>
+	{/if}
+</div>
+
+<style>
+	.facets {
+		display: flex;
+		flex-direction: column;
+		gap: var(--ax-space-24);
+	}
+
+	.facet-section {
+		display: flex;
+		flex-direction: column;
+		gap: var(--ax-space-8);
+	}
+
+	.facet-heading {
+		font-size: var(--ax-font-size-small);
+		font-weight: 600;
+		color: var(--ax-text-neutral-subtle);
+		margin: 0;
+		text-transform: uppercase;
+		letter-spacing: 0.03em;
+		border-bottom: 1px solid var(--ax-border-neutral-subtleA);
+		padding-bottom: var(--ax-space-8);
+	}
+
+	.facet-list {
+		display: flex;
+		flex-direction: column;
+	}
+
+	.facet-item {
+		display: flex;
+		align-items: center;
+		gap: var(--ax-space-8);
+		padding: var(--ax-space-6) 0;
+		font-size: var(--ax-font-size-small);
+		cursor: pointer;
+	}
+
+	.facet-item:hover {
+		color: var(--ax-text-default);
+	}
+
+	.facet-item input[type='checkbox'] {
+		width: 1rem;
+		height: 1rem;
+		margin: 0;
+		flex-shrink: 0;
+		cursor: pointer;
+		accent-color: var(--ax-text-accent);
+	}
+
+	.facet-label {
+		flex: 1;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+		min-width: 0;
+	}
+
+	.facet-count {
+		flex-shrink: 0;
+		font-size: 0.6875rem;
+		color: var(--ax-text-neutral-subtle);
+	}
+</style>

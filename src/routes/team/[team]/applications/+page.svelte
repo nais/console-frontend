@@ -1,19 +1,23 @@
 <script lang="ts">
 	import { page } from '$app/state';
-	import { ApplicationOrderField, OrderDirection } from '$houdini';
+	import {
+		ApplicationOrderField,
+		OrderDirection,
+		type ApplicationOrderField$options,
+		type OrderDirection$options
+	} from '$houdini';
+	import AppListFacets from '$lib/domain/applications/AppListFacets.svelte';
 	import AggregatedCostForApplications from '$lib/domain/cost/AggregatedCostForApplications.svelte';
 	import AppListItem from '$lib/domain/list-items/AppListItem.svelte';
 	import GraphErrors from '$lib/ui/GraphErrors.svelte';
 	import List from '$lib/ui/List.svelte';
-	import OrderByMenu from '$lib/ui/OrderByMenu.svelte';
 	import Pagination from '$lib/ui/Pagination.svelte';
 	import SearchField from '$lib/ui/SearchField.svelte';
-	import StatusFilterPills from '$lib/ui/StatusFilterPills.svelte';
 	import SurfaceCard from '$lib/ui/SurfaceCard.svelte';
 	import { changeParams } from '$lib/utils/searchparams';
-	import { BodyLong, Button } from '@nais/ds-svelte-community';
-	import { ActionMenu, ActionMenuCheckboxItem } from '@nais/ds-svelte-community/experimental';
-	import { ChevronDownIcon } from '@nais/ds-svelte-community/icons';
+	import { BodyLong } from '@nais/ds-svelte-community';
+
+	import { SortDownIcon, SortUpIcon } from '@nais/ds-svelte-community/icons';
 	import type { PageProps } from './$types';
 
 	let { data }: PageProps = $props();
@@ -28,28 +32,43 @@
 		$ApplicationsListMetadata.data?.team.totalApplications.pageInfo.totalCount ?? 0
 	);
 
-	const allEnvs = $derived(
-		$ApplicationsListMetadata.data?.team.environments.map((env) => env.environment.name) ?? []
+	let selectedEnvironments: string[] = $derived(
+		page.url.searchParams.get('environments')?.split(',').filter(Boolean) ?? []
 	);
 
-	let filteredEnvs = $derived(page.url.searchParams.get('environments')?.split(',') ?? allEnvs);
+	let selectedStates: string[] = $derived(
+		page.url.searchParams.get('states')?.split(',').filter(Boolean) ?? []
+	);
 
-	const allStates = ['running', 'not-running', 'unknown'];
-	let activeStatuses = $derived(page.url.searchParams.get('states')?.split(',') ?? allStates);
+	const sortFields: { value: ApplicationOrderField$options; label: string }[] = [
+		{ value: ApplicationOrderField.ISSUES, label: 'Issues' },
+		{ value: ApplicationOrderField.NAME, label: 'Name' },
+		{ value: ApplicationOrderField.DEPLOYMENT_TIME, label: 'Deploy time' },
+		{ value: ApplicationOrderField.ENVIRONMENT, label: 'Environment' },
+		{ value: ApplicationOrderField.STATE, label: 'State' }
+	];
 
-	let states = $derived({
-		running: $ApplicationsListMetadata.data?.team.inventoryCounts?.applications?.running ?? 0,
-		notRunning: $ApplicationsListMetadata.data?.team.inventoryCounts?.applications?.notRunning ?? 0,
-		unknown: $ApplicationsListMetadata.data?.team.inventoryCounts?.applications?.unknown ?? 0
-	});
+	const currentSortField: ApplicationOrderField$options = $derived(
+		(Object.values(ApplicationOrderField).find((f) =>
+			page.url.searchParams.get('sort')?.startsWith(f)
+		) as ApplicationOrderField$options | undefined) ?? ApplicationOrderField.ISSUES
+	);
 
-	$effect(() => {
-		const environments = filteredEnvs.length === allEnvs.length ? '' : filteredEnvs.join(',');
+	const currentSortDirection: OrderDirection$options = $derived(
+		(Object.values(OrderDirection).find((d) => page.url.searchParams.get('sort')?.endsWith(d)) as
+			| OrderDirection$options
+			| undefined) ?? OrderDirection.DESC
+	);
 
-		if (environments !== (page.url.searchParams.get('environments') ?? '')) {
-			changeQuery({ environments });
-		}
-	});
+	function setSort(field: ApplicationOrderField$options) {
+		const direction =
+			field === currentSortField
+				? currentSortDirection === OrderDirection.ASC
+					? OrderDirection.DESC
+					: OrderDirection.ASC
+				: OrderDirection.DESC;
+		changeParams({ sort: `${field}-${direction}`, after: '', before: '' }, { noScroll: true });
+	}
 
 	const changeQuery = (
 		params: {
@@ -60,18 +79,33 @@
 			states?: string;
 		} = {}
 	) => {
-		const currentEnvironments =
-			filteredEnvs.length === allEnvs.length ? '' : filteredEnvs.join(',');
-		const currentStates =
-			activeStatuses.length === allStates.length ? '' : activeStatuses.join(',');
-		changeParams({
-			before: params.before ?? before,
-			after: params.after ?? after,
-			filter: params.newFilter ?? filter,
-			environments: params.environments ?? currentEnvironments,
-			states: params.states ?? currentStates
-		});
+		changeParams(
+			{
+				before: params.before ?? before,
+				after: params.after ?? after,
+				filter: params.newFilter ?? filter,
+				environments: params.environments ?? (selectedEnvironments.join(',') || ''),
+				states: params.states ?? (selectedStates.join(',') || '')
+			},
+			{ noScroll: true }
+		);
 	};
+
+	function handleStatesChange(selected: string[]) {
+		changeQuery({
+			states: selected.join(','),
+			after: '',
+			before: ''
+		});
+	}
+
+	function handleEnvironmentsChange(selected: string[]) {
+		changeQuery({
+			environments: selected.join(','),
+			after: '',
+			before: ''
+		});
+	}
 </script>
 
 <GraphErrors errors={$Applications.errors} />
@@ -82,74 +116,6 @@
 			{@const apps = $Applications.data?.team.applications}
 
 			<List title="Apps" count={apps?.pageInfo.totalCount ?? 0}>
-				{#snippet search()}
-					<SearchField
-						value={filter}
-						placeholder="Search apps..."
-						label="Search applications"
-						oninput={(v) => (filter = v)}
-						onsubmit={() => changeQuery({ newFilter: filter })}
-						onclear={() => {
-							filter = '';
-							changeQuery({ newFilter: '' });
-						}}
-					/>
-				{/snippet}
-				{#snippet filters()}
-					<StatusFilterPills
-						running={states.running}
-						notRunning={states.notRunning}
-						unknown={states.unknown}
-						{activeStatuses}
-						onchange={(s) => {
-							const statesValue = s.length === allStates.length ? '' : s.join(',');
-							changeQuery({ states: statesValue, after: '', before: '' });
-						}}
-					/>
-				{/snippet}
-				{#snippet menu()}
-					<ActionMenu>
-						{#snippet trigger(props)}
-							<Button
-								variant="tertiary-neutral"
-								size="small"
-								iconPosition="right"
-								{...props}
-								icon={ChevronDownIcon}
-							>
-								<span style="font-weight: normal">Environment</span>
-							</Button>
-						{/snippet}
-						<ActionMenuCheckboxItem
-							checked={$ApplicationsListMetadata.data?.team.environments.every((env) =>
-								filteredEnvs.includes(env.environment.name)
-							)
-								? true
-								: filteredEnvs.length > 0
-									? 'indeterminate'
-									: false}
-							onchange={(checked) => (filteredEnvs = checked ? allEnvs : [])}
-						>
-							All environments
-						</ActionMenuCheckboxItem>
-						{#each $ApplicationsListMetadata.data?.team.environments ?? [] as { environment, id } (id)}
-							<ActionMenuCheckboxItem
-								checked={filteredEnvs.includes(environment.name)}
-								onchange={(checked) =>
-									(filteredEnvs = checked
-										? [...filteredEnvs, environment.name]
-										: filteredEnvs.filter((env) => env !== environment.name))}
-							>
-								{environment.name}
-							</ActionMenuCheckboxItem>
-						{/each}
-					</ActionMenu>
-					<OrderByMenu
-						orderField={ApplicationOrderField}
-						defaultOrderField={ApplicationOrderField.ISSUES}
-						defaultOrderDirection={OrderDirection.DESC}
-					/>
-				{/snippet}
 				{#each apps?.nodes ?? [] as app (app.id)}
 					<AppListItem {app} />
 				{/each}
@@ -170,6 +136,58 @@
 		{/if}
 	</div>
 	<div class="right-column">
+		<SurfaceCard title="Filters">
+			<div class="sidebar-section">
+				<SearchField
+					value={filter}
+					placeholder="Search apps..."
+					label="Search applications"
+					oninput={(v) => (filter = v)}
+					onsubmit={() => changeQuery({ newFilter: filter })}
+					onclear={() => {
+						filter = '';
+						changeQuery({ newFilter: '' });
+					}}
+				/>
+			</div>
+
+			<div class="sidebar-section">
+				<h4 class="section-heading">Sort By</h4>
+				<div class="sort-options">
+					{#each sortFields as { value, label } (value)}
+						{@const isActive = currentSortField === value}
+						<button
+							type="button"
+							class="sort-option"
+							class:active={isActive}
+							onclick={() => setSort(value)}
+						>
+							<span class="sort-option-label">{label}</span>
+							{#if isActive}
+								<span class="sort-direction">
+									{#if currentSortDirection === 'ASC'}
+										<SortUpIcon />
+									{:else}
+										<SortDownIcon />
+									{/if}
+								</span>
+							{/if}
+						</button>
+					{/each}
+				</div>
+			</div>
+
+			{#if $Applications.data?.team.applications.facets}
+				<AppListFacets
+					states={$Applications.data.team.applications.facets.states}
+					environments={$Applications.data.team.applications.facets.environments}
+					{selectedStates}
+					{selectedEnvironments}
+					onStatesChange={handleStatesChange}
+					onEnvironmentsChange={handleEnvironmentsChange}
+				/>
+			{/if}
+		</SurfaceCard>
 		{#if totalApplications > 0}
 			<SurfaceCard title="Cost">
 				<AggregatedCostForApplications {teamSlug} totalCount={totalApplications} />
@@ -189,6 +207,56 @@
 		display: grid;
 		gap: var(--ax-space-24);
 		align-content: start;
+	}
+
+	.sidebar-section {
+		margin-bottom: var(--ax-space-16);
+	}
+
+	.section-heading {
+		font-size: var(--ax-font-size-small);
+		font-weight: 600;
+		color: var(--ax-text-neutral-subtle);
+		margin: 0 0 var(--ax-space-8) 0;
+		text-transform: uppercase;
+		letter-spacing: 0.03em;
+		border-bottom: 1px solid var(--ax-border-neutral-subtleA);
+		padding-bottom: var(--ax-space-8);
+	}
+
+	.sort-options {
+		display: flex;
+		flex-direction: column;
+	}
+
+	.sort-option {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: var(--ax-space-8);
+		padding: var(--ax-space-6) var(--ax-space-8);
+		border: none;
+		border-radius: var(--ax-radius-8);
+		background: transparent;
+		font-size: var(--ax-font-size-small);
+		color: var(--ax-text-neutral);
+		cursor: pointer;
+		text-align: left;
+		transition: background-color 120ms ease;
+	}
+
+	.sort-option:hover {
+		background: var(--ax-bg-neutral-moderate);
+	}
+
+	.sort-option.active {
+		font-weight: 600;
+		color: var(--ax-text-accent);
+	}
+
+	.sort-direction {
+		font-size: var(--ax-font-size-small);
+		font-weight: 600;
 	}
 
 	/* Mobile responsive layout */
