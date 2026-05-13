@@ -21,7 +21,11 @@ export async function load(event) {
 	const before = event.url.searchParams.get('before') || '';
 
 	return {
-		...(await addPageMeta(event, { title: 'Alerts' })),
+		...(await addPageMeta(event, {
+			title: 'Alerts',
+			pageHeaderTitle: '',
+			docPath: '/observability/alerting'
+		})),
 		...(await load_Alerts({
 			event,
 			variables: {
