@@ -151,8 +151,8 @@
 				/>
 			</div>
 
-			<div class="sidebar-section">
-				<h4 class="section-heading">Sort By</h4>
+			<details class="sidebar-section" open>
+				<summary class="section-heading">Sort By</summary>
 				<div class="sort-options">
 					{#each sortFields as { value, label } (value)}
 						{@const isActive = currentSortField === value}
@@ -175,7 +175,7 @@
 						</button>
 					{/each}
 				</div>
-			</div>
+			</details>
 
 			{#if $Applications.data?.team.applications.facets}
 				<AppListFacets
@@ -222,6 +222,30 @@
 		letter-spacing: 0.03em;
 		border-bottom: 1px solid var(--ax-border-neutral-subtleA);
 		padding-bottom: var(--ax-space-8);
+		cursor: pointer;
+		list-style: none;
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+	}
+
+	.section-heading::-webkit-details-marker {
+		display: none;
+	}
+
+	.section-heading::after {
+		content: '';
+		width: 0.4em;
+		height: 0.4em;
+		border-right: 2px solid currentColor;
+		border-bottom: 2px solid currentColor;
+		transform: rotate(45deg);
+		transition: transform 150ms ease;
+		flex-shrink: 0;
+	}
+
+	.sidebar-section[open] > .section-heading::after {
+		transform: rotate(-135deg);
 	}
 
 	.sort-options {
