@@ -148,7 +148,7 @@
 	});
 </script>
 
-<SurfaceCard title="Inventory">
+<SurfaceCard title="Inventory" bordered>
 	{#if $inventoryQuery.fetching}
 		<div class="loading">
 			<Loader size="xlarge" />

@@ -71,7 +71,6 @@
 		const previous = series.at(-2)!.cost;
 		if (previous === 0) return null;
 		const change = ((current - previous) / previous) * 100;
-		if (Math.abs(change) < 1) return null;
 		return { current, previous, change };
 	});
 
@@ -142,31 +141,31 @@
 				</div>
 			</a>
 
-			<a
-				href="/team/{teamSlug}/cost"
-				class="metric"
+		<a
+			href="/team/{teamSlug}/cost"
+			class="metric"
+			class:warning={costTrend && costTrend.change > 5}
+			class:success={costTrend && costTrend.change <= 5}
+		>
+			<div
+				class="metric-icon"
 				class:warning={costTrend && costTrend.change > 5}
 				class:success={costTrend && costTrend.change <= 5}
 			>
-				<div
-					class="metric-icon"
-					class:warning={costTrend && costTrend.change > 5}
-					class:success={costTrend && costTrend.change <= 5}
-				>
-					<PiggybankIcon />
-				</div>
-				<div class="metric-body">
-					{#if costTrend}
-						<span class="metric-value">
-							{costTrend.change > 0 ? '+' : ''}{costTrend.change.toFixed(0)}%
-						</span>
-						<span class="metric-label">Cost vs last month</span>
-					{:else}
-						<span class="metric-value">—</span>
-						<span class="metric-label">Cost trend</span>
-					{/if}
-				</div>
-			</a>
+				<PiggybankIcon />
+			</div>
+			<div class="metric-body">
+				{#if costTrend}
+					<span class="metric-value">
+						{costTrend.change > 0 ? '+' : ''}{costTrend.change.toFixed(0)}%
+					</span>
+					<span class="metric-label">Cost vs last month</span>
+				{:else}
+					<span class="metric-value">—</span>
+					<span class="metric-label">Cost trend unavailable</span>
+				{/if}
+			</div>
+		</a>
 		</div>
 	{/if}
 </SurfaceCard>
