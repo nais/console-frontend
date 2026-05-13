@@ -1,23 +1,24 @@
 <script lang="ts">
 	import { page } from '$app/state';
-	import { AlertOrderField } from '$houdini';
+	import { AlertOrderField, OrderDirection } from '$houdini';
 	import { docURL, tenantURL } from '$lib/doc';
+	import AlertsFacets from '$lib/domain/alerts/AlertsFacets.svelte';
 	import CodeBlockPromQl from '$lib/domain/monitoring/CodeBlockPromQL.svelte';
 	import { formatSeconds } from '$lib/domain/vulnerability/dateUtils';
 	import { envTagVariant } from '$lib/envTagVariant';
 	import ExternalLink from '$lib/ui/ExternalLink.svelte';
 	import List from '$lib/ui/List.svelte';
 	import ListItem from '$lib/ui/ListItem.svelte';
-	import OrderByMenu from '$lib/ui/OrderByMenu.svelte';
 	import Pagination from '$lib/ui/Pagination.svelte';
 	import SearchField from '$lib/ui/SearchField.svelte';
+	import SurfaceCard from '$lib/ui/SurfaceCard.svelte';
 	import { changeParams } from '$lib/utils/searchparams';
-	import { Button, CopyButton, Heading, Tag } from '@nais/ds-svelte-community';
-	import { ActionMenu, ActionMenuCheckboxItem } from '@nais/ds-svelte-community/experimental';
+	import { CopyButton, Heading, Tag } from '@nais/ds-svelte-community';
 	import {
-		ChevronDownIcon,
 		ChevronRightIcon,
-		ClockDashedIcon
+		ClockDashedIcon,
+		SortDownIcon,
+		SortUpIcon
 	} from '@nais/ds-svelte-community/icons';
 	import type { PageProps } from './$types';
 	import PrometheusAlarmDetail from './PrometheusAlarmDetail.svelte';
@@ -30,6 +31,60 @@
 
 	let after: string = $derived($Alerts.variables?.after ?? '');
 	let before: string = $derived($Alerts.variables?.before ?? '');
+
+	const totalAlerts = $derived($AlertsMetadata.data?.team.totalAlerts.pageInfo.totalCount ?? 0);
+
+	const allEnvironments = $derived($AlertsMetadata.data?.team.environments ?? []);
+
+	const stateFacets = $derived([
+		{
+			state: 'FIRING',
+			count: $AlertsMetadata.data?.team.firingAlerts.pageInfo.totalCount ?? 0
+		},
+		{
+			state: 'INACTIVE',
+			count: $AlertsMetadata.data?.team.inactiveAlerts.pageInfo.totalCount ?? 0
+		}
+	]);
+
+	let selectedEnvironments: string[] = $derived(
+		page.url.searchParams.get('environments')?.split(',').filter(Boolean) ?? []
+	);
+
+	let selectedStates: string[] = $derived(
+		page.url.searchParams.get('states')?.split(',').filter(Boolean) ?? []
+	);
+
+	type AlertOrderFieldOptions = (typeof AlertOrderField)[keyof typeof AlertOrderField];
+	type OrderDirectionOptions = (typeof OrderDirection)[keyof typeof OrderDirection];
+
+	const sortFields: { value: AlertOrderFieldOptions; label: string }[] = [
+		{ value: AlertOrderField.STATE, label: 'State' },
+		{ value: AlertOrderField.NAME, label: 'Name' },
+		{ value: AlertOrderField.ENVIRONMENT, label: 'Environment' }
+	];
+
+	const currentSortField: AlertOrderFieldOptions = $derived(
+		(Object.values(AlertOrderField).find((f) =>
+			page.url.searchParams.get('sort')?.startsWith(f)
+		) as AlertOrderFieldOptions | undefined) ?? AlertOrderField.STATE
+	);
+
+	const currentSortDirection: OrderDirectionOptions = $derived(
+		(Object.values(OrderDirection).find((d) => page.url.searchParams.get('sort')?.endsWith(d)) as
+			| OrderDirectionOptions
+			| undefined) ?? OrderDirection.ASC
+	);
+
+	function setSort(field: AlertOrderFieldOptions) {
+		const direction =
+			field === currentSortField
+				? currentSortDirection === OrderDirection.ASC
+					? OrderDirection.DESC
+					: OrderDirection.ASC
+				: OrderDirection.DESC;
+		changeParams({ sort: `${field}-${direction}`, after: '', before: '' }, { noScroll: true });
+	}
 
 	function makeGrafanaExploreUrl(query: string): string {
 		const params = new URLSearchParams({
@@ -55,96 +110,39 @@
 		return tenantURL('grafana', `/explore?${params.toString()}`);
 	}
 
-	const totalAlerts = $derived($AlertsMetadata.data?.team.totalAlerts.pageInfo.totalCount ?? 0);
-
-	const allEnvs = $derived(
-		$AlertsMetadata.data?.team.environments.map((env) => env.environment.name) ?? []
-	);
-
-	let filteredEnvs = $derived(page.url.searchParams.get('environments')?.split(',') ?? allEnvs);
-
-	$effect(() => {
-		const environments = filteredEnvs.length === allEnvs.length ? '' : filteredEnvs.join(',');
-
-		if (environments !== (page.url.searchParams.get('environments') ?? '')) {
-			changeQuery({ environments });
-		}
-	});
-
 	const changeQuery = (
 		params: {
 			after?: string;
 			before?: string;
 			newFilter?: string;
 			environments?: string;
+			states?: string;
 		} = {}
 	) => {
-		changeParams({
-			before: params.before ?? before,
-			after: params.after ?? after,
-			filter: params.newFilter ?? filter,
-			environments: params.environments ?? ''
-		});
+		changeParams(
+			{
+				before: params.before ?? before,
+				after: params.after ?? after,
+				filter: params.newFilter ?? filter,
+				environments: params.environments ?? (selectedEnvironments.join(',') || ''),
+				states: params.states ?? (selectedStates.join(',') || '')
+			},
+			{ noScroll: true }
+		);
 	};
+
+	function handleStatesChange(selected: string[]) {
+		changeQuery({ states: selected.join(','), after: '', before: '' });
+	}
+
+	function handleEnvironmentsChange(selected: string[]) {
+		changeQuery({ environments: selected.join(','), after: '', before: '' });
+	}
 </script>
 
 <div class="wrapper">
 	<div>
-		<List title="Alerts" count={totalAlerts}>
-			{#snippet search()}
-				<SearchField
-					value={filter}
-					placeholder="Filter by name"
-					label="Filter alerts"
-					oninput={(v) => (filter = v)}
-					onsubmit={() => changeQuery({ newFilter: filter })}
-					onclear={() => {
-						filter = '';
-						changeQuery({ newFilter: '' });
-					}}
-				/>
-			{/snippet}
-			{#snippet filters()}
-				<ActionMenu>
-					{#snippet trigger(props)}
-						<Button
-							variant="tertiary-neutral"
-							size="small"
-							iconPosition="right"
-							{...props}
-							icon={ChevronDownIcon}
-						>
-							<span style="font-weight: normal">Environment</span>
-						</Button>
-					{/snippet}
-					<ActionMenuCheckboxItem
-						checked={$Alerts.data?.team.environments.every((env) =>
-							filteredEnvs.includes(env.environment.name)
-						)
-							? true
-							: filteredEnvs.length > 0
-								? 'indeterminate'
-								: false}
-						onchange={(checked) => (filteredEnvs = checked ? allEnvs : [])}
-					>
-						All environments
-					</ActionMenuCheckboxItem>
-					{#each $Alerts.data?.team.environments ?? [] as { environment, id } (id)}
-						<ActionMenuCheckboxItem
-							checked={filteredEnvs.includes(environment.name)}
-							onchange={(checked) =>
-								(filteredEnvs = checked
-									? [...filteredEnvs, environment.name]
-									: filteredEnvs.filter((env) => env !== environment.name))}
-						>
-							{environment.name}
-						</ActionMenuCheckboxItem>
-					{/each}
-				</ActionMenu>
-			{/snippet}
-			{#snippet menu()}
-				<OrderByMenu orderField={AlertOrderField} defaultOrderField={AlertOrderField.STATE} />
-			{/snippet}
+		<List title="Alerts" count={alerts?.pageInfo.totalCount ?? 0}>
 			{#if alerts && alerts.nodes.length > 0}
 				{#each alerts.nodes as alert (alert.id)}
 					<details class="item">
@@ -210,7 +208,7 @@
 						{/if}
 					</details>
 				{/each}
-			{:else}
+			{:else if totalAlerts === 0}
 				<ListItem>
 					<p>
 						No alerts found. Alerts notify you when something needs your attention.
@@ -218,6 +216,10 @@
 							>Learn more about alerts and how to get started.</ExternalLink
 						>
 					</p>
+				</ListItem>
+			{:else}
+				<ListItem>
+					<p>No alerts match the current filters. Try adjusting your filters.</p>
 				</ListItem>
 			{/if}
 		</List>
@@ -231,13 +233,121 @@
 			}}
 		/>
 	</div>
+	<div class="right-column">
+		<SurfaceCard title="Filters">
+			<div class="sidebar-section">
+				<SearchField
+					value={filter}
+					placeholder="Filter by name"
+					label="Filter alerts"
+					oninput={(v) => (filter = v)}
+					onsubmit={() => changeQuery({ newFilter: filter })}
+					onclear={() => {
+						filter = '';
+						changeQuery({ newFilter: '' });
+					}}
+				/>
+			</div>
+
+			<div class="sidebar-section">
+				<h4 class="section-heading">Sort By</h4>
+				<div class="sort-options">
+					{#each sortFields as { value, label } (value)}
+						{@const isActive = currentSortField === value}
+						<button
+							type="button"
+							class="sort-option"
+							class:active={isActive}
+							onclick={() => setSort(value)}
+						>
+							<span class="sort-option-label">{label}</span>
+							{#if isActive}
+								<span class="sort-direction">
+									{#if currentSortDirection === 'ASC'}
+										<SortUpIcon />
+									{:else}
+										<SortDownIcon />
+									{/if}
+								</span>
+							{/if}
+						</button>
+					{/each}
+				</div>
+			</div>
+
+			<AlertsFacets
+				environments={allEnvironments}
+				states={stateFacets}
+				{selectedStates}
+				{selectedEnvironments}
+				onStatesChange={handleStatesChange}
+				onEnvironmentsChange={handleEnvironmentsChange}
+			/>
+		</SurfaceCard>
+	</div>
 </div>
 
 <style>
 	.wrapper {
 		display: grid;
-		grid-template-columns: 1fr;
+		grid-template-columns: minmax(0, 1fr) 300px;
 		gap: var(--spacing-layout);
+	}
+
+	.right-column {
+		display: grid;
+		gap: var(--ax-space-24);
+		align-content: start;
+	}
+
+	.sidebar-section {
+		margin-bottom: var(--ax-space-16);
+	}
+
+	.section-heading {
+		font-size: var(--ax-font-size-small);
+		font-weight: 600;
+		color: var(--ax-text-neutral-subtle);
+		margin: 0 0 var(--ax-space-8) 0;
+		text-transform: uppercase;
+		letter-spacing: 0.03em;
+		border-bottom: 1px solid var(--ax-border-neutral-subtleA);
+		padding-bottom: var(--ax-space-8);
+	}
+
+	.sort-options {
+		display: flex;
+		flex-direction: column;
+	}
+
+	.sort-option {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: var(--ax-space-8);
+		padding: var(--ax-space-6) var(--ax-space-8);
+		border: none;
+		border-radius: var(--ax-radius-8);
+		background: transparent;
+		font-size: var(--ax-font-size-small);
+		color: var(--ax-text-neutral);
+		cursor: pointer;
+		text-align: left;
+		transition: background-color 120ms ease;
+	}
+
+	.sort-option:hover {
+		background: var(--ax-bg-neutral-moderate);
+	}
+
+	.sort-option.active {
+		font-weight: 600;
+		color: var(--ax-text-accent);
+	}
+
+	.sort-direction {
+		font-size: var(--ax-font-size-small);
+		font-weight: 600;
 	}
 
 	/* Mobile responsive layout */
