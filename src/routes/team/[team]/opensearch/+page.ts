@@ -29,7 +29,11 @@ export async function load(event) {
 	const before = url.searchParams.get('before') || '';
 
 	return {
-		...(await addPageMeta(event, { title: 'OpenSearch Instances' })),
+		...(await addPageMeta(event, {
+			title: 'OpenSearch Instances',
+			pageHeaderTitle: '',
+			docPath: '/persistence/opensearch'
+		})),
 		...(await load_OpenSearch({
 			event,
 			variables: {

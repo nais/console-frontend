@@ -1,10 +1,11 @@
 <script lang="ts">
 	import { page } from '$app/state';
 	import { ActivityLogActivityType, SecretOrderField } from '$houdini';
+	import { docURL } from '$lib/doc';
 	import TeamActivityCard from '$lib/domain/activity/TeamActivityCard.svelte';
 	import { envTagVariant } from '$lib/envTagVariant';
+	import ExternalLink from '$lib/ui/ExternalLink.svelte';
 	import GraphErrors from '$lib/ui/GraphErrors.svelte';
-	import IconLabel from '$lib/ui/IconLabel.svelte';
 	import List from '$lib/ui/List.svelte';
 	import ListItem from '$lib/ui/ListItem.svelte';
 	import OrderByMenu from '$lib/ui/OrderByMenu.svelte';
@@ -13,7 +14,7 @@
 	import Time from '$lib/ui/Time.svelte';
 	import { changeParams } from '$lib/utils/searchparams';
 	import { getSecretPermissions } from '$lib/utils/secretPermissions';
-	import { Button, Detail } from '@nais/ds-svelte-community';
+	import { Button, Detail, Tag } from '@nais/ds-svelte-community';
 	import { PadlockLockedIcon, PlusIcon } from '@nais/ds-svelte-community/icons';
 	import type { PageProps } from './$types';
 	import CreateSecret, { type EnvironmentType } from './CreateSecret.svelte';
@@ -144,16 +145,17 @@
 				{#if secrets.nodes.length > 0}
 					{#each secrets.nodes as secret (secret.id)}
 						<ListItem interactive>
-							<IconLabel
-								icon={PadlockLockedIcon}
-								label={secret.name}
-								href="/team/{teamSlug}/{secret.teamEnvironment.environment
-									.name}/secret/{secret.name}"
-								tag={{
-									label: secret.teamEnvironment.environment.name,
-									variant: envTagVariant(secret.teamEnvironment.environment.name)
-								}}
-							/>
+							<div class="name-group">
+								<PadlockLockedIcon style="font-size: 1.25rem; flex-shrink: 0" />
+								<a
+									href="/team/{teamSlug}/{secret.teamEnvironment.environment
+										.name}/secret/{secret.name}"
+									class="item-name">{secret.name}</a
+								>
+								<Tag size="xsmall" variant={envTagVariant(secret.teamEnvironment.environment.name)}
+									>{secret.teamEnvironment.environment.name}</Tag
+								>
+							</div>
 							<div class="right">
 								{#if secret.workloads.pageInfo.totalCount > 0}
 									<Detail
@@ -177,7 +179,14 @@
 						</ListItem>
 					{/each}
 				{:else}
-					<ListItem>No secrets found</ListItem>
+					<ListItem>
+						<p>
+							No secrets found. Secrets are used to store sensitive data for your applications.
+							<ExternalLink href={docURL('/services/secrets')}
+								>Learn more about secrets in Nais and how to get started.</ExternalLink
+							>
+						</p>
+					</ListItem>
 				{/if}
 			</List>
 			<Pagination
@@ -293,5 +302,29 @@
 			align-items: flex-end;
 			margin-top: var(--ax-space-6);
 		}
+	}
+
+	.name-group {
+		display: flex;
+		align-items: center;
+		gap: var(--ax-space-8);
+		min-width: 0;
+	}
+	.name-group :global(.aksel-tag) {
+		white-space: nowrap;
+		flex-shrink: 0;
+	}
+	.item-name {
+		color: var(--ax-text-neutral);
+		text-decoration: none;
+		font-weight: 500;
+		white-space: nowrap;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		min-width: 0;
+		flex: 0 1 auto;
+	}
+	.item-name:hover {
+		text-decoration: underline;
 	}
 </style>

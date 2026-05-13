@@ -1,9 +1,9 @@
-import { load_InstanceGroupDetail } from '$houdini';
+import { load_InstanceGroupRedirect } from '$houdini';
 import { redirect } from '@sveltejs/kit';
 import { get } from 'svelte/store';
 
 export async function load(event) {
-	const result = await load_InstanceGroupDetail({
+	const result = await load_InstanceGroupRedirect({
 		event,
 		blocking: true,
 		variables: {
@@ -14,7 +14,7 @@ export async function load(event) {
 	});
 
 	const groups =
-		get(result.InstanceGroupDetail).data?.team.environment.application.instanceGroups ?? [];
+		get(result.InstanceGroupRedirect).data?.team?.environment?.application?.instanceGroups ?? [];
 
 	if (groups.length > 0) {
 		const current =

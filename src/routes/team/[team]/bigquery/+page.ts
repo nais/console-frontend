@@ -10,7 +10,11 @@ export async function load(event) {
 	const before = event.url.searchParams.get('before') || '';
 
 	return {
-		...(await addPageMeta(event, { title: 'BigQuery Datasets' })),
+		...(await addPageMeta(event, {
+			title: 'BigQuery Datasets',
+			pageHeaderTitle: '',
+			docPath: '/persistence/bigquery'
+		})),
 		...(await load_BigQuery({
 			event,
 			variables: {

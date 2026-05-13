@@ -2,9 +2,9 @@
 	import { BigQueryDatasetOrderField, OrderDirection } from '$houdini';
 	import { docURL } from '$lib/doc';
 	import PersistenceCost from '$lib/domain/cost/PersistenceCost.svelte';
-	import PersistenceLink from '$lib/domain/persistence/PersistenceLink.svelte';
 	import WorkloadLink from '$lib/domain/workload/WorkloadLink.svelte';
 	import { envTagVariant } from '$lib/envTagVariant';
+	import BigQueryIcon from '$lib/icons/BigQueryIcon.svelte';
 	import ExternalLink from '$lib/ui/ExternalLink.svelte';
 	import GraphErrors from '$lib/ui/GraphErrors.svelte';
 	import List from '$lib/ui/List.svelte';
@@ -12,7 +12,7 @@
 	import OrderByMenu from '$lib/ui/OrderByMenu.svelte';
 	import Pagination from '$lib/ui/Pagination.svelte';
 	import { changeParams } from '$lib/utils/searchparams';
-	import { BodyLong, Tag } from '@nais/ds-svelte-community';
+	import { Tag } from '@nais/ds-svelte-community';
 	import { endOfYesterday, startOfMonth, subMonths } from 'date-fns';
 	import type { PageProps } from './$types';
 
@@ -36,29 +36,29 @@
 <GraphErrors errors={$BigQuery.errors} />
 
 {#if $BigQuery.data}
-	{#if $BigQuery.data.team.bigQueryDatasets.pageInfo.totalCount}
-		<div class="content-wrapper">
-			<div>
-				<BodyLong spacing>
-					BigQuery datasets store structured data optimized for analytical workloads.
-					<ExternalLink href={docURL('/persistence/bigquery')}
-						>Learn more about BigQuery datasets and how to get started.</ExternalLink
-					>
-				</BodyLong>
-
-				<List title="{$BigQuery.data.team.bigQueryDatasets.pageInfo.totalCount} entries">
-					{#snippet menu()}
-						<OrderByMenu
-							orderField={BigQueryDatasetOrderField}
-							defaultOrderField={BigQueryDatasetOrderField.NAME}
-							defaultOrderDirection={OrderDirection.DESC}
-						/>
-					{/snippet}
+	<div class="content-wrapper">
+		<div>
+			<List title="BigQuery" count={$BigQuery.data.team.bigQueryDatasets.pageInfo.totalCount}>
+				{#snippet menu()}
+					<OrderByMenu
+						orderField={BigQueryDatasetOrderField}
+						defaultOrderField={BigQueryDatasetOrderField.NAME}
+						defaultOrderDirection={OrderDirection.DESC}
+					/>
+				{/snippet}
+				{#if $BigQuery.data.team.bigQueryDatasets.nodes.length > 0}
 					{#each $BigQuery.data.team.bigQueryDatasets.nodes as instance (instance.id)}
 						<ListItem interactive>
-							<div>
-								<PersistenceLink {instance} />
-								<Tag size="small" variant={envTagVariant(instance.teamEnvironment.environment.name)}
+							<div class="name-group">
+								<BigQueryIcon style="font-size: 1.25rem; flex-shrink: 0" />
+								<a
+									href="/team/{instance.team.slug}/{instance.teamEnvironment.environment
+										.name}/bigquery/{instance.name}"
+									class="item-name">{instance.name}</a
+								>
+								<Tag
+									size="xsmall"
+									variant={envTagVariant(instance.teamEnvironment.environment.name)}
 									>{instance.teamEnvironment.environment.name}</Tag
 								>
 							</div>
@@ -69,56 +69,56 @@
 							{/if}
 						</ListItem>
 					{/each}
-				</List>
-				<Pagination
-					page={$BigQuery.data.team.bigQueryDatasets.pageInfo}
-					loaders={{
-						loadPreviousPage: () =>
-							changeParams(
-								{
-									after: '',
-									before: $BigQuery.data?.team.bigQueryDatasets.pageInfo.startCursor ?? ''
-								},
-								{ noScroll: true }
-							),
-						loadNextPage: () =>
-							changeParams(
-								{
-									before: '',
-									after: $BigQuery.data?.team.bigQueryDatasets.pageInfo.endCursor ?? ''
-								},
-								{ noScroll: true }
-							)
-					}}
-				/>
-			</div>
-			<div class="right-column">
-				{#if cost()}
-					{@const costData = cost()!}
-					<div>
-						<PersistenceCost
-							pageName={costData.pageName}
-							costData={costData.costData}
-							teamSlug={costData.teamSlug}
-							from={startOfMonth(subMonths(new Date(), 1))}
-							to={endOfYesterday()}
-							service="BigQuery"
-						/>
-					</div>
+				{:else}
+					<ListItem>
+						<p>
+							No BigQuery datasets found. BigQuery datasets store structured data optimized for
+							analytical workloads.
+							<ExternalLink href={docURL('/persistence/bigquery')}
+								>Learn more about BigQuery datasets and how to get started.</ExternalLink
+							>
+						</p>
+					</ListItem>
 				{/if}
-			</div>
+			</List>
+			<Pagination
+				page={$BigQuery.data.team.bigQueryDatasets.pageInfo}
+				loaders={{
+					loadPreviousPage: () =>
+						changeParams(
+							{
+								after: '',
+								before: $BigQuery.data?.team.bigQueryDatasets.pageInfo.startCursor ?? ''
+							},
+							{ noScroll: true }
+						),
+					loadNextPage: () =>
+						changeParams(
+							{
+								before: '',
+								after: $BigQuery.data?.team.bigQueryDatasets.pageInfo.endCursor ?? ''
+							},
+							{ noScroll: true }
+						)
+				}}
+			/>
 		</div>
-	{:else}
-		<div class="content-wrapper">
-			<BodyLong>
-				<strong>No BigQuery datasets found.</strong> BigQuery datasets store structured data
-				optimized for analytical workloads.
-				<ExternalLink href={docURL('/persistence/bigquery')}
-					>Learn more about BigQuery datasets and how to get started.</ExternalLink
-				>
-			</BodyLong>
+		<div class="right-column">
+			{#if cost()}
+				{@const costData = cost()!}
+				<div>
+					<PersistenceCost
+						pageName={costData.pageName}
+						costData={costData.costData}
+						teamSlug={costData.teamSlug}
+						from={startOfMonth(subMonths(new Date(), 1))}
+						to={endOfYesterday()}
+						service="BigQuery"
+					/>
+				</div>
+			{/if}
 		</div>
-	{/if}
+	</div>
 
 	<style>
 		.content-wrapper {
@@ -137,7 +137,6 @@
 			gap: var(--ax-space-24);
 		}
 
-		/* Mobile responsive layout */
 		@media (max-width: 767px), (max-height: 500px) {
 			.content-wrapper {
 				grid-template-columns: 1fr;
@@ -148,6 +147,30 @@
 				justify-content: flex-end;
 				margin-top: var(--ax-space-6);
 			}
+		}
+
+		.name-group {
+			display: flex;
+			align-items: center;
+			gap: var(--ax-space-8);
+			min-width: 0;
+		}
+		.name-group :global(.aksel-tag) {
+			white-space: nowrap;
+			flex-shrink: 0;
+		}
+		.item-name {
+			color: var(--ax-text-neutral);
+			text-decoration: none;
+			font-weight: 500;
+			white-space: nowrap;
+			overflow: hidden;
+			text-overflow: ellipsis;
+			min-width: 0;
+			flex: 0 1 auto;
+		}
+		.item-name:hover {
+			text-decoration: underline;
 		}
 	</style>
 {/if}

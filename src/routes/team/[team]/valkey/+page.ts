@@ -28,7 +28,11 @@ export async function load(event) {
 	const before = event.url.searchParams.get('before') || '';
 
 	return {
-		...(await addPageMeta(event, { title: 'Valkey Instances' })),
+		...(await addPageMeta(event, {
+			title: 'Valkey Instances',
+			pageHeaderTitle: '',
+			docPath: '/persistence/valkey'
+		})),
 		...(await load_Valkeys({
 			event,
 			variables: {

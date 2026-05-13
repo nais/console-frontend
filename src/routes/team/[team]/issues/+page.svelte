@@ -21,7 +21,6 @@
 	let { data }: PageProps = $props();
 	let { TeamIssues, TeamIssuesMetadata } = $derived(data);
 	let issues = $derived($TeamIssues.data?.team.issues);
-	let issueCount = $derived(issues?.pageInfo.totalCount ?? 0);
 	let totalCount = $derived($TeamIssues.data?.team.total.pageInfo.totalCount ?? 0);
 
 	let after: string = $derived($TeamIssues.variables?.after ?? '');
@@ -64,11 +63,8 @@
 
 <div class="wrapper">
 	<div>
-		<List
-			title="{issueCount} issue{issueCount !== 1 ? 's' : ''}
-						{issueCount !== totalCount ? `(of total ${totalCount})` : ''}"
-		>
-			{#snippet menu()}
+		<List title="Issues" count={totalCount}>
+			{#snippet filters()}
 				<ActionMenu>
 					{#snippet trigger(props)}
 						<Button
@@ -113,6 +109,8 @@
 						onIssueTypeChange={(issueType) => changeQuery({ issueType })}
 					/>
 				</ActionMenu>
+			{/snippet}
+			{#snippet menu()}
 				<OrderByMenu orderField={IssueOrderField} defaultOrderField={IssueOrderField.SEVERITY} />
 			{/snippet}
 			{#each issues?.nodes ?? [] as issue (issue.id)}

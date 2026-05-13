@@ -3,8 +3,8 @@
 	import { page } from '$app/state';
 	import type { RouteId } from '$app/types';
 	import AddToFavorites from '$lib/ui/AddToFavorites.svelte';
-	import { getHeaderActionsContext } from '$lib/ui/headerActionsContext.svelte';
 	import DocsLink from '$lib/ui/DocsLink.svelte';
+	import { getHeaderActionsContext } from '$lib/ui/headerActionsContext.svelte';
 	import { Heading, Tag } from '@nais/ds-svelte-community';
 	import type { Snippet } from 'svelte';
 

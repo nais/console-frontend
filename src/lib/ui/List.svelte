@@ -60,6 +60,8 @@
 		display: flex;
 		flex-direction: column;
 		min-width: 0;
+		border-radius: var(--ax-radius-12);
+		box-shadow: 0 8px 8px -8px var(--ax-border-neutral-subtleA);
 	}
 
 	.header {
@@ -131,6 +133,10 @@
 		gap: var(--ax-space-8);
 		flex-wrap: wrap;
 		align-items: center;
+	}
+
+	.menu-slot {
+		margin-left: auto;
 	}
 
 	.menu-slot {
