@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { page } from '$app/state';
 	import { BucketOrderField, OrderDirection } from '$houdini';
 	import { docURL } from '$lib/doc';
 	import PersistenceCost from '$lib/domain/cost/PersistenceCost.svelte';
@@ -8,8 +9,8 @@
 	import ExternalLink from '$lib/ui/ExternalLink.svelte';
 	import GraphErrors from '$lib/ui/GraphErrors.svelte';
 	import List from '$lib/ui/List.svelte';
+	import ListFilters from '$lib/ui/ListFilters.svelte';
 	import ListItem from '$lib/ui/ListItem.svelte';
-	import OrderByMenu from '$lib/ui/OrderByMenu.svelte';
 	import Pagination from '$lib/ui/Pagination.svelte';
 	import SurfaceCard from '$lib/ui/SurfaceCard.svelte';
 	import { changeParams } from '$lib/utils/searchparams';
@@ -18,8 +19,38 @@
 	import { endOfYesterday, startOfMonth, subMonths } from 'date-fns';
 	import type { PageProps } from './$types';
 
+	type BucketOrderFieldOptions = (typeof BucketOrderField)[keyof typeof BucketOrderField];
+	type OrderDirectionOptions = (typeof OrderDirection)[keyof typeof OrderDirection];
+
 	let { data }: PageProps = $props();
 	let { Buckets, viewerIsMember } = $derived(data);
+
+	const sortFields: { value: BucketOrderFieldOptions; label: string }[] = [
+		{ value: BucketOrderField.NAME, label: 'Name' },
+		{ value: BucketOrderField.ENVIRONMENT, label: 'Environment' }
+	];
+
+	const currentSortField: BucketOrderFieldOptions = $derived(
+		(Object.values(BucketOrderField).find((f) =>
+			page.url.searchParams.get('sort')?.startsWith(f)
+		) as BucketOrderFieldOptions | undefined) ?? BucketOrderField.NAME
+	);
+
+	const currentSortDirection: OrderDirectionOptions = $derived(
+		(Object.values(OrderDirection).find((d) => page.url.searchParams.get('sort')?.endsWith(d)) as
+			| OrderDirectionOptions
+			| undefined) ?? OrderDirection.ASC
+	);
+
+	function setSort(field: BucketOrderFieldOptions) {
+		const direction =
+			field === currentSortField
+				? currentSortDirection === OrderDirection.ASC
+					? OrderDirection.DESC
+					: OrderDirection.ASC
+				: OrderDirection.ASC;
+		changeParams({ sort: `${field}-${direction}`, after: '', before: '' });
+	}
 
 	let cost = $derived(() => {
 		const costData = $Buckets.data?.team.cost;
@@ -41,13 +72,6 @@
 	<div class="content-wrapper">
 		<div>
 			<List title="Buckets" count={$Buckets.data.team.buckets.pageInfo.totalCount}>
-				{#snippet menu()}
-					<OrderByMenu
-						orderField={BucketOrderField}
-						defaultOrderField={BucketOrderField.NAME}
-						defaultOrderDirection={OrderDirection.DESC}
-					/>
-				{/snippet}
 				{#if $Buckets.data.team.buckets.nodes.length > 0}
 					{#each $Buckets.data.team.buckets.nodes as instance (instance.id)}
 						<ListItem interactive>
@@ -103,6 +127,14 @@
 			/>
 		</div>
 		<div class="right-column">
+			<SurfaceCard title="Filters">
+				<ListFilters
+					{sortFields}
+					{currentSortField}
+					{currentSortDirection}
+					onSort={(field) => setSort(field as BucketOrderFieldOptions)}
+				/>
+			</SurfaceCard>
 			{#if cost()}
 				{@const costData = cost()!}
 				<SurfaceCard title="Cost">

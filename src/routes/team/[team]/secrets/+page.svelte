@@ -1,16 +1,16 @@
 <script lang="ts">
 	import { page } from '$app/state';
-	import { ActivityLogActivityType, SecretOrderField } from '$houdini';
+	import { ActivityLogActivityType, OrderDirection, SecretOrderField } from '$houdini';
 	import { docURL } from '$lib/doc';
 	import TeamActivityCard from '$lib/domain/activity/TeamActivityCard.svelte';
 	import { envTagVariant } from '$lib/envTagVariant';
 	import ExternalLink from '$lib/ui/ExternalLink.svelte';
 	import GraphErrors from '$lib/ui/GraphErrors.svelte';
 	import List from '$lib/ui/List.svelte';
+	import ListFilters from '$lib/ui/ListFilters.svelte';
 	import ListItem from '$lib/ui/ListItem.svelte';
-	import OrderByMenu from '$lib/ui/OrderByMenu.svelte';
 	import Pagination from '$lib/ui/Pagination.svelte';
-	import SearchField from '$lib/ui/SearchField.svelte';
+	import SurfaceCard from '$lib/ui/SurfaceCard.svelte';
 	import Time from '$lib/ui/Time.svelte';
 	import { changeParams } from '$lib/utils/searchparams';
 	import { getSecretPermissions } from '$lib/utils/secretPermissions';
@@ -18,6 +18,9 @@
 	import { PadlockLockedIcon, PlusIcon } from '@nais/ds-svelte-community/icons';
 	import type { PageProps } from './$types';
 	import CreateSecret, { type EnvironmentType } from './CreateSecret.svelte';
+
+	type SecretOrderFieldOptions = (typeof SecretOrderField)[keyof typeof SecretOrderField];
+	type OrderDirectionOptions = (typeof OrderDirection)[keyof typeof OrderDirection];
 
 	let { data }: PageProps = $props();
 	let { Secrets, teamSlug } = $derived(data);
@@ -64,6 +67,38 @@
 		});
 	};
 
+	const sortFields: { value: SecretOrderFieldOptions; label: string }[] = [
+		{ value: SecretOrderField.NAME, label: 'Name' },
+		{ value: SecretOrderField.ENVIRONMENT, label: 'Environment' },
+		{ value: SecretOrderField.LAST_MODIFIED_AT, label: 'Last modified' }
+	];
+
+	const currentSortField: SecretOrderFieldOptions = $derived(
+		(Object.values(SecretOrderField).find((f) =>
+			page.url.searchParams.get('sort')?.startsWith(f)
+		) as SecretOrderFieldOptions | undefined) ?? SecretOrderField.NAME
+	);
+
+	const currentSortDirection: OrderDirectionOptions = $derived(
+		(Object.values(OrderDirection).find((d) => page.url.searchParams.get('sort')?.endsWith(d)) as
+			| OrderDirectionOptions
+			| undefined) ?? OrderDirection.ASC
+	);
+
+	function setSort(field: SecretOrderFieldOptions) {
+		const defaultDirection =
+			field === SecretOrderField.NAME || field === SecretOrderField.ENVIRONMENT
+				? OrderDirection.ASC
+				: OrderDirection.DESC;
+		const direction =
+			field === currentSortField
+				? currentSortDirection === OrderDirection.ASC
+					? OrderDirection.DESC
+					: OrderDirection.ASC
+				: defaultDirection;
+		changeParams({ sort: `${field}-${direction}`, after: '', before: '' });
+	}
+
 	let createSecretOpen = $state(false);
 
 	const environments = $derived.by(() => {
@@ -106,42 +141,6 @@
 				</div>
 			{/if}
 			<List title="Secrets" count={secrets.pageInfo.totalCount}>
-				{#snippet search()}
-					<SearchField
-						value={filter}
-						placeholder="Filter by name"
-						label="Filter secrets"
-						oninput={(v) => (filter = v)}
-						onsubmit={() => changeQuery({ newFilter: filter })}
-						onclear={() => {
-							filter = '';
-							changeQuery({ newFilter: '' });
-						}}
-					/>
-				{/snippet}
-				{#snippet filters()}
-					<div class="usage-pills">
-						<button
-							type="button"
-							class="pill"
-							class:active={activeUsages.includes('inUse')}
-							onclick={() => toggleUsage('inUse')}
-						>
-							In use
-						</button>
-						<button
-							type="button"
-							class="pill"
-							class:active={activeUsages.includes('notInUse')}
-							onclick={() => toggleUsage('notInUse')}
-						>
-							Not in use
-						</button>
-					</div>
-				{/snippet}
-				{#snippet menu()}
-					<OrderByMenu orderField={SecretOrderField} defaultOrderField={SecretOrderField.NAME} />
-				{/snippet}
 				{#if secrets.nodes.length > 0}
 					{#each secrets.nodes as secret (secret.id)}
 						<ListItem interactive>
@@ -202,6 +201,45 @@
 			/>
 		</div>
 		<div class="right-column">
+			<SurfaceCard title="Filters">
+				<ListFilters
+					{filter}
+					searchPlaceholder="Filter by name"
+					searchLabel="Filter secrets"
+					{sortFields}
+					{currentSortField}
+					{currentSortDirection}
+					onFilterInput={(v) => (filter = v)}
+					onFilterSubmit={() => changeQuery({ newFilter: filter })}
+					onFilterClear={() => {
+						filter = '';
+						changeQuery({ newFilter: '' });
+					}}
+					onSort={(field) => setSort(field as SecretOrderFieldOptions)}
+				>
+					<div class="usage-section">
+						<span class="usage-heading">Usage</span>
+						<div class="facet-list">
+							<label class="facet-item">
+								<input
+									type="checkbox"
+									checked={activeUsages.includes('inUse')}
+									onchange={() => toggleUsage('inUse')}
+								/>
+								<span class="facet-label">In use</span>
+							</label>
+							<label class="facet-item">
+								<input
+									type="checkbox"
+									checked={activeUsages.includes('notInUse')}
+									onchange={() => toggleUsage('notInUse')}
+								/>
+								<span class="facet-label">Not in use</span>
+							</label>
+						</div>
+					</div>
+				</ListFilters>
+			</SurfaceCard>
 			<TeamActivityCard
 				{teamSlug}
 				viewAllHref="/team/{teamSlug}/activity-log"
@@ -247,47 +285,46 @@
 		gap: var(--ax-space-2);
 	}
 
-	.usage-pills {
+	.usage-section {
 		display: flex;
+		flex-direction: column;
 		gap: var(--ax-space-8);
-		align-items: center;
 	}
 
-	.pill {
-		display: inline-flex;
-		align-items: center;
-		gap: var(--ax-space-4);
-		padding: var(--ax-space-4) var(--ax-space-8);
-		border-radius: 9999px;
+	.usage-heading {
 		font-size: var(--ax-font-size-small);
 		font-weight: 500;
-		border: 1px solid var(--ax-border-neutral-subtleA);
+		color: var(--ax-text-neutral-subtle);
+		letter-spacing: 0.01em;
+		border-bottom: 1px solid var(--ax-border-neutral-subtleA);
+		padding-bottom: var(--ax-space-6);
+	}
+
+	.facet-list {
+		display: flex;
+		flex-direction: column;
+	}
+
+	.facet-item {
+		display: flex;
+		align-items: center;
+		gap: var(--ax-space-8);
+		padding: var(--ax-space-6) 0;
+		font-size: var(--ax-font-size-medium);
 		cursor: pointer;
-		transition:
-			background-color 120ms ease,
-			border-color 120ms ease,
-			opacity 120ms ease;
-		line-height: 1.4;
-		color: var(--ax-text-subtle);
-		background: color-mix(in srgb, var(--ax-neutral-200) 50%, transparent);
 	}
 
-	.pill:hover {
-		background: color-mix(in srgb, var(--ax-neutral-200) 80%, transparent);
+	.facet-item:hover {
+		color: var(--ax-text-default);
 	}
 
-	.pill:not(.active) {
-		opacity: 0.5;
-	}
-
-	.pill:not(.active):hover {
-		opacity: 0.75;
-	}
-
-	.pill.active {
-		opacity: 1;
-		background: color-mix(in srgb, var(--ax-neutral-200) 80%, transparent);
-		border-color: var(--ax-text-subtle);
+	.facet-item input[type='checkbox'] {
+		width: 1rem;
+		height: 1rem;
+		margin: 0;
+		flex-shrink: 0;
+		cursor: pointer;
+		accent-color: var(--ax-text-accent);
 	}
 
 	@media (max-width: 767px), (max-height: 500px) {

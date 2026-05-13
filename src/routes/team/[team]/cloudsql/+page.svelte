@@ -1,16 +1,16 @@
 <script lang="ts">
-	import WorkloadLink from '$lib/domain/workload/WorkloadLink.svelte';
-	import List from '$lib/ui/List.svelte';
-	import ListItem from '$lib/ui/ListItem.svelte';
-
+	import { page } from '$app/state';
 	import { OrderDirection, SqlInstanceOrderField } from '$houdini';
 	import { docURL } from '$lib/doc';
 	import PersistenceCost from '$lib/domain/cost/PersistenceCost.svelte';
 	import IssueSeverityTags from '$lib/domain/issues/IssueSeverityTags.svelte';
+	import WorkloadLink from '$lib/domain/workload/WorkloadLink.svelte';
 	import { envTagVariant } from '$lib/envTagVariant';
 	import ExternalLink from '$lib/ui/ExternalLink.svelte';
 	import GraphErrors from '$lib/ui/GraphErrors.svelte';
-	import OrderByMenu from '$lib/ui/OrderByMenu.svelte';
+	import List from '$lib/ui/List.svelte';
+	import ListFilters from '$lib/ui/ListFilters.svelte';
+	import ListItem from '$lib/ui/ListItem.svelte';
 	import Pagination from '$lib/ui/Pagination.svelte';
 	import SurfaceCard from '$lib/ui/SurfaceCard.svelte';
 	import TooltipAlignHack from '$lib/ui/TooltipAlignHack.svelte';
@@ -21,9 +21,53 @@
 	import { endOfYesterday, startOfMonth, subMonths } from 'date-fns';
 	import type { PageProps } from './$types';
 
+	type SqlOrderFieldOptions = (typeof SqlInstanceOrderField)[keyof typeof SqlInstanceOrderField];
+	type OrderDirectionOptions = (typeof OrderDirection)[keyof typeof OrderDirection];
+
 	let { data }: PageProps = $props();
 
 	let { SqlInstances } = $derived(data);
+
+	const sortFields: { value: SqlOrderFieldOptions; label: string }[] = [
+		{ value: SqlInstanceOrderField.ISSUES, label: 'Issues' },
+		{ value: SqlInstanceOrderField.NAME, label: 'Name' },
+		{ value: SqlInstanceOrderField.ENVIRONMENT, label: 'Environment' },
+		{ value: SqlInstanceOrderField.STATE, label: 'State' },
+		{ value: SqlInstanceOrderField.COST, label: 'Cost' },
+		{ value: SqlInstanceOrderField.CPU_UTILIZATION, label: 'CPU utilization' },
+		{ value: SqlInstanceOrderField.MEMORY_UTILIZATION, label: 'Memory utilization' },
+		{ value: SqlInstanceOrderField.DISK_UTILIZATION, label: 'Disk utilization' },
+		{ value: SqlInstanceOrderField.VERSION, label: 'Version' }
+	];
+
+	const currentSortField: SqlOrderFieldOptions = $derived(
+		(Object.values(SqlInstanceOrderField).find((f) =>
+			page.url.searchParams.get('sort')?.startsWith(f)
+		) as SqlOrderFieldOptions | undefined) ?? SqlInstanceOrderField.ISSUES
+	);
+
+	const currentSortDirection: OrderDirectionOptions = $derived(
+		(Object.values(OrderDirection).find((d) => page.url.searchParams.get('sort')?.endsWith(d)) as
+			| OrderDirectionOptions
+			| undefined) ?? OrderDirection.DESC
+	);
+
+	function setSort(field: SqlOrderFieldOptions) {
+		const defaultDirection =
+			field === SqlInstanceOrderField.NAME ||
+			field === SqlInstanceOrderField.ENVIRONMENT ||
+			field === SqlInstanceOrderField.STATE ||
+			field === SqlInstanceOrderField.VERSION
+				? OrderDirection.ASC
+				: OrderDirection.DESC;
+		const direction =
+			field === currentSortField
+				? currentSortDirection === OrderDirection.ASC
+					? OrderDirection.DESC
+					: OrderDirection.ASC
+				: defaultDirection;
+		changeParams({ sort: `${field}-${direction}`, after: '', before: '' });
+	}
 </script>
 
 <GraphErrors errors={$SqlInstances.errors} />
@@ -39,13 +83,6 @@
 	<div class="content-wrapper">
 		<div>
 			<List title="Cloud SQL" count={si.pageInfo.totalCount}>
-				{#snippet menu()}
-					<OrderByMenu
-						orderField={SqlInstanceOrderField}
-						defaultOrderField={SqlInstanceOrderField.ISSUES}
-						defaultOrderDirection={OrderDirection.DESC}
-					/>
-				{/snippet}
 				{#if si.nodes.length > 0}
 					{#each si.nodes as instance (instance.id)}
 						<ListItem interactive>
@@ -133,6 +170,14 @@
 			/>
 		</div>
 		<div class="right-column">
+			<SurfaceCard title="Filters">
+				<ListFilters
+					{sortFields}
+					{currentSortField}
+					{currentSortDirection}
+					onSort={(field) => setSort(field as SqlOrderFieldOptions)}
+				/>
+			</SurfaceCard>
 			{#if cost}
 				<SurfaceCard title="Cost">
 					<PersistenceCost

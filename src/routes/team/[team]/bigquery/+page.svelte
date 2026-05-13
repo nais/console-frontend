@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { page } from '$app/state';
 	import { BigQueryDatasetOrderField, OrderDirection } from '$houdini';
 	import { docURL } from '$lib/doc';
 	import PersistenceCost from '$lib/domain/cost/PersistenceCost.svelte';
@@ -8,16 +9,48 @@
 	import ExternalLink from '$lib/ui/ExternalLink.svelte';
 	import GraphErrors from '$lib/ui/GraphErrors.svelte';
 	import List from '$lib/ui/List.svelte';
+	import ListFilters from '$lib/ui/ListFilters.svelte';
 	import ListItem from '$lib/ui/ListItem.svelte';
-	import OrderByMenu from '$lib/ui/OrderByMenu.svelte';
 	import Pagination from '$lib/ui/Pagination.svelte';
+	import SurfaceCard from '$lib/ui/SurfaceCard.svelte';
 	import { changeParams } from '$lib/utils/searchparams';
 	import { Tag } from '@nais/ds-svelte-community';
 	import { endOfYesterday, startOfMonth, subMonths } from 'date-fns';
 	import type { PageProps } from './$types';
 
+	type BigQueryOrderFieldOptions =
+		(typeof BigQueryDatasetOrderField)[keyof typeof BigQueryDatasetOrderField];
+	type OrderDirectionOptions = (typeof OrderDirection)[keyof typeof OrderDirection];
+
 	let { data }: PageProps = $props();
 	let { BigQuery } = $derived(data);
+
+	const sortFields: { value: BigQueryOrderFieldOptions; label: string }[] = [
+		{ value: BigQueryDatasetOrderField.NAME, label: 'Name' },
+		{ value: BigQueryDatasetOrderField.ENVIRONMENT, label: 'Environment' }
+	];
+
+	const currentSortField: BigQueryOrderFieldOptions = $derived(
+		(Object.values(BigQueryDatasetOrderField).find((f) =>
+			page.url.searchParams.get('sort')?.startsWith(f)
+		) as BigQueryOrderFieldOptions | undefined) ?? BigQueryDatasetOrderField.NAME
+	);
+
+	const currentSortDirection: OrderDirectionOptions = $derived(
+		(Object.values(OrderDirection).find((d) => page.url.searchParams.get('sort')?.endsWith(d)) as
+			| OrderDirectionOptions
+			| undefined) ?? OrderDirection.ASC
+	);
+
+	function setSort(field: BigQueryOrderFieldOptions) {
+		const direction =
+			field === currentSortField
+				? currentSortDirection === OrderDirection.ASC
+					? OrderDirection.DESC
+					: OrderDirection.ASC
+				: OrderDirection.ASC;
+		changeParams({ sort: `${field}-${direction}`, after: '', before: '' });
+	}
 
 	let cost = $derived(() => {
 		const costData = $BigQuery.data?.team.cost;
@@ -39,13 +72,6 @@
 	<div class="content-wrapper">
 		<div>
 			<List title="BigQuery" count={$BigQuery.data.team.bigQueryDatasets.pageInfo.totalCount}>
-				{#snippet menu()}
-					<OrderByMenu
-						orderField={BigQueryDatasetOrderField}
-						defaultOrderField={BigQueryDatasetOrderField.NAME}
-						defaultOrderDirection={OrderDirection.DESC}
-					/>
-				{/snippet}
 				{#if $BigQuery.data.team.bigQueryDatasets.nodes.length > 0}
 					{#each $BigQuery.data.team.bigQueryDatasets.nodes as instance (instance.id)}
 						<ListItem interactive>
@@ -104,9 +130,17 @@
 			/>
 		</div>
 		<div class="right-column">
+			<SurfaceCard title="Filters">
+				<ListFilters
+					{sortFields}
+					{currentSortField}
+					{currentSortDirection}
+					onSort={(field) => setSort(field as BigQueryOrderFieldOptions)}
+				/>
+			</SurfaceCard>
 			{#if cost()}
 				{@const costData = cost()!}
-				<div>
+				<SurfaceCard title="Cost">
 					<PersistenceCost
 						pageName={costData.pageName}
 						costData={costData.costData}
@@ -115,7 +149,7 @@
 						to={endOfYesterday()}
 						service="BigQuery"
 					/>
-				</div>
+				</SurfaceCard>
 			{/if}
 		</div>
 	</div>

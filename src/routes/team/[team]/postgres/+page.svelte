@@ -1,23 +1,55 @@
 <script lang="ts">
-	import List from '$lib/ui/List.svelte';
-	import ListItem from '$lib/ui/ListItem.svelte';
-
+	import { page } from '$app/state';
 	import { OrderDirection, PostgresInstanceOrderField } from '$houdini';
 	import { docURL } from '$lib/doc';
 	import { envTagVariant } from '$lib/envTagVariant';
 	import ExternalLink from '$lib/ui/ExternalLink.svelte';
 	import GraphErrors from '$lib/ui/GraphErrors.svelte';
-	import OrderByMenu from '$lib/ui/OrderByMenu.svelte';
+	import List from '$lib/ui/List.svelte';
+	import ListFilters from '$lib/ui/ListFilters.svelte';
+	import ListItem from '$lib/ui/ListItem.svelte';
 	import Pagination from '$lib/ui/Pagination.svelte';
+	import SurfaceCard from '$lib/ui/SurfaceCard.svelte';
 	import TooltipAlignHack from '$lib/ui/TooltipAlignHack.svelte';
 	import { changeParams } from '$lib/utils/searchparams';
 	import { Alert, Loader, Tag } from '@nais/ds-svelte-community';
 	import { CircleFillIcon } from '@nais/ds-svelte-community/icons';
 	import type { PageProps } from './$types';
 
+	type PostgresOrderFieldOptions =
+		(typeof PostgresInstanceOrderField)[keyof typeof PostgresInstanceOrderField];
+	type OrderDirectionOptions = (typeof OrderDirection)[keyof typeof OrderDirection];
+
 	let { data }: PageProps = $props();
 
 	let { PostgresInstances } = $derived(data);
+
+	const sortFields: { value: PostgresOrderFieldOptions; label: string }[] = [
+		{ value: PostgresInstanceOrderField.NAME, label: 'Name' },
+		{ value: PostgresInstanceOrderField.ENVIRONMENT, label: 'Environment' }
+	];
+
+	const currentSortField: PostgresOrderFieldOptions = $derived(
+		(Object.values(PostgresInstanceOrderField).find((f) =>
+			page.url.searchParams.get('sort')?.startsWith(f)
+		) as PostgresOrderFieldOptions | undefined) ?? PostgresInstanceOrderField.NAME
+	);
+
+	const currentSortDirection: OrderDirectionOptions = $derived(
+		(Object.values(OrderDirection).find((d) => page.url.searchParams.get('sort')?.endsWith(d)) as
+			| OrderDirectionOptions
+			| undefined) ?? OrderDirection.ASC
+	);
+
+	function setSort(field: PostgresOrderFieldOptions) {
+		const direction =
+			field === currentSortField
+				? currentSortDirection === OrderDirection.ASC
+					? OrderDirection.DESC
+					: OrderDirection.ASC
+				: OrderDirection.ASC;
+		changeParams({ sort: `${field}-${direction}`, after: '', before: '' });
+	}
 	let hasCloudSql = $derived(
 		($PostgresInstances.data?.team.inventoryCounts.sqlInstances.total ?? 0) > 0
 	);
@@ -47,13 +79,6 @@
 			{@render cloudSqlRelocationAlert()}
 
 			<List title="Postgres" count={si.pageInfo.totalCount}>
-				{#snippet menu()}
-					<OrderByMenu
-						orderField={PostgresInstanceOrderField}
-						defaultOrderField={PostgresInstanceOrderField.NAME}
-						defaultOrderDirection={OrderDirection.ASC}
-					/>
-				{/snippet}
 				{#if si.nodes.length > 0}
 					{#each si.nodes as instance (instance.id)}
 						<ListItem interactive>
@@ -113,6 +138,16 @@
 				}}
 			/>
 		</div>
+		<div class="right-column">
+			<SurfaceCard title="Filters">
+				<ListFilters
+					{sortFields}
+					{currentSortField}
+					{currentSortDirection}
+					onSort={(field) => setSort(field as PostgresOrderFieldOptions)}
+				/>
+			</SurfaceCard>
+		</div>
 	</div>
 {/if}
 
@@ -122,6 +157,11 @@
 		gap: var(--ax-space-24);
 		grid-template-columns: 1fr 300px;
 		align-items: start;
+	}
+	.right-column {
+		display: grid;
+		gap: var(--ax-space-24);
+		align-content: start;
 	}
 	.right {
 		display: flex;

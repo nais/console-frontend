@@ -4,7 +4,9 @@
 	import ActivityLogFacets from '$lib/domain/activity/ActivityLogFacets.svelte';
 	import ActivityLogItem from '$lib/domain/list-items/ActivityLogListItem.svelte';
 	import List from '$lib/ui/List.svelte';
+	import ListFilters from '$lib/ui/ListFilters.svelte';
 	import Pagination from '$lib/ui/Pagination.svelte';
+	import SurfaceCard from '$lib/ui/SurfaceCard.svelte';
 	import { changeParams } from '$lib/utils/searchparams';
 	import { BodyLong } from '@nais/ds-svelte-community';
 	import type { PageProps } from './$types';
@@ -101,19 +103,23 @@
 			</div>
 
 			{#if ae.facets}
-				<aside class="facets-sidebar">
-					<ActivityLogFacets
-						activityTypes={ae.facets.activityTypes}
-						resourceTypes={ae.facets.resourceTypes}
-						environments={ae.facets.environments}
-						{selectedActivityTypes}
-						{selectedResourceTypes}
-						{selectedEnvironments}
-						onActivityTypesChange={handleActivityTypesChange}
-						onResourceTypesChange={handleResourceTypesChange}
-						onEnvironmentsChange={handleEnvironmentsChange}
-					/>
-				</aside>
+				<div class="right-column">
+					<SurfaceCard title="Filters">
+						<ListFilters>
+							<ActivityLogFacets
+								activityTypes={ae.facets.activityTypes}
+								resourceTypes={ae.facets.resourceTypes}
+								environments={ae.facets.environments}
+								{selectedActivityTypes}
+								{selectedResourceTypes}
+								{selectedEnvironments}
+								onActivityTypesChange={handleActivityTypesChange}
+								onResourceTypesChange={handleResourceTypesChange}
+								onEnvironmentsChange={handleEnvironmentsChange}
+							/>
+						</ListFilters>
+					</SurfaceCard>
+				</div>
 			{/if}
 		</div>
 	{/if}
@@ -122,8 +128,8 @@
 <style>
 	.wrapper {
 		display: grid;
-		grid-template-columns: 1fr 280px;
-		gap: var(--ax-space-24);
+		grid-template-columns: 1fr 300px;
+		gap: var(--spacing-layout);
 		align-items: start;
 	}
 
@@ -134,19 +140,15 @@
 		min-width: 0;
 	}
 
-	.facets-sidebar {
-		position: sticky;
-		top: var(--ax-space-16);
+	.right-column {
+		display: grid;
+		gap: var(--ax-space-16);
+		align-content: start;
 	}
 
 	@media (max-width: 960px) {
 		.wrapper {
 			grid-template-columns: 1fr;
-		}
-
-		.facets-sidebar {
-			position: static;
-			order: -1;
 		}
 	}
 </style>
