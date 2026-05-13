@@ -6,18 +6,15 @@
 		type ApplicationOrderField$options,
 		type OrderDirection$options
 	} from '$houdini';
-	import AppListFacets from '$lib/domain/applications/AppListFacets.svelte';
 	import AggregatedCostForApplications from '$lib/domain/cost/AggregatedCostForApplications.svelte';
 	import AppListItem from '$lib/domain/list-items/AppListItem.svelte';
+	import WorkloadListFilters from '$lib/domain/workload/WorkloadListFilters.svelte';
 	import GraphErrors from '$lib/ui/GraphErrors.svelte';
 	import List from '$lib/ui/List.svelte';
 	import Pagination from '$lib/ui/Pagination.svelte';
-	import SearchField from '$lib/ui/SearchField.svelte';
 	import SurfaceCard from '$lib/ui/SurfaceCard.svelte';
 	import { changeParams } from '$lib/utils/searchparams';
 	import { BodyLong } from '@nais/ds-svelte-community';
-
-	import { SortDownIcon, SortUpIcon } from '@nais/ds-svelte-community/icons';
 	import type { PageProps } from './$types';
 
 	let { data }: PageProps = $props();
@@ -137,56 +134,27 @@
 	</div>
 	<div class="right-column">
 		<SurfaceCard title="Filters">
-			<div class="sidebar-section">
-				<SearchField
-					value={filter}
-					placeholder="Search apps..."
-					label="Search applications"
-					oninput={(v) => (filter = v)}
-					onsubmit={() => changeQuery({ newFilter: filter })}
-					onclear={() => {
-						filter = '';
-						changeQuery({ newFilter: '' });
-					}}
-				/>
-			</div>
-
-			<details class="sidebar-section" open>
-				<summary class="section-heading">Sort By</summary>
-				<div class="sort-options">
-					{#each sortFields as { value, label } (value)}
-						{@const isActive = currentSortField === value}
-						<button
-							type="button"
-							class="sort-option"
-							class:active={isActive}
-							onclick={() => setSort(value)}
-						>
-							<span class="sort-option-label">{label}</span>
-							{#if isActive}
-								<span class="sort-direction">
-									{#if currentSortDirection === 'ASC'}
-										<SortUpIcon />
-									{:else}
-										<SortDownIcon />
-									{/if}
-								</span>
-							{/if}
-						</button>
-					{/each}
-				</div>
-			</details>
-
-			{#if $Applications.data?.team.applications.facets}
-				<AppListFacets
-					states={$Applications.data.team.applications.facets.states}
-					environments={$Applications.data.team.applications.facets.environments}
-					{selectedStates}
-					{selectedEnvironments}
-					onStatesChange={handleStatesChange}
-					onEnvironmentsChange={handleEnvironmentsChange}
-				/>
-			{/if}
+			<WorkloadListFilters
+				{filter}
+				searchPlaceholder="Search apps..."
+				searchLabel="Search applications"
+				{sortFields}
+				{currentSortField}
+				{currentSortDirection}
+				states={$Applications.data?.team.applications.facets?.states ?? []}
+				environments={$Applications.data?.team.applications.facets?.environments ?? []}
+				{selectedStates}
+				{selectedEnvironments}
+				onFilterInput={(v) => (filter = v)}
+				onFilterSubmit={() => changeQuery({ newFilter: filter })}
+				onFilterClear={() => {
+					filter = '';
+					changeQuery({ newFilter: '' });
+				}}
+				onSort={(field) => setSort(field as ApplicationOrderField$options)}
+				onStatesChange={handleStatesChange}
+				onEnvironmentsChange={handleEnvironmentsChange}
+			/>
 		</SurfaceCard>
 		{#if totalApplications > 0}
 			<SurfaceCard title="Cost">
@@ -207,80 +175,6 @@
 		display: grid;
 		gap: var(--ax-space-24);
 		align-content: start;
-	}
-
-	.sidebar-section {
-		margin-bottom: var(--ax-space-16);
-	}
-
-	.section-heading {
-		font-size: var(--ax-font-size-small);
-		font-weight: 600;
-		color: var(--ax-text-neutral-subtle);
-		margin: 0 0 var(--ax-space-8) 0;
-		text-transform: uppercase;
-		letter-spacing: 0.03em;
-		border-bottom: 1px solid var(--ax-border-neutral-subtleA);
-		padding-bottom: var(--ax-space-8);
-		cursor: pointer;
-		list-style: none;
-		display: flex;
-		align-items: center;
-		justify-content: space-between;
-	}
-
-	.section-heading::-webkit-details-marker {
-		display: none;
-	}
-
-	.section-heading::after {
-		content: '';
-		width: 0.4em;
-		height: 0.4em;
-		border-right: 2px solid currentColor;
-		border-bottom: 2px solid currentColor;
-		transform: rotate(45deg);
-		transition: transform 150ms ease;
-		flex-shrink: 0;
-	}
-
-	.sidebar-section[open] > .section-heading::after {
-		transform: rotate(-135deg);
-	}
-
-	.sort-options {
-		display: flex;
-		flex-direction: column;
-	}
-
-	.sort-option {
-		display: flex;
-		align-items: center;
-		justify-content: space-between;
-		gap: var(--ax-space-8);
-		padding: var(--ax-space-6) var(--ax-space-8);
-		border: none;
-		border-radius: var(--ax-radius-8);
-		background: transparent;
-		font-size: var(--ax-font-size-small);
-		color: var(--ax-text-neutral);
-		cursor: pointer;
-		text-align: left;
-		transition: background-color 120ms ease;
-	}
-
-	.sort-option:hover {
-		background: var(--ax-bg-neutral-moderate);
-	}
-
-	.sort-option.active {
-		font-weight: 600;
-		color: var(--ax-text-accent);
-	}
-
-	.sort-direction {
-		font-size: var(--ax-font-size-small);
-		font-weight: 600;
 	}
 
 	/* Mobile responsive layout */

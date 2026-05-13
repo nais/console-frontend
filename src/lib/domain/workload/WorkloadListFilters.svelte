@@ -1,5 +1,7 @@
 <script lang="ts">
+	import SearchField from '$lib/ui/SearchField.svelte';
 	import { capitalizeFirstLetter } from '$lib/utils/formatters';
+	import { SortDownIcon, SortUpIcon } from '@nais/ds-svelte-community/icons';
 
 	interface StateFacet {
 		state: string;
@@ -11,20 +13,45 @@
 		count: number;
 	}
 
+	interface SortField {
+		value: string;
+		label: string;
+	}
+
 	interface Props {
-		states: StateFacet[];
-		environments: EnvironmentFacet[];
+		filter: string;
+		searchPlaceholder: string;
+		searchLabel: string;
+		sortFields: SortField[];
+		currentSortField: string;
+		currentSortDirection: string;
+		states?: StateFacet[];
+		environments?: EnvironmentFacet[];
 		selectedStates: string[];
 		selectedEnvironments: string[];
+		onFilterInput: (value: string) => void;
+		onFilterSubmit: () => void;
+		onFilterClear: () => void;
+		onSort: (field: string) => void;
 		onStatesChange: (selected: string[]) => void;
 		onEnvironmentsChange: (selected: string[]) => void;
 	}
 
 	let {
-		states,
-		environments,
+		filter,
+		searchPlaceholder,
+		searchLabel,
+		sortFields,
+		currentSortField,
+		currentSortDirection,
+		states = [],
+		environments = [],
 		selectedStates,
 		selectedEnvironments,
+		onFilterInput,
+		onFilterSubmit,
+		onFilterClear,
+		onSort,
 		onStatesChange,
 		onEnvironmentsChange
 	}: Props = $props();
@@ -53,10 +80,47 @@
 	}
 </script>
 
-<div class="facets">
+<div class="filters">
+	<div class="filter-section">
+		<SearchField
+			value={filter}
+			placeholder={searchPlaceholder}
+			label={searchLabel}
+			oninput={onFilterInput}
+			onsubmit={onFilterSubmit}
+			onclear={onFilterClear}
+		/>
+	</div>
+
+	<details class="filter-section">
+		<summary class="section-heading">Sort By</summary>
+		<div class="sort-options">
+			{#each sortFields as { value, label } (value)}
+				{@const isActive = currentSortField === value}
+				<button
+					type="button"
+					class="sort-option"
+					class:active={isActive}
+					onclick={() => onSort(value)}
+				>
+					<span class="sort-option-label">{label}</span>
+					{#if isActive}
+						<span class="sort-direction">
+							{#if currentSortDirection === 'ASC'}
+								<SortUpIcon />
+							{:else}
+								<SortDownIcon />
+							{/if}
+						</span>
+					{/if}
+				</button>
+			{/each}
+		</div>
+	</details>
+
 	{#if states.length > 0}
-		<details class="facet-section" open>
-			<summary class="facet-heading">Status</summary>
+		<details class="filter-section">
+			<summary class="section-heading">Status</summary>
 			<div class="facet-list">
 				{#each states as facet (facet.state)}
 					<label class="facet-item">
@@ -74,8 +138,8 @@
 	{/if}
 
 	{#if environments.length > 0}
-		<details class="facet-section" open>
-			<summary class="facet-heading">Environments</summary>
+		<details class="filter-section">
+			<summary class="section-heading">Environments</summary>
 			<div class="facet-list">
 				{#each environments as facet (facet.environmentName)}
 					<label class="facet-item">
@@ -94,27 +158,26 @@
 </div>
 
 <style>
-	.facets {
+	.filters {
 		display: flex;
 		flex-direction: column;
-		gap: var(--ax-space-24);
+		gap: var(--ax-space-16);
 	}
 
-	.facet-section {
+	.filter-section {
 		display: flex;
 		flex-direction: column;
 		gap: var(--ax-space-8);
 	}
 
-	.facet-heading {
+	.section-heading {
 		font-size: var(--ax-font-size-small);
-		font-weight: 600;
+		font-weight: 500;
 		color: var(--ax-text-neutral-subtle);
 		margin: 0;
-		text-transform: uppercase;
-		letter-spacing: 0.03em;
+		letter-spacing: 0.01em;
 		border-bottom: 1px solid var(--ax-border-neutral-subtleA);
-		padding-bottom: var(--ax-space-8);
+		padding-bottom: var(--ax-space-6);
 		cursor: pointer;
 		list-style: none;
 		display: flex;
@@ -122,11 +185,11 @@
 		justify-content: space-between;
 	}
 
-	.facet-heading::-webkit-details-marker {
+	.section-heading::-webkit-details-marker {
 		display: none;
 	}
 
-	.facet-heading::after {
+	.section-heading::after {
 		content: '';
 		width: 0.4em;
 		height: 0.4em;
@@ -137,8 +200,43 @@
 		flex-shrink: 0;
 	}
 
-	.facet-section[open] > .facet-heading::after {
+	.filter-section[open] > .section-heading::after {
 		transform: rotate(-135deg);
+	}
+
+	.sort-options {
+		display: flex;
+		flex-direction: column;
+	}
+
+	.sort-option {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: var(--ax-space-8);
+		padding: var(--ax-space-6) var(--ax-space-8);
+		border: none;
+		border-radius: var(--ax-radius-8);
+		background: transparent;
+		font-size: var(--ax-font-size-small);
+		color: var(--ax-text-neutral);
+		cursor: pointer;
+		text-align: left;
+		transition: background-color 120ms ease;
+	}
+
+	.sort-option:hover {
+		background: var(--ax-bg-neutral-moderate);
+	}
+
+	.sort-option.active {
+		font-weight: 600;
+		color: var(--ax-text-accent);
+	}
+
+	.sort-direction {
+		font-size: var(--ax-font-size-small);
+		font-weight: 600;
 	}
 
 	.facet-list {
