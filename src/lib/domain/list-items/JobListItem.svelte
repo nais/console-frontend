@@ -9,7 +9,7 @@
 	import Time from '$lib/ui/Time.svelte';
 	import { countIssuesBySeverity } from '$lib/utils/issueCounts';
 	import { Loader, Tag, Tooltip } from '@nais/ds-svelte-community';
-	import { RocketIcon } from '@nais/ds-svelte-community/icons';
+	import { CalendarIcon, RocketIcon } from '@nais/ds-svelte-community/icons';
 	import { format } from 'date-fns';
 	import { enGB } from 'date-fns/locale';
 
@@ -25,6 +25,7 @@
 			schedule: {
 				expression: string;
 				timeZone: string;
+				nextRun: Date | null;
 			} | null;
 			issues: {
 				pageInfo: { totalCount: number };
@@ -86,22 +87,36 @@
 
 		<div class="meta-cell">
 			{#if lastRun}
-				<span class="meta-item run-status">
-					{#if lastRun.status.state === 'RUNNING' || lastRun.status.state === 'PENDING'}
-						<Loader size="xsmall" variant="interaction" />
-					{:else if lastRun.status.state === 'SUCCEEDED'}
-						<SuccessIcon />
-					{:else if lastRun.status.state === 'FAILED'}
-						<ErrorIcon />
-					{/if}
-					{#if lastRun.startTime}
-						<Time time={lastRun.startTime} distance={true} />
-					{/if}
-				</span>
+				<Tooltip
+					content="Last run {lastRun.status.state.toLowerCase()} — {lastRun.startTime
+						? format(lastRun.startTime, 'PPPp', { locale: enGB })
+						: 'unknown'}"
+				>
+					<span class="meta-item run-status">
+						{#if lastRun.status.state === 'RUNNING' || lastRun.status.state === 'PENDING'}
+							<Loader size="xsmall" variant="interaction" />
+						{:else if lastRun.status.state === 'SUCCEEDED'}
+							<SuccessIcon />
+						{:else if lastRun.status.state === 'FAILED'}
+							<ErrorIcon />
+						{/if}
+						{#if lastRun.startTime}
+							<Time time={lastRun.startTime} distance={true} />
+						{/if}
+					</span>
+				</Tooltip>
+			{/if}
+			{#if job.schedule?.nextRun}
+				<Tooltip content="Next run — {format(job.schedule.nextRun, 'PPPp', { locale: enGB })}">
+					<span class="meta-item">
+						<CalendarIcon style="font-size: 14px" />
+						<Time time={job.schedule.nextRun} distance={true} />
+					</span>
+				</Tooltip>
 			{/if}
 			{#if job.deployments.nodes.length > 0}
 				{@const timestamp = job.deployments.nodes[0].createdAt}
-				<Tooltip content="Last deploy \u2014 {format(timestamp, 'PPPP', { locale: enGB })}">
+				<Tooltip content="Last deploy — {format(timestamp, 'PPPP', { locale: enGB })}">
 					<span class="meta-item">
 						<RocketIcon style="font-size: 14px" />
 						<Time time={timestamp} distance={true} />

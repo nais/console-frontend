@@ -45,6 +45,7 @@ query Jobs(
 				schedule {
 					expression
 					timeZone
+					nextRun
 				}
 				teamEnvironment {
 					environment {
