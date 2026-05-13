@@ -58,12 +58,16 @@
 	);
 
 	function setSort(field: ApplicationOrderField$options) {
+		const defaultDirection =
+			field === ApplicationOrderField.NAME || field === ApplicationOrderField.ENVIRONMENT
+				? OrderDirection.ASC
+				: OrderDirection.DESC;
 		const direction =
 			field === currentSortField
 				? currentSortDirection === OrderDirection.ASC
 					? OrderDirection.DESC
 					: OrderDirection.ASC
-				: OrderDirection.DESC;
+				: defaultDirection;
 		changeParams({ sort: `${field}-${direction}`, after: '', before: '' }, { noScroll: true });
 	}
 

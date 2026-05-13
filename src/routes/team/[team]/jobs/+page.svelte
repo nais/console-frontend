@@ -59,12 +59,16 @@
 	);
 
 	function setSort(field: JobOrderField$options) {
+		const defaultDirection =
+			field === JobOrderField.NAME || field === JobOrderField.ENVIRONMENT
+				? OrderDirection.ASC
+				: OrderDirection.DESC;
 		const direction =
 			field === currentSortField
 				? currentSortDirection === OrderDirection.ASC
 					? OrderDirection.DESC
 					: OrderDirection.ASC
-				: OrderDirection.DESC;
+				: defaultDirection;
 		changeParams({ sort: `${field}-${direction}`, after: '', before: '' }, { noScroll: true });
 	}
 
