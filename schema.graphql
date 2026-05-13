@@ -3720,6 +3720,11 @@ enum JobOrderField {
   """Order jobs by name."""
   NAME
 
+  """
+  Order jobs by next scheduled run time. Jobs without a next run (no schedule or invalid cron) are always sorted last.
+  """
+  NEXT_RUN
+
   """Order by state."""
   STATE
 }
@@ -3895,6 +3900,9 @@ enum JobRunTriggerType {
 type JobSchedule {
   """The cron expression for the job."""
   expression: String!
+
+  """The next scheduled run time. Null if the cron expression is invalid."""
+  nextRun: Time
 
   """The time zone for the job. Defaults to UTC."""
   timeZone: String!

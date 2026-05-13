@@ -1,27 +1,23 @@
 <script lang="ts">
 	import { page } from '$app/state';
 	import {
-		graphql,
 		JobOrderField,
 		OrderDirection,
 		type JobOrderField$options,
 		type OrderDirection$options
 	} from '$houdini';
-	import AggregatedCostForJobs from '$lib/domain/cost/AggregatedCostForJobs.svelte';
 	import JobListItem from '$lib/domain/list-items/JobListItem.svelte';
 	import WorkloadListFilters from '$lib/domain/workload/WorkloadListFilters.svelte';
 	import GraphErrors from '$lib/ui/GraphErrors.svelte';
 	import List from '$lib/ui/List.svelte';
 	import Pagination from '$lib/ui/Pagination.svelte';
 	import SurfaceCard from '$lib/ui/SurfaceCard.svelte';
-	import { getLocalizedCronDescription } from '$lib/utils/cron';
 	import { changeParams } from '$lib/utils/searchparams';
 	import { BodyLong } from '@nais/ds-svelte-community';
-	import { CalendarIcon } from '@nais/ds-svelte-community/icons';
 	import type { PageProps } from './$types';
 
 	let { data }: PageProps = $props();
-	let { Jobs, JobsListMetadata, teamSlug } = $derived(data);
+	let { Jobs, JobsListMetadata } = $derived(data);
 
 	let filter = $state($Jobs.variables?.filter?.name ?? '');
 
@@ -41,6 +37,7 @@
 	const sortFields: { value: JobOrderField$options; label: string }[] = [
 		{ value: JobOrderField.ISSUES, label: 'Issues' },
 		{ value: JobOrderField.NAME, label: 'Name' },
+		{ value: JobOrderField.NEXT_RUN, label: 'Next run' },
 		{ value: JobOrderField.DEPLOYMENT_TIME, label: 'Deploy time' },
 		{ value: JobOrderField.ENVIRONMENT, label: 'Environment' },
 		{ value: JobOrderField.STATE, label: 'State' }
@@ -108,54 +105,6 @@
 			before: ''
 		});
 	}
-
-	const scheduledJobsQuery = graphql(`
-		query JobQueueScheduled($team: Slug!) @cache(policy: CacheAndNetwork) {
-			team(slug: $team) {
-				jobs(first: 500) {
-					nodes {
-						name
-						schedule {
-							expression
-							timeZone
-						}
-						teamEnvironment {
-							environment {
-								name
-							}
-						}
-					}
-				}
-			}
-		}
-	`);
-
-	$effect(() => {
-		scheduledJobsQuery.fetch({ variables: { team: teamSlug } });
-	});
-
-	let jobQueue = $derived.by(() => {
-		const nodes = $scheduledJobsQuery.data?.team?.jobs?.nodes ?? [];
-		return nodes
-			.filter((j) => j.schedule)
-			.map((j) => {
-				const result = getLocalizedCronDescription({
-					expression: j.schedule!.expression,
-					timeZone: j.schedule!.timeZone,
-					context: { team: teamSlug, environment: j.teamEnvironment.environment.name, job: j.name }
-				});
-				return {
-					name: j.name,
-					env: j.teamEnvironment.environment.name,
-					nextRun: result.nextRun,
-					nextRunDate: result.nextRunDate,
-					description: result.description
-				};
-			})
-			.filter((j) => j.nextRunDate)
-			.sort((a, b) => a.nextRunDate!.getTime() - b.nextRunDate!.getTime())
-			.slice(0, 5);
-	});
 </script>
 
 <GraphErrors errors={$Jobs.errors} />
@@ -209,26 +158,6 @@
 				onEnvironmentsChange={handleEnvironmentsChange}
 			/>
 		</SurfaceCard>
-		{#if jobQueue.length > 0}
-			<SurfaceCard title="Job queue">
-				<ul class="job-queue">
-					{#each jobQueue as item (item.name + item.env)}
-						<li class="queue-item">
-							<CalendarIcon width="16" height="16" />
-							<div class="queue-details">
-								<span class="queue-name">{item.name} - {item.env}</span>
-								<span class="queue-next">{item.nextRun}</span>
-							</div>
-						</li>
-					{/each}
-				</ul>
-			</SurfaceCard>
-		{/if}
-		{#if totalJobs > 0}
-			<SurfaceCard title="Cost">
-				<AggregatedCostForJobs {teamSlug} totalCount={totalJobs} />
-			</SurfaceCard>
-		{/if}
 	</div>
 </div>
 
@@ -257,47 +186,5 @@
 			grid-template-columns: 1fr;
 			gap: var(--ax-space-24);
 		}
-	}
-
-	.job-queue {
-		list-style: none;
-		margin: 0;
-		padding: 0;
-		display: flex;
-		flex-direction: column;
-		gap: var(--ax-space-12);
-	}
-
-	.queue-item {
-		display: flex;
-		align-items: flex-start;
-		gap: var(--ax-space-8);
-		color: var(--ax-text-neutral);
-	}
-
-	.queue-item :global(svg) {
-		flex-shrink: 0;
-		margin-top: 2px;
-		color: var(--ax-text-neutral);
-	}
-
-	.queue-details {
-		display: flex;
-		flex-direction: column;
-		gap: var(--ax-space-2);
-		min-width: 0;
-	}
-
-	.queue-name {
-		font-weight: 500;
-		font-size: var(--ax-font-size-small);
-		white-space: nowrap;
-		overflow: hidden;
-		text-overflow: ellipsis;
-	}
-
-	.queue-next {
-		font-size: var(--ax-font-size-small);
-		color: var(--ax-text-neutral);
 	}
 </style>
