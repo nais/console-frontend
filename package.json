@@ -65,7 +65,7 @@
 		"prettier-plugin-tailwindcss": "0.7.3",
 		"semver": "7.7.4",
 		"storybook": "10.3.5",
-		"svelte": "5.55.5",
+		"svelte": "5.55.7",
 		"svelte-check": "4.4.6",
 		"tailwindcss": "4.2.4",
 		"typescript": "6.0.3",
