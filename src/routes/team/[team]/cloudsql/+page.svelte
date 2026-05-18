@@ -2,7 +2,6 @@
 	import { page } from '$app/state';
 	import { OrderDirection, SqlInstanceOrderField } from '$houdini';
 	import { docURL } from '$lib/doc';
-	import PersistenceCost from '$lib/domain/cost/PersistenceCost.svelte';
 	import IssueSeverityTags from '$lib/domain/issues/IssueSeverityTags.svelte';
 	import WorkloadLink from '$lib/domain/workload/WorkloadLink.svelte';
 	import { envTagVariant } from '$lib/envTagVariant';
@@ -18,7 +17,6 @@
 	import { changeParams } from '$lib/utils/searchparams';
 	import { Loader, Tag } from '@nais/ds-svelte-community';
 	import { CircleFillIcon } from '@nais/ds-svelte-community/icons';
-	import { endOfYesterday, startOfMonth, subMonths } from 'date-fns';
 	import type { PageProps } from './$types';
 
 	type SqlOrderFieldOptions = (typeof SqlInstanceOrderField)[keyof typeof SqlInstanceOrderField];
@@ -77,7 +75,6 @@
 		<Loader size="3xlarge" />
 	</div>
 {:else if $SqlInstances.data}
-	{@const cost = $SqlInstances.data.team.cost}
 	{@const si = $SqlInstances.data.team.sqlInstances}
 
 	<div class="layout-two-column">
@@ -178,18 +175,6 @@
 					onSort={(field) => setSort(field as SqlOrderFieldOptions)}
 				/>
 			</SurfaceCard>
-			{#if cost}
-				<SurfaceCard title="Cost">
-					<PersistenceCost
-						pageName="SQL Instances"
-						teamSlug={$SqlInstances.data.team.slug}
-						costData={cost}
-						from={startOfMonth(subMonths(new Date(), 1))}
-						to={endOfYesterday()}
-						service="Cloud SQL"
-					/>
-				</SurfaceCard>
-			{/if}
 		</div>
 	</div>
 {/if}

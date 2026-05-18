@@ -2,8 +2,6 @@
 	import { page } from '$app/state';
 	import { BucketOrderField, OrderDirection } from '$houdini';
 	import { docURL } from '$lib/doc';
-	import PersistenceCost from '$lib/domain/cost/PersistenceCost.svelte';
-	import CdnBucket from '$lib/domain/persistence/CDNBucket.svelte';
 	import WorkloadLink from '$lib/domain/workload/WorkloadLink.svelte';
 	import { envTagVariant } from '$lib/envTagVariant';
 	import ExternalLink from '$lib/ui/ExternalLink.svelte';
@@ -16,14 +14,13 @@
 	import { changeParams } from '$lib/utils/searchparams';
 	import { Tag } from '@nais/ds-svelte-community';
 	import { BucketIcon } from '@nais/ds-svelte-community/icons';
-	import { endOfYesterday, startOfMonth, subMonths } from 'date-fns';
 	import type { PageProps } from './$types';
 
 	type BucketOrderFieldOptions = (typeof BucketOrderField)[keyof typeof BucketOrderField];
 	type OrderDirectionOptions = (typeof OrderDirection)[keyof typeof OrderDirection];
 
 	let { data }: PageProps = $props();
-	let { Buckets, viewerIsMember } = $derived(data);
+	let { Buckets } = $derived(data);
 
 	const sortFields: { value: BucketOrderFieldOptions; label: string }[] = [
 		{ value: BucketOrderField.NAME, label: 'Name' },
@@ -51,19 +48,6 @@
 				: OrderDirection.ASC;
 		changeParams({ sort: `${field}-${direction}`, after: '', before: '' });
 	}
-
-	let cost = $derived(() => {
-		const costData = $Buckets.data?.team.cost;
-		const teamSlug = $Buckets.data?.team.slug;
-
-		if (!costData || !teamSlug) return null;
-
-		return {
-			costData,
-			teamSlug,
-			pageName: 'Buckets'
-		};
-	});
 </script>
 
 <GraphErrors errors={$Buckets.errors} />
@@ -135,24 +119,6 @@
 					onSort={(field) => setSort(field as BucketOrderFieldOptions)}
 				/>
 			</SurfaceCard>
-			{#if cost()}
-				{@const costData = cost()!}
-				<SurfaceCard title="Cost">
-					<PersistenceCost
-						pageName={costData.pageName}
-						costData={costData.costData}
-						teamSlug={costData.teamSlug}
-						from={startOfMonth(subMonths(new Date(), 1))}
-						to={endOfYesterday()}
-						service="Cloud Storage"
-					/>
-				</SurfaceCard>
-			{/if}
-			{#if $Buckets.data.team.externalResources.cdn?.bucket && viewerIsMember}
-				<div>
-					<CdnBucket cdnBucket={$Buckets.data.team.externalResources.cdn.bucket} />
-				</div>
-			{/if}
 		</div>
 	</div>
 {/if}
