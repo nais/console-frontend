@@ -11,6 +11,7 @@ import {
 	PackageIcon,
 	PadlockLockedIcon,
 	PersonGroupIcon,
+	RobotIcon,
 	RocketIcon,
 	TerminalIcon,
 	VirusIcon
@@ -106,5 +107,17 @@ export const icons: { [typename: string]: Component } = {
 	TeamDeployKeyUpdatedActivityLogEntry: CogIcon,
 	ReconcilerConfiguredActivityLogEntry: CogIcon,
 	ReconcilerEnabledActivityLogEntry: CogIcon,
-	ReconcilerDisabledActivityLogEntry: CogIcon
+	ReconcilerDisabledActivityLogEntry: CogIcon,
+
+	/* Service accounts */
+	ServiceAccountCreatedActivityLogEntry: RobotIcon,
+	ServiceAccountDeletedActivityLogEntry: RobotIcon,
+	ServiceAccountUpdatedActivityLogEntry: RobotIcon,
+	ServiceAccountTokenCreatedActivityLogEntry: RobotIcon,
+	ServiceAccountTokenDeletedActivityLogEntry: RobotIcon,
+	ServiceAccountTokenUpdatedActivityLogEntry: RobotIcon,
+	ServiceAccountWorkloadBindingAddedActivityLogEntry: RobotIcon,
+	ServiceAccountWorkloadBindingRemovedActivityLogEntry: RobotIcon,
+	RoleAssignedToServiceAccountActivityLogEntry: RobotIcon,
+	RoleRevokedFromServiceAccountActivityLogEntry: RobotIcon
 };
