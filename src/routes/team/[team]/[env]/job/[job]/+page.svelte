@@ -34,7 +34,9 @@
 	let { data }: PageProps = $props();
 	let { Job, teamSlug, viewerIsMember } = $derived(data);
 
-	let jobData = $derived($Job.data);
+	let jobData = $derived(Job ? $Job.data : undefined);
+	let jobErrors = $derived(Job ? $Job.errors : undefined);
+	let jobFetching = $derived(Job ? $Job.fetching : false);
 	let job = $derived(jobData?.team?.environment?.job ?? null);
 
 	const triggerRunMutation = () =>
@@ -123,9 +125,9 @@
 	};
 </script>
 
-<GraphErrors errors={$Job.errors} />
+<GraphErrors errors={jobErrors} />
 
-{#if $Job.fetching}
+{#if jobFetching}
 	<div style="display: flex; justify-content: center; align-items: center; height: 500px;">
 		<Loader size="3xlarge" />
 	</div>
@@ -150,7 +152,7 @@
 						{/snippet}
 						<button
 							class="action-menu-button"
-							disabled={job.deletionStartedAt !== null}
+							disabled={job?.deletionStartedAt !== null}
 							onclick={(e: MouseEvent) => {
 								if (e.metaKey || e.ctrlKey) {
 									if (jobName && environment) {
@@ -177,7 +179,7 @@
 			{/if}
 
 			<div class="main-section">
-				{#if job.deletionStartedAt}
+				{#if job?.deletionStartedAt}
 					<Alert variant="info" size="small" fullWidth={false}>
 						This job is being deleted. Deletion started <Time
 							time={job.deletionStartedAt}
@@ -204,22 +206,22 @@
 				<WorkloadHealth
 					{teamSlug}
 					environment={environment ?? ''}
-					workload={job.name}
+					workload={job?.name ?? ''}
 					workloadType="job"
-					criticalIssues={job.criticalIssues.pageInfo.totalCount}
-					warningIssues={job.warningIssues.pageInfo.totalCount}
-					todoIssues={job.todoIssues.pageInfo.totalCount}
+					criticalIssues={job?.criticalIssues.pageInfo.totalCount ?? 0}
+					warningIssues={job?.warningIssues.pageInfo.totalCount ?? 0}
+					todoIssues={job?.todoIssues.pageInfo.totalCount ?? 0}
 					{totalRuns}
 					{succeededRuns}
-					loading={$Job.fetching}
+					loading={jobFetching}
 				/>
 				<SurfaceCard title="Runs">
 					<Schedule
-						schedule={job.schedule}
+						schedule={job?.schedule}
 						scheduleContext={{
-							team: job.team.slug,
-							environment: job.teamEnvironment.environment.name,
-							job: job.name
+							team: job?.team.slug ?? '',
+							environment: job?.teamEnvironment.environment.name ?? '',
+							job: job?.name ?? ''
 						}}
 					/>
 					<Runs {job} ondelete={viewerIsMember ? handleDeleteRun : undefined} />
@@ -230,7 +232,7 @@
 			</div>
 			<div class="sidebar">
 				<WorkloadDeploy workload={job} />
-				<JobResources requests={job.resources.requests} limits={job.resources.limits} />
+				<JobResources requests={job?.resources.requests} limits={job?.resources.limits} />
 				{#if environment && jobName}
 					<WorkloadActivityCard
 						{teamSlug}

@@ -19,31 +19,33 @@
 	let { workload }: Props = $props();
 
 	let data = $derived(
-		fragment(
-			workload,
-			graphql(`
-				fragment WorkloadDeploy on Workload {
-					deployments(first: 1) {
-						nodes {
-							createdAt
-							repository
-							commitSha
-							deployerUsername
-							triggerUrl
-							statuses {
+		workload
+			? fragment(
+					workload,
+					graphql(`
+						fragment WorkloadDeploy on Workload {
+							deployments(first: 1) {
 								nodes {
-									state
+									createdAt
+									repository
+									commitSha
+									deployerUsername
+									triggerUrl
+									statuses {
+										nodes {
+											state
+										}
+									}
 								}
 							}
 						}
-					}
-				}
-			`)
-		)
+					`)
+				)
+			: null
 	);
 
 	let deploymentInfo = $derived(
-		$data.deployments.nodes.length > 0 ? $data.deployments.nodes[0] : null
+		$data?.deployments.nodes.length ? $data.deployments.nodes[0] : null
 	);
 
 	let deploymentStatus: 'UNKNOWN' | DeploymentStatusState$options = $derived.by(
