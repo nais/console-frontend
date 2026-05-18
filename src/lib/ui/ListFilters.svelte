@@ -1,3 +1,7 @@
+<script module lang="ts">
+	let persistedSortOpen = false;
+</script>
+
 <script lang="ts">
 	import type { Snippet } from 'svelte';
 	import SearchField from '$lib/ui/SearchField.svelte';
@@ -35,6 +39,12 @@
 		onSort,
 		children
 	}: Props = $props();
+
+	let sortOpen = $state(persistedSortOpen);
+
+	$effect(() => {
+		persistedSortOpen = sortOpen;
+	});
 </script>
 
 <div class="filters">
@@ -52,7 +62,7 @@
 	{/if}
 
 	{#if sortFields && sortFields.length > 0 && onSort}
-		<details class="filter-section">
+		<details class="filter-section" bind:open={sortOpen}>
 			<summary class="section-heading">Sort By</summary>
 			<div class="sort-options">
 				{#each sortFields as { value, label } (value)}
