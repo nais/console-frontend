@@ -201,6 +201,8 @@
 							<Tr>
 								<Td>
 									<WorkloadLink
+										hideTeam
+										hideEnv
 										workload={{
 											__typename: overage.type,
 											teamEnvironment: { environment: { name: overage.env } },
