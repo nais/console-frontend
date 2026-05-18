@@ -230,26 +230,27 @@
 				</div>
 			</a>
 
-			{#if workloadType === 'app'}
-				<span
-					class="metric"
+		{#if workloadType === 'app'}
+			<a
+				href="{basePath}/instancegroup"
+				class="metric"
+				class:success={instancesHealthy}
+				class:danger={instancesDanger}
+				class:warning={!instancesHealthy && !instancesDanger && desiredInstances > 0}
+			>
+				<div
+					class="metric-icon"
 					class:success={instancesHealthy}
 					class:danger={instancesDanger}
 					class:warning={!instancesHealthy && !instancesDanger && desiredInstances > 0}
 				>
-					<div
-						class="metric-icon"
-						class:success={instancesHealthy}
-						class:danger={instancesDanger}
-						class:warning={!instancesHealthy && !instancesDanger && desiredInstances > 0}
-					>
-						<PackageIcon />
-					</div>
-					<div class="metric-body">
-						<span class="metric-value">{readyInstances}/{desiredInstances}</span>
-						<span class="metric-label">Instances</span>
-					</div>
-				</span>
+					<PackageIcon />
+				</div>
+				<div class="metric-body">
+					<span class="metric-value">{readyInstances}/{desiredInstances}</span>
+					<span class="metric-label">Instances</span>
+				</div>
+			</a>
 			{:else}
 				<span
 					class="metric"
