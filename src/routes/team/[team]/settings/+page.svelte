@@ -32,6 +32,7 @@
 		TokenIcon,
 		TrashIcon
 	} from '@nais/ds-svelte-community/icons';
+	import SlackIcon from '$lib/icons/SlackIcon.svelte';
 	import type { PageProps } from './$types';
 	import EditText from './EditText.svelte';
 
@@ -138,6 +139,9 @@
 			</SurfaceCard>
 
 			<SurfaceCard title="Slack Alert Channels">
+				{#snippet headerAside()}
+					<SlackIcon size="1.25em" />
+				{/snippet}
 				{#if teamSettings.slackChannel !== ''}
 					<p>
 						<b>Default slack-channel:</b>
