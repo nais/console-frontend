@@ -63,7 +63,7 @@
 
 <GraphErrors errors={$Members.errors} />
 {#if team}
-	<div class="content-wrapper">
+	<div class="layout-two-column">
 		<div>
 			{#if canEdit}
 				<div class="button">
@@ -97,7 +97,8 @@
 										{edge.node.user.name}
 									</BodyShort>
 									<BodyShort size="small">
-										<span style="color: var(--ax-text-subtle);">{edge.node.user.email}</span>
+										<span style="color: var(--ax-text-neutral-subtle);">{edge.node.user.email}</span
+										>
 									</BodyShort>
 								</div>
 
@@ -160,7 +161,7 @@
 			/>
 		</div>
 		<!--div>Here be documentation of teams, members and roles</div-->
-		<div class="right-column">
+		<div class="layout-sidebar" style="gap: var(--ax-space-16)">
 			<TeamActivityCard
 				teamSlug={team.slug}
 				viewAllHref="/team/{team.slug}/activity-log"
@@ -215,12 +216,6 @@
 		justify-content: flex-end;
 		margin-bottom: var(--ax-space-24);
 	}
-	.content-wrapper {
-		display: grid;
-		gap: var(--ax-space-24);
-		grid-template-columns: 1fr 300px;
-		align-items: start;
-	}
 
 	.item {
 		display: grid;
@@ -235,23 +230,14 @@
 		width: 174px;
 	}
 	.role {
-		color: var(--ax-text-subtle);
+		color: var(--ax-text-neutral-subtle);
 		text-transform: lowercase;
 	}
 	.role::first-letter {
 		text-transform: uppercase;
 	}
-	.right-column {
-		display: grid;
-		gap: var(--ax-space-16);
-		align-content: start;
-	}
 
 	@media (max-width: 767px), (max-height: 500px) {
-		.content-wrapper {
-			grid-template-columns: 1fr;
-		}
-
 		.button {
 			justify-content: flex-start;
 		}

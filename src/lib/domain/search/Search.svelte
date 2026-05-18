@@ -276,7 +276,7 @@
 			grid-template-columns: 1fr auto;
 			gap: var(--ax-space-16);
 			align-items: center;
-			border-radius: 4px;
+			border-radius: var(--ax-radius-4);
 			padding: var(--ax-space-4);
 
 			&.selected {

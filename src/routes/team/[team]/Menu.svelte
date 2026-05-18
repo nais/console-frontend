@@ -118,7 +118,7 @@
 		transition: border-color 100ms;
 
 		&:hover {
-			border-color: var(--ax-text-subtle);
+			border-color: var(--ax-text-neutral-subtle);
 		}
 
 		&:focus-visible {
@@ -134,7 +134,7 @@
 
 	.shortcut {
 		font-size: var(--ax-font-size-small);
-		color: var(--ax-text-subtle);
+		color: var(--ax-text-neutral-subtle);
 		border: 1px solid var(--ax-border-neutral-subtleA);
 		border-radius: var(--ax-radius-4);
 		padding: var(--ax-space-1) var(--ax-space-4);
@@ -184,8 +184,8 @@
 			flex-shrink: 0;
 			border-radius: var(--ax-radius-4);
 			font-size: 1rem;
-			color: var(--ax-text-subtle);
-			background: color-mix(in srgb, var(--ax-text-subtle) 10%, transparent);
+			color: var(--ax-text-neutral-subtle);
+			background: color-mix(in srgb, var(--ax-text-neutral-subtle) 10%, transparent);
 		}
 
 		&.active .icon-box {

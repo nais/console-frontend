@@ -779,18 +779,18 @@
 		margin-top: 1rem;
 		display: grid;
 		grid-template-columns: repeat(2, 1fr);
-		column-gap: 1rem;
-		row-gap: 1rem;
+		column-gap: var(--ax-space-16);
+		row-gap: var(--ax-space-16);
 	}
 
 	.card {
-		border-radius: 12px;
+		border-radius: var(--ax-radius-12);
 		align-items: stretch;
 	}
 
 	.cost-wrapper {
 		display: flex;
-		gap: 1rem;
+		gap: var(--ax-space-16);
 		justify-content: center;
 	}
 

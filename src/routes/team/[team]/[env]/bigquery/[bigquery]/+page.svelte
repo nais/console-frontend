@@ -72,7 +72,7 @@
 			<Heading as="h3" size="small" spacing>Access</Heading>
 
 			{#if bq.access.edges.length > 0}
-				<div class="table-container">
+				<div class="table-scroll">
 					<Table size="small">
 						<Thead>
 							<Tr>
@@ -134,17 +134,6 @@
 		min-width: 0;
 	}
 
-	.table-container {
-		max-width: 100%;
-		min-width: 0;
-		overflow-x: auto;
-	}
-
-	.table-container :global(table) {
-		width: max-content;
-		min-width: 100%;
-	}
-
 	.email {
 		display: grid;
 		grid-template-columns: minmax(0, 1fr) auto;
@@ -170,7 +159,7 @@
 	.inline {
 		display: flex;
 		align-items: center;
-		gap: 0.5rem;
+		gap: var(--ax-space-8);
 	}
 
 	dl {

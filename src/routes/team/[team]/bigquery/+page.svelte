@@ -69,7 +69,7 @@
 <GraphErrors errors={$BigQuery.errors} />
 
 {#if $BigQuery.data}
-	<div class="content-wrapper">
+	<div class="layout-two-column">
 		<div>
 			<List title="BigQuery" count={$BigQuery.data.team.bigQueryDatasets.pageInfo.totalCount}>
 				{#if $BigQuery.data.team.bigQueryDatasets.nodes.length > 0}
@@ -129,7 +129,7 @@
 				}}
 			/>
 		</div>
-		<div class="right-column">
+		<div class="layout-sidebar">
 			<SurfaceCard title="Filters">
 				<ListFilters
 					{sortFields}
@@ -155,27 +155,13 @@
 	</div>
 
 	<style>
-		.content-wrapper {
-			display: grid;
-			gap: var(--ax-space-24);
-			grid-template-columns: 1fr 300px;
-		}
 		.right {
 			display: flex;
 			gap: var(--ax-space-6);
 			align-items: center;
 		}
 
-		.right-column {
-			display: grid;
-			gap: var(--ax-space-24);
-		}
-
 		@media (max-width: 767px), (max-height: 500px) {
-			.content-wrapper {
-				grid-template-columns: 1fr;
-			}
-
 			.right {
 				align-self: flex-end;
 				justify-content: flex-end;

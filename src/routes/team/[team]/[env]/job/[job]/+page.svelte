@@ -291,7 +291,7 @@
 	.job-content {
 		display: grid;
 		grid-template-columns: 1fr 300px;
-		gap: 1rem;
+		gap: var(--ax-space-16);
 	}
 
 	.action-menu-button {

@@ -222,7 +222,7 @@
 		color: var(--ax-text-neutral);
 		text-decoration: none;
 		display: flex;
-		gap: 1rem;
+		gap: var(--ax-space-16);
 		font-size: 1.5rem;
 		font-weight: 700;
 		align-items: center;
@@ -281,7 +281,7 @@
 		min-height: 44px;
 		padding: var(--ax-space-8);
 		border: none;
-		border-radius: 4px;
+		border-radius: var(--ax-radius-4);
 		background: transparent;
 		color: inherit;
 		font: inherit;
@@ -315,7 +315,7 @@
 
 	@media (max-width: 960px) {
 		.logo {
-			gap: 0.75rem;
+			gap: var(--ax-space-12);
 			font-size: 1.25rem;
 		}
 
@@ -353,7 +353,7 @@
 	/* Mobile responsive behavior */
 	@media (max-width: 768px) {
 		.logo {
-			gap: 0.5rem;
+			gap: var(--ax-space-8);
 			font-size: 1rem;
 		}
 
@@ -379,7 +379,7 @@
 	/* Landscape on mobile phones: keep mobile nav despite wider viewport */
 	@media (max-height: 500px) {
 		.logo {
-			gap: 0.5rem;
+			gap: var(--ax-space-8);
 			font-size: 1rem;
 		}
 

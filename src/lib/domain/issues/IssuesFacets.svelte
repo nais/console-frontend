@@ -167,7 +167,7 @@
 	}
 
 	.facet-item:hover {
-		color: var(--ax-text-default);
+		color: var(--ax-text-neutral);
 	}
 
 	.facet-item input[type='checkbox'],

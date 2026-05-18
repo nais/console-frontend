@@ -32,7 +32,7 @@
 <GraphErrors errors={$Deployments.errors} />
 
 {#if $Deployments.data}
-	<div class="wrapper">
+	<div class="layout-two-column">
 		<div>
 			<BodyLong spacing>
 				{#if $Deployments.data?.team.deployments.pageInfo.totalCount == 0}
@@ -82,16 +82,4 @@
 {/if}
 
 <style>
-	.wrapper {
-		display: grid;
-		grid-template-columns: 1fr 300px;
-		gap: var(--spacing-layout);
-	}
-
-	@media (max-width: 767px), (max-height: 500px) {
-		.wrapper {
-			grid-template-columns: 1fr;
-			gap: var(--ax-space-24);
-		}
-	}
 </style>

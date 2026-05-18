@@ -127,7 +127,7 @@
 		border: none;
 		border-radius: var(--ax-radius-4);
 		background: transparent;
-		color: var(--ax-text-subtle);
+		color: var(--ax-text-neutral-subtle);
 		font-size: 1.125rem;
 		cursor: pointer;
 		line-height: 1;

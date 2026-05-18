@@ -178,7 +178,7 @@
 		align-items: center;
 		gap: var(--ax-space-8);
 		padding-bottom: var(--ax-space-24);
-		color: var(--ax-text-subtle);
+		color: var(--ax-text-neutral-subtle);
 	}
 
 	.empty-state :global(svg) {

@@ -197,8 +197,8 @@
 	.summary-grid {
 		display: grid;
 		grid-template-columns: repeat(3, 1fr);
-		column-gap: 1rem;
-		row-gap: 1rem;
+		column-gap: var(--ax-space-16);
+		row-gap: var(--ax-space-16);
 		margin-bottom: 1rem;
 		min-width: 0;
 	}

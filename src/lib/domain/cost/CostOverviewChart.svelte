@@ -168,7 +168,7 @@
 
 	.legend-label {
 		font-size: var(--ax-font-size-small);
-		color: var(--ax-text-subtle);
+		color: var(--ax-text-neutral-subtle);
 	}
 
 	.loading {

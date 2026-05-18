@@ -212,7 +212,7 @@
 		justify-content: space-between;
 		padding: var(--ax-space-8) var(--ax-space-12);
 		border: 1px solid var(--ax-border-neutral-subtleA);
-		border-radius: 8px;
+		border-radius: var(--ax-radius-8);
 	}
 
 	.result-info {

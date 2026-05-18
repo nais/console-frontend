@@ -85,7 +85,7 @@
 		position: relative;
 		top: -40px;
 		padding: var(--ax-space-24);
-		border-radius: 12px;
+		border-radius: var(--ax-radius-12);
 		max-width: 900px;
 		margin-inline: auto;
 	}

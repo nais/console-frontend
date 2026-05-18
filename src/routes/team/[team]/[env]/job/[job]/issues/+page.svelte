@@ -105,6 +105,6 @@
 	}
 
 	.empty-state {
-		color: var(--ax-text-subtle);
+		color: var(--ax-text-neutral-subtle);
 	}
 </style>

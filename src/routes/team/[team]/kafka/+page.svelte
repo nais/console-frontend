@@ -68,7 +68,7 @@
 <GraphErrors errors={$KafkaTopics.errors} />
 
 {#if $KafkaTopics.data}
-	<div class="content-wrapper">
+	<div class="layout-two-column">
 		<div>
 			<List title="Kafka" count={$KafkaTopics.data.team.kafkaTopics.pageInfo.totalCount}>
 				{#if $KafkaTopics.data.team.kafkaTopics.nodes.length > 0}
@@ -120,7 +120,7 @@
 				}}
 			/>
 		</div>
-		<div class="right-column">
+		<div class="layout-sidebar">
 			<SurfaceCard title="Filters">
 				<ListFilters
 					{sortFields}
@@ -146,25 +146,6 @@
 	</div>
 
 	<style>
-		.content-wrapper {
-			display: grid;
-			gap: var(--ax-space-24);
-			grid-template-columns: 1fr 300px;
-			align-items: start;
-		}
-
-		.right-column {
-			display: grid;
-			gap: var(--ax-space-24);
-			align-content: start;
-		}
-
-		@media (max-width: 767px), (max-height: 500px) {
-			.content-wrapper {
-				grid-template-columns: 1fr;
-			}
-		}
-
 		.name-group {
 			display: flex;
 			align-items: center;

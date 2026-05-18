@@ -139,7 +139,7 @@
 	}
 </script>
 
-<div class="wrapper">
+<div class="layout-two-column">
 	<div>
 		<List title="Alerts" count={alerts?.pageInfo.totalCount ?? 0}>
 			{#if alerts && alerts.nodes.length > 0}
@@ -232,7 +232,7 @@
 			}}
 		/>
 	</div>
-	<div class="right-column">
+	<div class="layout-sidebar">
 		<SurfaceCard title="Filters">
 			<ListFilters
 				{filter}
@@ -263,25 +263,8 @@
 </div>
 
 <style>
-	.wrapper {
-		display: grid;
-		grid-template-columns: minmax(0, 1fr) 300px;
-		gap: var(--spacing-layout);
-	}
-
-	.right-column {
-		display: grid;
-		gap: var(--ax-space-24);
-		align-content: start;
-	}
-
 	/* Mobile responsive layout */
 	@media (max-width: 767px), (max-height: 500px) {
-		.wrapper {
-			grid-template-columns: 1fr;
-			gap: var(--ax-space-24);
-		}
-
 		.query-heading {
 			flex-direction: column;
 			align-items: flex-start;
@@ -320,7 +303,7 @@
 		display: grid;
 		grid-template-columns: 22px 1fr auto;
 		align-items: center;
-		gap: 12px;
+		gap: var(--ax-space-12);
 		padding: 10px 14px;
 		cursor: pointer;
 		transition: background-color 120ms ease;

@@ -69,7 +69,7 @@
 <GraphErrors errors={$Buckets.errors} />
 
 {#if $Buckets.data}
-	<div class="content-wrapper">
+	<div class="layout-two-column">
 		<div>
 			<List title="Buckets" count={$Buckets.data.team.buckets.pageInfo.totalCount}>
 				{#if $Buckets.data.team.buckets.nodes.length > 0}
@@ -126,7 +126,7 @@
 				}}
 			/>
 		</div>
-		<div class="right-column">
+		<div class="layout-sidebar">
 			<SurfaceCard title="Filters">
 				<ListFilters
 					{sortFields}
@@ -158,29 +158,13 @@
 {/if}
 
 <style>
-	.content-wrapper {
-		display: grid;
-		gap: var(--ax-space-24);
-		grid-template-columns: 1fr 300px;
-		align-items: start;
-	}
 	.right {
 		display: flex;
 		gap: var(--ax-space-6);
 		align-items: center;
 	}
 
-	.right-column {
-		display: grid;
-		gap: var(--ax-space-24);
-		align-content: start;
-	}
-
 	@media (max-width: 767px), (max-height: 500px) {
-		.content-wrapper {
-			grid-template-columns: 1fr;
-		}
-
 		.right {
 			align-self: flex-end;
 			justify-content: flex-end;
