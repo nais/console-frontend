@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { type App$result } from '$houdini';
+	import CriticalIndicator from '$lib/ui/CriticalIndicator.svelte';
 	import IncomingIndicator from '$lib/ui/IncomingIndicator.svelte';
 	import RunningIndicator from '$lib/ui/RunningIndicator.svelte';
 	import SurfaceCard from '$lib/ui/SurfaceCard.svelte';
@@ -38,6 +39,7 @@
 	{#each app.instanceGroups as group (group.id)}
 		{@const role = groupRole(group)}
 		{@const hasFailing = group.instances.some((instance) => instance.status.state === 'FAILING')}
+		{@const isUnhealthy = hasFailing || group.readyInstances < group.desiredInstances}
 
 		<a
 			href="/team/{app.team.slug}/{app.teamEnvironment.environment
@@ -48,6 +50,8 @@
 			<div class="instance-group-icon">
 				{#if role === 'incoming'}
 					<IncomingIndicator />
+				{:else if isUnhealthy}
+					<CriticalIndicator />
 				{:else}
 					<RunningIndicator />
 				{/if}
