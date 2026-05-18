@@ -2,7 +2,6 @@
 	import { page } from '$app/state';
 	import { BigQueryDatasetOrderField, OrderDirection } from '$houdini';
 	import { docURL } from '$lib/doc';
-	import PersistenceCost from '$lib/domain/cost/PersistenceCost.svelte';
 	import WorkloadLink from '$lib/domain/workload/WorkloadLink.svelte';
 	import { envTagVariant } from '$lib/envTagVariant';
 	import BigQueryIcon from '$lib/icons/BigQueryIcon.svelte';
@@ -15,7 +14,6 @@
 	import SurfaceCard from '$lib/ui/SurfaceCard.svelte';
 	import { changeParams } from '$lib/utils/searchparams';
 	import { Tag } from '@nais/ds-svelte-community';
-	import { endOfYesterday, startOfMonth, subMonths } from 'date-fns';
 	import type { PageProps } from './$types';
 
 	type BigQueryOrderFieldOptions =
@@ -51,19 +49,6 @@
 				: OrderDirection.ASC;
 		changeParams({ sort: `${field}-${direction}`, after: '', before: '' });
 	}
-
-	let cost = $derived(() => {
-		const costData = $BigQuery.data?.team.cost;
-		const teamSlug = $BigQuery.data?.team.slug;
-
-		if (!costData || !teamSlug) return null;
-
-		return {
-			costData,
-			teamSlug,
-			pageName: 'BigQuery'
-		};
-	});
 </script>
 
 <GraphErrors errors={$BigQuery.errors} />
@@ -138,19 +123,6 @@
 					onSort={(field) => setSort(field as BigQueryOrderFieldOptions)}
 				/>
 			</SurfaceCard>
-			{#if cost()}
-				{@const costData = cost()!}
-				<SurfaceCard title="Cost">
-					<PersistenceCost
-						pageName={costData.pageName}
-						costData={costData.costData}
-						teamSlug={costData.teamSlug}
-						from={startOfMonth(subMonths(new Date(), 1))}
-						to={endOfYesterday()}
-						service="BigQuery"
-					/>
-				</SurfaceCard>
-			{/if}
 		</div>
 	</div>
 

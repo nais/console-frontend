@@ -2,7 +2,6 @@
 	import { page } from '$app/state';
 	import { KafkaTopicOrderField, OrderDirection } from '$houdini';
 	import { docURL } from '$lib/doc';
-	import PersistenceCost from '$lib/domain/cost/PersistenceCost.svelte';
 	import { envTagVariant } from '$lib/envTagVariant';
 	import KafkaIcon from '$lib/icons/KafkaIcon.svelte';
 	import ExternalLink from '$lib/ui/ExternalLink.svelte';
@@ -14,7 +13,6 @@
 	import SurfaceCard from '$lib/ui/SurfaceCard.svelte';
 	import { changeParams } from '$lib/utils/searchparams';
 	import { Tag } from '@nais/ds-svelte-community';
-	import { endOfYesterday, startOfMonth, subMonths } from 'date-fns';
 	import type { PageProps } from './$types';
 
 	type KafkaTopicOrderFieldOptions =
@@ -50,19 +48,6 @@
 				: OrderDirection.ASC;
 		changeParams({ sort: `${field}-${direction}`, after: '', before: '' });
 	}
-
-	let cost = $derived(() => {
-		const costData = $KafkaTopics.data?.team.cost;
-		const teamSlug = $KafkaTopics.data?.team.slug;
-
-		if (!costData || !teamSlug) return null;
-
-		return {
-			costData,
-			teamSlug,
-			pageName: 'Kafka'
-		};
-	});
 </script>
 
 <GraphErrors errors={$KafkaTopics.errors} />
@@ -129,19 +114,6 @@
 					onSort={(field) => setSort(field as KafkaTopicOrderFieldOptions)}
 				/>
 			</SurfaceCard>
-			{#if cost()}
-				{@const costData = cost()!}
-				<SurfaceCard title="Cost">
-					<PersistenceCost
-						pageName={costData.pageName}
-						costData={costData.costData}
-						teamSlug={costData.teamSlug}
-						from={startOfMonth(subMonths(new Date(), 1))}
-						to={endOfYesterday()}
-						service="Kafka Shared"
-					/>
-				</SurfaceCard>
-			{/if}
 		</div>
 	</div>
 
