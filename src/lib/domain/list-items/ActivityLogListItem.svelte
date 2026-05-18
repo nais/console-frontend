@@ -451,6 +451,11 @@
 		--surface-icon-size: 2rem;
 	}
 
+	.activity-log-list-item :global(.surface-icon) {
+		background: var(--ax-bg-brand-blue-softA);
+		color: var(--ax-text-brand-blue-decoration);
+	}
+
 	.activity-text {
 		min-width: 0;
 		overflow-wrap: anywhere;
