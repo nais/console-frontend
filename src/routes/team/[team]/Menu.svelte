@@ -9,8 +9,6 @@
 	import TeamSwitcher from './TeamSwitcher.svelte';
 
 	const {
-		member,
-		isAdmin,
 		features
 	}: {
 		member: boolean;
@@ -45,9 +43,7 @@
 	const items = $derived(
 		menuItems({
 			path: page.url.pathname,
-			member,
-			features,
-			isAdmin
+			features
 		})
 	);
 
