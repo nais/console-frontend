@@ -1,12 +1,14 @@
 <script lang="ts">
-	import { ActivityLogActivityType, graphql, TeamMemberOrderField } from '$houdini';
+	import { page } from '$app/state';
+	import { ActivityLogActivityType, graphql, OrderDirection, TeamMemberOrderField } from '$houdini';
 	import TeamActivityCard from '$lib/domain/activity/TeamActivityCard.svelte';
 	import Confirm from '$lib/ui/Confirm.svelte';
 	import GraphErrors from '$lib/ui/GraphErrors.svelte';
 	import List from '$lib/ui/List.svelte';
+	import ListFilters from '$lib/ui/ListFilters.svelte';
 	import ListItem from '$lib/ui/ListItem.svelte';
-	import OrderByMenu from '$lib/ui/OrderByMenu.svelte';
 	import Pagination from '$lib/ui/Pagination.svelte';
+	import SurfaceCard from '$lib/ui/SurfaceCard.svelte';
 	import { changeParams } from '$lib/utils/searchparams';
 	import { BodyShort, Button, Heading } from '@nais/ds-svelte-community';
 	import { PencilIcon, PlusIcon, TrashIcon } from '@nais/ds-svelte-community/icons';
@@ -45,6 +47,38 @@
 			($UserInfo.data?.me.__typename == 'User' && $UserInfo.data?.me.isAdmin)
 	);
 
+	type TeamMemberOrderFieldOptions =
+		(typeof TeamMemberOrderField)[keyof typeof TeamMemberOrderField];
+	type OrderDirectionOptions = (typeof OrderDirection)[keyof typeof OrderDirection];
+
+	const sortFields: { value: TeamMemberOrderFieldOptions; label: string }[] = [
+		{ value: TeamMemberOrderField.NAME, label: 'Name' },
+		{ value: TeamMemberOrderField.EMAIL, label: 'Email' },
+		{ value: TeamMemberOrderField.ROLE, label: 'Role' }
+	];
+
+	const currentSortField: TeamMemberOrderFieldOptions = $derived(
+		(Object.values(TeamMemberOrderField).find((f) =>
+			page.url.searchParams.get('sort')?.startsWith(f)
+		) as TeamMemberOrderFieldOptions | undefined) ?? TeamMemberOrderField.NAME
+	);
+
+	const currentSortDirection: OrderDirectionOptions = $derived(
+		(Object.values(OrderDirection).find((d) => page.url.searchParams.get('sort')?.endsWith(d)) as
+			| OrderDirectionOptions
+			| undefined) ?? OrderDirection.ASC
+	);
+
+	function setSort(field: TeamMemberOrderFieldOptions) {
+		const direction =
+			field === currentSortField
+				? currentSortDirection === OrderDirection.ASC
+					? OrderDirection.DESC
+					: OrderDirection.ASC
+				: OrderDirection.ASC;
+		changeParams({ sort: `${field}-${direction}`, after: '', before: '' });
+	}
+
 	let after: string = $state($Members.variables?.after ?? '');
 	let before: string = $state($Members.variables?.before ?? '');
 
@@ -65,23 +99,18 @@
 {#if team}
 	<div class="layout-two-column">
 		<div>
-			{#if canEdit}
-				<div class="button">
-					<Button
-						size="small"
-						onclick={() => {
-							addMemberOpen = !addMemberOpen;
-						}}
-						icon={PlusIcon}>Add member</Button
-					>
-				</div>
-			{/if}
 			<List title="Members" count={$Members.data?.team.members.pageInfo.totalCount}>
-				{#snippet menu()}
-					<OrderByMenu
-						orderField={TeamMemberOrderField}
-						defaultOrderField={TeamMemberOrderField.NAME}
-					/>
+				{#snippet actions()}
+					{#if canEdit}
+						<Button
+							variant="secondary"
+							size="small"
+							onclick={() => {
+								addMemberOpen = !addMemberOpen;
+							}}
+							icon={PlusIcon}>Add member</Button
+						>
+					{/if}
 				{/snippet}
 				{#if $Members.data?.team.members.edges}
 					{#each $Members.data?.team.members.edges as edge (edge.node.user.id + edge.node.role)}
@@ -155,8 +184,15 @@
 				}}
 			/>
 		</div>
-		<!--div>Here be documentation of teams, members and roles</div-->
 		<div class="layout-sidebar" style="gap: var(--ax-space-16)">
+			<SurfaceCard title="Filters">
+				<ListFilters
+					{sortFields}
+					{currentSortField}
+					{currentSortDirection}
+					onSort={(field) => setSort(field as TeamMemberOrderFieldOptions)}
+				/>
+			</SurfaceCard>
 			<TeamActivityCard
 				teamSlug={team.slug}
 				viewAllHref="/team/{team.slug}/activity-log"
@@ -206,12 +242,6 @@
 {/if}
 
 <style>
-	.button {
-		display: flex;
-		justify-content: flex-end;
-		margin-bottom: var(--ax-space-24);
-	}
-
 	.item {
 		display: grid;
 		grid-template-columns: 1fr 174px;
@@ -233,10 +263,6 @@
 	}
 
 	@media (max-width: 767px), (max-height: 500px) {
-		.button {
-			justify-content: flex-start;
-		}
-
 		.item {
 			grid-template-columns: 1fr;
 		}
