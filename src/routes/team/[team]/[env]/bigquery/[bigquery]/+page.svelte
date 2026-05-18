@@ -69,7 +69,7 @@
 					{/if}
 				</dd>
 			</dl>
-			<Heading as="h3" size="small" spacing>Access</Heading>
+			<Heading as="h2" size="small" spacing>Access</Heading>
 
 			{#if bq.access.edges.length > 0}
 				<div class="table-scroll">
@@ -101,7 +101,7 @@
 		</div>
 		<div class="sidebar">
 			<div>
-				<Heading as="h3" size="small">Owner</Heading>
+				<Heading as="h2" size="small">Owner</Heading>
 				{#if bq.workload}
 					<WorkloadLink workload={bq.workload} />
 				{:else}
@@ -112,7 +112,7 @@
 				{/if}
 			</div>
 			<div>
-				<Heading as="h3" size="small">Cost Last 30 Days</Heading>
+				<Heading as="h2" size="small">Cost Last 30 Days</Heading>
 				<BodyShort>
 					{bq.cost.sum ? euroValueFormatter(bq.cost.sum) : 'No cost data available'}
 				</BodyShort>

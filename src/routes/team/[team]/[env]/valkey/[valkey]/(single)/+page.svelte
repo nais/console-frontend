@@ -126,7 +126,7 @@
 				</div>
 			{/if}
 			<div class="spacing">
-				<Heading as="h3" spacing>Valkey Access List</Heading>
+				<Heading as="h2" spacing>Valkey Access List</Heading>
 				<div class="table-scroll">
 					<Table
 						size="small"
@@ -175,7 +175,7 @@
 				/>
 			</div>
 			<div class="spacing">
-				<Heading as="h3">Issues</Heading>
+				<Heading as="h2">Issues</Heading>
 				<List>
 					{#each $Valkey.data.team.environment.valkey.issues.edges as edge (edge.node.id)}
 						<IssueListItem item={edge.node} />
@@ -193,7 +193,7 @@
 
 				{#if mandatoryServiceMaintenanceUpdates.length > 0 || nonMandatoryServiceMaintenanceUpdates.length > 0}
 					<div class="service-maintenance-list-heading">
-						<Heading as="h3">Pending maintenance</Heading>
+						<Heading as="h2">Pending maintenance</Heading>
 
 						{#if maintenanceError === ''}
 							<Button icon={CogRotationIcon} variant="secondary" size="small" disabled
@@ -227,11 +227,11 @@
 		</div>
 		<div class="sidebar">
 			<div>
-				<Heading as="h3">State</Heading>
+				<Heading as="h2">State</Heading>
 				<BodyShort>{instance.state}</BodyShort>
 			</div>
 			<div>
-				<Heading as="h3">Settings</Heading>
+				<Heading as="h2">Settings</Heading>
 				<BodyShort>Tier: {instance.tier}</BodyShort>
 				<BodyShort>Memory: {instance.memory}</BodyShort>
 				{#if instance.maxMemoryPolicy}
@@ -258,7 +258,7 @@
 			{/if}
 			{#if instance.maintenance && instance.maintenance.window}
 				<div>
-					<Heading as="h3">Maintenance window</Heading>
+					<Heading as="h2">Maintenance window</Heading>
 					<BodyShort>Day of week: {instance.maintenance.window.dayOfWeek}</BodyShort>
 					<BodyShort>Time of day: {instance.maintenance.window.timeOfDay.slice(0, -3)}</BodyShort>
 				</div>

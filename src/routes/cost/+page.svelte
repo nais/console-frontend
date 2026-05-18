@@ -177,7 +177,7 @@
 				{/if}
 			</div>
 			<div>
-				<Heading as="h3" spacing>Team Cost last 12 months</Heading>
+				<Heading as="h2" spacing>Team Cost last 12 months</Heading>
 				<BodyLong spacing>
 					This table shows the cost for each team over the last 12 months. The cost is aggregated
 					from all services used by the team.

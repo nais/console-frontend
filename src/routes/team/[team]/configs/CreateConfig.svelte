@@ -110,7 +110,7 @@
 
 <Modal bind:open width="medium" onclose={close}>
 	{#snippet header()}
-		<Heading as="h1" size="large">Create New Config</Heading>
+		<Heading as="h2" size="large">Create New Config</Heading>
 	{/snippet}
 	<div class="row">
 		<BodyShort size="medium" spacing>A config is a named set of key-value pairs.</BodyShort>

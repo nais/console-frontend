@@ -26,7 +26,7 @@
 		<div class="workloads-section">
 			<div class="heading">
 				<div class="content">
-					<Heading as="h3" size="medium" spacing id="most_vulnerable_workloads"
+					<Heading as="h2" size="medium" spacing id="most_vulnerable_workloads"
 						>Most Vulnerable Workloads</Heading
 					>
 					<BodyLong spacing>
