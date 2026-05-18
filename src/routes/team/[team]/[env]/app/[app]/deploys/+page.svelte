@@ -1,8 +1,7 @@
 <script lang="ts">
 	import { page } from '$app/state';
-	import { docURL } from '$lib/doc';
 	import DeploymentListItem from '$lib/domain/list-items/DeploymentListItem.svelte';
-	import ExternalLink from '$lib/ui/ExternalLink.svelte';
+	import DocsLink from '$lib/ui/DocsLink.svelte';
 	import GraphErrors from '$lib/ui/GraphErrors.svelte';
 	import List from '$lib/ui/List.svelte';
 	import Pagination from '$lib/ui/Pagination.svelte';
@@ -73,16 +72,14 @@
 
 	<div class="wrapper">
 		{#if deploys.pageInfo.totalCount === 0}
-			<BodyShort size="small" textColor="subtle">
-				No deployments found.
-				<ExternalLink href={docURL('/build/')}
-					>Learn more about builds and deployments.</ExternalLink
-				>
-			</BodyShort>
+			<BodyShort size="small" textColor="subtle">No deployments found.</BodyShort>
 		{:else}
 			<div class="content">
 				<div class="list">
 				<List title="Deployments" count={deploys.pageInfo.totalCount}>
+						{#snippet actions()}
+							<DocsLink path="/build/" />
+						{/snippet}
 						{#each deploys.nodes as deployment (deployment.id)}
 							{@const id = extractIdFromUrl(deployment.triggerUrl ?? '')}
 							<div {id} class:highlight-in={id !== '' && highlightId !== '' && id === highlightId}>

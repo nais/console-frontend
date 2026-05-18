@@ -3,8 +3,9 @@
 	import LegendWrapper, { legendSnippet } from '$lib/chart/LegendWrapper.svelte';
 	import NetworkPolicy from '$lib/domain/resources/NetworkPolicy.svelte';
 	import WarningIcon from '$lib/icons/WarningIcon.svelte';
+	import DocsLink from '$lib/ui/DocsLink.svelte';
 	import GraphErrors from '$lib/ui/GraphErrors.svelte';
-	import SurfaceCard from '$lib/ui/SurfaceCard.svelte';
+	import List from '$lib/ui/List.svelte';
 	import TooltipAlignHack from '$lib/ui/TooltipAlignHack.svelte';
 	import { changeParams } from '$lib/utils/searchparams';
 	import {
@@ -77,7 +78,10 @@
 		{@const ingresses = app.ingresses}
 
 		{#if ingresses.length > 0}
-			<SurfaceCard title="Ingresses">
+			<List title="Ingresses" count={ingresses.length}>
+				{#snippet actions()}
+					<DocsLink path="/workloads/application/reference/ingress/" />
+				{/snippet}
 				<Accordion size="small" indent={false}>
 					{#each ingresses as ingress (ingress.url)}
 						<AccordionItem
@@ -153,11 +157,14 @@
 						</AccordionItem>
 					{/each}
 				</Accordion>
-			</SurfaceCard>
+			</List>
 		{:else}
-			<SurfaceCard title="Ingresses">
+			<List title="Ingresses" count={0}>
+				{#snippet actions()}
+					<DocsLink path="/workloads/application/reference/ingress/" />
+				{/snippet}
 				<BodyShort size="small" textColor="subtle">No ingresses configured.</BodyShort>
-			</SurfaceCard>
+			</List>
 		{/if}
 
 		<NetworkPolicy workload={app} />
