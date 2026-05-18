@@ -3,9 +3,9 @@
 </script>
 
 <script lang="ts">
-	import type { Snippet } from 'svelte';
 	import SearchField from '$lib/ui/SearchField.svelte';
 	import { SortDownIcon, SortUpIcon } from '@nais/ds-svelte-community/icons';
+	import type { Snippet } from 'svelte';
 
 	interface SortField {
 		value: string;
