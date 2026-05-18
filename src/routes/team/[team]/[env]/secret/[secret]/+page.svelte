@@ -281,7 +281,7 @@
 		onconfirm={deleteSecret}
 	>
 		{#snippet header()}
-			<Heading as="h1" size="large">Delete Secret</Heading>
+			<Heading as="h2" size="large">Delete Secret</Heading>
 		{/snippet}
 		<p>
 			This will permanently delete the secret named <b>{secret.name}</b>
@@ -308,7 +308,7 @@
 		onconfirm={deleteValueFromSecret}
 	>
 		{#snippet header()}
-			<Heading as="h1" size="large">Delete Key From Secret</Heading>
+			<Heading as="h2" size="large">Delete Key From Secret</Heading>
 		{/snippet}
 		<p>
 			This will permanently delete the key <b>{keyToDelete}</b> from the secret named
@@ -504,7 +504,7 @@
 {/if}
 <Modal bind:open={editValueOpen} onclose={cancelEditValue} width="medium">
 	{#snippet header()}
-		<Heading as="h1" size="large">Editing Value of Key <i>{keyToEdit}</i></Heading>
+		<Heading as="h2" size="large">Editing Value of Key <i>{keyToEdit}</i></Heading>
 	{/snippet}
 	{#if ($Secret.data?.team.environment.secret.workloads.nodes ?? []).length > 0}
 		<Alert variant="info" size="small">

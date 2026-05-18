@@ -194,7 +194,7 @@
 </div>
 <Modal bind:open onclose={reset} width="medium">
 	{#snippet header()}
-		<Heading as="h1" size="large">Add new key and value</Heading>
+		<Heading as="h2" size="large">Add new key and value</Heading>
 	{/snippet}
 	<div class="content">
 		<TextField

@@ -241,7 +241,7 @@
 		onconfirm={deleteConfig}
 	>
 		{#snippet header()}
-			<Heading as="h1" size="large">Delete Config</Heading>
+			<Heading as="h2" size="large">Delete Config</Heading>
 		{/snippet}
 		<p>
 			This will permanently delete the config named <b>{config.name}</b>
@@ -268,7 +268,7 @@
 		onconfirm={deleteValueFromConfig}
 	>
 		{#snippet header()}
-			<Heading as="h1" size="large">Delete Key From Config</Heading>
+			<Heading as="h2" size="large">Delete Key From Config</Heading>
 		{/snippet}
 		<p>
 			This will permanently delete the key <b>{keyToDelete}</b> from the config named
@@ -421,7 +421,7 @@
 {/if}
 <Modal bind:open={editValueOpen} onclose={cancelEditValue} width="medium">
 	{#snippet header()}
-		<Heading as="h1" size="large">Editing Value of Key <i>{keyToEdit}</i></Heading>
+		<Heading as="h2" size="large">Editing Value of Key <i>{keyToEdit}</i></Heading>
 	{/snippet}
 	{#if ($Config.data?.team.environment.config.workloads.nodes ?? []).length > 0}
 		<Alert variant="info" size="small">

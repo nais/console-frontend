@@ -6,7 +6,13 @@
 	import SurfaceCard from '$lib/ui/SurfaceCard.svelte';
 	import { changeParams } from '$lib/utils/searchparams';
 	import { visualizationColors } from '$lib/visualizationColors';
-	import { BodyLong, Loader, ToggleGroup, ToggleGroupItem } from '@nais/ds-svelte-community';
+	import {
+		BodyLong,
+		Heading,
+		Loader,
+		ToggleGroup,
+		ToggleGroupItem
+	} from '@nais/ds-svelte-community';
 	import { LineChart } from 'layerchart';
 
 	const {
@@ -118,7 +124,7 @@
 	{:else}
 		{#each appsByEnv as env (env.id)}
 			<div class="env-section">
-				<h3 class="env-heading">{env.environment.name}</h3>
+				<Heading as="h2" size="small" class="env-heading">{env.environment.name}</Heading>
 				<div class="chart">
 					<LegendWrapper height="400px">
 						<LineChart
@@ -169,9 +175,7 @@
 		margin-top: var(--ax-space-32);
 	}
 
-	.env-heading {
-		font-size: 1rem;
-		font-weight: var(--ax-font-weight-bold);
+	:global(.env-heading) {
 		margin: 0 0 var(--ax-space-12) 0;
 	}
 

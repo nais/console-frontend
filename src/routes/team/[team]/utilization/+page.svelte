@@ -12,7 +12,16 @@
 		yearlyOverageCost,
 		type TeamOverageData
 	} from '$lib/utils/resources';
-	import { Table, Tbody, Td, Th, Thead, Tr, type TableSortState } from '@nais/ds-svelte-community';
+	import {
+		Heading,
+		Table,
+		Tbody,
+		Td,
+		Th,
+		Thead,
+		Tr,
+		type TableSortState
+	} from '@nais/ds-svelte-community';
 	import prettyBytes from 'pretty-bytes';
 	import type { PageProps } from './$types';
 
@@ -152,7 +161,7 @@
 		<SurfaceCard title="Overprovisioned Applications">
 			<div class="resource-grid">
 				<div class="resource-column">
-					<h3 class="resource-heading">CPU</h3>
+					<Heading as="h3" size="small" class="resource-heading">CPU</Heading>
 					<div class="stat">
 						<span class="stat-value"
 							>{euroValueFormatter(cpuWaste, { maximumFractionDigits: 0 })}</span
@@ -164,7 +173,7 @@
 					</div>
 				</div>
 				<div class="resource-column">
-					<h3 class="resource-heading">Memory</h3>
+					<Heading as="h3" size="small" class="resource-heading">Memory</Heading>
 					<div class="stat">
 						<span class="stat-value"
 							>{euroValueFormatter(memoryWaste, { maximumFractionDigits: 0 })}</span
@@ -261,9 +270,7 @@
 		height: 350px;
 	}
 
-	.resource-heading {
-		font-size: 1rem;
-		font-weight: var(--ax-font-weight-bold);
+	:global(.resource-heading) {
 		margin: 0;
 	}
 
