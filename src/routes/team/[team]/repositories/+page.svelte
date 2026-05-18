@@ -6,21 +6,11 @@
 	import ExternalLink from '$lib/ui/ExternalLink.svelte';
 	import GraphErrors from '$lib/ui/GraphErrors.svelte';
 	import List from '$lib/ui/List.svelte';
-	import ListFilters from '$lib/ui/ListFilters.svelte';
 	import ListItem from '$lib/ui/ListItem.svelte';
 	import Pagination from '$lib/ui/Pagination.svelte';
-	import SurfaceCard from '$lib/ui/SurfaceCard.svelte';
 	import { changeParams } from '$lib/utils/searchparams';
-	import {
-		Alert,
-		BodyLong,
-		Button,
-		Detail,
-		Heading,
-		Search,
-		TextField
-	} from '@nais/ds-svelte-community';
-	import { PlusIcon, TrashIcon } from '@nais/ds-svelte-community/icons';
+	import { Alert, Button, Detail, Search, TextField } from '@nais/ds-svelte-community';
+	import { PlusIcon, SortDownIcon, SortUpIcon, TrashIcon } from '@nais/ds-svelte-community/icons';
 	import { onDestroy } from 'svelte';
 	import type { PageProps } from './$types';
 
@@ -28,19 +18,7 @@
 
 	let { Repositories, teamSlug, viewerIsMember } = $derived(data);
 
-	type RepositoryOrderFieldOptions =
-		(typeof RepositoryOrderField)[keyof typeof RepositoryOrderField];
 	type OrderDirectionOptions = (typeof OrderDirection)[keyof typeof OrderDirection];
-
-	const sortFields: { value: RepositoryOrderFieldOptions; label: string }[] = [
-		{ value: RepositoryOrderField.NAME, label: 'Name' }
-	];
-
-	const currentSortField: RepositoryOrderFieldOptions = $derived(
-		(Object.values(RepositoryOrderField).find((f) =>
-			page.url.searchParams.get('sort')?.startsWith(f)
-		) as RepositoryOrderFieldOptions | undefined) ?? RepositoryOrderField.NAME
-	);
 
 	const currentSortDirection: OrderDirectionOptions = $derived(
 		(Object.values(OrderDirection).find((d) => page.url.searchParams.get('sort')?.endsWith(d)) as
@@ -48,14 +26,10 @@
 			| undefined) ?? OrderDirection.ASC
 	);
 
-	function setSort(field: RepositoryOrderFieldOptions) {
+	function toggleSort() {
 		const direction =
-			field === currentSortField
-				? currentSortDirection === OrderDirection.ASC
-					? OrderDirection.DESC
-					: OrderDirection.ASC
-				: OrderDirection.ASC;
-		changeParams({ sort: `${field}-${direction}`, after: '', before: '' });
+			currentSortDirection === OrderDirection.ASC ? OrderDirection.DESC : OrderDirection.ASC;
+		changeParams({ sort: `${RepositoryOrderField.NAME}-${direction}`, after: '', before: '' });
 	}
 
 	const addRepositoryMutation = graphql(`
@@ -281,134 +255,126 @@
 			{#if $Repositories.data.team}
 				{@const team = $Repositories.data.team}
 				{#if viewerIsMember}
-					<div class="repository">
-						<Heading as="h2" size="small">Add Repository</Heading>
-						<Detail>
-							Adding a repository will grant it access to deployment actions on behalf of the team.</Detail
-						>
-						<form
-							onsubmit={(e: SubmitEvent) => {
-								e.preventDefault();
-								handleSubmit();
-							}}
-							class="input"
-						>
-							<TextField
-								size="small"
-								type="text"
-								id="repositoryName"
-								style="width: min(100%, 300px)"
-								bind:value={repoName}
-								oninput={onRepositoryNameInput}
-								error={inputError ? errorMessage : undefined}
+					<details class="add-repository">
+						<summary class="add-repository-heading">Add Repository</summary>
+						<div class="add-repository-content">
+							<Detail>
+								Adding a repository will grant it access to deployment actions on behalf of the
+								team.
+							</Detail>
+							<form
+								onsubmit={(e: SubmitEvent) => {
+									e.preventDefault();
+									handleSubmit();
+								}}
+								class="input"
 							>
-								{#snippet label()}
-									Repository name
-								{/snippet}
-								{#snippet description()}
-									GitHub repository and organization names can include alphanumeric characters,
-									hyphens, and underscores, and must follow the format
-									&lt;organization&gt;/&lt;repository&gt;.
-								{/snippet}
-							</TextField>
-							<div style="margin-top: 1rem;">
-								<Button size="small" variant="secondary" type="submit" icon={PlusIcon}>Add</Button>
-							</div>
-						</form>
-					</div>
+								<TextField
+									size="small"
+									type="text"
+									id="repositoryName"
+									style="width: min(100%, 300px)"
+									bind:value={repoName}
+									oninput={onRepositoryNameInput}
+									error={inputError ? errorMessage : undefined}
+								>
+									{#snippet label()}
+										Repository name
+									{/snippet}
+									{#snippet description()}
+										GitHub repository and organization names can include alphanumeric characters,
+										hyphens, and underscores, and must follow the format
+										&lt;organization&gt;/&lt;repository&gt;.
+									{/snippet}
+								</TextField>
+								<div style="margin-top: var(--ax-space-8);">
+									<Button size="small" variant="secondary" type="submit" icon={PlusIcon}>Add</Button
+									>
+								</div>
+							</form>
+						</div>
+					</details>
 				{/if}
 
-				<Heading as="h2" size="small">Authorized Repositories</Heading>
-				{#if team.repositories.pageInfo.totalCount === 0 && filter === ''}
-					<BodyLong spacing>
-						{#if team.repositories.pageInfo.totalCount == 0}
-							<strong>No repositories are authorized for deployment.</strong>
-						{/if}
-						To enable GitHub Actions to deploy your application, add a repository to the list.
-						<a
-							href="https://docs.dev-nais.cloud.nais.io/tutorials/hello-nais/#authorize-the-repository-for-deployment"
-							>Learn more.</a
-						>
-					</BodyLong>
-				{:else}
-					<div class="search" bind:this={searchContainer}>
-						<Search
-							clearButton={true}
-							clearButtonLabel="Clear"
-							label="filter repositories"
-							placeholder="Filter by name"
-							hideLabel={true}
+				<List title="Repositories" count={team.repositories.pageInfo.totalCount}>
+					{#snippet actions()}
+						<Button
+							variant="tertiary-neutral"
 							size="small"
-							variant="simple"
-							width="100%"
-							autocomplete="off"
-							bind:value={filter}
-							onChange={onFilterChange}
-							onkeydown={onFilterKeyDown}
-							onclear={() => {
-								filter = '';
-								applyFilter('');
-							}}
-						/>
-					</div>
-
-					<div>
-						<div>
-							<List title="{team.repositories.pageInfo.totalCount} entries">
-								{#each team.repositories.nodes as repo (repo.id)}
-									<ListItem interactive>
-										<div class="repo-row">
-											<div class="repo-name">
-												<GitHubIcon />
-												<ExternalLink href="https://github.com/{repo.name}"
-													>{repo.name}</ExternalLink
-												>
-											</div>
-											{#if viewerIsMember}
-												<div class="right">
-													<Button
-														variant="tertiary-neutral"
-														size="xsmall"
-														onclick={() => removeRepository(repo.team.slug, repo.name)}
-														aria-label="Remove repository"
-														title="Remove repository"
-													>
-														{#snippet icon()}
-															<TrashIcon style="color: var(--ax-text-danger-decoration);" />
-														{/snippet}
-													</Button>
-												</div>
-											{/if}
-										</div>
-									</ListItem>
-								{/each}
-							</List>
-							<Pagination
-								page={team.repositories.pageInfo}
-								loaders={{
-									loadPreviousPage: () =>
-										changeQuery({
-											after: '',
-											before: team.repositories.pageInfo.startCursor ?? ''
-										}),
-									loadNextPage: () =>
-										changeQuery({ before: '', after: team.repositories.pageInfo.endCursor ?? '' })
+							onclick={toggleSort}
+							title="Sort by name ({currentSortDirection === 'ASC' ? 'ascending' : 'descending'})"
+						>
+							{#snippet icon()}
+								{#if currentSortDirection === 'ASC'}
+									<SortUpIcon />
+								{:else}
+									<SortDownIcon />
+								{/if}
+							{/snippet}
+						</Button>
+					{/snippet}
+					{#snippet search()}
+						<div bind:this={searchContainer}>
+							<Search
+								clearButton={true}
+								clearButtonLabel="Clear"
+								label="filter repositories"
+								placeholder="Filter by name"
+								hideLabel={true}
+								size="small"
+								variant="simple"
+								autocomplete="off"
+								bind:value={filter}
+								onChange={onFilterChange}
+								onkeydown={onFilterKeyDown}
+								onclear={() => {
+									filter = '';
+									applyFilter('');
 								}}
 							/>
 						</div>
-					</div>
-				{/if}
+					{/snippet}
+					{#each team.repositories.nodes as repo (repo.id)}
+						<ListItem interactive>
+							<div class="repo-row">
+								<div class="repo-name">
+									<GitHubIcon />
+									<ExternalLink href="https://github.com/{repo.name}">{repo.name}</ExternalLink>
+								</div>
+								{#if viewerIsMember}
+									<div class="right">
+										<Button
+											variant="tertiary-neutral"
+											size="xsmall"
+											onclick={() => removeRepository(repo.team.slug, repo.name)}
+											aria-label="Remove repository"
+											title="Remove repository"
+										>
+											{#snippet icon()}
+												<TrashIcon style="color: var(--ax-text-danger-decoration);" />
+											{/snippet}
+										</Button>
+									</div>
+								{/if}
+							</div>
+						</ListItem>
+					{/each}
+				</List>
+				<Pagination
+					page={team.repositories.pageInfo}
+					loaders={{
+						loadPreviousPage: () =>
+							changeQuery({
+								after: '',
+								before: team.repositories.pageInfo.startCursor ?? ''
+							}),
+						loadNextPage: () =>
+							changeQuery({ before: '', after: team.repositories.pageInfo.endCursor ?? '' })
+					}}
+				/>
 			{/if}
 		</div>
 		<div class="layout-sidebar" style="gap: var(--ax-space-16)">
-			<SurfaceCard title="Filters">
-				<ListFilters
-					{sortFields}
-					{currentSortField}
-					{currentSortDirection}
-					onSort={(field) => setSort(field as RepositoryOrderFieldOptions)}
-				/>
-			</SurfaceCard>
 			<TeamActivityCard
 				{teamSlug}
 				viewAllHref="/team/{teamSlug}/activity-log"
@@ -424,15 +390,45 @@
 {/if}
 
 <style>
-	.input {
-		font-size: 1rem;
-		margin: 1rem 0;
+	.add-repository {
+		margin-bottom: var(--ax-space-16);
+		border: 1px solid var(--ax-border-neutral-subtleA);
+		border-radius: var(--ax-radius-8);
+		padding: var(--ax-space-12) var(--ax-space-16);
 	}
 
-	.search {
+	.add-repository-heading {
+		font-weight: 600;
+		font-size: var(--ax-font-size-medium);
+		cursor: pointer;
+		list-style: none;
 		display: flex;
-		justify-content: flex-end;
-		margin-bottom: 1rem;
+		align-items: center;
+		gap: var(--ax-space-8);
+	}
+
+	.add-repository-heading::before {
+		content: '›';
+		display: inline-block;
+		transition: transform 0.2s;
+		font-size: 1.2em;
+	}
+
+	.add-repository[open] > .add-repository-heading::before {
+		transform: rotate(90deg);
+	}
+
+	.add-repository-heading::-webkit-details-marker {
+		display: none;
+	}
+
+	.add-repository-content {
+		padding-top: var(--ax-space-12);
+	}
+
+	.input {
+		font-size: 1rem;
+		margin: var(--ax-space-8) 0;
 	}
 
 	.right {
@@ -448,18 +444,14 @@
 		width: 100%;
 		gap: var(--ax-space-8);
 	}
+
 	.repo-name {
 		display: flex;
 		align-items: center;
 		gap: var(--ax-space-6);
 	}
+
 	code {
 		font-size: 1rem;
-	}
-
-	@media (max-width: 767px), (max-height: 500px) {
-		.search {
-			justify-content: stretch;
-		}
 	}
 </style>
