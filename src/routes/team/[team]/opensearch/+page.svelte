@@ -2,7 +2,6 @@
 	import { page } from '$app/state';
 	import { OpenSearchOrderField, OrderDirection } from '$houdini';
 	import { docURL } from '$lib/doc';
-	import PersistenceCost from '$lib/domain/cost/PersistenceCost.svelte';
 	import IssueSeverityTags from '$lib/domain/issues/IssueSeverityTags.svelte';
 	import { envTagVariant } from '$lib/envTagVariant';
 	import ExternalLink from '$lib/ui/ExternalLink.svelte';
@@ -19,7 +18,6 @@
 	import { changeParams } from '$lib/utils/searchparams';
 	import { Button, Tag } from '@nais/ds-svelte-community';
 	import { CircleFillIcon, PlusIcon } from '@nais/ds-svelte-community/icons';
-	import { endOfYesterday, startOfMonth, subMonths } from 'date-fns';
 	import CreatePage from '../opensearch/create/+page.svelte';
 	import type { PageProps } from './$types';
 
@@ -63,19 +61,6 @@
 		changeParams({ sort: `${field}-${direction}`, after: '', before: '' });
 	}
 
-	let cost = $derived(() => {
-		const costData = $OpenSearch.data?.team.cost;
-		const teamSlug = $OpenSearch.data?.team.slug;
-
-		if (!costData || !teamSlug) return null;
-
-		return {
-			costData,
-			teamSlug,
-			pageName: 'OpenSearch'
-		};
-	});
-
 	let create = $derived({
 		buttonText: 'Create OpenSearch',
 		url: `/team/${$OpenSearch.data?.team.slug}/opensearch/create`,
@@ -105,11 +90,11 @@
 		{/if}
 	{/snippet}
 
-	{#if $OpenSearch.data.team.openSearches.pageInfo.totalCount}
-		<div class="layout-two-column">
-			<div>
-				{@render createButton()}
-				<List title="OpenSearch" count={$OpenSearch.data.team.openSearches.pageInfo.totalCount}>
+	<div class="layout-two-column">
+		<div>
+			{@render createButton()}
+			<List title="OpenSearch" count={$OpenSearch.data.team.openSearches.pageInfo.totalCount}>
+				{#if $OpenSearch.data.team.openSearches.nodes.length > 0}
 					{#each $OpenSearch.data.team.openSearches.nodes as instance (instance.id)}
 						<ListItem interactive>
 							<div class="name-group">
@@ -166,55 +151,7 @@
 							{/if}
 						</ListItem>
 					{/each}
-				</List>
-				<Pagination
-					page={$OpenSearch.data.team.openSearches.pageInfo}
-					loaders={{
-						loadPreviousPage: () =>
-							changeParams(
-								{
-									after: '',
-									before: $OpenSearch.data?.team.openSearches.pageInfo.startCursor ?? ''
-								},
-								{ noScroll: true }
-							),
-						loadNextPage: () =>
-							changeParams(
-								{ before: '', after: $OpenSearch.data?.team.openSearches.pageInfo.endCursor ?? '' },
-								{ noScroll: true }
-							)
-					}}
-				/>
-			</div>
-			<div class="layout-sidebar">
-				<SurfaceCard title="Filters">
-					<ListFilters
-						{sortFields}
-						{currentSortField}
-						{currentSortDirection}
-						onSort={(field) => setSort(field as OpenSearchOrderFieldOptions)}
-					/>
-				</SurfaceCard>
-				{#if cost()}
-					{@const costData = cost()!}
-					<SurfaceCard title="Cost">
-						<PersistenceCost
-							pageName={costData.pageName}
-							costData={costData.costData}
-							teamSlug={costData.teamSlug}
-							from={startOfMonth(subMonths(new Date(), 1))}
-							to={endOfYesterday()}
-							service="OpenSearch"
-						/>
-					</SurfaceCard>
-				{/if}
-			</div>
-		</div>
-	{:else}
-		<div class="layout-two-column">
-			<div>
-				{@render createButton()}
-				<List title="OpenSearch" count={0}>
+				{:else}
 					<ListItem>
 						<p>
 							No OpenSearch instances found. OpenSearch is a distributed search and analytics
@@ -224,10 +161,38 @@
 							>
 						</p>
 					</ListItem>
-				</List>
-			</div>
+				{/if}
+			</List>
+			<Pagination
+				page={$OpenSearch.data.team.openSearches.pageInfo}
+				loaders={{
+					loadPreviousPage: () =>
+						changeParams(
+							{
+								after: '',
+								before: $OpenSearch.data?.team.openSearches.pageInfo.startCursor ?? ''
+							},
+							{ noScroll: true }
+						),
+					loadNextPage: () =>
+						changeParams(
+							{ before: '', after: $OpenSearch.data?.team.openSearches.pageInfo.endCursor ?? '' },
+							{ noScroll: true }
+						)
+				}}
+			/>
 		</div>
-	{/if}
+		<div class="layout-sidebar">
+			<SurfaceCard title="Filters">
+				<ListFilters
+					{sortFields}
+					{currentSortField}
+					{currentSortDirection}
+					onSort={(field) => setSort(field as OpenSearchOrderFieldOptions)}
+				/>
+			</SurfaceCard>
+		</div>
+	</div>
 
 	{#if create}
 		<PageModal content={create.page} header={create.header} />
