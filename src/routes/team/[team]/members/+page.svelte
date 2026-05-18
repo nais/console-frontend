@@ -76,12 +76,7 @@
 					>
 				</div>
 			{/if}
-			<List
-				title="{$Members.data?.team.members.pageInfo.totalCount} user{$Members.data?.team.members
-					.pageInfo.totalCount !== 1
-					? 's'
-					: ''}"
-			>
+			<List title="Members" count={$Members.data?.team.members.pageInfo.totalCount}>
 				{#snippet menu()}
 					<OrderByMenu
 						orderField={TeamMemberOrderField}

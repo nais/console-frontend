@@ -70,7 +70,7 @@
 					>The Activity Log provides an overview of changes made to your team and its resources
 					within the Nais Console application.</BodyLong
 				>
-				<List title="{ae.pageInfo.totalCount} entries">
+				<List title="Activity Log" count={ae.pageInfo.totalCount}>
 					{#each ae.nodes || [] as item (item.id)}
 						<ActivityLogItem {item} />
 					{/each}

@@ -47,12 +47,7 @@
 	{/if}
 
 	{#if serviceAccounts && serviceAccounts.nodes.length > 0}
-		<List
-			title="{serviceAccounts.pageInfo.totalCount} service account{serviceAccounts.pageInfo
-				.totalCount !== 1
-				? 's'
-				: ''}"
-		>
+		<List title="Service accounts" count={serviceAccounts.pageInfo.totalCount}>
 			{#each serviceAccounts.nodes as sa (sa.id)}
 				<ServiceAccountListItem
 					serviceAccount={sa}
@@ -78,6 +73,6 @@
 
 <style>
 	.actions {
-		margin-bottom: 1rem;
+		margin-bottom: var(--ax-space-16);
 	}
 </style>
