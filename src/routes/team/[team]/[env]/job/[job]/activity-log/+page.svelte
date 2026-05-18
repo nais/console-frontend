@@ -57,7 +57,7 @@
 
 <div class="wrapper">
 	<div class="main-content">
-		<List title="{totalCount} entr{totalCount === 1 ? 'y' : 'ies'}">
+		<List title="Activity log" count={totalCount}>
 			{#each activityLog?.nodes ?? [] as item (item)}
 				<ActivityLogItem {item} />
 			{:else}
