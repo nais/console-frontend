@@ -133,14 +133,14 @@
 	{@const configs = $Configs.data.team.configs}
 	<div class="layout-two-column">
 		<div>
-			{#if canMutate}
-				<div class="button">
-					<Button variant="secondary" size="small" onclick={() => open()} icon={PlusIcon}>
-						Create Config
-					</Button>
-				</div>
-			{/if}
 			<List title="Configs" count={configs.pageInfo.totalCount}>
+				{#snippet actions()}
+					{#if canMutate}
+						<Button variant="secondary" size="small" onclick={() => open()} icon={PlusIcon}>
+							Create Config
+						</Button>
+					{/if}
+				{/snippet}
 				{#if configs.nodes.length > 0}
 					{#each configs.nodes as config (config.id)}
 						<ListItem interactive>
@@ -217,8 +217,8 @@
 					}}
 					onSort={(field) => setSort(field as ConfigOrderFieldOptions)}
 				>
-					<div class="usage-section">
-						<span class="usage-heading">Usage</span>
+					<details class="usage-section">
+						<summary class="usage-heading">Usage</summary>
 						<div class="facet-list">
 							<label class="facet-item">
 								<input
@@ -237,7 +237,7 @@
 								<span class="facet-label">Not in use</span>
 							</label>
 						</div>
-					</div>
+					</details>
 				</ListFilters>
 			</SurfaceCard>
 			<TeamActivityCard
@@ -259,11 +259,6 @@
 {/if}
 
 <style>
-	.button {
-		display: flex;
-		justify-content: flex-end;
-		margin-bottom: var(--spacing-layout);
-	}
 	.right {
 		display: flex;
 		flex-direction: column;
@@ -284,6 +279,30 @@
 		letter-spacing: 0.01em;
 		border-bottom: 1px solid var(--ax-border-neutral-subtleA);
 		padding-bottom: var(--ax-space-6);
+		cursor: pointer;
+		list-style: none;
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+	}
+
+	.usage-heading::-webkit-details-marker {
+		display: none;
+	}
+
+	.usage-heading::after {
+		content: '';
+		width: 0.4em;
+		height: 0.4em;
+		border-right: 2px solid currentColor;
+		border-bottom: 2px solid currentColor;
+		transform: rotate(45deg);
+		transition: transform 150ms ease;
+		flex-shrink: 0;
+	}
+
+	.usage-section[open] > .usage-heading::after {
+		transform: rotate(-135deg);
 	}
 
 	.facet-list {
@@ -338,9 +357,6 @@
 	}
 
 	@media (max-width: 767px), (max-height: 500px) {
-		.button {
-			margin-bottom: var(--ax-space-16);
-		}
 		.right {
 			align-items: flex-end;
 			margin-top: var(--ax-space-6);
