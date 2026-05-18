@@ -127,7 +127,7 @@
 			{/if}
 			<div class="spacing">
 				<Heading as="h3" spacing>Valkey Access List</Heading>
-				<div class="table-container">
+				<div class="table-scroll">
 					<Table
 						size="small"
 						sort={{
@@ -294,17 +294,6 @@
 
 	.spacing {
 		margin-bottom: var(--spacing-layout);
-	}
-
-	.table-container {
-		max-width: 100%;
-		min-width: 0;
-		overflow-x: auto;
-	}
-
-	.table-container :global(table) {
-		width: max-content;
-		min-width: 100%;
 	}
 
 	.service-maintenance-list-heading {

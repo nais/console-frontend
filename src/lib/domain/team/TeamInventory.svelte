@@ -397,7 +397,7 @@
 		align-items: center;
 		gap: var(--ax-space-4);
 		font-size: var(--ax-font-size-small);
-		color: var(--ax-text-subtle);
+		color: var(--ax-text-neutral-subtle);
 	}
 
 	.dot {

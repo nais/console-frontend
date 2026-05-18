@@ -106,7 +106,7 @@
 	{/snippet}
 
 	{#if $OpenSearch.data.team.openSearches.pageInfo.totalCount}
-		<div class="content-wrapper">
+		<div class="layout-two-column">
 			<div>
 				{@render createButton()}
 				<List title="OpenSearch" count={$OpenSearch.data.team.openSearches.pageInfo.totalCount}>
@@ -186,7 +186,7 @@
 					}}
 				/>
 			</div>
-			<div class="right-column">
+			<div class="layout-sidebar">
 				<SurfaceCard title="Filters">
 					<ListFilters
 						{sortFields}
@@ -211,7 +211,7 @@
 			</div>
 		</div>
 	{:else}
-		<div class="content-wrapper">
+		<div class="layout-two-column">
 			<div>
 				{@render createButton()}
 				<List title="OpenSearch" count={0}>
@@ -234,23 +234,12 @@
 	{/if}
 
 	<style>
-		.content-wrapper {
-			display: grid;
-			gap: var(--ax-space-24);
-			grid-template-columns: 1fr 300px;
-			align-items: start;
-		}
 		.right {
 			display: flex;
 			gap: var(--ax-space-6);
 			align-items: center;
 		}
 
-		.right-column {
-			display: grid;
-			gap: var(--ax-space-24);
-			align-content: start;
-		}
 		.button {
 			display: flex;
 			justify-content: flex-end;
@@ -287,10 +276,6 @@
 
 		/* Mobile responsive layout */
 		@media (max-width: 767px), (max-height: 500px) {
-			.content-wrapper {
-				grid-template-columns: 1fr;
-			}
-
 			.right {
 				align-items: flex-end;
 				margin-top: var(--ax-space-6);

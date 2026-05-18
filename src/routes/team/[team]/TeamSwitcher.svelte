@@ -141,8 +141,8 @@
 		flex-shrink: 0;
 		border-radius: var(--ax-radius-4);
 		font-size: 1rem;
-		color: var(--ax-text-subtle);
-		background: color-mix(in srgb, var(--ax-text-subtle) 10%, transparent);
+		color: var(--ax-text-neutral-subtle);
+		background: color-mix(in srgb, var(--ax-text-neutral-subtle) 10%, transparent);
 	}
 
 	.current .team-icon {
@@ -168,7 +168,7 @@
 		padding: var(--ax-space-8) var(--ax-space-16);
 		border-top: 1px solid var(--ax-border-neutral-subtleA);
 		font-size: var(--ax-font-size-small);
-		color: var(--ax-text-subtle);
+		color: var(--ax-text-neutral-subtle);
 
 		kbd {
 			font-size: var(--ax-font-size-small);

@@ -173,7 +173,7 @@
 
 	form {
 		display: flex;
-		gap: 1rem;
+		gap: var(--ax-space-16);
 	}
 
 	.field-wrapper {
@@ -195,7 +195,7 @@
 	}
 	.danger-zone {
 		padding: var(--ax-space-16);
-		border-radius: 8px;
+		border-radius: var(--ax-radius-8);
 		border: 1px solid var(--ax-border-danger);
 	}
 

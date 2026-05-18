@@ -74,7 +74,7 @@
 {:else if $PostgresInstances.data}
 	{@const si = $PostgresInstances.data.team.postgresInstances}
 
-	<div class="content-wrapper">
+	<div class="layout-two-column">
 		<div>
 			{@render cloudSqlRelocationAlert()}
 
@@ -138,7 +138,7 @@
 				}}
 			/>
 		</div>
-		<div class="right-column">
+		<div class="layout-sidebar">
 			<SurfaceCard title="Filters">
 				<ListFilters
 					{sortFields}
@@ -152,17 +152,6 @@
 {/if}
 
 <style>
-	.content-wrapper {
-		display: grid;
-		gap: var(--ax-space-24);
-		grid-template-columns: 1fr 300px;
-		align-items: start;
-	}
-	.right-column {
-		display: grid;
-		gap: var(--ax-space-24);
-		align-content: start;
-	}
 	.right {
 		display: flex;
 		flex-direction: column;
@@ -184,9 +173,6 @@
 
 	/* Mobile responsive layout */
 	@media (max-width: 767px), (max-height: 500px) {
-		.content-wrapper {
-			grid-template-columns: 1fr;
-		}
 		.right {
 			align-items: flex-end;
 			margin-top: var(--ax-space-6);

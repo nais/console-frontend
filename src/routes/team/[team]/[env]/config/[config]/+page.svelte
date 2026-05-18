@@ -321,7 +321,7 @@
 				</div>
 			</div>
 
-			<div class="table-container">
+			<div class="table-scroll">
 				<Table size="small" style="margin-top: 2rem">
 					<Thead>
 						<Tr>
@@ -480,7 +480,7 @@
 		display: flex;
 		align-items: flex-start;
 		justify-content: space-between;
-		gap: 0.5rem;
+		gap: var(--ax-space-8);
 		flex-wrap: wrap;
 	}
 
@@ -488,17 +488,6 @@
 		display: flex;
 		gap: var(--ax-space-8);
 		flex-wrap: wrap;
-	}
-
-	.table-container {
-		max-width: 100%;
-		min-width: 0;
-		overflow-x: auto;
-	}
-
-	.table-container :global(table) {
-		width: max-content;
-		min-width: 100%;
 	}
 
 	.value {
@@ -509,7 +498,7 @@
 
 	.binary-label {
 		font-size: var(--ax-font-size-small);
-		color: var(--ax-text-subtle);
+		color: var(--ax-text-neutral-subtle);
 		font-style: italic;
 	}
 

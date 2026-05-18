@@ -276,7 +276,7 @@
 		</div>
 	{/if}
 
-	<div class="wrapper">
+	<div class="layout-two-column">
 		<div>
 			{#if $Repositories.data.team}
 				{@const team = $Repositories.data.team}
@@ -400,7 +400,7 @@
 				{/if}
 			{/if}
 		</div>
-		<div class="right-column">
+		<div class="layout-sidebar" style="gap: var(--ax-space-16)">
 			<SurfaceCard title="Filters">
 				<ListFilters
 					{sortFields}
@@ -424,13 +424,6 @@
 {/if}
 
 <style>
-	.wrapper {
-		display: grid;
-		grid-template-columns: 1fr 300px;
-		gap: var(--spacing-layout);
-		align-items: start;
-	}
-
 	.input {
 		font-size: 1rem;
 		margin: 1rem 0;
@@ -440,12 +433,6 @@
 		display: flex;
 		justify-content: flex-end;
 		margin-bottom: 1rem;
-	}
-
-	.right-column {
-		display: grid;
-		gap: var(--ax-space-16);
-		align-content: start;
 	}
 
 	.right {
@@ -471,10 +458,6 @@
 	}
 
 	@media (max-width: 767px), (max-height: 500px) {
-		.wrapper {
-			grid-template-columns: 1fr;
-		}
-
 		.search {
 			justify-content: stretch;
 		}

@@ -127,7 +127,7 @@
 	}
 
 	.empty-state {
-		color: var(--ax-text-subtle);
+		color: var(--ax-text-neutral-subtle);
 	}
 
 	@media (max-width: 960px) {

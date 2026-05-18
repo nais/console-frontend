@@ -80,7 +80,7 @@
 	{@const cost = $SqlInstances.data.team.cost}
 	{@const si = $SqlInstances.data.team.sqlInstances}
 
-	<div class="content-wrapper">
+	<div class="layout-two-column">
 		<div>
 			<List title="Cloud SQL" count={si.pageInfo.totalCount}>
 				{#if si.nodes.length > 0}
@@ -169,7 +169,7 @@
 				}}
 			/>
 		</div>
-		<div class="right-column">
+		<div class="layout-sidebar">
 			<SurfaceCard title="Filters">
 				<ListFilters
 					{sortFields}
@@ -195,12 +195,6 @@
 {/if}
 
 <style>
-	.content-wrapper {
-		display: grid;
-		gap: var(--ax-space-24);
-		grid-template-columns: 1fr 300px;
-		align-items: start;
-	}
 	.right {
 		display: flex;
 		flex-direction: column;
@@ -208,11 +202,6 @@
 		align-items: flex-end;
 	}
 
-	.right-column {
-		display: grid;
-		gap: var(--ax-space-24);
-		align-content: start;
-	}
 	code {
 		font-size: 0.9rem;
 	}
@@ -227,9 +216,6 @@
 
 	/* Mobile responsive layout */
 	@media (max-width: 767px), (max-height: 500px) {
-		.content-wrapper {
-			grid-template-columns: 1fr;
-		}
 		.right {
 			align-items: flex-end;
 			margin-top: var(--ax-space-6);

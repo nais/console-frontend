@@ -458,7 +458,7 @@
 										/>{/if})
 								{/if}
 							{:else}
-								<span style="color: var(--ax-text-subtle)">Not set</span>
+								<span style="color: var(--ax-text-neutral-subtle)">Not set</span>
 							{/if}
 						</span>
 						{#if viewerIsMember && unleash.ready}
@@ -653,15 +653,15 @@
 	}
 	.grid {
 		display: grid;
-		column-gap: 0.5rem;
-		row-gap: 0.5rem;
+		column-gap: var(--ax-space-8);
+		row-gap: var(--ax-space-8);
 		align-items: center;
 	}
 
 	.release-channel-row {
 		display: flex;
 		align-items: center;
-		gap: 0.5rem;
+		gap: var(--ax-space-8);
 	}
 
 	.sidebar-heading {

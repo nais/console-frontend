@@ -33,7 +33,7 @@
 	.item {
 		display: grid;
 		grid-template-columns: 25ch auto;
-		gap: 1rem;
+		gap: var(--ax-space-16);
 	}
 
 	@media (max-width: 767px), (max-height: 500px) {

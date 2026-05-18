@@ -53,7 +53,7 @@
 		flex-direction: row;
 		border-bottom: 1px solid var(--ax-border-neutral-subtle);
 		align-items: center;
-		gap: 0.5rem;
+		gap: var(--ax-space-8);
 		padding: 0.2rem;
 	}
 

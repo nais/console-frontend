@@ -281,7 +281,7 @@
 		align-items: center;
 		gap: var(--ax-space-8);
 		width: 100%;
-		color: var(--ax-text-subtle);
+		color: var(--ax-text-neutral-subtle);
 		font-size: var(--ax-font-size-small);
 	}
 
@@ -297,7 +297,7 @@
 		justify-content: space-between;
 		padding: var(--ax-space-8) var(--ax-space-12);
 		background-color: var(--ax-neutral-100);
-		border-radius: 4px;
+		border-radius: var(--ax-radius-4);
 	}
 
 	.file-selected-name {

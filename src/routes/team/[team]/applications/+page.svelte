@@ -110,7 +110,7 @@
 
 <GraphErrors errors={$Applications.errors} />
 
-<div class="wrapper">
+<div class="layout-two-column">
 	<div>
 		{#if totalApplications > 0}
 			{@const apps = $Applications.data?.team.applications}
@@ -135,7 +135,7 @@
 			<BodyLong><strong>No applications found.</strong></BodyLong>
 		{/if}
 	</div>
-	<div class="right-column">
+	<div class="layout-sidebar">
 		<SurfaceCard title="Filters">
 			<WorkloadListFilters
 				{filter}
@@ -163,31 +163,4 @@
 </div>
 
 <style>
-	.wrapper {
-		display: grid;
-		grid-template-columns: minmax(0, 1fr) 300px;
-		gap: var(--spacing-layout);
-	}
-
-	.right-column {
-		display: grid;
-		gap: var(--ax-space-24);
-		align-content: start;
-	}
-
-	/* Mobile responsive layout */
-	@media (max-width: 767px) {
-		.wrapper {
-			grid-template-columns: 1fr;
-			gap: var(--ax-space-24);
-		}
-	}
-
-	/* Landscape on mobile phones: keep single column despite wider viewport */
-	@media (max-height: 500px) {
-		.wrapper {
-			grid-template-columns: 1fr;
-			gap: var(--ax-space-24);
-		}
-	}
 </style>

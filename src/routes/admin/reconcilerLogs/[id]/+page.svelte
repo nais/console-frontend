@@ -10,7 +10,7 @@
 </script>
 
 {#if $ReconcilerLogs.data && $ReconcilerLogs.data.node?.__typename === 'Reconciler'}
-	<div class="table-container">
+	<div class="table-scroll">
 		<Table size="small">
 			<Thead>
 				<Tr>
@@ -50,19 +50,6 @@
 {/if}
 
 <style>
-	.table-container {
-		max-width: 100%;
-		min-width: 0;
-		overflow-x: auto;
-		overscroll-behavior-x: contain;
-		-webkit-overflow-scrolling: touch;
-	}
-
-	.table-container :global(table) {
-		width: max-content;
-		min-width: 100%;
-	}
-
 	.message {
 		word-break: break-word;
 		white-space: pre-line;

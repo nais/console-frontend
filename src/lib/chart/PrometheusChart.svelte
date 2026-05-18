@@ -419,19 +419,19 @@
 		display: flex;
 		flex-direction: column;
 		align-items: center;
-		gap: 0.5rem;
+		gap: var(--ax-space-8);
 		padding: 1rem;
 		background: var(--ax-bg-sunken);
-		border-radius: 0.5rem;
+		border-radius: var(--ax-radius-8);
 		font-weight: 500;
-		color: var(--ax-text-default);
+		color: var(--ax-text-neutral);
 	}
 
 	.prometheus-chart-loading {
 		display: flex;
 		flex-direction: column;
 		align-items: center;
-		gap: 0.75rem;
+		gap: var(--ax-space-12);
 	}
 
 	.query-info-button {
@@ -440,7 +440,7 @@
 		right: 0.5rem;
 		background: var(--ax-bg-default);
 		border: 1px solid var(--ax-border-default);
-		border-radius: 0.25rem;
+		border-radius: var(--ax-radius-4);
 		padding: 0.5rem;
 		cursor: pointer;
 		display: flex;
@@ -468,7 +468,7 @@
 	.query-section {
 		display: flex;
 		flex-direction: column;
-		gap: 0.75rem;
+		gap: var(--ax-space-12);
 	}
 
 	.query-heading {

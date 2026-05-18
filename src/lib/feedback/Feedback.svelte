@@ -163,7 +163,7 @@
 		display: flex;
 		flex-direction: column;
 		padding: 1rem;
-		gap: 1rem;
+		gap: var(--ax-space-16);
 	}
 	.details {
 		display: flex;
@@ -172,7 +172,7 @@
 	}
 	#charCount {
 		font-size: 0.75rem;
-		color: var(--ax-text-subtle);
+		color: var(--ax-text-neutral-subtle);
 		margin: 0;
 		padding-top: 0.2rem;
 	}

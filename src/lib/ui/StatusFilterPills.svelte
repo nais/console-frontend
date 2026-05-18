@@ -143,7 +143,7 @@
 	}
 
 	.pill.neutral {
-		color: var(--ax-text-subtle);
+		color: var(--ax-text-neutral-subtle);
 		background: color-mix(in srgb, var(--ax-neutral-200) 50%, transparent);
 		border-color: var(--ax-border-neutral-subtleA);
 	}

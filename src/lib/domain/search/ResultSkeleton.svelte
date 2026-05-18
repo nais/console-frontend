@@ -19,7 +19,7 @@
 		display: flex;
 		align-items: center;
 		gap: var(--ax-space-6);
-		border-radius: 4px;
+		border-radius: var(--ax-radius-4);
 		padding: var(--ax-space-4);
 	}
 </style>

@@ -131,7 +131,7 @@
 	<GraphErrors errors={$Configs.errors} />
 {:else if $Configs.data}
 	{@const configs = $Configs.data.team.configs}
-	<div class="wrapper">
+	<div class="layout-two-column">
 		<div>
 			{#if canMutate}
 				<div class="button">
@@ -200,7 +200,7 @@
 				}}
 			/>
 		</div>
-		<div class="right-column">
+		<div class="layout-sidebar" style="gap: var(--ax-space-16)">
 			<SurfaceCard title="Filters">
 				<ListFilters
 					{filter}
@@ -259,21 +259,10 @@
 {/if}
 
 <style>
-	.wrapper {
-		display: grid;
-		grid-template-columns: 1fr 300px;
-		gap: var(--spacing-layout);
-		align-items: start;
-	}
 	.button {
 		display: flex;
 		justify-content: flex-end;
 		margin-bottom: var(--spacing-layout);
-	}
-	.right-column {
-		display: grid;
-		gap: var(--ax-space-16);
-		align-content: start;
 	}
 	.right {
 		display: flex;
@@ -312,7 +301,7 @@
 	}
 
 	.facet-item:hover {
-		color: var(--ax-text-default);
+		color: var(--ax-text-neutral);
 	}
 
 	.facet-item input[type='checkbox'] {
@@ -349,10 +338,6 @@
 	}
 
 	@media (max-width: 767px), (max-height: 500px) {
-		.wrapper {
-			grid-template-columns: 1fr;
-			gap: var(--ax-space-24);
-		}
 		.button {
 			margin-bottom: var(--ax-space-16);
 		}

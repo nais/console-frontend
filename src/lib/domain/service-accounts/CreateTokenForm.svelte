@@ -95,7 +95,7 @@
 		gap: var(--ax-space-8);
 		background-color: var(--ax-bg-sunken);
 		padding: var(--ax-space-12);
-		border-radius: 8px;
+		border-radius: var(--ax-radius-8);
 		overflow-x: auto;
 	}
 

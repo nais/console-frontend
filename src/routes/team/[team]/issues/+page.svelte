@@ -112,7 +112,7 @@
 
 <GraphErrors errors={$TeamIssues.errors} />
 
-<div class="wrapper">
+<div class="layout-two-column">
 	<div>
 		<List title="Issues" count={issues?.pageInfo.totalCount ?? 0}>
 			{#each issues?.nodes ?? [] as issue (issue.id)}
@@ -140,7 +140,7 @@
 			/>
 		{/if}
 	</div>
-	<div class="right-column">
+	<div class="layout-sidebar">
 		<SurfaceCard title="Filters">
 			<ListFilters
 				{sortFields}
@@ -165,27 +165,7 @@
 </div>
 
 <style>
-	.wrapper {
-		display: grid;
-		grid-template-columns: minmax(0, 1fr) 300px;
-		gap: var(--spacing-layout);
-	}
-
-	.right-column {
-		display: grid;
-		gap: var(--ax-space-24);
-		align-content: start;
-	}
-
 	.empty-state {
-		color: var(--ax-text-subtle);
-	}
-
-	/* Mobile responsive layout */
-	@media (max-width: 767px), (max-height: 500px) {
-		.wrapper {
-			grid-template-columns: 1fr;
-			gap: var(--ax-space-24);
-		}
+		color: var(--ax-text-neutral-subtle);
 	}
 </style>

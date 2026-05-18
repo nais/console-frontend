@@ -537,12 +537,12 @@
 		gap: var(--spacing-layout);
 	}
 	.managed-resources {
-		border-radius: 12px;
+		border-radius: var(--ax-radius-12);
 		align-self: start;
 	}
 	.danger-zone {
 		padding: var(--ax-space-16);
-		border-radius: 8px;
+		border-radius: var(--ax-radius-8);
 		border: 1px solid var(--ax-border-danger);
 	}
 
@@ -556,7 +556,7 @@
 	.buttons {
 		display: flex;
 		flex-direction: row;
-		gap: 1rem;
+		gap: var(--ax-space-16);
 	}
 	.button {
 		width: 130px;
@@ -565,7 +565,7 @@
 	.channel {
 		display: flex;
 		flex-direction: row;
-		gap: 0.5rem;
+		gap: var(--ax-space-8);
 	}
 
 	.deletewrapper {

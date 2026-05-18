@@ -231,7 +231,7 @@
 			<div>
 				<Heading as="h2" spacing>CPU and Memory Underutilization per Team</Heading>
 
-				<div class="table-container">
+				<div class="table-scroll">
 					<Table
 						size="small"
 						sort={sortState}
@@ -291,12 +291,12 @@
 		margin-top: 1rem;
 		display: grid;
 		grid-template-columns: repeat(2, 1fr);
-		column-gap: 1rem;
+		column-gap: var(--ax-space-16);
 		min-width: 0;
 	}
 	.card {
 		padding: var(--ax-space-16) var(--ax-space-20);
-		border-radius: 12px;
+		border-radius: var(--ax-radius-12);
 		align-items: stretch;
 		min-width: 0;
 	}
@@ -307,17 +307,6 @@
 		border-radius: 0.375rem;
 		display: inline-block;
 		align-items: center;
-	}
-
-	.table-container {
-		max-width: 100%;
-		min-width: 0;
-		overflow-x: auto;
-	}
-
-	.table-container :global(table) {
-		width: max-content;
-		min-width: 100%;
 	}
 
 	/* Mobile responsive styles */
