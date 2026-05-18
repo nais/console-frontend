@@ -64,8 +64,8 @@
 <div>
 	{#if $ActivityLog.data}
 		{@const ae = $ActivityLog.data.team.activityLog}
-		<div class="wrapper">
-			<div class="main-content">
+		<div class="layout-two-column">
+			<div>
 				<BodyLong spacing
 					>The Activity Log provides an overview of changes made to your team and its resources
 					within the Nais Console application.</BodyLong
@@ -103,7 +103,7 @@
 			</div>
 
 			{#if ae.facets}
-				<div class="right-column">
+				<div class="layout-sidebar">
 					<SurfaceCard title="Filters">
 						<ListFilters>
 							<ActivityLogFacets
@@ -126,29 +126,4 @@
 </div>
 
 <style>
-	.wrapper {
-		display: grid;
-		grid-template-columns: 1fr 300px;
-		gap: var(--spacing-layout);
-		align-items: start;
-	}
-
-	.main-content {
-		display: flex;
-		flex-direction: column;
-		gap: var(--ax-space-16);
-		min-width: 0;
-	}
-
-	.right-column {
-		display: grid;
-		gap: var(--ax-space-16);
-		align-content: start;
-	}
-
-	@media (max-width: 960px) {
-		.wrapper {
-			grid-template-columns: 1fr;
-		}
-	}
 </style>
