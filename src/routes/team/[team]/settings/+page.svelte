@@ -392,7 +392,7 @@
 {#if browser}
 	<Modal bind:open={showRotateKey} closeButton={false}>
 		{#snippet header()}
-			<Heading as="h1" size="medium">Rotate deploy key</Heading>
+			<Heading as="h2" size="medium">Rotate deploy key</Heading>
 		{/snippet}
 		<BodyShort spacing>Are you sure you want to rotate the deploy key?</BodyShort>
 
@@ -417,7 +417,7 @@
 
 	<Modal bind:open={showCreateKey} closeButton={false}>
 		{#snippet header()}
-			<Heading as="h1" size="medium">Create deploy key</Heading>
+			<Heading as="h2" size="medium">Create deploy key</Heading>
 		{/snippet}
 		<BodyShort spacing>
 			Are you sure you need to create a deploy key? <br />
@@ -446,7 +446,7 @@
 
 	<Modal bind:open={showDeleteTeam}>
 		{#snippet header()}
-			<Heading as="h1" size="medium">Request Team Deletion</Heading>
+			<Heading as="h2" size="medium">Request Team Deletion</Heading>
 		{/snippet}
 
 		{#if !deleteKeyResp?.data}

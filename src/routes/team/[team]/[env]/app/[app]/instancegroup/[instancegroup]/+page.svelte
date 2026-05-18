@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { goto } from '$app/navigation';
+	import { page } from '$app/state';
 	import type { InstanceGroupDetail$result, ValueEncoding$options } from '$houdini';
 	import { ValueEncoding } from '$houdini';
 	import GraphErrors from '$lib/ui/GraphErrors.svelte';
@@ -7,7 +9,9 @@
 	import {
 		Alert,
 		BodyShort,
+		Heading,
 		Loader,
+		Select,
 		Table,
 		Tag,
 		Tbody,
@@ -48,6 +52,21 @@
 			: null
 	);
 	const role = $derived(incoming && group?.id === incoming.id ? 'incoming' : 'current');
+
+	function groupLabel(g: InstanceGroup) {
+		const r = incoming && g.id === incoming.id ? 'Incoming' : 'Current';
+		return allGroups.length > 1 ? `${g.name} (${r})` : g.name;
+	}
+
+	function handleGroupChange(e: Event) {
+		const target = e.target as HTMLSelectElement;
+		const name = target.value;
+		if (name && name !== page.params.instancegroup) {
+			goto(
+				`/team/${page.params.team}/${page.params.env}/app/${page.params.app}/instancegroup/${name}`
+			);
+		}
+	}
 
 	const hasFailing = $derived(group?.instances.some((i) => i.status.state === 'FAILING') ?? false);
 
@@ -190,6 +209,30 @@
 		URL.revokeObjectURL(url);
 	}
 </script>
+
+<Heading as="h2" size="medium" spacing>
+	{instanceGroupName}
+	{#if allGroups.length > 1}
+		<Tag size="small" variant={role === 'incoming' ? 'alt1' : 'neutral'}>
+			{role === 'incoming' ? 'Incoming' : 'Current'}
+		</Tag>
+	{/if}
+</Heading>
+
+{#if allGroups.length > 1}
+	<div class="group-selector">
+		<Select
+			label="Switch instance group"
+			size="small"
+			value={instanceGroupName}
+			onchange={handleGroupChange}
+		>
+			{#each allGroups as g (g.id)}
+				<option value={g.name}>{groupLabel(g)}</option>
+			{/each}
+		</Select>
+	</div>
+{/if}
 
 <GraphErrors errors={$InstanceGroupDetail.errors} />
 
@@ -463,6 +506,11 @@
 {/if}
 
 <style>
+	.group-selector {
+		max-width: 20rem;
+		margin-bottom: var(--ax-space-16);
+	}
+
 	.page {
 		display: flex;
 		flex-direction: column;

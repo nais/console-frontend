@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Box } from '@nais/ds-svelte-community';
+	import { Box, Heading } from '@nais/ds-svelte-community';
 	import type { Snippet } from 'svelte';
 
 	interface Props {
@@ -7,9 +7,10 @@
 		children: Snippet;
 		headerAside?: Snippet;
 		bordered?: boolean;
+		level?: 'h2' | 'h3' | 'h4';
 	}
 
-	let { title, children, headerAside, bordered = false }: Props = $props();
+	let { title, children, headerAside, bordered = false, level = 'h2' }: Props = $props();
 </script>
 
 <Box
@@ -20,7 +21,7 @@
 	{#if title || headerAside}
 		<div class="header">
 			{#if title}
-				<h2 class="eyebrow">{title}</h2>
+				<Heading as={level} size="xsmall" class="eyebrow">{title}</Heading>
 			{/if}
 			{#if headerAside}
 				{@render headerAside()}
@@ -54,10 +55,10 @@
 		gap: var(--ax-space-8);
 	}
 
-	.eyebrow {
-		font-size: var(--ax-font-size-small);
-		font-weight: var(--ax-font-weight-bold);
-		line-height: var(--ax-font-line-height-large);
+	:global(.eyebrow) {
+		font-size: var(--ax-font-size-small) !important;
+		font-weight: var(--ax-font-weight-bold) !important;
+		line-height: var(--ax-font-line-height-large) !important;
 		color: var(--ax-text-neutral-subtle);
 		text-transform: uppercase;
 		letter-spacing: 0.04em;
