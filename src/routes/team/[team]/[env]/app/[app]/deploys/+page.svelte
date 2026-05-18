@@ -82,11 +82,7 @@
 		{:else}
 			<div class="content">
 				<div class="list">
-					<List
-						title="{deploys.pageInfo.totalCount} deployment{deploys.pageInfo.totalCount !== 1
-							? 's'
-							: ''}"
-					>
+				<List title="Deployments" count={deploys.pageInfo.totalCount}>
 						{#each deploys.nodes as deployment (deployment.id)}
 							{@const id = extractIdFromUrl(deployment.triggerUrl ?? '')}
 							<div {id} class:highlight-in={id !== '' && highlightId !== '' && id === highlightId}>

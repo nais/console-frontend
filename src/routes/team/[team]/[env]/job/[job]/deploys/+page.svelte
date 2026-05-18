@@ -91,13 +91,7 @@
 				{/if}
 			</BodyLong>
 			{#if $JobDeploys.data.team.environment.job.deployments.pageInfo.totalCount != 0}
-				<List
-					title="{$JobDeploys.data.team.environment.job.deployments.pageInfo
-						.totalCount} deployment{$JobDeploys.data.team.environment.job.deployments.pageInfo
-						.totalCount !== 1
-						? 's'
-						: ''}"
-				>
+			<List title="Deployments" count={$JobDeploys.data.team.environment.job.deployments.pageInfo.totalCount}>
 					{#each $JobDeploys.data.team.environment.job.deployments.nodes as deployment (deployment.id)}
 						{@const id = extractIdFromUrl(deployment.triggerUrl ?? '')}
 						<div {id} class:highlight-in={id !== '' && highlightId !== '' && id === highlightId}>
