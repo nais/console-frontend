@@ -34,6 +34,9 @@
 	let { data }: PageProps = $props();
 	let { Job, teamSlug, viewerIsMember } = $derived(data);
 
+	let jobData = $derived($Job.data);
+	let job = $derived(jobData?.team?.environment?.job ?? null);
+
 	const triggerRunMutation = () =>
 		graphql(`
 			mutation TriggerJob(
@@ -85,9 +88,13 @@
 			environment,
 			teamSlug,
 			runName,
-			jobId: $Job.data!.team.environment.job.id
+			jobId: job!.id
 		});
 	};
+
+	let criticalEdges = $derived(job?.issues.edges.filter((e) => e.node.severity === 'CRITICAL') ?? []);
+	let totalRuns = $derived(job?.recentRuns.nodes.length ?? 0);
+	let succeededRuns = $derived(job?.recentRuns.nodes.filter((n) => n.status.state === 'SUCCEEDED').length ?? 0);
 
 	let deleteConfirmOpen = $state(false);
 	let deleteRunName = $state('');
@@ -124,11 +131,7 @@
 	</div>
 {/if}
 
-{#if $Job.data}
-	{@const job = $Job.data.team.environment.job}
-	{@const criticalEdges = job.issues.edges.filter((e) => e.node.severity === 'CRITICAL')}
-	{@const totalRuns = job.recentRuns.nodes.length}
-	{@const succeededRuns = job.recentRuns.nodes.filter((n) => n.status.state === 'SUCCEEDED').length}
+{#if job}
 	<div class="wrapper">
 		<div class="job-content">
 			{#if viewerIsMember}
