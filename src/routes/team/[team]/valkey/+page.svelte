@@ -2,7 +2,6 @@
 	import { page } from '$app/state';
 	import { OrderDirection, ValkeyOrderField } from '$houdini';
 	import { docURL } from '$lib/doc';
-	import PersistenceCost from '$lib/domain/cost/PersistenceCost.svelte';
 	import IssueSeverityTags from '$lib/domain/issues/IssueSeverityTags.svelte';
 	import { envTagVariant } from '$lib/envTagVariant';
 	import ExternalLink from '$lib/ui/ExternalLink.svelte';
@@ -19,7 +18,6 @@
 	import { changeParams } from '$lib/utils/searchparams';
 	import { Button, Tag } from '@nais/ds-svelte-community';
 	import { CircleFillIcon, PlusIcon } from '@nais/ds-svelte-community/icons';
-	import { endOfYesterday, startOfMonth, subMonths } from 'date-fns';
 	import type { PageProps } from './$types';
 	import CreatePage from './create/+page.svelte';
 
@@ -62,19 +60,6 @@
 		changeParams({ sort: `${field}-${direction}`, after: '', before: '' });
 	}
 
-	let cost = $derived(() => {
-		const costData = $Valkeys.data?.team.cost;
-		const teamSlug = $Valkeys.data?.team.slug;
-
-		if (!costData || !teamSlug) return null;
-
-		return {
-			costData,
-			teamSlug,
-			pageName: 'Valkey'
-		};
-	});
-
 	let create = $derived({
 		buttonText: 'Create Valkey',
 		url: `/team/${$Valkeys.data?.team.slug}/valkey/create`,
@@ -104,11 +89,11 @@
 		{/if}
 	{/snippet}
 
-	{#if $Valkeys.data.team.valkeys.pageInfo.totalCount}
-		<div class="layout-two-column">
-			<div>
-				{@render createButton()}
-				<List title="Valkey" count={$Valkeys.data.team.valkeys.pageInfo.totalCount}>
+	<div class="layout-two-column">
+		<div>
+			{@render createButton()}
+			<List title="Valkey" count={$Valkeys.data.team.valkeys.pageInfo.totalCount}>
+				{#if $Valkeys.data.team.valkeys.nodes.length > 0}
 					{#each $Valkeys.data.team.valkeys.nodes as instance (instance.id)}
 						<ListItem interactive>
 							<div class="name-group">
@@ -165,55 +150,7 @@
 							{/if}
 						</ListItem>
 					{/each}
-				</List>
-				<Pagination
-					page={$Valkeys.data.team.valkeys.pageInfo}
-					loaders={{
-						loadPreviousPage: () =>
-							changeParams(
-								{
-									after: '',
-									before: $Valkeys.data?.team.valkeys.pageInfo.startCursor ?? ''
-								},
-								{ noScroll: true }
-							),
-						loadNextPage: () =>
-							changeParams(
-								{ before: '', after: $Valkeys.data?.team.valkeys.pageInfo.endCursor ?? '' },
-								{ noScroll: true }
-							)
-					}}
-				/>
-			</div>
-			<div class="layout-sidebar">
-				<SurfaceCard title="Filters">
-					<ListFilters
-						{sortFields}
-						{currentSortField}
-						{currentSortDirection}
-						onSort={(field) => setSort(field as ValkeyOrderFieldOptions)}
-					/>
-				</SurfaceCard>
-				{#if cost()}
-					{@const costData = cost()!}
-					<SurfaceCard title="Cost">
-						<PersistenceCost
-							pageName={costData.pageName}
-							costData={costData.costData}
-							teamSlug={costData.teamSlug}
-							from={startOfMonth(subMonths(new Date(), 1))}
-							to={endOfYesterday()}
-							service="Valkey"
-						/>
-					</SurfaceCard>
-				{/if}
-			</div>
-		</div>
-	{:else}
-		<div class="layout-two-column">
-			<div>
-				{@render createButton()}
-				<List title="Valkey" count={0}>
+				{:else}
 					<ListItem>
 						<p>
 							No Valkey instances found. Valkey is a key value database that is used for storing and
@@ -224,10 +161,38 @@
 							>
 						</p>
 					</ListItem>
-				</List>
-			</div>
+				{/if}
+			</List>
+			<Pagination
+				page={$Valkeys.data.team.valkeys.pageInfo}
+				loaders={{
+					loadPreviousPage: () =>
+						changeParams(
+							{
+								after: '',
+								before: $Valkeys.data?.team.valkeys.pageInfo.startCursor ?? ''
+							},
+							{ noScroll: true }
+						),
+					loadNextPage: () =>
+						changeParams(
+							{ before: '', after: $Valkeys.data?.team.valkeys.pageInfo.endCursor ?? '' },
+							{ noScroll: true }
+						)
+				}}
+			/>
 		</div>
-	{/if}
+		<div class="layout-sidebar">
+			<SurfaceCard title="Filters">
+				<ListFilters
+					{sortFields}
+					{currentSortField}
+					{currentSortDirection}
+					onSort={(field) => setSort(field as ValkeyOrderFieldOptions)}
+				/>
+			</SurfaceCard>
+		</div>
+	</div>
 
 	{#if create}
 		<PageModal content={create.page} header={create.header} />
