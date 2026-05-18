@@ -290,15 +290,6 @@
 		border-bottom: 1px solid var(--ax-border-neutral-subtleA);
 	}
 
-	.item:last-child {
-		border-bottom: none;
-		border-radius: 0 0 var(--ax-radius-8) var(--ax-radius-8);
-	}
-
-	.item:last-child:not([open]) > summary.head {
-		border-radius: 0 0 var(--ax-radius-8) var(--ax-radius-8);
-	}
-
 	.head {
 		display: grid;
 		grid-template-columns: 22px 1fr auto;
