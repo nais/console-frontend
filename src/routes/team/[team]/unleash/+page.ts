@@ -12,7 +12,7 @@ export async function load(event) {
 	}
 
 	return {
-		...(await addPageMeta(event, { title: 'Unleash' })),
+		...(await addPageMeta(event, { title: 'Unleash', docPath: '/services/feature-toggling' })),
 		...(await load_Unleash({
 			event,
 			variables: {

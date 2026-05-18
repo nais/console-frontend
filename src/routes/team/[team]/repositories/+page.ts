@@ -10,7 +10,10 @@ export async function load(event) {
 	const before = event.url.searchParams.get('before') || '';
 
 	return {
-		...(await addPageMeta(event, { title: 'Repositories' })),
+		...(await addPageMeta(event, {
+			title: 'Repositories',
+			docPath: '/build/how-to/build-and-deploy/#authorize-your-github-repository-for-deployment'
+		})),
 		...(await load_Repositories({
 			event,
 			variables: {
