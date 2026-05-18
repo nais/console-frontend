@@ -34,11 +34,6 @@
 		border-bottom: 1px solid var(--ax-border-neutral-subtleA);
 	}
 
-	.list-item:last-child {
-		border-bottom: none;
-		border-radius: 0 0 var(--ax-radius-8) var(--ax-radius-8);
-	}
-
 	.list-item > :global(*) {
 		min-width: 0;
 		max-width: 100%;
