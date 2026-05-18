@@ -1,8 +1,9 @@
 <script lang="ts">
 	import { fragment, graphql, type NetworkPolicy, type NetworkPolicy$data } from '$houdini';
 	import WorkloadLink from '$lib/domain/workload/WorkloadLink.svelte';
+	import DocsLink from '$lib/ui/DocsLink.svelte';
 	import IconLabel from '$lib/ui/IconLabel.svelte';
-	import SurfaceCard from '$lib/ui/SurfaceCard.svelte';
+	import List from '$lib/ui/List.svelte';
 	import TooltipAlignHack from '$lib/ui/TooltipAlignHack.svelte';
 	import { BodyShort, Tag } from '@nais/ds-svelte-community';
 	import {
@@ -137,7 +138,10 @@
 	{/if}
 {/snippet}
 
-<SurfaceCard title="Network policy">
+<List title="Access policy" count={flatRules.length}>
+	{#snippet actions()}
+		<DocsLink path="/workloads/application/reference/application-spec/#accesspolicy" />
+	{/snippet}
 	{#if hasPolicy}
 		<ul class="rules">
 			{#each flatRules as entry, i (`${entry.direction}-${entry.kind}-${i}`)}
@@ -185,7 +189,7 @@
 	{:else}
 		<BodyShort size="small" textColor="subtle">No network policies configured.</BodyShort>
 	{/if}
-</SurfaceCard>
+</List>
 
 <style>
 	.rules {

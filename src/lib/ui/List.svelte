@@ -7,7 +7,8 @@
 		children,
 		menu,
 		search,
-		filters
+		filters,
+		actions
 	}: {
 		title?: string;
 		count?: number;
@@ -15,6 +16,7 @@
 		menu?: Snippet;
 		search?: Snippet;
 		filters?: Snippet;
+		actions?: Snippet;
 	} = $props();
 </script>
 
@@ -29,13 +31,16 @@
 					<span class="count-badge">{count}</span>
 				{/if}
 			</div>
-			<div class="header-right">
-				{#if search}
-					<div class="search-slot">
-						{@render search()}
-					</div>
-				{/if}
-			</div>
+		<div class="header-right">
+			{#if actions}
+				{@render actions()}
+			{/if}
+			{#if search}
+				<div class="search-slot">
+					{@render search()}
+				</div>
+			{/if}
+		</div>
 		</div>
 		{#if filters || menu}
 			<div class="toolbar">
