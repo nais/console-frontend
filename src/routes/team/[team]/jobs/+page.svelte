@@ -57,7 +57,9 @@
 
 	function setSort(field: JobOrderField$options) {
 		const defaultDirection =
-			field === JobOrderField.NAME || field === JobOrderField.ENVIRONMENT
+			field === JobOrderField.NAME ||
+			field === JobOrderField.ENVIRONMENT ||
+			field === JobOrderField.NEXT_RUN
 				? OrderDirection.ASC
 				: OrderDirection.DESC;
 		const direction =
