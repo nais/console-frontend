@@ -245,6 +245,16 @@ Use `@nais/ds-svelte-community` components, not custom implementations:
 
 This project layers project-level design conventions on top of the `@nais/ds-svelte-community` design system. Always prefer design system components and `--ax-*` tokens first; the `--surface-*` variables are project extensions that compose them.
 
+### Layout Utility Classes
+
+Global utility classes defined in `src/styles/app.css` for common page patterns. **Use these instead of writing per-component layout CSS:**
+
+- `.layout-two-column` — two-column grid (`1fr 300px`) with `--spacing-layout` gap. Collapses to single column on mobile (`max-width: 767px`).
+- `.layout-sidebar` — grid with `--ax-space-24` gap, `align-content: start`. Use for the sidebar column inside `.layout-two-column`.
+- `.table-scroll` — horizontal scroll wrapper for wide tables. Wrap the `<Table>` with this instead of per-component overflow CSS.
+- `.detail-actions` — right-aligned flex row for action buttons above content (e.g., edit/delete buttons).
+- `.loading-centered` — centered flex container (300px height) for loading spinners.
+
 ### Surface System
 
 Global CSS custom properties and utility classes defined in `src/styles/app.css`:
@@ -303,9 +313,29 @@ When rendering type-specific content from GraphQL unions:
 
 1. **Components first**: Use `@nais/ds-svelte-community` components (`Button`, `Tabs`, `Alert`, `Tooltip`, `Table`, etc.) before building custom HTML
 2. **Tokens first**: Use `--ax-*` tokens for spacing, colors, borders, and radii — never hardcode raw values
-3. **Surface variables compose tokens**: The `--surface-*` variables are project-level abstractions built from `--ax-*` tokens — do not bypass them with raw color values
-4. **Icons**: Import from `@nais/ds-svelte-community/icons` or `$lib/icons/` — never use inline SVGs
-5. **Dark mode**: The surface system handles dark mode via CSS selectors on the root element; do not add separate dark-mode overrides for surface properties
+3. **Utility classes first**: Use the layout utility classes (`.layout-two-column`, `.table-scroll`, etc.) before writing custom layout CSS
+4. **Surface variables compose tokens**: The `--surface-*` variables are project-level abstractions built from `--ax-*` tokens — do not bypass them with raw color values
+5. **Icons**: Import from `@nais/ds-svelte-community/icons` or `$lib/icons/` — never use inline SVGs
+6. **Dark mode**: The surface system handles dark mode via CSS selectors on the root element; do not add separate dark-mode overrides for surface properties
+7. **No hardcoded values**: Use `gap: var(--ax-space-8)` not `gap: 0.5rem`; use `border-radius: var(--ax-radius-medium)` not `border-radius: 8px`; use `color: var(--ax-text-neutral)` not `color: #333`
+
+---
+
+### CSS Architecture
+
+Styles are organized with `@layer` ordering in `src/styles/app.css`:
+
+```
+@layer theme, base, components, utilities;
+```
+
+- `src/styles/app.css` — global variables, utility classes, surface system
+- `src/styles/layerchart.css` — maps LayerChart `--color-*` variables to `--ax-*` tokens. **Must include a `.dark, .dark-theme` block** re-declaring the same mappings because `--ax-*` tokens resolve to different values inside dark-scoped elements.
+- `src/styles/colors.css` — chart/visualization color palette (raw hex is acceptable here for data visualization)
+
+#### LayerChart Dark Mode
+
+The `layerchart.css` file has both a `:root` and a `.dark, .dark-theme` block with identical-looking declarations. **Do not remove the dark block** — CSS custom properties are scope-dependent. `var(--ax-neutral-000)` resolves to white at `:root` but to dark navy inside `.dark`, because the design system redefines tokens at that scope level.
 
 ---
 

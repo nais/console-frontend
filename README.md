@@ -79,6 +79,15 @@ When changing layouts, lists, tables, or chart-heavy pages, validate in responsi
 - Two-column desktop layouts collapse to one column on mobile where relevant
 - Touch targets and controls remain usable without overlapping
 
+### CSS Architecture
+
+Styles use `@layer` ordering and design tokens from `@nais/ds-svelte-community`:
+
+- **Tokens**: Use `--ax-space-*`, `--ax-radius-*`, `--ax-text-*` variables — never hardcode spacing, radii, or colors
+- **Utility classes**: `src/styles/app.css` provides `.layout-two-column`, `.layout-sidebar`, `.table-scroll`, `.detail-actions`, `.loading-centered` for common patterns
+- **LayerChart theming**: `src/styles/layerchart.css` maps chart library variables to design tokens. The `.dark` block must mirror the `:root` declarations (tokens resolve differently per scope)
+- **Validation**: Run `npm run lint` — ESLint includes custom rules for missing CSS variables and unused GraphQL files
+
 #### Storybook
 
 The project includes a component library documented with Storybook:
