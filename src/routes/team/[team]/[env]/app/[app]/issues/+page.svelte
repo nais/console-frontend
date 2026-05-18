@@ -46,10 +46,7 @@
 
 <div class="wrapper">
 	<div>
-		<List
-			title="{issueCount} issue{issueCount !== 1 ? 's' : ''}
-						{issueCount !== totalCount ? `(of total ${totalCount})` : ''}"
-		>
+	<List title="Issues" count={issueCount}>
 			{#snippet menu()}
 				<ActionMenu>
 					{#snippet trigger(props)}
