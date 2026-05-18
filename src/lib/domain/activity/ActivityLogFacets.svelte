@@ -79,7 +79,7 @@
 
 <div class="facets">
 	{#if activityTypes.length > 0}
-		<details class="facet-section" open>
+		<details class="facet-section">
 			<summary class="facet-heading">Activity Types</summary>
 			<div class="facet-list">
 				{#each activityTypes as facet (facet.activityType)}
@@ -98,7 +98,7 @@
 	{/if}
 
 	{#if resourceTypes.length > 0}
-		<details class="facet-section" open>
+		<details class="facet-section">
 			<summary class="facet-heading">Resource Types</summary>
 			<div class="facet-list">
 				{#each resourceTypes as facet (facet.resourceType)}
@@ -117,7 +117,7 @@
 	{/if}
 
 	{#if environments.length > 0}
-		<details class="facet-section" open>
+		<details class="facet-section">
 			<summary class="facet-heading">Environments</summary>
 			<div class="facet-list">
 				{#each environments as facet (facet.environmentName)}
@@ -140,7 +140,7 @@
 	.facets {
 		display: flex;
 		flex-direction: column;
-		gap: var(--ax-space-24);
+		gap: var(--ax-space-16);
 	}
 
 	.facet-section {
@@ -150,13 +150,13 @@
 	}
 
 	.facet-heading {
-		font-size: var(--ax-font-size-heading-small);
-		font-weight: 600;
+		font-size: var(--ax-font-size-small);
+		font-weight: 500;
 		color: var(--ax-text-neutral-subtle);
 		margin: 0;
-		letter-spacing: 0.03em;
+		letter-spacing: 0.01em;
 		border-bottom: 1px solid var(--ax-border-neutral-subtleA);
-		padding-bottom: var(--ax-space-8);
+		padding-bottom: var(--ax-space-6);
 		cursor: pointer;
 		list-style: none;
 		display: flex;
@@ -193,7 +193,7 @@
 		align-items: center;
 		gap: var(--ax-space-8);
 		padding: var(--ax-space-6) 0;
-		font-size: var(--ax-font-size-medium);
+		font-size: var(--ax-font-size-small);
 		cursor: pointer;
 	}
 
@@ -220,6 +220,7 @@
 
 	.facet-count {
 		flex-shrink: 0;
+		font-size: 0.6875rem;
 		color: var(--ax-text-neutral-subtle);
 	}
 </style>
