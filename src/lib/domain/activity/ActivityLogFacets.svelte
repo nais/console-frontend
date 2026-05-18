@@ -154,9 +154,9 @@
 		font-weight: 500;
 		color: var(--ax-text-neutral-subtle);
 		margin: 0;
-		letter-spacing: 0.01em;
+		letter-spacing: 0.03em;
 		border-bottom: 1px solid var(--ax-border-neutral-subtleA);
-		padding-bottom: var(--ax-space-6);
+		padding-bottom: var(--ax-space-8);
 		cursor: pointer;
 		list-style: none;
 		display: flex;
