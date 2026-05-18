@@ -15,8 +15,6 @@
 	--surface-icon-glyph-size: 1.5rem;
 	--surface-icon-connector-gap: 2px;
 	--surface-elevated-background: var(--ax-bg-brand-blue-softA);
-	--surface-elevated-background-reverse: var(--ax-bg-brand-blue-softA);
-	/* --surface-icon-background: color-mix(in srgb, var(--surface-accent-color) 10%, transparent); */
 
 	--surface-elevated-shadow:
 		0 0 0 1px color-mix(in srgb, var(--surface-accent-color) 24%, transparent),
@@ -38,11 +36,9 @@
 	--surface-accent-color: var(--ax-text-brand-blue-subtle);
 	--surface-shadow-color: rgba(61, 65, 111, 0.6);
 	--surface-elevated-background: var(--ax-bg-brand-blue-softA);
-	--surface-elevated-background-reverse: var(--ax-bg-brand-blue-softA);
 	--surface-elevated-shadow:
 		0 0 0 1px color-mix(in srgb, var(--surface-accent-color) 24%, transparent),
 		0 2px 8px 0 rgba(0, 0, 0, 0.2), 0 1px 3px 0 rgba(0, 0, 0, 0.16);
-	/* --surface-icon-background: color-mix(in srgb, var(--surface-accent-color) 10%, transparent); */
 	--surface-icon-shadow: none;
 }
 
@@ -102,7 +98,6 @@ html {
 	flex-shrink: 0;
 	border-radius: var(--ax-radius-8);
 	color: var(--surface-accent-color);
-	background: var(--surface-icon-background);
 	box-shadow: var(--surface-icon-shadow);
 	font-size: var(--surface-icon-glyph-size);
 }
@@ -136,6 +131,52 @@ html {
 		0 0 0 1px color-mix(in srgb, var(--surface-accent-color) 24%, transparent),
 		0 8px 12px -10px var(--surface-shadow-color);
 	transform: translateY(-1px);
+}
+
+.layout-two-column {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr) 300px;
+	gap: var(--spacing-layout);
+	align-items: start;
+}
+
+.layout-sidebar {
+	display: grid;
+	gap: var(--ax-space-24);
+	align-content: start;
+}
+
+.table-scroll {
+	max-width: 100%;
+	min-width: 0;
+	overflow-x: auto;
+
+	& table {
+		width: max-content;
+		min-width: 100%;
+	}
+}
+
+.detail-actions {
+	display: flex;
+	justify-content: flex-end;
+	margin-bottom: var(--ax-space-16);
+	gap: var(--ax-space-8);
+	flex-wrap: wrap;
+}
+
+.loading-centered {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	height: 300px;
+}
+
+@media (max-width: 767px), (max-height: 500px) {
+	.layout-two-column {
+		grid-template-columns: 1fr;
+		gap: var(--ax-space-24);
+	}
 }
 
 .search-modal {
