@@ -166,12 +166,13 @@
 	.env-section {
 		display: flex;
 		flex-direction: column;
+		margin-top: var(--ax-space-32);
 	}
 
 	.env-heading {
 		font-size: 1rem;
 		font-weight: var(--ax-font-weight-bold);
-		margin: 0;
+		margin: 0 0 var(--ax-space-12) 0;
 	}
 
 	.chart {
