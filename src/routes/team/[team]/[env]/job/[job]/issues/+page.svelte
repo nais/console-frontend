@@ -1,71 +1,90 @@
 <script lang="ts">
 	import { page } from '$app/state';
-	import IssueTypeSeverityFilters from '$lib/domain/issues/IssueTypeSeverityFilters.svelte';
+	import { IssueOrderField, OrderDirection } from '$houdini';
+	import WorkloadIssuesFacets from '$lib/domain/issues/WorkloadIssuesFacets.svelte';
 	import IssueListItem from '$lib/domain/list-items/IssueListItem.svelte';
 	import GraphErrors from '$lib/ui/GraphErrors.svelte';
 	import List from '$lib/ui/List.svelte';
+	import ListFilters from '$lib/ui/ListFilters.svelte';
 	import ListItem from '$lib/ui/ListItem.svelte';
 	import Pagination from '$lib/ui/Pagination.svelte';
+	import SurfaceCard from '$lib/ui/SurfaceCard.svelte';
 	import { changeParams } from '$lib/utils/searchparams';
-	import { Button } from '@nais/ds-svelte-community';
-	import { ActionMenu } from '@nais/ds-svelte-community/experimental';
-	import { ChevronDownIcon } from '@nais/ds-svelte-community/icons';
 	import type { PageProps } from './$types';
 
 	let { data }: PageProps = $props();
 	let { JobIssues } = $derived(data);
 	let issues = $derived($JobIssues.data?.team.environment.job.issues);
-	let issueCount = $derived(issues?.pageInfo.totalCount ?? 0);
-	let totalCount = $derived($JobIssues.data?.team.environment.job.issues.pageInfo.totalCount ?? 0);
 
 	let after: string = $derived($JobIssues.variables?.after ?? '');
 	let before: string = $derived($JobIssues.variables?.before ?? '');
 
+	let selectedSeverity: string = $derived(page.url.searchParams.get('severity') ?? '');
+	let selectedIssueType: string = $derived(page.url.searchParams.get('issueType') ?? '');
+
+	type IssueOrderFieldOptions = (typeof IssueOrderField)[keyof typeof IssueOrderField];
+	type OrderDirectionOptions = (typeof OrderDirection)[keyof typeof OrderDirection];
+
+	const sortFields: { value: IssueOrderFieldOptions; label: string }[] = [
+		{ value: IssueOrderField.SEVERITY, label: 'Severity' },
+		{ value: IssueOrderField.ISSUE_TYPE, label: 'Issue type' }
+	];
+
+	const currentSortField: IssueOrderFieldOptions = $derived(
+		(Object.values(IssueOrderField).find((f) =>
+			page.url.searchParams.get('sort')?.startsWith(f)
+		) as IssueOrderFieldOptions | undefined) ?? IssueOrderField.SEVERITY
+	);
+
+	const currentSortDirection: OrderDirectionOptions = $derived(
+		(Object.values(OrderDirection).find((d) => page.url.searchParams.get('sort')?.endsWith(d)) as
+			| OrderDirectionOptions
+			| undefined) ?? OrderDirection.ASC
+	);
+
+	function setSort(field: IssueOrderFieldOptions) {
+		const direction =
+			field === currentSortField
+				? currentSortDirection === OrderDirection.ASC
+					? OrderDirection.DESC
+					: OrderDirection.ASC
+				: OrderDirection.ASC;
+		changeParams({ sort: `${field}-${direction}`, after: '', before: '' }, { noScroll: true });
+	}
+
 	const changeQuery = (
 		params: {
-			environments?: string;
-			severity?: string | undefined;
-			issueType?: string | undefined;
+			severity?: string;
+			issueType?: string;
 			after?: string;
 			before?: string;
 		} = {}
 	) => {
-		changeParams({
-			environments: params.environments ?? '',
-			severity: params.severity ?? '',
-			issueType: params.issueType ?? '',
-			before: params.before ?? before,
-			after: params.after ?? after
-		});
+		changeParams(
+			{
+				severity: params.severity ?? selectedSeverity,
+				issueType: params.issueType ?? selectedIssueType,
+				before: params.before ?? before,
+				after: params.after ?? after
+			},
+			{ noScroll: true }
+		);
 	};
+
+	function handleSeverityChange(severity: string) {
+		changeQuery({ severity, after: '', before: '' });
+	}
+
+	function handleIssueTypeChange(issueType: string) {
+		changeQuery({ issueType, after: '', before: '' });
+	}
 </script>
 
 <GraphErrors errors={$JobIssues.errors} />
 
-<div class="wrapper">
+<div class="layout-two-column">
 	<div>
-	<List title="Issues" count={issueCount}>
-			{#snippet menu()}
-				<ActionMenu>
-					{#snippet trigger(props)}
-						<Button
-							variant="tertiary-neutral"
-							size="small"
-							iconPosition="right"
-							{...props}
-							icon={ChevronDownIcon}
-						>
-							<span style="font-weight: normal">Filters</span>
-						</Button>
-					{/snippet}
-					<IssueTypeSeverityFilters
-						severity={page.url.searchParams.get('severity') ?? ''}
-						issueType={page.url.searchParams.get('issueType') ?? ''}
-						onSeverityChange={(severity) => changeQuery({ severity })}
-						onIssueTypeChange={(issueType) => changeQuery({ issueType })}
-					/>
-				</ActionMenu>
-			{/snippet}
+		<List title="Issues" count={issues?.pageInfo.totalCount ?? 0}>
 			{#each issues?.nodes ?? [] as issue (issue.id)}
 				<IssueListItem item={issue} />
 			{:else}
@@ -85,22 +104,26 @@
 			/>
 		{/if}
 	</div>
+	<div class="layout-sidebar">
+		<SurfaceCard title="Filters">
+			<ListFilters
+				{sortFields}
+				{currentSortField}
+				{currentSortDirection}
+				onSort={(field) => setSort(field as IssueOrderFieldOptions)}
+			>
+				<WorkloadIssuesFacets
+					{selectedSeverity}
+					{selectedIssueType}
+					onSeverityChange={handleSeverityChange}
+					onIssueTypeChange={handleIssueTypeChange}
+				/>
+			</ListFilters>
+		</SurfaceCard>
+	</div>
 </div>
 
 <style>
-	.wrapper {
-		display: grid;
-		grid-template-columns: 1fr 300px;
-		gap: var(--spacing-layout);
-	}
-
-	@media (max-width: 767px), (max-height: 500px) {
-		.wrapper {
-			grid-template-columns: 1fr;
-			gap: var(--ax-space-24);
-		}
-	}
-
 	.empty-state {
 		color: var(--ax-text-neutral-subtle);
 	}
