@@ -132,7 +132,7 @@
 	.facets {
 		display: flex;
 		flex-direction: column;
-		gap: var(--ax-space-24);
+		gap: var(--ax-space-16);
 	}
 
 	.facet-section {
@@ -146,9 +146,9 @@
 		font-weight: 500;
 		color: var(--ax-text-neutral-subtle);
 		margin: 0;
-		letter-spacing: 0.03em;
+		letter-spacing: 0.01em;
 		border-bottom: 1px solid var(--ax-border-neutral-subtleA);
-		padding-bottom: var(--ax-space-8);
+		padding-bottom: var(--ax-space-6);
 		cursor: pointer;
 		list-style: none;
 		display: flex;
