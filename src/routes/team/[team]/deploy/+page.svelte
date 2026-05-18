@@ -1,12 +1,9 @@
 <script lang="ts">
-	import { docURL } from '$lib/doc';
 	import DeploymentListItem from '$lib/domain/list-items/DeploymentListItem.svelte';
-	import ExternalLink from '$lib/ui/ExternalLink.svelte';
 	import GraphErrors from '$lib/ui/GraphErrors.svelte';
 	import List from '$lib/ui/List.svelte';
 	import Pagination from '$lib/ui/Pagination.svelte';
 	import { changeParams } from '$lib/utils/searchparams';
-	import { BodyLong } from '@nais/ds-svelte-community';
 	import type { PageProps } from './$types';
 
 	let { data }: PageProps = $props();
@@ -32,66 +29,27 @@
 <GraphErrors errors={$Deployments.errors} />
 
 {#if $Deployments.data}
-	<div class="wrapper">
-		<div>
-			<BodyLong spacing>
-				{#if $Deployments.data?.team.deployments.pageInfo.totalCount == 0}
-					<strong>No deployments found.</strong>
-					<ExternalLink href={docURL('/build/')}
-						>Learn more about builds and deployments in Nais.</ExternalLink
-					>
-				{:else}
-					Overview of your team's deployments.
-					<ExternalLink href={docURL('/build/')}
-						>Learn more about builds and deployments in Nais.</ExternalLink
-					>
-				{/if}
-			</BodyLong>
-			{#if $Deployments.data?.team.deployments.pageInfo.totalCount > 0}
-				<List
-					title="{$Deployments.data.team.deployments.pageInfo.totalCount} deployment{$Deployments
-						.data.team.deployments.pageInfo.totalCount !== 1
-						? 's'
-						: ''}"
-				>
-					{#each $Deployments.data.team.deployments.nodes as deployment (deployment.id)}
-						<DeploymentListItem {deployment} showEnv />
-					{/each}
-				</List>
+	<List title="Deployments" count={$Deployments.data.team.deployments.pageInfo.totalCount}>
+		{#each $Deployments.data.team.deployments.nodes as deployment (deployment.id)}
+			<DeploymentListItem {deployment} showEnv />
+		{/each}
+	</List>
 
-				<Pagination
-					page={$Deployments.data.team.deployments.pageInfo}
-					loaders={{
-						loadPreviousPage: () => {
-							changeQuery({
-								after: '',
-								before: $Deployments.data?.team.deployments.pageInfo.startCursor ?? ''
-							});
-						},
-						loadNextPage: () => {
-							changeQuery({
-								before: '',
-								after: $Deployments.data?.team.deployments.pageInfo.endCursor ?? ''
-							});
-						}
-					}}
-				/>
-			{/if}
-		</div>
-	</div>
+	<Pagination
+		page={$Deployments.data.team.deployments.pageInfo}
+		loaders={{
+			loadPreviousPage: () => {
+				changeQuery({
+					after: '',
+					before: $Deployments.data?.team.deployments.pageInfo.startCursor ?? ''
+				});
+			},
+			loadNextPage: () => {
+				changeQuery({
+					before: '',
+					after: $Deployments.data?.team.deployments.pageInfo.endCursor ?? ''
+				});
+			}
+		}}
+	/>
 {/if}
-
-<style>
-	.wrapper {
-		display: grid;
-		grid-template-columns: 1fr 300px;
-		gap: var(--spacing-layout);
-	}
-
-	@media (max-width: 767px), (max-height: 500px) {
-		.wrapper {
-			grid-template-columns: 1fr;
-			gap: var(--ax-space-24);
-		}
-	}
-</style>

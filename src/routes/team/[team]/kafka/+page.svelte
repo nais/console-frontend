@@ -1,136 +1,145 @@
 <script lang="ts">
+	import { page } from '$app/state';
 	import { KafkaTopicOrderField, OrderDirection } from '$houdini';
 	import { docURL } from '$lib/doc';
-	import PersistenceCost from '$lib/domain/cost/PersistenceCost.svelte';
-	import PersistenceLink from '$lib/domain/persistence/PersistenceLink.svelte';
 	import { envTagVariant } from '$lib/envTagVariant';
+	import KafkaIcon from '$lib/icons/KafkaIcon.svelte';
 	import ExternalLink from '$lib/ui/ExternalLink.svelte';
 	import GraphErrors from '$lib/ui/GraphErrors.svelte';
 	import List from '$lib/ui/List.svelte';
+	import ListFilters from '$lib/ui/ListFilters.svelte';
 	import ListItem from '$lib/ui/ListItem.svelte';
-	import OrderByMenu from '$lib/ui/OrderByMenu.svelte';
 	import Pagination from '$lib/ui/Pagination.svelte';
+	import SurfaceCard from '$lib/ui/SurfaceCard.svelte';
 	import { changeParams } from '$lib/utils/searchparams';
-	import { BodyLong, Tag } from '@nais/ds-svelte-community';
-	import { endOfYesterday, startOfMonth, subMonths } from 'date-fns';
+	import { Tag } from '@nais/ds-svelte-community';
 	import type { PageProps } from './$types';
+
+	type KafkaTopicOrderFieldOptions =
+		(typeof KafkaTopicOrderField)[keyof typeof KafkaTopicOrderField];
+	type OrderDirectionOptions = (typeof OrderDirection)[keyof typeof OrderDirection];
 
 	let { data }: PageProps = $props();
 	let { KafkaTopics } = $derived(data);
 
-	let cost = $derived(() => {
-		const costData = $KafkaTopics.data?.team.cost;
-		const teamSlug = $KafkaTopics.data?.team.slug;
+	const sortFields: { value: KafkaTopicOrderFieldOptions; label: string }[] = [
+		{ value: KafkaTopicOrderField.NAME, label: 'Name' },
+		{ value: KafkaTopicOrderField.ENVIRONMENT, label: 'Environment' }
+	];
 
-		if (!costData || !teamSlug) return null;
+	const currentSortField: KafkaTopicOrderFieldOptions = $derived(
+		(Object.values(KafkaTopicOrderField).find((f) =>
+			page.url.searchParams.get('sort')?.startsWith(f)
+		) as KafkaTopicOrderFieldOptions | undefined) ?? KafkaTopicOrderField.NAME
+	);
 
-		return {
-			costData,
-			teamSlug,
-			pageName: 'Kafka'
-		};
-	});
+	const currentSortDirection: OrderDirectionOptions = $derived(
+		(Object.values(OrderDirection).find((d) => page.url.searchParams.get('sort')?.endsWith(d)) as
+			| OrderDirectionOptions
+			| undefined) ?? OrderDirection.ASC
+	);
+
+	function setSort(field: KafkaTopicOrderFieldOptions) {
+		const direction =
+			field === currentSortField
+				? currentSortDirection === OrderDirection.ASC
+					? OrderDirection.DESC
+					: OrderDirection.ASC
+				: OrderDirection.ASC;
+		changeParams({ sort: `${field}-${direction}`, after: '', before: '' });
+	}
 </script>
 
 <GraphErrors errors={$KafkaTopics.errors} />
 
 {#if $KafkaTopics.data}
-	{#if $KafkaTopics.data.team.kafkaTopics.pageInfo.totalCount}
-		<div class="content-wrapper">
-			<div>
-				<BodyLong spacing>
-					Kafka topics are categories where messages are published and consumed, acting as
-					distributed logs for event streaming.
-
-					<ExternalLink href={docURL('/persistence/kafka')}
-						>Learn more about Kafka and how to get started.</ExternalLink
-					>
-				</BodyLong>
-
-				<List title="{$KafkaTopics.data.team.kafkaTopics.pageInfo.totalCount} entries">
-					{#snippet menu()}
-						<OrderByMenu
-							orderField={KafkaTopicOrderField}
-							defaultOrderField={KafkaTopicOrderField.NAME}
-							defaultOrderDirection={OrderDirection.DESC}
-						/>
-					{/snippet}
+	<div class="layout-two-column">
+		<div>
+			<List title="Kafka" count={$KafkaTopics.data.team.kafkaTopics.pageInfo.totalCount}>
+				{#if $KafkaTopics.data.team.kafkaTopics.nodes.length > 0}
 					{#each $KafkaTopics.data.team.kafkaTopics.nodes as instance (instance.id)}
-						<ListItem>
-							<div>
-								<PersistenceLink {instance} />
-								<Tag size="small" variant={envTagVariant(instance.teamEnvironment.environment.name)}
+						<ListItem interactive>
+							<div class="name-group">
+								<KafkaIcon style="font-size: 1.25rem; flex-shrink: 0" />
+								<a
+									href="/team/{instance.team.slug}/{instance.teamEnvironment.environment
+										.name}/kafka/{instance.name}"
+									class="item-name">{instance.name}</a
+								>
+								<Tag
+									size="xsmall"
+									variant={envTagVariant(instance.teamEnvironment.environment.name)}
 									>{instance.teamEnvironment.environment.name}</Tag
 								>
 							</div>
 						</ListItem>
 					{/each}
-				</List>
-				<Pagination
-					page={$KafkaTopics.data.team.kafkaTopics.pageInfo}
-					loaders={{
-						loadPreviousPage: () =>
-							changeParams(
-								{
-									after: '',
-									before: $KafkaTopics.data?.team.kafkaTopics.pageInfo.startCursor ?? ''
-								},
-								{ noScroll: true }
-							),
-						loadNextPage: () =>
-							changeParams(
-								{ before: '', after: $KafkaTopics.data?.team.kafkaTopics.pageInfo.endCursor ?? '' },
-								{ noScroll: true }
-							)
-					}}
-				/>
-			</div>
-			<div class="right-column">
-				{#if cost()}
-					{@const costData = cost()!}
-					<div>
-						<PersistenceCost
-							pageName={costData.pageName}
-							costData={costData.costData}
-							teamSlug={costData.teamSlug}
-							from={startOfMonth(subMonths(new Date(), 1))}
-							to={endOfYesterday()}
-							service="Kafka Shared"
-						/>
-					</div>
+				{:else}
+					<ListItem>
+						<p>
+							No Kafka topics found. Kafka topics are categories where messages are published and
+							consumed, acting as distributed logs for event streaming.
+							<ExternalLink href={docURL('/persistence/kafka')}
+								>Learn more about Kafka and how to get started.</ExternalLink
+							>
+						</p>
+					</ListItem>
 				{/if}
-			</div>
+			</List>
+			<Pagination
+				page={$KafkaTopics.data.team.kafkaTopics.pageInfo}
+				loaders={{
+					loadPreviousPage: () =>
+						changeParams(
+							{
+								after: '',
+								before: $KafkaTopics.data?.team.kafkaTopics.pageInfo.startCursor ?? ''
+							},
+							{ noScroll: true }
+						),
+					loadNextPage: () =>
+						changeParams(
+							{ before: '', after: $KafkaTopics.data?.team.kafkaTopics.pageInfo.endCursor ?? '' },
+							{ noScroll: true }
+						)
+				}}
+			/>
 		</div>
-	{:else}
-		<div class="content-wrapper">
-			<BodyLong>
-				<strong>No Kafka topics found.</strong> Kafka topics are categories where messages are
-				published and consumed, acting as distributed logs for event streaming.
-
-				<ExternalLink href={docURL('/persistence/kafka')}
-					>Learn more about Kafka and how to get started.</ExternalLink
-				>
-			</BodyLong>
+		<div class="layout-sidebar">
+			<SurfaceCard title="Filters">
+				<ListFilters
+					{sortFields}
+					{currentSortField}
+					{currentSortDirection}
+					onSort={(field) => setSort(field as KafkaTopicOrderFieldOptions)}
+				/>
+			</SurfaceCard>
 		</div>
-	{/if}
+	</div>
 
 	<style>
-		.content-wrapper {
-			display: grid;
-			gap: var(--ax-space-24);
-			grid-template-columns: 1fr 300px;
+		.name-group {
+			display: flex;
+			align-items: center;
+			gap: var(--ax-space-8);
+			min-width: 0;
 		}
-
-		.right-column {
-			display: grid;
-			gap: var(--ax-space-24);
+		.name-group :global(.aksel-tag) {
+			white-space: nowrap;
+			flex-shrink: 0;
 		}
-
-		/* Mobile responsive layout */
-		@media (max-width: 767px), (max-height: 500px) {
-			.content-wrapper {
-				grid-template-columns: 1fr;
-			}
+		.item-name {
+			color: var(--ax-text-neutral);
+			text-decoration: none;
+			font-weight: 500;
+			white-space: nowrap;
+			overflow: hidden;
+			text-overflow: ellipsis;
+			min-width: 0;
+			flex: 0 1 auto;
+		}
+		.item-name:hover {
+			text-decoration: underline;
 		}
 	</style>
 {/if}

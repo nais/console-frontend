@@ -50,3 +50,7 @@
 .stroke-danger {
 	stroke: var(--ax-border-danger);
 }
+
+.lc-legend-ramp-svg {
+	display: none;
+}

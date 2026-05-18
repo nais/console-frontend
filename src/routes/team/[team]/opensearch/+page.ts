@@ -2,7 +2,6 @@ import { load_OpenSearch, OpenSearchOrderField, OrderDirection } from '$houdini'
 import { urlToOrderDirection, urlToOrderField } from '$lib/ui/OrderByMenu.svelte';
 import { addPageMeta } from '$lib/utils/pageMeta';
 import { error } from '@sveltejs/kit';
-import { startOfMonth, subMonths } from 'date-fns';
 import { get } from 'svelte/store';
 
 const rows = 25;
@@ -29,7 +28,11 @@ export async function load(event) {
 	const before = url.searchParams.get('before') || '';
 
 	return {
-		...(await addPageMeta(event, { title: 'OpenSearch Instances' })),
+		...(await addPageMeta(event, {
+			title: 'OpenSearch Instances',
+			pageHeaderTitle: '',
+			docPath: '/persistence/opensearch'
+		})),
 		...(await load_OpenSearch({
 			event,
 			variables: {
@@ -38,9 +41,7 @@ export async function load(event) {
 					field: urlToOrderField(OpenSearchOrderField, OpenSearchOrderField.ISSUES, event.url),
 					direction: urlToOrderDirection(event.url, OrderDirection.DESC)
 				},
-				...(before ? { before, last: rows } : { after, first: rows }),
-				from: startOfMonth(subMonths(new Date(), 12)),
-				to: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000)
+				...(before ? { before, last: rows } : { after, first: rows })
 			}
 		}))
 	};

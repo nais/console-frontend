@@ -1,7 +1,6 @@
 import { BigQueryDatasetOrderField, load_BigQuery } from '$houdini';
 import { urlToOrderDirection, urlToOrderField } from '$lib/ui/OrderByMenu.svelte';
 import { addPageMeta } from '$lib/utils/pageMeta';
-import { startOfMonth, subMonths } from 'date-fns';
 
 const rows = 25;
 
@@ -10,7 +9,11 @@ export async function load(event) {
 	const before = event.url.searchParams.get('before') || '';
 
 	return {
-		...(await addPageMeta(event, { title: 'BigQuery Datasets' })),
+		...(await addPageMeta(event, {
+			title: 'BigQuery Datasets',
+			pageHeaderTitle: '',
+			docPath: '/persistence/bigquery'
+		})),
 		...(await load_BigQuery({
 			event,
 			variables: {
@@ -23,9 +26,7 @@ export async function load(event) {
 					),
 					direction: urlToOrderDirection(event.url)
 				},
-				...(before ? { before, last: rows } : { after, first: rows }),
-				from: startOfMonth(subMonths(new Date(), 12)),
-				to: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000)
+				...(before ? { before, last: rows } : { after, first: rows })
 			}
 		}))
 	};

@@ -103,13 +103,13 @@
 		justify-content: center;
 		gap: var(--ax-space-12);
 		padding: var(--ax-space-20) var(--ax-space-32);
-		background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
+		background: var(--ax-bg-success-moderate);
 		color: var(--ax-text-success-subtle);
 		border-radius: var(--ax-radius-8);
 		margin-bottom: var(--ax-space-32);
 		font-size: var(--ax-font-size-xlarge);
 		font-weight: 700;
-		box-shadow: 0 4px 12px rgba(40, 167, 69, 0.25);
+		box-shadow: none;
 	}
 
 	.naisdevice-banner :global(svg) {

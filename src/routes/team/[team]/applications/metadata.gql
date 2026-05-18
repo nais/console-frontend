@@ -11,5 +11,13 @@ query ApplicationsListMetadata($team: Slug!) @cache(policy: CacheAndNetwork) {
 				totalCount
 			}
 		}
+		inventoryCounts {
+			applications {
+				running
+				notRunning
+				unknown
+				total
+			}
+		}
 	}
 }

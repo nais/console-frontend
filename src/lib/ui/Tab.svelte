@@ -15,7 +15,7 @@
 <style>
 	.tab {
 		text-decoration: none;
-		color: var(--ax-text-subtle);
+		color: var(--ax-text-neutral-subtle);
 		padding: 0.75rem 1rem;
 		border-bottom: 3px solid transparent;
 	}

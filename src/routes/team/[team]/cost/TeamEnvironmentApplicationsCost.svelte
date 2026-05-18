@@ -2,15 +2,11 @@
 	import { graphql } from '$houdini';
 	import LegendWrapper, { legendSnippet } from '$lib/chart/LegendWrapper.svelte';
 	import { euroAxisFormatter } from '$lib/chart/util';
+	import GraphErrors from '$lib/ui/GraphErrors.svelte';
+	import SurfaceCard from '$lib/ui/SurfaceCard.svelte';
 	import { changeParams } from '$lib/utils/searchparams';
 	import { visualizationColors } from '$lib/visualizationColors';
-	import {
-		BodyLong,
-		Heading,
-		Loader,
-		ToggleGroup,
-		ToggleGroupItem
-	} from '@nais/ds-svelte-community';
+	import { BodyLong, Loader, ToggleGroup, ToggleGroupItem } from '@nais/ds-svelte-community';
 	import { LineChart } from 'layerchart';
 
 	const {
@@ -90,41 +86,41 @@
 					.sort((a, b) => b.sum - a.sum)
 					.slice(0, 10)
 			}))
+			.filter((env) => env.series.length > 0)
 			.toReversed() ?? []
 	);
 </script>
 
-<div>
-	<div class="content">
-		<Heading as="h2" spacing>10 Most Expensive Applications by Environment</Heading>
-		<BodyLong spacing>
-			Accumulated cost for each application over time, including persistence, broken down by
-			environment. Displaying the 10 most expensive applications for the chosen time interval.
-		</BodyLong>
-	</div>
+<SurfaceCard title="Top 10 Applications by Environment">
+	{#snippet headerAside()}
+		<ToggleGroup
+			size="small"
+			value={interval}
+			onchange={(interval) => changeParams({ interval }, { noScroll: true })}
+		>
+			{#each ['30d', '90d', '6m', '1y'] as interval (interval)}
+				<ToggleGroupItem value={interval}>{interval}</ToggleGroupItem>
+			{/each}
+		</ToggleGroup>
+	{/snippet}
+
+	<BodyLong>
+		Accumulated cost for each application over time, including persistence. Displaying the 10 most
+		expensive applications per environment.
+	</BodyLong>
+
+	<GraphErrors errors={$costQuery.errors} />
+
 	{#if $costQuery.fetching}
-		<div style="display: flex; justify-content: center; align-items: center; height: 200px;">
+		<div class="loading">
 			<Loader size="3xlarge" />
 		</div>
 	{:else}
 		{#each appsByEnv as env (env.id)}
-			<div class="heading">
-				<Heading as="h3" size="small">{env.environment.name}</Heading>
-				<div class="interval-controls">
-					<ToggleGroup
-						value={interval}
-						onchange={(interval) => changeParams({ interval }, { noScroll: true })}
-					>
-						{#each ['30d', '90d', '6m', '1y'] as interval (interval)}
-							<ToggleGroupItem value={interval}>{interval}</ToggleGroupItem>
-						{/each}
-					</ToggleGroup>
-				</div>
-			</div>
-
-			{#if env.series.length > 0}
-				<div class="mt-5 mb-12">
-					<LegendWrapper height="500px">
+			<div class="env-section">
+				<h3 class="env-heading">{env.environment.name}</h3>
+				<div class="chart">
+					<LegendWrapper height="400px">
 						<LineChart
 							padding={{ left: 40 }}
 							legend={legendSnippet}
@@ -154,44 +150,34 @@
 						/>
 					</LegendWrapper>
 				</div>
-			{:else}
-				<BodyLong>No application cost data available</BodyLong>
-			{/if}
+			</div>
 		{/each}
 	{/if}
-</div>
+</SurfaceCard>
 
 <style>
-	.heading {
+	.loading {
 		display: flex;
-		justify-content: space-between;
+		justify-content: center;
 		align-items: center;
-		padding-bottom: var(--spacing-layout);
-	}
-	.content {
-		max-width: 80ch;
+		height: 200px;
 	}
 
-	.interval-controls {
+	.env-section {
 		display: flex;
-		justify-content: flex-end;
+		flex-direction: column;
+		margin-top: var(--ax-space-32);
 	}
 
-	@media (max-width: 767px), (max-height: 500px) {
-		.heading {
-			flex-direction: column;
-			align-items: flex-start;
-			gap: var(--ax-space-12);
-		}
+	.env-heading {
+		font-size: 1rem;
+		font-weight: var(--ax-font-weight-bold);
+		margin: 0 0 var(--ax-space-12) 0;
+	}
 
-		.content {
-			max-width: 100%;
-		}
-
-		.interval-controls {
-			width: 100%;
-			justify-content: flex-start;
-			overflow-x: auto;
-		}
+	.chart {
+		height: 400px;
+		min-width: 0;
+		margin-bottom: var(--ax-space-32);
 	}
 </style>

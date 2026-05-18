@@ -6,9 +6,8 @@
 	import type { Component } from 'svelte';
 	import { icons } from '../activity/activity-log-icons';
 	import { activityTooltip } from '../activity/activity-log-tooltip';
-	import '../activity/activity-log.css';
-	import ApplicationDeletedActivityLogEntryText from '../activity/shared/texts/ApplicationDeletedActivityLogEntryText.svelte';
 	import ApplicationCreatedActivityLogEntryText from '../activity/shared/texts/ApplicationCreatedActivityLogEntryText.svelte';
+	import ApplicationDeletedActivityLogEntryText from '../activity/shared/texts/ApplicationDeletedActivityLogEntryText.svelte';
 	import ApplicationRestartedActivityLogEntryText from '../activity/shared/texts/ApplicationRestartedActivityLogEntryText.svelte';
 	import ApplicationScaledActivityLogEntryText from '../activity/shared/texts/ApplicationScaledActivityLogEntryText.svelte';
 	import ApplicationUpdatedActivityLogEntryText from '../activity/shared/texts/ApplicationUpdatedActivityLogEntryText.svelte';
@@ -429,16 +428,36 @@
 	const TextComponent = $derived(textComponent($data.__typename));
 </script>
 
-<ListItem>
-	<div style="display: flex; gap: 0.5rem; min-width: 0;">
-		<div class="activity-icon">
-			<Tooltip content={activityTooltip($data.__typename)}>
-				<Icon size="1em" width="1em" height="1em" />
-			</Tooltip>
-		</div>
+<ListItem interactive>
+	<div class="activity-log-list-item">
+		<Tooltip content={activityTooltip($data.__typename)}>
+			<div class="surface-icon surface-icon-timeline">
+				<Icon />
+			</div>
+		</Tooltip>
 
-		<div style="min-width: 0; overflow-wrap: anywhere;">
+		<div class="activity-text">
 			<TextComponent data={$data} />
 		</div>
 	</div>
 </ListItem>
+
+<style>
+	.activity-log-list-item {
+		display: flex;
+		align-items: center;
+		gap: var(--ax-space-12);
+		font-size: var(--ax-font-size-medium);
+		--surface-icon-size: 2rem;
+	}
+
+	.activity-log-list-item :global(.surface-icon) {
+		background: var(--ax-bg-brand-blue-softA);
+		color: var(--ax-text-brand-blue-decoration);
+	}
+
+	.activity-text {
+		min-width: 0;
+		overflow-wrap: anywhere;
+	}
+</style>

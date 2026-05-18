@@ -1,16 +1,7 @@
 <script lang="ts">
 	import type { InstanceGroupDetail$result } from '$houdini';
-	import {
-		Button,
-		CopyButton,
-		Heading,
-		Table,
-		Tbody,
-		Td,
-		Th,
-		Thead,
-		Tr
-	} from '@nais/ds-svelte-community';
+	import SurfaceCard from '$lib/ui/SurfaceCard.svelte';
+	import { Button, CopyButton, Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte-community';
 	import { EyeIcon, EyeSlashIcon } from '@nais/ds-svelte-community/icons';
 	import { SvelteMap } from 'svelte/reactivity';
 
@@ -31,15 +22,14 @@
 </script>
 
 {#if envVars.length > 0}
-	<section>
-		<div class="section-header">
-			<Heading as="h3" size="small" spacing>Environment Variables</Heading>
+	<SurfaceCard title="Environment Variables">
+		{#snippet headerAside()}
 			{#if hasSecrets && viewerIsMember && revealedValues.size > 0}
 				<Button size="xsmall" variant="tertiary" icon={EyeSlashIcon} onclick={onHideAll}>
 					Hide secret values
 				</Button>
 			{/if}
-		</div>
+		{/snippet}
 		<div class="table-container">
 			<Table size="small" zebraStripes>
 				<Thead>
@@ -98,21 +88,10 @@
 				</Tbody>
 			</Table>
 		</div>
-	</section>
+	</SurfaceCard>
 {/if}
 
 <style>
-	section {
-		display: flex;
-		flex-direction: column;
-	}
-
-	.section-header {
-		display: flex;
-		justify-content: space-between;
-		align-items: flex-start;
-	}
-
 	.masked {
 		color: var(--ax-text-neutral-subtle);
 		user-select: none;
@@ -167,7 +146,7 @@
 		color: var(--ax-text-neutral-subtle);
 	}
 
-	section :global(code) {
+	.table-container :global(code) {
 		font-size: var(--ax-font-size-small);
 		color: var(--ax-text-neutral);
 	}
@@ -190,11 +169,6 @@
 	}
 
 	@media (max-width: 767px), (max-height: 500px) {
-		.section-header {
-			flex-direction: column;
-			gap: var(--ax-space-8);
-		}
-
 		.table-container {
 			padding-bottom: var(--ax-space-4);
 			overscroll-behavior-x: contain;

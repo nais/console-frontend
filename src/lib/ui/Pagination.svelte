@@ -71,7 +71,7 @@
 		display: flex;
 		justify-content: space-between;
 		align-items: center;
-		color: var(--ax-text-subtle, --a-text-subtle);
+		color: var(--ax-text-neutral-subtle, --a-text-subtle);
 		font-size: 1rem;
 	}
 	.pagination {
@@ -79,7 +79,7 @@
 		justify-content: flex-end;
 		align-items: center;
 		gap: var(--ax-space-16);
-		color: var(--ax-text-subtle);
+		color: var(--ax-text-neutral-subtle);
 		padding: var(--ax-space-16);
 
 		.active-range {

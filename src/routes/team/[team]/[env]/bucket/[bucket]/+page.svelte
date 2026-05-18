@@ -140,7 +140,7 @@
 	.inline {
 		display: flex;
 		align-items: center;
-		gap: 0.5rem;
+		gap: var(--ax-space-8);
 	}
 
 	@media (max-width: 767px) {

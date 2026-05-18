@@ -2,7 +2,8 @@
 	import { graphql } from '$houdini';
 	import GraphErrors from '$lib/ui/GraphErrors.svelte';
 	import IconLabel from '$lib/ui/IconLabel.svelte';
-	import { BodyShort, Heading, Loader } from '@nais/ds-svelte-community';
+	import SurfaceCard from '$lib/ui/SurfaceCard.svelte';
+	import { Loader } from '@nais/ds-svelte-community';
 	import { FileTextIcon } from '@nais/ds-svelte-community/icons';
 
 	const configs = graphql(`
@@ -47,28 +48,29 @@
 	});
 </script>
 
-<div class="wrapper">
-	<Heading as="h3" size="small">Configs</Heading>
-	<GraphErrors errors={$configs.errors} />
+<GraphErrors errors={$configs.errors} />
 
-	{#if $configs.fetching}
+{#if $configs.fetching}
+	<SurfaceCard title="Configs">
 		<Loader />
-	{:else if $configs.data && $configs.data.team.environment.workload.configs.edges.length > 0}
-		{#each $configs.data.team.environment.workload.configs.edges as config (config.node.id)}
-			<IconLabel
-				label={config.node.name}
-				icon={FileTextIcon}
-				href="/team/{$configs.data.team.slug}/{$configs.data.team.environment.environment
-					.name}/config/{config.node.name}"
-			/>
-		{/each}
-	{:else}
-		<BodyShort>No configs referenced in nais.yaml.</BodyShort>
-	{/if}
-</div>
+	</SurfaceCard>
+{:else if $configs.data && $configs.data.team.environment.workload.configs.edges.length > 0}
+	<SurfaceCard title="Configs">
+		<div class="list">
+			{#each $configs.data.team.environment.workload.configs.edges as config (config.node.id)}
+				<IconLabel
+					label={config.node.name}
+					icon={FileTextIcon}
+					href="/team/{$configs.data.team.slug}/{$configs.data.team.environment.environment
+						.name}/config/{config.node.name}"
+				/>
+			{/each}
+		</div>
+	</SurfaceCard>
+{/if}
 
 <style>
-	.wrapper {
+	.list {
 		display: flex;
 		flex-direction: column;
 		gap: var(--ax-space-4);

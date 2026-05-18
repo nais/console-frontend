@@ -11,5 +11,14 @@ query JobsListMetadata($team: Slug!) @cache(policy: CacheAndNetwork) {
 				totalCount
 			}
 		}
+		inventoryCounts {
+			jobs {
+				running
+				completed
+				failed
+				unknown
+				total
+			}
+		}
 	}
 }

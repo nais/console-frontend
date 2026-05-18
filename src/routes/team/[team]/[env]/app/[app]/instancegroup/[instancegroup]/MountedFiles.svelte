@@ -1,6 +1,7 @@
 <script lang="ts">
 	import type { InstanceGroupDetail$result } from '$houdini';
-	import { Button, Heading, Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte-community';
+	import SurfaceCard from '$lib/ui/SurfaceCard.svelte';
+	import { Button, Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte-community';
 	import { DownloadIcon } from '@nais/ds-svelte-community/icons';
 
 	type MountedFile =
@@ -21,15 +22,14 @@
 </script>
 
 {#if files.length > 0}
-	<section>
-		<Heading as="h3" size="small" spacing>Mounted Files</Heading>
+	<SurfaceCard title="Mounted Files">
 		<div class="table-container">
 			<Table size="small" zebraStripes>
 				<Thead>
 					<Tr>
-						<Th style="min-width: 320px">Path</Th>
-						<Th style="min-width: 260px">Source</Th>
-						<Th style="width: 1%"></Th>
+						<Th>Path</Th>
+						<Th>Source</Th>
+						<Th class="action-column"></Th>
 					</Tr>
 				</Thead>
 				<Tbody>
@@ -73,15 +73,10 @@
 				</Tbody>
 			</Table>
 		</div>
-	</section>
+	</SurfaceCard>
 {/if}
 
 <style>
-	section {
-		display: flex;
-		flex-direction: column;
-	}
-
 	.source {
 		color: var(--ax-text-neutral-subtle);
 		font-size: var(--ax-font-size-small);
@@ -102,7 +97,11 @@
 		white-space: nowrap;
 	}
 
-	section :global(code) {
+	.table-container :global(th.action-column) {
+		width: 1%;
+	}
+
+	.table-container :global(code) {
 		font-size: var(--ax-font-size-small);
 		color: var(--ax-text-neutral);
 		overflow-wrap: normal;

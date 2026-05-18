@@ -1,7 +1,9 @@
 interface AddPageMetaOptions {
 	title?: string;
+	pageHeaderTitle?: string;
 	breadcrumbs?: App.LayoutData['meta']['breadcrumbs'];
 	tag?: App.LayoutData['meta']['tag'];
+	docPath?: string;
 }
 
 /**
@@ -56,16 +58,18 @@ export async function addPageMeta<
 	}
 >(event: T, options: AddPageMetaOptions) {
 	const parentData = await event.parent();
-	const { title, breadcrumbs, tag } = options;
+	const { title, pageHeaderTitle, breadcrumbs, tag, docPath } = options;
 
 	return {
 		meta: {
 			...parentData.meta,
 			...(title ? { title } : {}),
+			...(pageHeaderTitle !== undefined ? { pageHeaderTitle } : {}),
 			...(breadcrumbs
 				? { breadcrumbs: [...(parentData.meta?.breadcrumbs ?? []), ...breadcrumbs] }
 				: {}),
-			...(tag ? { tag } : {})
+			...(tag ? { tag } : {}),
+			...(docPath ? { docPath } : {})
 		}
 	};
 }

@@ -1,7 +1,7 @@
 <script lang="ts">
+	import { BodyLong } from '@nais/ds-svelte-community';
 	import type { SidebarActivityLogFragment$data } from '$houdini';
-	import Time from '$lib/ui/Time.svelte';
-	import { BodyShort } from '@nais/ds-svelte-community';
+	import Meta from '../../Meta.svelte';
 	import { activityLogResourceLink } from '../../utils';
 
 	let {
@@ -15,25 +15,24 @@
 </script>
 
 <div>
-	Workload
-	{#if data.environmentName}
-		<a
-			href={activityLogResourceLink(
-				data.environmentName,
-				data.resourceType,
-				data.resourceName,
-				data.teamSlug
-			)}>{data.resourceName}</a
-		>
-	{:else}
-		{data.resourceName}
-	{/if}
-	scaled {data.appScaled.direction} to {data.appScaled.newSize} replicas
-	{#if data.environmentName}
-		in {data.environmentName}
-	{/if}.
-
-	<BodyShort textColor="subtle" size="small">
-		<Time time={data.createdAt} distance />
-	</BodyShort>
+	<BodyLong size="small">
+		Application
+		{#if data.environmentName}
+			<a
+				href={activityLogResourceLink(
+					data.environmentName,
+					data.resourceType,
+					data.resourceName,
+					data.teamSlug
+				)}>{data.resourceName}</a
+			>
+		{:else}
+			{data.resourceName}
+		{/if}
+		scaled {data.appScaled.direction} to {data.appScaled.newSize} replicas
+		{#if data.environmentName}
+			in {data.environmentName}
+		{/if}.
+	</BodyLong>
+	<Meta actor={data.actor} createdAt={data.createdAt} />
 </div>

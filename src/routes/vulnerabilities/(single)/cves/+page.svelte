@@ -113,26 +113,26 @@
 		display: flex;
 		justify-content: space-between;
 		align-items: flex-start;
-		gap: 1rem;
+		gap: var(--ax-space-16);
 		width: 100%;
 	}
 
 	.cve-main {
 		display: flex;
 		flex-direction: column;
-		gap: 0.5rem;
+		gap: var(--ax-space-8);
 		flex: 1;
 	}
 
 	.cve-id-section {
 		display: flex;
 		align-items: center;
-		gap: 0.5rem;
+		gap: var(--ax-space-8);
 	}
 
 	.cve-stats {
 		display: flex;
-		gap: 1rem;
+		gap: var(--ax-space-16);
 		flex-shrink: 0;
 	}
 

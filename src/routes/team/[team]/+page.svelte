@@ -1,18 +1,16 @@
 <script lang="ts">
 	import { page } from '$app/state';
-	import { AlertState } from '$houdini';
-	import TeamOverviewActivityLog from '$lib/domain/activity/team-overview/TeamOverviewActivityLog.svelte';
-	import AggregatedCostForTeam from '$lib/domain/cost/AggregatedCostForTeam.svelte';
+	import TeamActivityCard from '$lib/domain/activity/TeamActivityCard.svelte';
 	import CriticalIssues from '$lib/domain/issues/CriticalIssues.svelte';
-	import IssueSummary from '$lib/domain/issues/IssueSummary.svelte';
-	import PrometheusAlert from '$lib/domain/monitoring/PrometheusAlert.svelte';
-	import VulnerabilitySummary from '$lib/domain/vulnerability/VulnerabilitySummary.svelte';
+	import TeamInventory from '$lib/domain/team/TeamInventory.svelte';
+	import TeamSummary from '$lib/domain/team/TeamSummary.svelte';
 	import GraphErrors from '$lib/ui/GraphErrors.svelte';
 	import { Alert, BodyShort } from '@nais/ds-svelte-community';
 	import type { PageProps } from './$types';
 
 	let { data }: PageProps = $props();
-	let { TeamOverview, teamSlug, purpose } = $derived(data);
+	let { TeamOverview, TeamSummaryVulnerabilities, TeamSummaryCost, teamSlug, purpose } =
+		$derived(data);
 </script>
 
 <div class="team-info">
@@ -31,34 +29,28 @@
 
 <GraphErrors errors={$TeamOverview.errors} />
 
-{#if $TeamOverview.data?.team.firingAlerts.pageInfo.totalCount}
-	<div class="alerts-wrapper">
-		<PrometheusAlert
-			{teamSlug}
-			alerts={$TeamOverview.data?.team.firingAlerts.nodes}
-			collapsible={false}
-			alertsState={AlertState.FIRING}
-		/>
-	</div>
-{/if}
-
 <div class="wrapper">
 	<div class="main-content">
 		<CriticalIssues {teamSlug} />
-		<div>
-			<AggregatedCostForTeam {teamSlug} />
-		</div>
+		<TeamSummary
+			{teamSlug}
+			criticalIssues={$TeamOverview.data?.team.criticalIssues.pageInfo.totalCount ?? 0}
+			warningIssues={$TeamOverview.data?.team.warningIssues.pageInfo.totalCount ?? 0}
+			todoIssues={$TeamOverview.data?.team.todoIssues.pageInfo.totalCount ?? 0}
+			firingAlerts={$TeamOverview.data?.team.firingAlerts.pageInfo.totalCount ?? 0}
+			loading={$TeamOverview.fetching}
+			vulnerabilityData={$TeamSummaryVulnerabilities.data}
+			costData={$TeamSummaryCost.data}
+			costLoading={$TeamSummaryCost.fetching}
+		/>
+		<TeamInventory {teamSlug} />
 	</div>
 	<div class="summary-cards">
-		<IssueSummary
-			critical={$TeamOverview.data?.team.criticals.pageInfo.totalCount}
-			warning={$TeamOverview.data?.team.warnings.pageInfo.totalCount}
-			todo={$TeamOverview.data?.team.todos.pageInfo.totalCount}
+		<TeamActivityCard
 			{teamSlug}
-			loading={$TeamOverview.fetching}
+			viewAllHref="/team/{teamSlug}/activity-log"
+			title="Latest Activity"
 		/>
-		<VulnerabilitySummary {teamSlug} />
-		<TeamOverviewActivityLog {teamSlug} />
 	</div>
 </div>
 
@@ -83,15 +75,9 @@
 
 	.summary-cards {
 		display: grid;
-		grid-template-columns: minmax(250px, max-content);
+		grid-template-columns: minmax(0, 1fr);
 		gap: var(--spacing-layout);
-	}
-
-	.alerts-wrapper {
-		display: flex;
-		flex-direction: column;
-		gap: var(--ax-space-8);
-		padding-bottom: var(--spacing-layout);
+		align-self: start;
 	}
 
 	.team-info {

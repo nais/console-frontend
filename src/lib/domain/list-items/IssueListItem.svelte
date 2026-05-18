@@ -1,22 +1,18 @@
 <script lang="ts">
-	import { fragment, graphql, type IssueFragment, type IssueFragment$data } from '$houdini';
-	import DefaultIssue from '$lib/domain/issues/DefaultIssue.svelte';
-	import DeprecatedIngressIssue from '$lib/domain/issues/DeprecatedIngressIssue.svelte';
-	import DeprecatedRegistryIssue from '$lib/domain/issues/DeprecatedRegistryIssue.svelte';
-	import ExternalIngressCriticalVulnerabilityIssue from '$lib/domain/issues/ExternalIngressCriticalVulnerabilityIssue.svelte';
-	import FailedSynchronizationIssue from '$lib/domain/issues/FailedSynchronizationIssue.svelte';
-	import InvalidSpecIssue from '$lib/domain/issues/InvalidSpecIssue.svelte';
-	import LastRunFailedIssue from '$lib/domain/issues/LastRunFailedIssue.svelte';
-	import ApplicationRestartLoopIssue from '$lib/domain/issues/ApplicationRestartLoopIssue.svelte';
-	import NoRunningInstancesIssue from '$lib/domain/issues/NoRunningInstancesIssue.svelte';
-	import OpenSearchIssue from '$lib/domain/issues/OpenSearchIssue.svelte';
-	import SqlInstanceStateIssue from '$lib/domain/issues/SqlInstanceStateIssue.svelte';
-	import SqlInstanceVersionIssue from '$lib/domain/issues/SqlInstanceVersionIssue.svelte';
-	import ValkeyIssue from '$lib/domain/issues/ValkeyIssue.svelte';
-	import ListItem from '$lib/ui/ListItem.svelte';
-	import type { Component } from 'svelte';
-	import MissingSbomIssue from '../issues/MissingSbomIssue.svelte';
-	import VulnerableImageIssue from '../issues/VulnerableImageIssue.svelte';
+	import { fragment, graphql, type IssueFragment } from '$houdini';
+	import { envTagVariant } from '$lib/envTagVariant';
+	import OpenSearchIcon from '$lib/icons/OpenSearchIcon.svelte';
+	import ValkeyIcon from '$lib/icons/ValkeyIcon.svelte';
+	import CriticalIndicator from '$lib/ui/CriticalIndicator.svelte';
+	import { issueTypeLabel } from '$lib/utils/issueTypeLabel';
+	import { Tag } from '@nais/ds-svelte-community';
+	import {
+		BriefcaseClockIcon,
+		ChevronRightIcon,
+		CircleFillIcon,
+		DatabaseIcon,
+		PackageIcon
+	} from '@nais/ds-svelte-community/icons';
 
 	interface Props {
 		item: IssueFragment;
@@ -136,45 +132,212 @@
 		)
 	);
 
-	type Kind = IssueFragment$data['__typename'];
+	const resourceName = $derived.by(() => {
+		const d = $data;
+		if ('application' in d && d.application) return d.application.name;
+		if ('job' in d && d.job) return d.job.name;
+		if ('openSearch' in d && d.openSearch) return d.openSearch.name;
+		if ('sqlInstance' in d && d.sqlInstance) return d.sqlInstance.name;
+		if ('valkey' in d && d.valkey) return d.valkey.name;
+		if ('workload' in d && d.workload) return d.workload.name;
+		return 'Unknown';
+	});
 
-	function issueComponent(kind: Kind): Component<{ data: unknown }> {
-		switch (kind) {
-			case 'DeprecatedIngressIssue':
-				return DeprecatedIngressIssue as Component<{ data: unknown }>;
-			case 'DeprecatedRegistryIssue':
-				return DeprecatedRegistryIssue as Component<{ data: unknown }>;
-			case 'ExternalIngressCriticalVulnerabilityIssue':
-				return ExternalIngressCriticalVulnerabilityIssue as Component<{ data: unknown }>;
-			case 'LastRunFailedIssue':
-				return LastRunFailedIssue as Component<{ data: unknown }>;
-			case 'FailedSynchronizationIssue':
-				return FailedSynchronizationIssue as Component<{ data: unknown }>;
-			case 'InvalidSpecIssue':
-				return InvalidSpecIssue as Component<{ data: unknown }>;
-			case 'MissingSbomIssue':
-				return MissingSbomIssue as Component<{ data: unknown }>;
-			case 'VulnerableImageIssue':
-				return VulnerableImageIssue as Component<{ data: unknown }>;
-			case 'NoRunningInstancesIssue':
-				return NoRunningInstancesIssue as Component<{ data: unknown }>;
-			case 'ApplicationRestartLoopIssue':
-				return ApplicationRestartLoopIssue as Component<{ data: unknown }>;
-			case 'OpenSearchIssue':
-				return OpenSearchIssue as Component<{ data: unknown }>;
-			case 'SqlInstanceStateIssue':
-				return SqlInstanceStateIssue as Component<{ data: unknown }>;
-			case 'SqlInstanceVersionIssue':
-				return SqlInstanceVersionIssue as Component<{ data: unknown }>;
-			case 'ValkeyIssue':
-				return ValkeyIssue as Component<{ data: unknown }>;
-			default:
-				return DefaultIssue as Component<{ data: unknown }>;
-		}
-	}
+	const ResourceIcon = $derived.by(() => {
+		const d = $data;
+		if ('openSearch' in d && d.openSearch) return OpenSearchIcon;
+		if ('sqlInstance' in d && d.sqlInstance) return DatabaseIcon;
+		if ('valkey' in d && d.valkey) return ValkeyIcon;
+		if ('job' in d && d.job) return BriefcaseClockIcon;
+		if ('workload' in d && d.workload && d.workload.__typename === 'NaisJob')
+			return BriefcaseClockIcon;
+		return PackageIcon;
+	});
+
+	const issueTitle = $derived.by(() => {
+		const typeName = $data.__typename
+			.replace(/Issue$/, '')
+			.replace(/([a-z])([A-Z])/g, '$1_$2')
+			.toUpperCase();
+		return issueTypeLabel(typeName);
+	});
 </script>
 
-<ListItem>
-	{@const IssueComponent = issueComponent($data.__typename)}
-	<IssueComponent data={$data} />
-</ListItem>
+<details class="item">
+	<summary class="head">
+		<div class="chev">
+			<ChevronRightIcon />
+		</div>
+		<div class="severity-dot">
+			{#if $data.severity === 'CRITICAL'}
+				<CriticalIndicator />
+			{:else}
+				<CircleFillIcon
+					style="color: light-dark({{
+						TODO: 'var(--ax-bg-info-strong), var(--ax-bg-info-strong)',
+						WARNING: 'var(--ax-bg-warning-moderate-pressed), var(--ax-bg-warning-strong-pressed)'
+					}[$data.severity] ??
+						'var(--ax-bg-info-strong), var(--ax-bg-info-strong)'}); font-size: 0.7rem"
+				/>
+			{/if}
+		</div>
+		<div class="resource-icon">
+			<ResourceIcon />
+		</div>
+		<div class="resource-group">
+			<span class="resource-name" title={resourceName}>{resourceName}</span>
+			<Tag size="xsmall" variant={envTagVariant($data.teamEnvironment.environment.name)}
+				>{$data.teamEnvironment.environment.name}</Tag
+			>
+		</div>
+		<span class="issue-title">{issueTitle}</span>
+	</summary>
+
+	<div class="detail">
+		<p class="message">{$data.message}</p>
+		{#if $data.__typename === 'DeprecatedIngressIssue' && 'ingresses' in $data}
+			<div class="extra">
+				<strong>
+					{$data.ingresses.length === 1 ? 'Deprecated ingress:' : 'Deprecated ingresses:'}
+				</strong>
+				{#each $data.ingresses as ingress (ingress)}
+					<span class="ingress">{ingress}</span>
+				{/each}
+			</div>
+		{/if}
+		{#if $data.__typename === 'ExternalIngressCriticalVulnerabilityIssue' && 'cvssScore' in $data}
+			<div class="extra">
+				<strong>CVSS Score:</strong>
+				{$data.cvssScore}
+			</div>
+		{/if}
+	</div>
+</details>
+
+<style>
+	details > summary {
+		list-style: none;
+	}
+	details > summary::-webkit-details-marker {
+		display: none;
+	}
+
+	.item {
+		background: var(--ax-bg-default);
+		border-bottom: 1px solid var(--ax-border-neutral-subtleA);
+	}
+
+	.head {
+		display: grid;
+		grid-template-columns: 22px 16px 18px minmax(0, auto) minmax(100px, 1fr);
+		align-items: center;
+		gap: var(--ax-space-8);
+		padding: 10px 14px;
+		cursor: pointer;
+		transition: background-color 120ms ease;
+	}
+
+	.item:not([open]) > summary.head:hover {
+		background: color-mix(in srgb, var(--surface-accent-color) 6%, var(--ax-bg-default));
+	}
+
+	.item[open] > summary.head {
+		background: color-mix(in srgb, var(--surface-accent-color) 10%, var(--ax-bg-default));
+	}
+
+	.chev {
+		width: 16px;
+		height: 16px;
+		color: var(--ax-text-neutral);
+		transition: transform 0.18s ease;
+	}
+	.item[open] .chev {
+		transform: rotate(90deg);
+	}
+
+	.severity-dot {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+	}
+
+	.resource-group {
+		display: flex;
+		align-items: center;
+		gap: var(--ax-space-6);
+		min-width: 0;
+		flex-wrap: wrap;
+	}
+
+	.resource-name {
+		color: var(--ax-text-neutral);
+		font-weight: 500;
+		white-space: nowrap;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		min-width: 0;
+	}
+
+	.resource-group :global(.aksel-tag) {
+		white-space: nowrap;
+		flex-shrink: 0;
+	}
+
+	.issue-title {
+		color: var(--ax-text-neutral);
+		font-weight: 500;
+		white-space: nowrap;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		min-width: 0;
+		text-align: right;
+	}
+
+	.resource-icon {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		color: var(--ax-text-neutral-subtle);
+		font-size: 1rem;
+	}
+
+	.detail {
+		padding: 12px 14px 14px calc(14px + 22px + var(--ax-space-8));
+		background: var(--ax-bg-default);
+		border-top: 1px dashed var(--ax-border-neutral-subtle);
+	}
+
+	.message {
+		margin: 0;
+		color: var(--ax-text-neutral);
+		font-size: var(--ax-font-size-small);
+		line-height: var(--ax-font-line-height-large);
+	}
+
+	.extra {
+		margin-top: var(--ax-space-8);
+		font-size: var(--ax-font-size-small);
+		color: var(--ax-text-neutral);
+		display: flex;
+		flex-direction: column;
+		gap: var(--ax-space-2);
+	}
+
+	.ingress {
+		word-break: break-word;
+		color: var(--ax-text-neutral-subtle);
+	}
+
+	@media (max-width: 767px), (max-height: 500px) {
+		.head {
+			grid-template-columns: 22px 16px 18px 1fr;
+			gap: var(--ax-space-6);
+		}
+
+		.issue-title {
+			grid-column: 1 / -1;
+			padding-left: calc(22px + 16px + 18px + var(--ax-space-6) * 3);
+			text-align: left;
+		}
+	}
+</style>

@@ -1,235 +1,129 @@
 <script lang="ts">
-	import {
-		ActivityLogActivityType,
-		type ActivityLog$input,
-		type ActivityLogActivityType$options
-	} from '$houdini';
+	import { page } from '$app/state';
+	import { type ActivityLogActivityType$options } from '$houdini';
+	import ActivityLogFacets from '$lib/domain/activity/ActivityLogFacets.svelte';
 	import ActivityLogItem from '$lib/domain/list-items/ActivityLogListItem.svelte';
 	import List from '$lib/ui/List.svelte';
+	import ListFilters from '$lib/ui/ListFilters.svelte';
 	import Pagination from '$lib/ui/Pagination.svelte';
-	import { capitalizeFirstLetter } from '$lib/utils/formatters';
-	import { BodyLong, Button, Search } from '@nais/ds-svelte-community';
-	import { ActionMenu, ActionMenuCheckboxItem } from '@nais/ds-svelte-community/experimental';
-	import { ChevronDownIcon } from '@nais/ds-svelte-community/icons';
+	import SurfaceCard from '$lib/ui/SurfaceCard.svelte';
+	import { changeParams } from '$lib/utils/searchparams';
+	import { BodyLong } from '@nais/ds-svelte-community';
 	import type { PageProps } from './$types';
 
 	let { data }: PageProps = $props();
-	let { ActivityLog, teamSlug } = $derived(data);
+	let { ActivityLog } = $derived(data);
 
-	const allActivities = Object.values(ActivityLogActivityType).map((type) => type);
-
-	let filtered = $state(allActivities);
-
-	let allActivitiesButtonState: boolean | 'indeterminate' = $derived(
-		filtered.length === allActivities.length
-			? true
-			: filtered.length === 0
-				? false
-				: 'indeterminate'
+	let selectedActivityTypes: ActivityLogActivityType$options[] = $derived(
+		(page.url.searchParams.get('activityTypes')?.split(',').filter(Boolean) ??
+			[]) as ActivityLogActivityType$options[]
 	);
 
-	let searchQuery = $state('');
+	let selectedResourceTypes: string[] = $derived(
+		page.url.searchParams.get('resourceTypes')?.split(',').filter(Boolean) ?? []
+	);
 
-	const groupedActivities: Record<string, ActivityLogActivityType$options[]> = {
-		Application: [
-			ActivityLogActivityType.APPLICATION_DELETED,
-			ActivityLogActivityType.APPLICATION_RESTARTED,
-			ActivityLogActivityType.APPLICATION_SCALED
-		],
-		'Cluster Audit': [ActivityLogActivityType.CLUSTER_AUDIT],
-		Config: [
-			ActivityLogActivityType.CONFIG_CREATED,
-			ActivityLogActivityType.CONFIG_DELETED,
-			ActivityLogActivityType.CONFIG_UPDATED
-		],
-		Credentials: [ActivityLogActivityType.CREDENTIALS_CREATED],
-		Deployment: [ActivityLogActivityType.DEPLOYMENT],
-		Job: [
-			ActivityLogActivityType.JOB_DELETED,
-			ActivityLogActivityType.JOB_RUN_DELETED,
-			ActivityLogActivityType.JOB_TRIGGERED
-		],
-		'Kubernetes Resource': [
-			ActivityLogActivityType.GENERIC_KUBERNETES_RESOURCE_CREATED,
-			ActivityLogActivityType.GENERIC_KUBERNETES_RESOURCE_UPDATED
-		],
-		OpenSearch: [
-			ActivityLogActivityType.OPENSEARCH_CREATED,
-			ActivityLogActivityType.OPENSEARCH_DELETED,
-			ActivityLogActivityType.OPENSEARCH_UPDATED,
-			ActivityLogActivityType.OPENSEARCH_MAINTENANCE_STARTED
-		],
-		Postgres: [
-			ActivityLogActivityType.POSTGRES_DELETED,
-			ActivityLogActivityType.POSTGRES_GRANT_ACCESS
-		],
-		// Reconciler: [
-		// 	ActivityLogActivityType.RECONCILER_CONFIGURED,
-		// 	ActivityLogActivityType.RECONCILER_DISABLED,
-		// 	ActivityLogActivityType.RECONCILER_ENABLED
-		// ],
-		Repository: [
-			ActivityLogActivityType.REPOSITORY_ADDED,
-			ActivityLogActivityType.REPOSITORY_REMOVED
-		],
-		Secret: [
-			ActivityLogActivityType.SECRET_CREATED,
-			ActivityLogActivityType.SECRET_DELETED,
-			ActivityLogActivityType.SECRET_VALUE_ADDED,
-			ActivityLogActivityType.SECRET_VALUE_REMOVED,
-			ActivityLogActivityType.SECRET_VALUE_UPDATED,
-			ActivityLogActivityType.SECRET_VALUES_VIEWED
-		],
-		Team: [
-			ActivityLogActivityType.TEAM_CONFIRM_DELETE_KEY,
-			ActivityLogActivityType.TEAM_CREATED,
-			ActivityLogActivityType.TEAM_CREATE_DELETE_KEY,
-			ActivityLogActivityType.TEAM_DEPLOY_KEY_UPDATED,
-			ActivityLogActivityType.TEAM_ENVIRONMENT_UPDATED,
-			ActivityLogActivityType.TEAM_MEMBER_ADDED,
-			ActivityLogActivityType.TEAM_MEMBER_REMOVED,
-			ActivityLogActivityType.TEAM_MEMBER_SET_ROLE,
-			ActivityLogActivityType.TEAM_UPDATED
-		],
-		Valkey: [
-			ActivityLogActivityType.VALKEY_CREATED,
-			ActivityLogActivityType.VALKEY_DELETED,
-			ActivityLogActivityType.VALKEY_UPDATED,
-			ActivityLogActivityType.VALKEY_MAINTENANCE_STARTED
-		],
-		Unleash: [
-			ActivityLogActivityType.UNLEASH_INSTANCE_CREATED,
-			ActivityLogActivityType.UNLEASH_INSTANCE_DELETED,
-			ActivityLogActivityType.UNLEASH_INSTANCE_UPDATED
-		],
-		Vulnerability: [ActivityLogActivityType.VULNERABILITY_UPDATED]
-	};
+	let selectedEnvironments: string[] = $derived(
+		page.url.searchParams.get('environments')?.split(',').filter(Boolean) ?? []
+	);
 
-	function filteredGroup(types: string[]) {
-		if (!searchQuery) return types;
-		return types.filter((type) => type.toLowerCase().includes(searchQuery.toLowerCase()));
+	function handleActivityTypesChange(selected: ActivityLogActivityType$options[]) {
+		changeParams(
+			{
+				activityTypes: selected.join(','),
+				after: '',
+				before: ''
+			},
+			{ noScroll: true }
+		);
 	}
 
-	function filterActivities() {
-		ActivityLog.fetch({
-			variables: {
-				team: teamSlug.valueOf(),
-				first: 20,
-				after: undefined,
-				filter: {
-					activityTypes: filtered.length === allActivities.length ? [] : filtered.toSorted()
-				}
-			} as ActivityLog$input
-		});
+	function handleResourceTypesChange(selected: string[]) {
+		changeParams(
+			{
+				resourceTypes: selected.join(','),
+				after: '',
+				before: ''
+			},
+			{ noScroll: true }
+		);
+	}
+
+	function handleEnvironmentsChange(selected: string[]) {
+		changeParams(
+			{
+				environments: selected.join(','),
+				after: '',
+				before: ''
+			},
+			{ noScroll: true }
+		);
 	}
 </script>
 
 <div>
 	{#if $ActivityLog.data}
 		{@const ae = $ActivityLog.data.team.activityLog}
-		<div class="wrapper">
+		<div class="layout-two-column">
 			<div>
 				<BodyLong spacing
 					>The Activity Log provides an overview of changes made to your team and its resources
 					within the Nais Console application.</BodyLong
 				>
-				<List title="{ae.pageInfo.totalCount} entries">
-					{#snippet menu()}
-						<ActionMenu>
-							{#snippet trigger(props)}
-								<Button
-									variant="tertiary-neutral"
-									size="small"
-									iconPosition="right"
-									{...props}
-									icon={ChevronDownIcon}
-								>
-									<span style="font-weight: normal">Filter</span>
-								</Button>
-							{/snippet}
-							<div class="activity-search-wrapper">
-								<Search
-									class="activity-filter-search"
-									placeholder="Search activity type…"
-									label="Search activity type"
-									size="small"
-									bind:value={searchQuery}
-								/>
-							</div>
-							<ActionMenuCheckboxItem
-								checked={allActivitiesButtonState}
-								onchange={(checked) => {
-									filtered = checked ? [...allActivities] : [];
-									filterActivities();
-								}}
-							>
-								All Activities
-							</ActionMenuCheckboxItem>
-							{#each Object.entries(groupedActivities) as [group, types] (group)}
-								{#if filteredGroup(types).length}
-									<div class="activity-group-label">{group}</div>
-									{#each filteredGroup(types) as type (type)}
-										<ActionMenuCheckboxItem
-											checked={filtered.includes(type as ActivityLogActivityType$options)}
-											onchange={(checked) => {
-												const t = type as ActivityLogActivityType$options;
-												filtered = checked ? [...filtered, t] : filtered.filter((a) => a !== t);
-
-												filterActivities();
-											}}
-										>
-											{capitalizeFirstLetter(type.split('_').join(' ').toLowerCase())}
-										</ActionMenuCheckboxItem>
-									{/each}
-								{/if}
-							{/each}
-						</ActionMenu>
-					{/snippet}
+				<List title="Activity Log" count={ae.pageInfo.totalCount}>
 					{#each ae.nodes || [] as item (item.id)}
 						<ActivityLogItem {item} />
 					{/each}
 				</List>
-				{#if $ActivityLog.data.team.activityLog.pageInfo.hasPreviousPage || $ActivityLog.data.team.activityLog.pageInfo.hasNextPage}
+				{#if ae.pageInfo.hasPreviousPage || ae.pageInfo.hasNextPage}
 					<Pagination
 						page={ae.pageInfo}
 						loaders={{
-							loadNextPage: () => {
-								ActivityLog.loadNextPage({ first: 20 });
-							},
 							loadPreviousPage: () => {
-								ActivityLog.loadPreviousPage({
-									last: 20
-								});
+								changeParams(
+									{
+										after: '',
+										before: ae.pageInfo.startCursor ?? ''
+									},
+									{ noScroll: true }
+								);
+							},
+							loadNextPage: () => {
+								changeParams(
+									{
+										before: '',
+										after: ae.pageInfo.endCursor ?? ''
+									},
+									{ noScroll: true }
+								);
 							}
 						}}
 					/>
 				{/if}
 			</div>
+
+			{#if ae.facets}
+				<div class="layout-sidebar">
+					<SurfaceCard title="Filters">
+						<ListFilters>
+							<ActivityLogFacets
+								activityTypes={ae.facets.activityTypes}
+								resourceTypes={ae.facets.resourceTypes}
+								environments={ae.facets.environments}
+								{selectedActivityTypes}
+								{selectedResourceTypes}
+								{selectedEnvironments}
+								onActivityTypesChange={handleActivityTypesChange}
+								onResourceTypesChange={handleResourceTypesChange}
+								onEnvironmentsChange={handleEnvironmentsChange}
+							/>
+						</ListFilters>
+					</SurfaceCard>
+				</div>
+			{/if}
 		</div>
 	{/if}
 </div>
 
 <style>
-	.wrapper {
-		display: grid;
-		grid-template-columns: 1fr 300px;
-		gap: var(--spacing-layout);
-	}
-
-	.activity-search-wrapper {
-		padding: var(--ax-space-8);
-	}
-
-	.activity-group-label {
-		padding: var(--ax-space-4) var(--ax-space-8);
-		font-weight: 500;
-		color: var(--ax-text-neutral-subtle);
-		margin-top: var(--ax-space-2);
-	}
-
-	@media (max-width: 767px) {
-		.wrapper {
-			grid-template-columns: 1fr;
-		}
-	}
 </style>

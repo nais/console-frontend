@@ -8,7 +8,11 @@ export async function load(event) {
 	const before = event.url.searchParams.get('before') || '';
 
 	return {
-		...(await addPageMeta(event, { title: 'Deployments' })),
+		...(await addPageMeta(event, {
+			title: 'Deployments',
+			pageHeaderTitle: '',
+			docPath: '/build/how-to/build-and-deploy'
+		})),
 		...(await load_Deployments({
 			event,
 			variables: {

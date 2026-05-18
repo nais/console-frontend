@@ -13,9 +13,25 @@ query App($app: String!, $team: Slug!, $env: String!) {
 						node {
 							id
 							__typename
+							severity
 							message
 							...IssueFragment
 						}
+					}
+				}
+				criticalIssues: issues(filter: { severity: CRITICAL }) {
+					pageInfo {
+						totalCount
+					}
+				}
+				warningIssues: issues(filter: { severity: WARNING }) {
+					pageInfo {
+						totalCount
+					}
+				}
+				todoIssues: issues(filter: { severity: TODO }) {
+					pageInfo {
+						totalCount
 					}
 				}
 				teamEnvironment {
@@ -35,15 +51,6 @@ query App($app: String!, $team: Slug!, $env: String!) {
 								createdAt
 							}
 						}
-					}
-				}
-
-				ingresses {
-					type
-					url
-					metrics {
-						errorsPerSecond
-						requestsPerSecond
 					}
 				}
 
@@ -67,10 +74,8 @@ query App($app: String!, $team: Slug!, $env: String!) {
 					}
 				}
 
-				...SidebarActivityLogFragment @with(limit: 20) @mask_disable
 				...Persistence
 				...WorkloadDeploy
-				...NetworkPolicy
 				...Manifest
 			}
 		}

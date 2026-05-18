@@ -16,21 +16,25 @@ declare global {
 		interface PageData {
 			meta: {
 				title: string;
+				pageHeaderTitle?: string;
 				breadcrumbs?: { label: string; href?: RouteId }[];
 				tag?: {
 					label: string;
 					variant: TagProps['variant'];
 				};
+				docPath?: string;
 			};
 		}
 		interface LayoutData {
 			meta: {
 				title?: string;
+				pageHeaderTitle?: string;
 				breadcrumbs?: { label: string; href?: RouteId }[];
 				tag?: {
 					label: string;
 					variant: TagProps['variant'];
 				};
+				docPath?: string;
 			};
 		}
 		// interface Platform {}

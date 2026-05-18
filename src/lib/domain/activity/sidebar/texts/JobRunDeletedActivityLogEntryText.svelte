@@ -1,7 +1,9 @@
 <script lang="ts">
 	import type { SidebarActivityLogFragment$data } from '$houdini';
-	import Time from '$lib/ui/Time.svelte';
-	import { BodyShort } from '@nais/ds-svelte-community';
+	import { BodyLong } from '@nais/ds-svelte-community';
+	import Meta from '../../Meta.svelte';
+
+	import { activityLogResourceLink } from '../../utils';
 
 	let {
 		data
@@ -14,14 +16,24 @@
 </script>
 
 <div>
-	Job run <strong>{data.jobRunDeletedData?.runName}</strong> from job
-	<strong>{data.resourceName}</strong>
-	deleted
-	{#if data.environmentName}
-		in {data.environmentName}
-	{/if}.
-	<BodyShort textColor="subtle" size="small">
-		By {data.actor}
-		<Time time={data.createdAt} distance />
-	</BodyShort>
+	<BodyLong size="small">
+		Job run <strong>{data.jobRunDeletedData?.runName}</strong> from job
+		{#if data.environmentName}
+			<a
+				href={activityLogResourceLink(
+					data.environmentName,
+					data.resourceType,
+					data.resourceName,
+					data.teamSlug
+				)}>{data.resourceName}</a
+			>
+		{:else}
+			{data.resourceName}
+		{/if}
+		deleted
+		{#if data.environmentName}
+			in {data.environmentName}
+		{/if}.
+	</BodyLong>
+	<Meta actor={data.actor} createdAt={data.createdAt} />
 </div>

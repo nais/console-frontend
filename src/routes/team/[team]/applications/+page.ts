@@ -13,18 +13,26 @@ const rows = 25;
 export async function load(event) {
 	const filter: string = event.url.searchParams.get('filter') || '';
 	const environments: string[] | undefined =
-		event.url.searchParams.get('environments')?.split(',') || undefined;
+		event.url.searchParams.get('environments')?.split(',').filter(Boolean) || undefined;
+
+	const states: string[] | undefined =
+		event.url.searchParams.get('states')?.split(',').filter(Boolean) || undefined;
 
 	const after = event.url.searchParams.get('after') || '';
 	const before = event.url.searchParams.get('before') || '';
 
 	return {
-		...(await addPageMeta(event, { title: 'Applications' })),
+		...(await addPageMeta(event, {
+			title: 'Applications',
+			pageHeaderTitle: '',
+			docPath: '/workloads/application'
+		})),
 		...(await load_Applications({
 			event,
+			blocking: true,
 			variables: {
 				team: event.params.team,
-				filter: { name: filter, environments } as TeamApplicationsFilter,
+				filter: { name: filter, environments, states } as TeamApplicationsFilter,
 				orderBy: {
 					field: urlToOrderField(ApplicationOrderField, ApplicationOrderField.ISSUES, event.url),
 					direction: urlToOrderDirection(event.url, OrderDirection.DESC)

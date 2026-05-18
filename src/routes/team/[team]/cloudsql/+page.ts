@@ -1,7 +1,6 @@
 import { load_SqlInstances, OrderDirection, SqlInstanceOrderField } from '$houdini';
 import { urlToOrderDirection, urlToOrderField } from '$lib/ui/OrderByMenu.svelte';
 import { addPageMeta } from '$lib/utils/pageMeta';
-import { startOfMonth, subMonths } from 'date-fns';
 
 const rows = 25;
 
@@ -10,7 +9,11 @@ export async function load(event) {
 	const before = event.url.searchParams.get('before') || '';
 
 	return {
-		...(await addPageMeta(event, { title: 'Cloud SQL Instances' })),
+		...(await addPageMeta(event, {
+			title: 'Cloud SQL Instances',
+			pageHeaderTitle: '',
+			docPath: '/persistence/cloudsql'
+		})),
 		...(await load_SqlInstances({
 			event,
 			variables: {
@@ -19,9 +22,7 @@ export async function load(event) {
 					field: urlToOrderField(SqlInstanceOrderField, SqlInstanceOrderField.ISSUES, event.url),
 					direction: urlToOrderDirection(event.url, OrderDirection.DESC)
 				},
-				...(before ? { before, last: rows } : { after, first: rows }),
-				from: startOfMonth(subMonths(new Date(), 12)),
-				to: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000)
+				...(before ? { before, last: rows } : { after, first: rows })
 			}
 		}))
 	};

@@ -1,64 +1,75 @@
 <script lang="ts">
+	import { page } from '$app/state';
 	import { BigQueryDatasetOrderField, OrderDirection } from '$houdini';
 	import { docURL } from '$lib/doc';
-	import PersistenceCost from '$lib/domain/cost/PersistenceCost.svelte';
-	import PersistenceLink from '$lib/domain/persistence/PersistenceLink.svelte';
 	import WorkloadLink from '$lib/domain/workload/WorkloadLink.svelte';
 	import { envTagVariant } from '$lib/envTagVariant';
+	import BigQueryIcon from '$lib/icons/BigQueryIcon.svelte';
 	import ExternalLink from '$lib/ui/ExternalLink.svelte';
 	import GraphErrors from '$lib/ui/GraphErrors.svelte';
 	import List from '$lib/ui/List.svelte';
+	import ListFilters from '$lib/ui/ListFilters.svelte';
 	import ListItem from '$lib/ui/ListItem.svelte';
-	import OrderByMenu from '$lib/ui/OrderByMenu.svelte';
 	import Pagination from '$lib/ui/Pagination.svelte';
+	import SurfaceCard from '$lib/ui/SurfaceCard.svelte';
 	import { changeParams } from '$lib/utils/searchparams';
-	import { BodyLong, Tag } from '@nais/ds-svelte-community';
-	import { endOfYesterday, startOfMonth, subMonths } from 'date-fns';
+	import { Tag } from '@nais/ds-svelte-community';
 	import type { PageProps } from './$types';
+
+	type BigQueryOrderFieldOptions =
+		(typeof BigQueryDatasetOrderField)[keyof typeof BigQueryDatasetOrderField];
+	type OrderDirectionOptions = (typeof OrderDirection)[keyof typeof OrderDirection];
 
 	let { data }: PageProps = $props();
 	let { BigQuery } = $derived(data);
 
-	let cost = $derived(() => {
-		const costData = $BigQuery.data?.team.cost;
-		const teamSlug = $BigQuery.data?.team.slug;
+	const sortFields: { value: BigQueryOrderFieldOptions; label: string }[] = [
+		{ value: BigQueryDatasetOrderField.NAME, label: 'Name' },
+		{ value: BigQueryDatasetOrderField.ENVIRONMENT, label: 'Environment' }
+	];
 
-		if (!costData || !teamSlug) return null;
+	const currentSortField: BigQueryOrderFieldOptions = $derived(
+		(Object.values(BigQueryDatasetOrderField).find((f) =>
+			page.url.searchParams.get('sort')?.startsWith(f)
+		) as BigQueryOrderFieldOptions | undefined) ?? BigQueryDatasetOrderField.NAME
+	);
 
-		return {
-			costData,
-			teamSlug,
-			pageName: 'BigQuery'
-		};
-	});
+	const currentSortDirection: OrderDirectionOptions = $derived(
+		(Object.values(OrderDirection).find((d) => page.url.searchParams.get('sort')?.endsWith(d)) as
+			| OrderDirectionOptions
+			| undefined) ?? OrderDirection.ASC
+	);
+
+	function setSort(field: BigQueryOrderFieldOptions) {
+		const direction =
+			field === currentSortField
+				? currentSortDirection === OrderDirection.ASC
+					? OrderDirection.DESC
+					: OrderDirection.ASC
+				: OrderDirection.ASC;
+		changeParams({ sort: `${field}-${direction}`, after: '', before: '' });
+	}
 </script>
 
 <GraphErrors errors={$BigQuery.errors} />
 
 {#if $BigQuery.data}
-	{#if $BigQuery.data.team.bigQueryDatasets.pageInfo.totalCount}
-		<div class="content-wrapper">
-			<div>
-				<BodyLong spacing>
-					BigQuery datasets store structured data optimized for analytical workloads.
-					<ExternalLink href={docURL('/persistence/bigquery')}
-						>Learn more about BigQuery datasets and how to get started.</ExternalLink
-					>
-				</BodyLong>
-
-				<List title="{$BigQuery.data.team.bigQueryDatasets.pageInfo.totalCount} entries">
-					{#snippet menu()}
-						<OrderByMenu
-							orderField={BigQueryDatasetOrderField}
-							defaultOrderField={BigQueryDatasetOrderField.NAME}
-							defaultOrderDirection={OrderDirection.DESC}
-						/>
-					{/snippet}
+	<div class="layout-two-column">
+		<div>
+			<List title="BigQuery" count={$BigQuery.data.team.bigQueryDatasets.pageInfo.totalCount}>
+				{#if $BigQuery.data.team.bigQueryDatasets.nodes.length > 0}
 					{#each $BigQuery.data.team.bigQueryDatasets.nodes as instance (instance.id)}
-						<ListItem>
-							<div>
-								<PersistenceLink {instance} />
-								<Tag size="small" variant={envTagVariant(instance.teamEnvironment.environment.name)}
+						<ListItem interactive>
+							<div class="name-group">
+								<BigQueryIcon style="font-size: 1.25rem; flex-shrink: 0" />
+								<a
+									href="/team/{instance.team.slug}/{instance.teamEnvironment.environment
+										.name}/bigquery/{instance.name}"
+									class="item-name">{instance.name}</a
+								>
+								<Tag
+									size="xsmall"
+									variant={envTagVariant(instance.teamEnvironment.environment.name)}
 									>{instance.teamEnvironment.environment.name}</Tag
 								>
 							</div>
@@ -69,85 +80,89 @@
 							{/if}
 						</ListItem>
 					{/each}
-				</List>
-				<Pagination
-					page={$BigQuery.data.team.bigQueryDatasets.pageInfo}
-					loaders={{
-						loadPreviousPage: () =>
-							changeParams(
-								{
-									after: '',
-									before: $BigQuery.data?.team.bigQueryDatasets.pageInfo.startCursor ?? ''
-								},
-								{ noScroll: true }
-							),
-						loadNextPage: () =>
-							changeParams(
-								{
-									before: '',
-									after: $BigQuery.data?.team.bigQueryDatasets.pageInfo.endCursor ?? ''
-								},
-								{ noScroll: true }
-							)
-					}}
-				/>
-			</div>
-			<div class="right-column">
-				{#if cost()}
-					{@const costData = cost()!}
-					<div>
-						<PersistenceCost
-							pageName={costData.pageName}
-							costData={costData.costData}
-							teamSlug={costData.teamSlug}
-							from={startOfMonth(subMonths(new Date(), 1))}
-							to={endOfYesterday()}
-							service="BigQuery"
-						/>
-					</div>
+				{:else}
+					<ListItem>
+						<p>
+							No BigQuery datasets found. BigQuery datasets store structured data optimized for
+							analytical workloads.
+							<ExternalLink href={docURL('/persistence/bigquery')}
+								>Learn more about BigQuery datasets and how to get started.</ExternalLink
+							>
+						</p>
+					</ListItem>
 				{/if}
-			</div>
+			</List>
+			<Pagination
+				page={$BigQuery.data.team.bigQueryDatasets.pageInfo}
+				loaders={{
+					loadPreviousPage: () =>
+						changeParams(
+							{
+								after: '',
+								before: $BigQuery.data?.team.bigQueryDatasets.pageInfo.startCursor ?? ''
+							},
+							{ noScroll: true }
+						),
+					loadNextPage: () =>
+						changeParams(
+							{
+								before: '',
+								after: $BigQuery.data?.team.bigQueryDatasets.pageInfo.endCursor ?? ''
+							},
+							{ noScroll: true }
+						)
+				}}
+			/>
 		</div>
-	{:else}
-		<div class="content-wrapper">
-			<BodyLong>
-				<strong>No BigQuery datasets found.</strong> BigQuery datasets store structured data
-				optimized for analytical workloads.
-				<ExternalLink href={docURL('/persistence/bigquery')}
-					>Learn more about BigQuery datasets and how to get started.</ExternalLink
-				>
-			</BodyLong>
+		<div class="layout-sidebar">
+			<SurfaceCard title="Filters">
+				<ListFilters
+					{sortFields}
+					{currentSortField}
+					{currentSortDirection}
+					onSort={(field) => setSort(field as BigQueryOrderFieldOptions)}
+				/>
+			</SurfaceCard>
 		</div>
-	{/if}
+	</div>
 
 	<style>
-		.content-wrapper {
-			display: grid;
-			gap: var(--ax-space-24);
-			grid-template-columns: 1fr 300px;
-		}
 		.right {
 			display: flex;
 			gap: var(--ax-space-6);
 			align-items: center;
 		}
 
-		.right-column {
-			display: grid;
-			gap: var(--ax-space-24);
-		}
-
-		/* Mobile responsive layout */
 		@media (max-width: 767px), (max-height: 500px) {
-			.content-wrapper {
-				grid-template-columns: 1fr;
-			}
-
 			.right {
 				align-self: flex-end;
 				justify-content: flex-end;
 				margin-top: var(--ax-space-6);
 			}
+		}
+
+		.name-group {
+			display: flex;
+			align-items: center;
+			gap: var(--ax-space-8);
+			min-width: 0;
+		}
+		.name-group :global(.aksel-tag) {
+			white-space: nowrap;
+			flex-shrink: 0;
+		}
+		.item-name {
+			color: var(--ax-text-neutral);
+			text-decoration: none;
+			font-weight: 500;
+			white-space: nowrap;
+			overflow: hidden;
+			text-overflow: ellipsis;
+			min-width: 0;
+			flex: 0 1 auto;
+		}
+		.item-name:hover {
+			text-decoration: underline;
 		}
 	</style>
 {/if}

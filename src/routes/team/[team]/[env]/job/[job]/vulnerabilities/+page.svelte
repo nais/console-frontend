@@ -7,9 +7,9 @@
 	import WarningIcon from '$lib/icons/WarningIcon.svelte';
 	import ExternalLink from '$lib/ui/ExternalLink.svelte';
 	import GraphErrors from '$lib/ui/GraphErrors.svelte';
-	import List from '$lib/ui/List.svelte';
+	import SurfaceCard from '$lib/ui/SurfaceCard.svelte';
 	import { parseImage } from '$lib/utils/image';
-	import { BodyShort, CopyButton, Detail, Heading } from '@nais/ds-svelte-community';
+	import { BodyShort, CopyButton } from '@nais/ds-svelte-community';
 	import type { PageProps } from './$types';
 
 	let { data }: PageProps = $props();
@@ -27,60 +27,55 @@
 	{@const workload = $JobImageDetails.data.team.environment.workload}
 	<div class="wrapper">
 		<div class="top">
-			<div>
-				<section class="image-info" aria-labelledby="image-info-title">
-					<div style="display: flex; justify-content: space-between; align-items: center;">
-						<Heading id="image-info-title" as="h3" size="small" spacing>Image</Heading>
-						<CopyButton
-							copyText={$JobImageDetails.data?.team.environment.workload.image.name +
-								':' +
-								$JobImageDetails.data?.team.environment.workload.image.tag}
-							size="xsmall"
-							variant="action"
-						/>
-					</div>
+			{#if workload.image.hasSBOM}
+				<SurfaceCard title="Summary" bordered>
+					<WorkloadVulnerabilitySummary {workload} />
+				</SurfaceCard>
+			{/if}
 
-					<div class="image-row">
-						<code>
-							{$JobImageDetails.data?.team.environment.workload.image.name}:{$JobImageDetails.data
-								?.team.environment.workload.image.tag}
-						</code>
-					</div>
+			<SurfaceCard title="Image">
+				{#snippet headerAside()}
+					<CopyButton
+						copyText={workload.image.name + ':' + workload.image.tag}
+						size="xsmall"
+						variant="action"
+					/>
+				{/snippet}
 
-					{#if registry === '' || repository === '' || name === ''}
-						<dl class="kv">
-							<div>
-								<dt>Name</dt>
-								<dd><Detail>{workload.image.name}</Detail></dd>
-							</div>
-							<div>
-								<dt>Tag</dt>
-								<dd><code>{workload.image.tag}</code></dd>
-							</div>
-						</dl>
-					{:else}
-						<dl class="kv">
-							<div>
-								<dt>Registry</dt>
-								<dd><code>{registry}</code></dd>
-							</div>
-							<div>
-								<dt>Repository</dt>
-								<dd><code>{repository}</code></dd>
-							</div>
-							<div>
-								<dt>Name</dt>
-								<dd><code>{name}</code></dd>
-							</div>
-							<div>
-								<dt>Tag</dt>
-								<dd><code>{workload.image.tag}</code></dd>
-							</div>
-						</dl>
-					{/if}
-				</section>
+				{#if registry === '' || repository === '' || name === ''}
+					<dl class="kv">
+						<div>
+							<dt>Name</dt>
+							<dd><code>{workload.image.name}</code></dd>
+						</div>
+						<div>
+							<dt>Tag</dt>
+							<dd><code>{workload.image.tag}</code></dd>
+						</div>
+					</dl>
+				{:else}
+					<dl class="kv">
+						<div>
+							<dt>Registry</dt>
+							<dd><code>{registry}</code></dd>
+						</div>
+						<div>
+							<dt>Repository</dt>
+							<dd><code>{repository}</code></dd>
+						</div>
+						<div>
+							<dt>Name</dt>
+							<dd><code>{name}</code></dd>
+						</div>
+						<div>
+							<dt>Tag</dt>
+							<dd><code>{workload.image.tag}</code></dd>
+						</div>
+					</dl>
+				{/if}
+
 				{#if !workload.image.hasSBOM}
-					<BodyShort spacing>
+					<BodyShort size="small" spacing>
 						<WarningIcon class="text-aligned-icon" /> No vulnerability data available. Learn how to generate
 						SBOMs and attestations for your workloads in the
 						<ExternalLink href={docURL('/services/vulnerabilities/how-to/sbom/')}
@@ -88,94 +83,58 @@
 						</ExternalLink>.
 					</BodyShort>
 				{/if}
-			</div>
-			<div class="cards">
-				{#if workload.image.hasSBOM}
-					<div class="card">
-						<Heading as="h2" size="small">Summary</Heading>
-
-						<WorkloadVulnerabilitySummary {workload} />
-					</div>
-				{/if}
-			</div>
+			</SurfaceCard>
 		</div>
+
 		{#if workload.image.hasSBOM}
-			<div>
+			<SurfaceCard title="Vulnerabilities">
 				<ImageVulnerabilities
 					team={$JobImageDetails.data?.team.slug}
 					environment={$JobImageDetails.data?.team.environment.environment.name}
 					workload={$JobImageDetails.data?.team.environment.workload.name}
 					authorized={viewerIsMember}
 				/>
-			</div>
-			<WorkloadVulnerabilityHistoryGraph
-				team={$JobImageDetails.data?.team.slug}
-				environment={$JobImageDetails.data?.team.environment.environment.name}
-				workload={$JobImageDetails.data?.team.environment.workload.name}
-			/>
-			<div>
-				{#if $JobImageDetails.data?.team.environment.workload.image.activityLog.edges.length > 0}
-					<div class="activity-log">
-						<Heading as="h3" size="small" spacing>Image Activity Log</Heading>
+			</SurfaceCard>
 
-						<List>
-							{#each $JobImageDetails.data?.team.environment.workload.image.activityLog.edges || [] as item (item.node.id)}
-								<ActivityLogListItem item={item.node} />
-							{/each}
-						</List>
-					</div>
-				{:else}
-					<div class="activity-log">
-						<Heading as="h3" size="small" spacing>Image Activity Log</Heading>
-						<p class="no-activity">No activity log entries found for this image.</p>
-					</div>
-				{/if}
-			</div>
+			{#if $JobImageDetails.data?.team.environment.workload.image.activityLog.edges.length > 0}
+				<SurfaceCard title="Image activity log">
+					{#each $JobImageDetails.data?.team.environment.workload.image.activityLog.edges || [] as item (item.node.id)}
+						<ActivityLogListItem item={item.node} />
+					{/each}
+				</SurfaceCard>
+			{:else}
+				<BodyShort size="small" textColor="subtle"
+					>No activity log entries found for this image.</BodyShort
+				>
+			{/if}
+			<SurfaceCard title="Vulnerability history">
+				<WorkloadVulnerabilityHistoryGraph
+					team={$JobImageDetails.data?.team.slug}
+					environment={$JobImageDetails.data?.team.environment.environment.name}
+					workload={$JobImageDetails.data?.team.environment.workload.name}
+				/>
+			</SurfaceCard>
 		{/if}
 	</div>
 {/if}
 
 <style>
 	.wrapper {
-		display: grid;
-		grid-template-columns: 1fr;
-		gap: var(--spacing-layout);
-	}
-	.wrapper > * {
-		min-width: 0;
-	}
-	.top {
-		display: grid;
-		grid-template-columns: 1fr 300px;
-		gap: var(--spacing-layout);
-	}
-	.top > * {
-		min-width: 0;
-	}
-	.cards {
 		display: flex;
 		flex-direction: column;
-		gap: 1rem;
-		.card {
-			padding: var(--ax-space-20);
-			width: 300px;
-		}
-		padding-bottom: var(--ax-space-32);
+		gap: var(--ax-space-24);
+	}
+
+	.top {
+		display: grid;
+		grid-template-columns: minmax(0, 1fr) 300px;
+		gap: var(--ax-space-24);
+		align-items: start;
 	}
 
 	code {
-		font-size: 0.9rem;
-	}
-	.image-info {
-		margin-top: var(--ax-space-16);
-	}
-	.image-row {
-		display: flex;
-		gap: var(--ax-space-8);
-		align-items: center;
-		margin-bottom: var(--ax-space-8);
-		max-width: 100%;
-		overflow-x: auto;
+		font-size: var(--ax-font-size-small);
+		font-family: monospace;
 	}
 
 	.kv {
@@ -183,37 +142,26 @@
 		grid-template-columns: auto 1fr;
 		gap: var(--ax-space-4) var(--ax-space-12);
 		align-items: baseline;
+		font-size: var(--ax-font-size-small);
 	}
+
 	.kv > div {
 		display: contents;
 	}
+
 	.kv dt {
-		font-weight: 600;
+		font-weight: var(--ax-font-weight-bold);
+		color: var(--ax-text-neutral);
 	}
+
 	.kv dd {
 		margin: 0;
-	}
-
-	.activity-log {
-		margin-top: var(--ax-space-32);
-	}
-
-	.no-activity {
-		color: var(--ax-text-subtle);
-		font-style: italic;
+		color: var(--ax-text-neutral-subtle);
 	}
 
 	@media (max-width: 767px), (max-height: 500px) {
 		.top {
 			grid-template-columns: 1fr;
-		}
-
-		.cards {
-			padding-bottom: 0;
-		}
-
-		.cards .card {
-			width: 100%;
 		}
 	}
 </style>

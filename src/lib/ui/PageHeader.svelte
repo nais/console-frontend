@@ -2,20 +2,33 @@
 	import { resolve } from '$app/paths';
 	import { page } from '$app/state';
 	import type { RouteId } from '$app/types';
-	import DangerIcon from '$lib/icons/DangerIcon.svelte';
-	import WarningIcon from '$lib/icons/WarningIcon.svelte';
-	import { pageHeaderState } from '$lib/stores/pageHeaderState.svelte';
 	import AddToFavorites from '$lib/ui/AddToFavorites.svelte';
+	import DocsLink from '$lib/ui/DocsLink.svelte';
+	import { getHeaderActionsContext } from '$lib/ui/headerActionsContext.svelte';
 	import { Heading, Tag } from '@nais/ds-svelte-community';
 	import type { Snippet } from 'svelte';
 
 	const { beforeBreadcrumbs }: { beforeBreadcrumbs?: Snippet } = $props();
 
-	const breadcrumbs = $derived(page.data?.meta?.breadcrumbs ?? []);
-	const heading = $derived(page.data?.meta?.title ?? '');
+	const headerActions = getHeaderActionsContext();
+
+	const breadcrumbs = $derived.by(() => {
+		const baseBreadcrumbs = page.data?.meta?.breadcrumbs ?? [];
+		const title = page.data?.meta?.title;
+
+		if (baseBreadcrumbs.length === 0 || !title) {
+			return baseBreadcrumbs;
+		}
+
+		if (baseBreadcrumbs.at(-1)?.label === title) {
+			return baseBreadcrumbs;
+		}
+
+		return [...baseBreadcrumbs, { label: title }];
+	});
+	const heading = $derived(page.data?.meta?.pageHeaderTitle ?? page.data?.meta?.title ?? '');
 	const tag = $derived(page.data?.meta?.tag ?? null);
-	const warning = $derived(pageHeaderState.warning);
-	const error = $derived(pageHeaderState.error);
+	const docPath = $derived(page.data?.meta?.docPath ?? null);
 	const resolveUnsafe = resolve as unknown as (
 		href: string,
 		params?: Record<string, string>
@@ -44,28 +57,38 @@
 					{/each}
 				</div>
 			</div>
-			<AddToFavorites path={page.url.pathname} />
+			<div class="actions">
+				<AddToFavorites path={page.url.pathname} />
+				{#if docPath}
+					<DocsLink path={docPath} />
+				{/if}
+			</div>
 		</div>
 	{/if}
 	{#if !breadcrumbs.length && beforeBreadcrumbs}
 		<div class="breadcrumbs-trigger breadcrumbs-trigger-row">{@render beforeBreadcrumbs()}</div>
 	{/if}
-	<div class="header-row">
-		<div class="heading-wrapper">
-			{#if error}
-				<DangerIcon style="font-size: 1.5rem" />
-			{:else if warning}
-				<WarningIcon style="font-size: 1.5rem" />
-			{/if}
-			<Heading as="h1" size="xlarge">{heading}</Heading>
-			{#if tag}
-				<Tag variant={tag.variant}>{tag.label}</Tag>
-			{/if}
+	{#if heading}
+		<div class="header-row">
+			<div class="heading-wrapper">
+				<Heading as="h1" size="xlarge">{heading}</Heading>
+				{#if tag}
+					<Tag variant={tag.variant}>{tag.label}</Tag>
+				{/if}
+			</div>
+			<div class="actions">
+				{#if headerActions?.snippet}
+					{@render headerActions.snippet()}
+				{/if}
+				{#if breadcrumbs.length === 0}
+					<AddToFavorites path={page.url.pathname} />
+				{/if}
+				{#if docPath}
+					<DocsLink path={docPath} />
+				{/if}
+			</div>
 		</div>
-		{#if breadcrumbs.length === 0}
-			<AddToFavorites path={page.url.pathname} />
-		{/if}
-	</div>
+	{/if}
 </div>
 
 <style>
@@ -79,6 +102,13 @@
 			align-items: center;
 			justify-content: space-between;
 			gap: var(--ax-space-8);
+		}
+
+		.actions {
+			display: flex;
+			align-items: center;
+			gap: var(--ax-space-4);
+			flex-shrink: 0;
 		}
 
 		.breadcrumbs-wrapper {
@@ -110,7 +140,7 @@
 				}
 
 				.divider {
-					color: var(--ax-text-subtle);
+					color: var(--ax-text-neutral-subtle);
 				}
 			}
 		}
