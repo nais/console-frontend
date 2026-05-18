@@ -31,16 +31,16 @@
 					<span class="count-badge">{count}</span>
 				{/if}
 			</div>
-		<div class="header-right">
-			{#if actions}
-				{@render actions()}
-			{/if}
-			{#if search}
-				<div class="search-slot">
-					{@render search()}
-				</div>
-			{/if}
-		</div>
+			<div class="header-right">
+				{#if actions}
+					{@render actions()}
+				{/if}
+				{#if search}
+					<div class="search-slot">
+						{@render search()}
+					</div>
+				{/if}
+			</div>
 		</div>
 		{#if filters || menu}
 			<div class="toolbar">

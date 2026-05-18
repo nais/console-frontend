@@ -72,27 +72,23 @@
 <GraphErrors errors={$Valkeys.errors} />
 
 {#if $Valkeys.data}
-	{#snippet createButton()}
-		{#if create && create.viewerIsMember}
-			<div class="button">
-				<Button
-					variant="secondary"
-					size="small"
-					as="a"
-					href={create.url}
-					icon={PlusIcon}
-					onclick={pageModalClick}
-				>
-					{create.buttonText}
-				</Button>
-			</div>
-		{/if}
-	{/snippet}
-
 	<div class="layout-two-column">
 		<div>
-			{@render createButton()}
 			<List title="Valkey" count={$Valkeys.data.team.valkeys.pageInfo.totalCount}>
+				{#snippet actions()}
+					{#if create && create.viewerIsMember}
+						<Button
+							variant="secondary"
+							size="small"
+							as="a"
+							href={create.url}
+							icon={PlusIcon}
+							onclick={pageModalClick}
+						>
+							{create.buttonText}
+						</Button>
+					{/if}
+				{/snippet}
 				{#if $Valkeys.data.team.valkeys.nodes.length > 0}
 					{#each $Valkeys.data.team.valkeys.nodes as instance (instance.id)}
 						<ListItem interactive>
@@ -205,11 +201,6 @@
 			align-items: center;
 		}
 
-		.button {
-			display: flex;
-			justify-content: flex-end;
-			margin-bottom: var(--spacing-layout);
-		}
 		/* Valkey state indicators */
 		.status-indicator {
 			width: 24px;
