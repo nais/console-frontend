@@ -5,20 +5,9 @@ query SqlInstances(
 	$last: Int
 	$before: Cursor
 	$after: Cursor
-	$from: Date!
-	$to: Date!
 ) {
 	team(slug: $team) {
 		slug
-
-		cost {
-			daily(from: $from, to: $to, filter: { services: ["Cloud SQL"] }) {
-				series {
-					date
-					sum
-				}
-			}
-		}
 
 		serviceUtilization {
 			sqlInstances {

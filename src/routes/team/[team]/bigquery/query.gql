@@ -1,8 +1,6 @@
 query BigQuery(
 	$team: Slug!
 	$orderBy: BigQueryDatasetOrder
-	$from: Date!
-	$to: Date!
 	$first: Int
 	$last: Int
 	$before: Cursor
@@ -10,17 +8,6 @@ query BigQuery(
 ) {
 	team(slug: $team) {
 		slug
-		cost {
-			daily(from: $from, to: $to, filter: { services: ["BigQuery"] }) {
-				series {
-					services {
-						service
-					}
-					date
-					sum
-				}
-			}
-		}
 
 		bigQueryDatasets(first: $first, last: $last, orderBy: $orderBy, before: $before, after: $after)
 			@paginate(mode: SinglePage) {
