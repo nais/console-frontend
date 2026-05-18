@@ -12,6 +12,7 @@ export async function load(event) {
 	return {
 		...(await addPageMeta(event, {
 			title: 'Repositories',
+			pageHeaderTitle: '',
 			docPath: '/build/how-to/build-and-deploy/#authorize-your-github-repository-for-deployment'
 		})),
 		...(await load_Repositories({

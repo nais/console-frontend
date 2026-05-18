@@ -6,19 +6,32 @@
 	import ExternalLink from '$lib/ui/ExternalLink.svelte';
 	import GraphErrors from '$lib/ui/GraphErrors.svelte';
 	import List from '$lib/ui/List.svelte';
+	import ListFilters from '$lib/ui/ListFilters.svelte';
 	import ListItem from '$lib/ui/ListItem.svelte';
 	import Pagination from '$lib/ui/Pagination.svelte';
+	import SurfaceCard from '$lib/ui/SurfaceCard.svelte';
 	import { changeParams } from '$lib/utils/searchparams';
-	import { Alert, Button, Detail, Search, TextField } from '@nais/ds-svelte-community';
-	import { PlusIcon, SortDownIcon, SortUpIcon, TrashIcon } from '@nais/ds-svelte-community/icons';
-	import { onDestroy } from 'svelte';
+	import { Alert, Button, Detail, Heading, Modal, TextField } from '@nais/ds-svelte-community';
+	import { PlusIcon, TrashIcon } from '@nais/ds-svelte-community/icons';
 	import type { PageProps } from './$types';
 
 	let { data }: PageProps = $props();
 
 	let { Repositories, teamSlug, viewerIsMember } = $derived(data);
 
+	type RepositoryOrderFieldOptions =
+		(typeof RepositoryOrderField)[keyof typeof RepositoryOrderField];
 	type OrderDirectionOptions = (typeof OrderDirection)[keyof typeof OrderDirection];
+
+	const sortFields: { value: RepositoryOrderFieldOptions; label: string }[] = [
+		{ value: RepositoryOrderField.NAME, label: 'Name' }
+	];
+
+	const currentSortField: RepositoryOrderFieldOptions = $derived(
+		(Object.values(RepositoryOrderField).find((f) =>
+			page.url.searchParams.get('sort')?.startsWith(f)
+		) as RepositoryOrderFieldOptions | undefined) ?? RepositoryOrderField.NAME
+	);
 
 	const currentSortDirection: OrderDirectionOptions = $derived(
 		(Object.values(OrderDirection).find((d) => page.url.searchParams.get('sort')?.endsWith(d)) as
@@ -26,10 +39,14 @@
 			| undefined) ?? OrderDirection.ASC
 	);
 
-	function toggleSort() {
+	function setSort(field: RepositoryOrderFieldOptions) {
 		const direction =
-			currentSortDirection === OrderDirection.ASC ? OrderDirection.DESC : OrderDirection.ASC;
-		changeParams({ sort: `${RepositoryOrderField.NAME}-${direction}`, after: '', before: '' });
+			field === currentSortField
+				? currentSortDirection === OrderDirection.ASC
+					? OrderDirection.DESC
+					: OrderDirection.ASC
+				: OrderDirection.ASC;
+		changeParams({ sort: `${field}-${direction}`, after: '', before: '' });
 	}
 
 	const addRepositoryMutation = graphql(`
@@ -84,140 +101,33 @@
 			addRepository(teamSlug, repoName);
 			inputError = false;
 			repoName = '';
+			addModalOpen = false;
 		} else {
 			inputError = true;
 		}
 	};
 
 	let currentFilter = $derived($Repositories.variables?.filter?.name ?? '');
-	let filter = $derived(currentFilter);
+	let filter = $state(page.url.searchParams.get('filter') ?? '');
 	let after: string = $derived($Repositories.variables?.after ?? '');
 	let before: string = $derived($Repositories.variables?.before ?? '');
 	let repositoryAdded = $state(false);
 	let repositoryRemoved = $state(false);
 	let repoOperatedOn = $state('');
-	let searchContainer = $state<HTMLDivElement | undefined>(undefined);
-	let pendingFocusedFilter = $state<string | undefined>(undefined);
-
-	const focusSearchField = (attemptsLeft = 4) => {
-		const input = searchContainer?.querySelector<HTMLInputElement>('input[type="search"]');
-
-		if (!input) {
-			if (attemptsLeft > 0) {
-				requestAnimationFrame(() => {
-					focusSearchField(attemptsLeft - 1);
-				});
-				return;
-			}
-
-			pendingFocusedFilter = undefined;
-			return;
-		}
-
-		input.focus();
-
-		if (document.activeElement === input) {
-			pendingFocusedFilter = undefined;
-			return;
-		}
-
-		if (attemptsLeft > 0) {
-			requestAnimationFrame(() => {
-				focusSearchField(attemptsLeft - 1);
-			});
-			return;
-		}
-
-		pendingFocusedFilter = undefined;
-	};
-
-	// This effect only handles post-render DOM focus after the Search component remounts.
-	$effect(() => {
-		const requestedFilter = pendingFocusedFilter;
-		const appliedFilter = currentFilter;
-		const container = searchContainer;
-
-		if (requestedFilter === undefined || appliedFilter !== requestedFilter || !container) {
-			return;
-		}
-
-		requestAnimationFrame(() => {
-			focusSearchField();
-		});
-	});
+	let addModalOpen = $state(false);
 
 	const changeQuery = (
 		params: {
 			after?: string;
 			before?: string;
 			newFilter?: string;
-		} = {},
-		options = {}
+		} = {}
 	) => {
-		clearSearchTimeout();
-		pendingFocusedFilter = params.newFilter;
-
-		void changeParams(
-			{
-				before: params.before ?? before,
-				after: params.after ?? after,
-				filter: params.newFilter ?? currentFilter
-			},
-			options
-		);
-	};
-
-	let searchTimeout: ReturnType<typeof setTimeout> | undefined = undefined;
-
-	const clearSearchTimeout = () => {
-		if (searchTimeout) {
-			clearTimeout(searchTimeout);
-			searchTimeout = undefined;
-		}
-	};
-
-	const applyFilter = (newFilter = filter) => {
-		clearSearchTimeout();
-
-		if (newFilter === currentFilter) {
-			return;
-		}
-
-		changeQuery(
-			{ before: '', after: '', newFilter },
-			{ keepFocus: true, noScroll: true, replaceState: true }
-		);
-	};
-
-	const onFilterChange = (newFilter: string) => {
-		filter = newFilter;
-
-		clearSearchTimeout();
-
-		if (newFilter === '') {
-			applyFilter('');
-			return;
-		}
-
-		searchTimeout = setTimeout(() => {
-			applyFilter(newFilter);
-		}, 1000);
-	};
-
-	onDestroy(clearSearchTimeout);
-
-	const onFilterKeyDown = (event: KeyboardEvent) => {
-		if (event.key === 'Enter') {
-			event.preventDefault();
-			applyFilter();
-			return;
-		}
-
-		if (event.key === 'Escape' && filter !== '') {
-			event.preventDefault();
-			filter = '';
-			applyFilter('');
-		}
+		changeParams({
+			before: params.before ?? before,
+			after: params.after ?? after,
+			filter: params.newFilter ?? currentFilter
+		});
 	};
 
 	let repoName = $state('');
@@ -254,85 +164,19 @@
 		<div>
 			{#if $Repositories.data.team}
 				{@const team = $Repositories.data.team}
-				{#if viewerIsMember}
-					<details class="add-repository">
-						<summary class="add-repository-heading">Add Repository</summary>
-						<div class="add-repository-content">
-							<Detail>
-								Adding a repository will grant it access to deployment actions on behalf of the
-								team.
-							</Detail>
-							<form
-								onsubmit={(e: SubmitEvent) => {
-									e.preventDefault();
-									handleSubmit();
-								}}
-								class="input"
-							>
-								<TextField
-									size="small"
-									type="text"
-									id="repositoryName"
-									style="width: min(100%, 300px)"
-									bind:value={repoName}
-									oninput={onRepositoryNameInput}
-									error={inputError ? errorMessage : undefined}
-								>
-									{#snippet label()}
-										Repository name
-									{/snippet}
-									{#snippet description()}
-										GitHub repository and organization names can include alphanumeric characters,
-										hyphens, and underscores, and must follow the format
-										&lt;organization&gt;/&lt;repository&gt;.
-									{/snippet}
-								</TextField>
-								<div style="margin-top: var(--ax-space-8);">
-									<Button size="small" variant="secondary" type="submit" icon={PlusIcon}>Add</Button
-									>
-								</div>
-							</form>
-						</div>
-					</details>
-				{/if}
 
 				<List title="Repositories" count={team.repositories.pageInfo.totalCount}>
 					{#snippet actions()}
-						<Button
-							variant="tertiary-neutral"
-							size="small"
-							onclick={toggleSort}
-							title="Sort by name ({currentSortDirection === 'ASC' ? 'ascending' : 'descending'})"
-						>
-							{#snippet icon()}
-								{#if currentSortDirection === 'ASC'}
-									<SortUpIcon />
-								{:else}
-									<SortDownIcon />
-								{/if}
-							{/snippet}
-						</Button>
-					{/snippet}
-					{#snippet search()}
-						<div bind:this={searchContainer}>
-							<Search
-								clearButton={true}
-								clearButtonLabel="Clear"
-								label="filter repositories"
-								placeholder="Filter by name"
-								hideLabel={true}
+						{#if viewerIsMember}
+							<Button
+								variant="secondary"
 								size="small"
-								variant="simple"
-								autocomplete="off"
-								bind:value={filter}
-								onChange={onFilterChange}
-								onkeydown={onFilterKeyDown}
-								onclear={() => {
-									filter = '';
-									applyFilter('');
-								}}
-							/>
-						</div>
+								onclick={() => (addModalOpen = true)}
+								icon={PlusIcon}
+							>
+								Add Repository
+							</Button>
+						{/if}
 					{/snippet}
 					{#each team.repositories.nodes as repo (repo.id)}
 						<ListItem interactive>
@@ -374,7 +218,24 @@
 				/>
 			{/if}
 		</div>
-		<div class="layout-sidebar" style="gap: var(--ax-space-16)">
+		<div class="layout-sidebar">
+			<SurfaceCard title="Filters">
+				<ListFilters
+					{filter}
+					searchPlaceholder="Filter by name"
+					searchLabel="Filter repositories"
+					{sortFields}
+					{currentSortField}
+					{currentSortDirection}
+					onFilterInput={(v) => (filter = v)}
+					onFilterSubmit={() => changeQuery({ newFilter: filter })}
+					onFilterClear={() => {
+						filter = '';
+						changeQuery({ newFilter: '' });
+					}}
+					onSort={(field) => setSort(field as RepositoryOrderFieldOptions)}
+				/>
+			</SurfaceCard>
 			<TeamActivityCard
 				{teamSlug}
 				viewAllHref="/team/{teamSlug}/activity-log"
@@ -387,50 +248,46 @@
 			/>
 		</div>
 	</div>
+
+	<Modal bind:open={addModalOpen} width="small" onclose={() => (addModalOpen = false)}>
+		{#snippet header()}
+			<Heading as="h2" size="medium">Add Repository</Heading>
+		{/snippet}
+		<Detail spacing>
+			Adding a repository will grant it access to deployment actions on behalf of the team.
+		</Detail>
+		<form
+			onsubmit={(e: SubmitEvent) => {
+				e.preventDefault();
+				handleSubmit();
+			}}
+		>
+			<TextField
+				size="small"
+				type="text"
+				id="repositoryName"
+				bind:value={repoName}
+				oninput={onRepositoryNameInput}
+				error={inputError ? errorMessage : undefined}
+			>
+				{#snippet label()}
+					Repository name
+				{/snippet}
+				{#snippet description()}
+					Format: &lt;organization&gt;/&lt;repository&gt;
+				{/snippet}
+			</TextField>
+			<div class="modal-actions">
+				<Button size="small" variant="primary" type="submit" icon={PlusIcon}>Add</Button>
+				<Button size="small" variant="tertiary" onclick={() => (addModalOpen = false)}
+					>Cancel</Button
+				>
+			</div>
+		</form>
+	</Modal>
 {/if}
 
 <style>
-	.add-repository {
-		margin-bottom: var(--ax-space-16);
-		border: 1px solid var(--ax-border-neutral-subtleA);
-		border-radius: var(--ax-radius-8);
-		padding: var(--ax-space-12) var(--ax-space-16);
-	}
-
-	.add-repository-heading {
-		font-weight: 600;
-		font-size: var(--ax-font-size-medium);
-		cursor: pointer;
-		list-style: none;
-		display: flex;
-		align-items: center;
-		gap: var(--ax-space-8);
-	}
-
-	.add-repository-heading::before {
-		content: '›';
-		display: inline-block;
-		transition: transform 0.2s;
-		font-size: 1.2em;
-	}
-
-	.add-repository[open] > .add-repository-heading::before {
-		transform: rotate(90deg);
-	}
-
-	.add-repository-heading::-webkit-details-marker {
-		display: none;
-	}
-
-	.add-repository-content {
-		padding-top: var(--ax-space-12);
-	}
-
-	.input {
-		font-size: 1rem;
-		margin: var(--ax-space-8) 0;
-	}
-
 	.right {
 		display: flex;
 		gap: var(--ax-space-6);
@@ -449,6 +306,12 @@
 		display: flex;
 		align-items: center;
 		gap: var(--ax-space-6);
+	}
+
+	.modal-actions {
+		display: flex;
+		gap: var(--ax-space-8);
+		margin-top: var(--ax-space-16);
 	}
 
 	code {
