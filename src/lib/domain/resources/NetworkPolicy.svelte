@@ -187,7 +187,9 @@
 			{/each}
 		</ul>
 	{:else}
-		<BodyShort size="small" textColor="subtle">No network policies configured.</BodyShort>
+	<div class="empty-state">
+		<BodyShort size="small" textColor="subtle">No access policies configured.</BodyShort>
+	</div>
 	{/if}
 </List>
 
@@ -252,5 +254,9 @@
 
 	.wildcard {
 		color: var(--ax-text-neutral-subtle);
+	}
+
+	.empty-state {
+		padding: var(--ax-space-12) var(--ax-space-24);
 	}
 </style>

@@ -163,7 +163,9 @@
 				{#snippet actions()}
 					<DocsLink path="/workloads/application/reference/ingress/" />
 				{/snippet}
-				<BodyShort size="small" textColor="subtle">No ingresses configured.</BodyShort>
+				<div class="empty-state">
+					<BodyShort size="small" textColor="subtle">No ingresses configured.</BodyShort>
+				</div>
 			</List>
 		{/if}
 
@@ -232,5 +234,9 @@
 		.ingress-metrics {
 			display: none;
 		}
+	}
+
+	.empty-state {
+		padding: var(--ax-space-12) var(--ax-space-24);
 	}
 </style>
