@@ -1,8 +1,6 @@
 export const menuItems = ({
 	path,
-	features,
-	member,
-	isAdmin
+	features
 }: {
 	path: string;
 	features?: {
@@ -11,8 +9,6 @@ export const menuItems = ({
 		kafka: { enabled: boolean };
 		openSearch: { enabled: boolean };
 	};
-	member: boolean;
-	isAdmin: boolean;
 }): { label: string; href: string; active?: boolean }[][] => {
 	const split = path.split('/');
 
@@ -64,7 +60,7 @@ export const menuItems = ({
 		[
 			menuItem('Members', 'members'),
 			menuItem('Repositories', 'repositories'),
-			(member || isAdmin) && menuItem('Settings', 'settings'),
+			menuItem('Settings', 'settings'),
 			menuItem('Activity Log', 'activity-log')
 		].filter(Boolean) as { label: string; href: string; active?: boolean }[]
 	];

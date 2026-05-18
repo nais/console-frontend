@@ -13,9 +13,7 @@ describe('menuItems', () => {
 			expect(
 				menuItems({
 					path: '/team/devteam',
-					features,
-					member: true,
-					isAdmin: false
+					features
 				})
 			).toEqual([
 				[{ label: 'Team Overview', href: '/team/devteam', active: true }],
@@ -55,9 +53,7 @@ describe('menuItems', () => {
 		test('secrets active for sub-pages', () => {
 			expect(
 				menuItems({
-					path: '/team/nais/prod-gcp/secret/github-backup-config',
-					member: true,
-					isAdmin: false
+					path: '/team/nais/prod-gcp/secret/github-backup-config'
 				})
 					.flatMap((g) => g)
 					.find((i) => i.label === 'Secrets')?.active
@@ -67,9 +63,7 @@ describe('menuItems', () => {
 		test('postgres active for sub-pages', () => {
 			expect(
 				menuItems({
-					path: '/team/nais/prod-gcp/cloudsql/gemini',
-					member: true,
-					isAdmin: false
+					path: '/team/nais/prod-gcp/cloudsql/gemini'
 				})
 					.flatMap((g) => g)
 					.find((i) => i.label === 'Cloud SQL')?.active
@@ -80,9 +74,7 @@ describe('menuItems', () => {
 			expect(
 				menuItems({
 					path: '/team/nais/prod-gcp/valkey/gemini',
-					features,
-					member: true,
-					isAdmin: false
+					features
 				})
 					.flatMap((g) => g)
 					.find((i) => i.label === 'Valkey')?.active
@@ -92,25 +84,10 @@ describe('menuItems', () => {
 		test('no features', () => {
 			expect(
 				menuItems({
-					path: '/team/devteam/jobs',
-					member: true,
-					isAdmin: false
+					path: '/team/devteam/jobs'
 				})
 					.flatMap((g) => g)
 					.find((i) => ['Valkey', 'OpenSearch', 'Kafka Topics', 'Unleash'].includes(i.label))
-			).toBeUndefined();
-		});
-
-		test('when not member', () => {
-			expect(
-				menuItems({
-					path: '/team/tbd/jobs',
-					features,
-					member: false,
-					isAdmin: false
-				})
-					.flatMap((g) => g)
-					.find((i) => ['Settings'].includes(i.label))
 			).toBeUndefined();
 		});
 
@@ -118,9 +95,7 @@ describe('menuItems', () => {
 			expect(
 				menuItems({
 					path: '/team/nais',
-					features,
-					member: false,
-					isAdmin: true
+					features
 				})
 					.flatMap((g) => g)
 					.find((i) => ['Settings'].includes(i.label))
@@ -132,9 +107,7 @@ describe('menuItems', () => {
 		test('app detail routes keep applications active in the team menu', () => {
 			expect(
 				menuItems({
-					path: '/team/devteam/dev/app/app-w-all-storage/utilization',
-					member: true,
-					isAdmin: false
+					path: '/team/devteam/dev/app/app-w-all-storage/utilization'
 				})
 					.flatMap((group) => group)
 					.find((item) => item.label === 'Applications')
@@ -144,9 +117,7 @@ describe('menuItems', () => {
 		test('job detail routes keep jobs active in the team menu', () => {
 			expect(
 				menuItems({
-					path: '/team/devteam/dev/job/dataproduct-apps-topics/vulnerabilities',
-					member: true,
-					isAdmin: false
+					path: '/team/devteam/dev/job/dataproduct-apps-topics/vulnerabilities'
 				})
 					.flatMap((group) => group)
 					.find((item) => item.label === 'Jobs')
@@ -156,9 +127,7 @@ describe('menuItems', () => {
 		test('auxiliary workload routes do not add detail menu entries', () => {
 			expect(
 				menuItems({
-					path: '/team/devteam/dev/job/dataproduct-apps-topics/delete',
-					member: true,
-					isAdmin: false
+					path: '/team/devteam/dev/job/dataproduct-apps-topics/delete'
 				})
 					.flatMap((group) => group)
 					.find((item) => item.label === 'Delete')
