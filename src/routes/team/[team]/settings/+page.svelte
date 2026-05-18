@@ -10,10 +10,9 @@
 	} from '$houdini';
 	import { docURL } from '$lib/doc';
 	import TeamActivityCard from '$lib/domain/activity/TeamActivityCard.svelte';
-	import SlackIcon from '$lib/icons/SlackIcon.svelte';
-	import WarningIcon from '$lib/icons/WarningIcon.svelte';
 	import ExternalLink from '$lib/ui/ExternalLink.svelte';
 	import GraphErrors from '$lib/ui/GraphErrors.svelte';
+	import SurfaceCard from '$lib/ui/SurfaceCard.svelte';
 	import Time from '$lib/ui/Time.svelte';
 	import {
 		Alert,
@@ -114,10 +113,9 @@
 <GraphErrors errors={$TeamSettings.errors} />
 
 {#if teamSettings}
-	<div class="wrapper">
-		<div style="display: flex; flex-direction: column; gap: var(--spacing-layout)">
-			<div>
-				<Heading as="h2">Description</Heading>
+	<div class="layout-two-column">
+		<div class="main-column">
+			<SurfaceCard title="Description">
 				<EditText
 					text={teamSettings.purpose}
 					onsave={async (text) => {
@@ -137,10 +135,9 @@
 				/>
 
 				<GraphErrors errors={descriptionErrors} size="small" />
-			</div>
+			</SurfaceCard>
 
-			<div>
-				<Heading as="h2"><SlackIcon class="heading-aligned-icon" /> Slack Alert Channels</Heading>
+			<SurfaceCard title="Slack Alert Channels">
 				{#if teamSettings.slackChannel !== ''}
 					<p>
 						<b>Default slack-channel:</b>
@@ -200,11 +197,10 @@
 
 					<GraphErrors errors={slackChannelsErrors} size="small" />
 				{/if}
-			</div>
+			</SurfaceCard>
 
 			{#if viewerIsMember}
-				<div>
-					<Heading as="h2">Deploy Key</Heading>
+				<SurfaceCard title="Deploy Key">
 					<BodyShort>
 						Deploy keys can be used to authenticate for deployments instead of using
 						<a
@@ -252,50 +248,43 @@
 							</dd>
 						</dl>
 						<div class="buttons">
-							<div class="button">
-								<CopyButton
-									text="Copy key"
-									activeText="Key copied"
-									variant="action"
-									copyText={deployKey.key}
-									size="small"
-								/>
-							</div>
-							<div class="button">
-								<Button
-									size="small"
-									variant="danger"
-									onclick={() => {
-										showRotateKey = !showRotateKey;
-									}}
-									icon={ArrowsCirclepathIcon}
-								>
-									Rotate key
-								</Button>
-							</div>
+							<CopyButton
+								text="Copy key"
+								activeText="Key copied"
+								variant="action"
+								copyText={deployKey.key}
+								size="small"
+							/>
+							<Button
+								size="small"
+								variant="danger"
+								onclick={() => {
+									showRotateKey = !showRotateKey;
+								}}
+								icon={ArrowsCirclepathIcon}
+							>
+								Rotate key
+							</Button>
 						</div>
 					{:else}
-						<div class="buttons">
-							<div class="button mt-2">
-								<Button
-									size="small"
-									variant="secondary"
-									onclick={() => {
-										showCreateKey = !showCreateKey;
-									}}
-									icon={TokenIcon}
-								>
-									Create key
-								</Button>
-							</div>
+						<div class="buttons mt-2">
+							<Button
+								size="small"
+								variant="secondary"
+								onclick={() => {
+									showCreateKey = !showCreateKey;
+								}}
+								icon={TokenIcon}
+							>
+								Create key
+							</Button>
 						</div>
 					{/if}
-				</div>
+				</SurfaceCard>
 			{/if}
 
 			{#if viewerIsOwner}
-				<div>
-					<Heading as="h2"><WarningIcon class="heading-aligned-icon" /> Danger Zone</Heading>
+				<SurfaceCard title="Danger Zone">
 					<div class="danger-zone">
 						<BodyLong spacing>
 							Deleting the team will permanently delete all managed resources and all resources
@@ -319,12 +308,11 @@
 							Request team deletion</Button
 						>
 					</div>
-				</div>
+				</SurfaceCard>
 			{/if}
 		</div>
-		<div class="right">
-			<div class="managed-resources">
-				<Heading as="h2" size="small">Managed Resources</Heading>
+		<div class="layout-sidebar">
+			<SurfaceCard title="Managed Resources">
 				<dl>
 					{#if $TeamSettings.data?.team.externalResources}
 						{@const external = $TeamSettings.data.team.externalResources}
@@ -370,7 +358,7 @@
 						</BodyShort>
 					{/each}
 				</dl>
-			</div>
+			</SurfaceCard>
 			{#if $TeamSettings.data?.team}
 				<TeamActivityCard
 					{teamSlug}
@@ -387,14 +375,14 @@
 					}}
 				/>
 			{/if}
+			<p class="last-sync">
+				{#if teamSettings.lastSuccessfulSync}
+					Last successful sync: <Time time={teamSettings.lastSuccessfulSync} distance={true} />
+				{:else}
+					No successful syncs
+				{/if}
+			</p>
 		</div>
-		<p class="last-sync">
-			{#if teamSettings.lastSuccessfulSync}
-				Last successful sync: <Time time={teamSettings.lastSuccessfulSync} distance={true} />
-			{:else}
-				No successful syncs
-			{/if}
-		</p>
 	</div>
 {/if}
 {#if browser}
@@ -526,20 +514,12 @@
 {/if}
 
 <style>
-	.wrapper {
-		display: grid;
-		grid-template-columns: 1fr 320px;
-		gap: var(--spacing-layout);
-	}
-	.right {
+	.main-column {
 		display: flex;
 		flex-direction: column;
 		gap: var(--spacing-layout);
 	}
-	.managed-resources {
-		border-radius: var(--ax-radius-12);
-		align-self: start;
-	}
+
 	.danger-zone {
 		padding: var(--ax-space-16);
 		border-radius: var(--ax-radius-8);
@@ -548,7 +528,7 @@
 
 	.deployKey {
 		font-family: monospace;
-		padding-bottom: 1rem;
+		padding-bottom: var(--ax-space-16);
 		word-break: break-all;
 		overflow-wrap: break-word;
 	}
@@ -557,9 +537,6 @@
 		display: flex;
 		flex-direction: row;
 		gap: var(--ax-space-16);
-	}
-	.button {
-		width: 130px;
 	}
 
 	.channel {
@@ -570,30 +547,21 @@
 
 	.deletewrapper {
 		display: flex;
-		gap: 0.2rem;
+		gap: var(--ax-space-4);
 	}
 
 	.deletewrapper div {
 		flex-grow: 1;
 	}
+
 	.last-sync {
-		width: 100%;
-		color: var(--ax-text-info-subtle);
-		font-size: 0.9rem;
-		text-align: right;
+		color: var(--ax-text-subtle);
+		font-size: var(--ax-font-size-small);
 	}
 
 	@media (max-width: 767px) {
-		.wrapper {
-			grid-template-columns: 1fr;
-		}
-
 		.buttons {
 			flex-wrap: wrap;
-		}
-
-		.button {
-			width: auto;
 		}
 
 		.channel {
@@ -603,10 +571,6 @@
 		.deletewrapper {
 			flex-direction: column;
 			gap: var(--ax-space-8);
-		}
-
-		.last-sync {
-			text-align: left;
 		}
 	}
 </style>
