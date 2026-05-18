@@ -9,7 +9,7 @@
 	import GraphErrors from '$lib/ui/GraphErrors.svelte';
 	import SurfaceCard from '$lib/ui/SurfaceCard.svelte';
 	import { parseImage } from '$lib/utils/image';
-	import { BodyShort, CopyButton } from '@nais/ds-svelte-community';
+	import { BodyShort, CopyButton, Heading } from '@nais/ds-svelte-community';
 	import type { PageProps } from './$types';
 
 	let { data }: PageProps = $props();
@@ -20,6 +20,8 @@
 		parseImage($JobImageDetails.data?.team.environment.workload.image.name)
 	);
 </script>
+
+<Heading as="h2" size="medium" spacing>Vulnerabilities</Heading>
 
 <GraphErrors errors={$JobImageDetails.errors} />
 

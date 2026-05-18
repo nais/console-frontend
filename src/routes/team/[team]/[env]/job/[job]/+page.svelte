@@ -94,9 +94,13 @@
 		});
 	};
 
-	let criticalEdges = $derived(job?.issues.edges.filter((e) => e.node.severity === 'CRITICAL') ?? []);
+	let criticalEdges = $derived(
+		job?.issues.edges.filter((e) => e.node.severity === 'CRITICAL') ?? []
+	);
 	let totalRuns = $derived(job?.recentRuns.nodes.length ?? 0);
-	let succeededRuns = $derived(job?.recentRuns.nodes.filter((n) => n.status.state === 'SUCCEEDED').length ?? 0);
+	let succeededRuns = $derived(
+		job?.recentRuns.nodes.filter((n) => n.status.state === 'SUCCEEDED').length ?? 0
+	);
 
 	let deleteConfirmOpen = $state(false);
 	let deleteRunName = $state('');
