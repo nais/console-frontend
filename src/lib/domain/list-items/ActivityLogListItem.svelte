@@ -6,7 +6,6 @@
 	import type { Component } from 'svelte';
 	import { icons } from '../activity/activity-log-icons';
 	import { activityTooltip } from '../activity/activity-log-tooltip';
-	import '../activity/activity-log.css';
 	import ApplicationCreatedActivityLogEntryText from '../activity/shared/texts/ApplicationCreatedActivityLogEntryText.svelte';
 	import ApplicationDeletedActivityLogEntryText from '../activity/shared/texts/ApplicationDeletedActivityLogEntryText.svelte';
 	import ApplicationRestartedActivityLogEntryText from '../activity/shared/texts/ApplicationRestartedActivityLogEntryText.svelte';
@@ -432,8 +431,8 @@
 <ListItem interactive>
 	<div class="activity-log-list-item">
 		<Tooltip content={activityTooltip($data.__typename)}>
-			<div class="activity-icon">
-				<Icon size="1em" width="1em" height="1em" />
+			<div class="surface-icon surface-icon-timeline">
+				<Icon />
 			</div>
 		</Tooltip>
 
@@ -448,7 +447,8 @@
 		display: flex;
 		align-items: center;
 		gap: var(--ax-space-12);
-		font-size: var(--ax-font-size-small);
+		font-size: var(--ax-font-size-medium);
+		--surface-icon-size: 2rem;
 	}
 
 	.activity-text {
