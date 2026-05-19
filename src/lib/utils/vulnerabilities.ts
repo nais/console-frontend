@@ -13,13 +13,13 @@ export function severityToColor({
 	if (isText) {
 		switch (severity) {
 			case 'critical':
-				return 'var(--ax-text-danger)';
+				return 'var(--ax-text-danger-decoration)';
 			case 'high':
-				return 'color-mix(in oklab, var(--ax-text-danger), var(--ax-text-warning))';
+				return 'var(--ax-text-warning-decoration)';
 			case 'medium':
-				return 'var(--ax-text-warning)';
+				return 'color-mix(in oklab, var(--ax-text-warning-decoration), var(--ax-text-success-decoration))';
 			case 'low':
-				return 'var(--ax-text-success)';
+				return 'var(--ax-text-success-decoration)';
 			case 'unassigned':
 			default:
 				return 'var(--ax-text-neutral-subtle)';
@@ -67,9 +67,9 @@ export function severityToVariant(
 		case 'critical':
 			return 'error';
 		case 'high':
-			return 'error';
-		case 'medium':
 			return 'warning';
+		case 'medium':
+			return 'info';
 		case 'low':
 			return 'success';
 		case 'unassigned':
