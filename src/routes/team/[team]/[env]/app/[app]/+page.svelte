@@ -4,7 +4,7 @@
 	import { graphql } from '$houdini';
 	import WorkloadActivityCard from '$lib/domain/activity/WorkloadActivityCard.svelte';
 	import CostOverviewChart from '$lib/domain/cost/CostOverviewChart.svelte';
-	import IssueListItem from '$lib/domain/list-items/IssueListItem.svelte';
+	import CriticalIssuesCard from '$lib/domain/issues/CriticalIssuesCard.svelte';
 	import Persistence from '$lib/domain/persistence/Persistence.svelte';
 	import Configs from '$lib/domain/resources/Configs.svelte';
 	import Manifest from '$lib/domain/resources/Manifest.svelte';
@@ -14,8 +14,6 @@
 	import Confirm from '$lib/ui/Confirm.svelte';
 	import GraphErrors from '$lib/ui/GraphErrors.svelte';
 	import HeaderActions from '$lib/ui/HeaderActions.svelte';
-	import List from '$lib/ui/List.svelte';
-	import SurfaceCard from '$lib/ui/SurfaceCard.svelte';
 	import Time from '$lib/ui/Time.svelte';
 	import { Alert, Button, Heading, Loader, Modal } from '@nais/ds-svelte-community';
 	import { ActionMenu, ActionMenuItem } from '@nais/ds-svelte-community/experimental';
@@ -137,20 +135,11 @@
 					</Alert>
 				{/if}
 				{#if criticalEdges.length > 0}
-					<SurfaceCard title="Critical issues ({criticalEdges.length})">
-						{#snippet headerAside()}
-							<a
-								class="view-all"
-								href="/team/{page.params.team}/{page.params.env}/app/{page.params.app}/issues"
-								>View all</a
-							>
-						{/snippet}
-						<List>
-							{#each criticalEdges as edge (edge.node.id)}
-								<IssueListItem item={edge.node} />
-							{/each}
-						</List>
-					</SurfaceCard>
+					<CriticalIssuesCard
+						title={`Critical issues (${criticalEdges.length})`}
+						viewAllHref="/team/{page.params.team}/{page.params.env}/app/{page.params.app}/issues"
+						issues={criticalEdges}
+					/>
 				{/if}
 				<WorkloadHealth
 					{teamSlug}
@@ -230,17 +219,6 @@
 		all: unset;
 		display: contents;
 		cursor: pointer;
-	}
-
-	.view-all {
-		font-size: var(--ax-font-size-small);
-		font-weight: var(--ax-font-weight-bold);
-		color: var(--ax-text-accent);
-		text-decoration: none;
-	}
-
-	.view-all:hover {
-		text-decoration: underline;
 	}
 
 	.sidebar {
