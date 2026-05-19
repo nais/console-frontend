@@ -56,7 +56,7 @@
 	}
 
 	:global(.eyebrow) {
-		font-size: var(--ax-font-size-small) !important;
+		font-size: var(--ax-font-size-medium) !important;
 		font-weight: var(--ax-font-weight-bold) !important;
 		line-height: var(--ax-font-line-height-large) !important;
 		color: var(--ax-text-neutral-subtle);
