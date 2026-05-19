@@ -5,8 +5,6 @@
 	import GraphErrors from '$lib/ui/GraphErrors.svelte';
 	import List from '$lib/ui/List.svelte';
 	import Pagination from '$lib/ui/Pagination.svelte';
-	import SurfaceCard from '$lib/ui/SurfaceCard.svelte';
-	import Time from '$lib/ui/Time.svelte';
 	import { extractIdFromUrl } from '$lib/utils/extractIdFromUrl';
 	import { changeParams } from '$lib/utils/searchparams';
 	import { BodyShort } from '@nais/ds-svelte-community';
@@ -56,12 +54,6 @@
 
 		tryScroll();
 	});
-
-	let latestDeploy = $derived.by(() => {
-		const nodes = $AppDeploys.data?.team?.environment?.application?.deployments?.nodes;
-		if (!nodes || nodes.length === 0) return null;
-		return nodes[0];
-	});
 </script>
 
 <GraphErrors errors={$AppDeploys.errors} />
@@ -74,71 +66,34 @@
 		{#if deploys.pageInfo.totalCount === 0}
 			<BodyShort size="small" textColor="subtle">No deployments found.</BodyShort>
 		{:else}
-			<div class="content">
-				<div class="list">
-				<List title="Deployments" count={deploys.pageInfo.totalCount}>
-						{#snippet actions()}
-							<DocsLink path="/build/" />
-						{/snippet}
-						{#each deploys.nodes as deployment (deployment.id)}
-							{@const id = extractIdFromUrl(deployment.triggerUrl ?? '')}
-							<div {id} class:highlight-in={id !== '' && highlightId !== '' && id === highlightId}>
-								<DeploymentListItem {deployment} />
-							</div>
-						{/each}
-					</List>
-					<Pagination
-						page={deploys.pageInfo}
-						loaders={{
-							loadPreviousPage: () => {
-								changeQuery({
-									after: '',
-									before: deploys.pageInfo.startCursor ?? ''
-								});
-							},
-							loadNextPage: () => {
-								changeQuery({
-									before: '',
-									after: deploys.pageInfo.endCursor ?? ''
-								});
-							}
-						}}
-					/>
-				</div>
-
-				<div class="sidebar">
-					<SurfaceCard title="Statistics">
-						<dl class="stats">
-							<div>
-								<dt>Total deployments</dt>
-								<dd>{deploys.pageInfo.totalCount}</dd>
-							</div>
-							{#if latestDeploy}
-								<div>
-									<dt>Latest deploy</dt>
-									<dd><Time time={latestDeploy.createdAt} distance={true} /></dd>
-								</div>
-								{#if latestDeploy.deployerUsername}
-									<div>
-										<dt>Deployed by</dt>
-										<dd>{latestDeploy.deployerUsername}</dd>
-									</div>
-								{/if}
-								{#if latestDeploy.repository}
-									<div>
-										<dt>Repository</dt>
-										<dd>
-											<a href="https://github.com/{latestDeploy.repository}"
-												>{latestDeploy.repository}</a
-											>
-										</dd>
-									</div>
-								{/if}
-							{/if}
-						</dl>
-					</SurfaceCard>
-				</div>
-			</div>
+			<List title="Deployments" count={deploys.pageInfo.totalCount}>
+				{#snippet actions()}
+					<DocsLink path="/build/" />
+				{/snippet}
+				{#each deploys.nodes as deployment (deployment.id)}
+					{@const id = extractIdFromUrl(deployment.triggerUrl ?? '')}
+					<div {id} class:highlight-in={id !== '' && highlightId !== '' && id === highlightId}>
+						<DeploymentListItem {deployment} />
+					</div>
+				{/each}
+			</List>
+			<Pagination
+				page={deploys.pageInfo}
+				loaders={{
+					loadPreviousPage: () => {
+						changeQuery({
+							after: '',
+							before: deploys.pageInfo.startCursor ?? ''
+						});
+					},
+					loadNextPage: () => {
+						changeQuery({
+							before: '',
+							after: deploys.pageInfo.endCursor ?? ''
+						});
+					}
+				}}
+			/>
 		{/if}
 	</div>
 {/if}
@@ -148,51 +103,6 @@
 		display: flex;
 		flex-direction: column;
 		gap: var(--ax-space-24);
-	}
-
-	.content {
-		display: grid;
-		grid-template-columns: 1fr 300px;
-		gap: var(--ax-space-24);
-		align-items: start;
-	}
-
-	.list {
-		display: flex;
-		flex-direction: column;
-		gap: var(--ax-space-24);
-		min-width: 0;
-	}
-
-	.sidebar {
-		min-width: 0;
-	}
-
-	.stats {
-		display: flex;
-		flex-direction: column;
-		gap: var(--ax-space-8);
-		margin: 0;
-		font-size: var(--ax-font-size-small);
-	}
-
-	.stats dt {
-		font-weight: var(--ax-font-weight-bold);
-		color: var(--ax-text-neutral);
-	}
-
-	.stats dd {
-		margin: 0;
-		color: var(--ax-text-neutral-subtle);
-	}
-
-	.stats dd a {
-		color: inherit;
-		text-decoration: none;
-	}
-
-	.stats dd a:hover {
-		text-decoration: underline;
 	}
 
 	[id] {
@@ -209,11 +119,5 @@
 		padding-left: 0.5rem;
 		opacity: 1;
 		border-left-width: 4px;
-	}
-
-	@media (max-width: 767px), (max-height: 500px) {
-		.content {
-			grid-template-columns: 1fr;
-		}
 	}
 </style>
