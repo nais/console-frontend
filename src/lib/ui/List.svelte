@@ -5,6 +5,7 @@
 		title,
 		count,
 		headerless = false,
+		level = 'h2',
 		children,
 		menu,
 		search,
@@ -14,6 +15,7 @@
 		title?: string;
 		count?: number;
 		headerless?: boolean;
+		level?: 'h1' | 'h2' | 'h3' | 'h4';
 		children: Snippet;
 		menu?: Snippet;
 		search?: Snippet;
@@ -28,7 +30,7 @@
 			<div class="header-row">
 				<div class="header-left">
 					{#if title}
-						<h2 class="title">{title}</h2>
+						<svelte:element this={level} class="title">{title}</svelte:element>
 					{/if}
 					{#if count !== undefined}
 						<span class="count-badge">{count}</span>
@@ -75,7 +77,7 @@
 	.header {
 		display: flex;
 		flex-direction: column;
-		padding: var(--ax-space-16) var(--ax-space-24);
+		padding: var(--ax-space-16) var(--ax-space-24) var(--ax-space-16) 0;
 		gap: var(--ax-space-16);
 		border-bottom: 1px solid var(--ax-border-neutral-subtleA);
 	}
