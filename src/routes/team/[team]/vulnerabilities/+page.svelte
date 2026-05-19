@@ -1,4 +1,5 @@
 <script lang="ts">
+	import TeamCveSearch from '$lib/domain/vulnerability/TeamCveSearch.svelte';
 	import TeamMeanTimeToFixHistoryGraph from '$lib/domain/vulnerability/TeamMeanTimeToFixHistoryGraph.svelte';
 	import TeamVulnerabilityHistoryGraph from '$lib/domain/vulnerability/TeamVulnerabilityHistoryGraph.svelte';
 	import VulnerabilitySummaryMetrics from '$lib/domain/vulnerability/VulnerabilitySummaryMetrics.svelte';
@@ -16,6 +17,13 @@
 
 {#if $TeamVulnerabilities.data}
 	<div class="wrapper">
+		<div class="cve-search-section">
+			<Heading as="h2" size="xsmall">Search for vulnerability</Heading>
+			<BodyLong size="small">Find details and suppress a CVE across your team's workloads.</BodyLong
+			>
+			<TeamCveSearch team={teamSlug} />
+		</div>
+
 		{#if $TeamVulnerabilities.data.team.vulnerabilitySummary}
 			<SurfaceCard title="Summary" level="h2" bordered>
 				<VulnerabilitySummaryMetrics
@@ -48,6 +56,12 @@
 		display: grid;
 		gap: var(--ax-space-32);
 		min-width: 0;
+	}
+
+	.cve-search-section {
+		display: flex;
+		flex-direction: column;
+		gap: var(--ax-space-8);
 	}
 
 	.graphs {
