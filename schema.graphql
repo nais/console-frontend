@@ -185,6 +185,15 @@ enum ActivityLogActivityType {
   VULNERABILITY_UPDATED
 }
 
+"""A single facet item for activity types."""
+type ActivityLogActivityTypeFacetItem {
+  """The activity type enum value, usable in the ActivityLogFilter."""
+  activityType: ActivityLogActivityType!
+
+  """Number of matching entries."""
+  count: Int!
+}
+
 """Interface for activity log entries."""
 interface ActivityLogEntry implements Node {
   """
@@ -218,6 +227,12 @@ interface ActivityLogEntry implements Node {
 type ActivityLogEntryConnection {
   """List of edges."""
   edges: [ActivityLogEntryEdge!]!
+
+  """
+  Facets for the activity log entries. Provides distribution counts to help narrow down results.
+  Facet counts are computed over the full result set (ignoring pagination) but respect the current filter.
+  """
+  facets: ActivityLogFacets
 
   """List of nodes."""
   nodes: [ActivityLogEntry!]!
@@ -306,8 +321,58 @@ enum ActivityLogEntryResourceType {
   VULNERABILITY
 }
 
+"""A single facet item for environments."""
+type ActivityLogEnvironmentFacetItem {
+  """Number of matching entries."""
+  count: Int!
+
+  """The environment name."""
+  environmentName: String!
+}
+
+"""
+Facets for activity log entries, providing distribution counts across different dimensions.
+"""
+type ActivityLogFacets {
+  """
+  Distribution of entries by activity type. These values can be used with the ActivityLogFilter.
+  """
+  activityTypes: [ActivityLogActivityTypeFacetItem!]!
+
+  """Distribution of entries by environment."""
+  environments: [ActivityLogEnvironmentFacetItem!]!
+
+  """Distribution of entries by resource type."""
+  resourceTypes: [ActivityLogResourceTypeFacetItem!]!
+}
+
 input ActivityLogFilter {
+  """
+  Only include entries whose activity type matches one of these values.
+  Use the available activity type facet values when building this filter. When combined with other fields in this input, entries must match this filter as well as the other selected filters.
+  """
   activityTypes: [ActivityLogActivityType!]
+
+  """
+  Only include entries that belong to one of these environments.
+  When combined with other fields in this input, entries must match this filter as well as the other selected filters.
+  """
+  environments: [String!]
+
+  """
+  Only include entries for resources whose type matches one of these values.
+  When combined with other fields in this input, entries must match this filter as well as the other selected filters.
+  """
+  resourceTypes: [ActivityLogEntryResourceType!]
+}
+
+"""A single facet item for resource types."""
+type ActivityLogResourceTypeFacetItem {
+  """Number of matching entries."""
+  count: Int!
+
+  """The resource type."""
+  resourceType: ActivityLogEntryResourceType!
 }
 
 interface ActivityLogger {
@@ -767,6 +832,12 @@ type ApplicationConnection {
   """List of edges."""
   edges: [ApplicationEdge!]!
 
+  """
+  Facets for the applications. Provides distribution counts to help narrow down results.
+  Facet counts are computed over the full result set (ignoring pagination) but respect the current filter.
+  """
+  facets: ApplicationFacets
+
   """List of nodes."""
   nodes: [Application!]!
 
@@ -840,6 +911,26 @@ type ApplicationEdge {
 
   """The application."""
   node: Application!
+}
+
+"""A single facet item for environments."""
+type ApplicationEnvironmentFacetItem {
+  """Number of matching applications."""
+  count: Int!
+
+  """The environment name."""
+  environmentName: String!
+}
+
+"""
+Facets for applications, providing distribution counts across different dimensions.
+"""
+type ApplicationFacets {
+  """Distribution of applications by environment."""
+  environments: [ApplicationEnvironmentFacetItem!]!
+
+  """Distribution of applications by state."""
+  states: [ApplicationStateFacetItem!]!
 }
 
 type ApplicationInstance implements Node {
@@ -1067,6 +1158,15 @@ enum ApplicationState {
 
   """The application state is unknown."""
   UNKNOWN
+}
+
+"""A single facet item for application states."""
+type ApplicationStateFacetItem {
+  """Number of matching applications."""
+  count: Int!
+
+  """The application state."""
+  state: ApplicationState!
 }
 
 type ApplicationUpdatedActivityLogEntry implements ActivityLogEntry & Node {
@@ -3494,6 +3594,12 @@ type JobConnection {
   """List of edges."""
   edges: [JobEdge!]!
 
+  """
+  Facets for the jobs. Provides distribution counts to help narrow down results.
+  Facet counts are computed over the full result set (ignoring pagination) but respect the current filter.
+  """
+  facets: JobFacets
+
   """List of nodes."""
   nodes: [Job!]!
 
@@ -3568,6 +3674,26 @@ type JobEdge {
   node: Job!
 }
 
+"""A single facet item for environments."""
+type JobEnvironmentFacetItem {
+  """Number of matching jobs."""
+  count: Int!
+
+  """The environment name."""
+  environmentName: String!
+}
+
+"""
+Facets for jobs, providing distribution counts across different dimensions.
+"""
+type JobFacets {
+  """Distribution of jobs by environment."""
+  environments: [JobEnvironmentFacetItem!]!
+
+  """Distribution of jobs by state."""
+  states: [JobStateFacetItem!]!
+}
+
 type JobManifest implements WorkloadManifest {
   """The manifest content, serialized as a YAML document."""
   content: String!
@@ -3593,6 +3719,11 @@ enum JobOrderField {
 
   """Order jobs by name."""
   NAME
+
+  """
+  Order jobs by next scheduled run time. Jobs without a next run (no schedule or invalid cron) are always sorted last.
+  """
+  NEXT_RUN
 
   """Order by state."""
   STATE
@@ -3770,6 +3901,9 @@ type JobSchedule {
   """The cron expression for the job."""
   expression: String!
 
+  """The next scheduled run time. Null if the cron expression is invalid."""
+  nextRun: Time
+
   """The time zone for the job. Defaults to UTC."""
   timeZone: String!
 }
@@ -3779,6 +3913,15 @@ enum JobState {
   FAILED
   RUNNING
   UNKNOWN
+}
+
+"""A single facet item for job states."""
+type JobStateFacetItem {
+  """Number of matching jobs."""
+  count: Int!
+
+  """The job state."""
+  state: JobState!
 }
 
 type JobTriggeredActivityLogEntry implements ActivityLogEntry & Node {
@@ -7881,6 +8024,11 @@ input TeamApplicationsFilter {
 
   """Filter by the name of the application."""
   name: String
+
+  """
+  Filter by application state. When provided, only applications matching one of the given states are returned.
+  """
+  states: [ApplicationState!]
 }
 
 type TeamCDN {
@@ -8279,8 +8427,17 @@ type TeamGoogleGroup {
 
 """Application inventory count for a team."""
 type TeamInventoryCountApplications {
+  """Number of applications in a not running state."""
+  notRunning: Int!
+
+  """Number of applications in a running state."""
+  running: Int!
+
   """Total number of applications."""
   total: Int!
+
+  """Number of applications in an unknown state."""
+  unknown: Int!
 }
 
 type TeamInventoryCountBigQueryDatasets {
@@ -8300,8 +8457,20 @@ type TeamInventoryCountConfigs {
 }
 
 type TeamInventoryCountJobs {
+  """Number of jobs in a completed state."""
+  completed: Int!
+
+  """Number of jobs in a failed state."""
+  failed: Int!
+
+  """Number of jobs in a running state."""
+  running: Int!
+
   """Total number of jobs."""
   total: Int!
+
+  """Number of jobs in an unknown state."""
+  unknown: Int!
 }
 
 type TeamInventoryCountKafkaTopics {
@@ -8360,6 +8529,11 @@ input TeamJobsFilter {
 
   """Filter by the name of the job."""
   name: String!
+
+  """
+  Filter by job state. When provided, only jobs matching one of the given states are returned.
+  """
+  states: [JobState!]
 }
 
 type TeamMember {
