@@ -4,6 +4,7 @@
 	const {
 		title,
 		count,
+		headerless = false,
 		children,
 		menu,
 		search,
@@ -12,6 +13,7 @@
 	}: {
 		title?: string;
 		count?: number;
+		headerless?: boolean;
 		children: Snippet;
 		menu?: Snippet;
 		search?: Snippet;
@@ -20,41 +22,43 @@
 	} = $props();
 </script>
 
-<div class="list">
-	<header class="header">
-		<div class="header-row">
-			<div class="header-left">
-				{#if title}
-					<h2 class="title">{title}</h2>
-				{/if}
-				{#if count !== undefined}
-					<span class="count-badge">{count}</span>
-				{/if}
+<div class="list" class:headerless>
+	{#if !headerless}
+		<header class="header">
+			<div class="header-row">
+				<div class="header-left">
+					{#if title}
+						<h2 class="title">{title}</h2>
+					{/if}
+					{#if count !== undefined}
+						<span class="count-badge">{count}</span>
+					{/if}
+				</div>
+				<div class="header-right">
+					{#if actions}
+						{@render actions()}
+					{/if}
+					{#if search}
+						<div class="search-slot">
+							{@render search()}
+						</div>
+					{/if}
+				</div>
 			</div>
-			<div class="header-right">
-				{#if actions}
-					{@render actions()}
-				{/if}
-				{#if search}
-					<div class="search-slot">
-						{@render search()}
-					</div>
-				{/if}
-			</div>
-		</div>
-		{#if filters || menu}
-			<div class="toolbar">
-				{#if filters}
-					<div class="filters-slot">
-						{@render filters()}
-					</div>
-				{/if}
-				{#if menu}
-					<div class="menu-slot">{@render menu()}</div>
-				{/if}
-			</div>
-		{/if}
-	</header>
+			{#if filters || menu}
+				<div class="toolbar">
+					{#if filters}
+						<div class="filters-slot">
+							{@render filters()}
+						</div>
+					{/if}
+					{#if menu}
+						<div class="menu-slot">{@render menu()}</div>
+					{/if}
+				</div>
+			{/if}
+		</header>
+	{/if}
 	<div class="items">
 		{@render children()}
 	</div>
@@ -152,6 +156,11 @@
 	.items {
 		display: flex;
 		flex-direction: column;
+	}
+
+	.list.headerless .items {
+		border-top: 1px solid var(--ax-border-neutral-subtleA);
+		border-bottom: 1px solid var(--ax-border-neutral-subtleA);
 	}
 
 	@media (max-width: 767px) {
