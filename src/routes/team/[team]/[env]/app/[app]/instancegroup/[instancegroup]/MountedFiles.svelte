@@ -1,7 +1,6 @@
 <script lang="ts">
 	import type { InstanceGroupDetail$result } from '$houdini';
-	import SurfaceCard from '$lib/ui/SurfaceCard.svelte';
-	import { Button, Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte-community';
+	import { Button, Heading, Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte-community';
 	import { DownloadIcon } from '@nais/ds-svelte-community/icons';
 
 	type MountedFile =
@@ -22,7 +21,8 @@
 </script>
 
 {#if files.length > 0}
-	<SurfaceCard title="Mounted Files">
+	<section class="section">
+		<Heading as="h3" size="xsmall" class="section-title">Mounted Files</Heading>
 		<div class="table-container">
 			<Table size="small" zebraStripes>
 				<Thead>
@@ -73,10 +73,27 @@
 				</Tbody>
 			</Table>
 		</div>
-	</SurfaceCard>
+	</section>
 {/if}
 
 <style>
+	.section {
+		display: flex;
+		flex-direction: column;
+		gap: var(--ax-space-16);
+		width: 100%;
+	}
+
+	:global(.section-title) {
+		font-size: var(--ax-font-size-small) !important;
+		font-weight: var(--ax-font-weight-bold) !important;
+		line-height: var(--ax-font-line-height-large) !important;
+		color: var(--ax-text-neutral-subtle);
+		text-transform: uppercase;
+		letter-spacing: 0.04em;
+		margin: 0;
+	}
+
 	.source {
 		color: var(--ax-text-neutral-subtle);
 		font-size: var(--ax-font-size-small);
