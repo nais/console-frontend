@@ -32,6 +32,7 @@
 
 	const groupedActivities: Record<string, ActivityLogActivityType$options[]> = {
 		Application: [
+			ActivityLogActivityType.APPLICATION_UPDATED,
 			ActivityLogActivityType.APPLICATION_DELETED,
 			ActivityLogActivityType.APPLICATION_RESTARTED,
 			ActivityLogActivityType.APPLICATION_SCALED
@@ -45,14 +46,12 @@
 		Credentials: [ActivityLogActivityType.CREDENTIALS_CREATED],
 		Deployment: [ActivityLogActivityType.DEPLOYMENT],
 		Job: [
+			ActivityLogActivityType.JOB_UPDATED,
 			ActivityLogActivityType.JOB_DELETED,
 			ActivityLogActivityType.JOB_RUN_DELETED,
 			ActivityLogActivityType.JOB_TRIGGERED
 		],
-		'Kubernetes Resource': [
-			ActivityLogActivityType.GENERIC_KUBERNETES_RESOURCE_CREATED,
-			ActivityLogActivityType.GENERIC_KUBERNETES_RESOURCE_UPDATED
-		],
+		'Kubernetes Resource': [ActivityLogActivityType.GENERIC_KUBERNETES_RESOURCE_CREATED],
 		OpenSearch: [
 			ActivityLogActivityType.OPENSEARCH_CREATED,
 			ActivityLogActivityType.OPENSEARCH_DELETED,
