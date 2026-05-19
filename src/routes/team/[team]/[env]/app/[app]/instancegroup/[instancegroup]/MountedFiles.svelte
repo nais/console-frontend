@@ -22,7 +22,7 @@
 
 {#if files.length > 0}
 	<section class="section">
-		<Heading as="h3" size="xsmall" class="section-title">Mounted Files</Heading>
+		<Heading as="h3" size="xsmall" class="eyebrow">Mounted Files</Heading>
 		<div class="table-container">
 			<Table size="small" zebraStripes>
 				<Thead>
@@ -82,16 +82,6 @@
 		flex-direction: column;
 		gap: var(--ax-space-16);
 		width: 100%;
-	}
-
-	:global(.section-title) {
-		font-size: var(--ax-font-size-small) !important;
-		font-weight: var(--ax-font-weight-bold) !important;
-		line-height: var(--ax-font-line-height-large) !important;
-		color: var(--ax-text-neutral-subtle);
-		text-transform: uppercase;
-		letter-spacing: 0.04em;
-		margin: 0;
 	}
 
 	.source {

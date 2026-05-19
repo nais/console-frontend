@@ -247,14 +247,13 @@
 {:else}
 	<div class="page">
 		<section class="section">
-			<Heading as="h3" size="xsmall" class="section-title">Image</Heading>
+			<Heading as="h3" size="xsmall" class="eyebrow">Image</Heading>
 			<code>{group.image.name}:{group.image.tag}</code>
 		</section>
 
 		{#if group.instances.length > 0}
 			<section class="section">
-				<Heading as="h3" size="xsmall" class="section-title"
-					>Instances ({group.instances.length})</Heading
+				<Heading as="h3" size="xsmall" class="eyebrow">Instances ({group.instances.length})</Heading
 				>
 				<div class="table-container">
 					<Table size="small" zebraStripes>
@@ -316,7 +315,7 @@
 
 		{#if application}
 			<section class="section">
-				<Heading as="h3" size="xsmall" class="section-title">Resources</Heading>
+				<Heading as="h3" size="xsmall" class="eyebrow">Resources</Heading>
 				{#if !isIn50PercentRange(cpuReq, cpuReqRecommendation) || !isIn50PercentRange(memReq, memReqRecommendation)}
 					<Alert variant="info" size="small">
 						CPU and/or memory requests differ by more than 50% from the recommended values. Consider
@@ -420,7 +419,7 @@
 				{@const scaling = application.resources.scaling}
 				{#if scaling.minInstances !== scaling.maxInstances}
 					<section class="section">
-						<Heading as="h3" size="xsmall" class="section-title">Scaling</Heading>
+						<Heading as="h3" size="xsmall" class="eyebrow">Scaling</Heading>
 						<div class="table-container">
 							<Table size="small" zebraStripes>
 								<Thead>
@@ -524,16 +523,6 @@
 		flex-direction: column;
 		gap: var(--ax-space-16);
 		width: 100%;
-	}
-
-	:global(.section-title) {
-		font-size: var(--ax-font-size-small) !important;
-		font-weight: var(--ax-font-weight-bold) !important;
-		line-height: var(--ax-font-line-height-large) !important;
-		color: var(--ax-text-neutral-subtle);
-		text-transform: uppercase;
-		letter-spacing: 0.04em;
-		margin: 0;
 	}
 
 	.page :global(code) {
