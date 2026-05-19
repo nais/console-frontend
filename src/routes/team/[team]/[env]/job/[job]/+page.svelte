@@ -183,6 +183,7 @@
 			{/if}
 
 			<div class="main-section">
+				<Heading as="h2" class="aksel-sr-only">Overview</Heading>
 				{#if job?.deletionStartedAt}
 					<Alert variant="info" size="small" fullWidth={false}>
 						This job is being deleted. Deletion started <Time
