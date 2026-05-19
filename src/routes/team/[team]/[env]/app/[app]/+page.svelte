@@ -127,6 +127,7 @@
 	<div class="wrapper">
 		<div class="app-content">
 			<div class="main-section">
+				<Heading as="h2" class="aksel-sr-only">Overview</Heading>
 				{#if app?.deletionStartedAt}
 					<Alert variant="info" size="small" fullWidth={false}>
 						This application is being deleted. Deletion started <Time
