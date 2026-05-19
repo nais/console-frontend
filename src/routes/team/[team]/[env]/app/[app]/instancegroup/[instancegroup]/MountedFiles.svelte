@@ -1,6 +1,7 @@
 <script lang="ts">
 	import type { InstanceGroupDetail$result } from '$houdini';
-	import { Button, Heading, Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte-community';
+	import List from '$lib/ui/List.svelte';
+	import { Button } from '@nais/ds-svelte-community';
 	import { DownloadIcon } from '@nais/ds-svelte-community/icons';
 
 	type MountedFile =
@@ -18,61 +19,62 @@
 	function fileNameFromPath(filePath: string): string {
 		return filePath.split('/').pop() ?? filePath;
 	}
+
+	function sourceLabel(kind: MountedFile['source']['kind']): string {
+		if (kind === 'CONFIG') return 'Config';
+		if (kind === 'SECRET') return 'Secret';
+		if (kind === 'SPEC') return 'Application manifest';
+		return 'Nais';
+	}
 </script>
 
 {#if files.length > 0}
 	<section class="section">
-		<Heading as="h3" size="xsmall" class="eyebrow">Mounted Files</Heading>
-		<div class="table-container">
-			<Table size="small" zebraStripes>
-				<Thead>
-					<Tr>
-						<Th>Path</Th>
-						<Th>Source</Th>
-						<Th class="action-column"></Th>
-					</Tr>
-				</Thead>
-				<Tbody>
-					{#each files as file (file.path)}
-						<Tr>
-							<Td><code>{file.path}</code></Td>
-							<Td>
-								<span class="source">
-									{file.source.kind === 'CONFIG'
-										? 'Config'
-										: file.source.kind === 'SECRET'
-											? 'Secret'
-											: file.source.kind === 'SPEC'
-												? 'Application manifest'
-												: 'Nais'}
-									{#if file.source.name}/ {file.source.name}{/if}
-								</span>
-							</Td>
-							<Td>
-								{#if file.source.kind === 'CONFIG' && file.content !== null}
-									<Button
-										size="xsmall"
-										variant="tertiary-neutral"
-										icon={DownloadIcon}
-										title="Download {fileNameFromPath(file.path)}"
-										onclick={() =>
-											onDownloadConfigMap(file.path, file.content ?? '', file.encoding)}
-									/>
-								{:else if file.source.kind === 'SECRET' && viewerIsMember}
-									<Button
-										size="xsmall"
-										variant="tertiary-neutral"
-										icon={DownloadIcon}
-										title="Download {fileNameFromPath(file.path)}"
-										onclick={() => onDownloadSecret(fileNameFromPath(file.path), file.source.name)}
-									/>
-								{/if}
-							</Td>
-						</Tr>
-					{/each}
-				</Tbody>
-			</Table>
-		</div>
+		<List title="Mounted Files" count={files.length} level="h3">
+			<ul class="instancegroup-list file-list">
+				{#each files as file (file.path)}
+					<li class="instancegroup-list-item file-item">
+						<div class="instancegroup-list-cell file-cell file-path-cell">
+							<span class="instancegroup-list-label">Path</span>
+							<code>{file.path}</code>
+						</div>
+
+						<div class="instancegroup-list-cell file-cell file-source-cell">
+							<span class="instancegroup-list-label">Type</span>
+							<span class="source-kind">{sourceLabel(file.source.kind)}</span>
+						</div>
+
+						<div class="instancegroup-list-cell file-cell file-name-cell">
+							<span class="instancegroup-list-label">Source</span>
+							<span class="source-name">{file.source.name ?? '—'}</span>
+						</div>
+
+						<div class="instancegroup-list-cell file-cell file-action-cell">
+							<span class="instancegroup-list-label">Actions</span>
+							{#if file.source.kind === 'CONFIG' && file.content !== null}
+								<Button
+									size="xsmall"
+									variant="tertiary-neutral"
+									icon={DownloadIcon}
+									title="Download {fileNameFromPath(file.path)}"
+									onclick={() => onDownloadConfigMap(file.path, file.content ?? '', file.encoding)}
+								/>
+							{:else if file.source.kind === 'SECRET' && viewerIsMember}
+								<Button
+									size="xsmall"
+									variant="tertiary-neutral"
+									icon={DownloadIcon}
+									title="Download {fileNameFromPath(file.path)}"
+									onclick={() => onDownloadSecret(fileNameFromPath(file.path), file.source.name)}
+								/>
+							{:else}
+								<span class="muted">-</span>
+							{/if}
+						</div>
+					</li>
+				{/each}
+			</ul>
+		</List>
 	</section>
 {/if}
 
@@ -84,37 +86,37 @@
 		width: 100%;
 	}
 
-	.source {
+	.file-list {
+		--instancegroup-list-columns: minmax(0, 2.5fr) auto minmax(0, 1.8fr) 3rem;
+	}
+
+	.file-cell code {
+		font-size: var(--ax-font-size-small);
+		color: var(--ax-text-neutral);
+		white-space: normal;
+		overflow-wrap: anywhere;
+		word-break: break-word;
+	}
+
+	.source-kind {
 		color: var(--ax-text-neutral-subtle);
 		font-size: var(--ax-font-size-small);
 		white-space: nowrap;
 	}
 
-	.table-container {
-		width: 100%;
-		overflow-x: auto;
-	}
-
-	.table-container :global(table) {
-		min-width: 720px;
-	}
-
-	.table-container :global(th),
-	.table-container :global(td) {
-		white-space: nowrap;
-	}
-
-	.table-container :global(th.action-column) {
-		width: 1%;
-	}
-
-	.table-container :global(code) {
+	.source-name {
+		color: var(--ax-text-neutral-subtle);
 		font-size: var(--ax-font-size-small);
-		color: var(--ax-text-neutral);
-		overflow-wrap: normal;
-		word-break: normal;
-		white-space: nowrap;
-		display: inline-block;
-		min-width: max-content;
+		white-space: normal;
+		overflow-wrap: anywhere;
+		word-break: break-word;
+	}
+
+	.file-action-cell {
+		justify-content: flex-start;
+	}
+
+	.muted {
+		color: var(--ax-text-neutral-subtle);
 	}
 </style>
