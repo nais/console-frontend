@@ -1,13 +1,15 @@
 <script lang="ts">
 	import { page } from '$app/state';
+	import { docURL } from '$lib/doc';
 	import DeploymentListItem from '$lib/domain/list-items/DeploymentListItem.svelte';
 	import DocsLink from '$lib/ui/DocsLink.svelte';
+	import ExternalLink from '$lib/ui/ExternalLink.svelte';
 	import GraphErrors from '$lib/ui/GraphErrors.svelte';
 	import List from '$lib/ui/List.svelte';
 	import Pagination from '$lib/ui/Pagination.svelte';
 	import { extractIdFromUrl } from '$lib/utils/extractIdFromUrl';
 	import { changeParams } from '$lib/utils/searchparams';
-	import { BodyShort } from '@nais/ds-svelte-community';
+	import { BodyLong } from '@nais/ds-svelte-community';
 	import { tick } from 'svelte';
 	import type { PageProps } from './$types';
 
@@ -63,7 +65,17 @@
 	<div class="wrapper">
 		<div>
 			{#if deploys.pageInfo.totalCount === 0}
-				<BodyShort size="small" textColor="subtle">No deployments found.</BodyShort>
+				<List title="Deployments" count={0}>
+					<div class="empty-state">
+						<BodyLong>
+							<strong>No deployments found.</strong> Deployments are listed here once a workload has
+							been deployed.
+							<ExternalLink href={docURL('/build/')}
+								>Learn more about builds and deployments in Nais.</ExternalLink
+							>
+						</BodyLong>
+					</div>
+				</List>
 			{:else}
 				<List title="Deployments" count={deploys.pageInfo.totalCount}>
 					{#snippet actions()}
@@ -104,6 +116,10 @@
 		display: flex;
 		flex-direction: column;
 		gap: var(--ax-space-24);
+	}
+
+	.empty-state {
+		padding: var(--ax-space-16) var(--ax-space-24);
 	}
 
 	[id] {
