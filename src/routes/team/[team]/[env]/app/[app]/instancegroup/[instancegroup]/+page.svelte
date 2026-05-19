@@ -4,7 +4,6 @@
 	import type { InstanceGroupDetail$result, ValueEncoding$options } from '$houdini';
 	import { ValueEncoding } from '$houdini';
 	import GraphErrors from '$lib/ui/GraphErrors.svelte';
-	import SurfaceCard from '$lib/ui/SurfaceCard.svelte';
 	import Time from '$lib/ui/Time.svelte';
 	import {
 		Alert,
@@ -210,14 +209,17 @@
 	}
 </script>
 
-<Heading as="h2" size="medium" spacing>
-	{instanceGroupName}
+<div class="heading-row">
+	<Heading as="h2" size="medium">{instanceGroupName}</Heading>
+	{#if hasFailing}
+		<Tag size="small" variant="error">Failing</Tag>
+	{/if}
 	{#if allGroups.length > 1}
 		<Tag size="small" variant={role === 'incoming' ? 'alt1' : 'neutral'}>
 			{role === 'incoming' ? 'Incoming' : 'Current'}
 		</Tag>
 	{/if}
-</Heading>
+</div>
 
 {#if allGroups.length > 1}
 	<div class="group-selector">
@@ -244,26 +246,16 @@
 	<Alert variant="warning">Instance group "{instanceGroupName}" not found.</Alert>
 {:else}
 	<div class="page">
-		<SurfaceCard title="Image">
-			{#snippet headerAside()}
-				{#if incoming || hasFailing}
-					<span class="status-tags">
-						{#if hasFailing}
-							<Tag size="small" variant="error">Failing</Tag>
-						{/if}
-						{#if incoming}
-							<Tag size="small" variant={role === 'incoming' ? 'alt1' : 'neutral'}>
-								{role === 'incoming' ? 'Incoming' : 'Current'}
-							</Tag>
-						{/if}
-					</span>
-				{/if}
-			{/snippet}
+		<section class="section">
+			<Heading as="h3" size="xsmall" class="section-title">Image</Heading>
 			<code>{group.image.name}:{group.image.tag}</code>
-		</SurfaceCard>
+		</section>
 
 		{#if group.instances.length > 0}
-			<SurfaceCard title="Instances ({group.instances.length})">
+			<section class="section">
+				<Heading as="h3" size="xsmall" class="section-title"
+					>Instances ({group.instances.length})</Heading
+				>
 				<div class="table-container">
 					<Table size="small" zebraStripes>
 						<Thead>
@@ -319,11 +311,12 @@
 						</Tbody>
 					</Table>
 				</div>
-			</SurfaceCard>
+			</section>
 		{/if}
 
 		{#if application}
-			<SurfaceCard title="Resources">
+			<section class="section">
+				<Heading as="h3" size="xsmall" class="section-title">Resources</Heading>
 				{#if !isIn50PercentRange(cpuReq, cpuReqRecommendation) || !isIn50PercentRange(memReq, memReqRecommendation)}
 					<Alert variant="info" size="small">
 						CPU and/or memory requests differ by more than 50% from the recommended values. Consider
@@ -421,12 +414,13 @@
 						</Tbody>
 					</Table>
 				</div>
-			</SurfaceCard>
+			</section>
 
 			{#if application.resources.scaling}
 				{@const scaling = application.resources.scaling}
 				{#if scaling.minInstances !== scaling.maxInstances}
-					<SurfaceCard title="Scaling">
+					<section class="section">
+						<Heading as="h3" size="xsmall" class="section-title">Scaling</Heading>
 						<div class="table-container">
 							<Table size="small" zebraStripes>
 								<Thead>
@@ -466,7 +460,7 @@
 								</Tbody>
 							</Table>
 						</div>
-					</SurfaceCard>
+					</section>
 				{/if}
 			{/if}
 		{/if}
@@ -515,6 +509,31 @@
 		display: flex;
 		flex-direction: column;
 		gap: var(--ax-space-24);
+		width: 100%;
+	}
+
+	.heading-row {
+		display: flex;
+		align-items: center;
+		gap: var(--ax-space-8);
+		margin-bottom: var(--ax-space-8);
+	}
+
+	.section {
+		display: flex;
+		flex-direction: column;
+		gap: var(--ax-space-16);
+		width: 100%;
+	}
+
+	:global(.section-title) {
+		font-size: var(--ax-font-size-small) !important;
+		font-weight: var(--ax-font-weight-bold) !important;
+		line-height: var(--ax-font-line-height-large) !important;
+		color: var(--ax-text-neutral-subtle);
+		text-transform: uppercase;
+		letter-spacing: 0.04em;
+		margin: 0;
 	}
 
 	.page :global(code) {
@@ -533,12 +552,6 @@
 	.exit-info {
 		font-size: var(--ax-font-size-small);
 		overflow-wrap: anywhere;
-	}
-
-	.status-tags {
-		display: flex;
-		gap: var(--ax-space-4);
-		flex-wrap: wrap;
 	}
 
 	.table-container {

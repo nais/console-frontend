@@ -1,7 +1,16 @@
 <script lang="ts">
 	import type { InstanceGroupDetail$result } from '$houdini';
-	import SurfaceCard from '$lib/ui/SurfaceCard.svelte';
-	import { Button, CopyButton, Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte-community';
+	import {
+		Button,
+		CopyButton,
+		Heading,
+		Table,
+		Tbody,
+		Td,
+		Th,
+		Thead,
+		Tr
+	} from '@nais/ds-svelte-community';
 	import { EyeIcon, EyeSlashIcon } from '@nais/ds-svelte-community/icons';
 	import { SvelteMap } from 'svelte/reactivity';
 
@@ -22,14 +31,15 @@
 </script>
 
 {#if envVars.length > 0}
-	<SurfaceCard title="Environment Variables">
-		{#snippet headerAside()}
+	<section class="section">
+		<div class="section-header">
+			<Heading as="h3" size="xsmall" class="section-title">Environment Variables</Heading>
 			{#if hasSecrets && viewerIsMember && revealedValues.size > 0}
 				<Button size="xsmall" variant="tertiary" icon={EyeSlashIcon} onclick={onHideAll}>
 					Hide secret values
 				</Button>
 			{/if}
-		{/snippet}
+		</div>
 		<div class="table-container">
 			<Table size="small" zebraStripes>
 				<Thead>
@@ -88,10 +98,34 @@
 				</Tbody>
 			</Table>
 		</div>
-	</SurfaceCard>
+	</section>
 {/if}
 
 <style>
+	.section {
+		display: flex;
+		flex-direction: column;
+		gap: var(--ax-space-16);
+		width: 100%;
+	}
+
+	.section-header {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		gap: var(--ax-space-8);
+	}
+
+	:global(.section-title) {
+		font-size: var(--ax-font-size-small) !important;
+		font-weight: var(--ax-font-weight-bold) !important;
+		line-height: var(--ax-font-line-height-large) !important;
+		color: var(--ax-text-neutral-subtle);
+		text-transform: uppercase;
+		letter-spacing: 0.04em;
+		margin: 0;
+	}
+
 	.masked {
 		color: var(--ax-text-neutral-subtle);
 		user-select: none;
