@@ -5,7 +5,7 @@
 	import IconLabel from '$lib/ui/IconLabel.svelte';
 	import List from '$lib/ui/List.svelte';
 	import TooltipAlignHack from '$lib/ui/TooltipAlignHack.svelte';
-	import { BodyShort, Tag } from '@nais/ds-svelte-community';
+	import { BodyLong, Heading, Tag } from '@nais/ds-svelte-community';
 	import {
 		ArrowLeftIcon,
 		ArrowRightIcon,
@@ -138,10 +138,14 @@
 	{/if}
 {/snippet}
 
-<List title="Access policy" count={flatRules.length}>
-	{#snippet actions()}
+<div class="section-heading">
+	<Heading as="h2" size="medium" spacing>Access policy</Heading>
+	<div class="actions">
 		<DocsLink path="/workloads/application/reference/application-spec/#accesspolicy" />
-	{/snippet}
+	</div>
+</div>
+
+<List headerless>
 	{#if hasPolicy}
 		<ul class="rules">
 			{#each flatRules as entry, i (`${entry.direction}-${entry.kind}-${i}`)}
@@ -170,9 +174,13 @@
 
 					<span class="status">
 						{#if entry.kind === 'external'}
-							<Tag size="xsmall" variant="neutral">External</Tag>
+							<TooltipAlignHack content="Traffic to an external destination outside this cluster.">
+								<Tag size="xsmall" variant="neutral">External</Tag>
+							</TooltipAlignHack>
 						{:else if entry.rule.mutual}
-							<Tag size="xsmall" variant="success">Mutual</Tag>
+							<TooltipAlignHack content="Both workloads allow traffic to each other.">
+								<Tag size="xsmall" variant="success">Mutual</Tag>
+							</TooltipAlignHack>
 						{:else}
 							<TooltipAlignHack
 								content={entry.direction === 'inbound'
@@ -187,13 +195,28 @@
 			{/each}
 		</ul>
 	{:else}
-	<div class="empty-state">
-		<BodyShort size="small" textColor="subtle">No access policies configured.</BodyShort>
-	</div>
+		<div class="empty-state">
+			<BodyLong size="small" textColor="subtle">No access policies configured.</BodyLong>
+		</div>
 	{/if}
 </List>
 
 <style>
+	.section-heading {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: var(--ax-space-16);
+		flex-wrap: wrap;
+	}
+
+	.actions {
+		display: flex;
+		align-items: center;
+		gap: var(--ax-space-4);
+		flex-shrink: 0;
+	}
+
 	.rules {
 		list-style: none;
 		margin: 0;
@@ -210,6 +233,11 @@
 		border-bottom: 1px solid var(--ax-border-neutral-subtleA);
 		font-size: var(--ax-font-size-small);
 		min-width: 0;
+		transition: background-color 120ms ease;
+	}
+
+	.rule:hover {
+		background-color: var(--ax-bg-neutral-soft);
 	}
 
 	.rule:last-child {

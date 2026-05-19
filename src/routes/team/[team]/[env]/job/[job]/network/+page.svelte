@@ -1,7 +1,7 @@
 <script lang="ts">
 	import NetworkPolicy from '$lib/domain/resources/NetworkPolicy.svelte';
 	import GraphErrors from '$lib/ui/GraphErrors.svelte';
-	import { Loader } from '@nais/ds-svelte-community';
+	import { Heading, Loader } from '@nais/ds-svelte-community';
 	import type { PageProps } from './$types';
 
 	let { data }: PageProps = $props();
@@ -9,6 +9,8 @@
 </script>
 
 <GraphErrors errors={$JobNetworkPolicy.errors} />
+
+<Heading as="h2" class="aksel-sr-only">Network</Heading>
 
 {#if $JobNetworkPolicy.fetching}
 	<div class="loading">
