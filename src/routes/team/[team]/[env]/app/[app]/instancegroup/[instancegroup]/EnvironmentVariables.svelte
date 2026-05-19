@@ -33,7 +33,7 @@
 {#if envVars.length > 0}
 	<section class="section">
 		<div class="section-header">
-			<Heading as="h3" size="xsmall" class="section-title">Environment Variables</Heading>
+			<Heading as="h3" size="xsmall" class="eyebrow">Environment Variables</Heading>
 			{#if hasSecrets && viewerIsMember && revealedValues.size > 0}
 				<Button size="xsmall" variant="tertiary" icon={EyeSlashIcon} onclick={onHideAll}>
 					Hide secret values
@@ -114,16 +114,6 @@
 		justify-content: space-between;
 		align-items: center;
 		gap: var(--ax-space-8);
-	}
-
-	:global(.section-title) {
-		font-size: var(--ax-font-size-small) !important;
-		font-weight: var(--ax-font-weight-bold) !important;
-		line-height: var(--ax-font-line-height-large) !important;
-		color: var(--ax-text-neutral-subtle);
-		text-transform: uppercase;
-		letter-spacing: 0.04em;
-		margin: 0;
 	}
 
 	.masked {

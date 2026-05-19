@@ -89,6 +89,16 @@ html {
 	vertical-align: bottom;
 }
 
+.eyebrow {
+	font-size: var(--ax-font-size-medium) !important;
+	font-weight: var(--ax-font-weight-bold) !important;
+	line-height: var(--ax-font-line-height-large) !important;
+	color: var(--ax-text-neutral-subtle);
+	text-transform: uppercase;
+	letter-spacing: 0.04em;
+	margin: 0;
+}
+
 .surface-icon {
 	display: inline-flex;
 	align-items: center;
