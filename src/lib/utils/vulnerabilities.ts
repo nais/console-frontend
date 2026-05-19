@@ -1,5 +1,73 @@
-import type { ImageVulnerabilitySuppressionState$options } from '$houdini/graphql/enums';
-import { ImageVulnerabilitySuppressionState } from '$houdini/graphql/enums';
+import type {
+	ImageVulnerabilitySuppressionState$options,
+	SBOMStatus$options
+} from '$houdini/graphql/enums';
+import { ImageVulnerabilitySuppressionState, SBOMStatus } from '$houdini/graphql/enums';
+
+export type SbomStatus = SBOMStatus$options;
+
+export type SbomStatusIndicator = 'healthy' | 'processing' | 'warning' | 'no-sbom';
+
+export type SbomStatusIconIndicator = SbomStatusIndicator;
+
+export interface SbomStatusSource {
+	status: SbomStatus;
+	sbomProcessingStartedAt?: Date | null;
+	hasVulnerabilityData?: boolean;
+}
+
+export interface SbomStatusDetails {
+	status: SbomStatus;
+	indicator: SbomStatusIndicator;
+	iconIndicator: SbomStatusIconIndicator;
+	label: string;
+}
+
+const sbomStatusIndicators: Record<SbomStatus, SbomStatusIndicator> = {
+	[SBOMStatus.READY]: 'healthy',
+	[SBOMStatus.PROCESSING]: 'processing',
+	[SBOMStatus.NO_SBOM]: 'no-sbom',
+	[SBOMStatus.FAILED]: 'warning'
+};
+
+const sbomStatusLabels: Record<SbomStatus, string> = {
+	[SBOMStatus.READY]: 'SBOM up to date',
+	[SBOMStatus.PROCESSING]: 'Scanning for vulnerabilities',
+	[SBOMStatus.NO_SBOM]: 'No SBOM found',
+	[SBOMStatus.FAILED]: 'SBOM processing failed'
+};
+
+export function formatProcessingDuration(
+	sbomProcessingStartedAt: Date | null | undefined
+): string | null {
+	if (!sbomProcessingStartedAt) return null;
+	const diffMs = Date.now() - sbomProcessingStartedAt.getTime();
+	const diffMin = Math.floor(diffMs / 60_000);
+	if (diffMin < 1) return 'Scanning for vulnerabilities · less than a minute';
+	if (diffMin < 60) return `Scanning for vulnerabilities · ${diffMin} min`;
+	const diffH = Math.floor(diffMin / 60);
+	const remMin = diffMin % 60;
+	if (diffH < 24)
+		return remMin > 0
+			? `Scanning for vulnerabilities · ${diffH} h ${remMin} min`
+			: `Scanning for vulnerabilities · ${diffH} h`;
+	return `Scanning for vulnerabilities · ${Math.floor(diffH / 24)} d`;
+}
+
+export const sbomStatusDetails = (source: SbomStatusSource): SbomStatusDetails => {
+	const status = source.status ?? 'NO_SBOM';
+	const indicator = sbomStatusIndicators[status] ?? 'no-sbom';
+	const baseLabel = sbomStatusLabels[status] ?? 'No SBOM found';
+	const iconIndicator =
+		indicator === 'no-sbom' || (indicator === 'healthy' && source.hasVulnerabilityData === false)
+			? 'no-sbom'
+			: indicator;
+	const label =
+		indicator === 'processing'
+			? (formatProcessingDuration(source.sbomProcessingStartedAt) ?? baseLabel)
+			: baseLabel;
+	return { status, indicator, iconIndicator, label };
+};
 
 export function severityToColor({
 	severity,

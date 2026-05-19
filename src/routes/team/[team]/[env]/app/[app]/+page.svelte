@@ -6,12 +6,16 @@
 	import Persistence from '$lib/domain/persistence/Persistence.svelte';
 	import Configs from '$lib/domain/resources/Configs.svelte';
 	import Secrets from '$lib/domain/resources/Secrets.svelte';
+	import SbomStatusIcon from '$lib/domain/vulnerability/SbomStatusIcon.svelte';
+	import WorkloadVulnerabilitySummary from '$lib/domain/vulnerability/WorkloadVulnerabilitySummary.svelte';
 	import WorkloadDeploy from '$lib/domain/workload/WorkloadDeploy.svelte';
 	import WorkloadHealth from '$lib/domain/workload/WorkloadHealth.svelte';
 	import GraphErrors from '$lib/ui/GraphErrors.svelte';
 	import PageModal from '$lib/ui/PageModal.svelte';
 	import Time from '$lib/ui/Time.svelte';
-	import { Alert, Heading, Loader } from '@nais/ds-svelte-community';
+	import { sbomStatusDetails } from '$lib/utils/vulnerabilities';
+	import { Alert, Button, Heading, Loader, Tag } from '@nais/ds-svelte-community';
+	import { ArrowCirclepathIcon, TrashIcon } from '@nais/ds-svelte-community/icons';
 	import { onMount } from 'svelte';
 	import type { PageProps } from './$types';
 	import InstanceGroups from './InstanceGroups.svelte';
@@ -57,6 +61,11 @@
 	</div>
 {/if}
 {#if app}
+	{@const imageStaleness = sbomStatusDetails({
+		status: app.image.sbom.status,
+		sbomProcessingStartedAt: app.image.sbom.processingStartedAt,
+		hasVulnerabilityData: !!(app.image.sbom.status === 'READY' && app.image.vulnerabilitySummary)
+	})}
 	<div class="wrapper">
 		<div class="app-content">
 			<div class="main-section">
@@ -97,6 +106,13 @@
 					/>
 					<CostOverviewChart workload={app.name} {environment} {teamSlug} />
 				{/if}
+				<div>
+					<div style="display: flex; align-items: center; gap: var(--ax-space-4);">
+						<Heading as="h2" size="small">Vulnerabilities</Heading>
+						<SbomStatusIcon indicator={imageStaleness.iconIndicator} label={imageStaleness.label} />
+					</div>
+					<WorkloadVulnerabilitySummary workload={app} />
+				</div>
 			</div>
 			<div class="layout-sidebar">
 				<WorkloadDeploy workload={app} />
