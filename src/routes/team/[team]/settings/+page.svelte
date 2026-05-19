@@ -10,6 +10,7 @@
 	} from '$houdini';
 	import { docURL } from '$lib/doc';
 	import TeamActivityCard from '$lib/domain/activity/TeamActivityCard.svelte';
+	import SlackIcon from '$lib/icons/SlackIcon.svelte';
 	import ExternalLink from '$lib/ui/ExternalLink.svelte';
 	import GraphErrors from '$lib/ui/GraphErrors.svelte';
 	import SurfaceCard from '$lib/ui/SurfaceCard.svelte';
@@ -32,7 +33,6 @@
 		TokenIcon,
 		TrashIcon
 	} from '@nais/ds-svelte-community/icons';
-	import SlackIcon from '$lib/icons/SlackIcon.svelte';
 	import type { PageProps } from './$types';
 	import EditText from './EditText.svelte';
 
