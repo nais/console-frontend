@@ -1,8 +1,14 @@
-query CVEWorkloads($identifier: String!, $first: Int, $last: Int, $after: Cursor, $before: Cursor)
-@cache(policy: CacheAndNetwork) {
+query CVEWorkloads(
+	$identifier: String!
+	$first: Int
+	$last: Int
+	$after: Cursor
+	$before: Cursor
+	$filter: CVEWorkloadsFilter
+) @cache(policy: CacheAndNetwork) {
 	cve(identifier: $identifier) {
 		id
-		workloads(first: $first, last: $last, after: $after, before: $before) {
+		workloads(first: $first, last: $last, after: $after, before: $before, filter: $filter) {
 			pageInfo {
 				hasNextPage
 				hasPreviousPage
@@ -30,6 +36,7 @@ query CVEWorkloads($identifier: String!, $first: Int, $last: Int, $after: Cursor
 					}
 				}
 				vulnerability {
+					id
 					identifier
 					severity
 					package

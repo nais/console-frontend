@@ -6,9 +6,11 @@ const rows = 25;
 export async function load(event) {
 	const after = event.url.searchParams.get('after') || '';
 	const before = event.url.searchParams.get('before') || '';
+	const team = event.url.searchParams.get('team') || '';
 
 	return {
 		...(await addPageMeta(event, { title: event.params.cve })),
+		teamSlug: team || null,
 		...(await load_CVEDetails({
 			event,
 			variables: {
@@ -19,7 +21,8 @@ export async function load(event) {
 			event,
 			variables: {
 				identifier: event.params.cve,
-				...(before ? { before, last: rows } : { after, first: rows })
+				...(before ? { before, last: rows } : { after, first: rows }),
+				...(team ? { filter: { teamSlugs: [team] } } : {})
 			}
 		}))
 	};
