@@ -50,7 +50,7 @@
 					</Tr>
 				</Thead>
 				<Tbody>
-					{#each envVars as env (env.id)}
+					{#each envVars as env, i (i)}
 						<Tr>
 							<Td class="name-cell"><code>{env.name}</code></Td>
 							<Td class="value-cell">
