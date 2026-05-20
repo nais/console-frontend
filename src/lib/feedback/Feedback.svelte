@@ -124,6 +124,7 @@
 						style="resize: vertical; min-height: 16rem; "
 						placeholder="Enter your feedback here..."
 						disabled={feedbackSent}
+						aria-describedby="charCount tf-uid-43"
 					></textarea>
 					<span id="charCount"
 						>{maxlength - details.length} character{maxlength - details.length == 1 ? '' : 's'} remaining</span

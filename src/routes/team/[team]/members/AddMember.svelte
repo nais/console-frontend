@@ -121,7 +121,7 @@
 	{/snippet}
 
 	{#each errors as error (error)}
-		<Alert variant="error">{error}</Alert>
+		<Alert variant="error" role="alert">{error}</Alert>
 	{/each}
 
 	<form
