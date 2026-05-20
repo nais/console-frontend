@@ -42,6 +42,7 @@ export function formatProcessingDuration(
 ): string | null {
 	if (!sbomProcessingStartedAt) return null;
 	const diffMs = Date.now() - sbomProcessingStartedAt.getTime();
+	if (diffMs < 0) return null;
 	const diffMin = Math.floor(diffMs / 60_000);
 	if (diffMin < 1) return 'Scanning for vulnerabilities · less than a minute';
 	if (diffMin < 60) return `Scanning for vulnerabilities · ${diffMin} min`;
