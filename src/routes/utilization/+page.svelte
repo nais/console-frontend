@@ -231,10 +231,8 @@
 			<div>
 				<Heading as="h2" spacing>CPU and Memory Underutilization per Team</Heading>
 
-				<!-- svelte-ignore a11y_no_noninteractive_tabindex -->
 				<div
 					class="table-scroll"
-					tabindex="0"
 					role="region"
 					aria-label="CPU and memory underutilization per team"
 				>

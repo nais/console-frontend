@@ -10,8 +10,7 @@
 </script>
 
 {#if $ReconcilerLogs.data && $ReconcilerLogs.data.node?.__typename === 'Reconciler'}
-	<!-- svelte-ignore a11y_no_noninteractive_tabindex -->
-	<div class="table-scroll" tabindex="0" role="region" aria-label="Reconciler logs table">
+	<div class="table-scroll" role="region" aria-label="Reconciler logs table">
 		<Table size="small">
 			<Thead>
 				<Tr>
