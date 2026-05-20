@@ -217,7 +217,7 @@
 					}}
 					onSort={(field) => setSort(field as SecretOrderFieldOptions)}
 				>
-					<details class="usage-section">
+					<details class="usage-section" open>
 						<summary class="usage-heading">Usage</summary>
 						<div class="facet-list">
 							<label class="facet-item">

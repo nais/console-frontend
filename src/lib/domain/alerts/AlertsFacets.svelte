@@ -49,7 +49,7 @@
 
 <div class="facets">
 	{#if states.length > 0}
-		<details class="facet-section">
+		<details class="facet-section" open>
 			<summary class="facet-heading">State</summary>
 			<div class="facet-list">
 				{#each states as facet (facet.state)}
@@ -68,7 +68,7 @@
 	{/if}
 
 	{#if environments.length > 0}
-		<details class="facet-section">
+		<details class="facet-section" open>
 			<summary class="facet-heading">Environments</summary>
 			<div class="facet-list">
 				{#each environments as entry (entry.id)}

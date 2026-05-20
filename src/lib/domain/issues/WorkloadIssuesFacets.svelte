@@ -17,7 +17,7 @@
 	}
 </script>
 
-<details class="facet-section">
+<details class="facet-section" open>
 	<summary class="facet-heading">Severity</summary>
 	<div class="facet-list">
 		<label class="facet-item">
@@ -43,7 +43,7 @@
 	</div>
 </details>
 
-<details class="facet-section">
+<details class="facet-section" open>
 	<summary class="facet-heading">Issue Type</summary>
 	<div class="facet-list">
 		<label class="facet-item">

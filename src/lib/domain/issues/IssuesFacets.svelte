@@ -53,7 +53,7 @@
 
 <div class="facets">
 	{#if severities.length > 0}
-		<details class="facet-section">
+		<details class="facet-section" open>
 			<summary class="facet-heading">Severity</summary>
 			<div class="facet-list">
 				<label class="facet-item">
@@ -82,7 +82,7 @@
 	{/if}
 
 	{#if issueTypes.length > 0}
-		<details class="facet-section">
+		<details class="facet-section" open>
 			<summary class="facet-heading">Issue Type</summary>
 			<div class="facet-list">
 				<label class="facet-item">
@@ -110,7 +110,7 @@
 	{/if}
 
 	{#if environments.length > 0}
-		<details class="facet-section">
+		<details class="facet-section" open>
 			<summary class="facet-heading">Environments</summary>
 			<div class="facet-list">
 				{#each environments as entry (entry.id)}

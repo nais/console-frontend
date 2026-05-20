@@ -1,5 +1,5 @@
 <script module lang="ts">
-	let persistedSortOpen = false;
+	let persistedSortOpen = true;
 </script>
 
 <script lang="ts">

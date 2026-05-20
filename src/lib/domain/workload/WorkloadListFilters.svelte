@@ -92,7 +92,7 @@
 	{onSort}
 >
 	{#if states.length > 0}
-		<details class="filter-section">
+		<details class="filter-section" open>
 			<summary class="section-heading">Status</summary>
 			<div class="facet-list">
 				{#each states as facet (facet.state)}
@@ -111,7 +111,7 @@
 	{/if}
 
 	{#if environments.length > 0}
-		<details class="filter-section">
+		<details class="filter-section" open>
 			<summary class="section-heading">Environments</summary>
 			<div class="facet-list">
 				{#each environments as facet (facet.environmentName)}

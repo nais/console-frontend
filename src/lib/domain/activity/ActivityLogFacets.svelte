@@ -79,7 +79,7 @@
 
 <div class="facets">
 	{#if activityTypes.length > 0}
-		<details class="facet-section">
+		<details class="facet-section" open>
 			<summary class="facet-heading">Activity Types</summary>
 			<div class="facet-list">
 				{#each activityTypes as facet (facet.activityType)}
@@ -98,7 +98,7 @@
 	{/if}
 
 	{#if resourceTypes.length > 0}
-		<details class="facet-section">
+		<details class="facet-section" open>
 			<summary class="facet-heading">Resource Types</summary>
 			<div class="facet-list">
 				{#each resourceTypes as facet (facet.resourceType)}
@@ -117,7 +117,7 @@
 	{/if}
 
 	{#if environments.length > 0}
-		<details class="facet-section">
+		<details class="facet-section" open>
 			<summary class="facet-heading">Environments</summary>
 			<div class="facet-list">
 				{#each environments as facet (facet.environmentName)}
