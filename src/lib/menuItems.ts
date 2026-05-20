@@ -39,7 +39,7 @@ export const menuItems = ({
 		[menuItem('Applications', 'applications'), menuItem('Jobs', 'jobs')],
 		[
 			menuItem('Secrets', 'secrets', 'secret'),
-			menuItem('Config', 'configs', 'config'),
+			menuItem('Configs', 'configs', 'config'),
 			menuItem('Cloud SQL', 'cloudsql', 'cloudsql'),
 			menuItem('Postgres', 'postgres', 'postgres'),
 			menuItem('Buckets', 'buckets', 'bucket'),

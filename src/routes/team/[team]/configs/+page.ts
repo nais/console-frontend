@@ -22,7 +22,7 @@ export async function load(event) {
 
 	return {
 		...(await addPageMeta(event, {
-			title: 'Config',
+			title: 'Configs',
 			pageHeaderTitle: '',
 			docPath: '/services/config'
 		})),

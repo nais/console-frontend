@@ -44,6 +44,7 @@
 			case 'secrets':
 				return PadlockLockedIcon;
 			case 'config':
+			case 'configs':
 				return FileTextIcon;
 			case 'cloudsql':
 			case 'cloud sql':
