@@ -1,11 +1,6 @@
 <script lang="ts">
-	import {
-		CopyButton,
-		Heading,
-		ToggleGroup,
-		ToggleGroupItem,
-		Tooltip
-	} from '@nais/ds-svelte-community';
+	import SurfaceCard from '$lib/ui/SurfaceCard.svelte';
+	import { CopyButton, ToggleGroup, ToggleGroupItem, Tooltip } from '@nais/ds-svelte-community';
 
 	interface Props {
 		configName: string;
@@ -26,10 +21,7 @@
 	);
 </script>
 
-<div>
-	<Heading as="h2" size="medium" spacing>Use this config</Heading>
-
-	<Heading as="h3" size="xsmall">Manifest</Heading>
+<SurfaceCard title="Use this config">
 	<ToggleGroup size="small" value={mode} onchange={(val) => (mode = val)}>
 		<ToggleGroupItem value="env">Environment</ToggleGroupItem>
 		<ToggleGroupItem value="files">Files</ToggleGroupItem>
@@ -43,7 +35,7 @@
 			copyText={manifest}
 		></CopyButton>
 	</Tooltip>
-</div>
+</SurfaceCard>
 
 <style>
 	.manifest {
@@ -51,6 +43,6 @@
 		font-size: var(--ax-font-size-small);
 		word-break: break-word;
 		white-space: pre-wrap;
-		margin: 0.5rem 1rem;
+		margin: 0;
 	}
 </style>

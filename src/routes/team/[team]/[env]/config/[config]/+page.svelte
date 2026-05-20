@@ -9,7 +9,6 @@
 		Button,
 		CopyButton,
 		Heading,
-		HelpText,
 		Loader,
 		Modal,
 		Table,
@@ -23,13 +22,13 @@
 	import SidebarActivity from '$lib/domain/activity/sidebar/SidebarActivity.svelte';
 	import WorkloadLink from '$lib/domain/workload/WorkloadLink.svelte';
 	import GraphErrors from '$lib/ui/GraphErrors.svelte';
+	import SurfaceCard from '$lib/ui/SurfaceCard.svelte';
 	import Textarea from '$lib/ui/Textarea.svelte';
 	import { getConfigPermissions } from '$lib/utils/configPermissions';
 	import { DocPencilIcon, DownloadIcon, TrashIcon } from '@nais/ds-svelte-community/icons';
 	import type { PageProps } from './$types';
 	import AddKeyValue from './AddKeyValue.svelte';
 	import Manifest from './Manifest.svelte';
-	import Metadata from './Metadata.svelte';
 	import Workloads from './Workloads.svelte';
 
 	let { data }: PageProps = $props();
@@ -232,7 +231,9 @@
 <GraphErrors errors={$Config.errors} />
 
 {#if $Config.fetching}
-	<Loader />
+	<div class="loading-centered" role="status" aria-label="Loading">
+		<Loader size="3xlarge" />
+	</div>
 {:else if config}
 	<Confirm
 		confirmText="Delete"
@@ -291,131 +292,118 @@
 	</Confirm>
 
 	<div class="wrapper">
-		<div class="content">
-			<div class="alerts">
-				{#if $deleteMutation.errors}
-					<GraphErrors errors={$deleteMutation.errors} />
-				{/if}
-			</div>
-			<div class="data-heading">
-				<div style="display: flex; align-items: center; gap: var(--ax-space-8);">
+		<div class="config-content">
+			<div class="main-section">
+				<div class="detail-actions">
 					<Heading as="h2">Config Data</Heading>
-					<HelpText title="Config data" placement="right">
-						A config contains a set of key-value pairs that can be used as environment variables
-						(envFrom) or mounted as files (filesFrom) in your workloads.
-					</HelpText>
+					<div class="header-buttons">
+						{#if canMutate}
+							<Button variant="danger" size="small" onclick={openDeleteModal} icon={TrashIcon}>
+								Delete
+							</Button>
+						{/if}
+					</div>
 				</div>
-				<div class="header-buttons">
-					{#if canMutate}
-						<Button
-							class="delete-config"
-							title="Delete config from environment"
-							variant="danger"
-							size="small"
-							onclick={openDeleteModal}
-							icon={TrashIcon}
-						>
-							Delete
-						</Button>
-					{/if}
-				</div>
-			</div>
+				<GraphErrors errors={$deleteMutation.errors} />
 
-			<div class="table-scroll" role="region" aria-label="Configuration key-value pairs">
-				<Table size="small" style="margin-top: 2rem">
-					<Thead>
-						<Tr>
-							<Th>Key</Th>
-							<Th>Value</Th>
-							<Th align="right">Actions</Th>
-						</Tr>
-					</Thead>
-					<Tbody>
-						{#each config.values as entry (entry.name)}
+				<div class="table-scroll" role="region" aria-label="Configuration key-value pairs">
+					<Table size="small">
+						<Thead>
 							<Tr>
-								<Td>
-									<p class="key">
-										{entry.name}
-									</p>
-								</Td>
-								<Td>
-									{#if isBinaryValue(entry)}
-										<span class="binary-label">Binary data ({formatBinarySize(entry.value)})</span>
-									{:else}
-										<code class="value">
-											{entry.value}
-										</code>
-									{/if}
-								</Td>
-								<Td style="width: 120px" align="right">
-									<div class="buttons">
+								<Th>Key</Th>
+								<Th>Value</Th>
+								<Th align="right">Actions</Th>
+							</Tr>
+						</Thead>
+						<Tbody>
+							{#each config.values as entry (entry.name)}
+								<Tr>
+									<Td>
+										<p class="key">
+											{entry.name}
+										</p>
+									</Td>
+									<Td>
 										{#if isBinaryValue(entry)}
-											<Button
-												size="small"
-												variant="tertiary"
-												title="Download binary value"
-												onclick={() => downloadBinaryValue(entry.name, entry.value)}
-												icon={DownloadIcon}
-											/>
+											<span class="binary-label">Binary data ({formatBinarySize(entry.value)})</span
+											>
 										{:else}
-											<CopyButton
-												activeText="Value copied"
-												variant="action"
-												size="small"
-												copyText={entry.value}
-											/>
-											{#if canMutate}
+											<code class="value">
+												{entry.value}
+											</code>
+										{/if}
+									</Td>
+									<Td style="width: 120px" align="right">
+										<div class="buttons">
+											{#if isBinaryValue(entry)}
 												<Button
 													size="small"
 													variant="tertiary"
-													title="Edit config value"
-													onclick={() => {
-														openEditValueModal(entry.name, entry.value);
-													}}
-													icon={DocPencilIcon}
+													title="Download binary value"
+													onclick={() => downloadBinaryValue(entry.name, entry.value)}
+													icon={DownloadIcon}
 												/>
+											{:else}
+												<CopyButton
+													activeText="Value copied"
+													variant="action"
+													size="small"
+													copyText={entry.value}
+												/>
+												{#if canMutate}
+													<Button
+														size="small"
+														variant="tertiary"
+														title="Edit config value"
+														onclick={() => {
+															openEditValueModal(entry.name, entry.value);
+														}}
+														icon={DocPencilIcon}
+													/>
+												{/if}
 											{/if}
-										{/if}
-										{#if canMutate}
-											<Button
-												size="small"
-												variant="tertiary-neutral"
-												title="Delete key and value"
-												onclick={() => {
-													openDeleteValueModal(entry.name);
-												}}
-											>
-												{#snippet icon()}
-													<TrashIcon style="color:var(--ax-text-danger-decoration)!important" />
-												{/snippet}
-											</Button>
-										{/if}
-									</div>
-								</Td>
-							</Tr>
-						{/each}
-					</Tbody>
-				</Table>
+											{#if canMutate}
+												<Button
+													size="small"
+													variant="tertiary-neutral"
+													title="Delete key and value"
+													onclick={() => {
+														openDeleteValueModal(entry.name);
+													}}
+												>
+													{#snippet icon()}
+														<TrashIcon style="color:var(--ax-text-danger-decoration)!important" />
+													{/snippet}
+												</Button>
+											{/if}
+										</div>
+									</Td>
+								</Tr>
+							{/each}
+						</Tbody>
+					</Table>
+				</div>
+				{#if canMutate}
+					<AddKeyValue
+						initial={config.values.map((v) => ({ name: v.name }))}
+						{teamSlug}
+						{env}
+						{configName}
+						onSuccess={() => {
+							Config.fetch();
+						}}
+					/>
+				{/if}
 			</div>
-			{#if canMutate}
-				<AddKeyValue
-					initial={config.values.map((v) => ({ name: v.name }))}
-					{teamSlug}
-					{env}
-					{configName}
-					onSuccess={() => {
-						Config.fetch();
-					}}
-				/>
-			{/if}
-		</div>
-		<div class="sidebar">
-			<Metadata lastModifiedAt={config.lastModifiedAt} lastModifiedBy={config.lastModifiedBy} />
-			<Workloads workloads={config.workloads} />
-			<Manifest {configName} />
-			{#if config}
-				<SidebarActivity activityLog={config} direct={config.activityLog} />
-			{/if}
+			<div class="sidebar">
+				<Workloads workloads={config.workloads} />
+				<Manifest {configName} />
+				{#if config}
+					<SurfaceCard title="Activity">
+						<SidebarActivity activityLog={config} direct={config.activityLog} hideTitle />
+					</SurfaceCard>
+				{/if}
+			</div>
 		</div>
 	</div>
 {/if}
@@ -446,22 +434,39 @@
 
 <style>
 	.wrapper {
-		display: grid;
-		grid-template-columns: minmax(0, 1fr) 300px;
+		display: flex;
+		flex-direction: column;
 		gap: var(--spacing-layout);
-		align-items: start;
-		min-width: 0;
 	}
 
-	.content {
-		min-width: 0;
+	.config-content {
+		display: grid;
+		grid-template-columns: 1fr 300px;
+		gap: var(--spacing-layout);
+	}
+
+	.main-section {
+		display: flex;
+		flex-direction: column;
+		gap: var(--ax-space-16);
 	}
 
 	.sidebar {
 		display: flex;
 		flex-direction: column;
 		gap: var(--ax-space-16);
-		min-width: 0;
+	}
+
+	.detail-actions {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: var(--ax-space-8);
+	}
+
+	.header-buttons {
+		display: flex;
+		gap: var(--ax-space-8);
 	}
 
 	.buttons {
@@ -469,25 +474,8 @@
 		display: flex;
 	}
 
-	.alerts {
-		margin-bottom: 1rem;
-	}
 	.entry {
-		margin: 2rem 0;
-	}
-
-	.data-heading {
-		display: flex;
-		align-items: flex-start;
-		justify-content: space-between;
-		gap: var(--ax-space-8);
-		flex-wrap: wrap;
-	}
-
-	.header-buttons {
-		display: flex;
-		gap: var(--ax-space-8);
-		flex-wrap: wrap;
+		margin: var(--ax-space-32) 0;
 	}
 
 	.value {
@@ -508,18 +496,9 @@
 		padding: 0 0 0 1rem;
 	}
 
-	@media (max-width: 767px) {
-		.wrapper {
+	@media (max-width: 767px), (max-height: 500px) {
+		.config-content {
 			grid-template-columns: 1fr;
-		}
-
-		.data-heading {
-			flex-direction: column;
-		}
-
-		.header-buttons {
-			width: 100%;
-			justify-content: flex-start;
 		}
 	}
 </style>
