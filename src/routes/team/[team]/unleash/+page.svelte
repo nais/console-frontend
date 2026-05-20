@@ -6,6 +6,7 @@
 	import Confirm from '$lib/ui/Confirm.svelte';
 	import ExternalLink from '$lib/ui/ExternalLink.svelte';
 	import IconLabel from '$lib/ui/IconLabel.svelte';
+	import SurfaceCard from '$lib/ui/SurfaceCard.svelte';
 	import Time from '$lib/ui/Time.svelte';
 	import TooltipAlignHack from '$lib/ui/TooltipAlignHack.svelte';
 	import {
@@ -15,7 +16,6 @@
 		Button,
 		CopyButton,
 		Heading,
-		HelpText,
 		Loader,
 		Select,
 		Table,
@@ -27,13 +27,10 @@
 		Tr
 	} from '@nais/ds-svelte-community';
 	import {
-		BulletListIcon,
 		CheckmarkIcon,
-		LineGraphStackedIcon,
 		PencilIcon,
 		PlusCircleFillIcon,
 		PlusIcon,
-		TokenIcon,
 		TrashIcon,
 		XMarkIcon
 	} from '@nais/ds-svelte-community/icons';
@@ -316,20 +313,13 @@
 		Unleash is not enabled for this tenant. Contact your administrator.
 	</Alert>
 {:else if unleash}
-	<BodyLong spacing
-		>Unleash is a feature toggle system, that gives you a great overview of all feature toggles
-		across all your applications and services
-		<ExternalLink href={docURL('/services/feature-toggling')}
-			>Learn more about Unleash and how to get started.</ExternalLink
-		>
-	</BodyLong>
 	{#if !unleash.ready}
-		<Alert variant="info" size="small" style="margin-bottom: 1rem;">
+		<Alert variant="info" size="small">
 			<Loader size="small" /> Your Unleash instance is being created. This usually takes about a minute...
 		</Alert>
 	{/if}
 	{#if !unleash.releaseChannelName}
-		<Alert variant="warning" size="small" style="margin-bottom: 1rem;">
+		<Alert variant="warning" size="small">
 			No release channel configured. All Unleash instances are being transitioned to release
 			channels for automatic version management. Please select a release channel to ensure your
 			instance receives updates.
@@ -362,170 +352,150 @@
 		/>
 	{/if}
 
-	<Heading as="h2" size="large" spacing>
-		{unleash.name}
-	</Heading>
-	<div class="wrapper">
-		<div style="display: grid; gap: var(--spacing-layout);">
-			<div class="info-grid grid">
-				<p><strong>Name</strong></p>
-				<p>{unleash.name}</p>
-
-				<p style="display: flex; align-items: center; gap 0 1rem;"><strong>Status</strong></p>
-				<p style="padding-top: 4px;">
-					{#if unleash.ready}
-						<CheckmarkIcon style="color: var(--ax-text-success-decoration); font-size: 1.2rem" />
-					{:else}
-						<Tooltip
-							content="Unleash is not ready, new instances will be online after a minute."
-							placement="right"
-						>
-							<XMarkIcon style="color: var(--ax-text-danger-decoration); font-size: 1.2rem" />
-						</Tooltip>
-					{/if}
-				</p>
-				<p><strong>Version</strong></p>
-				<p>
-					{#if unleash.version === ''}
-						version not available yet.
-					{:else}
-						{unleash.version}
-					{/if}
-				</p>
-				<div style="display: flex; align-items: center; gap: 0.5rem;">
-					<strong>Release Channel</strong>
-					{#if releaseChannels.length > 0}
-						<HelpText title="Available Release Channels">
-							<dl style="margin: 0; padding: 0;">
-								{#each releaseChannels as channel (channel.name)}
-									<dt style="font-weight: bold; margin-top: 0.5rem;">{channel.name}</dt>
-									<dd style="margin: 0; margin-left: 1rem;">
-										Version: {extractVersion(channel.currentVersion)}
-										{#if channel.lastUpdated}
-											(<Time time={new Date(channel.lastUpdated)} />)
-										{/if}<br />
-										Rollout: {channel.type}
-									</dd>
-								{/each}
-							</dl>
-						</HelpText>
-					{/if}
-				</div>
-				<div class="release-channel-row">
-					{#if editingReleaseChannel}
-						<Select
-							size="small"
-							label="Release Channel"
-							hideLabel
-							value={unleash.releaseChannelName ?? ''}
-							onchange={(e) => {
-								updateReleaseChannel(e);
-								editingReleaseChannel = false;
-							}}
-							disabled={!unleash.ready || releaseChannelLoading || releaseChannels.length === 0}
-						>
-							{#if releaseChannels.length === 0}
-								<option value="">No channels available</option>
-							{:else}
-								{#each releaseChannels as channel (channel.name)}
-									<option value={channel.name}>
-										{channel.name} (v{extractVersion(
-											channel.currentVersion
-										)}{#if channel.lastUpdated}, {channel.lastUpdated}{/if})
-									</option>
-								{/each}
-							{/if}
-						</Select>
-						{#if releaseChannelLoading}
-							<Loader size="small" title="Updating release channel..." />
+	<div class="layout-two-column">
+		<div class="content">
+			<section aria-labelledby="info-heading">
+				<Heading as="h2" id="info-heading" size="medium" spacing>Instance details</Heading>
+				<dl class="settings-list">
+					<dt>Name</dt>
+					<dd>{unleash.name}</dd>
+					<dt>Status</dt>
+					<dd>
+						{#if unleash.ready}
+							<CheckmarkIcon style="color: var(--ax-text-success-decoration); font-size: 1.2rem" />
+						{:else}
+							<Tooltip
+								content="Unleash is not ready, new instances will be online after a minute."
+								placement="right"
+							>
+								<XMarkIcon style="color: var(--ax-text-danger-decoration); font-size: 1.2rem" />
+							</Tooltip>
 						{/if}
-						<Button
-							size="xsmall"
-							variant="tertiary-neutral"
-							onclick={() => (editingReleaseChannel = false)}
-						>
-							Cancel
-						</Button>
-					{:else}
-						<span>
-							{#if unleash.releaseChannelName}
-								{unleash.releaseChannelName}
-								{#if unleash.releaseChannel}
-									(v{extractVersion(
-										unleash.releaseChannel.currentVersion
-									)}{#if unleash.releaseChannel.lastUpdated}, <Time
-											time={new Date(unleash.releaseChannel.lastUpdated)}
-										/>{/if})
-								{/if}
-							{:else}
-								<span style="color: var(--ax-text-neutral-subtle)">Not set</span>
-							{/if}
-						</span>
-						{#if viewerIsMember && unleash.ready}
-							<Button
-								size="xsmall"
-								variant="tertiary-neutral"
-								title="Change release channel"
-								onclick={() => (editingReleaseChannel = true)}
-								icon={PencilIcon}
-							/>
+					</dd>
+					<dt>Version</dt>
+					<dd>
+						{#if unleash.version === ''}
+							version not available yet.
+						{:else}
+							{unleash.version}
 						{/if}
-					{/if}
-				</div>
-				<p><strong>Web UI</strong></p>
-				<p>
-					<ExternalLink href="https://{unleash.webIngress}"
-						>https://{unleash.webIngress}</ExternalLink
-					>
-				</p>
-				<p><strong>API</strong></p>
-				<p>
-					<span>https://{unleash.apiIngress}</span>
-					<CopyButton size="small" variant="action" copyText="https://{unleash.apiIngress}" />
-				</p>
-				<p><strong>Documentation</strong></p>
-				<p>
-					<ExternalLink href={docURL('/explanation/feature-toggling')}
-						>{docURL('/explanation/feature-toggling')}
-					</ExternalLink>
-				</p>
-			</div>
-			<div>
-				<Heading as="h2" spacing>Team Access</Heading>
-				<Table>
-					<Thead>
-						<Tr>
-							<Th>Team</Th>
-							<Th align="right"></Th>
-						</Tr>
-					</Thead>
-					<Tbody>
-						{#each unleash.allowedTeams.nodes as team (team.slug)}
-							<Tr>
-								<Td>
-									<a href="/team/{team.slug}">{team.slug}</a>
-								</Td>
-								<Td align="right">
-									{#if viewerIsMember && team.slug !== teamSlug}
-										<Button
-											size="small"
-											disabled={unleash.ready === false}
-											variant="tertiary-neutral"
-											aria-label="Remove team access"
-											onclick={() => handleRemoveTeamClick(team.slug)}
-										>
-											{#snippet icon()}
-												<TrashIcon style="color:var(--ax-text-danger-decoration)!important" />
-											{/snippet}
-										</Button>
+					</dd>
+					<dt>Release Channel</dt>
+					<dd>
+						<div class="release-channel-row">
+							{#if editingReleaseChannel}
+								<Select
+									size="small"
+									label="Release Channel"
+									hideLabel
+									value={unleash.releaseChannelName ?? ''}
+									onchange={(e) => {
+										updateReleaseChannel(e);
+										editingReleaseChannel = false;
+									}}
+									disabled={!unleash.ready || releaseChannelLoading || releaseChannels.length === 0}
+								>
+									{#if releaseChannels.length === 0}
+										<option value="">No channels available</option>
+									{:else}
+										{#each releaseChannels as channel (channel.name)}
+											<option value={channel.name}>
+												{channel.name} (v{extractVersion(
+													channel.currentVersion
+												)}{#if channel.lastUpdated}, {channel.lastUpdated}{/if})
+											</option>
+										{/each}
 									{/if}
-								</Td>
+								</Select>
+								{#if releaseChannelLoading}
+									<Loader size="small" title="Updating release channel..." />
+								{/if}
+								<Button
+									size="xsmall"
+									variant="tertiary-neutral"
+									onclick={() => (editingReleaseChannel = false)}
+								>
+									Cancel
+								</Button>
+							{:else}
+								<span>
+									{#if unleash.releaseChannelName}
+										{unleash.releaseChannelName}
+										{#if unleash.releaseChannel}
+											(v{extractVersion(
+												unleash.releaseChannel.currentVersion
+											)}{#if unleash.releaseChannel.lastUpdated}, <Time
+													time={new Date(unleash.releaseChannel.lastUpdated)}
+												/>{/if})
+										{/if}
+									{:else}
+										<span style="color: var(--ax-text-neutral-subtle)">Not set</span>
+									{/if}
+								</span>
+								{#if viewerIsMember && unleash.ready}
+									<Button
+										size="xsmall"
+										variant="tertiary-neutral"
+										title="Change release channel"
+										onclick={() => (editingReleaseChannel = true)}
+										icon={PencilIcon}
+									/>
+								{/if}
+							{/if}
+						</div>
+					</dd>
+					<dt>Web UI</dt>
+					<dd>
+						<ExternalLink href="https://{unleash.webIngress}"
+							>https://{unleash.webIngress}</ExternalLink
+						>
+					</dd>
+					<dt>API</dt>
+					<dd>
+						<span>https://{unleash.apiIngress}</span>
+						<CopyButton size="small" variant="action" copyText="https://{unleash.apiIngress}" />
+					</dd>
+				</dl>
+			</section>
+
+			<section aria-labelledby="team-access-heading">
+				<Heading as="h2" id="team-access-heading" size="medium" spacing>Team Access</Heading>
+				<div class="table-scroll" role="region" aria-label="Team access list">
+					<Table size="small">
+						<Thead>
+							<Tr>
+								<Th>Team</Th>
+								<Th align="right"></Th>
 							</Tr>
-						{/each}
-					</Tbody>
-				</Table>
-				<p>
-					{#if viewerIsMember}
+						</Thead>
+						<Tbody>
+							{#each unleash.allowedTeams.nodes as team (team.slug)}
+								<Tr>
+									<Td>
+										<a href="/team/{team.slug}">{team.slug}</a>
+									</Td>
+									<Td align="right">
+										{#if viewerIsMember && team.slug !== teamSlug}
+											<Button
+												size="small"
+												disabled={unleash.ready === false}
+												variant="tertiary-neutral"
+												aria-label="Remove team access"
+												onclick={() => handleRemoveTeamClick(team.slug)}
+											>
+												{#snippet icon()}
+													<TrashIcon style="color:var(--ax-text-danger-decoration)!important" />
+												{/snippet}
+											</Button>
+										{/if}
+									</Td>
+								</Tr>
+							{/each}
+						</Tbody>
+					</Table>
+				</div>
+				{#if viewerIsMember}
+					<div style="margin-top: var(--ax-space-8);">
 						<Button
 							title="Add team"
 							variant="tertiary"
@@ -536,70 +506,78 @@
 						>
 							Add team
 						</Button>
-					{/if}
-				</p>
-			</div>
+					</div>
+				{/if}
+			</section>
 		</div>
-		<div class="sidebar">
-			<div>
-				<div class="sidebar-heading">
-					<IconLabel label="Toggles" icon={BulletListIcon} size="large" as="h2" />
-					<HelpText title="Toggles">Number of feature toggles in the Unleash server</HelpText>
-				</div>
-				<div class="sidebar-content">
-					<BodyShort>{metrics.toggles}</BodyShort>
-				</div>
-			</div>
-			<div>
-				<div class="sidebar-heading">
-					<IconLabel label="API clients" icon={TokenIcon} size="large" as="h2" />
-					<HelpText title="API clients"
-						>Number of API clients that are using the Unleash server</HelpText
+
+		<div class="layout-sidebar">
+			<SurfaceCard title="Metrics">
+				<dl class="metrics-list">
+					<dt>Toggles</dt>
+					<dd>{metrics.toggles}</dd>
+					<dt>API clients</dt>
+					<dd>{metrics.apiTokens}</dd>
+				</dl>
+			</SurfaceCard>
+
+			<SurfaceCard title="Utilization">
+				<div class="utilization-content">
+					<TooltipAlignHack
+						content={`Memory usage compared to the requested ${metrics.memoryRequests}.`}
 					>
+						<IconLabel
+							size="medium"
+							icon={MemoryIcon}
+							label={`${metrics.memoryUtilization.toLocaleString('en', {
+								maximumSignificantDigits: 3
+							})}% of ${prettyBytes(metrics.memoryRequests, {
+								locale: 'en',
+								minimumFractionDigits: 2,
+								maximumFractionDigits: 2,
+								binary: true
+							})}`}
+						/>
+					</TooltipAlignHack>
+					<TooltipAlignHack content={`CPU usage compared to the requested ${metrics.cpuRequests}.`}>
+						<IconLabel
+							size="medium"
+							icon={CpuIcon}
+							label={`${metrics.cpuUtilization.toLocaleString('en', {
+								maximumSignificantDigits: 3
+							})}% of ${metrics.cpuRequests} CPUs`}
+						/>
+					</TooltipAlignHack>
 				</div>
-				<div class="sidebar-content">
-					<BodyShort>{metrics.apiTokens}</BodyShort>
-				</div>
-			</div>
-			<div>
-				<div class="sidebar-heading">
-					<IconLabel label="Utilization" icon={LineGraphStackedIcon} size="large" as="h2" />
-					<HelpText title="Resource Utilization">Resource usage over the past hour</HelpText>
-				</div>
-				<div class="sidebar-content utilization-content">
-					<div>
-						<TooltipAlignHack
-							content={`Memory usage compared to the requested ${metrics.memoryRequests}.`}
-						>
-							<IconLabel
-								size="medium"
-								icon={MemoryIcon}
-								label={`${metrics.memoryUtilization.toLocaleString('en', {
-									maximumSignificantDigits: 3
-								})}% of ${prettyBytes(metrics.memoryRequests, {
-									locale: 'en',
-									minimumFractionDigits: 2,
-									maximumFractionDigits: 2,
-									binary: true
-								})}`}
-							/>
-						</TooltipAlignHack>
-					</div>
-					<div>
-						<TooltipAlignHack
-							content={`CPU usage compared to the requested ${metrics.cpuRequests}.`}
-						>
-							<IconLabel
-								size="medium"
-								icon={CpuIcon}
-								label={`${metrics.cpuUtilization.toLocaleString('en', {
-									maximumSignificantDigits: 3
-								})}% of ${metrics.cpuRequests} CPUs`}
-							/>
-						</TooltipAlignHack>
-					</div>
-				</div>
-			</div>
+			</SurfaceCard>
+
+			{#if releaseChannels.length > 0}
+				<SurfaceCard title="Available Release Channels">
+					<Table size="small" zebraStripes>
+						<Thead>
+							<Tr>
+								<Th>Channel</Th>
+								<Th>Version</Th>
+							</Tr>
+						</Thead>
+						<Tbody>
+							{#each releaseChannels as channel (channel.name)}
+								<Tr>
+									<Td>{channel.name}</Td>
+									<Td>
+										{extractVersion(channel.currentVersion)}
+										{#if channel.lastUpdated}
+											<br /><span class="channel-date"
+												><Time time={new Date(channel.lastUpdated)} /></span
+											>
+										{/if}
+									</Td>
+								</Tr>
+							{/each}
+						</Tbody>
+					</Table>
+				</SurfaceCard>
+			{/if}
 		</div>
 	</div>
 {:else}
@@ -633,29 +611,31 @@
 {/if}
 
 <style>
-	.wrapper {
-		display: grid;
-		grid-template-columns: 1fr 300px;
-		gap: var(--spacing-layout);
-	}
-
-	.sidebar {
+	.content {
 		display: flex;
 		flex-direction: column;
-		gap: var(--spacing-layout);
+		gap: var(--ax-space-24);
+		min-width: 0;
 	}
 
-	.wrapper p {
-		margin: 0.2rem 0;
+	.settings-list {
+		display: grid;
+		grid-template-columns: 18ch minmax(0, 1fr);
+		gap: var(--ax-space-4) var(--ax-space-8);
+		margin: 0;
+		align-items: baseline;
+	}
+
+	.settings-list dt {
+		font-weight: var(--ax-font-weight-bold);
+		color: var(--ax-text-neutral-subtle);
+	}
+
+	.settings-list dd {
+		margin: 0;
 		display: flex;
 		align-items: center;
-		gap: 0 0.5rem;
-	}
-	.grid {
-		display: grid;
-		column-gap: var(--ax-space-8);
-		row-gap: var(--ax-space-8);
-		align-items: center;
+		gap: var(--ax-space-4);
 	}
 
 	.release-channel-row {
@@ -664,36 +644,45 @@
 		gap: var(--ax-space-8);
 	}
 
-	.sidebar-heading {
-		display: flex;
-		align-items: center;
-		justify-content: space-between;
-		gap: var(--ax-space-2);
+	.channel-date {
+		font-size: var(--ax-font-size-small);
+		color: var(--ax-text-neutral-subtle);
 	}
 
-	.sidebar-content {
+	.metrics-list {
 		display: grid;
-		gap: var(--ax-space-2);
+		grid-template-columns: 12ch minmax(0, 1fr);
+		gap: var(--ax-space-4) var(--ax-space-8);
+		margin: 0;
+		align-items: baseline;
+	}
+
+	.metrics-list dt {
+		font-weight: var(--ax-font-weight-bold);
+		color: var(--ax-text-neutral-subtle);
+	}
+
+	.metrics-list dd {
+		margin: 0;
 	}
 
 	.utilization-content {
+		display: grid;
 		gap: var(--ax-space-4);
 	}
 
-	.info-grid {
-		grid-template-columns: 20% 80%;
-		overflow-wrap: anywhere;
-	}
-
-	/* Mobile responsive layout */
-	@media (max-width: 767px), (max-height: 500px) {
-		.wrapper {
+	@media (max-width: 767px) {
+		.settings-list {
 			grid-template-columns: 1fr;
-			gap: var(--ax-space-24);
+			gap: var(--ax-space-2);
 		}
 
-		.info-grid {
-			grid-template-columns: max-content 1fr;
+		.settings-list dd {
+			margin-bottom: var(--ax-space-8);
+		}
+
+		.settings-list dd:last-child {
+			margin-bottom: 0;
 		}
 
 		.release-channel-row {
