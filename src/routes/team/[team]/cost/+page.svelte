@@ -2,9 +2,14 @@
 	import { PendingValue } from '$houdini';
 	import CostAreaChart from '$lib/chart/CostAreaChart.svelte';
 	import GraphErrors from '$lib/ui/GraphErrors.svelte';
-	import SurfaceCard from '$lib/ui/SurfaceCard.svelte';
 	import { changeParams } from '$lib/utils/searchparams';
-	import { BodyLong, Loader, ToggleGroup, ToggleGroupItem } from '@nais/ds-svelte-community';
+	import {
+		BodyLong,
+		Heading,
+		Loader,
+		ToggleGroup,
+		ToggleGroupItem
+	} from '@nais/ds-svelte-community';
 	import type { PageProps } from './$types';
 	import TeamEnvironmentApplicationsCost from './TeamEnvironmentApplicationsCost.svelte';
 
@@ -14,9 +19,10 @@
 
 <GraphErrors errors={$TeamCost.errors} />
 
-<div class="wrapper">
-	<SurfaceCard title="Cost by Service">
-		{#snippet headerAside()}
+<div class="content">
+	<section aria-labelledby="cost-by-service-heading">
+		<div class="section-header">
+			<Heading as="h2" id="cost-by-service-heading" size="medium">Cost by Service</Heading>
 			<ToggleGroup
 				size="small"
 				value={interval}
@@ -26,7 +32,7 @@
 					<ToggleGroupItem value={interval}>{interval}</ToggleGroupItem>
 				{/each}
 			</ToggleGroup>
-		{/snippet}
+		</div>
 
 		<BodyLong>
 			Distribution of team costs across various services. Cost information is best-effort and
@@ -50,22 +56,30 @@
 				<Loader size="3xlarge" />
 			</div>
 		{/if}
-	</SurfaceCard>
+	</section>
 
 	<TeamEnvironmentApplicationsCost {teamSlug} {from} {to} {interval} />
 </div>
 
 <style>
-	.wrapper {
+	.content {
 		display: flex;
 		flex-direction: column;
-		gap: var(--spacing-layout);
+		gap: var(--ax-space-32);
+	}
+
+	.section-header {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: var(--ax-space-8);
+		margin-bottom: var(--ax-space-16);
 	}
 
 	.chart {
 		height: 350px;
 		min-width: 0;
-		margin-bottom: var(--ax-space-32);
+		padding-inline: var(--spacing-layout);
 	}
 
 	.loading {

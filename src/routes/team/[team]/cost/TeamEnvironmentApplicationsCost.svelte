@@ -3,7 +3,6 @@
 	import LegendWrapper, { legendSnippet } from '$lib/chart/LegendWrapper.svelte';
 	import { euroAxisFormatter } from '$lib/chart/util';
 	import GraphErrors from '$lib/ui/GraphErrors.svelte';
-	import SurfaceCard from '$lib/ui/SurfaceCard.svelte';
 	import { changeParams } from '$lib/utils/searchparams';
 	import { visualizationColors } from '$lib/visualizationColors';
 	import {
@@ -97,8 +96,10 @@
 	);
 </script>
 
-<SurfaceCard title="Top 10 Applications by Environment">
-	{#snippet headerAside()}
+<section aria-labelledby="top-apps-heading">
+	<div class="section-header">
+		<Heading as="h2" id="top-apps-heading" size="medium">Top 10 Applications by Environment</Heading
+		>
 		<ToggleGroup
 			size="small"
 			value={interval}
@@ -108,7 +109,7 @@
 				<ToggleGroupItem value={interval}>{interval}</ToggleGroupItem>
 			{/each}
 		</ToggleGroup>
-	{/snippet}
+	</div>
 
 	<BodyLong>
 		Accumulated cost for each application over time, including persistence. Displaying the 10 most
@@ -124,7 +125,7 @@
 	{:else}
 		{#each appsByEnv as env (env.id)}
 			<div class="env-section">
-				<Heading as="h2" size="small" class="env-heading">{env.environment.name}</Heading>
+				<Heading as="h3" size="small">{env.environment.name}</Heading>
 				<div class="chart">
 					<LegendWrapper height="400px">
 						<LineChart
@@ -159,9 +160,17 @@
 			</div>
 		{/each}
 	{/if}
-</SurfaceCard>
+</section>
 
 <style>
+	.section-header {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: var(--ax-space-8);
+		margin-bottom: var(--ax-space-16);
+	}
+
 	.loading {
 		display: flex;
 		justify-content: center;
@@ -172,16 +181,20 @@
 	.env-section {
 		display: flex;
 		flex-direction: column;
-		margin-top: var(--ax-space-32);
+		gap: var(--ax-space-12);
 	}
 
-	:global(.env-heading) {
-		margin: 0 0 var(--ax-space-12) 0;
+	.env-section:first-child {
+		margin-top: var(--ax-space-24);
+	}
+
+	.env-section + .env-section {
+		margin-top: var(--ax-space-64);
 	}
 
 	.chart {
 		height: 400px;
 		min-width: 0;
-		margin-bottom: var(--ax-space-32);
+		padding-inline: var(--spacing-layout);
 	}
 </style>
