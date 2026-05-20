@@ -155,6 +155,7 @@
 						{/snippet}
 						<button
 							class="action-menu-button"
+							aria-label="Trigger a new job run"
 							disabled={job?.deletionStartedAt !== null}
 							onclick={(e: MouseEvent) => {
 								if (e.metaKey || e.ctrlKey) {
@@ -168,11 +169,16 @@
 						>
 							<ActionMenuItem icon={PlayIcon}>Trigger run</ActionMenuItem>
 						</button>
-						<button class="action-menu-button" onclick={() => (showManifest = true)}>
+						<button
+							class="action-menu-button"
+							aria-label="View job manifest"
+							onclick={() => (showManifest = true)}
+						>
 							<ActionMenuItem icon={FileTextIcon}>View manifest</ActionMenuItem>
 						</button>
 						<a
 							class="action-menu-button"
+							aria-label="Delete this job"
 							href="/team/{page.params.team}/{page.params.env}/job/{page.params.job}/delete"
 						>
 							<ActionMenuItem icon={TrashIcon} variant="danger">Delete job</ActionMenuItem>
@@ -210,16 +216,22 @@
 					{succeededRuns}
 					loading={jobFetching}
 				/>
-				<SurfaceCard title="Runs">
-					<Schedule
-						schedule={job?.schedule}
-						scheduleContext={{
-							team: job?.team.slug ?? '',
-							environment: job?.teamEnvironment.environment.name ?? '',
-							job: job?.name ?? ''
-						}}
-					/>
+				<SurfaceCard>
 					<Runs {job} ondelete={viewerIsMember ? handleDeleteRun : undefined} />
+				</SurfaceCard>
+				<SurfaceCard>
+					<div class="configuration-section">
+						<Heading as="h2">Configuration</Heading>
+						<Schedule
+							schedule={job?.schedule}
+							scheduleContext={{
+								team: job?.team.slug ?? '',
+								environment: job?.teamEnvironment.environment.name ?? '',
+								job: job?.name ?? ''
+							}}
+						/>
+						<JobResources requests={job?.resources.requests} limits={job?.resources.limits} />
+					</div>
 				</SurfaceCard>
 				{#if jobName && environment}
 					<CostOverviewChart workload={jobName} {environment} {teamSlug} />
@@ -227,7 +239,6 @@
 			</div>
 			<div class="sidebar">
 				<WorkloadDeploy workload={job} />
-				<JobResources requests={job?.resources.requests} limits={job?.resources.limits} />
 				{#if environment && jobName}
 					<WorkloadActivityCard
 						{teamSlug}
@@ -298,6 +309,12 @@
 		all: unset;
 		display: contents;
 		cursor: pointer;
+	}
+
+	.configuration-section {
+		display: flex;
+		flex-direction: column;
+		gap: var(--spacing-layout);
 	}
 
 	.sidebar {

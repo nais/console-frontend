@@ -3,7 +3,7 @@
 	import { fragment, graphql } from '$houdini';
 	import JobRunListItem from '$lib/domain/list-items/JobRunListItem.svelte';
 	import List from '$lib/ui/List.svelte';
-	import { BodyShort } from '@nais/ds-svelte-community';
+	import ListItem from '$lib/ui/ListItem.svelte';
 
 	interface Props {
 		job: JobRuns;
@@ -58,30 +58,35 @@
 
 	let runEdges = $derived($data?.runs?.edges ?? []);
 	let runCount = $derived(runEdges.length);
-	let runTitle = $derived(`${runCount} job run${runCount > 1 ? 's' : ''}`);
 </script>
 
 {#if $data}
-	{#if runCount === 0}
-		<BodyShort>No runs found</BodyShort>
-	{:else}
-		<List title={runTitle}>
-			{#each runEdges as run (run.node.id)}
-				{#if run.node.instances.pageInfo.totalCount > 0}
-					{#if $data.team?.slug && $data.teamEnvironment?.environment?.name && $data.name}
-						<JobRunListItem
-							run={run.node}
-							urlBase="/team/{$data.team?.slug}/{$data.teamEnvironment?.environment
-								.name}/job/{$data.name}/logs?instance="
-							{ondelete}
-						/>
-					{:else}
-						<JobRunListItem run={run.node} {ondelete} />
-					{/if}
+	<List title="Job runs" count={runCount} level="h2">
+		{#each runEdges as run (run.node.id)}
+			{#if run.node.instances.pageInfo.totalCount > 0}
+				{#if $data.team?.slug && $data.teamEnvironment?.environment?.name && $data.name}
+					<JobRunListItem
+						run={run.node}
+						urlBase="/team/{$data.team?.slug}/{$data.teamEnvironment?.environment
+							.name}/job/{$data.name}/logs?instance="
+						{ondelete}
+					/>
 				{:else}
 					<JobRunListItem run={run.node} {ondelete} />
 				{/if}
-			{/each}
-		</List>
-	{/if}
+			{:else}
+				<JobRunListItem run={run.node} {ondelete} />
+			{/if}
+		{:else}
+			<ListItem>
+				<span class="empty-state">No runs found</span>
+			</ListItem>
+		{/each}
+	</List>
 {/if}
+
+<style>
+	.empty-state {
+		padding: var(--ax-space-16) var(--ax-space-24);
+	}
+</style>
