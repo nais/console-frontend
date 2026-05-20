@@ -57,7 +57,8 @@
 		const identifier = searchValue.trim();
 		if (identifier) {
 			searchValue = '';
-			await goto(`/vulnerabilities/${encodeURIComponent(identifier)}`);
+			const query = teamSlug ? `?team=${encodeURIComponent(teamSlug)}` : '';
+			await goto(`/vulnerabilities/${encodeURIComponent(identifier)}${query}`);
 		}
 	};
 
@@ -83,7 +84,7 @@
 
 	const toggleAll = (nodes: { vulnerability: { id: string } }[]) => {
 		if (allSelected(nodes)) {
-			selectedIds.clear();
+			nodes.forEach((n) => selectedIds.delete(n.vulnerability.id));
 		} else {
 			nodes.forEach((n) => selectedIds.add(n.vulnerability.id));
 		}
@@ -91,6 +92,10 @@
 
 	const allSelected = (nodes: { vulnerability: { id: string } }[]) => {
 		return nodes.length > 0 && nodes.every((n) => selectedIds.has(n.vulnerability.id));
+	};
+
+	const anySelected = (nodes: { vulnerability: { id: string } }[]) => {
+		return nodes.some((n) => selectedIds.has(n.vulnerability.id));
 	};
 
 	const bulkWorkloads = $derived.by((): BulkSuppressWorkload[] => {
@@ -227,7 +232,7 @@
 							<div class="select-all-row">
 								<Checkbox
 									checked={allSelected(workloads.nodes)}
-									indeterminate={selectedIds.size > 0 && !allSelected(workloads.nodes)}
+									indeterminate={anySelected(workloads.nodes) && !allSelected(workloads.nodes)}
 									onchange={() => toggleAll(workloads.nodes)}
 								>
 									Select all on this page
