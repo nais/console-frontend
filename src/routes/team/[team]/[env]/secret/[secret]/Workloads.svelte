@@ -1,7 +1,8 @@
 <script lang="ts">
 	import { type Secret$result } from '$houdini';
 	import WorkloadLink from '$lib/domain/workload/WorkloadLink.svelte';
-	import { Alert, Heading } from '@nais/ds-svelte-community';
+	import SurfaceCard from '$lib/ui/SurfaceCard.svelte';
+	import { Alert } from '@nais/ds-svelte-community';
 
 	interface Props {
 		workloads: Secret$result['team']['environment']['secret']['workloads'];
@@ -10,12 +11,11 @@
 	let { workloads }: Props = $props();
 </script>
 
-<div>
-	<Heading as="h2" size="medium" spacing>Used by</Heading>
+<SurfaceCard title="Used by">
 	{#if workloads.nodes.length > 0}
 		<ul>
 			{#each workloads.nodes as workload (workload.id)}
-				<li><WorkloadLink {workload} /></li>
+				<li><WorkloadLink {workload} hideTeam /></li>
 			{/each}
 		</ul>
 	{/if}
@@ -23,7 +23,7 @@
 	{#if workloads.nodes.length === 0}
 		<Alert size="small" variant="info">Secret is not in use by any workloads.</Alert>
 	{/if}
-</div>
+</SurfaceCard>
 
 <style>
 	ul {

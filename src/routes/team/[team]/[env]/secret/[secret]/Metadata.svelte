@@ -1,6 +1,7 @@
 <script lang="ts">
+	import SurfaceCard from '$lib/ui/SurfaceCard.svelte';
 	import Time from '$lib/ui/Time.svelte';
-	import { BodyShort, Detail, Heading } from '@nais/ds-svelte-community';
+	import { BodyShort, Detail } from '@nais/ds-svelte-community';
 
 	interface Props {
 		lastModifiedAt: Date | null;
@@ -13,8 +14,7 @@
 	let { lastModifiedAt, lastModifiedBy }: Props = $props();
 </script>
 
-<div>
-	<Heading as="h2" size="medium" spacing>Metadata</Heading>
+<SurfaceCard title="Metadata">
 	<dl class="metadata-list">
 		<Detail as="dt">Last Modified</Detail>
 		<BodyShort as="dd">
@@ -33,7 +33,7 @@
 			{/if}
 		</BodyShort>
 	</dl>
-</div>
+</SurfaceCard>
 
 <style>
 	.metadata-list {
