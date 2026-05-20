@@ -362,7 +362,7 @@
 				</dl>
 			</SurfaceCard>
 			<SurfaceCard title="Sync Status">
-				<p class="last-sync">
+				<p>
 					{#if teamSettings.lastSuccessfulSync}
 						Synced <Time time={teamSettings.lastSuccessfulSync} distance={true} />
 					{:else}
@@ -559,11 +559,6 @@
 
 	.deletewrapper div {
 		flex-grow: 1;
-	}
-
-	.last-sync {
-		color: var(--ax-text-subtle);
-		font-size: var(--ax-font-size-small);
 	}
 
 	@media (max-width: 767px) {

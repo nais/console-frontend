@@ -95,7 +95,8 @@
 	const saPath = $derived(basePath);
 </script>
 
-<section>
+<section aria-labelledby="auth-methods-heading">
+	<Heading size="small" as="h3" id="auth-methods-heading">Authentication methods</Heading>
 	<GraphErrors errors={removeErrors} dismissable />
 
 	{#if totalMethods > 0}
@@ -236,7 +237,6 @@
 			{/each}
 		</List>
 	{:else}
-		<Heading size="small" as="h3">Authentication methods</Heading>
 		<p>No authentication methods configured.</p>
 		{#if canManage}
 			<div class="actions">

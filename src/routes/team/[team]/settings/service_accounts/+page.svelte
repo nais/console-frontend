@@ -32,22 +32,21 @@
 		to query or manage the team's resources.
 	</BodyLong>
 
-	{#if viewerIsOwner || isAdmin}
-		<div class="actions">
-			<Button
-				size="small"
-				variant="secondary"
-				icon={PlusIcon}
-				as="a"
-				href="/team/{teamSlug}/settings/service_accounts/create"
-			>
-				Create service account
-			</Button>
-		</div>
-	{/if}
-
 	{#if serviceAccounts && serviceAccounts.nodes.length > 0}
 		<List title="Service accounts" count={serviceAccounts.pageInfo.totalCount}>
+			{#snippet actions()}
+				{#if viewerIsOwner || isAdmin}
+					<Button
+						size="small"
+						variant="secondary"
+						icon={PlusIcon}
+						as="a"
+						href="/team/{teamSlug}/settings/service_accounts/create"
+					>
+						Create service account
+					</Button>
+				{/if}
+			{/snippet}
 			{#each serviceAccounts.nodes as sa (sa.id)}
 				<ServiceAccountListItem
 					serviceAccount={sa}
@@ -67,12 +66,17 @@
 			}}
 		/>
 	{:else if serviceAccounts}
+		{#if viewerIsOwner || isAdmin}
+			<Button
+				size="small"
+				variant="secondary"
+				icon={PlusIcon}
+				as="a"
+				href="/team/{teamSlug}/settings/service_accounts/create"
+			>
+				Create service account
+			</Button>
+		{/if}
 		<BodyLong><strong>No service accounts found.</strong></BodyLong>
 	{/if}
 </div>
-
-<style>
-	.actions {
-		margin-bottom: var(--ax-space-16);
-	}
-</style>

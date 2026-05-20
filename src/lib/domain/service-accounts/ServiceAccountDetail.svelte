@@ -69,11 +69,21 @@
 <GraphErrors {errors} dismissable />
 
 <div class="detail-page">
-	<section>
-		<Heading size="medium" as="h2">{serviceAccount.name}</Heading>
-		<BodyLong spacing>{serviceAccount.description}</BodyLong>
+	<section aria-labelledby="sa-heading">
+		<div class="section-header">
+			<Heading size="medium" as="h2" id="sa-heading">{serviceAccount.name}</Heading>
+			{#if canManage}
+				<Button variant="danger" size="small" onclick={() => (deleteServiceAccountOpen = true)}>
+					{#snippet icon()}
+						<TrashIcon />
+					{/snippet}
+					Delete service account
+				</Button>
+			{/if}
+		</div>
+		<BodyLong>{serviceAccount.description}</BodyLong>
 
-		<dl class="metadata">
+		<dl class="settings-list">
 			<dt>Created</dt>
 			<dd>
 				<Tooltip content={format(serviceAccount.createdAt, 'PPPP', { locale: enGB })}>
@@ -97,17 +107,6 @@
 				{/if}
 			</dd>
 		</dl>
-
-		{#if canManage}
-			<div>
-				<Button variant="danger" size="small" onclick={() => (deleteServiceAccountOpen = true)}>
-					{#snippet icon()}
-						<TrashIcon />
-					{/snippet}
-					Delete service account
-				</Button>
-			</div>
-		{/if}
 	</section>
 
 	<ServiceAccountRoles serviceAccountRoles={serviceAccount} {availableRoles} {canManage} />
@@ -145,19 +144,10 @@
 		gap: var(--ax-space-12);
 	}
 
-	.metadata {
-		display: grid;
-		grid-template-columns: auto 1fr;
-		gap: var(--ax-space-4) var(--ax-space-16);
-	}
-
-	.metadata dt {
-		font-weight: bold;
-	}
-
-	@media (max-width: 767px) {
-		.metadata {
-			grid-template-columns: 1fr;
-		}
+	.section-header {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: var(--ax-space-8);
 	}
 </style>

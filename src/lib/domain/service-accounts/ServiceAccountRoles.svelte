@@ -107,24 +107,27 @@
 	};
 </script>
 
-<section>
-	<Heading size="small" as="h3">Roles</Heading>
-	<BodyLong spacing>
+<section aria-labelledby="roles-heading">
+	<Heading size="small" as="h3" id="roles-heading">Roles</Heading>
+	<BodyLong>
 		Service accounts have read access to everything a user has access to, except secrets. You can
 		grant additional roles below.
 	</BodyLong>
-
-	{#if canManage}
-		<Button size="small" variant="secondary" onclick={() => (editable = !editable)}>
-			{editable ? 'Cancel' : 'Edit roles'}
-		</Button>
-	{/if}
 	{#if mutationError}
 		<ErrorMessage>{mutationError}</ErrorMessage>
 	{/if}
+	<div class="section-header">
+		<Heading size="xsmall" as="h4">Assigned roles</Heading>
+		{#if canManage}
+			<Button size="small" variant="secondary" onclick={() => (editable = !editable)}>
+				{editable ? 'Done' : 'Edit roles'}
+			</Button>
+		{/if}
+	</div>
 	<CheckboxGroup
 		value={list.filter((r) => r.hasRole).map((r) => r.name)}
 		legend="Assigned roles"
+		hideLegend
 		onchange={handleOnChange}
 	>
 		{#each list as role (role.name)}
@@ -136,3 +139,13 @@
 		{/each}
 	</CheckboxGroup>
 </section>
+
+<style>
+	.section-header {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: var(--ax-space-8);
+		margin-top: var(--ax-space-16);
+	}
+</style>
