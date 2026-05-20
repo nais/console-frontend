@@ -3,16 +3,10 @@
 	import PrometheusUtilizationDonut from '$lib/chart/PrometheusUtilizationDonut.svelte';
 	import WorkloadLink from '$lib/domain/workload/WorkloadLink.svelte';
 	import ExternalLink from '$lib/ui/ExternalLink.svelte';
+	import ManifestCard from '$lib/ui/ManifestCard.svelte';
 	import SurfaceCard from '$lib/ui/SurfaceCard.svelte';
 	import { sanitizePromLabel } from '$lib/utils/formatters';
-	import {
-		Alert,
-		BodyShort,
-		Button,
-		CopyButton,
-		Heading,
-		Tooltip
-	} from '@nais/ds-svelte-community';
+	import { Alert, BodyShort, Button, Heading } from '@nais/ds-svelte-community';
 	import { CheckmarkIcon, TrashIcon, XMarkIcon } from '@nais/ds-svelte-community/icons';
 	import type { PageProps } from './$types';
 
@@ -262,6 +256,8 @@ clamp_min(
 		</div>
 
 		<div class="layout-sidebar">
+			<ManifestCard title="Use this Postgres" manifest={workloadManifest} />
+
 			<SurfaceCard title="Used by">
 				{#if instance.workloads.nodes.length > 0}
 					<ul class="workloads-list">
@@ -283,18 +279,6 @@ clamp_min(
 
 			<SurfaceCard title="Observability">
 				<ExternalLink href={grafanaPostgresOverviewUrl}>Grafana dashboard</ExternalLink>
-			</SurfaceCard>
-
-			<SurfaceCard title="Use this Postgres">
-				<pre class="manifest">{workloadManifest}</pre>
-				<Tooltip content="Copy manifest to clipboard">
-					<CopyButton
-						text="Copy manifest"
-						activeText="Manifest copied"
-						variant="action"
-						copyText={workloadManifest}
-					/>
-				</Tooltip>
 			</SurfaceCard>
 		</div>
 	</div>
@@ -360,14 +344,6 @@ clamp_min(
 		padding: 0;
 		display: grid;
 		gap: var(--ax-space-6);
-	}
-
-	.manifest {
-		display: block;
-		font-size: var(--ax-font-size-small);
-		word-break: break-word;
-		white-space: pre-wrap;
-		margin: 0;
 	}
 
 	@media (max-width: 767px) {

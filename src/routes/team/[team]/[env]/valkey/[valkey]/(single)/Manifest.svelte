@@ -1,7 +1,6 @@
 <script lang="ts">
 	import { fragment, graphql, type ValkeyManifestFragment } from '$houdini';
-	import { docURL } from '$lib/doc';
-	import ExternalLink from '$lib/ui/ExternalLink.svelte';
+	import SurfaceCard from '$lib/ui/SurfaceCard.svelte';
 	import { CopyButton, Heading } from '@nais/ds-svelte-community';
 
 	interface Props {
@@ -32,16 +31,7 @@
     - instance: ${niceName}`);
 </script>
 
-<div>
-	<Heading as="h2" size="medium" spacing>Use this Valkey</Heading>
-
-	<Heading as="h3" size="xsmall">Documentation</Heading>
-	<div class="value">
-		<ExternalLink href={docURL('/persistence/valkey/how-to/use-in-workload/')}
-			>How-to guide</ExternalLink
-		>
-	</div>
-
+<SurfaceCard title="Use this Valkey">
 	<Heading as="h3" size="xsmall">
 		Manifest
 
@@ -54,18 +44,14 @@
 		/>
 	</Heading>
 	<pre class="manifest">{workloadManifest}</pre>
-</div>
+</SurfaceCard>
 
 <style>
-	.value {
-		margin: 0.5rem 1rem;
-	}
-
 	.manifest {
 		display: block;
 		font-size: var(--ax-font-size-small);
 		word-break: break-word;
 		white-space: pre-wrap;
-		margin: 0.5rem 1rem;
+		margin: 0;
 	}
 </style>

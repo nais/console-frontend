@@ -1,27 +1,27 @@
 <script lang="ts">
-	import SurfaceCard from '$lib/ui/SurfaceCard.svelte';
 	import { CopyButton, Tooltip } from '@nais/ds-svelte-community';
+	import type { Snippet } from 'svelte';
+	import SurfaceCard from './SurfaceCard.svelte';
 
 	interface Props {
-		secretName: string;
+		title: string;
+		manifest: string;
+		children?: Snippet;
 	}
 
-	let { secretName }: Props = $props();
-
-	const workloadManifest = () => `spec:
-  envFrom:
-    - secret: ${secretName}`;
+	let { title, manifest, children }: Props = $props();
 </script>
 
-<SurfaceCard title="Use this secret">
-	<pre class="manifest">{workloadManifest()}</pre>
+<SurfaceCard {title}>
+	{#if children}{@render children()}{/if}
+	<pre class="manifest">{manifest}</pre>
 	<Tooltip content="Copy manifest to clipboard">
 		<CopyButton
 			text="Copy manifest"
 			activeText="Manifest copied"
 			variant="action"
-			copyText={workloadManifest()}
-		></CopyButton>
+			copyText={manifest}
+		/>
 	</Tooltip>
 </SurfaceCard>
 
@@ -29,7 +29,6 @@
 	.manifest {
 		display: block;
 		font-size: var(--ax-font-size-small);
-		word-break: break-word;
 		white-space: pre-wrap;
 		margin: 0;
 	}
