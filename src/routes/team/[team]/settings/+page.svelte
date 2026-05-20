@@ -10,7 +10,6 @@
 	} from '$houdini';
 	import { docURL } from '$lib/doc';
 	import TeamActivityCard from '$lib/domain/activity/TeamActivityCard.svelte';
-	import SlackIcon from '$lib/icons/SlackIcon.svelte';
 	import ExternalLink from '$lib/ui/ExternalLink.svelte';
 	import GraphErrors from '$lib/ui/GraphErrors.svelte';
 	import SurfaceCard from '$lib/ui/SurfaceCard.svelte';
@@ -116,7 +115,8 @@
 {#if teamSettings}
 	<div class="layout-two-column">
 		<div class="main-column">
-			<SurfaceCard title="Description">
+			<section aria-labelledby="description-heading">
+				<Heading as="h2" size="small" id="description-heading">Description</Heading>
 				<EditText
 					text={teamSettings.purpose}
 					onsave={async (text) => {
@@ -136,42 +136,38 @@
 				/>
 
 				<GraphErrors errors={descriptionErrors} size="small" />
-			</SurfaceCard>
+			</section>
 
-			<SurfaceCard title="Slack Alert Channels">
-				{#snippet headerAside()}
-					<SlackIcon size="1.25em" />
-				{/snippet}
-				{#if teamSettings.slackChannel !== ''}
-					<p>
-						<b>Default slack-channel:</b>
-						<EditText
-							text={teamSettings.slackChannel}
-							variant="textfield"
-							onsave={async (text) => {
-								defaultSlackChannelErrors = undefined;
-								const data = await updateTeam.mutate({
-									input: {
-										slug: teamSlug,
-										slackChannel: text
+			<section aria-labelledby="slack-heading">
+				<Heading as="h2" size="small" id="slack-heading">Slack Alert Channels</Heading>
+				<dl class="settings-list">
+					{#if teamSettings.slackChannel !== ''}
+						<dt>Default</dt>
+						<dd>
+							<EditText
+								text={teamSettings.slackChannel}
+								variant="textfield"
+								onsave={async (text) => {
+									defaultSlackChannelErrors = undefined;
+									const data = await updateTeam.mutate({
+										input: {
+											slug: teamSlug,
+											slackChannel: text
+										}
+									});
+
+									if (data.errors) {
+										defaultSlackChannelErrors = data.errors;
 									}
-								});
-
-								if (data.errors) {
-									defaultSlackChannelErrors = data.errors;
-								}
-							}}
-							isMember={viewerIsMember}
-						/>
-					</p>
-					<GraphErrors errors={defaultSlackChannelErrors} size="small" />
-				{/if}
-				{#if teamSettings.environments && teamSettings.environments.length > 0}
-					<div>
-						Per-environment slack-channels to be used for alerts sent by the platform.
+								}}
+								isMember={viewerIsMember}
+							/>
+						</dd>
+					{/if}
+					{#if teamSettings.environments && teamSettings.environments.length > 0}
 						{#each teamSettings.environments as env (env.id)}
-							<div class="channel">
-								<b>{env.environment.name}:</b>
+							<dt>{env.environment.name}</dt>
+							<dd>
 								<EditText
 									text={env.slackAlertsChannel}
 									variant="textfield"
@@ -195,16 +191,17 @@
 									}}
 									isMember={viewerIsMember}
 								/>
-							</div>
+							</dd>
 						{/each}
-					</div>
-
-					<GraphErrors errors={slackChannelsErrors} size="small" />
-				{/if}
-			</SurfaceCard>
+					{/if}
+				</dl>
+				<GraphErrors errors={defaultSlackChannelErrors} size="small" />
+				<GraphErrors errors={slackChannelsErrors} size="small" />
+			</section>
 
 			{#if viewerIsMember}
-				<SurfaceCard title="Deploy Key">
+				<section aria-labelledby="deploy-key-heading">
+					<Heading as="h2" size="small" id="deploy-key-heading">Deploy Key</Heading>
 					<BodyShort>
 						Deploy keys can be used to authenticate for deployments instead of using
 						<a
@@ -284,11 +281,12 @@
 							</Button>
 						</div>
 					{/if}
-				</SurfaceCard>
+				</section>
 			{/if}
 
 			{#if viewerIsOwner}
-				<SurfaceCard title="Danger Zone">
+				<section aria-labelledby="danger-zone-heading">
+					<Heading as="h2" size="small" id="danger-zone-heading">Danger Zone</Heading>
 					<div class="danger-zone">
 						<BodyLong spacing>
 							Deleting the team will permanently delete all managed resources and all resources
@@ -312,7 +310,7 @@
 							Request team deletion</Button
 						>
 					</div>
-				</SurfaceCard>
+				</section>
 			{/if}
 		</div>
 		<div class="layout-sidebar">
@@ -521,7 +519,13 @@
 	.main-column {
 		display: flex;
 		flex-direction: column;
-		gap: var(--spacing-layout);
+		gap: var(--ax-space-32);
+	}
+
+	.settings-list dd {
+		display: flex;
+		align-items: center;
+		gap: var(--ax-space-4);
 	}
 
 	.danger-zone {
@@ -543,12 +547,6 @@
 		gap: var(--ax-space-16);
 	}
 
-	.channel {
-		display: flex;
-		flex-direction: row;
-		gap: var(--ax-space-8);
-	}
-
 	.deletewrapper {
 		display: flex;
 		gap: var(--ax-space-4);
@@ -565,10 +563,6 @@
 
 	@media (max-width: 767px) {
 		.buttons {
-			flex-wrap: wrap;
-		}
-
-		.channel {
 			flex-wrap: wrap;
 		}
 

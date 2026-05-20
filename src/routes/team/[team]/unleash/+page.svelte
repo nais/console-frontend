@@ -618,21 +618,7 @@
 		min-width: 0;
 	}
 
-	.settings-list {
-		display: grid;
-		grid-template-columns: 18ch minmax(0, 1fr);
-		gap: var(--ax-space-4) var(--ax-space-8);
-		margin: 0;
-		align-items: baseline;
-	}
-
-	.settings-list dt {
-		font-weight: var(--ax-font-weight-bold);
-		color: var(--ax-text-neutral-subtle);
-	}
-
 	.settings-list dd {
-		margin: 0;
 		display: flex;
 		align-items: center;
 		gap: var(--ax-space-4);
@@ -672,11 +658,6 @@
 	}
 
 	@media (max-width: 767px) {
-		.settings-list {
-			grid-template-columns: 1fr;
-			gap: var(--ax-space-2);
-		}
-
 		.settings-list dd {
 			margin-bottom: var(--ax-space-8);
 		}
