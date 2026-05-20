@@ -92,7 +92,13 @@
 					<span class="repo-name">{deploymentInfo.repository}</span>
 					{#if workflowUrl}
 						<Tooltip content="View workflow on GitHub" placement="top">
-							<a href={workflowUrl} target="_blank" rel="noopener noreferrer" class="workflow-icon">
+							<a
+								href={workflowUrl}
+								target="_blank"
+								rel="noopener noreferrer"
+								class="workflow-icon"
+								aria-label="View workflow on GitHub"
+							>
 								<ExternalLinkIcon />
 							</a>
 						</Tooltip>

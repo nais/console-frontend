@@ -57,7 +57,9 @@
 		oninput={(e) => oninput?.(e.currentTarget.value)}
 	/>
 	{#if value}
-		<button type="button" class="clear-button" onclick={clearValue}> &times; </button>
+		<button type="button" class="clear-button" aria-label="Clear search" onclick={clearValue}>
+			&times;
+		</button>
 	{/if}
 </form>
 

@@ -19,5 +19,6 @@
 		variant="tertiary-neutral"
 		size="small"
 		icon={BookIcon}
+		aria-label="Documentation"
 	/>
 </Tooltip>

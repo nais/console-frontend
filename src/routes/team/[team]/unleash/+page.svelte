@@ -511,7 +511,7 @@
 											size="small"
 											disabled={unleash.ready === false}
 											variant="tertiary-neutral"
-											title="Remove team access"
+											aria-label="Remove team access"
 											onclick={() => handleRemoveTeamClick(team.slug)}
 										>
 											{#snippet icon()}

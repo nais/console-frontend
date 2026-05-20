@@ -133,7 +133,7 @@
 									{#if canEdit}
 										<div>
 											<Button
-												title="Edit member"
+												aria-label="Edit member"
 												size="small"
 												variant="tertiary"
 												onclick={() => {
@@ -143,7 +143,7 @@
 												icon={PencilIcon}
 											/>
 											<Button
-												title="Delete member"
+												aria-label="Delete member"
 												size="small"
 												variant="tertiary-neutral"
 												onclick={() => {
