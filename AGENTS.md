@@ -349,6 +349,28 @@ The `layerchart.css` file has both a `:root` and a `.dark, .dark-theme` block wi
 
 ---
 
+## Accessibility & WCAG Compliance
+
+This project targets **WCAG 2.0 AA compliance** as a minimum standard.
+
+All UI changes and accessibility work must meet this level:
+
+- **Semantic HTML**: Use proper heading hierarchy (h1-h6 in logical order), semantic elements (`<button>`, `<a>`, `<nav>`, `<main>`, etc.), and avoid div soup
+- **Heading structure**:
+  - The page **h1** (job/app name) is provided by the layout/PageHeader component — do not duplicate it in page content
+  - Page content starts with **h2** peer headings for main sections (e.g., "Job runs", "Configuration", "Deployments")
+  - Subsections within those use **h3, h4** as appropriate (e.g., "Schedule" and "Next run" under Configuration)
+- **Color contrast**: Ensure 4.5:1 contrast ratio for text and 3:1 for UI components (AA standard)
+- **Focus indicators**: All interactive elements must have visible focus states; don't remove or hide native focus outlines without replacing them
+- **Keyboard navigation**: All functionality must be accessible via keyboard; don't trap focus
+- **ARIA labels**: Use `aria-label`, `aria-labelledby`, `aria-describedby` when semantic HTML isn't sufficient; especially for icon-only buttons
+- **Empty states**: Use consistent patterns (see List component with ListItem for empty states)
+- **Form fields**: Always associate labels with inputs; use semantic form elements
+- **Icons**: Provide text alternatives; use `aria-label` for icon-only buttons
+- **Link text**: Avoid "click here"; use descriptive link text that makes sense out of context
+
+---
+
 ## Code Quality
 
 ### Before committing and pushing:
