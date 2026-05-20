@@ -361,29 +361,34 @@
 					{/each}
 				</dl>
 			</SurfaceCard>
+			<SurfaceCard title="Sync Status">
+				<p class="last-sync">
+					{#if teamSettings.lastSuccessfulSync}
+						Synced <Time time={teamSettings.lastSuccessfulSync} distance={true} />
+					{:else}
+						No successful syncs
+					{/if}
+				</p>
+			</SurfaceCard>
 			{#if $TeamSettings.data?.team}
 				<TeamActivityCard
 					{teamSlug}
 					viewAllHref="/team/{teamSlug}/activity-log"
 					filter={{
 						activityTypes: [
-							ActivityLogActivityType.TEAM_DEPLOY_KEY_UPDATED,
-							ActivityLogActivityType.TEAM_CREATED,
-							ActivityLogActivityType.TEAM_UPDATED,
-							ActivityLogActivityType.TEAM_ENVIRONMENT_UPDATED,
 							ActivityLogActivityType.TEAM_CONFIRM_DELETE_KEY,
-							ActivityLogActivityType.TEAM_CREATE_DELETE_KEY
+							ActivityLogActivityType.TEAM_CREATE_DELETE_KEY,
+							ActivityLogActivityType.TEAM_CREATED,
+							ActivityLogActivityType.TEAM_DEPLOY_KEY_UPDATED,
+							ActivityLogActivityType.TEAM_ENVIRONMENT_UPDATED,
+							ActivityLogActivityType.TEAM_MEMBER_ADDED,
+							ActivityLogActivityType.TEAM_MEMBER_REMOVED,
+							ActivityLogActivityType.TEAM_MEMBER_SET_ROLE,
+							ActivityLogActivityType.TEAM_UPDATED
 						]
 					}}
 				/>
 			{/if}
-			<p class="last-sync">
-				{#if teamSettings.lastSuccessfulSync}
-					Last successful sync: <Time time={teamSettings.lastSuccessfulSync} distance={true} />
-				{:else}
-					No successful syncs
-				{/if}
-			</p>
 		</div>
 	</div>
 {/if}
