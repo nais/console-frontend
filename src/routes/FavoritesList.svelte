@@ -27,12 +27,13 @@
 
 <style>
 	.favorites-list {
-		margin-top: var(--ax-space-16);
+		margin-top: var(--spacing-layout);
 	}
 	.header {
 		display: flex;
 		justify-content: space-between;
 		align-items: center;
-		margin-bottom: var(--ax-space-16);
+		padding-bottom: var(--ax-space-16);
+		border-bottom: 1px solid var(--ax-border-neutral-subtleA);
 	}
 </style>

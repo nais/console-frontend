@@ -78,7 +78,7 @@
 
 <style>
 	.page {
-		padding-top: 4rem;
+		padding-top: var(--spacing-layout);
 	}
 	.content-wrapper {
 		background: var(--ax-bg-default);
