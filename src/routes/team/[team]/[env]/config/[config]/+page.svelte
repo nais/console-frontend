@@ -19,10 +19,9 @@
 		Tr
 	} from '@nais/ds-svelte-community';
 
-	import SidebarActivity from '$lib/domain/activity/sidebar/SidebarActivity.svelte';
+	import ResourceActivityCard from '$lib/domain/activity/ResourceActivityCard.svelte';
 	import WorkloadLink from '$lib/domain/workload/WorkloadLink.svelte';
 	import GraphErrors from '$lib/ui/GraphErrors.svelte';
-	import SurfaceCard from '$lib/ui/SurfaceCard.svelte';
 	import Textarea from '$lib/ui/Textarea.svelte';
 	import { getConfigPermissions } from '$lib/utils/configPermissions';
 	import { DocPencilIcon, DownloadIcon, TrashIcon } from '@nais/ds-svelte-community/icons';
@@ -398,11 +397,7 @@
 			<div class="sidebar">
 				<Workloads workloads={config.workloads} />
 				<Manifest {configName} />
-				{#if config}
-					<SurfaceCard title="Activity">
-						<SidebarActivity activityLog={config} direct={config.activityLog} hideTitle />
-					</SurfaceCard>
-				{/if}
+				<ResourceActivityCard resourceType="config" resource={config} />
 			</div>
 		</div>
 	</div>

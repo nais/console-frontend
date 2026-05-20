@@ -20,10 +20,9 @@
 	} from '@nais/ds-svelte-community';
 	import { SvelteMap } from 'svelte/reactivity';
 
-	import SidebarActivity from '$lib/domain/activity/sidebar/SidebarActivity.svelte';
+	import ResourceActivityCard from '$lib/domain/activity/ResourceActivityCard.svelte';
 	import WorkloadLink from '$lib/domain/workload/WorkloadLink.svelte';
 	import GraphErrors from '$lib/ui/GraphErrors.svelte';
-	import SurfaceCard from '$lib/ui/SurfaceCard.svelte';
 	import Textarea from '$lib/ui/Textarea.svelte';
 	import { getSecretPermissions } from '$lib/utils/secretPermissions';
 	import {
@@ -474,11 +473,7 @@
 			<div class="sidebar">
 				<Workloads workloads={secret.workloads} />
 				<Manifest {secretName} />
-				{#if secret}
-					<SurfaceCard title="Activity">
-						<SidebarActivity activityLog={secret} direct={secret.activityLog} hideTitle />
-					</SurfaceCard>
-				{/if}
+				<ResourceActivityCard resourceType="secret" resource={secret} />
 			</div>
 		</div>
 	</div>
