@@ -394,7 +394,8 @@
 				</div>
 			</div>
 
-			<div class="table-scroll">
+			<!-- svelte-ignore a11y_no_noninteractive_tabindex -->
+			<div class="table-scroll" tabindex="0" role="region" aria-label="Secret key-value pairs">
 				<Table size="small" style="margin-top: 2rem">
 					<Thead>
 						<Tr>

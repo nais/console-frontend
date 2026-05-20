@@ -127,7 +127,8 @@
 			{/if}
 			<div class="spacing">
 				<Heading as="h2" spacing>Valkey Access List</Heading>
-				<div class="table-scroll">
+				<!-- svelte-ignore a11y_no_noninteractive_tabindex -->
+				<div class="table-scroll" tabindex="0" role="region" aria-label="Valkey access list">
 					<Table
 						size="small"
 						sort={{

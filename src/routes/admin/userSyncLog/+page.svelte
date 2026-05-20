@@ -11,7 +11,8 @@
 
 <GraphErrors errors={$UserSyncLogs.errors} />
 {#if $UserSyncLogs.data}
-	<div class="table-scroll">
+	<!-- svelte-ignore a11y_no_noninteractive_tabindex -->
+	<div class="table-scroll" tabindex="0" role="region" aria-label="User sync log table">
 		<Table size="small">
 			<Thead>
 				<Tr>

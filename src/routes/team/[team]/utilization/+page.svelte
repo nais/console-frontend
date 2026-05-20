@@ -188,7 +188,13 @@
 		</SurfaceCard>
 
 		<SurfaceCard title="Underutilization per Application">
-			<div class="table-scroll">
+			<!-- svelte-ignore a11y_no_noninteractive_tabindex -->
+			<div
+				class="table-scroll"
+				tabindex="0"
+				role="region"
+				aria-label="Underutilization per application"
+			>
 				<Table
 					size="small"
 					sort={sortState}

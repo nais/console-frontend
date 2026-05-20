@@ -72,7 +72,8 @@
 			<Heading as="h2" size="small" spacing>Access</Heading>
 
 			{#if bq.access.edges.length > 0}
-				<div class="table-scroll">
+				<!-- svelte-ignore a11y_no_noninteractive_tabindex -->
+				<div class="table-scroll" tabindex="0" role="region" aria-label="BigQuery access table">
 					<Table size="small">
 						<Thead>
 							<Tr>
