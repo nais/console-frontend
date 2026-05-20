@@ -23,12 +23,15 @@
 		FileTextIcon,
 		MenuElipsisVerticalIcon,
 		PlayIcon,
+		PencilWritingIcon,
 		TrashIcon
 	} from '@nais/ds-svelte-community/icons';
 	import type { PageProps } from './$types';
 	import Runs from './Runs.svelte';
 	import Schedule from './Schedule.svelte';
 	import TriggerRunModal from './TriggerRunModal.svelte';
+	import PageModal, { pageModalClick } from '$lib/ui/PageModal.svelte';
+	import EnvPage from './env/+page.svelte';
 
 	let { data }: PageProps = $props();
 	let { Job, teamSlug, viewerIsMember } = $derived(data);
@@ -173,16 +176,18 @@
 						>
 							<ActionMenuItem icon={PlayIcon}>Trigger run</ActionMenuItem>
 						</button>
-						<button
+						<a
 							class="action-menu-button"
-							aria-label="View job manifest"
-							onclick={() => (showManifest = true)}
+							href="/team/{page.params.team}/{page.params.env}/job/{page.params.job}/env"
+							onclick={pageModalClick}
 						>
+							<ActionMenuItem icon={PencilWritingIcon}>Set environment variables</ActionMenuItem>
+						</a>
+						<button class="action-menu-button" onclick={() => (showManifest = true)}>
 							<ActionMenuItem icon={FileTextIcon}>View manifest</ActionMenuItem>
 						</button>
 						<a
 							class="action-menu-button"
-							aria-label="Delete this job"
 							href="/team/{page.params.team}/{page.params.env}/job/{page.params.job}/delete"
 						>
 							<ActionMenuItem icon={TrashIcon} variant="danger">Delete job</ActionMenuItem>
@@ -287,6 +292,7 @@
 			{/snippet}
 			<Manifest workload={job} />
 		</Modal>
+		<PageModal content={EnvPage} header="Set environment variables" />
 	</div>
 {/if}
 

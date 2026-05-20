@@ -16,18 +16,33 @@
 	import HeaderActions from '$lib/ui/HeaderActions.svelte';
 	import Time from '$lib/ui/Time.svelte';
 	import { Alert, Button, Heading, Loader, Modal } from '@nais/ds-svelte-community';
-	import { ActionMenu, ActionMenuItem } from '@nais/ds-svelte-community/experimental';
+	import {
+		ActionMenu,
+		ActionMenuDivider,
+		ActionMenuItem
+	} from '@nais/ds-svelte-community/experimental';
 	import {
 		ArrowCirclepathIcon,
+		ArrowsUpDownIcon,
 		FileTextIcon,
 		MenuElipsisVerticalIcon,
+		StopIcon,
 		TrashIcon
 	} from '@nais/ds-svelte-community/icons';
 	import type { PageProps } from './$types';
 	import InstanceGroups from './InstanceGroups.svelte';
+	import PageModal, { pageModalClick } from '$lib/ui/PageModal.svelte';
+	import ResizePage from './resize/+page.svelte';
 
 	let { data }: PageProps = $props();
 	let { App, teamSlug, viewerIsMember } = $derived(data);
+
+	$effect(() => {
+		const interval = setInterval(() => {
+			App.fetch({ policy: 'NetworkOnly' });
+		}, 10_000);
+		return () => clearInterval(interval);
+	});
 
 	let appData = $derived(App ? $App.data : undefined);
 	let appErrors = $derived(App ? $App.errors : undefined);
@@ -53,16 +68,50 @@
 
 	onNavigate(() => {
 		restartApp = restartAppMutation();
+		stopApp = stopAppMutation();
 	});
 
 	let application = $derived(page.params.app);
 	let environment = $derived(page.params.env);
 
+	const stopAppMutation = () =>
+		graphql(`
+			mutation StopApp($team: Slug!, $environment: String!, $application: String!) {
+				updateApplication(
+					input: {
+						teamSlug: $team
+						environmentName: $environment
+						name: $application
+						replicas: { min: 0, max: 0 }
+					}
+				) {
+					application {
+						name
+					}
+				}
+			}
+		`);
+	let stopApp = $state(stopAppMutation());
+
 	let restart = $state(false);
+	let stop = $state(false);
 	let showManifest = $state(false);
 
 	const openRestart = () => {
 		restart = true;
+	};
+
+	const openStop = () => {
+		stop = true;
+	};
+
+	const submitStop = () => {
+		if (!application || !environment) return;
+		stopApp.mutate({
+			application,
+			environment,
+			team: teamSlug
+		});
 	};
 
 	const submit = () => {
@@ -110,17 +159,35 @@
 					disabled={app?.deletionStartedAt !== null}
 				>
 					<ActionMenuItem icon={ArrowCirclepathIcon} disabled={app?.deletionStartedAt !== null}>
-						Restart app
+						Restart
 					</ActionMenuItem>
 				</button>
+				<button
+					class="action-menu-button"
+					onclick={openStop}
+					disabled={app?.deletionStartedAt !== null}
+				>
+					<ActionMenuItem icon={StopIcon} disabled={app?.deletionStartedAt !== null}>
+						Stop
+					</ActionMenuItem>
+				</button>
+				<a
+					class="action-menu-button"
+					href="/team/{page.params.team}/{page.params.env}/app/{page.params.app}/resize"
+					onclick={pageModalClick}
+				>
+					<ActionMenuItem icon={ArrowsUpDownIcon}>Resize</ActionMenuItem>
+				</a>
 				<button class="action-menu-button" onclick={() => (showManifest = true)}>
 					<ActionMenuItem icon={FileTextIcon}>View manifest</ActionMenuItem>
 				</button>
+				<ActionMenuDivider />
+
 				<a
 					class="action-menu-button"
 					href="/team/{page.params.team}/{page.params.env}/app/{page.params.app}/delete"
 				>
-					<ActionMenuItem icon={TrashIcon} variant="danger">Delete app</ActionMenuItem>
+					<ActionMenuItem icon={TrashIcon} variant="danger">Delete</ActionMenuItem>
 				</a>
 			</ActionMenu>
 		</HeaderActions>
@@ -191,12 +258,25 @@
 			<br />
 			Are you sure?
 		</Confirm>
+		<Confirm bind:open={stop} onconfirm={submitStop}>
+			{#snippet header()}
+				<Heading as="h2" size="medium">Stop {application}</Heading>
+			{/snippet}
+			This will stop
+			<strong>{application}</strong> in
+			<strong>{environment}</strong> by scaling replicas to 0.
+			<br />
+			The application will not receive any traffic until it is resized.
+			<br /><br />
+			Are you sure?
+		</Confirm>
 		<Modal bind:open={showManifest} closeButton width="medium">
 			{#snippet header()}
 				<Heading as="h2" size="small">Manifest &ndash; {application}</Heading>
 			{/snippet}
 			<Manifest workload={app} />
 		</Modal>
+		<PageModal content={ResizePage} header="Resize app" />
 	</div>
 {/if}
 
