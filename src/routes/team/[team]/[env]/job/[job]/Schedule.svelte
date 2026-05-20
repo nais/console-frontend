@@ -1,7 +1,7 @@
 <script lang="ts">
 	import SurfaceCard from '$lib/ui/SurfaceCard.svelte';
 	import { getLocalizedCronDescription, type ScheduleContext } from '$lib/utils/cron';
-	import { Heading } from '@nais/ds-svelte-community';
+	import { Alert, Heading } from '@nais/ds-svelte-community';
 
 	interface Props {
 		schedule: {
@@ -20,7 +20,9 @@
 		{#if schedule}
 			{@const runConfig = getLocalizedCronDescription({ ...schedule, context: scheduleContext })}
 			{#if runConfig.error}
-				<p style="color: red;">Error: {runConfig.error}</p>
+				<Alert variant="warning" size="small">
+					Unable to parse schedule: {runConfig.error}
+				</Alert>
 			{:else}
 				<div class="resource-cards">
 					<SurfaceCard title="Schedule" level="h4">

@@ -9,7 +9,7 @@
 	let { ApplicationImageDetails, viewerIsMember } = $derived(data);
 </script>
 
-<Heading as="h2" size="medium" spacing>Vulnerabilities</Heading>
+<Heading as="h2" size="medium">Vulnerabilities</Heading>
 
 <GraphErrors errors={$ApplicationImageDetails.errors} />
 
