@@ -254,6 +254,7 @@ Global utility classes defined in `src/styles/app.css` for common page patterns.
 - `.table-scroll` — horizontal scroll wrapper for wide tables. Wrap the `<Table>` with this instead of per-component overflow CSS.
 - `.detail-actions` — right-aligned flex row for action buttons above content (e.g., edit/delete buttons).
 - `.loading-centered` — centered flex container (300px height) for loading spinners.
+- `.settings-list` — grid-based `<dl>` for key-value pairs (`18ch` label column + `1fr` value column). Collapses to stacked layout on mobile. Bold `dt` with `--ax-text-neutral-subtle` color.
 
 ### Surface System
 
@@ -272,11 +273,27 @@ Global utility classes:
 
 ### SurfaceCard Component
 
-Use `SurfaceCard` (`$lib/ui/SurfaceCard.svelte`) for elevated content sections:
+Use `SurfaceCard` (`$lib/ui/SurfaceCard.svelte`) for **sidebar cards only**:
 
 - Props: `title` (uppercase eyebrow label), `headerAside` (snippet), `bordered`
 - Applies `--surface-elevated-background` and `--surface-elevated-shadow`
-- Use for dashboard widgets, sidebar cards, and overview panels
+- Use for sidebar widgets, sidebar info panels, and dashboard overview panels
+- **Never use in main content pane** — use `<section aria-labelledby>` + `<Heading>` instead
+
+### Main Content Sections
+
+For content in the main column (left side of `.layout-two-column`):
+
+```svelte
+<section aria-labelledby="my-section-heading">
+	<Heading as="h2" size="small" id="my-section-heading">Section Title</Heading>
+	<!-- section content -->
+</section>
+```
+
+- Use `<section aria-labelledby>` for WCAG landmark navigation
+- Use `<Heading>` with appropriate level (`h2` for top-level sections, `h3` for subsections)
+- Separate sections with flex gap (`.main-column` with `gap: var(--ax-space-32)`)
 
 ### Tab Navigation Pattern
 
