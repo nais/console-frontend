@@ -71,6 +71,7 @@
 			});
 		} else {
 			modalData = undefined;
+			open = false;
 		}
 	});
 </script>
