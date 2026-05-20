@@ -77,7 +77,7 @@
 	.header {
 		display: flex;
 		flex-direction: column;
-		padding: var(--ax-space-16) var(--ax-space-24) var(--ax-space-16) 0;
+		padding: 0 var(--ax-space-24) var(--ax-space-16) 0;
 		gap: var(--ax-space-16);
 		border-bottom: 1px solid var(--ax-border-neutral-subtleA);
 	}

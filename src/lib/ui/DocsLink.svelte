@@ -17,6 +17,7 @@
 		target="_blank"
 		rel="noopener noreferrer"
 		variant="tertiary-neutral"
+		size="small"
 		icon={BookIcon}
 	/>
 </Tooltip>
