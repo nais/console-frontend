@@ -31,7 +31,7 @@
 		>
 	{/if}
 
-	<div class="main">
+	<main class="main">
 		<Menu features={$UserInfo.data?.features} member={viewerIsMember} {isAdmin} />
 		<div class="container">
 			<PageHeader>
@@ -41,7 +41,7 @@
 			</PageHeader>
 			<div>{@render children?.()}</div>
 		</div>
-	</div>
+	</main>
 </div>
 
 <style>
