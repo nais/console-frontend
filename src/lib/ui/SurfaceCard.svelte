@@ -8,9 +8,17 @@
 		headerAside?: Snippet;
 		bordered?: boolean;
 		level?: 'h2' | 'h3' | 'h4';
+		eyebrow?: boolean;
 	}
 
-	let { title, children, headerAside, bordered = false, level = 'h2' }: Props = $props();
+	let {
+		title,
+		children,
+		headerAside,
+		bordered = false,
+		level = 'h2',
+		eyebrow = true
+	}: Props = $props();
 </script>
 
 <Box
@@ -21,7 +29,9 @@
 	{#if title || headerAside}
 		<div class="header">
 			{#if title}
-				<Heading as={level} size="xsmall" class="eyebrow">{title}</Heading>
+				<Heading as={level} size={eyebrow ? 'xsmall' : 'medium'} class={eyebrow ? 'eyebrow' : ''}
+					>{title}</Heading
+				>
 			{/if}
 			{#if headerAside}
 				{@render headerAside()}

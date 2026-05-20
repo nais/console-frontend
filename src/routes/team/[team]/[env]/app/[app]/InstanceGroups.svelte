@@ -35,7 +35,7 @@
 	}
 </script>
 
-<SurfaceCard title="Instance groups">
+<SurfaceCard title="Instance groups" eyebrow={false}>
 	{#each app.instanceGroups as group (group.id)}
 		{@const role = groupRole(group)}
 		{@const hasFailing = group.instances.some((instance) => instance.status.state === 'FAILING')}
