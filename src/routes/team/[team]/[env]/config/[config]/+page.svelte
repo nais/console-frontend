@@ -394,7 +394,7 @@
 					/>
 				{/if}
 			</div>
-			<div class="sidebar">
+			<div class="layout-sidebar">
 				<Workloads workloads={config.workloads} />
 				<Manifest {configName} />
 				<ResourceActivityCard resourceType="config" resource={config} />
@@ -441,12 +441,6 @@
 	}
 
 	.main-section {
-		display: flex;
-		flex-direction: column;
-		gap: var(--ax-space-16);
-	}
-
-	.sidebar {
 		display: flex;
 		flex-direction: column;
 		gap: var(--ax-space-16);

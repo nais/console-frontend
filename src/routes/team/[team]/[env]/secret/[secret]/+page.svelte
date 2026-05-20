@@ -470,7 +470,7 @@
 					/>
 				{/if}
 			</div>
-			<div class="sidebar">
+			<div class="layout-sidebar">
 				<Workloads workloads={secret.workloads} />
 				<Manifest {secretName} />
 				<ResourceActivityCard resourceType="secret" resource={secret} />
@@ -518,12 +518,6 @@
 	}
 
 	.main-section {
-		display: flex;
-		flex-direction: column;
-		gap: var(--ax-space-16);
-	}
-
-	.sidebar {
 		display: flex;
 		flex-direction: column;
 		gap: var(--ax-space-16);

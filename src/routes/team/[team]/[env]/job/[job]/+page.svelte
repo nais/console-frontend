@@ -253,7 +253,7 @@
 					<CostOverviewChart workload={jobName} {environment} {teamSlug} />
 				{/if}
 			</div>
-			<div class="sidebar">
+			<div class="layout-sidebar">
 				<WorkloadDeploy workload={job} />
 				{#if environment && jobName}
 					<WorkloadActivityCard
@@ -329,12 +329,6 @@
 	}
 
 	.configuration-section {
-		display: flex;
-		flex-direction: column;
-		gap: var(--spacing-layout);
-	}
-
-	.sidebar {
 		display: flex;
 		flex-direction: column;
 		gap: var(--spacing-layout);

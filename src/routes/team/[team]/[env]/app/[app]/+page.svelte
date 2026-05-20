@@ -268,7 +268,7 @@
 					<CostOverviewChart workload={app.name} {environment} {teamSlug} />
 				{/if}
 			</div>
-			<div class="sidebar">
+			<div class="layout-sidebar">
 				<WorkloadDeploy workload={app} />
 				{#if environment && application}
 					<WorkloadActivityCard
@@ -348,12 +348,6 @@
 		:global(*) {
 			cursor: pointer;
 		}
-	}
-
-	.sidebar {
-		display: flex;
-		flex-direction: column;
-		gap: var(--spacing-layout);
 	}
 
 	/* Mobile responsive layout */
