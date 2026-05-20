@@ -199,11 +199,11 @@
 						{#if $CVEWorkloads.data?.cve.workloads.pageInfo.totalCount ?? 0 > 0}
 							<span class="count">({$CVEWorkloads.data?.cve.workloads.pageInfo.totalCount})</span>
 						{/if}
-						{#if teamSlug}
+						{#if teamSlug && $teamRoles.data?.team}
 							<Tag variant="neutral" size="small">Filtered: {teamSlug}</Tag>
 						{/if}
 					</Heading>
-					{#if teamSlug && viewerIsMember && selectedIds.size > 0}
+					{#if teamSlug && $teamRoles.data?.team && viewerIsMember && bulkWorkloads.length > 0}
 						<Button
 							variant="primary"
 							size="small"
@@ -211,7 +211,7 @@
 								bulkOpen = true;
 							}}
 						>
-							Suppress {selectedIds.size} selected
+							Suppress {bulkWorkloads.length} selected
 						</Button>
 					{/if}
 				</div>
