@@ -751,7 +751,7 @@
 			</ReadMore>
 		</div>
 	{:else}
-		<div class="loading-centered">
+		<div class="loading-centered" role="status" aria-label="Loading">
 			<Loader size="3xlarge" />
 		</div>
 	{/if}

@@ -129,7 +129,8 @@
 
 {#if !$Teams.fetching}
 	<!-- Desktop Table View -->
-	<div class="table-scroll">
+	<!-- svelte-ignore a11y_no_noninteractive_tabindex -->
+	<div class="table-scroll" tabindex="0" role="region" aria-label="Teams table">
 		<Table
 			size="small"
 			zebraStripes
@@ -163,7 +164,11 @@
 		</Table>
 	</div>
 {:else}
-	<div style="display: flex; justify-content: center; align-items: center; height: 500px;">
+	<div
+		style="display: flex; justify-content: center; align-items: center; height: 500px;"
+		role="status"
+		aria-label="Loading"
+	>
 		<Loader size="3xlarge" />
 	</div>
 {/if}

@@ -131,7 +131,11 @@
 <GraphErrors errors={jobErrors} />
 
 {#if jobFetching}
-	<div style="display: flex; justify-content: center; align-items: center; height: 500px;">
+	<div
+		style="display: flex; justify-content: center; align-items: center; height: 500px;"
+		role="status"
+		aria-label="Loading"
+	>
 		<Loader size="3xlarge" />
 	</div>
 {/if}

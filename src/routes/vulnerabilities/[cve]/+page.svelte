@@ -68,7 +68,7 @@
 		</form>
 
 		{#if $CVEDetails.fetching}
-			<div class="loading">
+			<div class="loading" role="status" aria-label="Loading">
 				<Loader size="3xlarge" />
 			</div>
 		{:else if isNotFoundError($CVEDetails.errors)}
@@ -146,7 +146,7 @@
 					{/if}
 				</Heading>
 				{#if $CVEWorkloads.fetching}
-					<div class="loading">
+					<div class="loading" role="status" aria-label="Loading">
 						<Loader size="3xlarge" />
 					</div>
 				{:else if $CVEWorkloads.data}

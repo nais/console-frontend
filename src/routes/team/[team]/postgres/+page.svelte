@@ -68,7 +68,7 @@
 {/snippet}
 
 {#if $PostgresInstances.fetching}
-	<div class="loading">
+	<div class="loading" role="status" aria-label="Loading">
 		<Loader size="3xlarge" />
 	</div>
 {:else if $PostgresInstances.data}

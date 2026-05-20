@@ -25,7 +25,11 @@
 		</BodyLong>
 	</div>
 	{#if $CVES.fetching && !$CVES.data}
-		<div style="display: flex; justify-content: center; align-items: center; height: 500px;">
+		<div
+			style="display: flex; justify-content: center; align-items: center; height: 500px;"
+			role="status"
+			aria-label="Loading"
+		>
 			<Loader size="3xlarge" />
 		</div>
 	{:else}
@@ -38,7 +42,11 @@
 				/>
 			{/snippet}
 			{#if $CVES.fetching}
-				<div style="display: flex; justify-content: center; align-items: center; height: 500px;">
+				<div
+					style="display: flex; justify-content: center; align-items: center; height: 500px;"
+					role="status"
+					aria-label="Loading"
+				>
 					<Loader size="3xlarge" />
 				</div>
 			{:else if $CVES.data?.cves.nodes}

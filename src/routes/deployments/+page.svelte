@@ -73,7 +73,7 @@
 	<div class="container">
 		<GraphErrors errors={$TenantDeployments.errors} />
 		{#if $TenantDeployments.fetching}
-			<div class="loading">
+			<div class="loading" role="status" aria-label="Loading">
 				<Loader size="3xlarge" />
 			</div>
 		{:else if $TenantDeployments.data}
