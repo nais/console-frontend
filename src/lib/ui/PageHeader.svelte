@@ -27,6 +27,7 @@
 		return [...baseBreadcrumbs, { label: title }];
 	});
 	const heading = $derived(page.data?.meta?.pageHeaderTitle ?? page.data?.meta?.title ?? '');
+	const srOnlyHeading = $derived(!heading ? (page.data?.meta?.title ?? '') : '');
 	const tag = $derived(page.data?.meta?.tag ?? null);
 	const docPath = $derived(page.data?.meta?.docPath ?? null);
 	const resolveUnsafe = resolve as unknown as (
@@ -88,6 +89,8 @@
 				{/if}
 			</div>
 		</div>
+	{:else if srOnlyHeading}
+		<Heading as="h1" class="aksel-sr-only">{srOnlyHeading}</Heading>
 	{/if}
 </div>
 
