@@ -8,7 +8,6 @@
 	import Pagination from '$lib/ui/Pagination.svelte';
 	import SurfaceCard from '$lib/ui/SurfaceCard.svelte';
 	import { changeParams } from '$lib/utils/searchparams';
-	import { BodyLong } from '@nais/ds-svelte-community';
 	import type { PageProps } from './$types';
 
 	let { data }: PageProps = $props();
@@ -66,10 +65,6 @@
 		{@const ae = $ActivityLog.data.team.activityLog}
 		<div class="layout-two-column">
 			<div>
-				<BodyLong spacing
-					>The Activity Log provides an overview of changes made to your team and its resources
-					within the Nais Console application.</BodyLong
-				>
 				<List title="Activity Log" count={ae.pageInfo.totalCount}>
 					{#each ae.nodes || [] as item (item.id)}
 						<ActivityLogItem {item} />

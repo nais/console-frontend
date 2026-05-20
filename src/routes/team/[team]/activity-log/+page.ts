@@ -13,7 +13,7 @@ export async function load(event) {
 	const rows = 20;
 
 	return {
-		...(await addPageMeta(event, { title: 'Activity Log' })),
+		...(await addPageMeta(event, { title: 'Activity Log', pageHeaderTitle: '' })),
 		...(await load_ActivityLog({
 			event,
 			blocking: true,
