@@ -1,8 +1,8 @@
 <script lang="ts">
 	import {
+		DeploymentStatusState,
 		fragment,
 		graphql,
-		DeploymentStatusState,
 		type DeploymentStatusState$options,
 		type WorkloadDeploy
 	} from '$houdini';

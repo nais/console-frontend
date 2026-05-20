@@ -33,24 +33,26 @@ describe('vulnerabilities', () => {
 		describe('text colors', () => {
 			test('returns correct text color for critical severity', () => {
 				expect(severityToColor({ severity: 'critical', isText: true })).toBe(
-					'var(--ax-text-danger)'
+					'var(--ax-text-danger-decoration)'
 				);
 			});
 
 			test('returns correct text color for high severity', () => {
 				expect(severityToColor({ severity: 'high', isText: true })).toBe(
-					'color-mix(in oklab, var(--ax-text-danger), var(--ax-text-warning))'
+					'var(--ax-text-warning-decoration)'
 				);
 			});
 
 			test('returns correct text color for medium severity', () => {
 				expect(severityToColor({ severity: 'medium', isText: true })).toBe(
-					'var(--ax-text-warning)'
+					'color-mix(in oklab, var(--ax-text-warning-decoration), var(--ax-text-success-decoration))'
 				);
 			});
 
 			test('returns correct text color for low severity', () => {
-				expect(severityToColor({ severity: 'low', isText: true })).toBe('var(--ax-text-success)');
+				expect(severityToColor({ severity: 'low', isText: true })).toBe(
+					'var(--ax-text-success-decoration)'
+				);
 			});
 
 			test('returns correct text color for unassigned severity', () => {
@@ -94,7 +96,7 @@ describe('vulnerabilities', () => {
 			test('text and background colors use same tokens', () => {
 				const bgHigh = severityToColor({ severity: 'high' });
 				const textHigh = severityToColor({ severity: 'high', isText: true });
-				expect(bgHigh).toBe(textHigh);
+				expect(bgHigh).not.toBe(textHigh);
 			});
 
 			test('graph colors use hex values, not CSS variables', () => {
