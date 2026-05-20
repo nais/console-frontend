@@ -5,7 +5,7 @@ export async function load(event) {
 	return {
 		...(await addPageMeta(event, {
 			title: event.params.secret,
-			docPath: '/services/secrets/how-to/workload/'
+			docPath: '/services/secrets/'
 		})),
 		...(await load_Secret({
 			event,

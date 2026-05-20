@@ -30,7 +30,7 @@ export async function load(event) {
 	}
 
 	return {
-		...(await addPageMeta(event, { title: event.params.valkey })),
+		...(await addPageMeta(event, { title: event.params.valkey, docPath: '/persistence/valkey/' })),
 		...loadValkey
 	};
 }

@@ -9,7 +9,9 @@
 	import ExternalLink from '$lib/ui/ExternalLink.svelte';
 	import GraphErrors from '$lib/ui/GraphErrors.svelte';
 	import List from '$lib/ui/List.svelte';
+	import ManifestCard from '$lib/ui/ManifestCard.svelte';
 	import Pagination from '$lib/ui/Pagination.svelte';
+	import SurfaceCard from '$lib/ui/SurfaceCard.svelte';
 	import { changeParams } from '$lib/utils/searchparams';
 	import {
 		Alert,
@@ -25,7 +27,6 @@
 	} from '@nais/ds-svelte-community';
 	import { CogRotationIcon, NotePencilIcon, TrashIcon } from '@nais/ds-svelte-community/icons';
 	import type { PageProps } from './$types';
-	import Manifest from './Manifest.svelte';
 
 	const runServiceMaintenance = graphql(`
 		mutation runOpenSearchMaintenance(
@@ -105,10 +106,10 @@
 		(x) => !x?.deadline
 	)}
 
-	<div class="wrapper">
+	<div class="layout-two-column">
 		<div class="content">
 			{#if !isManagedByConsole}
-				<Alert variant="info" style="margin-bottom: 1rem;">
+				<Alert variant="info">
 					This OpenSearch instance is managed outside Console.<br />
 					To migrate this instance to Console, see the
 					<ExternalLink href={docURL('/persistence/opensearch/how-to/migrate-to-console/')}>
@@ -130,11 +131,14 @@
 					</Button>
 				</div>
 			{/if}
-			<div class="spacing">
-				<Heading as="h2" spacing>OpenSearch Instance Access List</Heading>
+
+			<section aria-labelledby="access-heading">
+				<Heading as="h2" id="access-heading" size="medium" spacing
+					>OpenSearch Instance Access List</Heading
+				>
 
 				{#if instance.access.edges.length > 0}
-					<div class="table-container">
+					<div class="table-scroll" role="region" aria-label="OpenSearch access list">
 						<Table
 							size="small"
 							sort={{
@@ -180,9 +184,10 @@
 				{:else}
 					<p>No workloads with configured access</p>
 				{/if}
-			</div>
-			<div class="spacing">
-				<Heading as="h2">Issues</Heading>
+			</section>
+
+			<section aria-labelledby="issues-heading">
+				<Heading as="h2" id="issues-heading" size="medium" spacing>Issues</Heading>
 				<List>
 					{#each $OpenSearchInstance.data.team.environment.openSearch.issues.edges as edge (edge.node.id)}
 						<IssueListItem item={edge.node} />
@@ -190,17 +195,18 @@
 						<span>No issues found</span>
 					{/each}
 				</List>
-			</div>
-			<div>
-				{#if maintenanceError}
-					<Alert variant="error" style="margin-bottom: 1rem;">
-						{maintenanceError}
-					</Alert>
-				{/if}
+			</section>
 
-				{#if mandatoryServiceMaintenanceUpdates.length > 0 || nonMandatoryServiceMaintenanceUpdates.length > 0}
+			{#if maintenanceError}
+				<Alert variant="error">
+					{maintenanceError}
+				</Alert>
+			{/if}
+
+			{#if mandatoryServiceMaintenanceUpdates.length > 0 || nonMandatoryServiceMaintenanceUpdates.length > 0}
+				<section aria-labelledby="maintenance-heading">
 					<div class="service-maintenance-list-heading">
-						<Heading as="h2">Pending maintenance</Heading>
+						<Heading as="h2" id="maintenance-heading" size="medium">Pending maintenance</Heading>
 
 						{#if maintenanceError === ''}
 							<Button icon={CogRotationIcon} variant="secondary" size="small" disabled
@@ -217,94 +223,83 @@
 							</Button>
 						{/if}
 					</div>
-					<div>
-						<List>
-							{#each mandatoryServiceMaintenanceUpdates.concat(nonMandatoryServiceMaintenanceUpdates) as u, index (index)}
-								<ServiceMaintenanceListItem
-									title={u?.title ?? 'Missing title'}
-									description={u?.description ?? 'Missing description'}
-									start_at={u?.startAt}
-									deadline={!!u?.deadline}
-								/>
-							{/each}
-						</List>
-					</div>
-				{/if}
-			</div>
+					<List>
+						{#each mandatoryServiceMaintenanceUpdates.concat(nonMandatoryServiceMaintenanceUpdates) as u, index (index)}
+							<ServiceMaintenanceListItem
+								title={u?.title ?? 'Missing title'}
+								description={u?.description ?? 'Missing description'}
+								start_at={u?.startAt}
+								deadline={!!u?.deadline}
+							/>
+						{/each}
+					</List>
+				</section>
+			{/if}
 		</div>
-		<div class="sidebar">
-			<div>
-				<Heading as="h2">State</Heading>
+
+		<div class="layout-sidebar">
+			<ManifestCard
+				title="Use this OpenSearch"
+				manifest={`spec:\n  openSearch:\n    - instance: ${instance.name.replace(`opensearch-${teamSlug}-`, '')}`}
+			/>
+
+			<SurfaceCard title="State">
 				<BodyShort>{instance.state}</BodyShort>
-			</div>
-			<div>
-				<Heading as="h2">Settings</Heading>
-				<BodyShort>Tier: {instance.tier}</BodyShort>
-				<BodyShort>Memory: {instance.memory}</BodyShort>
-				<BodyShort>Storage: {instance.storageGB}GB</BodyShort>
-				{#if viewerIsMember && isManagedByConsole}
-					<a
-						class="mt-2"
-						href="/team/{page.params.team}/{page.params.env}/opensearch/{page.params
-							.opensearch}/edit"
-					>
-						Edit <NotePencilIcon />
-					</a>
-				{/if}
-			</div>
-			<div>
-				<Heading as="h2">Version</Heading>
+			</SurfaceCard>
+
+			<SurfaceCard title="Settings">
+				{#snippet headerAside()}
+					{#if viewerIsMember && isManagedByConsole}
+						<Button
+							as="a"
+							variant="secondary"
+							size="small"
+							href="/team/{page.params.team}/{page.params.env}/opensearch/{page.params
+								.opensearch}/edit"
+							icon={NotePencilIcon}
+						>
+							Edit
+						</Button>
+					{/if}
+				{/snippet}
+				<dl class="settings-list">
+					<dt>Tier</dt>
+					<dd>{instance.tier}</dd>
+					<dt>Memory</dt>
+					<dd>{instance.memory}</dd>
+					<dt>Storage</dt>
+					<dd>{instance.storageGB}GB</dd>
+				</dl>
+			</SurfaceCard>
+
+			<SurfaceCard title="Version">
 				<BodyShort>{instance.version.actual ?? 'Unknown'}</BodyShort>
-			</div>
+			</SurfaceCard>
+
 			{#if instance.maintenance && instance.maintenance.window}
-				<div>
-					<Heading as="h2">Maintenance window</Heading>
-					<BodyShort>Day of week: {instance.maintenance.window.dayOfWeek}</BodyShort>
-					<BodyShort>Time of day: {instance.maintenance.window.timeOfDay.slice(0, -3)}</BodyShort>
-				</div>
+				<SurfaceCard title="Maintenance window">
+					<dl class="settings-list">
+						<dt>Day of week</dt>
+						<dd>{instance.maintenance.window.dayOfWeek}</dd>
+						<dt>Time of day</dt>
+						<dd>{instance.maintenance.window.timeOfDay.slice(0, -3)}</dd>
+					</dl>
+				</SurfaceCard>
 			{/if}
 
-			<Manifest openSearch={instance} teamSlug={page.params.team!} />
-
-			<SidebarActivity activityLog={instance} direct={instance.activityLog} />
+			<SurfaceCard title="Activity">
+				<SidebarActivity activityLog={instance} direct={instance.activityLog} hideTitle />
+			</SurfaceCard>
 		</div>
 	</div>
 {/if}
 
 <style>
-	.wrapper {
-		display: grid;
-		grid-template-columns: minmax(0, 1fr) 300px;
-		gap: var(--spacing-layout);
-		align-items: start;
-		min-width: 0;
-	}
-
 	.content {
-		min-width: 0;
-	}
-
-	.detail-actions {
 		display: flex;
-		justify-content: flex-end;
-		margin-bottom: var(--ax-space-16);
-		gap: var(--ax-space-8);
-		flex-wrap: wrap;
-	}
-
-	.spacing {
-		margin-bottom: var(--spacing-layout);
-	}
-
-	.table-container {
-		max-width: 100%;
+		flex-direction: column;
+		gap: var(--ax-space-24);
 		min-width: 0;
-		overflow-x: auto;
-	}
-
-	.table-container :global(table) {
-		width: max-content;
-		min-width: 100%;
 	}
 
 	.service-maintenance-list-heading {
@@ -316,25 +311,39 @@
 		flex-wrap: wrap;
 	}
 
-	.sidebar {
-		display: flex;
-		flex-direction: column;
-		gap: var(--spacing-layout);
-		min-width: 0;
+	.settings-list {
+		display: grid;
+		grid-template-columns: 18ch minmax(0, 1fr);
+		gap: var(--ax-space-4) var(--ax-space-8);
+		margin: 0;
+		align-items: baseline;
+	}
+
+	.settings-list dt {
+		font-weight: var(--ax-font-weight-bold);
+		color: var(--ax-text-neutral-subtle);
+	}
+
+	.settings-list dd {
+		margin: 0;
 	}
 
 	@media (max-width: 767px) {
-		.wrapper {
-			grid-template-columns: 1fr;
-		}
-
-		.detail-actions :global(button),
-		.detail-actions :global(a) {
-			width: 100%;
-		}
-
 		.service-maintenance-list-heading {
 			flex-direction: column;
+		}
+
+		.settings-list {
+			grid-template-columns: 1fr;
+			gap: var(--ax-space-2);
+		}
+
+		.settings-list dd {
+			margin-bottom: var(--ax-space-4);
+		}
+
+		.settings-list dd:last-child {
+			margin-bottom: 0;
 		}
 	}
 </style>

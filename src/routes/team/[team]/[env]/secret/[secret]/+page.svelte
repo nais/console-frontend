@@ -16,6 +16,8 @@
 		Td,
 		Th,
 		Thead,
+		ToggleGroup,
+		ToggleGroupItem,
 		Tr
 	} from '@nais/ds-svelte-community';
 	import { SvelteMap } from 'svelte/reactivity';
@@ -23,6 +25,7 @@
 	import ResourceActivityCard from '$lib/domain/activity/ResourceActivityCard.svelte';
 	import WorkloadLink from '$lib/domain/workload/WorkloadLink.svelte';
 	import GraphErrors from '$lib/ui/GraphErrors.svelte';
+	import ManifestCard from '$lib/ui/ManifestCard.svelte';
 	import Textarea from '$lib/ui/Textarea.svelte';
 	import { getSecretPermissions } from '$lib/utils/secretPermissions';
 	import {
@@ -34,7 +37,6 @@
 	} from '@nais/ds-svelte-community/icons';
 	import type { PageProps } from './$types';
 	import AddKeyValue from './AddKeyValue.svelte';
-	import Manifest from './Manifest.svelte';
 	import ViewSecretModal from './ViewSecretModal.svelte';
 	import Workloads from './Workloads.svelte';
 
@@ -53,6 +55,7 @@
 
 	let deleteSecretOpen = $state(false);
 	let deleteValueOpen = $state(false);
+	let manifestMode: string = $state('env');
 	let editValueOpen = $state(false);
 	let viewSecretsModalOpen = $state(false);
 
@@ -338,11 +341,11 @@
 		onSuccess={handleRevealSuccess}
 	/>
 
-	<div class="wrapper">
-		<div class="secret-content">
-			<div class="main-section">
-				<div class="detail-actions">
-					<Heading as="h2">Secret Data</Heading>
+	<div class="layout-two-column">
+		<div class="content">
+			<section aria-labelledby="secret-data-heading">
+				<div class="section-header">
+					<Heading as="h2" id="secret-data-heading" size="medium" spacing>Secret Data</Heading>
 					<div class="header-buttons">
 						{#if canRevealValues}
 							{#if secretsRevealed}
@@ -469,12 +472,23 @@
 						}}
 					/>
 				{/if}
-			</div>
-			<div class="layout-sidebar">
-				<Workloads workloads={secret.workloads} />
-				<Manifest {secretName} />
-				<ResourceActivityCard resourceType="secret" resource={secret} />
-			</div>
+			</section>
+		</div>
+
+		<div class="layout-sidebar">
+			<ManifestCard
+				title="Use this secret"
+				manifest={manifestMode === 'env'
+					? `spec:\n  envFrom:\n    - secret: ${secretName}`
+					: `spec:\n  filesFrom:\n    - secret: ${secretName}\n      mountPath: /var/run/secrets/${secretName}`}
+			>
+				<ToggleGroup size="small" value={manifestMode} onchange={(val) => (manifestMode = val)}>
+					<ToggleGroupItem value="env">Environment</ToggleGroupItem>
+					<ToggleGroupItem value="files">Files</ToggleGroupItem>
+				</ToggleGroup>
+			</ManifestCard>
+			<Workloads workloads={secret.workloads} />
+			<ResourceActivityCard resourceType="secret" resource={secret} />
 		</div>
 	</div>
 
@@ -505,25 +519,14 @@
 {/if}
 
 <style>
-	.wrapper {
-		display: flex;
-		flex-direction: column;
-		gap: var(--spacing-layout);
-	}
-
-	.secret-content {
-		display: grid;
-		grid-template-columns: 1fr 300px;
-		gap: var(--spacing-layout);
-	}
-
-	.main-section {
+	.content {
 		display: flex;
 		flex-direction: column;
 		gap: var(--ax-space-16);
+		min-width: 0;
 	}
 
-	.detail-actions {
+	.section-header {
 		display: flex;
 		align-items: center;
 		justify-content: space-between;
@@ -562,9 +565,10 @@
 		padding: 0 0 0 1rem;
 	}
 
-	@media (max-width: 767px), (max-height: 500px) {
-		.secret-content {
-			grid-template-columns: 1fr;
+	@media (max-width: 767px) {
+		.section-header {
+			flex-direction: column;
+			align-items: flex-start;
 		}
 	}
 </style>

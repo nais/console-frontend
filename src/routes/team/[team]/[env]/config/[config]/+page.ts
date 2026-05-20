@@ -5,7 +5,7 @@ export async function load(event) {
 	return {
 		...(await addPageMeta(event, {
 			title: event.params.config,
-			docPath: '/workloads/application/reference/application-spec/#envfrom'
+			docPath: '/services/config/'
 		})),
 		...(await load_Config({
 			event,

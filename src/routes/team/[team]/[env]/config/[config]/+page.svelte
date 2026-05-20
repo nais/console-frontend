@@ -16,18 +16,20 @@
 		Td,
 		Th,
 		Thead,
+		ToggleGroup,
+		ToggleGroupItem,
 		Tr
 	} from '@nais/ds-svelte-community';
 
 	import ResourceActivityCard from '$lib/domain/activity/ResourceActivityCard.svelte';
 	import WorkloadLink from '$lib/domain/workload/WorkloadLink.svelte';
 	import GraphErrors from '$lib/ui/GraphErrors.svelte';
+	import ManifestCard from '$lib/ui/ManifestCard.svelte';
 	import Textarea from '$lib/ui/Textarea.svelte';
 	import { getConfigPermissions } from '$lib/utils/configPermissions';
 	import { DocPencilIcon, DownloadIcon, TrashIcon } from '@nais/ds-svelte-community/icons';
 	import type { PageProps } from './$types';
 	import AddKeyValue from './AddKeyValue.svelte';
-	import Manifest from './Manifest.svelte';
 	import Workloads from './Workloads.svelte';
 
 	let { data }: PageProps = $props();
@@ -44,6 +46,7 @@
 	let deleteConfigOpen = $state(false);
 	let deleteValueOpen = $state(false);
 	let editValueOpen = $state(false);
+	let manifestMode: string = $state('env');
 
 	let keyToDelete = $state('');
 	let keyToEdit = $state('');
@@ -290,11 +293,11 @@
 		Are you sure you want to delete <b>{keyToDelete}</b> from this config?
 	</Confirm>
 
-	<div class="wrapper">
-		<div class="config-content">
-			<div class="main-section">
-				<div class="detail-actions">
-					<Heading as="h2">Config Data</Heading>
+	<div class="layout-two-column">
+		<div class="content">
+			<section aria-labelledby="config-data-heading">
+				<div class="section-header">
+					<Heading as="h2" id="config-data-heading" size="medium" spacing>Config Data</Heading>
 					<div class="header-buttons">
 						{#if canMutate}
 							<Button variant="danger" size="small" onclick={openDeleteModal} icon={TrashIcon}>
@@ -393,12 +396,23 @@
 						}}
 					/>
 				{/if}
-			</div>
-			<div class="layout-sidebar">
-				<Workloads workloads={config.workloads} />
-				<Manifest {configName} />
-				<ResourceActivityCard resourceType="config" resource={config} />
-			</div>
+			</section>
+		</div>
+
+		<div class="layout-sidebar">
+			<ManifestCard
+				title="Use this config"
+				manifest={manifestMode === 'env'
+					? `spec:\n  envFrom:\n    - configmap: ${configName}`
+					: `spec:\n  filesFrom:\n    - configmap: ${configName}\n      mountPath: /var/run/configmaps/${configName}`}
+			>
+				<ToggleGroup size="small" value={manifestMode} onchange={(val) => (manifestMode = val)}>
+					<ToggleGroupItem value="env">Environment</ToggleGroupItem>
+					<ToggleGroupItem value="files">Files</ToggleGroupItem>
+				</ToggleGroup>
+			</ManifestCard>
+			<Workloads workloads={config.workloads} />
+			<ResourceActivityCard resourceType="config" resource={config} />
 		</div>
 	</div>
 {/if}
@@ -428,25 +442,14 @@
 </Modal>
 
 <style>
-	.wrapper {
-		display: flex;
-		flex-direction: column;
-		gap: var(--spacing-layout);
-	}
-
-	.config-content {
-		display: grid;
-		grid-template-columns: 1fr 300px;
-		gap: var(--spacing-layout);
-	}
-
-	.main-section {
+	.content {
 		display: flex;
 		flex-direction: column;
 		gap: var(--ax-space-16);
+		min-width: 0;
 	}
 
-	.detail-actions {
+	.section-header {
 		display: flex;
 		align-items: center;
 		justify-content: space-between;
@@ -485,9 +488,10 @@
 		padding: 0 0 0 1rem;
 	}
 
-	@media (max-width: 767px), (max-height: 500px) {
-		.config-content {
-			grid-template-columns: 1fr;
+	@media (max-width: 767px) {
+		.section-header {
+			flex-direction: column;
+			align-items: flex-start;
 		}
 	}
 </style>

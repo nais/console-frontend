@@ -30,7 +30,10 @@ export async function load(event) {
 	}
 
 	return {
-		...(await addPageMeta(event, { title: event.params.opensearch })),
+		...(await addPageMeta(event, {
+			title: event.params.opensearch,
+			docPath: '/persistence/opensearch/'
+		})),
 		...loadValkey
 	};
 }

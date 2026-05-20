@@ -3,7 +3,7 @@ import { addPageMeta } from '$lib/utils/pageMeta';
 
 export async function load(event) {
 	return {
-		...(await addPageMeta(event, { title: event.params.bucket })),
+		...(await addPageMeta(event, { title: event.params.bucket, docPath: '/persistence/buckets/' })),
 		...(await load_Bucket({
 			event,
 			variables: {
