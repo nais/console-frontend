@@ -157,38 +157,40 @@
 <GraphErrors errors={$TeamResourceUsage.errors} />
 
 {#if resourceUtilization}
-	<div class="wrapper">
-		<SurfaceCard title="Overprovisioned Applications">
+	<div class="content">
+		<section aria-labelledby="overprovisioned-heading">
+			<Heading as="h2" size="medium" id="overprovisioned-heading"
+				>Overprovisioned Applications</Heading
+			>
 			<div class="resource-grid">
-				<div class="resource-column">
-					<Heading as="h3" size="small" class="resource-heading">CPU</Heading>
-					<div class="stat">
-						<span class="stat-value"
-							>{euroValueFormatter(cpuWaste, { maximumFractionDigits: 0 })}</span
-						>
-						<span class="stat-label">Estimated annual waste</span>
+				<SurfaceCard title="Estimated annual CPU waste" level="h3" bordered>
+					<div class="cost-wrapper">
+						<div class="cost-amount">
+							{euroValueFormatter(cpuWaste, { maximumFractionDigits: 0 })}
+						</div>
 					</div>
-					<div class="charts-row">
+					<div class="chart">
 						<UtilizationChart data={sortedCpuData} format="cpu" onBarClick={handleBarClick} />
 					</div>
-				</div>
-				<div class="resource-column">
-					<Heading as="h3" size="small" class="resource-heading">Memory</Heading>
-					<div class="stat">
-						<span class="stat-value"
-							>{euroValueFormatter(memoryWaste, { maximumFractionDigits: 0 })}</span
-						>
-						<span class="stat-label">Estimated annual waste</span>
+				</SurfaceCard>
+				<SurfaceCard title="Estimated annual memory waste" level="h3" bordered>
+					<div class="cost-wrapper">
+						<div class="cost-amount">
+							{euroValueFormatter(memoryWaste, { maximumFractionDigits: 0 })}
+						</div>
 					</div>
-					<div class="charts-row">
+					<div class="chart">
 						<UtilizationChart data={sortedMemoryData} format="memory" onBarClick={handleBarClick} />
 					</div>
-				</div>
+				</SurfaceCard>
 			</div>
-		</SurfaceCard>
+		</section>
 
-		<SurfaceCard title="Underutilization per Application">
-			<div class="table-scroll" role="region" aria-label="Underutilization per application">
+		<section aria-labelledby="underutilization-heading">
+			<Heading as="h2" size="medium" id="underutilization-heading"
+				>Underutilization per Application</Heading
+			>
+			<div class="table-scroll">
 				<Table
 					size="small"
 					sort={sortState}
@@ -240,102 +242,50 @@
 					</Tbody>
 				</Table>
 			</div>
-		</SurfaceCard>
+		</section>
 	</div>
 {/if}
 
 <style>
-	.wrapper {
+	.content {
 		display: flex;
 		flex-direction: column;
-		gap: var(--spacing-layout);
+		gap: var(--ax-space-32);
 		min-width: 0;
 	}
 
 	.resource-grid {
-		display: flex;
-		gap: 5rem;
-		padding-left: var(--ax-space-8);
+		display: grid;
+		grid-template-columns: repeat(2, 1fr);
+		gap: var(--ax-space-16);
+		margin-top: var(--ax-space-16);
 		min-width: 0;
 	}
 
-	.resource-column {
+	.cost-wrapper {
 		display: flex;
-		flex-direction: column;
-		flex: 1;
-		min-width: 0;
+		gap: var(--ax-space-16);
+		justify-content: center;
 	}
 
-	.resource-column :global(.chart-container) {
-		height: 350px;
-	}
-
-	:global(.resource-heading) {
-		margin: 0;
-	}
-
-	.stat {
-		display: flex;
-		flex-direction: column;
+	.cost-amount {
+		background-color: var(--ax-bg-raised);
+		font-size: 1.5rem;
+		border-radius: 0.375rem;
+		display: inline-block;
 		align-items: center;
-		gap: var(--ax-space-4);
-		padding: var(--ax-space-8) var(--ax-space-16);
+		padding: var(--ax-space-8) var(--ax-space-32);
 	}
 
-	.stat-value {
-		font-size: 1.75rem;
-		font-weight: var(--ax-font-weight-bold);
-		color: var(--ax-text-neutral);
+	.chart {
+		height: 350px;
+		min-width: 0;
+		margin-top: var(--ax-space-16);
 	}
 
-	.stat-label {
-		font-size: var(--ax-font-size-small);
-		color: var(--ax-text-neutral-subtle);
-	}
-
-	@media (max-width: 767px), (max-height: 500px) {
+	@media (max-width: 767px) {
 		.resource-grid {
-			flex-direction: column;
-			height: auto;
-			gap: var(--ax-space-24);
-			padding-left: 0;
-		}
-	}
-
-	.stat {
-		display: flex;
-		flex-direction: column;
-		align-items: center;
-		gap: var(--ax-space-4);
-		padding: var(--ax-space-12) var(--ax-space-16);
-	}
-
-	.stat-value {
-		font-size: 1.75rem;
-		font-weight: var(--ax-font-weight-bold);
-		color: var(--ax-text-neutral);
-	}
-
-	.stat-label {
-		font-size: var(--ax-font-size-small);
-		color: var(--ax-text-neutral-subtle);
-	}
-
-	.charts-row {
-		display: flex;
-		height: 350px;
-		gap: 5rem;
-		padding-left: var(--ax-space-8);
-		min-width: 0;
-	}
-
-	@media (max-width: 767px), (max-height: 500px) {
-		.charts-row {
-			flex-direction: column;
-			height: auto;
-			gap: var(--ax-space-24);
-			padding-left: 0;
-			width: 100%;
+			grid-template-columns: 1fr;
 		}
 	}
 </style>
