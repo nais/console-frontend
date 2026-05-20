@@ -2,7 +2,7 @@
 	import { page } from '$app/state';
 	import { graphql, OpenSearchAccessOrderField } from '$houdini';
 	import { docURL } from '$lib/doc';
-	import SidebarActivity from '$lib/domain/activity/sidebar/SidebarActivity.svelte';
+	import PersistenceActivityCard from '$lib/domain/activity/PersistenceActivityCard.svelte';
 	import IssueListItem from '$lib/domain/list-items/IssueListItem.svelte';
 	import ServiceMaintenanceListItem from '$lib/domain/list-items/ServiceMaintenanceListItem.svelte';
 	import WorkloadLink from '$lib/domain/workload/WorkloadLink.svelte';
@@ -11,11 +11,9 @@
 	import List from '$lib/ui/List.svelte';
 	import ManifestCard from '$lib/ui/ManifestCard.svelte';
 	import Pagination from '$lib/ui/Pagination.svelte';
-	import SurfaceCard from '$lib/ui/SurfaceCard.svelte';
 	import { changeParams } from '$lib/utils/searchparams';
 	import {
 		Alert,
-		BodyShort,
 		Button,
 		Heading,
 		Table,
@@ -132,6 +130,42 @@
 				</div>
 			{/if}
 
+			<section aria-labelledby="settings-heading">
+				<div class="section-header">
+					<Heading as="h2" id="settings-heading" size="medium">Settings</Heading>
+					{#if viewerIsMember && isManagedByConsole}
+						<Button
+							as="a"
+							variant="secondary"
+							size="small"
+							href="/team/{page.params.team}/{page.params.env}/opensearch/{page.params
+								.opensearch}/edit"
+							icon={NotePencilIcon}
+						>
+							Edit
+						</Button>
+					{/if}
+				</div>
+				<dl class="settings-list">
+					<dt>State</dt>
+					<dd>{instance.state}</dd>
+					<dt>Tier</dt>
+					<dd>{instance.tier}</dd>
+					<dt>Memory</dt>
+					<dd>{instance.memory}</dd>
+					<dt>Storage</dt>
+					<dd>{instance.storageGB}GB</dd>
+					<dt>Version</dt>
+					<dd>{instance.version.actual ?? 'Unknown'}</dd>
+					{#if instance.maintenance && instance.maintenance.window}
+						<dt>Maintenance day</dt>
+						<dd>{instance.maintenance.window.dayOfWeek}</dd>
+						<dt>Maintenance time</dt>
+						<dd>{instance.maintenance.window.timeOfDay.slice(0, -3)}</dd>
+					{/if}
+				</dl>
+			</section>
+
 			<section aria-labelledby="access-heading">
 				<Heading as="h2" id="access-heading" size="medium" spacing
 					>OpenSearch Instance Access List</Heading
@@ -243,53 +277,7 @@
 				manifest={`spec:\n  openSearch:\n    - instance: ${instance.name.replace(`opensearch-${teamSlug}-`, '')}`}
 			/>
 
-			<SurfaceCard title="State">
-				<BodyShort>{instance.state}</BodyShort>
-			</SurfaceCard>
-
-			<SurfaceCard title="Settings">
-				{#snippet headerAside()}
-					{#if viewerIsMember && isManagedByConsole}
-						<Button
-							as="a"
-							variant="secondary"
-							size="small"
-							href="/team/{page.params.team}/{page.params.env}/opensearch/{page.params
-								.opensearch}/edit"
-							icon={NotePencilIcon}
-						>
-							Edit
-						</Button>
-					{/if}
-				{/snippet}
-				<dl class="settings-list">
-					<dt>Tier</dt>
-					<dd>{instance.tier}</dd>
-					<dt>Memory</dt>
-					<dd>{instance.memory}</dd>
-					<dt>Storage</dt>
-					<dd>{instance.storageGB}GB</dd>
-				</dl>
-			</SurfaceCard>
-
-			<SurfaceCard title="Version">
-				<BodyShort>{instance.version.actual ?? 'Unknown'}</BodyShort>
-			</SurfaceCard>
-
-			{#if instance.maintenance && instance.maintenance.window}
-				<SurfaceCard title="Maintenance window">
-					<dl class="settings-list">
-						<dt>Day of week</dt>
-						<dd>{instance.maintenance.window.dayOfWeek}</dd>
-						<dt>Time of day</dt>
-						<dd>{instance.maintenance.window.timeOfDay.slice(0, -3)}</dd>
-					</dl>
-				</SurfaceCard>
-			{/if}
-
-			<SurfaceCard title="Activity">
-				<SidebarActivity activityLog={instance} direct={instance.activityLog} hideTitle />
-			</SurfaceCard>
+			<PersistenceActivityCard resourceType="opensearch" resource={instance} />
 		</div>
 	</div>
 {/if}
@@ -300,6 +288,14 @@
 		flex-direction: column;
 		gap: var(--ax-space-24);
 		min-width: 0;
+	}
+
+	.section-header {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: var(--ax-space-8);
+		margin-bottom: var(--ax-space-16);
 	}
 
 	.service-maintenance-list-heading {

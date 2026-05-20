@@ -100,7 +100,7 @@ query OpenSearchInstance(
 						}
 					}
 				}
-				...SidebarActivityLogFragment @with(limit: 20) @mask_disable
+				...PersistenceActivityCardOpenSearchFragment
 			}
 		}
 	}
