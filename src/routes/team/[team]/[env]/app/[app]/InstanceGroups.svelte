@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { type App$result } from '$houdini';
+	import { type AppInstanceGroups$result } from '$houdini';
 	import CriticalIndicator from '$lib/ui/CriticalIndicator.svelte';
 	import IncomingIndicator from '$lib/ui/IncomingIndicator.svelte';
 	import RunningIndicator from '$lib/ui/RunningIndicator.svelte';
@@ -7,45 +7,47 @@
 	import Time from '$lib/ui/Time.svelte';
 	import { Tag } from '@nais/ds-svelte-community';
 	import { CloudSlashIcon } from '@nais/ds-svelte-community/icons';
+	import { slide } from 'svelte/transition';
 
-	type TeamData = NonNullable<App$result['team']>;
-	type EnvironmentData = NonNullable<TeamData['environment']>;
-	type AppData = NonNullable<EnvironmentData['application']>;
-	type InstanceGroup = AppData['instanceGroups'][number];
+	type InstanceGroups =
+		AppInstanceGroups$result['team']['environment']['application']['instanceGroups'];
 
 	interface Props {
-		app: AppData;
+		teamSlug: string;
+		environmentName: string;
+		appName: string;
+		instanceGroups: AppInstanceGroups$result['team']['environment']['application']['instanceGroups'];
 	}
 
-	let { app }: Props = $props();
+	let { instanceGroups, teamSlug, environmentName, appName }: Props = $props();
 
 	const incoming = $derived.by(() => {
-		if (app.instanceGroups.length <= 1) {
+		if (instanceGroups.length <= 1) {
 			return null;
 		}
 
-		return app.instanceGroups.reduce((newest, group) =>
+		return instanceGroups.reduce((newest, group) =>
 			new Date(group.created) > new Date(newest.created) ? group : newest
 		);
 	});
 
-	function groupRole(group: InstanceGroup) {
+	function groupRole(group: InstanceGroups[0]) {
 		if (incoming && group.id === incoming.id) return 'incoming';
 		return 'current';
 	}
 </script>
 
 <SurfaceCard title="Instance groups" eyebrow={false}>
-	{#each app.instanceGroups as group (group.id)}
+	{#each instanceGroups as group (group.id)}
 		{@const role = groupRole(group)}
 		{@const hasFailing = group.instances.some((instance) => instance.status.state === 'FAILING')}
 		{@const isUnhealthy = hasFailing || group.readyInstances < group.desiredInstances}
 
 		<a
-			href="/team/{app.team.slug}/{app.teamEnvironment.environment
-				.name}/app/{app.name}/instancegroup/{group.name}"
+			href="/team/{teamSlug}/{environmentName}/app/{appName}/instancegroup/{group.name}"
 			class="instance-group-link"
 			class:incoming={role === 'incoming'}
+			transition:slide
 		>
 			<div class="instance-group-icon">
 				{#if role === 'incoming'}

@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { onNavigate } from '$app/navigation';
 	import { page } from '$app/state';
 	import { graphql } from '$houdini';
 	import WorkloadActivityCard from '$lib/domain/activity/WorkloadActivityCard.svelte';
@@ -14,6 +13,7 @@
 	import Confirm from '$lib/ui/Confirm.svelte';
 	import GraphErrors from '$lib/ui/GraphErrors.svelte';
 	import HeaderActions from '$lib/ui/HeaderActions.svelte';
+	import PageModal, { pageModalClick } from '$lib/ui/PageModal.svelte';
 	import Time from '$lib/ui/Time.svelte';
 	import { Alert, Button, Heading, Loader, Modal } from '@nais/ds-svelte-community';
 	import {
@@ -29,18 +29,20 @@
 		StopIcon,
 		TrashIcon
 	} from '@nais/ds-svelte-community/icons';
+	import { onMount } from 'svelte';
 	import type { PageProps } from './$types';
 	import InstanceGroups from './InstanceGroups.svelte';
-	import PageModal, { pageModalClick } from '$lib/ui/PageModal.svelte';
 	import ResizePage from './resize/+page.svelte';
 
 	let { data }: PageProps = $props();
-	let { App, teamSlug, viewerIsMember } = $derived(data);
+	let { App, AppInstanceGroups, teamSlug, viewerIsMember } = $derived(data);
 
-	$effect(() => {
-		const interval = setInterval(() => {
-			App.fetch({ policy: 'NetworkOnly' });
-		}, 10_000);
+	const refetchInstanceGroups = () => {
+		AppInstanceGroups.fetch({ policy: 'CacheAndNetwork' });
+	};
+
+	onMount(() => {
+		const interval = setInterval(refetchInstanceGroups, 10_000);
 		return () => clearInterval(interval);
 	});
 
@@ -48,11 +50,14 @@
 	let appErrors = $derived(App ? $App.errors : undefined);
 	let appFetching = $derived(App ? $App.fetching : false);
 	let app = $derived(appData?.team?.environment?.application ?? null);
+	let appInstanceGroups = $derived(
+		$AppInstanceGroups.data?.team?.environment?.application?.instanceGroups ?? []
+	);
 	let criticalEdges = $derived(
 		app?.issues.edges.filter((e) => e.node.severity === 'CRITICAL') ?? []
 	);
 
-	const restartAppMutation = () =>
+	const restartAppMutation = $derived(
 		graphql(`
 			mutation RestartApp($team: Slug!, $environment: String!, $application: String!) {
 				restartApplication(
@@ -63,18 +68,13 @@
 					}
 				}
 			}
-		`);
-	let restartApp = $state(restartAppMutation());
-
-	onNavigate(() => {
-		restartApp = restartAppMutation();
-		stopApp = stopAppMutation();
-	});
+		`)
+	);
 
 	let application = $derived(page.params.app);
 	let environment = $derived(page.params.env);
 
-	const stopAppMutation = () =>
+	const stopAppMutation = $derived(
 		graphql(`
 			mutation StopApp($team: Slug!, $environment: String!, $application: String!) {
 				updateApplication(
@@ -90,8 +90,8 @@
 					}
 				}
 			}
-		`);
-	let stopApp = $state(stopAppMutation());
+		`)
+	);
 
 	let restart = $state(false);
 	let stop = $state(false);
@@ -107,24 +107,27 @@
 
 	const submitStop = () => {
 		if (!application || !environment) return;
-		stopApp.mutate({
+		stopAppMutation.mutate({
 			application,
 			environment,
 			team: teamSlug
 		});
 	};
 
-	const submit = () => {
+	const submitRestart = () => {
 		if (!application || !environment) {
 			console.error('Application or environment is not defined');
 			return;
 		}
-		restartApp.mutate({
+		restartAppMutation.mutate({
 			application,
 			environment,
 			team: teamSlug
 		});
+		refetchInstanceGroups();
 	};
+
+	$inspect(app);
 </script>
 
 <GraphErrors errors={appErrors} />
@@ -220,13 +223,17 @@
 					criticalIssues={app?.criticalIssues.pageInfo.totalCount ?? 0}
 					warningIssues={app?.warningIssues.pageInfo.totalCount ?? 0}
 					todoIssues={app?.todoIssues.pageInfo.totalCount ?? 0}
-					readyInstances={app?.instanceGroups.reduce((sum, g) => sum + g.readyInstances, 0) ?? 0}
-					desiredInstances={app?.instanceGroups.reduce((sum, g) => sum + g.desiredInstances, 0) ??
-						0}
+					readyInstances={appInstanceGroups.reduce((sum, g) => sum + g.readyInstances, 0) ?? 0}
+					desiredInstances={appInstanceGroups.reduce((sum, g) => sum + g.desiredInstances, 0) ?? 0}
 					loading={appFetching}
 				/>
-				<InstanceGroups {app} />
 				{#if environment}
+					<InstanceGroups
+						appName={app.name}
+						environmentName={environment}
+						{teamSlug}
+						instanceGroups={appInstanceGroups}
+					/>
 					<CostOverviewChart workload={app.name} {environment} {teamSlug} />
 				{/if}
 			</div>
@@ -248,7 +255,7 @@
 				{/if}
 			</div>
 		</div>
-		<Confirm bind:open={restart} onconfirm={submit}>
+		<Confirm bind:open={restart} onconfirm={submitRestart}>
 			{#snippet header()}
 				<Heading as="h2" size="medium">Restart {application}</Heading>
 			{/snippet}

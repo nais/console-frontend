@@ -141,9 +141,8 @@
 
 	let criticalVulnerabilities = $derived(
 		workloadType === 'app'
-			? ($vulnQuery?.data?.team?.environment?.application?.image?.vulnerabilitySummary?.critical ??
-					0)
-			: ($jobVulnQuery?.data?.team?.environment?.job?.image?.vulnerabilitySummary?.critical ?? 0)
+			? $vulnQuery?.data?.team?.environment?.application?.image?.vulnerabilitySummary?.critical
+			: $jobVulnQuery?.data?.team?.environment?.job?.image?.vulnerabilitySummary?.critical
 	);
 
 	let costTrend = $derived.by(() => {
@@ -214,18 +213,20 @@
 			<a
 				href="{basePath}/vulnerabilities"
 				class="metric"
-				class:danger={criticalVulnerabilities > 0}
+				class:danger={(criticalVulnerabilities ?? 0) > 0}
 				class:success={criticalVulnerabilities === 0}
 			>
 				<div
 					class="metric-icon"
-					class:danger={criticalVulnerabilities > 0}
+					class:danger={(criticalVulnerabilities ?? 0) > 0}
 					class:success={criticalVulnerabilities === 0}
 				>
 					<VirusIcon />
 				</div>
 				<div class="metric-body">
-					<span class="metric-value">{criticalVulnerabilities}</span>
+					<span class="metric-value"
+						>{criticalVulnerabilities !== undefined ? criticalVulnerabilities : '-'}</span
+					>
 					<span class="metric-label">Critical vulns</span>
 				</div>
 			</a>
