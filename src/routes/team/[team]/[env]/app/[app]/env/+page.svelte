@@ -21,11 +21,24 @@
 
 <form
 	method="POST"
-	action="/team/{page.params.team}/{page.params.env}/job/{page.params.job}/env"
+	action="/team/{page.params.team}/{page.params.env}/app/{page.params.app}/env"
 	use:enhance={() => {
 		return async ({ result }) => {
 			if (result.type === 'redirect') {
-				await goto(result.location, { replaceState: isPossiblyInModal(), invalidateAll: true });
+				await goto(result.location, {
+					replaceState: isPossiblyInModal(),
+					invalidateAll: true,
+					state: {
+						showMessage: [
+							{
+								id: crypto.randomUUID(),
+								target: 'instance_groups',
+								type: 'success',
+								text: 'Successfully set environment variables. Restarting application to apply changes.'
+							}
+						]
+					}
+				});
 			} else if (result.type === 'failure') {
 				const { applyAction } = await import('$app/forms');
 				await applyAction(result);
@@ -34,7 +47,7 @@
 	}}
 >
 	<BodyLong style="margin-bottom: 1rem;">
-		Set environment variables for <strong>{page.params.job}</strong> in
+		Set environment variables for <strong>{page.params.app}</strong> in
 		<strong>{page.params.env}</strong>. These are plain text values that will be added to the
 		workload.
 	</BodyLong>
@@ -76,6 +89,7 @@
 		Add variable
 	</Button>
 
+	<br />
 	{#if form?.error}
 		<ErrorMessage>{form.error}</ErrorMessage>
 	{/if}

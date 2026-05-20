@@ -15,15 +15,8 @@
 
 	const form = $derived(page.form);
 
-	let min = $state('');
-	let max = $state('');
-
-	$effect(() => {
-		if (scaling) {
-			min = form?.min ?? String(scaling.minInstances);
-			max = form?.max ?? String(scaling.maxInstances);
-		}
-	});
+	let min = $derived(form?.min ?? scaling?.minInstances ?? 0);
+	let max = $derived(form?.min ?? scaling?.maxInstances ?? 0);
 </script>
 
 <form
@@ -32,7 +25,20 @@
 	use:enhance={() => {
 		return async ({ result }) => {
 			if (result.type === 'redirect') {
-				await goto(result.location, { replaceState: isPossiblyInModal(), invalidateAll: true });
+				await goto(result.location, {
+					replaceState: isPossiblyInModal(),
+					invalidateAll: true,
+					state: {
+						showMessage: [
+							{
+								id: crypto.randomUUID(),
+								target: 'instance_groups',
+								type: 'success',
+								text: `Successfully resized application to ${min} - ${max} replicas.`
+							}
+						]
+					}
+				});
 			} else if (result.type === 'failure') {
 				const { applyAction } = await import('$app/forms');
 				await applyAction(result);

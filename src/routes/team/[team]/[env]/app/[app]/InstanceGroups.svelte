@@ -1,11 +1,13 @@
 <script lang="ts">
+	import { pushState } from '$app/navigation';
+	import { page } from '$app/state';
 	import { type AppInstanceGroups$result } from '$houdini';
 	import CriticalIndicator from '$lib/ui/CriticalIndicator.svelte';
 	import IncomingIndicator from '$lib/ui/IncomingIndicator.svelte';
 	import RunningIndicator from '$lib/ui/RunningIndicator.svelte';
 	import SurfaceCard from '$lib/ui/SurfaceCard.svelte';
 	import Time from '$lib/ui/Time.svelte';
-	import { Tag } from '@nais/ds-svelte-community';
+	import { Alert, Tag } from '@nais/ds-svelte-community';
 	import { CloudSlashIcon } from '@nais/ds-svelte-community/icons';
 	import { slide } from 'svelte/transition';
 
@@ -35,9 +37,27 @@
 		if (incoming && group.id === incoming.id) return 'incoming';
 		return 'current';
 	}
+
+	let messages = $derived(
+		page.state.showMessage?.filter((m) => m.target == 'instance_groups') ?? []
+	);
 </script>
 
 <SurfaceCard title="Instance groups" eyebrow={false}>
+	{#each messages as message (message.id)}
+		<Alert
+			variant={message.type}
+			size="small"
+			closeButton
+			onclose={() => {
+				pushState(page.url, {
+					showMessage: page.state.showMessage?.filter((m) => m.id !== message.id)
+				});
+			}}
+		>
+			{message.text}
+		</Alert>
+	{/each}
 	{#each instanceGroups as group (group.id)}
 		{@const role = groupRole(group)}
 		{@const hasFailing = group.instances.some((instance) => instance.status.state === 'FAILING')}

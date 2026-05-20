@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { pushState } from '$app/navigation';
 	import { page } from '$app/state';
 	import { graphql } from '$houdini';
 	import WorkloadActivityCard from '$lib/domain/activity/WorkloadActivityCard.svelte';
@@ -26,12 +27,14 @@
 		ArrowsUpDownIcon,
 		FileTextIcon,
 		MenuElipsisVerticalIcon,
+		PencilWritingIcon,
 		StopIcon,
 		TrashIcon
 	} from '@nais/ds-svelte-community/icons';
 	import { onMount } from 'svelte';
 	import type { PageProps } from './$types';
 	import InstanceGroups from './InstanceGroups.svelte';
+	import EnvPage from './env/+page.svelte';
 	import ResizePage from './resize/+page.svelte';
 
 	let { data }: PageProps = $props();
@@ -112,6 +115,17 @@
 			environment,
 			team: teamSlug
 		});
+
+		pushState(page.url, {
+			showMessage: [
+				{
+					id: crypto.randomUUID(),
+					target: 'instance_groups',
+					type: 'success',
+					text: `Successfully stopped application. It will not receive traffic until it is resized again.`
+				}
+			]
+		});
 	};
 
 	const submitRestart = () => {
@@ -125,9 +139,18 @@
 			team: teamSlug
 		});
 		refetchInstanceGroups();
-	};
 
-	$inspect(app);
+		pushState(page.url, {
+			showMessage: [
+				{
+					id: crypto.randomUUID(),
+					target: 'instance_groups',
+					type: 'success',
+					text: `Successfully restarted application.`
+				}
+			]
+		});
+	};
 </script>
 
 <GraphErrors errors={appErrors} />
@@ -142,20 +165,20 @@
 	</div>
 {/if}
 {#if app}
-	{#if viewerIsMember}
-		<HeaderActions>
-			<ActionMenu>
-				{#snippet trigger(props)}
-					<Button
-						variant="secondary"
-						size="small"
-						icon={MenuElipsisVerticalIcon}
-						iconPosition="right"
-						{...props}
-					>
-						Actions
-					</Button>
-				{/snippet}
+	<HeaderActions>
+		<ActionMenu>
+			{#snippet trigger(props)}
+				<Button
+					variant="secondary"
+					size="small"
+					icon={MenuElipsisVerticalIcon}
+					iconPosition="right"
+					{...props}
+				>
+					Actions
+				</Button>
+			{/snippet}
+			{#if viewerIsMember}
 				<button
 					class="action-menu-button"
 					onclick={openRestart}
@@ -181,20 +204,28 @@
 				>
 					<ActionMenuItem icon={ArrowsUpDownIcon}>Resize</ActionMenuItem>
 				</a>
-				<button class="action-menu-button" onclick={() => (showManifest = true)}>
-					<ActionMenuItem icon={FileTextIcon}>View manifest</ActionMenuItem>
-				</button>
+				<a
+					class="action-menu-button"
+					href="/team/{page.params.team}/{page.params.env}/app/{page.params.app}/env"
+					onclick={pageModalClick}
+				>
+					<ActionMenuItem icon={PencilWritingIcon}>Set environment variables</ActionMenuItem>
+				</a>
+			{/if}
+			<button class="action-menu-button" onclick={() => (showManifest = true)}>
+				<ActionMenuItem icon={FileTextIcon}>View manifest</ActionMenuItem>
+			</button>
+			{#if viewerIsMember}
 				<ActionMenuDivider />
-
 				<a
 					class="action-menu-button"
 					href="/team/{page.params.team}/{page.params.env}/app/{page.params.app}/delete"
 				>
 					<ActionMenuItem icon={TrashIcon} variant="danger">Delete</ActionMenuItem>
 				</a>
-			</ActionMenu>
-		</HeaderActions>
-	{/if}
+			{/if}
+		</ActionMenu>
+	</HeaderActions>
 
 	<div class="wrapper">
 		<div class="app-content">
@@ -283,7 +314,11 @@
 			{/snippet}
 			<Manifest workload={app} />
 		</Modal>
-		<PageModal content={ResizePage} header="Resize app" />
+		{#if page.state.modalHref?.includes('/resize')}
+			<PageModal content={ResizePage} header="Resize app" />
+		{:else if page.state.modalHref?.includes('/env')}
+			<PageModal content={EnvPage} header="Set environment variables" />
+		{/if}
 	</div>
 {/if}
 
@@ -309,7 +344,10 @@
 	.action-menu-button {
 		all: unset;
 		display: contents;
-		cursor: pointer;
+
+		:global(*) {
+			cursor: pointer;
+		}
 	}
 
 	.sidebar {

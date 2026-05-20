@@ -14,24 +14,28 @@
 	import Confirm from '$lib/ui/Confirm.svelte';
 	import GraphErrors from '$lib/ui/GraphErrors.svelte';
 	import HeaderActions from '$lib/ui/HeaderActions.svelte';
+	import PageModal, { pageModalClick } from '$lib/ui/PageModal.svelte';
 	import SurfaceCard from '$lib/ui/SurfaceCard.svelte';
 	import Time from '$lib/ui/Time.svelte';
 	import { generateJobRunName } from '$lib/utils/jobRunName';
 	import { Alert, BodyShort, Button, Heading, Loader, Modal } from '@nais/ds-svelte-community';
-	import { ActionMenu, ActionMenuItem } from '@nais/ds-svelte-community/experimental';
+	import {
+		ActionMenu,
+		ActionMenuDivider,
+		ActionMenuItem
+	} from '@nais/ds-svelte-community/experimental';
 	import {
 		FileTextIcon,
 		MenuElipsisVerticalIcon,
-		PlayIcon,
 		PencilWritingIcon,
+		PlayIcon,
 		TrashIcon
 	} from '@nais/ds-svelte-community/icons';
 	import type { PageProps } from './$types';
+	import EnvPage from './env/+page.svelte';
 	import Runs from './Runs.svelte';
 	import Schedule from './Schedule.svelte';
 	import TriggerRunModal from './TriggerRunModal.svelte';
-	import PageModal, { pageModalClick } from '$lib/ui/PageModal.svelte';
-	import EnvPage from './env/+page.svelte';
 
 	let { data }: PageProps = $props();
 	let { Job, teamSlug, viewerIsMember } = $derived(data);
@@ -146,20 +150,20 @@
 {#if job}
 	<div class="wrapper">
 		<div class="job-content">
-			{#if viewerIsMember}
-				<HeaderActions>
-					<ActionMenu>
-						{#snippet trigger(props)}
-							<Button
-								variant="secondary"
-								size="small"
-								icon={MenuElipsisVerticalIcon}
-								iconPosition="right"
-								{...props}
-							>
-								Actions
-							</Button>
-						{/snippet}
+			<HeaderActions>
+				<ActionMenu>
+					{#snippet trigger(props)}
+						<Button
+							variant="secondary"
+							size="small"
+							icon={MenuElipsisVerticalIcon}
+							iconPosition="right"
+							{...props}
+						>
+							Actions
+						</Button>
+					{/snippet}
+					{#if viewerIsMember}
 						<button
 							class="action-menu-button"
 							aria-label="Trigger a new job run"
@@ -183,18 +187,21 @@
 						>
 							<ActionMenuItem icon={PencilWritingIcon}>Set environment variables</ActionMenuItem>
 						</a>
-						<button class="action-menu-button" onclick={() => (showManifest = true)}>
-							<ActionMenuItem icon={FileTextIcon}>View manifest</ActionMenuItem>
-						</button>
+					{/if}
+					<button class="action-menu-button" onclick={() => (showManifest = true)}>
+						<ActionMenuItem icon={FileTextIcon}>View manifest</ActionMenuItem>
+					</button>
+					{#if viewerIsMember}
+						<ActionMenuDivider />
 						<a
 							class="action-menu-button"
 							href="/team/{page.params.team}/{page.params.env}/job/{page.params.job}/delete"
 						>
 							<ActionMenuItem icon={TrashIcon} variant="danger">Delete job</ActionMenuItem>
 						</a>
-					</ActionMenu>
-				</HeaderActions>
-			{/if}
+					{/if}
+				</ActionMenu>
+			</HeaderActions>
 
 			<div class="main-section">
 				<Heading as="h2" class="aksel-sr-only">Overview</Heading>

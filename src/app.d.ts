@@ -40,6 +40,7 @@ declare global {
 		// interface Platform {}
 		interface PageState {
 			modalHref?: string;
+			showMessage?: { id: string; type: 'success' | 'error'; text: string; target?: string }[];
 		}
 	}
 }
