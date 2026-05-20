@@ -3,6 +3,7 @@
 	import { page } from '$app/state';
 	import type { InstanceGroupDetail$result, ValueEncoding$options } from '$houdini';
 	import { ValueEncoding } from '$houdini';
+	import Resource from '$lib/domain/resources/Resource.svelte';
 	import WorkloadImageCard from '$lib/domain/workload/WorkloadImageCard.svelte';
 	import GraphErrors from '$lib/ui/GraphErrors.svelte';
 	import List from '$lib/ui/List.svelte';
@@ -146,6 +147,77 @@
 		application?.utilization.recommendations.memoryRequestBytes ?? 0
 	);
 	const memReq = $derived(application?.resources.requests.memory ?? 0);
+
+	const cpuRequestDisplay = $derived.by(() => {
+		if (application?.resources.requests.cpu) {
+			return `${application.resources.requests.cpu.toFixed(3)} CPUs`;
+		}
+
+		if (application?.utilization.requested_cpu) {
+			return `${application.utilization.requested_cpu.toFixed(3)} CPUs (default)`;
+		}
+
+		return 'Not set';
+	});
+
+	const cpuLimitDisplay = $derived.by(() => {
+		if (application?.resources.limits.cpu) {
+			return `${application.resources.limits.cpu.toFixed(3)} CPUs`;
+		}
+
+		if (application?.utilization.limit_cpu) {
+			return `${application.utilization.limit_cpu.toFixed(3)} CPUs (default)`;
+		}
+
+		return 'Not set';
+	});
+
+	const memoryRequestDisplay = $derived.by(() => {
+		if (application?.resources.requests.memory != null) {
+			return prettyBytes(application!.resources.requests.memory, {
+				locale: 'en',
+				minimumFractionDigits: 2,
+				maximumFractionDigits: 2,
+				binary: true
+			});
+		}
+
+		if (application?.utilization.requested_memory) {
+			return `${prettyBytes(application.utilization.requested_memory, {
+				locale: 'en',
+				minimumFractionDigits: 2,
+				maximumFractionDigits: 2,
+				binary: true
+			})} (default)`;
+		}
+
+		return 'Not set';
+	});
+
+	const memoryLimitDisplay = $derived.by(() => {
+		if (application?.resources.limits.memory) {
+			return prettyBytes(application.resources.limits.memory, {
+				locale: 'en',
+				minimumFractionDigits: 2,
+				maximumFractionDigits: 2,
+				binary: true
+			});
+		}
+
+		if (application?.utilization.limit_memory) {
+			return `${prettyBytes(application.utilization.limit_memory, {
+				locale: 'en',
+				minimumFractionDigits: 2,
+				maximumFractionDigits: 2,
+				binary: true
+			})} (default)`;
+		}
+
+		return 'Not set';
+	});
+
+	const cpuUsageDisplay = $derived(`${usage_cpu_percent.toFixed(1)}%`);
+	const memoryUsageDisplay = $derived(`${usage_memory_percent.toFixed(1)}%`);
 
 	function renameStrategy(type: string) {
 		if (type === 'CPUScalingStrategy') return 'CPU usage';
@@ -320,97 +392,19 @@
 						{/if}
 
 						<div class="resource-cards">
-							<SurfaceCard title="CPU" level="h4">
-								<dl class="resource-kv">
-									<div class="kv-row">
-										<dt class="kv-label">Request</dt>
-										<dd class="kv-value">
-											<code>
-												{#if application.resources.requests.cpu}
-													{application.resources.requests.cpu.toFixed(3)} CPUs
-												{:else if application.utilization.requested_cpu}
-													{application.utilization.requested_cpu.toFixed(3)} CPUs (default)
-												{:else}
-													Not set
-												{/if}
-											</code>
-										</dd>
-									</div>
-									<div class="kv-row">
-										<dt class="kv-label">Limit</dt>
-										<dd class="kv-value">
-											<code>
-												{#if application.resources.limits.cpu}
-													{application.resources.limits.cpu.toFixed(3)} CPUs
-												{:else if application.utilization.limit_cpu}
-													{application.utilization.limit_cpu.toFixed(3)} CPUs (default)
-												{:else}
-													Not set
-												{/if}
-											</code>
-										</dd>
-									</div>
-									<div class="kv-row">
-										<dt class="kv-label">Usage</dt>
-										<dd class="kv-value"><code>{usage_cpu_percent.toFixed(1)}%</code></dd>
-									</div>
-								</dl>
-							</SurfaceCard>
+							<Resource
+								title="CPU"
+								request={cpuRequestDisplay}
+								limit={cpuLimitDisplay}
+								usage={cpuUsageDisplay}
+							/>
 
-							<SurfaceCard title="Memory" level="h4">
-								<dl class="resource-kv">
-									<div class="kv-row">
-										<dt class="kv-label">Request</dt>
-										<dd class="kv-value">
-											<code>
-												{#if application.resources.requests.memory !== null}
-													{prettyBytes(application.resources.requests.memory, {
-														locale: 'en',
-														minimumFractionDigits: 2,
-														maximumFractionDigits: 2,
-														binary: true
-													})}
-												{:else}
-													{prettyBytes(application.utilization.requested_memory, {
-														locale: 'en',
-														minimumFractionDigits: 2,
-														maximumFractionDigits: 2,
-														binary: true
-													})} (default)
-												{/if}
-											</code>
-										</dd>
-									</div>
-									<div class="kv-row">
-										<dt class="kv-label">Limit</dt>
-										<dd class="kv-value">
-											<code>
-												{#if application.resources.limits.memory}
-													{prettyBytes(application.resources.limits.memory, {
-														locale: 'en',
-														minimumFractionDigits: 2,
-														maximumFractionDigits: 2,
-														binary: true
-													})}
-												{:else if application.utilization.limit_memory}
-													{prettyBytes(application.utilization.limit_memory, {
-														locale: 'en',
-														minimumFractionDigits: 2,
-														maximumFractionDigits: 2,
-														binary: true
-													})} (default)
-												{:else}
-													Not set
-												{/if}
-											</code>
-										</dd>
-									</div>
-									<div class="kv-row">
-										<dt class="kv-label">Usage</dt>
-										<dd class="kv-value"><code>{usage_memory_percent.toFixed(1)}%</code></dd>
-									</div>
-								</dl>
-							</SurfaceCard>
+							<Resource
+								title="Memory"
+								request={memoryRequestDisplay}
+								limit={memoryLimitDisplay}
+								usage={memoryUsageDisplay}
+							/>
 						</div>
 
 						{#if application.resources.scaling}
@@ -546,20 +540,6 @@
 		display: grid;
 		grid-template-columns: 1fr 1fr;
 		gap: var(--ax-space-12);
-	}
-
-	.resource-kv {
-		display: flex;
-		flex-direction: column;
-		gap: var(--ax-space-4);
-		margin: 0;
-	}
-
-	.kv-row {
-		display: flex;
-		justify-content: space-between;
-		align-items: baseline;
-		gap: var(--ax-space-8);
 	}
 
 	.kv-label {
