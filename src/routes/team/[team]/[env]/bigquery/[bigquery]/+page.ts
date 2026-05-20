@@ -3,7 +3,10 @@ import { addPageMeta } from '$lib/utils/pageMeta';
 
 export async function load(event) {
 	return {
-		...(await addPageMeta(event, { title: event.params.bigquery })),
+		...(await addPageMeta(event, {
+			title: event.params.bigquery,
+			docPath: '/persistence/bigquery/'
+		})),
 		...(await load_BigQueryDataset({
 			event,
 			variables: {
