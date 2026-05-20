@@ -83,9 +83,9 @@
 				{/if}
 				{#if breadcrumbs.length === 0}
 					<AddToFavorites path={page.url.pathname} />
-				{/if}
-				{#if docPath}
-					<DocsLink path={docPath} />
+					{#if docPath}
+						<DocsLink path={docPath} />
+					{/if}
 				{/if}
 			</div>
 		</div>
