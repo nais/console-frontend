@@ -6,68 +6,35 @@
 	import CriticalIssuesCard from '$lib/domain/issues/CriticalIssuesCard.svelte';
 	import Persistence from '$lib/domain/persistence/Persistence.svelte';
 	import Configs from '$lib/domain/resources/Configs.svelte';
-	import Manifest from '$lib/domain/resources/Manifest.svelte';
 	import Secrets from '$lib/domain/resources/Secrets.svelte';
 	import JobResources from '$lib/domain/workload/JobResources.svelte';
 	import WorkloadDeploy from '$lib/domain/workload/WorkloadDeploy.svelte';
 	import WorkloadHealth from '$lib/domain/workload/WorkloadHealth.svelte';
 	import Confirm from '$lib/ui/Confirm.svelte';
 	import GraphErrors from '$lib/ui/GraphErrors.svelte';
-	import HeaderActions from '$lib/ui/HeaderActions.svelte';
-	import PageModal, { pageModalClick } from '$lib/ui/PageModal.svelte';
+	import PageModal from '$lib/ui/PageModal.svelte';
 	import SurfaceCard from '$lib/ui/SurfaceCard.svelte';
 	import Time from '$lib/ui/Time.svelte';
-	import { generateJobRunName } from '$lib/utils/jobRunName';
-	import { Alert, BodyShort, Button, Heading, Loader, Modal } from '@nais/ds-svelte-community';
-	import {
-		ActionMenu,
-		ActionMenuDivider,
-		ActionMenuItem
-	} from '@nais/ds-svelte-community/experimental';
-	import {
-		FileTextIcon,
-		MenuElipsisVerticalIcon,
-		PencilWritingIcon,
-		PlayIcon,
-		TrashIcon
-	} from '@nais/ds-svelte-community/icons';
+	import { Alert, BodyShort, Heading, Loader } from '@nais/ds-svelte-community';
+	import { onMount } from 'svelte';
 	import type { PageProps } from './$types';
 	import EnvPage from './env/+page.svelte';
 	import Runs from './Runs.svelte';
 	import Schedule from './Schedule.svelte';
-	import TriggerRunModal from './TriggerRunModal.svelte';
 
 	let { data }: PageProps = $props();
-	let { Job, teamSlug, viewerIsMember } = $derived(data);
+	let { Job, JobRunsQuery, teamSlug, viewerIsMember } = $derived(data);
+
+	onMount(() => {
+		const interval = setInterval(() => JobRunsQuery.fetch({ policy: 'CacheAndNetwork' }), 10_000);
+		return () => clearInterval(interval);
+	});
 
 	let jobData = $derived(Job ? $Job.data : undefined);
 	let jobErrors = $derived(Job ? $Job.errors : undefined);
 	let jobFetching = $derived(Job ? $Job.fetching : false);
 	let job = $derived(jobData?.team?.environment?.job ?? null);
-
-	const triggerRunMutation = () =>
-		graphql(`
-			mutation TriggerJob(
-				$teamSlug: Slug!
-				$environment: String!
-				$jobName: String!
-				$runName: String!
-				$jobId: ID!
-			) {
-				triggerJob(
-					input: {
-						environmentName: $environment
-						teamSlug: $teamSlug
-						runName: $runName
-						name: $jobName
-					}
-				) {
-					jobRun {
-						...All_Runs_insert @parentID(value: $jobId) @prepend
-					}
-				}
-			}
-		`);
+	let jobRuns = $derived($JobRunsQuery.data?.team?.environment?.job ?? null);
 
 	const deleteJobRunMutation = graphql(`
 		mutation DeleteJobRun($teamSlug: Slug!, $environment: String!, $runName: String!) {
@@ -79,26 +46,8 @@
 		}
 	`);
 
-	let triggerRun = $state(triggerRunMutation());
-
 	let jobName = $derived(page.params.job);
 	let environment = $derived(page.params.env);
-
-	let open = $state(false);
-
-	const submit = (runName: string) => {
-		if (!jobName || !environment) {
-			console.error('Job name or environment is not defined');
-			return;
-		}
-		triggerRun.mutate({
-			jobName: jobName,
-			environment,
-			teamSlug,
-			runName,
-			jobId: job!.id
-		});
-	};
 
 	let criticalEdges = $derived(
 		job?.issues.edges.filter((e) => e.node.severity === 'CRITICAL') ?? []
@@ -110,7 +59,6 @@
 
 	let deleteConfirmOpen = $state(false);
 	let deleteRunName = $state('');
-	let showManifest = $state(false);
 
 	const handleDeleteRun = (runName: string) => {
 		deleteRunName = runName;
@@ -130,8 +78,7 @@
 		if (!resp.data?.deleteJobRun.success) return;
 
 		deleteRunName = '';
-		// Small delay to allow the watcher cache to process the delete event
-		setTimeout(() => Job.fetch({ policy: 'NetworkOnly' }), 500);
+		setTimeout(() => JobRunsQuery.fetch({ policy: 'NetworkOnly' }), 500);
 	};
 </script>
 
@@ -150,59 +97,6 @@
 {#if job}
 	<div class="wrapper">
 		<div class="job-content">
-			<HeaderActions>
-				<ActionMenu>
-					{#snippet trigger(props)}
-						<Button
-							variant="secondary"
-							size="small"
-							icon={MenuElipsisVerticalIcon}
-							iconPosition="right"
-							{...props}
-						>
-							Actions
-						</Button>
-					{/snippet}
-					{#if viewerIsMember}
-						<button
-							class="action-menu-button"
-							aria-label="Trigger a new job run"
-							disabled={job?.deletionStartedAt !== null}
-							onclick={(e: MouseEvent) => {
-								if (e.metaKey || e.ctrlKey) {
-									if (jobName && environment) {
-										submit(generateJobRunName(jobName));
-									}
-								} else {
-									open = true;
-								}
-							}}
-						>
-							<ActionMenuItem icon={PlayIcon}>Trigger run</ActionMenuItem>
-						</button>
-						<a
-							class="action-menu-button"
-							href="/team/{page.params.team}/{page.params.env}/job/{page.params.job}/env"
-							onclick={pageModalClick}
-						>
-							<ActionMenuItem icon={PencilWritingIcon}>Set environment variables</ActionMenuItem>
-						</a>
-					{/if}
-					<button class="action-menu-button" onclick={() => (showManifest = true)}>
-						<ActionMenuItem icon={FileTextIcon}>View manifest</ActionMenuItem>
-					</button>
-					{#if viewerIsMember}
-						<ActionMenuDivider />
-						<a
-							class="action-menu-button"
-							href="/team/{page.params.team}/{page.params.env}/job/{page.params.job}/delete"
-						>
-							<ActionMenuItem icon={TrashIcon} variant="danger">Delete job</ActionMenuItem>
-						</a>
-					{/if}
-				</ActionMenu>
-			</HeaderActions>
-
 			<div class="main-section">
 				<Heading as="h2" class="aksel-sr-only">Overview</Heading>
 				{#if job?.deletionStartedAt}
@@ -233,7 +127,9 @@
 					loading={jobFetching}
 				/>
 				<SurfaceCard>
-					<Runs {job} ondelete={viewerIsMember ? handleDeleteRun : undefined} />
+					{#if jobRuns}
+						<Runs job={jobRuns} ondelete={viewerIsMember ? handleDeleteRun : undefined} />
+					{/if}
 				</SurfaceCard>
 				<SurfaceCard>
 					<div class="configuration-section">
@@ -272,10 +168,6 @@
 			</div>
 		</div>
 
-		{#if open && jobName && environment}
-			<TriggerRunModal {jobName} {environment} close={() => (open = false)} {submit} />
-		{/if}
-
 		<Confirm
 			confirmText="Delete"
 			variant="danger"
@@ -293,12 +185,6 @@
 				Are you sure you want to delete the job run <strong>{deleteRunName}</strong>?
 			</BodyShort>
 		</Confirm>
-		<Modal bind:open={showManifest} closeButton width="medium">
-			{#snippet header()}
-				<Heading as="h2" size="small">Manifest &ndash; {jobName}</Heading>
-			{/snippet}
-			<Manifest workload={job} />
-		</Modal>
 		<PageModal content={EnvPage} header="Set environment variables" />
 	</div>
 {/if}
@@ -320,12 +206,6 @@
 		display: grid;
 		grid-template-columns: 1fr 300px;
 		gap: var(--ax-space-16);
-	}
-
-	.action-menu-button {
-		all: unset;
-		display: contents;
-		cursor: pointer;
 	}
 
 	.configuration-section {

@@ -3,8 +3,11 @@
 	import { page } from '$app/state';
 	import { Tab, TabList, Tabs } from '@nais/ds-svelte-community';
 	import type { LayoutProps } from './$types';
+	import JobActions from './JobActions.svelte';
 
-	let { children }: LayoutProps = $props();
+	let { data, children }: LayoutProps = $props();
+	let { JobLayout, viewerIsMember } = $derived(data);
+	let job = $derived($JobLayout.data?.team?.environment?.job ?? null);
 
 	let routeId = $derived(page.route.id ?? '');
 	let tabs = $derived([
@@ -46,6 +49,8 @@
 	] as const);
 	let visibleTabs = $derived(tabs.some((tab) => tab.value === routeId) ? tabs : []);
 </script>
+
+<JobActions {viewerIsMember} {job} />
 
 {#if visibleTabs.length > 0}
 	<Tabs value={routeId} size="small">
