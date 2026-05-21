@@ -22,7 +22,7 @@
 	);
 </script>
 
-<div class="chart-container">
+<div class="chart-container" class:clickable={!!onBarClick}>
 	<BarChart
 		{data}
 		padding={{ top: 24, bottom: 120, left: 40, right: 40 }}
@@ -58,5 +58,9 @@
 		height: 100%;
 		min-width: 0;
 		overflow-x: auto;
+	}
+
+	.clickable :global(rect) {
+		cursor: pointer;
 	}
 </style>
