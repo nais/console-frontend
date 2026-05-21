@@ -16,6 +16,10 @@ query TeamVulnerabilities($team: Slug!) @cache(policy: CacheAndNetwork) {
 			sbomCount
 			coverage
 			critical
+			high
+			medium
+			low
+			unassigned
 			riskScore
 			riskScoreTrend
 			lastUpdated

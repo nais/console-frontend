@@ -1,9 +1,10 @@
 <script lang="ts">
 	import TeamMeanTimeToFixHistoryGraph from '$lib/domain/vulnerability/TeamMeanTimeToFixHistoryGraph.svelte';
 	import TeamVulnerabilityHistoryGraph from '$lib/domain/vulnerability/TeamVulnerabilityHistoryGraph.svelte';
-	import VulnerabilitySummary from '$lib/domain/vulnerability/VulnerabilitySummary.svelte';
+	import VulnerabilitySummaryMetrics from '$lib/domain/vulnerability/VulnerabilitySummaryMetrics.svelte';
 	import WorkloadsWithVulnerabilities from '$lib/domain/vulnerability/WorkloadsWithVulnerabilities.svelte';
 	import GraphErrors from '$lib/ui/GraphErrors.svelte';
+	import SurfaceCard from '$lib/ui/SurfaceCard.svelte';
 	import { BodyLong, Heading } from '@nais/ds-svelte-community';
 	import type { PageProps } from './$types';
 
@@ -15,15 +16,20 @@
 
 {#if $TeamVulnerabilities.data}
 	<div class="wrapper">
-		<div class="columns">
-			<div class="graphs">
-				<TeamVulnerabilityHistoryGraph {teamSlug} />
-				<TeamMeanTimeToFixHistoryGraph {teamSlug} />
-			</div>
-			<VulnerabilitySummary {teamSlug} />
+		{#if $TeamVulnerabilities.data.team.vulnerabilitySummary}
+			<SurfaceCard title="Summary" level="h2" bordered>
+				<VulnerabilitySummaryMetrics
+					vulnerabilitySummary={$TeamVulnerabilities.data.team.vulnerabilitySummary}
+				/>
+			</SurfaceCard>
+		{/if}
+
+		<div class="graphs">
+			<TeamVulnerabilityHistoryGraph {teamSlug} />
+			<TeamMeanTimeToFixHistoryGraph {teamSlug} />
 		</div>
 
-		<section class="workloads-section" aria-labelledby="most_vulnerable_workloads">
+		<section aria-labelledby="most_vulnerable_workloads">
 			<Heading as="h2" size="medium" spacing id="most_vulnerable_workloads"
 				>Most Vulnerable Workloads</Heading
 			>
@@ -42,27 +48,6 @@
 		display: grid;
 		gap: var(--ax-space-32);
 		min-width: 0;
-	}
-
-	.workloads-section {
-		min-width: 0;
-	}
-
-	.columns {
-		display: grid;
-		grid-template-columns: 1fr 300px;
-		gap: var(--ax-space-16);
-		align-items: start;
-		margin-bottom: var(--ax-space-40);
-		min-width: 0;
-	}
-
-	@media (max-width: 767px) {
-		.columns {
-			display: flex;
-			flex-direction: column-reverse;
-			margin-bottom: var(--ax-space-64);
-		}
 	}
 
 	.graphs {
