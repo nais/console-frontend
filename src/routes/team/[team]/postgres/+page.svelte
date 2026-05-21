@@ -1,29 +1,59 @@
 <script lang="ts">
-	import List from '$lib/ui/List.svelte';
-	import ListItem from '$lib/ui/ListItem.svelte';
-
+	import { page } from '$app/state';
 	import { OrderDirection, PostgresInstanceOrderField } from '$houdini';
 	import { docURL } from '$lib/doc';
 	import { envTagVariant } from '$lib/envTagVariant';
 	import ExternalLink from '$lib/ui/ExternalLink.svelte';
 	import GraphErrors from '$lib/ui/GraphErrors.svelte';
-	import IconLabel from '$lib/ui/IconLabel.svelte';
-	import OrderByMenu from '$lib/ui/OrderByMenu.svelte';
+	import List from '$lib/ui/List.svelte';
+	import ListFilters from '$lib/ui/ListFilters.svelte';
+	import ListItem from '$lib/ui/ListItem.svelte';
 	import Pagination from '$lib/ui/Pagination.svelte';
+	import SurfaceCard from '$lib/ui/SurfaceCard.svelte';
 	import TooltipAlignHack from '$lib/ui/TooltipAlignHack.svelte';
 	import { changeParams } from '$lib/utils/searchparams';
-	import { Alert, BodyLong, Loader } from '@nais/ds-svelte-community';
+	import { Alert, Loader, Tag } from '@nais/ds-svelte-community';
 	import { CircleFillIcon } from '@nais/ds-svelte-community/icons';
 	import type { PageProps } from './$types';
+
+	type PostgresOrderFieldOptions =
+		(typeof PostgresInstanceOrderField)[keyof typeof PostgresInstanceOrderField];
+	type OrderDirectionOptions = (typeof OrderDirection)[keyof typeof OrderDirection];
 
 	let { data }: PageProps = $props();
 
 	let { PostgresInstances } = $derived(data);
+
+	const sortFields: { value: PostgresOrderFieldOptions; label: string }[] = [
+		{ value: PostgresInstanceOrderField.NAME, label: 'Name' },
+		{ value: PostgresInstanceOrderField.ENVIRONMENT, label: 'Environment' }
+	];
+
+	const currentSortField: PostgresOrderFieldOptions = $derived(
+		(Object.values(PostgresInstanceOrderField).find((f) =>
+			page.url.searchParams.get('sort')?.startsWith(f)
+		) as PostgresOrderFieldOptions | undefined) ?? PostgresInstanceOrderField.NAME
+	);
+
+	const currentSortDirection: OrderDirectionOptions = $derived(
+		(Object.values(OrderDirection).find((d) => page.url.searchParams.get('sort')?.endsWith(d)) as
+			| OrderDirectionOptions
+			| undefined) ?? OrderDirection.ASC
+	);
+
+	function setSort(field: PostgresOrderFieldOptions) {
+		const direction =
+			field === currentSortField
+				? currentSortDirection === OrderDirection.ASC
+					? OrderDirection.DESC
+					: OrderDirection.ASC
+				: OrderDirection.ASC;
+		changeParams({ sort: `${field}-${direction}`, after: '', before: '' });
+	}
 	let hasCloudSql = $derived(
 		($PostgresInstances.data?.team.inventoryCounts.sqlInstances.total ?? 0) > 0
 	);
 	let cloudSqlTeamSlug = $derived($PostgresInstances.data?.team.slug ?? data.teamSlug);
-	const postgresDocUrl = docURL('/persistence/postgresql');
 </script>
 
 <GraphErrors errors={$PostgresInstances.errors} />
@@ -38,72 +68,64 @@
 {/snippet}
 
 {#if $PostgresInstances.fetching}
-	<div class="loading">
+	<div class="loading" role="status" aria-label="Loading">
 		<Loader size="3xlarge" />
 	</div>
-{:else if $PostgresInstances.data && $PostgresInstances.data.team.postgresInstances.pageInfo.totalCount > 0}
+{:else if $PostgresInstances.data}
 	{@const si = $PostgresInstances.data.team.postgresInstances}
 
-	<div class="content-wrapper">
+	<div class="layout-two-column">
 		<div>
 			{@render cloudSqlRelocationAlert()}
 
-			<BodyLong spacing>
-				Postgres instances provide managed relational databases in the cloud.
-				<ExternalLink href={postgresDocUrl}
-					>Learn more about Postgres in Nais and how to get started.</ExternalLink
-				>
-			</BodyLong>
+			<List title="Postgres" count={si.pageInfo.totalCount}>
+				{#if si.nodes.length > 0}
+					{#each si.nodes as instance (instance.id)}
+						<ListItem interactive>
+							<div class="name-group">
+								<TooltipAlignHack
+									content={{
+										DEGRADED: 'DEGRADED',
+										PROGRESSING: 'PROGRESSING',
+										AVAILABLE: 'AVAILABLE'
+									}[instance.state] ?? ''}
+								>
+									<CircleFillIcon
+										style="color: var({{
+											AVAILABLE: '--ax-bg-success-strong',
+											DEGRADED: '--ax-bg-danger-strong',
+											PROGRESSING: '--ax-bg-warning-moderate-pressed'
+										}[instance.state] ?? '--ax-bg-info-strong'}); font-size: 0.7rem"
+									/>
+								</TooltipAlignHack>
+								<a
+									href="/team/{instance.team.slug}/{instance.teamEnvironment.environment
+										.name}/postgres/{instance.name}"
+									class="item-name">{instance.name}</a
+								>
+								<Tag
+									size="xsmall"
+									variant={envTagVariant(instance.teamEnvironment.environment.name)}
+									>{instance.teamEnvironment.environment.name}</Tag
+								>
+							</div>
 
-			<List
-				title="{si.pageInfo.totalCount} Postgres instance{si.pageInfo.totalCount !== 1 ? 's' : ''}"
-			>
-				{#snippet menu()}
-					<OrderByMenu
-						orderField={PostgresInstanceOrderField}
-						defaultOrderField={PostgresInstanceOrderField.NAME}
-						defaultOrderDirection={OrderDirection.ASC}
-					/>
-				{/snippet}
-				{#each si.nodes as instance (instance.id)}
+							<div class="right">
+								<div>Version: <code>{instance.majorVersion}</code></div>
+							</div>
+						</ListItem>
+					{/each}
+				{:else}
 					<ListItem>
-						<div>
-							<IconLabel
-								as="h4"
-								href="/team/{instance.team.slug}/{instance.teamEnvironment.environment
-									.name}/postgres/{instance.name}"
-								size="large"
-								label={instance.name}
-								tag={{
-									label: instance.teamEnvironment.environment.name,
-									variant: envTagVariant(instance.teamEnvironment.environment.name)
-								}}
+						<p>
+							No Postgres instances found. Postgres instances provide managed relational databases
+							in the cloud.
+							<ExternalLink href={docURL('/persistence/postgresql')}
+								>Learn more about Postgres in Nais and how to get started.</ExternalLink
 							>
-								{#snippet icon()}
-									<TooltipAlignHack
-										content={{
-											DEGRADED: 'DEGRADED',
-											PROGRESSING: 'PROGRESSING',
-											AVAILABLE: 'AVAILABLE'
-										}[instance.state] ?? ''}
-									>
-										<CircleFillIcon
-											style="color: var({{
-												AVAILABLE: '--ax-bg-success-strong',
-												DEGRADED: '--ax-bg-danger-strong',
-												PROGRESSING: '--ax-bg-warning-moderate-pressed'
-											}[instance.state] ?? '--ax-bg-info-strong'}); font-size: 0.7rem"
-										/>
-									</TooltipAlignHack>
-								{/snippet}
-							</IconLabel>
-						</div>
-
-						<div class="right">
-							<div>Version: <code>{instance.majorVersion}</code></div>
-						</div>
+						</p>
 					</ListItem>
-				{/each}
+				{/if}
 			</List>
 
 			<Pagination
@@ -116,30 +138,20 @@
 				}}
 			/>
 		</div>
-	</div>
-{:else}
-	<div class="content-wrapper">
-		<div>
-			{@render cloudSqlRelocationAlert()}
-
-			<BodyLong>
-				<strong>No Postgres instances found.</strong> Postgres instances provide managed relational
-				databases in the cloud.
-				<ExternalLink href={postgresDocUrl}
-					>Learn more about Postgres in Nais and how to get started.</ExternalLink
-				>
-			</BodyLong>
+		<div class="layout-sidebar">
+			<SurfaceCard title="Filters">
+				<ListFilters
+					{sortFields}
+					{currentSortField}
+					{currentSortDirection}
+					onSort={(field) => setSort(field as PostgresOrderFieldOptions)}
+				/>
+			</SurfaceCard>
 		</div>
 	</div>
 {/if}
 
 <style>
-	.content-wrapper {
-		display: grid;
-		gap: var(--ax-space-24);
-		grid-template-columns: 1fr 300px;
-		align-items: start;
-	}
 	.right {
 		display: flex;
 		flex-direction: column;
@@ -161,12 +173,33 @@
 
 	/* Mobile responsive layout */
 	@media (max-width: 767px), (max-height: 500px) {
-		.content-wrapper {
-			grid-template-columns: 1fr;
-		}
 		.right {
 			align-items: flex-end;
 			margin-top: var(--ax-space-6);
 		}
+	}
+
+	.name-group {
+		display: flex;
+		align-items: center;
+		gap: var(--ax-space-8);
+		min-width: 0;
+	}
+	.name-group :global(.aksel-tag) {
+		white-space: nowrap;
+		flex-shrink: 0;
+	}
+	.item-name {
+		color: var(--ax-text-neutral);
+		text-decoration: none;
+		font-weight: 500;
+		white-space: nowrap;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		min-width: 0;
+		flex: 0 1 auto;
+	}
+	.item-name:hover {
+		text-decoration: underline;
 	}
 </style>

@@ -1,227 +1,130 @@
 <script lang="ts">
-	import type { JobRuns } from '$houdini';
-	import { fragment, graphql } from '$houdini';
+	import { graphql } from '$houdini';
 	import JobRunListItem from '$lib/domain/list-items/JobRunListItem.svelte';
 	import List from '$lib/ui/List.svelte';
-	import { BodyShort, Heading } from '@nais/ds-svelte-community';
-	import prettyBytes from 'pretty-bytes';
+	import ListItem from '$lib/ui/ListItem.svelte';
+	import { Button } from '@nais/ds-svelte-community';
+	import { onMount } from 'svelte';
 
 	interface Props {
-		job: JobRuns;
+		teamSlug: string;
+		environment: string;
+		jobName: string;
 		ondelete?: (runName: string) => void;
 	}
 
-	let { job, ondelete }: Props = $props();
+	let { teamSlug, environment, jobName, ondelete }: Props = $props();
 
-	let data = $derived(
-		fragment(
-			job,
-			graphql(`
-				fragment JobRuns on Job {
-					team {
-						slug
-					}
-					teamEnvironment {
-						environment {
-							name
-						}
-					}
-					name
-					resources {
-						requests {
-							cpu
-							memory
-						}
-						limits {
-							cpu
-							memory
-						}
-					}
+	onMount(() => {
+		const interval = setInterval(() => refetch(), 10_000);
+		return () => clearInterval(interval);
+	});
 
-					runs(first: 999) @list(name: "All_Runs") {
-						edges {
-							node {
-								id
-								name
-								startTime
-								completionTime
-								duration
-								instances {
-									pageInfo {
-										totalCount
+	const runsQuery = graphql(`
+		query JobRunsList($team: Slug!, $env: String!, $job: String!, $first: Int!)
+		@cache(policy: CacheAndNetwork) {
+			team(slug: $team) {
+				environment(name: $env) {
+					job(name: $job) {
+						runs(first: $first) @paginate(mode: Infinite) @list(name: "All_Runs") {
+							edges {
+								node {
+									id
+									name
+									startTime
+									completionTime
+									duration
+									instances {
+										pageInfo {
+											totalCount
+										}
+									}
+									status {
+										message
+										state
+									}
+									trigger {
+										type
+										actor
 									}
 								}
-								status {
-									message
-									state
-								}
-								trigger {
-									type
-									actor
-								}
+							}
+							pageInfo {
+								hasNextPage
+								totalCount
 							}
 						}
 					}
 				}
-			`)
-		)
-	);
+			}
+		}
+	`);
 
-	let runEdges = $derived($data?.runs?.edges ?? []);
-	let runCount = $derived(runEdges.length);
-	let runTitle = $derived(`${runCount} job run${runCount > 1 ? 's' : ''}`);
+	$effect(() => {
+		runsQuery.fetch({ variables: { team: teamSlug, env: environment, job: jobName, first: 5 } });
+	});
+
+	export function refetch() {
+		runsQuery.fetch({
+			variables: { team: teamSlug, env: environment, job: jobName, first: 20 },
+			policy: 'NetworkOnly'
+		});
+	}
+
+	let runs = $derived($runsQuery.data?.team?.environment?.job?.runs);
+	let runEdges = $derived(runs?.edges ?? []);
+	let totalCount = $derived(runs?.pageInfo?.totalCount ?? runEdges.length);
+	let hasNextPage = $derived(runs?.pageInfo?.hasNextPage ?? false);
+	let loadingMore = $state(false);
+
+	async function loadMore() {
+		loadingMore = true;
+		await runsQuery.loadNextPage({ first: 20 });
+		loadingMore = false;
+	}
 </script>
 
-{#if $data}
-	<div>
-		<Heading as="h4" size="small">Resources:</Heading>
-		<ul class="resource-list">
-			<li>
-				Requests:
-				<ul>
-					<li>
-						<div class="resource-list-item">
-							<div>CPU:</div>
-							<div class="data">
-								<code>
-									{#if $data.resources?.requests?.cpu}
-										{$data.resources?.requests?.cpu?.toFixed(2)} CPUs
-									{:else}
-										0.2 CPUs (default)
-									{/if}
-								</code>
-							</div>
-						</div>
-					</li>
-
-					<li>
-						<div class="resource-list-item">
-							<div>Memory:</div>
-							<div class="data">
-								<code>
-									{#if $data.resources?.requests?.memory}
-										{prettyBytes($data.resources?.requests?.memory, {
-											locale: 'en',
-											minimumFractionDigits: 2,
-											maximumFractionDigits: 2,
-											binary: true
-										})}
-									{:else}
-										{prettyBytes(268435456, {
-											locale: 'en',
-											minimumFractionDigits: 2,
-											maximumFractionDigits: 2,
-											binary: true
-										})} (default)
-									{/if}
-								</code>
-							</div>
-						</div>
-					</li>
-				</ul>
-			</li>
-			<li>
-				Limits:
-				<ul>
-					<li>
-						<div class="resource-list-item">
-							<div>CPU:</div>
-							<div class="data">
-								<code>
-									{#if $data.resources?.limits?.cpu}
-										{$data.resources?.limits?.cpu?.toFixed(2)} CPUs
-									{:else}
-										0.5 CPUs (default)
-									{/if}
-								</code>
-							</div>
-						</div>
-					</li>
-
-					<li>
-						<div class="resource-list-item">
-							<div>Memory:</div>
-							<div class="data">
-								<code>
-									{#if $data.resources?.limits?.memory}
-										{prettyBytes($data.resources?.limits?.memory, {
-											locale: 'en',
-											minimumFractionDigits: 2,
-											maximumFractionDigits: 2,
-											binary: true
-										})}
-									{:else}
-										{prettyBytes(536870912, {
-											locale: 'en',
-											minimumFractionDigits: 2,
-											maximumFractionDigits: 2,
-											binary: true
-										})} (default)
-									{/if}
-								</code>
-							</div>
-						</div>
-					</li>
-				</ul>
-			</li>
-		</ul>
-	</div>
-
-	{#if runCount === 0}
-		<BodyShort>No runs found</BodyShort>
-	{:else}
-		<List title={runTitle}>
-			{#each runEdges as run (run.node.id)}
-				{#if run.node.instances.pageInfo.totalCount > 0}
-					{#if $data.team?.slug && $data.teamEnvironment?.environment?.name && $data.name}
-						<JobRunListItem
-							run={run.node}
-							urlBase="/team/{$data.team?.slug}/{$data.teamEnvironment?.environment
-								.name}/job/{$data.name}/logs?instance="
-							{ondelete}
-						/>
-					{:else}
-						<JobRunListItem run={run.node} {ondelete} />
-					{/if}
-				{:else}
-					<JobRunListItem run={run.node} {ondelete} />
-				{/if}
-			{/each}
-		</List>
+{#if runEdges.length > 0 || $runsQuery.fetching}
+	<List title="Job runs" count={totalCount} level="h2">
+		{#each runEdges as run (run.node.id)}
+			{#if run.node.instances.pageInfo.totalCount > 0}
+				<JobRunListItem
+					run={run.node}
+					urlBase="/team/{teamSlug}/{environment}/job/{jobName}/logs?instance="
+					{ondelete}
+				/>
+			{:else}
+				<JobRunListItem run={run.node} {ondelete} />
+			{/if}
+		{:else}
+			<ListItem>
+				<span class="empty-state">No runs found</span>
+			</ListItem>
+		{/each}
+	</List>
+	{#if hasNextPage}
+		<div class="load-more">
+			<Button variant="tertiary" size="small" onclick={loadMore} loading={loadingMore}
+				>Load more</Button
+			>
+		</div>
 	{/if}
+{:else if !$runsQuery.fetching}
+	<List title="Job runs" count={0} level="h2">
+		<ListItem>
+			<span class="empty-state">No runs found</span>
+		</ListItem>
+	</List>
 {/if}
 
 <style>
-	ul {
-		list-style-type: none;
-		padding: 0;
-		margin: 0;
+	.empty-state {
+		padding: var(--ax-space-16) var(--ax-space-24);
 	}
 
-	li ul {
-		margin-left: 1rem;
-	}
-
-	.resource-list {
-		display: grid;
-		grid-template-columns: 1fr 1fr;
-		gap: 1rem;
-	}
-	.resource-list-item {
-		display: grid;
-		grid-template-columns: 1fr 1fr;
-	}
-	.data {
-		text-align: right;
-	}
-	code {
-		font-size: 1rem;
-		overflow-wrap: anywhere;
-	}
-
-	@media (max-width: 767px), (max-height: 500px) {
-		.resource-list {
-			grid-template-columns: 1fr;
-		}
+	.load-more {
+		display: flex;
+		justify-content: center;
+		padding-top: var(--ax-space-8);
 	}
 </style>

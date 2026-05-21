@@ -17,32 +17,30 @@
 	const { TeamCost, interval, teamSlug, from, to } = $derived(data);
 </script>
 
-<div class="wrapper">
-	<GraphErrors errors={$TeamCost.errors} />
+<GraphErrors errors={$TeamCost.errors} />
 
-	<div class="graph">
-		<div class="heading">
-			<div class="content">
-				<Heading as="h2" spacing>Cost by Service</Heading>
-				<BodyLong>
-					Distribution of team costs across various services. Cost information is best-effort and
-					originates from Google Cloud and Aiven. For Kafka we are using a shared base cost for
-					every team, plus the total size of the Kafka topics in the team.
-				</BodyLong>
-			</div>
-			<div class="interval-controls">
-				<ToggleGroup
-					value={interval}
-					onchange={(interval) => changeParams({ interval }, { noScroll: true })}
-				>
-					{#each ['30d', '90d', '6m', '1y'] as interval (interval)}
-						<ToggleGroupItem value={interval}>{interval}</ToggleGroupItem>
-					{/each}
-				</ToggleGroup>
-			</div>
+<div class="content">
+	<section aria-labelledby="cost-by-service-heading">
+		<div class="section-header">
+			<Heading as="h2" id="cost-by-service-heading" size="medium">Cost by Service</Heading>
+			<ToggleGroup
+				size="small"
+				value={interval}
+				onchange={(interval) => changeParams({ interval }, { noScroll: true })}
+			>
+				{#each ['30d', '90d', '6m', '1y'] as interval (interval)}
+					<ToggleGroupItem value={interval}>{interval}</ToggleGroupItem>
+				{/each}
+			</ToggleGroup>
 		</div>
+
+		<BodyLong>
+			Distribution of team costs across various services. Cost information is best-effort and
+			originates from Google Cloud and Aiven.
+		</BodyLong>
+
 		{#if $TeamCost.data && $TeamCost.data.team.cost !== PendingValue}
-			<div class="mt-4 h-125">
+			<div class="chart">
 				<CostAreaChart
 					data={$TeamCost.data.team.cost.daily.series.map((item) => {
 						const ret: { date: Date; [key: string]: number | Date } = { date: item.date };
@@ -54,60 +52,33 @@
 				/>
 			</div>
 		{:else}
-			<div style="display: flex; justify-content: center; align-items: center; height: 500px;">
+			<div class="loading-centered" role="status" aria-label="Loading">
 				<Loader size="3xlarge" />
 			</div>
 		{/if}
-	</div>
+	</section>
 
 	<TeamEnvironmentApplicationsCost {teamSlug} {from} {to} {interval} />
 </div>
 
 <style>
-	.wrapper {
-		display: flex;
-		flex-direction: column;
-		gap: var(--spacing-layout);
-	}
-
-	.graph {
-		display: flex;
-		flex-direction: column;
-		gap: var(--ax-space-16);
-	}
-
-	.heading {
-		display: flex;
-		justify-content: space-between;
-		align-items: flex-end;
-		gap: var(--spacing-layout);
-		padding-bottom: var(--spacing-layout);
-	}
-
 	.content {
-		max-width: 80ch;
-	}
-
-	.interval-controls {
 		display: flex;
-		justify-content: flex-end;
+		flex-direction: column;
+		gap: var(--ax-space-32);
 	}
 
-	@media (max-width: 767px), (max-height: 500px) {
-		.heading {
-			flex-direction: column;
-			align-items: flex-start;
-			gap: var(--ax-space-12);
-		}
+	.section-header {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: var(--ax-space-8);
+		margin-bottom: var(--ax-space-16);
+	}
 
-		.content {
-			max-width: 100%;
-		}
-
-		.interval-controls {
-			width: 100%;
-			justify-content: flex-start;
-			overflow-x: auto;
-		}
+	.chart {
+		height: 350px;
+		min-width: 0;
+		padding-inline: var(--spacing-layout);
 	}
 </style>

@@ -73,7 +73,7 @@
 	{#snippet header()}
 		<div class="header">
 			<PadlockLockedIcon style="font-size: 1.5rem;" />
-			<Heading as="h1" size="medium">View secret values</Heading>
+			<Heading as="h2" size="medium">View secret values</Heading>
 		</div>
 	{/snippet}
 

@@ -1,7 +1,6 @@
 import { BucketOrderField, load_Buckets } from '$houdini';
 import { urlToOrderDirection, urlToOrderField } from '$lib/ui/OrderByMenu.svelte';
 import { addPageMeta } from '$lib/utils/pageMeta';
-import { startOfMonth, subMonths } from 'date-fns';
 
 const rows = 25;
 
@@ -10,7 +9,11 @@ export async function load(event) {
 	const before = event.url.searchParams.get('before') || '';
 
 	return {
-		...(await addPageMeta(event, { title: 'Buckets' })),
+		...(await addPageMeta(event, {
+			title: 'Buckets',
+			pageHeaderTitle: '',
+			docPath: '/persistence/buckets'
+		})),
 		...(await load_Buckets({
 			event,
 			variables: {
@@ -19,9 +22,7 @@ export async function load(event) {
 					field: urlToOrderField(BucketOrderField, BucketOrderField.NAME, event.url),
 					direction: urlToOrderDirection(event.url)
 				},
-				...(before ? { before, last: rows } : { after, first: rows }),
-				from: startOfMonth(subMonths(new Date(), 12)),
-				to: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000)
+				...(before ? { before, last: rows } : { after, first: rows })
 			}
 		}))
 	};

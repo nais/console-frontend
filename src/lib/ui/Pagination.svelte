@@ -23,14 +23,26 @@
 </script>
 
 {#if fetching}
-	<div class="pagination">
+	<div class="pagination" aria-busy="true" aria-label="Loading page">
 		<div class="fetching">
 			<Skeleton variant="text" style="width: 12ch; height: 1.5rem;" />
 		</div>
 
 		<span class="pagination-buttons">
-			<Button size="small" variant="tertiary-neutral" icon={ChevronLeftIcon} disabled={true} />
-			<Button size="small" variant="tertiary-neutral" icon={ChevronRightIcon} disabled={true} />
+			<Button
+				size="small"
+				variant="tertiary-neutral"
+				icon={ChevronLeftIcon}
+				disabled={true}
+				aria-label="Previous page"
+			/>
+			<Button
+				size="small"
+				variant="tertiary-neutral"
+				icon={ChevronRightIcon}
+				disabled={true}
+				aria-label="Next page"
+			/>
 		</span>
 	</div>
 {:else if page && (page.hasPreviousPage || page.hasNextPage)}
@@ -54,6 +66,7 @@
 				icon={ChevronLeftIcon}
 				disabled={!page.hasPreviousPage}
 				onclick={() => loaders.loadPreviousPage()}
+				aria-label="Previous page"
 			/>
 			<Button
 				size="small"
@@ -61,6 +74,7 @@
 				icon={ChevronRightIcon}
 				disabled={!page.hasNextPage}
 				onclick={() => loaders.loadNextPage()}
+				aria-label="Next page"
 			/>
 		</span>
 	</div>
@@ -71,7 +85,7 @@
 		display: flex;
 		justify-content: space-between;
 		align-items: center;
-		color: var(--ax-text-subtle, --a-text-subtle);
+		color: var(--ax-text-neutral-subtle, --a-text-subtle);
 		font-size: 1rem;
 	}
 	.pagination {
@@ -79,7 +93,7 @@
 		justify-content: flex-end;
 		align-items: center;
 		gap: var(--ax-space-16);
-		color: var(--ax-text-subtle);
+		color: var(--ax-text-neutral-subtle);
 		padding: var(--ax-space-16);
 
 		.active-range {

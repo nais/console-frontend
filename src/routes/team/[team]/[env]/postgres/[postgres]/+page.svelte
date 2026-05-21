@@ -1,11 +1,12 @@
 <script lang="ts">
 	import { page } from '$app/state';
 	import PrometheusUtilizationDonut from '$lib/chart/PrometheusUtilizationDonut.svelte';
-	import { docURL } from '$lib/doc';
 	import WorkloadLink from '$lib/domain/workload/WorkloadLink.svelte';
 	import ExternalLink from '$lib/ui/ExternalLink.svelte';
+	import ManifestCard from '$lib/ui/ManifestCard.svelte';
+	import SurfaceCard from '$lib/ui/SurfaceCard.svelte';
 	import { sanitizePromLabel } from '$lib/utils/formatters';
-	import { Alert, BodyShort, Button, CopyButton, Heading } from '@nais/ds-svelte-community';
+	import { Alert, BodyShort, Button, Heading } from '@nais/ds-svelte-community';
 	import { CheckmarkIcon, TrashIcon, XMarkIcon } from '@nais/ds-svelte-community/icons';
 	import type { PageProps } from './$types';
 
@@ -151,7 +152,7 @@ clamp_min(
 		</Alert>
 	{/each}
 {:else if instance}
-	<div class="wrapper">
+	<div class="layout-two-column">
 		<div class="content">
 			{#if viewerIsMember}
 				<div class="detail-actions">
@@ -166,115 +167,98 @@ clamp_min(
 					</Button>
 				</div>
 			{/if}
-			<div class="summary-grid">
-				<PrometheusUtilizationDonut
-					{environmentName}
-					query={postgresCpuUtilizationQuery}
-					label="CPU"
-					height="200px"
-					domainMax={1}
-					formatCenterValue={(value) => `${(value * 100).toFixed(1)}%`}
-				/>
-				<PrometheusUtilizationDonut
-					{environmentName}
-					query={postgresMemoryUtilizationQuery}
-					label="Memory"
-					height="200px"
-					domainMax={1}
-					formatCenterValue={(value) => `${(value * 100).toFixed(1)}%`}
-				/>
-				<PrometheusUtilizationDonut
-					{environmentName}
-					query={postgresDiskUtilizationQuery}
-					label="Disk"
-					height="200px"
-					domainMax={1}
-					formatCenterValue={(value) => `${(value * 100).toFixed(1)}%`}
-				/>
-			</div>
 
-			<div class="details">
-				<div class="details-sections">
-					<div>
-						<Heading as="h3" size="small">State</Heading>
-						<BodyShort>{instance.state}</BodyShort>
-					</div>
-
-					<div>
-						<Heading as="h3" size="small">Settings</Heading>
-						<dl class="settings-list">
-							<dt>High availability</dt>
-							<dd>
-								{instance.highAvailability
-									? 'Enabled (primary + 2 replicas)'
-									: 'Standard (primary + replica)'}
-							</dd>
-						</dl>
-					</div>
-
-					<div>
-						<Heading as="h3" size="small">Version</Heading>
-						<dl class="settings-list">
-							<dt>Postgres major version</dt>
-							<dd>{instance.majorVersion}</dd>
-						</dl>
-					</div>
-
-					<div>
-						<Heading as="h3" size="small">Resources</Heading>
-						<dl class="settings-list">
-							<dt>CPU</dt>
-							<dd>{instance.resources.cpu}</dd>
-							<dt>Memory</dt>
-							<dd>{instance.resources.memory}</dd>
-							<dt>Storage</dt>
-							<dd>{instance.resources.diskSize}</dd>
-						</dl>
-					</div>
-
-					<div>
-						<Heading as="h3" size="small">Maintenance window</Heading>
-						<BodyShort>
-							{instance.maintenanceWindow
-								? `${instance.maintenanceWindow.day} at ${instance.maintenanceWindow.hour}:00 UTC`
-								: 'Not configured (maintenance can run at any time)'}
-						</BodyShort>
-					</div>
-
-					<div>
-						<Heading as="h3" size="small">Audit</Heading>
-						{#if instance.audit.enabled}
-							<div class="status">
-								<CheckmarkIcon style="color: var(--ax-text-success-subtle);" />
-								<BodyShort>Audit logging enabled</BodyShort>
-							</div>
-							<BodyShort>PGAudit statement classes:</BodyShort>
-							{#if instance.audit.statementClasses?.length}
-								<ul class="statement-classes">
-									{#each instance.audit.statementClasses as statementClass (statementClass)}
-										<li><span class="mono">{statementClass}</span></li>
-									{/each}
-								</ul>
-							{/if}
-							{#if instance.audit.url && viewerIsMember}
-								<BodyShort>
-									<ExternalLink href={instance.audit.url}>View audit logs</ExternalLink>
-								</BodyShort>
-							{/if}
-						{:else}
-							<div class="status">
-								<XMarkIcon style="color: var(--ax-text-danger-decoration);" />
-								<BodyShort>Audit logging disabled</BodyShort>
-							</div>
-						{/if}
-					</div>
+			<section aria-labelledby="utilization-heading">
+				<Heading as="h2" id="utilization-heading" size="medium" spacing>Utilization</Heading>
+				<div class="summary-grid">
+					<PrometheusUtilizationDonut
+						{environmentName}
+						query={postgresCpuUtilizationQuery}
+						label="CPU"
+						height="200px"
+						domainMax={1}
+						formatCenterValue={(value) => `${(value * 100).toFixed(1)}%`}
+					/>
+					<PrometheusUtilizationDonut
+						{environmentName}
+						query={postgresMemoryUtilizationQuery}
+						label="Memory"
+						height="200px"
+						domainMax={1}
+						formatCenterValue={(value) => `${(value * 100).toFixed(1)}%`}
+					/>
+					<PrometheusUtilizationDonut
+						{environmentName}
+						query={postgresDiskUtilizationQuery}
+						label="Disk"
+						height="200px"
+						domainMax={1}
+						formatCenterValue={(value) => `${(value * 100).toFixed(1)}%`}
+					/>
 				</div>
-			</div>
+			</section>
+
+			<section aria-labelledby="configuration-heading">
+				<Heading as="h2" id="configuration-heading" size="medium" spacing>Configuration</Heading>
+				<dl class="settings-list">
+					<dt>State</dt>
+					<dd>{instance.state}</dd>
+					<dt>High availability</dt>
+					<dd>
+						{instance.highAvailability
+							? 'Enabled (primary + 2 replicas)'
+							: 'Standard (primary + replica)'}
+					</dd>
+					<dt>Postgres version</dt>
+					<dd>{instance.majorVersion}</dd>
+					<dt>CPU</dt>
+					<dd>{instance.resources.cpu}</dd>
+					<dt>Memory</dt>
+					<dd>{instance.resources.memory}</dd>
+					<dt>Storage</dt>
+					<dd>{instance.resources.diskSize}</dd>
+					<dt>Maintenance window</dt>
+					<dd>
+						{instance.maintenanceWindow
+							? `${instance.maintenanceWindow.day} at ${instance.maintenanceWindow.hour}:00 UTC`
+							: 'Not configured'}
+					</dd>
+				</dl>
+
+				<div class="audit-section">
+					<Heading as="h3" size="small">Audit</Heading>
+					{#if instance.audit.enabled}
+						<div class="status">
+							<CheckmarkIcon style="color: var(--ax-text-success-subtle);" />
+							<BodyShort>Audit logging enabled</BodyShort>
+						</div>
+						<BodyShort>PGAudit statement classes:</BodyShort>
+						{#if instance.audit.statementClasses?.length}
+							<ul class="statement-classes">
+								{#each instance.audit.statementClasses as statementClass (statementClass)}
+									<li><span class="mono">{statementClass}</span></li>
+								{/each}
+							</ul>
+						{/if}
+						{#if instance.audit.url && viewerIsMember}
+							<BodyShort>
+								<ExternalLink href={instance.audit.url}>View audit logs</ExternalLink>
+							</BodyShort>
+						{/if}
+					{:else}
+						<div class="status">
+							<XMarkIcon style="color: var(--ax-text-danger-decoration);" />
+							<BodyShort>Audit logging disabled</BodyShort>
+						</div>
+					{/if}
+				</div>
+			</section>
 		</div>
 
-		<div class="sidebar">
-			<div>
-				<Heading as="h2" size="medium" spacing>Used by</Heading>
+		<div class="layout-sidebar">
+			<ManifestCard title="Use this Postgres" manifest={workloadManifest} />
+
+			<SurfaceCard title="Used by">
 				{#if instance.workloads.nodes.length > 0}
 					<ul class="workloads-list">
 						{#each instance.workloads.nodes as workload (workload.id)}
@@ -291,94 +275,34 @@ clamp_min(
 				{:else}
 					<BodyShort>Not used by any workloads.</BodyShort>
 				{/if}
-			</div>
-			<div>
-				<Heading as="h2" size="medium" spacing>Observability</Heading>
-				<div class="value">
-					<ExternalLink href={grafanaPostgresOverviewUrl}>Grafana dashboard</ExternalLink>
-				</div>
-			</div>
-			<div>
-				<Heading as="h2" size="medium" spacing>Use this Postgres</Heading>
+			</SurfaceCard>
 
-				<Heading as="h3" size="xsmall">Documentation</Heading>
-				<div class="value">
-					<ExternalLink href={docURL('/persistence/postgresql/explanations/postgres-cluster/')}
-						>How-to guide</ExternalLink
-					>
-				</div>
-
-				<Heading as="h3" size="xsmall">
-					Manifest
-					<CopyButton
-						activeText="Manifest copied"
-						title="Copy manifest to clipboard"
-						variant="neutral"
-						copyText={workloadManifest}
-						size="xsmall"
-					/>
-				</Heading>
-				<pre class="manifest">{workloadManifest}</pre>
-			</div>
+			<SurfaceCard title="Observability">
+				<ExternalLink href={grafanaPostgresOverviewUrl}>Grafana dashboard</ExternalLink>
+			</SurfaceCard>
 		</div>
 	</div>
 {/if}
 
 <style>
-	.wrapper {
-		display: grid;
-		grid-template-columns: minmax(0, 1fr) 300px;
-		gap: var(--spacing-layout);
-		align-items: start;
-		min-width: 0;
-	}
-
 	.content {
-		min-width: 0;
-	}
-
-	.detail-actions {
 		display: flex;
-		justify-content: flex-end;
-		margin-bottom: var(--ax-space-16);
-		gap: var(--ax-space-8);
-		flex-wrap: wrap;
+		flex-direction: column;
+		gap: var(--ax-space-24);
+		min-width: 0;
 	}
 
 	.summary-grid {
 		display: grid;
-		grid-template-columns: repeat(4, 1fr);
-		column-gap: 1rem;
-		row-gap: 1rem;
-		margin-bottom: 1rem;
+		grid-template-columns: repeat(3, 1fr);
+		gap: var(--ax-space-16);
 		min-width: 0;
 	}
 
-	.details {
-		margin-top: var(--ax-space-12);
-	}
-
-	.details-sections {
+	.audit-section {
+		margin-top: var(--ax-space-16);
 		display: grid;
-		gap: var(--ax-space-12);
-		margin: var(--ax-space-8) 0 0;
-	}
-
-	.settings-list {
-		display: grid;
-		grid-template-columns: 18ch minmax(0, 1fr);
-		gap: var(--ax-space-4) var(--ax-space-8);
-		margin: 0;
-		align-items: baseline;
-	}
-
-	.settings-list dt {
-		font-weight: var(--ax-font-weight-bold);
-		color: var(--ax-text-neutral-subtle);
-	}
-
-	.settings-list dd {
-		margin: 0;
+		gap: var(--ax-space-8);
 	}
 
 	.status {
@@ -405,46 +329,9 @@ clamp_min(
 		gap: var(--ax-space-6);
 	}
 
-	.sidebar {
-		display: flex;
-		flex-direction: column;
-		gap: var(--spacing-layout);
-		min-width: 0;
-	}
-
-	.manifest {
-		display: block;
-		font-size: var(--ax-font-size-small);
-		word-break: break-word;
-		white-space: pre-wrap;
-		margin: 0.5rem 1rem;
-	}
-
 	@media (max-width: 767px) {
-		.wrapper {
-			grid-template-columns: 1fr;
-		}
-
-		.detail-actions :global(button),
-		.detail-actions :global(a) {
-			width: 100%;
-		}
-
 		.summary-grid {
 			grid-template-columns: 1fr;
-		}
-
-		.settings-list {
-			grid-template-columns: 1fr;
-			gap: var(--ax-space-2);
-		}
-
-		.settings-list dd {
-			margin-bottom: var(--ax-space-4);
-		}
-
-		.settings-list dd:last-child {
-			margin-bottom: 0;
 		}
 	}
 </style>

@@ -68,7 +68,7 @@
 
 		const series = severitiesForChart.map((severity) => ({
 			key: severity,
-			color: severityToColor({ severity: severity.toLowerCase() })
+			color: severityToColor({ severity, isGraph: true })
 		}));
 
 		return { data: Array.from(mergedDataMap.values()), series };

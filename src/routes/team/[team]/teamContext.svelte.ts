@@ -12,22 +12,11 @@ class TeamContext {
 	closeMobileMenu() {
 		this.mobileMenuOpen = false;
 	}
-
-	refetchInventory() {
-		this.inventoryFetcher?.();
-	}
-
-	inventoryFetcher?: () => void;
 }
 
 export function createTeamContext() {
 	const context = new TeamContext();
 	setContext(ctxKey, context);
-}
-
-export function setInventoryRefetcher(refetcher: () => void) {
-	const ctx = getContext<TeamContext>(ctxKey);
-	ctx.inventoryFetcher = refetcher;
 }
 
 export function getTeamContext() {

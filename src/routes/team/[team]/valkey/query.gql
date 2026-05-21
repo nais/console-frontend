@@ -1,8 +1,6 @@
 query Valkeys(
 	$team: Slug!
 	$orderBy: ValkeyOrder
-	$from: Date!
-	$to: Date!
 	$first: Int
 	$last: Int
 	$before: Cursor
@@ -10,17 +8,6 @@ query Valkeys(
 ) @cache(policy: CacheAndNetwork) {
 	team(slug: $team) {
 		slug
-		cost {
-			daily(from: $from, to: $to, filter: { services: ["Valkey"] }) {
-				series {
-					services {
-						service
-					}
-					date
-					sum
-				}
-			}
-		}
 
 		valkeys(first: $first, last: $last, orderBy: $orderBy, before: $before, after: $after)
 			@paginate(mode: SinglePage) {

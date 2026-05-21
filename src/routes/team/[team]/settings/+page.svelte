@@ -2,17 +2,17 @@
 	import { browser } from '$app/environment';
 	import { resolve } from '$app/paths';
 	import {
+		ActivityLogActivityType,
+		graphql,
 		type GetTeamDeleteKey$input,
 		type GetTeamDeleteKey$result,
-		graphql,
 		type QueryResult
 	} from '$houdini';
 	import { docURL } from '$lib/doc';
-	import SidebarActivity from '$lib/domain/activity/sidebar/SidebarActivity.svelte';
-	import SlackIcon from '$lib/icons/SlackIcon.svelte';
-	import WarningIcon from '$lib/icons/WarningIcon.svelte';
+	import TeamActivityCard from '$lib/domain/activity/TeamActivityCard.svelte';
 	import ExternalLink from '$lib/ui/ExternalLink.svelte';
 	import GraphErrors from '$lib/ui/GraphErrors.svelte';
+	import SurfaceCard from '$lib/ui/SurfaceCard.svelte';
 	import Time from '$lib/ui/Time.svelte';
 	import {
 		Alert,
@@ -113,10 +113,10 @@
 <GraphErrors errors={$TeamSettings.errors} />
 
 {#if teamSettings}
-	<div class="wrapper">
-		<div style="display: flex; flex-direction: column; gap: var(--spacing-layout)">
-			<div>
-				<Heading as="h2">Description</Heading>
+	<div class="layout-two-column">
+		<div class="main-column">
+			<section aria-labelledby="description-heading">
+				<Heading as="h2" size="small" id="description-heading">Description</Heading>
 				<EditText
 					text={teamSettings.purpose}
 					onsave={async (text) => {
@@ -136,40 +136,38 @@
 				/>
 
 				<GraphErrors errors={descriptionErrors} size="small" />
-			</div>
+			</section>
 
-			<div>
-				<Heading as="h2"><SlackIcon class="heading-aligned-icon" /> Slack Alert Channels</Heading>
-				{#if teamSettings.slackChannel !== ''}
-					<p>
-						<b>Default slack-channel:</b>
-						<EditText
-							text={teamSettings.slackChannel}
-							variant="textfield"
-							onsave={async (text) => {
-								defaultSlackChannelErrors = undefined;
-								const data = await updateTeam.mutate({
-									input: {
-										slug: teamSlug,
-										slackChannel: text
+			<section aria-labelledby="slack-heading">
+				<Heading as="h2" size="small" id="slack-heading">Slack Alert Channels</Heading>
+				<dl class="settings-list">
+					{#if teamSettings.slackChannel !== ''}
+						<dt>Default</dt>
+						<dd>
+							<EditText
+								text={teamSettings.slackChannel}
+								variant="textfield"
+								onsave={async (text) => {
+									defaultSlackChannelErrors = undefined;
+									const data = await updateTeam.mutate({
+										input: {
+											slug: teamSlug,
+											slackChannel: text
+										}
+									});
+
+									if (data.errors) {
+										defaultSlackChannelErrors = data.errors;
 									}
-								});
-
-								if (data.errors) {
-									defaultSlackChannelErrors = data.errors;
-								}
-							}}
-							isMember={viewerIsMember}
-						/>
-					</p>
-					<GraphErrors errors={defaultSlackChannelErrors} size="small" />
-				{/if}
-				{#if teamSettings.environments && teamSettings.environments.length > 0}
-					<div>
-						Per-environment slack-channels to be used for alerts sent by the platform.
+								}}
+								isMember={viewerIsMember}
+							/>
+						</dd>
+					{/if}
+					{#if teamSettings.environments && teamSettings.environments.length > 0}
 						{#each teamSettings.environments as env (env.id)}
-							<div class="channel">
-								<b>{env.environment.name}:</b>
+							<dt>{env.environment.name}</dt>
+							<dd>
 								<EditText
 									text={env.slackAlertsChannel}
 									variant="textfield"
@@ -193,17 +191,17 @@
 									}}
 									isMember={viewerIsMember}
 								/>
-							</div>
+							</dd>
 						{/each}
-					</div>
-
-					<GraphErrors errors={slackChannelsErrors} size="small" />
-				{/if}
-			</div>
+					{/if}
+				</dl>
+				<GraphErrors errors={defaultSlackChannelErrors} size="small" />
+				<GraphErrors errors={slackChannelsErrors} size="small" />
+			</section>
 
 			{#if viewerIsMember}
-				<div>
-					<Heading as="h2">Deploy Key</Heading>
+				<section aria-labelledby="deploy-key-heading">
+					<Heading as="h2" size="small" id="deploy-key-heading">Deploy Key</Heading>
 					<BodyShort>
 						Deploy keys can be used to authenticate for deployments instead of using
 						<a
@@ -251,50 +249,44 @@
 							</dd>
 						</dl>
 						<div class="buttons">
-							<div class="button">
-								<CopyButton
-									text="Copy key"
-									activeText="Key copied"
-									variant="action"
-									copyText={deployKey.key}
-									size="small"
-								/>
-							</div>
-							<div class="button">
-								<Button
-									size="small"
-									variant="danger"
-									onclick={() => {
-										showRotateKey = !showRotateKey;
-									}}
-									icon={ArrowsCirclepathIcon}
-								>
-									Rotate key
-								</Button>
-							</div>
+							<CopyButton
+								text="Copy key"
+								activeText="Key copied"
+								variant="action"
+								copyText={deployKey.key}
+								size="small"
+							/>
+							<Button
+								size="small"
+								variant="danger"
+								onclick={() => {
+									showRotateKey = !showRotateKey;
+								}}
+								icon={ArrowsCirclepathIcon}
+							>
+								Rotate key
+							</Button>
 						</div>
 					{:else}
-						<div class="buttons">
-							<div class="button mt-2">
-								<Button
-									size="small"
-									variant="secondary"
-									onclick={() => {
-										showCreateKey = !showCreateKey;
-									}}
-									icon={TokenIcon}
-								>
-									Create key
-								</Button>
-							</div>
+						<div class="buttons mt-2">
+							<Button
+								size="small"
+								variant="secondary"
+								onclick={() => {
+									showCreateKey = !showCreateKey;
+								}}
+								icon={TokenIcon}
+							>
+								Create key
+							</Button>
 						</div>
 					{/if}
-				</div>
+				</section>
 			{/if}
 
 			{#if viewerIsOwner}
-				<div>
-					<Heading as="h2"><WarningIcon class="heading-aligned-icon" /> Danger Zone</Heading>
+				<section aria-labelledby="danger-zone-heading">
+					<Heading as="h2" size="small" id="danger-zone-heading">Danger Zone</Heading>
 					<div class="danger-zone">
 						<BodyLong spacing>
 							Deleting the team will permanently delete all managed resources and all resources
@@ -318,12 +310,11 @@
 							Request team deletion</Button
 						>
 					</div>
-				</div>
+				</section>
 			{/if}
 		</div>
-		<div class="right">
-			<div class="managed-resources">
-				<Heading as="h2" size="small">Managed Resources</Heading>
+		<div class="layout-sidebar">
+			<SurfaceCard title="Managed Resources">
 				<dl>
 					{#if $TeamSettings.data?.team.externalResources}
 						{@const external = $TeamSettings.data.team.externalResources}
@@ -369,27 +360,42 @@
 						</BodyShort>
 					{/each}
 				</dl>
-			</div>
+			</SurfaceCard>
+			<SurfaceCard title="Sync Status">
+				<p>
+					{#if teamSettings.lastSuccessfulSync}
+						Synced <Time time={teamSettings.lastSuccessfulSync} distance={true} />
+					{:else}
+						No successful syncs
+					{/if}
+				</p>
+			</SurfaceCard>
 			{#if $TeamSettings.data?.team}
-				<SidebarActivity
-					activityLog={$TeamSettings.data.team}
-					direct={$TeamSettings.data.team.activityLog}
+				<TeamActivityCard
+					{teamSlug}
+					viewAllHref="/team/{teamSlug}/activity-log"
+					filter={{
+						activityTypes: [
+							ActivityLogActivityType.TEAM_CONFIRM_DELETE_KEY,
+							ActivityLogActivityType.TEAM_CREATE_DELETE_KEY,
+							ActivityLogActivityType.TEAM_CREATED,
+							ActivityLogActivityType.TEAM_DEPLOY_KEY_UPDATED,
+							ActivityLogActivityType.TEAM_ENVIRONMENT_UPDATED,
+							ActivityLogActivityType.TEAM_MEMBER_ADDED,
+							ActivityLogActivityType.TEAM_MEMBER_REMOVED,
+							ActivityLogActivityType.TEAM_MEMBER_SET_ROLE,
+							ActivityLogActivityType.TEAM_UPDATED
+						]
+					}}
 				/>
 			{/if}
 		</div>
-		<p class="last-sync">
-			{#if teamSettings.lastSuccessfulSync}
-				Last successful sync: <Time time={teamSettings.lastSuccessfulSync} distance={true} />
-			{:else}
-				No successful syncs
-			{/if}
-		</p>
 	</div>
 {/if}
 {#if browser}
 	<Modal bind:open={showRotateKey} closeButton={false}>
 		{#snippet header()}
-			<Heading as="h1" size="medium">Rotate deploy key</Heading>
+			<Heading as="h2" size="medium">Rotate deploy key</Heading>
 		{/snippet}
 		<BodyShort spacing>Are you sure you want to rotate the deploy key?</BodyShort>
 
@@ -414,7 +420,7 @@
 
 	<Modal bind:open={showCreateKey} closeButton={false}>
 		{#snippet header()}
-			<Heading as="h1" size="medium">Create deploy key</Heading>
+			<Heading as="h2" size="medium">Create deploy key</Heading>
 		{/snippet}
 		<BodyShort spacing>
 			Are you sure you need to create a deploy key? <br />
@@ -443,7 +449,7 @@
 
 	<Modal bind:open={showDeleteTeam}>
 		{#snippet header()}
-			<Heading as="h1" size="medium">Request Team Deletion</Heading>
+			<Heading as="h2" size="medium">Request Team Deletion</Heading>
 		{/snippet}
 
 		{#if !deleteKeyResp?.data}
@@ -515,29 +521,27 @@
 {/if}
 
 <style>
-	.wrapper {
-		display: grid;
-		grid-template-columns: 1fr 320px;
-		gap: var(--spacing-layout);
-	}
-	.right {
+	.main-column {
 		display: flex;
 		flex-direction: column;
-		gap: var(--spacing-layout);
+		gap: var(--ax-space-32);
 	}
-	.managed-resources {
-		border-radius: 12px;
-		align-self: start;
+
+	.settings-list dd {
+		display: flex;
+		align-items: center;
+		gap: var(--ax-space-4);
 	}
+
 	.danger-zone {
 		padding: var(--ax-space-16);
-		border-radius: 8px;
+		border-radius: var(--ax-radius-8);
 		border: 1px solid var(--ax-border-danger);
 	}
 
 	.deployKey {
 		font-family: monospace;
-		padding-bottom: 1rem;
+		padding-bottom: var(--ax-space-16);
 		word-break: break-all;
 		overflow-wrap: break-word;
 	}
@@ -545,57 +549,26 @@
 	.buttons {
 		display: flex;
 		flex-direction: row;
-		gap: 1rem;
-	}
-	.button {
-		width: 130px;
-	}
-
-	.channel {
-		display: flex;
-		flex-direction: row;
-		gap: 0.5rem;
+		gap: var(--ax-space-16);
 	}
 
 	.deletewrapper {
 		display: flex;
-		gap: 0.2rem;
+		gap: var(--ax-space-4);
 	}
 
 	.deletewrapper div {
 		flex-grow: 1;
 	}
-	.last-sync {
-		width: 100%;
-		color: var(--ax-text-info-subtle);
-		font-size: 0.9rem;
-		text-align: right;
-	}
 
 	@media (max-width: 767px) {
-		.wrapper {
-			grid-template-columns: 1fr;
-		}
-
 		.buttons {
-			flex-wrap: wrap;
-		}
-
-		.button {
-			width: auto;
-		}
-
-		.channel {
 			flex-wrap: wrap;
 		}
 
 		.deletewrapper {
 			flex-direction: column;
 			gap: var(--ax-space-8);
-		}
-
-		.last-sync {
-			text-align: left;
 		}
 	}
 </style>

@@ -10,9 +10,11 @@ export async function load(event) {
 	return {
 		...(await addPageMeta(event, {
 			title: 'Service Accounts',
+			pageHeaderTitle: 'Team Settings',
+			docPath: '/operate/console/api/#service-accounts',
 			breadcrumbs: [
 				{
-					label: 'Settings',
+					label: 'Team Settings',
 					href: '/team/[team]/settings'
 				}
 			]

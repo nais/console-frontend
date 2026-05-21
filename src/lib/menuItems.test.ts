@@ -13,9 +13,7 @@ describe('menuItems', () => {
 			expect(
 				menuItems({
 					path: '/team/devteam',
-					features,
-					member: true,
-					isAdmin: false
+					features
 				})
 			).toEqual([
 				[{ label: 'Team Overview', href: '/team/devteam', active: true }],
@@ -25,7 +23,7 @@ describe('menuItems', () => {
 				],
 				[
 					{ label: 'Secrets', href: '/team/devteam/secrets' },
-					{ label: 'Config', href: '/team/devteam/configs' },
+					{ label: 'Configs', href: '/team/devteam/configs' },
 					{ label: 'Cloud SQL', href: '/team/devteam/cloudsql' },
 					{ label: 'Postgres', href: '/team/devteam/postgres' },
 					{ label: 'Buckets', href: '/team/devteam/buckets' },
@@ -55,9 +53,7 @@ describe('menuItems', () => {
 		test('secrets active for sub-pages', () => {
 			expect(
 				menuItems({
-					path: '/team/nais/prod-gcp/secret/github-backup-config',
-					member: true,
-					isAdmin: false
+					path: '/team/nais/prod-gcp/secret/github-backup-config'
 				})
 					.flatMap((g) => g)
 					.find((i) => i.label === 'Secrets')?.active
@@ -67,9 +63,7 @@ describe('menuItems', () => {
 		test('postgres active for sub-pages', () => {
 			expect(
 				menuItems({
-					path: '/team/nais/prod-gcp/cloudsql/gemini',
-					member: true,
-					isAdmin: false
+					path: '/team/nais/prod-gcp/cloudsql/gemini'
 				})
 					.flatMap((g) => g)
 					.find((i) => i.label === 'Cloud SQL')?.active
@@ -80,9 +74,7 @@ describe('menuItems', () => {
 			expect(
 				menuItems({
 					path: '/team/nais/prod-gcp/valkey/gemini',
-					features,
-					member: true,
-					isAdmin: false
+					features
 				})
 					.flatMap((g) => g)
 					.find((i) => i.label === 'Valkey')?.active
@@ -92,75 +84,18 @@ describe('menuItems', () => {
 		test('no features', () => {
 			expect(
 				menuItems({
-					path: '/team/devteam/jobs',
-					member: true,
-					isAdmin: false
+					path: '/team/devteam/jobs'
 				})
 					.flatMap((g) => g)
 					.find((i) => ['Valkey', 'OpenSearch', 'Kafka Topics', 'Unleash'].includes(i.label))
 			).toBeUndefined();
 		});
 
-		test('when not member', () => {
-			expect(
-				menuItems({
-					path: '/team/tbd/jobs',
-					features,
-					member: false,
-					isAdmin: false
-				})
-					.flatMap((g) => g)
-					.find((i) => ['Settings'].includes(i.label))
-			).toBeUndefined();
-		});
-
-		test('inventory', () => {
-			const res = menuItems({
-				path: '/team/tbd/jobs',
-				features,
-				member: true,
-				isAdmin: false,
-				inventory: {
-					applications: { total: 42 },
-					jobs: { total: 1 },
-					sqlInstances: { total: 7 },
-					buckets: { total: 1337 },
-					valkeys: { total: 11 },
-					openSearches: { total: 17 },
-					kafkaTopics: { total: 23 },
-					bigQueryDatasets: { total: 49 },
-					postgresInstances: { total: 7 },
-					secrets: { total: 3 },
-					configs: { total: 5 }
-				}
-			});
-
-			expect(
-				res
-					.flatMap((g) => g)
-					.filter((i) => i.count)
-					.map((i) => ({ label: i.label, count: i.count }))
-			).toEqual([
-				{ label: 'Applications', count: 42 },
-				{ label: 'Jobs', count: 1 },
-				{ label: 'Secrets', count: 3 },
-				{ label: 'Config', count: 5 },
-				{ label: 'Cloud SQL', count: 7 },
-				{ label: 'Postgres', count: 7 },
-				{ label: 'Buckets', count: 1337 },
-				{ label: 'Valkey', count: 11 },
-				{ label: 'OpenSearch', count: 17 },
-				{ label: 'Kafka Topics', count: 23 },
-				{ label: 'BigQuery', count: 49 }
-			]);
-		});
 		test('show settings when admin', () => {
 			expect(
 				menuItems({
 					path: '/team/nais',
-					features,
-					member: false,
-					isAdmin: true
+					features
 				})
 					.flatMap((g) => g)
 					.find((i) => ['Settings'].includes(i.label))
@@ -168,56 +103,34 @@ describe('menuItems', () => {
 		});
 	});
 
-	describe('workload menu', () => {
-		test('full', () => {
+	describe('workload detail routes', () => {
+		test('app detail routes keep applications active in the team menu', () => {
 			expect(
 				menuItems({
-					path: '/team/devteam/dev/app/app-w-all-storage/utilization',
-					member: true,
-					isAdmin: false
+					path: '/team/devteam/dev/app/app-w-all-storage/utilization'
 				})
-			).toEqual([
-				[{ label: 'App Overview', href: '/team/devteam/dev/app/app-w-all-storage' }],
-				[
-					{
-						label: 'Vulnerabilities',
-						href: '/team/devteam/dev/app/app-w-all-storage/vulnerabilities'
-					},
-					{
-						label: 'Deployments',
-						href: '/team/devteam/dev/app/app-w-all-storage/deploys'
-					},
-					{ label: 'Cost', href: '/team/devteam/dev/app/app-w-all-storage/cost' },
-					{ label: 'Issues', href: '/team/devteam/dev/app/app-w-all-storage/issues' },
-					{
-						label: 'Utilization',
-						href: '/team/devteam/dev/app/app-w-all-storage/utilization',
-						active: true
-					},
-					{
-						href: '/team/devteam/dev/app/app-w-all-storage/ingresses',
-						label: 'Ingresses'
-					},
-					{ label: 'Logs', href: '/team/devteam/dev/app/app-w-all-storage/logs' }
-				],
-				[
-					{
-						label: 'Manifest',
-						href: '/team/devteam/dev/app/app-w-all-storage/manifest'
-					}
-				]
-			]);
+					.flatMap((group) => group)
+					.find((item) => item.label === 'Applications')
+			).toEqual({ label: 'Applications', href: '/team/devteam/applications', active: true });
 		});
 
-		test('does not include delete', () => {
+		test('job detail routes keep jobs active in the team menu', () => {
 			expect(
 				menuItems({
-					path: '/team/devteam/dev/job/dataproduct-apps-topics/vulnerabilities',
-					member: true,
-					isAdmin: false
+					path: '/team/devteam/dev/job/dataproduct-apps-topics/vulnerabilities'
 				})
-					.flatMap((g) => g)
-					.find((i) => ['Delete'].includes(i.label))
+					.flatMap((group) => group)
+					.find((item) => item.label === 'Jobs')
+			).toEqual({ label: 'Jobs', href: '/team/devteam/jobs', active: true });
+		});
+
+		test('auxiliary workload routes do not add detail menu entries', () => {
+			expect(
+				menuItems({
+					path: '/team/devteam/dev/job/dataproduct-apps-topics/delete'
+				})
+					.flatMap((group) => group)
+					.find((item) => item.label === 'Delete')
 			).toBeUndefined();
 		});
 	});

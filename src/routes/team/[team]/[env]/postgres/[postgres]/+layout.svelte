@@ -26,7 +26,7 @@
 		>
 	</TabList>
 
-	<div class="mt-4">
+	<div class="tab-content">
 		{@render children()}
 	</div>
 </Tabs>

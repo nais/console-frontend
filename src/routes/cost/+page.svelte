@@ -1,23 +1,27 @@
 <script lang="ts">
 	import { page } from '$app/state';
-	import { TeamOrderField } from '$houdini';
+	import { OrderDirection, TeamOrderField } from '$houdini';
 	import LegendWrapper, { legendSnippet } from '$lib/chart/LegendWrapper.svelte';
 	import { euroAxisFormatter, serviceColor } from '$lib/chart/util';
 	import IconLabel from '$lib/ui/IconLabel.svelte';
-	import List from '$lib/ui/List.svelte';
-	import ListItem from '$lib/ui/ListItem.svelte';
-	import OrderByMenu from '$lib/ui/OrderByMenu.svelte';
+	import { urlToOrderDirection, urlToOrderField } from '$lib/ui/OrderByMenu.svelte';
 	import Pagination from '$lib/ui/Pagination.svelte';
 	import Time from '$lib/ui/Time.svelte';
 	import { euroValueFormatter } from '$lib/utils/formatters';
 	import { changeParams } from '$lib/utils/searchparams';
 	import {
 		BodyLong,
-		BodyShort,
 		Heading,
 		Loader,
+		Table,
+		Tbody,
+		Td,
+		Th,
+		Thead,
 		ToggleGroup,
-		ToggleGroupItem
+		ToggleGroupItem,
+		Tr,
+		type TableSortState
 	} from '@nais/ds-svelte-community';
 	import { PersonGroupIcon } from '@nais/ds-svelte-community/icons';
 	import { sum } from 'd3-array';
@@ -27,6 +31,39 @@
 
 	let { data }: PageProps = $props();
 	let { TenantCost, CostMonthly, interval } = $derived(data);
+
+	const currentOrderField = $derived(
+		urlToOrderField(TeamOrderField, TeamOrderField.ACCUMULATED_COST, page.url)
+	);
+
+	const currentOrderDirection = $derived(urlToOrderDirection(page.url, OrderDirection.DESC));
+
+	const tableSortState = $derived.by(
+		(): TableSortState => ({
+			orderBy: currentOrderField,
+			direction: currentOrderDirection === OrderDirection.ASC ? 'ascending' : 'descending'
+		})
+	);
+
+	const handleSortChange = (key: string) => {
+		const nextDirection =
+			currentOrderField === key
+				? currentOrderDirection === OrderDirection.ASC
+					? OrderDirection.DESC
+					: OrderDirection.ASC
+				: key === TeamOrderField.SLUG
+					? OrderDirection.ASC
+					: OrderDirection.DESC;
+
+		changeParams(
+			{
+				sort: `${key}-${nextDirection}`,
+				after: '',
+				before: ''
+			},
+			{ noScroll: true }
+		);
+	};
 
 	const allServicesSeries = $derived.by(() => {
 		if (!$CostMonthly.data?.costMonthlySummary.series) return [];
@@ -81,13 +118,14 @@
 
 <div class="page">
 	<div class="container">
+		<Heading as="h1" size="large">Tenant Cost</Heading>
 		<div class="wrapper">
 			<!-- <GraphErrors errors={$TenantCost.errors} /> -->
 
-			<div class="graph">
+			<section class="graph" aria-labelledby="cost-by-service-heading">
 				<div class="heading">
 					<div class="content">
-						<Heading as="h2" spacing>Cost by Service</Heading>
+						<Heading as="h2" spacing id="cost-by-service-heading">Cost by Service</Heading>
 						<BodyLong>
 							Service cost distribution for <strong>{page.data.tenantName?.toUpperCase()}</strong>.
 							Some services are missing cost data. Figures are based on data from Google Cloud and
@@ -171,56 +209,57 @@
 						</BarChart>
 					</LegendWrapper>
 				{:else}
-					<div style="display: flex; justify-content: center; align-items: center; height: 500px;">
+					<div class="loading-centered" role="status" aria-label="Loading">
 						<Loader size="3xlarge" />
 					</div>
 				{/if}
-			</div>
-			<div>
-				<Heading as="h3" spacing>Team Cost last 12 months</Heading>
+			</section>
+			<section aria-labelledby="team-cost-heading">
+				<Heading as="h2" spacing id="team-cost-heading">Team Cost last 12 months</Heading>
 				<BodyLong spacing>
 					This table shows the cost for each team over the last 12 months. The cost is aggregated
 					from all services used by the team.
 				</BodyLong>
 
-				<div class="cost-breakdown-list">
-					<List title="Team Cost Breakdown">
-						{#snippet menu()}
-							<div class="cost-list-menu">
-								<OrderByMenu
-									orderField={TeamOrderField}
-									defaultOrderField={TeamOrderField.ACCUMULATED_COST}
-									onlyInclude={[TeamOrderField.SLUG, TeamOrderField.ACCUMULATED_COST]}
-								/>
-							</div>
-						{/snippet}
-						{#if !$TenantCost.fetching}
-							{#each $TenantCost.data?.teams.nodes ?? [] as team (team.slug)}
-								<ListItem>
-									<IconLabel
-										label={team.slug}
-										href="/team/{team.slug}/cost"
-										icon={PersonGroupIcon}
-										size="large"
-										as="h3"
-									/>
-									<div class="right">
-										<BodyShort
-											>{euroValueFormatter(team.cost.monthlySummary.sum, {
+				<div class="table-scroll">
+					<Table size="small" sort={tableSortState} onsortchange={handleSortChange}>
+						<Thead>
+							<Tr>
+								<Th sortable sortKey={TeamOrderField.SLUG}>Team</Th>
+								<Th sortable sortKey={TeamOrderField.ACCUMULATED_COST} align="right">
+									Cost (12 months)
+								</Th>
+							</Tr>
+						</Thead>
+						<Tbody>
+							{#if !$TenantCost.fetching}
+								{#each $TenantCost.data?.teams.nodes ?? [] as team (team.slug)}
+									<Tr>
+										<Td>
+											<IconLabel
+												label={team.slug}
+												href="/team/{team.slug}/cost"
+												icon={PersonGroupIcon}
+											/>
+										</Td>
+										<Td align="right">
+											{euroValueFormatter(team.cost.monthlySummary.sum, {
 												maximumFractionDigits: 0
-											})}</BodyShort
-										>
-									</div>
-								</ListItem>
-							{/each}
-						{:else}
-							<div
-								style="display: flex; justify-content: center; align-items: center; height: 200px;"
-							>
-								<Loader size="3xlarge" />
-							</div>
-						{/if}
-					</List>
+											})}
+										</Td>
+									</Tr>
+								{/each}
+							{:else}
+								<Tr>
+									<Td colspan={2}>
+										<div class="loading-centered" role="status" aria-label="Loading">
+											<Loader size="3xlarge" />
+										</div>
+									</Td>
+								</Tr>
+							{/if}
+						</Tbody>
+					</Table>
 				</div>
 				<Pagination
 					page={$TenantCost.data?.teams.pageInfo}
@@ -244,7 +283,7 @@
 							)
 					}}
 				/>
-			</div>
+			</section>
 		</div>
 	</div>
 </div>
@@ -262,7 +301,7 @@
 		gap: var(--spacing-layout);
 	}
 
-	.graph {
+	section.graph {
 		display: flex;
 		flex-direction: column;
 		gap: var(--ax-space-16);
@@ -280,16 +319,6 @@
 		max-width: 80ch;
 	}
 
-	.cost-list-menu {
-		display: flex;
-	}
-	.right {
-		display: flex;
-		flex-direction: row;
-		align-items: end;
-		gap: var(--ax-space-24);
-	}
-
 	/* Mobile responsive styles */
 	@media (max-width: 767px) {
 		.heading {
@@ -298,21 +327,8 @@
 			gap: var(--ax-space-16);
 		}
 
-		.right {
-			gap: var(--ax-space-16);
-		}
-
 		.content {
 			max-width: 100%;
-		}
-
-		.cost-breakdown-list :global(.menu) {
-			width: 100%;
-			justify-content: flex-end;
-		}
-
-		.cost-list-menu {
-			justify-content: flex-end;
 		}
 	}
 </style>

@@ -95,11 +95,18 @@ export function serviceColor(serviceName: ServiceName | string): string {
 
 export function euroAxisFormatter(value: number) {
 	if (value === 0) return '0 €';
+	if (value < 0.001) {
+		const micro = value * 1_000_000;
+		return (micro % 1 === 0 ? micro.toFixed(0) : micro.toFixed(1)) + ' µ€';
+	}
+	if (value < 1) {
+		const milli = value * 1000;
+		return (milli % 1 === 0 ? milli.toFixed(0) : milli.toFixed(1)) + ' m€';
+	}
 	if (value < 1000) {
 		return euroValueFormatter(value);
 	}
 	const kValue = value / 1000;
-	// Use 1 decimal place if needed to avoid duplicates
 	if (kValue % 1 === 0) {
 		return kValue.toFixed(0) + 'K' + ' €';
 	} else {

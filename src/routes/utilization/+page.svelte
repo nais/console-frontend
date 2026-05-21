@@ -3,6 +3,9 @@
 	import { UtilizationResourceType, type TenantUtilization$result } from '$houdini';
 	import UtilizationChart from '$lib/chart/UtilizationChart.svelte';
 	import GraphErrors from '$lib/ui/GraphErrors.svelte';
+	import IconLabel from '$lib/ui/IconLabel.svelte';
+	import Pagination from '$lib/ui/Pagination.svelte';
+	import SurfaceCard from '$lib/ui/SurfaceCard.svelte';
 	import { euroValueFormatter } from '$lib/utils/formatters';
 	import {
 		getTeamsOverageData,
@@ -12,7 +15,6 @@
 	} from '$lib/utils/resources';
 	import {
 		BodyLong,
-		BodyShort,
 		Heading,
 		Table,
 		Tbody,
@@ -22,7 +24,7 @@
 		Tr,
 		type TableSortState
 	} from '@nais/ds-svelte-community';
-	import { WalletFillIcon } from '@nais/ds-svelte-community/icons';
+	import { PersonGroupIcon } from '@nais/ds-svelte-community/icons';
 	import prettyBytes from 'pretty-bytes';
 	import type { PageProps } from './$types';
 
@@ -96,6 +98,16 @@
 		getTeamsOverageData($TenantUtilization.data, sortState.orderBy, sortState.direction)
 	);
 
+	const pageSize = 25;
+	let currentPage = $state(0);
+
+	const paginatedTable = $derived(
+		overageTable.slice(currentPage * pageSize, (currentPage + 1) * pageSize)
+	);
+	const totalCount = $derived(overageTable.length);
+	const pageStart = $derived(totalCount > 0 ? currentPage * pageSize + 1 : 0);
+	const pageEnd = $derived(Math.min((currentPage + 1) * pageSize, totalCount));
+
 	const sortedMemoryData = $derived.by(() => {
 		const tmp =
 			(resourceUtilization?.memUtil.filter((item) => item) as NonNullable<TenantOverageData>[]) ??
@@ -133,25 +145,22 @@
 
 <div class="page">
 	<div class="container">
+		<Heading as="h1" size="large">Tenant Utilization</Heading>
 		<GraphErrors errors={$TenantUtilization.errors} />
 		{#if resourceUtilization}
-			<div class="grid">
-				<div class="card">
-					<Heading as="h2" size="medium" spacing
-						><WalletFillIcon class="heading-aligned-icon" /> Cost of Unutilized CPU</Heading
-					>
-					<BodyShort
-						>Estimate of annual cost of unutilized CPU for tenant calculated from current
-						utilization data.</BodyShort
-					>
-
+			<div class="resource-grid">
+				<SurfaceCard title="Estimated annual CPU waste" level="h2" bordered>
+					<p>
+						Estimate of annual cost of unutilized CPU for tenant calculated from current utilization
+						data.
+					</p>
 					{#if resourceUtilization.cpuUtil.length > 0}
 						{@const cpuRequested = resourceUtilization.cpuUtil.reduce(
 							(acc, { requested }) => acc + requested,
 							0
 						)}
 						{@const cpuUsage = resourceUtilization.cpuUtil.reduce((acc, { used }) => acc + used, 0)}
-						<div style="display: flex; gap: 1rem; justify-content: center;">
+						<div class="cost-wrapper">
 							<div class="cost-amount">
 								{euroValueFormatter(
 									round(
@@ -168,16 +177,12 @@
 							</div>
 						</div>
 					{/if}
-				</div>
-				<div class="card">
-					<Heading as="h2" size="medium" spacing
-						><WalletFillIcon class="heading-aligned-icon" /> Cost of Unutilized Memory</Heading
-					>
-					<BodyShort
-						>Estimate of annual cost of unutilized memory for tenant calculated from current
-						utilization data.</BodyShort
-					>
-
+				</SurfaceCard>
+				<SurfaceCard title="Estimated annual memory waste" level="h2" bordered>
+					<p>
+						Estimate of annual cost of unutilized memory for tenant calculated from current
+						utilization data.
+					</p>
 					{#if resourceUtilization.memUtil.length > 0}
 						{@const memoryRequested = resourceUtilization.memUtil.reduce(
 							(acc, { requested }) => acc + requested,
@@ -187,7 +192,7 @@
 							(acc, { used }) => acc + used,
 							0
 						)}
-						<div style="display: flex; gap: 1rem; justify-content: center;">
+						<div class="cost-wrapper">
 							<div class="cost-amount">
 								{euroValueFormatter(
 									yearlyOverageCost(
@@ -201,37 +206,42 @@
 							</div>
 						</div>
 					{/if}
+				</SurfaceCard>
+			</div>
+
+			<section aria-labelledby="top-teams-heading">
+				<Heading as="h2" spacing id="top-teams-heading"
+					>Teams with the Highest CPU and Memory Underutilization</Heading
+				>
+				<BodyLong
+					>The chart below shows which teams are using less CPU and memory than they requested.
+					While resources are allocated based on anticipated needs, consistently underutilized
+					resources represent an opportunity for cost optimization. By adjusting resource requests
+					to more accurately reflect actual usage, teams can reduce wasteful spending and improve
+					overall efficiency.
+				</BodyLong>
+
+				<BodyLong>
+					Note: The chart only shows the top 10 teams with the highest CPU and memory
+					underutilization. For a complete overview of all teams, please refer to the table below.
+				</BodyLong>
+
+				<div class="chart-row">
+					<UtilizationChart data={sortedCpuData} format="cpu" onBarClick={handleBarClick} />
+					<UtilizationChart data={sortedMemoryData} format="memory" onBarClick={handleBarClick} />
 				</div>
-			</div>
+			</section>
 
-			<Heading as="h1" size="large">Teams with the Highest CPU and Memory Underutilization</Heading>
-			<BodyLong
-				>The chart below shows which teams are using less CPU and memory than they requested. While
-				resources are allocated based on anticipated needs, consistently underutilized resources
-				represent an opportunity for cost optimization. By adjusting resource requests to more
-				accurately reflect actual usage, teams can reduce wasteful spending and improve overall
-				efficiency.
-			</BodyLong>
+			<section aria-labelledby="underutilization-heading">
+				<Heading as="h2" spacing id="underutilization-heading"
+					>CPU and Memory Underutilization per Team</Heading
+				>
 
-			<BodyLong>
-				Note: The chart only shows the top 10 teams with the highest CPU and memory
-				underutilization. For a complete overview of all teams, please refer to the table below.
-			</BodyLong>
-
-			<div class="flex h-87.5">
-				<UtilizationChart data={sortedCpuData} format="cpu" onBarClick={handleBarClick} />
-				<UtilizationChart data={sortedMemoryData} format="memory" onBarClick={handleBarClick} />
-			</div>
-
-			<BodyLong>
-				Click on the bars in the chart to see details about the resource utilization of a specific
-				team.
-			</BodyLong>
-
-			<div>
-				<Heading as="h2" spacing>CPU and Memory Underutilization per Team</Heading>
-
-				<div class="table-container">
+				<div
+					class="table-scroll"
+					role="region"
+					aria-label="CPU and memory underutilization per team"
+				>
 					<Table
 						size="small"
 						sort={sortState}
@@ -248,12 +258,14 @@
 							</Tr>
 						</Thead>
 						<Tbody>
-							{#each overageTable as overage (overage)}
+							{#each paginatedTable as overage (overage)}
 								<Tr>
 									<Td>
-										<a href={`/team/${overage.teamSlug}/utilization`}>
-											{overage.teamSlug}
-										</a>
+										<IconLabel
+											label={overage.teamSlug}
+											href={`/team/${overage.teamSlug}/utilization`}
+											icon={PersonGroupIcon}
+										/>
 									</Td>
 									<Td>
 										{overage.unusedCpu.toLocaleString('en-GB', {
@@ -274,7 +286,24 @@
 						</Tbody>
 					</Table>
 				</div>
-			</div>
+				<Pagination
+					page={{
+						hasNextPage: pageEnd < totalCount,
+						hasPreviousPage: currentPage > 0,
+						pageStart,
+						pageEnd,
+						totalCount
+					}}
+					loaders={{
+						loadNextPage: () => {
+							currentPage += 1;
+						},
+						loadPreviousPage: () => {
+							currentPage -= 1;
+						}
+					}}
+				/>
+			</section>
 		{/if}
 	</div>
 </div>
@@ -287,37 +316,31 @@
 		gap: var(--spacing-layout);
 		min-width: 0;
 	}
-	.grid {
-		margin-top: 1rem;
+	.resource-grid {
 		display: grid;
 		grid-template-columns: repeat(2, 1fr);
-		column-gap: 1rem;
+		gap: var(--ax-space-16);
 		min-width: 0;
 	}
-	.card {
-		padding: var(--ax-space-16) var(--ax-space-20);
-		border-radius: 12px;
-		align-items: stretch;
-		min-width: 0;
+
+	.cost-wrapper {
+		display: flex;
+		gap: var(--ax-space-16);
+		justify-content: center;
 	}
+
 	.cost-amount {
 		background-color: var(--ax-bg-raised);
-		font-size: 1.5rem;
-		padding: 1rem 2rem;
-		border-radius: 0.375rem;
+		font-size: var(--ax-font-size-xlarge);
+		padding: var(--ax-space-16) var(--ax-space-32);
+		border-radius: var(--ax-radius-8);
 		display: inline-block;
 		align-items: center;
 	}
 
-	.table-container {
-		max-width: 100%;
-		min-width: 0;
-		overflow-x: auto;
-	}
-
-	.table-container :global(table) {
-		width: max-content;
-		min-width: 100%;
+	.chart-row {
+		display: flex;
+		height: 350px;
 	}
 
 	/* Mobile responsive styles */
@@ -327,19 +350,13 @@
 			margin-top: var(--ax-space-16);
 		}
 
-		.grid {
+		.resource-grid {
 			grid-template-columns: 1fr;
-			column-gap: 0;
-			row-gap: var(--ax-space-16);
-		}
-
-		.card {
-			padding: var(--ax-space-12) var(--ax-space-16);
 		}
 
 		.cost-amount {
 			padding: var(--ax-space-8) var(--ax-space-12);
-			font-size: 1.25rem;
+			font-size: var(--ax-font-size-large);
 		}
 	}
 </style>

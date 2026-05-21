@@ -1,6 +1,7 @@
 <script lang="ts">
+	import SurfaceCard from '$lib/ui/SurfaceCard.svelte';
 	import { getLocalizedCronDescription, type ScheduleContext } from '$lib/utils/cron';
-	import { Heading } from '@nais/ds-svelte-community';
+	import { Alert, Heading } from '@nais/ds-svelte-community';
 
 	interface Props {
 		schedule: {
@@ -19,14 +20,19 @@
 		{#if schedule}
 			{@const runConfig = getLocalizedCronDescription({ ...schedule, context: scheduleContext })}
 			{#if runConfig.error}
-				<p style="color: red;">Error: {runConfig.error}</p>
+				<Alert variant="warning" size="small">
+					Unable to parse schedule: {runConfig.error}
+				</Alert>
 			{:else}
-				<dl class="details-grid">
-					<dt>Schedule</dt>
-					<dd>{runConfig.description}</dd>
-					<dt>Next run</dt>
-					<dd>{runConfig.nextRun}</dd>
-				</dl>
+				<div class="resource-cards">
+					<SurfaceCard title="Schedule" level="h4">
+						<code>{runConfig.description}</code>
+					</SurfaceCard>
+
+					<SurfaceCard title="Next run" level="h4">
+						<code>{runConfig.nextRun}</code>
+					</SurfaceCard>
+				</div>
 			{/if}
 		{:else}
 			<p>No schedule</p>
@@ -35,9 +41,6 @@
 </div>
 
 <style>
-	dt {
-		font-weight: bold;
-	}
 	.wrapper {
 		display: flex;
 		flex-direction: column;
@@ -45,24 +48,21 @@
 		width: 100%;
 	}
 
-	.details-grid {
-		margin: 0;
+	.resource-cards {
 		display: grid;
-		grid-template-rows: repeat(2, auto);
-		grid-auto-flow: column;
-		grid-auto-columns: 1fr;
-		width: 100%;
+		grid-template-columns: 1fr 1fr;
+		gap: var(--ax-space-12);
 	}
 
-	dd {
-		margin: 0;
+	code {
+		font-family: monospace;
+		font-size: var(--ax-font-size-small);
+		color: var(--ax-text-neutral);
 	}
 
 	@media (max-width: 800px) {
-		.details-grid {
-			grid-template-rows: none;
-			grid-auto-flow: row;
-			grid-auto-columns: auto;
+		.resource-cards {
+			grid-template-columns: 1fr;
 		}
 	}
 </style>

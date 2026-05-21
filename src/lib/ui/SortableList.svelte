@@ -43,18 +43,5 @@
 	.list {
 		display: flex;
 		flex-direction: column;
-		gap: 2px;
-
-		:global(> *) {
-			&:first-child {
-				border-top-left-radius: 12px;
-				border-top-right-radius: 12px;
-			}
-
-			&:last-child {
-				border-bottom-left-radius: 12px;
-				border-bottom-right-radius: 12px;
-			}
-		}
 	}
 </style>

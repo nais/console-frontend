@@ -3,7 +3,10 @@ import { addPageMeta } from '$lib/utils/pageMeta';
 
 export async function load(event) {
 	return {
-		...(await addPageMeta(event, { title: event.params.secret })),
+		...(await addPageMeta(event, {
+			title: event.params.secret,
+			docPath: '/services/secrets/'
+		})),
 		...(await load_Secret({
 			event,
 			variables: {

@@ -13,7 +13,7 @@ type MonthlyCostCarrier = {
 	};
 };
 
-export function estimateMonthCost(month: MonthlyCostSeriesEntry): number {
+function estimateMonthCost(month: MonthlyCostSeriesEntry): number {
 	const daysKnown = month.date.getDate();
 	const daysInMonth = new Date(month.date.getFullYear(), month.date.getMonth() + 1, 0).getDate();
 	const costPerDay = month.sum / daysKnown;

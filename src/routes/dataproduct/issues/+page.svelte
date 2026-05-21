@@ -15,7 +15,9 @@
 	let issues = $derived($AllIssues.data?.teams.nodes.flatMap((team) => team.issues.nodes) ?? []);
 </script>
 
+<label for="issue-type-select" class="aksel-sr-only">Issue type</label>
 <select
+	id="issue-type-select"
 	value={selectedIssueType}
 	onchange={(event) => {
 		const target = event.currentTarget as HTMLSelectElement;

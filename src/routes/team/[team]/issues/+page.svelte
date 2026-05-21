@@ -1,125 +1,131 @@
 <script lang="ts">
 	import { page } from '$app/state';
-	import { IssueOrderField } from '$houdini';
-	import IssueTypeSeverityFilters from '$lib/domain/issues/IssueTypeSeverityFilters.svelte';
+	import { IssueOrderField, IssueType, OrderDirection } from '$houdini';
+	import IssuesFacets from '$lib/domain/issues/IssuesFacets.svelte';
 	import IssueListItem from '$lib/domain/list-items/IssueListItem.svelte';
 	import GraphErrors from '$lib/ui/GraphErrors.svelte';
 	import List from '$lib/ui/List.svelte';
+	import ListFilters from '$lib/ui/ListFilters.svelte';
 	import ListItem from '$lib/ui/ListItem.svelte';
-	import OrderByMenu from '$lib/ui/OrderByMenu.svelte';
 	import Pagination from '$lib/ui/Pagination.svelte';
+	import SurfaceCard from '$lib/ui/SurfaceCard.svelte';
 	import { changeParams } from '$lib/utils/searchparams';
-	import { Button } from '@nais/ds-svelte-community';
-	import {
-		ActionMenu,
-		ActionMenuCheckboxItem,
-		ActionMenuGroup
-	} from '@nais/ds-svelte-community/experimental';
-	import { ChevronDownIcon } from '@nais/ds-svelte-community/icons';
 	import type { PageProps } from './$types';
 
 	let { data }: PageProps = $props();
 	let { TeamIssues, TeamIssuesMetadata } = $derived(data);
 	let issues = $derived($TeamIssues.data?.team.issues);
-	let issueCount = $derived(issues?.pageInfo.totalCount ?? 0);
-	let totalCount = $derived($TeamIssues.data?.team.total.pageInfo.totalCount ?? 0);
 
 	let after: string = $derived($TeamIssues.variables?.after ?? '');
 	let before: string = $derived($TeamIssues.variables?.before ?? '');
 
-	const allEnvs = $derived(
-		$TeamIssuesMetadata.data?.team.environments.map((env) => env.environment.name) ?? []
+	const totalCount = $derived($TeamIssuesMetadata.data?.team.total.pageInfo.totalCount ?? 0);
+
+	const allEnvironments = $derived($TeamIssuesMetadata.data?.team.environments ?? []);
+
+	const severityFacets = $derived([
+		{
+			severity: 'CRITICAL',
+			count: $TeamIssuesMetadata.data?.team.critical.pageInfo.totalCount ?? 0
+		},
+		{
+			severity: 'WARNING',
+			count: $TeamIssuesMetadata.data?.team.warnings.pageInfo.totalCount ?? 0
+		},
+		{ severity: 'TODO', count: $TeamIssuesMetadata.data?.team.todos.pageInfo.totalCount ?? 0 }
+	]);
+
+	const issueTypes = Object.values(IssueType) as string[];
+
+	let selectedEnvironments: string[] = $derived(
+		page.url.searchParams.get('environments')?.split(',').filter(Boolean) ?? []
 	);
 
-	let filteredEnvs = $derived(page.url.searchParams.get('environments')?.split(',') ?? allEnvs);
+	let selectedSeverity: string = $derived(page.url.searchParams.get('severity') ?? '');
 
-	$effect(() => {
-		const environments = filteredEnvs.length === allEnvs.length ? '' : filteredEnvs.join(',');
+	let selectedIssueType: string = $derived(page.url.searchParams.get('issueType') ?? '');
 
-		if (environments !== (page.url.searchParams.get('environments') ?? '')) {
-			changeQuery({ environments });
-		}
-	});
+	type IssueOrderFieldOptions = (typeof IssueOrderField)[keyof typeof IssueOrderField];
+	type OrderDirectionOptions = (typeof OrderDirection)[keyof typeof OrderDirection];
+
+	const sortFields: { value: IssueOrderFieldOptions; label: string }[] = [
+		{ value: IssueOrderField.SEVERITY, label: 'Severity' },
+		{ value: IssueOrderField.ISSUE_TYPE, label: 'Issue type' },
+		{ value: IssueOrderField.ENVIRONMENT, label: 'Environment' }
+	];
+
+	const currentSortField: IssueOrderFieldOptions = $derived(
+		(Object.values(IssueOrderField).find((f) =>
+			page.url.searchParams.get('sort')?.startsWith(f)
+		) as IssueOrderFieldOptions | undefined) ?? IssueOrderField.SEVERITY
+	);
+
+	const currentSortDirection: OrderDirectionOptions = $derived(
+		(Object.values(OrderDirection).find((d) => page.url.searchParams.get('sort')?.endsWith(d)) as
+			| OrderDirectionOptions
+			| undefined) ?? OrderDirection.DESC
+	);
+
+	function setSort(field: IssueOrderFieldOptions) {
+		const direction =
+			field === currentSortField
+				? currentSortDirection === OrderDirection.ASC
+					? OrderDirection.DESC
+					: OrderDirection.ASC
+				: OrderDirection.DESC;
+		changeParams({ sort: `${field}-${direction}`, after: '', before: '' }, { noScroll: true });
+	}
 
 	const changeQuery = (
 		params: {
 			environments?: string;
-			severity?: string | undefined;
-			issueType?: string | undefined;
+			severity?: string;
+			issueType?: string;
 			after?: string;
 			before?: string;
 		} = {}
 	) => {
-		changeParams({
-			environments: params.environments ?? '',
-			severity: params.severity ?? '',
-			issueType: params.issueType ?? '',
-			before: params.before ?? before,
-			after: params.after ?? after
-		});
+		changeParams(
+			{
+				environments: params.environments ?? (selectedEnvironments.join(',') || ''),
+				severity: params.severity ?? selectedSeverity,
+				issueType: params.issueType ?? selectedIssueType,
+				before: params.before ?? before,
+				after: params.after ?? after
+			},
+			{ noScroll: true }
+		);
 	};
+
+	function handleSeverityChange(severity: string) {
+		changeQuery({ severity, after: '', before: '' });
+	}
+
+	function handleIssueTypeChange(issueType: string) {
+		changeQuery({ issueType, after: '', before: '' });
+	}
+
+	function handleEnvironmentsChange(selected: string[]) {
+		changeQuery({ environments: selected.join(','), after: '', before: '' });
+	}
 </script>
 
 <GraphErrors errors={$TeamIssues.errors} />
 
-<div class="wrapper">
+<div class="layout-two-column">
 	<div>
-		<List
-			title="{issueCount} issue{issueCount !== 1 ? 's' : ''}
-						{issueCount !== totalCount ? `(of total ${totalCount})` : ''}"
-		>
-			{#snippet menu()}
-				<ActionMenu>
-					{#snippet trigger(props)}
-						<Button
-							variant="tertiary-neutral"
-							size="small"
-							iconPosition="right"
-							{...props}
-							icon={ChevronDownIcon}
-						>
-							<span style="font-weight: normal">Filters</span>
-						</Button>
-					{/snippet}
-					<ActionMenuGroup label="Environment">
-						<ActionMenuCheckboxItem
-							checked={$TeamIssues.data?.team.environments.every((env) =>
-								filteredEnvs.includes(env.environment.name)
-							)
-								? true
-								: filteredEnvs.length > 0
-									? 'indeterminate'
-									: false}
-							onchange={(checked) => (filteredEnvs = checked ? allEnvs : [])}
-						>
-							All environments
-						</ActionMenuCheckboxItem>
-						{#each $TeamIssues.data?.team.environments ?? [] as { environment, id } (id)}
-							<ActionMenuCheckboxItem
-								checked={filteredEnvs.includes(environment.name)}
-								onchange={(checked) =>
-									(filteredEnvs = checked
-										? [...filteredEnvs, environment.name]
-										: filteredEnvs.filter((env) => env !== environment.name))}
-							>
-								{environment.name}
-							</ActionMenuCheckboxItem>
-						{/each}
-					</ActionMenuGroup>
-					<IssueTypeSeverityFilters
-						severity={page.url.searchParams.get('severity') ?? ''}
-						issueType={page.url.searchParams.get('issueType') ?? ''}
-						onSeverityChange={(severity) => changeQuery({ severity })}
-						onIssueTypeChange={(issueType) => changeQuery({ issueType })}
-					/>
-				</ActionMenu>
-				<OrderByMenu orderField={IssueOrderField} defaultOrderField={IssueOrderField.SEVERITY} />
-			{/snippet}
+		<List title="Issues" count={issues?.pageInfo.totalCount ?? 0}>
 			{#each issues?.nodes ?? [] as issue (issue.id)}
 				<IssueListItem item={issue} />
 			{:else}
 				<ListItem>
-					<span class="empty-state">No issues found</span>
+					{#if totalCount === 0}
+						<span class="empty-state">No issues found</span>
+					{:else}
+						<span class="empty-state"
+							>No issues match the current filters. Try adjusting your filters.</span
+						>
+					{/if}
 				</ListItem>
 			{/each}
 		</List>
@@ -134,16 +140,32 @@
 			/>
 		{/if}
 	</div>
+	<div class="layout-sidebar">
+		<SurfaceCard title="Filters">
+			<ListFilters
+				{sortFields}
+				{currentSortField}
+				{currentSortDirection}
+				onSort={(field) => setSort(field as IssueOrderFieldOptions)}
+			>
+				<IssuesFacets
+					severities={severityFacets}
+					{issueTypes}
+					environments={allEnvironments}
+					{selectedSeverity}
+					{selectedIssueType}
+					{selectedEnvironments}
+					onSeverityChange={handleSeverityChange}
+					onIssueTypeChange={handleIssueTypeChange}
+					onEnvironmentsChange={handleEnvironmentsChange}
+				/>
+			</ListFilters>
+		</SurfaceCard>
+	</div>
 </div>
 
 <style>
-	.wrapper {
-		display: flex;
-		flex-direction: column;
-		gap: var(--spacing-layout);
-	}
-
 	.empty-state {
-		color: var(--ax-text-subtle);
+		color: var(--ax-text-neutral-subtle);
 	}
 </style>

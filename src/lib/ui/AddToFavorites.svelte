@@ -25,5 +25,6 @@
 		variant="tertiary-neutral"
 		onclick={toggleFavorite}
 		icon={isFavorite ? StarFillIcon : StarIcon}
+		aria-label={isFavorite ? 'Remove from favorites' : 'Add to favorites'}
 	/>
 </Tooltip>

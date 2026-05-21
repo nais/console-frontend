@@ -5,22 +5,9 @@ query Buckets(
 	$last: Int
 	$before: Cursor
 	$after: Cursor
-	$from: Date!
-	$to: Date!
 ) {
 	team(slug: $team) {
 		slug
-		cost {
-			daily(from: $from, to: $to, filter: { services: ["Cloud Storage"] }) {
-				series {
-					services {
-						service
-					}
-					date
-					sum
-				}
-			}
-		}
 
 		buckets(first: $first, last: $last, orderBy: $orderBy, before: $before, after: $after)
 			@paginate(mode: SinglePage) {

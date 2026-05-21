@@ -120,9 +120,10 @@ Generates Svelte Playground link. Ask user first, and NEVER if code was written 
 2. **Never invent** CSS variable names like `--ax-font-family-mono`, `--ax-color-*`, etc.
 3. **For font-family**: Use `font-family: monospace` directly (not a CSS variable)
 4. **For spacing**: Use the predefined spacing scale, not arbitrary values
-5. **Run validation**: The project’s ESLint configuration includes project checks for missing CSS variables and unused GraphQL files
-6. **When in doubt**: Search existing `.svelte` and `.css` files for similar patterns before creating new styles
-7. **Lists are non-exhaustive**: The design system has more tokens than listed here; use the ESLint checks to confirm
+5. **For text color**: Prefer `--ax-text-neutral` as the default text color. Only use `--ax-text-subtle` when explicitly asked for subdued/secondary text
+6. **Run validation**: The project's ESLint configuration includes project checks for missing CSS variables and unused GraphQL files
+7. **When in doubt**: Search existing `.svelte` and `.css` files for similar patterns before creating new styles
+8. **Lists are non-exhaustive**: The design system has more tokens than listed here; use the ESLint checks to confirm
 
 ---
 
@@ -168,6 +169,12 @@ This project uses **Houdini** for GraphQL, not Apollo or other clients.
 - Mutations pass variables directly: `await myMutation.mutate({ id, name })`
 - Check for errors: `if ($myQuery.errors) { ... }`
 - Use `$myQuery.fetching` for loading states
+
+### Query Design Rules:
+
+- **Never use `first: <high_number>`** (e.g., `first: 500`, `first: 9999`) to fetch all items in a paginated connection. This is a code smell that means the API is missing a proper resolver.
+- If you need an overview of all items (e.g., all applications for a team), the backend in [nais/api](https://github.com/nais/api) should expose a dedicated field or resolver that returns the full list without requiring pagination hacks.
+- Do not work around missing backend capabilities by over-fetching on the frontend. Instead, flag it as a missing API feature that needs a backend change.
 
 ### Example (.gql file for routes):
 
@@ -234,6 +241,120 @@ Use `@nais/ds-svelte-community` components, not custom implementations:
 
 ---
 
+## Design Guidelines
+
+This project layers project-level design conventions on top of the `@nais/ds-svelte-community` design system. Always prefer design system components and `--ax-*` tokens first; the `--surface-*` variables are project extensions that compose them.
+
+### Layout Utility Classes
+
+Global utility classes defined in `src/styles/app.css` for common page patterns. **Use these instead of writing per-component layout CSS:**
+
+- `.layout-two-column` — two-column grid (`1fr 300px`) with `--spacing-layout` gap. Collapses to single column on mobile (`max-width: 767px`).
+- `.layout-sidebar` — grid with `--ax-space-24` gap, `align-content: start`. Use for the sidebar column inside `.layout-two-column`.
+- `.table-scroll` — horizontal scroll wrapper for wide tables. Wrap the `<Table>` with this instead of per-component overflow CSS.
+- `.detail-actions` — right-aligned flex row for action buttons above content (e.g., edit/delete buttons).
+- `.loading-centered` — centered flex container (300px height) for loading spinners.
+- `.settings-list` — grid-based `<dl>` for key-value pairs (`18ch` label column + `1fr` value column). Collapses to stacked layout on mobile. Bold `dt` with `--ax-text-neutral-subtle` color.
+
+### Surface System
+
+Global CSS custom properties and utility classes defined in `src/styles/app.css`:
+
+- `--surface-accent-color` — brand accent (uses `--ax-text-brand-blue`), with dark mode override
+- `--surface-icon-size` / `--surface-icon-glyph-size` — icon container and glyph sizing (default `2.25rem` / `1.5rem`)
+- `--surface-elevated-background` / `--surface-elevated-shadow` — gradient background and layered shadow for elevated cards
+- `--surface-icon-background` / `--surface-icon-shadow` — gradient fill and inset shadow for icon containers
+
+Global utility classes:
+
+- `.surface-icon` — rounded icon container with gradient background and shadow. Override `--surface-icon-size` locally for compact contexts (e.g., `2rem` in sidebar cards).
+- `.surface-icon-timeline` — adds `position: relative; z-index: 1` so timeline connector lines render behind the icon.
+- `.surface-interactive` — hoverable card/link surface with subtle border, lift-on-hover transform, and accent tint.
+
+### SurfaceCard Component
+
+Use `SurfaceCard` (`$lib/ui/SurfaceCard.svelte`) for **sidebar cards only**:
+
+- Props: `title` (uppercase eyebrow label), `headerAside` (snippet), `bordered`
+- Applies `--surface-elevated-background` and `--surface-elevated-shadow`
+- Use for sidebar widgets, sidebar info panels, and dashboard overview panels
+- **Never use in main content pane** — use `<section aria-labelledby>` + `<Heading>` instead
+
+### Main Content Sections
+
+For content in the main column (left side of `.layout-two-column`):
+
+```svelte
+<section aria-labelledby="my-section-heading">
+	<Heading as="h2" size="small" id="my-section-heading">Section Title</Heading>
+	<!-- section content -->
+</section>
+```
+
+- Use `<section aria-labelledby>` for WCAG landmark navigation
+- Use `<Heading>` with appropriate level (`h2` for top-level sections, `h3` for subsections)
+- Separate sections with flex gap (`.main-column` with `gap: var(--ax-space-32)`)
+
+### Tab Navigation Pattern
+
+Use `Tabs`, `TabList`, `Tab` from `@nais/ds-svelte-community` for route-based sub-navigation:
+
+- Size: `"small"`
+- Render tabs as anchor links: `<Tab as="a" href={...}>`
+- Define tabs as a `$derived` array of `{ value, label, href }` where `value` is the SvelteKit route ID
+- Match active tab via `page.route.id`
+- Hide the tab bar when the current route doesn't match any tab (`visibleTabs` pattern)
+- See `src/routes/team/[team]/[env]/app/[app]/+layout.svelte` for reference
+
+### Timeline / Activity Log Pattern
+
+For vertical timelines with icon nodes:
+
+- Use `.surface-icon.surface-icon-timeline` for each icon node
+- Timeline connector: `::before` pseudo-element on `.activity-item:not(:last-child)` — a 2px vertical line using `--ax-border-neutral-subtleA`
+- Hide the connector on the last child and on mobile (`@media (max-width: 767px)`)
+- Override `--surface-icon-size` to `2rem` in compact card contexts
+- Map GraphQL `__typename` to icon components via a shared `Record<string, Component>` (see `src/lib/domain/activity/activity-log-icons.ts`)
+
+### Dynamic Component Dispatch
+
+When rendering type-specific content from GraphQL unions:
+
+- Create a lookup function that maps `__typename` → Svelte component
+- All variant components share a common props interface (e.g., `{ data: FragmentType }`)
+- Provide a `DefaultText` fallback for unknown or new types
+- See `src/lib/domain/activity/workload/textComponent.ts` for reference
+
+### Key Rules
+
+1. **Components first**: Use `@nais/ds-svelte-community` components (`Button`, `Tabs`, `Alert`, `Tooltip`, `Table`, etc.) before building custom HTML
+2. **Tokens first**: Use `--ax-*` tokens for spacing, colors, borders, and radii — never hardcode raw values
+3. **Utility classes first**: Use the layout utility classes (`.layout-two-column`, `.table-scroll`, etc.) before writing custom layout CSS
+4. **Surface variables compose tokens**: The `--surface-*` variables are project-level abstractions built from `--ax-*` tokens — do not bypass them with raw color values
+5. **Icons**: Import from `@nais/ds-svelte-community/icons` or `$lib/icons/` — never use inline SVGs
+6. **Dark mode**: The surface system handles dark mode via CSS selectors on the root element; do not add separate dark-mode overrides for surface properties
+7. **No hardcoded values**: Use `gap: var(--ax-space-8)` not `gap: 0.5rem`; use `border-radius: var(--ax-radius-medium)` not `border-radius: 8px`; use `color: var(--ax-text-neutral)` not `color: #333`
+
+---
+
+### CSS Architecture
+
+Styles are organized with `@layer` ordering in `src/styles/app.css`:
+
+```
+@layer theme, base, components, utilities;
+```
+
+- `src/styles/app.css` — global variables, utility classes, surface system
+- `src/styles/layerchart.css` — maps LayerChart `--color-*` variables to `--ax-*` tokens. **Must include a `.dark, .dark-theme` block** re-declaring the same mappings because `--ax-*` tokens resolve to different values inside dark-scoped elements.
+- `src/styles/colors.css` — chart/visualization color palette (raw hex is acceptable here for data visualization)
+
+#### LayerChart Dark Mode
+
+The `layerchart.css` file has both a `:root` and a `.dark, .dark-theme` block with identical-looking declarations. **Do not remove the dark block** — CSS custom properties are scope-dependent. `var(--ax-neutral-000)` resolves to white at `:root` but to dark navy inside `.dark`, because the design system redefines tokens at that scope level.
+
+---
+
 ## Responsive UI / Mobile
 
 - New pages and substantial page changes must work on narrow mobile widths, not just desktop layouts.
@@ -242,6 +363,28 @@ Use `@nais/ds-svelte-community` components, not custom implementations:
 - Keep pagination outside horizontal scroll containers.
 - Avoid blanket `white-space: nowrap` and large fixed `min-width` rules across entire tables; let value-heavy columns wrap and keep only the columns that need it non-wrapping.
 - If tabs overflow on narrow screens, make the tab row horizontally scrollable and keep labels on a single line.
+
+---
+
+## Accessibility & WCAG Compliance
+
+This project targets **WCAG 2.0 AA compliance** as a minimum standard.
+
+All UI changes and accessibility work must meet this level:
+
+- **Semantic HTML**: Use proper heading hierarchy (h1-h6 in logical order), semantic elements (`<button>`, `<a>`, `<nav>`, `<main>`, etc.), and avoid div soup
+- **Heading structure**:
+  - The page **h1** (job/app name) is provided by the layout/PageHeader component — do not duplicate it in page content
+  - Page content starts with **h2** peer headings for main sections (e.g., "Job runs", "Configuration", "Deployments")
+  - Subsections within those use **h3, h4** as appropriate (e.g., "Schedule" and "Next run" under Configuration)
+- **Color contrast**: Ensure 4.5:1 contrast ratio for text and 3:1 for UI components (AA standard)
+- **Focus indicators**: All interactive elements must have visible focus states; don't remove or hide native focus outlines without replacing them
+- **Keyboard navigation**: All functionality must be accessible via keyboard; don't trap focus
+- **ARIA labels**: Use `aria-label`, `aria-labelledby`, `aria-describedby` when semantic HTML isn't sufficient; especially for icon-only buttons
+- **Empty states**: Use consistent patterns (see List component with ListItem for empty states)
+- **Form fields**: Always associate labels with inputs; use semantic form elements
+- **Icons**: Provide text alternatives; use `aria-label` for icon-only buttons
+- **Link text**: Avoid "click here"; use descriptive link text that makes sense out of context
 
 ---
 
@@ -266,6 +409,19 @@ All of these must pass before committing. If prettier reports issues, fix them w
 - Routes: Lowercase with brackets for params (e.g., `[team]/+page.svelte`)
 - Utilities: camelCase (e.g., `formatters.ts`)
 - Tests: `*.test.ts`
+
+---
+
+## PR Review Comments
+
+When asked to address Copilot (or other) review comments on a PR:
+
+1. Fetch the review comments and implement the fixes
+2. Commit and push the changes
+3. Reply to **each** review comment thread individually with a short summary of what was done (or why no change was needed)
+4. Resolve each review thread after replying
+
+Do not post a single top-level PR comment summarizing all fixes — reply directly on each thread instead.
 
 ---
 

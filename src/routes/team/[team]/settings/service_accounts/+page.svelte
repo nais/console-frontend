@@ -2,11 +2,13 @@
 	import ServiceAccountListItem from '$lib/domain/list-items/ServiceAccountListItem.svelte';
 	import GraphErrors from '$lib/ui/GraphErrors.svelte';
 	import List from '$lib/ui/List.svelte';
+	import PageModal, { pageModalClick } from '$lib/ui/PageModal.svelte';
 	import Pagination from '$lib/ui/Pagination.svelte';
 	import { changeParams } from '$lib/utils/searchparams';
 	import { BodyLong, Button } from '@nais/ds-svelte-community';
 	import { PlusIcon } from '@nais/ds-svelte-community/icons';
 	import type { PageProps } from './$types';
+	import CreatePage from './create/+page.svelte';
 
 	let { data }: PageProps = $props();
 	let { TeamServiceAccounts, viewerIsOwner, isAdmin, teamSlug } = $derived(data);
@@ -22,6 +24,8 @@
 			after: params.after ?? after
 		});
 	};
+
+	const createUrl = $derived(`/team/${teamSlug}/settings/service_accounts/create`);
 </script>
 
 <GraphErrors errors={$TeamServiceAccounts.errors} />
@@ -32,27 +36,22 @@
 		to query or manage the team's resources.
 	</BodyLong>
 
-	{#if viewerIsOwner || isAdmin}
-		<div class="actions">
-			<Button
-				size="small"
-				variant="secondary"
-				icon={PlusIcon}
-				as="a"
-				href="/team/{teamSlug}/settings/service_accounts/create"
-			>
-				Create service account
-			</Button>
-		</div>
-	{/if}
-
 	{#if serviceAccounts && serviceAccounts.nodes.length > 0}
-		<List
-			title="{serviceAccounts.pageInfo.totalCount} service account{serviceAccounts.pageInfo
-				.totalCount !== 1
-				? 's'
-				: ''}"
-		>
+		<List title="Service accounts" count={serviceAccounts.pageInfo.totalCount}>
+			{#snippet actions()}
+				{#if viewerIsOwner || isAdmin}
+					<Button
+						size="small"
+						variant="secondary"
+						icon={PlusIcon}
+						as="a"
+						href={createUrl}
+						onclick={pageModalClick}
+					>
+						Create service account
+					</Button>
+				{/if}
+			{/snippet}
 			{#each serviceAccounts.nodes as sa (sa.id)}
 				<ServiceAccountListItem
 					serviceAccount={sa}
@@ -72,12 +71,22 @@
 			}}
 		/>
 	{:else if serviceAccounts}
+		{#if viewerIsOwner || isAdmin}
+			<Button
+				size="small"
+				variant="secondary"
+				icon={PlusIcon}
+				as="a"
+				href={createUrl}
+				onclick={pageModalClick}
+			>
+				Create service account
+			</Button>
+		{/if}
 		<BodyLong><strong>No service accounts found.</strong></BodyLong>
 	{/if}
 </div>
 
-<style>
-	.actions {
-		margin-bottom: 1rem;
-	}
-</style>
+{#if viewerIsOwner || isAdmin}
+	<PageModal content={CreatePage} header="Create service account" />
+{/if}

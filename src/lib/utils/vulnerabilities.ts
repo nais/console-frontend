@@ -13,16 +13,16 @@ export function severityToColor({
 	if (isText) {
 		switch (severity) {
 			case 'critical':
-				return 'var(--ax-danger-600)';
+				return 'var(--ax-text-danger-decoration)';
 			case 'high':
-				return 'color-mix(in oklab, var(--ax-danger-600), var(--ax-warning-400))';
+				return 'var(--ax-text-warning-decoration)';
 			case 'medium':
-				return 'var(--ax-warning-400)';
+				return 'color-mix(in oklab, var(--ax-text-warning-decoration), var(--ax-text-success-decoration))';
 			case 'low':
-				return 'var(--ax-success-500)';
+				return 'var(--ax-text-success-decoration)';
 			case 'unassigned':
 			default:
-				return 'var(--ax-neutral-600)';
+				return 'var(--ax-text-neutral-subtle)';
 		}
 	} else if (isGraph) {
 		switch (severity) {
@@ -41,16 +41,16 @@ export function severityToColor({
 	} else {
 		switch (severity) {
 			case 'critical':
-				return 'var(--ax-danger-600)';
+				return 'var(--ax-text-danger)';
 			case 'high':
-				return 'color-mix(in oklab, var(--ax-danger-600), var(--ax-warning-200))';
+				return 'color-mix(in oklab, var(--ax-text-danger), var(--ax-text-warning))';
 			case 'medium':
-				return 'var(--ax-warning-200)';
+				return 'var(--ax-text-warning)';
 			case 'low':
-				return 'var(--ax-success-400)';
+				return 'var(--ax-text-success)';
 			case 'unassigned':
 			default:
-				return 'var(--ax-neutral-400)';
+				return 'var(--ax-text-neutral-subtle)';
 		}
 	}
 }
@@ -67,9 +67,9 @@ export function severityToVariant(
 		case 'critical':
 			return 'error';
 		case 'high':
-			return 'error';
-		case 'medium':
 			return 'warning';
+		case 'medium':
+			return 'info';
 		case 'low':
 			return 'success';
 		case 'unassigned':

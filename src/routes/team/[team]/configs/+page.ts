@@ -1,4 +1,4 @@
-import { load_Configs, OrderDirection, ConfigOrderField, type ConfigFilter } from '$houdini';
+import { ConfigOrderField, load_Configs, OrderDirection, type ConfigFilter } from '$houdini';
 import { urlToOrderDirection, urlToOrderField } from '$lib/ui/OrderByMenu.svelte';
 import { addPageMeta } from '$lib/utils/pageMeta';
 
@@ -21,7 +21,11 @@ export async function load(event) {
 	const before = event.url.searchParams.get('before') || '';
 
 	return {
-		...(await addPageMeta(event, { title: 'Config' })),
+		...(await addPageMeta(event, {
+			title: 'Configs',
+			pageHeaderTitle: '',
+			docPath: '/services/config'
+		})),
 		...(await load_Configs({
 			event,
 			variables: {

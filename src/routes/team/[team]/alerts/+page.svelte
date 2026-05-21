@@ -1,32 +1,89 @@
 <script lang="ts">
 	import { page } from '$app/state';
-	import { AlertOrderField } from '$houdini';
+	import { AlertOrderField, OrderDirection } from '$houdini';
 	import { docURL, tenantURL } from '$lib/doc';
+	import AlertsFacets from '$lib/domain/alerts/AlertsFacets.svelte';
 	import CodeBlockPromQl from '$lib/domain/monitoring/CodeBlockPromQL.svelte';
 	import { formatSeconds } from '$lib/domain/vulnerability/dateUtils';
 	import { envTagVariant } from '$lib/envTagVariant';
 	import ExternalLink from '$lib/ui/ExternalLink.svelte';
 	import List from '$lib/ui/List.svelte';
-	import OrderByMenu from '$lib/ui/OrderByMenu.svelte';
+	import ListFilters from '$lib/ui/ListFilters.svelte';
+	import ListItem from '$lib/ui/ListItem.svelte';
 	import Pagination from '$lib/ui/Pagination.svelte';
+	import SurfaceCard from '$lib/ui/SurfaceCard.svelte';
 	import { changeParams } from '$lib/utils/searchparams';
-	import { BodyLong, Button, CopyButton, Heading, Search, Tag } from '@nais/ds-svelte-community';
-	import { ActionMenu, ActionMenuCheckboxItem } from '@nais/ds-svelte-community/experimental';
-	import {
-		ChevronDownIcon,
-		ChevronRightIcon,
-		ClockDashedIcon
-	} from '@nais/ds-svelte-community/icons';
+	import { CopyButton, Heading, Tag } from '@nais/ds-svelte-community';
+	import { ChevronRightIcon, ClockDashedIcon } from '@nais/ds-svelte-community/icons';
 	import type { PageProps } from './$types';
 	import PrometheusAlarmDetail from './PrometheusAlarmDetail.svelte';
 
 	let { data }: PageProps = $props();
 	let { Alerts, AlertsMetadata } = $derived(data);
 
+	let alerts = $derived($Alerts.data?.team.alerts);
 	let filter = $state($Alerts.variables?.filter?.name ?? '');
 
 	let after: string = $derived($Alerts.variables?.after ?? '');
 	let before: string = $derived($Alerts.variables?.before ?? '');
+
+	const totalAlerts = $derived($AlertsMetadata.data?.team.totalAlerts.pageInfo.totalCount ?? 0);
+
+	const allEnvironments = $derived($AlertsMetadata.data?.team.environments ?? []);
+
+	const stateFacets = $derived([
+		{
+			state: 'FIRING',
+			count: $AlertsMetadata.data?.team.firingAlerts.pageInfo.totalCount ?? 0
+		},
+		{
+			state: 'INACTIVE',
+			count: $AlertsMetadata.data?.team.inactiveAlerts.pageInfo.totalCount ?? 0
+		}
+	]);
+
+	let selectedEnvironments: string[] = $derived(
+		page.url.searchParams.get('environments')?.split(',').filter(Boolean) ?? []
+	);
+
+	let selectedStates: string[] = $derived(
+		page.url.searchParams.get('states')?.split(',').filter(Boolean) ?? []
+	);
+
+	type AlertOrderFieldOptions = (typeof AlertOrderField)[keyof typeof AlertOrderField];
+	type OrderDirectionOptions = (typeof OrderDirection)[keyof typeof OrderDirection];
+
+	const sortFields: { value: AlertOrderFieldOptions; label: string }[] = [
+		{ value: AlertOrderField.STATE, label: 'State' },
+		{ value: AlertOrderField.NAME, label: 'Name' },
+		{ value: AlertOrderField.ENVIRONMENT, label: 'Environment' }
+	];
+
+	const currentSortField: AlertOrderFieldOptions = $derived(
+		(Object.values(AlertOrderField).find((f) =>
+			page.url.searchParams.get('sort')?.startsWith(f)
+		) as AlertOrderFieldOptions | undefined) ?? AlertOrderField.STATE
+	);
+
+	const currentSortDirection: OrderDirectionOptions = $derived(
+		(Object.values(OrderDirection).find((d) => page.url.searchParams.get('sort')?.endsWith(d)) as
+			| OrderDirectionOptions
+			| undefined) ?? OrderDirection.ASC
+	);
+
+	function setSort(field: AlertOrderFieldOptions) {
+		const defaultDirection =
+			field === AlertOrderField.NAME || field === AlertOrderField.ENVIRONMENT
+				? OrderDirection.ASC
+				: OrderDirection.DESC;
+		const direction =
+			field === currentSortField
+				? currentSortDirection === OrderDirection.ASC
+					? OrderDirection.DESC
+					: OrderDirection.ASC
+				: defaultDirection;
+		changeParams({ sort: `${field}-${direction}`, after: '', before: '' }, { noScroll: true });
+	}
 
 	function makeGrafanaExploreUrl(query: string): string {
 		const params = new URLSearchParams({
@@ -52,139 +109,51 @@
 		return tenantURL('grafana', `/explore?${params.toString()}`);
 	}
 
-	const totalAlerts = $derived($AlertsMetadata.data?.team.totalAlerts.pageInfo.totalCount ?? 0);
-
-	const allEnvs = $derived(
-		$AlertsMetadata.data?.team.environments.map((env) => env.environment.name) ?? []
-	);
-
-	let filteredEnvs = $derived(page.url.searchParams.get('environments')?.split(',') ?? allEnvs);
-
-	$effect(() => {
-		const environments = filteredEnvs.length === allEnvs.length ? '' : filteredEnvs.join(',');
-
-		if (environments !== (page.url.searchParams.get('environments') ?? '')) {
-			changeQuery({ environments });
-		}
-	});
-
 	const changeQuery = (
 		params: {
 			after?: string;
 			before?: string;
 			newFilter?: string;
 			environments?: string;
+			states?: string;
 		} = {}
 	) => {
-		changeParams({
-			before: params.before ?? before,
-			after: params.after ?? after,
-			filter: params.newFilter ?? filter,
-			environments: params.environments ?? ''
-		});
+		changeParams(
+			{
+				before: params.before ?? before,
+				after: params.after ?? after,
+				filter: params.newFilter ?? filter,
+				environments: params.environments ?? (selectedEnvironments.join(',') || ''),
+				states: params.states ?? (selectedStates.join(',') || '')
+			},
+			{ noScroll: true }
+		);
 	};
+
+	function handleStatesChange(selected: string[]) {
+		changeQuery({ states: selected.join(','), after: '', before: '' });
+	}
+
+	function handleEnvironmentsChange(selected: string[]) {
+		changeQuery({ environments: selected.join(','), after: '', before: '' });
+	}
 </script>
 
-<div class="wrapper">
+<div class="layout-two-column">
 	<div>
-		<BodyLong spacing>
-			{#if totalAlerts == 0}
-				<strong>No alerts found.</strong>
-			{/if}
-			Alerts notify you when something needs your attention. If your alert rules don't appear here, check
-			that each rule has a <strong>team</strong> or <strong>namespace</strong> label set.
-			<ExternalLink href={docURL('/observability/alerting')}
-				>Learn more about alerts and how to get started.</ExternalLink
-			>
-		</BodyLong>
-		{#if totalAlerts > 0}
-			{@const alerts = $Alerts.data?.team.alerts}
-			<div class="search">
-				<form
-					onsubmit={(e) => {
-						e.preventDefault();
-						changeQuery({ newFilter: filter });
-					}}
-				>
-					<Search
-						clearButton={true}
-						clearButtonLabel="Clear"
-						label="filter alerts"
-						placeholder="Filter by name"
-						hideLabel={true}
-						size="small"
-						variant="simple"
-						width="100%"
-						autocomplete="off"
-						bind:value={filter}
-						onclear={() => {
-							filter = '';
-							changeQuery({ newFilter: '' });
-						}}
-					/>
-				</form>
-			</div>
-
-			<List
-				title="{alerts?.pageInfo.totalCount} alert rule{alerts?.pageInfo.totalCount !== 1
-					? 's'
-					: ''}
-						{alerts?.pageInfo.totalCount !== totalAlerts ? `(of total ${totalAlerts})` : ''}"
-			>
-				{#snippet menu()}
-					<ActionMenu>
-						{#snippet trigger(props)}
-							<Button
-								variant="tertiary-neutral"
-								size="small"
-								iconPosition="right"
-								{...props}
-								icon={ChevronDownIcon}
-							>
-								<span style="font-weight: normal">Environment</span>
-							</Button>
-						{/snippet}
-						<ActionMenuCheckboxItem
-							checked={$Alerts.data?.team.environments.every((env) =>
-								filteredEnvs.includes(env.environment.name)
-							)
-								? true
-								: filteredEnvs.length > 0
-									? 'indeterminate'
-									: false}
-							onchange={(checked) => (filteredEnvs = checked ? allEnvs : [])}
-						>
-							All environments
-						</ActionMenuCheckboxItem>
-						{#each $Alerts.data?.team.environments ?? [] as { environment, id } (id)}
-							<ActionMenuCheckboxItem
-								checked={filteredEnvs.includes(environment.name)}
-								onchange={(checked) =>
-									(filteredEnvs = checked
-										? [...filteredEnvs, environment.name]
-										: filteredEnvs.filter((env) => env !== environment.name))}
-							>
-								{environment.name}
-							</ActionMenuCheckboxItem>
-						{/each}
-					</ActionMenu>
-					<OrderByMenu orderField={AlertOrderField} defaultOrderField={AlertOrderField.STATE} />
-				{/snippet}
-				{#each alerts?.nodes ?? [] as alert (alert.id)}
+		<List title="Alerts" count={alerts?.pageInfo.totalCount ?? 0}>
+			{#if alerts && alerts.nodes.length > 0}
+				{#each alerts.nodes as alert (alert.id)}
 					<details class="item">
 						<summary class="head">
 							<div class="chev">
 								<ChevronRightIcon />
 							</div>
-							<div class="titleblock">
-								<div class="titleline">
-									<Heading size="xsmall" as="h2" title={alert.name}>{alert.name}</Heading>
-								</div>
-								<div class="subtitle">
-									<Tag size="small" variant={envTagVariant(alert.teamEnvironment.environment.name)}>
-										{alert.teamEnvironment.environment.name}
-									</Tag>
-								</div>
+							<div class="name-group">
+								<span class="item-name" title={alert.name}>{alert.name}</span>
+								<Tag size="xsmall" variant={envTagVariant(alert.teamEnvironment.environment.name)}
+									>{alert.teamEnvironment.environment.name}</Tag
+								>
 							</div>
 
 							<div class="state">
@@ -238,50 +207,64 @@
 						{/if}
 					</details>
 				{/each}
-			</List>
+			{:else if totalAlerts === 0}
+				<ListItem>
+					<p>
+						No alerts found. Alerts notify you when something needs your attention.
+						<ExternalLink href={docURL('/observability/alerting')}
+							>Learn more about alerts and how to get started.</ExternalLink
+						>
+					</p>
+				</ListItem>
+			{:else}
+				<ListItem>
+					<p>No alerts match the current filters. Try adjusting your filters.</p>
+				</ListItem>
+			{/if}
+		</List>
 
-			<Pagination
-				page={alerts?.pageInfo}
-				loaders={{
-					loadPreviousPage: () =>
-						changeQuery({ before: alerts?.pageInfo.startCursor ?? '', after: '' }),
-					loadNextPage: () => changeQuery({ after: alerts?.pageInfo.endCursor ?? '', before: '' })
+		<Pagination
+			page={alerts?.pageInfo}
+			loaders={{
+				loadPreviousPage: () =>
+					changeQuery({ before: alerts?.pageInfo.startCursor ?? '', after: '' }),
+				loadNextPage: () => changeQuery({ after: alerts?.pageInfo.endCursor ?? '', before: '' })
+			}}
+		/>
+	</div>
+	<div class="layout-sidebar">
+		<SurfaceCard title="Filters">
+			<ListFilters
+				{filter}
+				searchPlaceholder="Filter by name"
+				searchLabel="Filter alerts"
+				{sortFields}
+				{currentSortField}
+				{currentSortDirection}
+				onFilterInput={(v) => (filter = v)}
+				onFilterSubmit={() => changeQuery({ newFilter: filter })}
+				onFilterClear={() => {
+					filter = '';
+					changeQuery({ newFilter: '' });
 				}}
-			/>
-		{/if}
+				onSort={(field) => setSort(field as AlertOrderFieldOptions)}
+			>
+				<AlertsFacets
+					environments={allEnvironments}
+					states={stateFacets}
+					{selectedStates}
+					{selectedEnvironments}
+					onStatesChange={handleStatesChange}
+					onEnvironmentsChange={handleEnvironmentsChange}
+				/>
+			</ListFilters>
+		</SurfaceCard>
 	</div>
 </div>
 
 <style>
-	.wrapper {
-		display: grid;
-		grid-template-columns: 1fr 300px;
-		gap: var(--spacing-layout);
-	}
-	.search {
-		display: flex;
-		justify-content: flex-end;
-		margin-bottom: 1rem;
-	}
-	.search form {
-		width: min(100%, 320px);
-	}
-
 	/* Mobile responsive layout */
 	@media (max-width: 767px), (max-height: 500px) {
-		.wrapper {
-			grid-template-columns: 1fr;
-			gap: var(--ax-space-24);
-		}
-
-		.search {
-			justify-content: stretch;
-		}
-
-		.search form {
-			width: 100%;
-		}
-
 		.query-heading {
 			flex-direction: column;
 			align-items: flex-start;
@@ -303,26 +286,26 @@
 	}
 
 	.item {
-		background: var(--ax-neutral-100);
+		background: var(--ax-bg-default);
+		border-bottom: 1px solid var(--ax-border-neutral-subtleA);
 	}
 
 	.head {
 		display: grid;
 		grid-template-columns: 22px 1fr auto;
 		align-items: center;
-		gap: 12px;
+		gap: var(--ax-space-12);
 		padding: 10px 14px;
 		cursor: pointer;
-		padding: 10px 14px;
+		transition: background-color 120ms ease;
 	}
 
 	.item:not([open]) > summary.head:hover {
-		box-shadow: inset 0 0 0 9999px var(--ax-neutral-300);
-		transition: box-shadow 0.12s ease;
+		background: color-mix(in srgb, var(--surface-accent-color) 6%, var(--ax-bg-default));
 	}
 
 	.item[open] > summary.head {
-		background-color: var(--ax-neutral-300);
+		background: color-mix(in srgb, var(--surface-accent-color) 10%, var(--ax-bg-default));
 	}
 
 	.chev {
@@ -335,22 +318,26 @@
 		transform: rotate(90deg);
 	}
 
-	.titleblock {
-		min-width: 0;
-	}
-	.titleline {
+	.name-group {
 		display: flex;
 		align-items: center;
-		gap: 10px;
+		gap: var(--ax-space-8);
 		min-width: 0;
+	}
+	.name-group :global(.aksel-tag) {
+		white-space: nowrap;
+		flex-shrink: 0;
+	}
+	.item-name {
+		color: var(--ax-text-neutral);
+		font-weight: 500;
+		white-space: nowrap;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		min-width: 0;
+		flex: 0 1 auto;
 	}
 
-	.subtitle {
-		display: flex;
-		align-items: center;
-		gap: 10px;
-		margin-top: 2px;
-	}
 	.muted {
 		color: var(--ax-text-neutral);
 	}

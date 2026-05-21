@@ -1,0 +1,7 @@
+query TeamSummaryVulnerabilities($team: Slug!) @cache(policy: CacheAndNetwork) {
+	team(slug: $team) {
+		vulnerabilitySummary {
+			critical
+		}
+	}
+}

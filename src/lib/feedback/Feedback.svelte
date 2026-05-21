@@ -124,6 +124,7 @@
 						style="resize: vertical; min-height: 16rem; "
 						placeholder="Enter your feedback here..."
 						disabled={feedbackSent}
+						aria-describedby="charCount tf-uid-43"
 					></textarea>
 					<span id="charCount"
 						>{maxlength - details.length} character{maxlength - details.length == 1 ? '' : 's'} remaining</span
@@ -163,7 +164,7 @@
 		display: flex;
 		flex-direction: column;
 		padding: 1rem;
-		gap: 1rem;
+		gap: var(--ax-space-16);
 	}
 	.details {
 		display: flex;
@@ -172,7 +173,7 @@
 	}
 	#charCount {
 		font-size: 0.75rem;
-		color: var(--ax-text-subtle);
+		color: var(--ax-text-neutral-subtle);
 		margin: 0;
 		padding-top: 0.2rem;
 	}

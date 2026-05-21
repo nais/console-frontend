@@ -13,20 +13,26 @@ const rows = 25;
 export async function load(event) {
 	const filter: string = event.url.searchParams.get('filter') || '';
 	const environments: string[] | undefined =
-		event.url.searchParams.get('environments') === 'none'
-			? undefined
-			: event.url.searchParams.get('environments')?.split(',') || [];
+		event.url.searchParams.get('environments')?.split(',').filter(Boolean) || undefined;
+
+	const states: string[] | undefined =
+		event.url.searchParams.get('states')?.split(',').filter(Boolean) || undefined;
 
 	const after = event.url.searchParams.get('after') || '';
 	const before = event.url.searchParams.get('before') || '';
 
 	return {
-		...(await addPageMeta(event, { title: 'Jobs' })),
+		...(await addPageMeta(event, {
+			title: 'Jobs',
+			pageHeaderTitle: '',
+			docPath: '/workloads/job'
+		})),
 		...(await load_Jobs({
 			event,
+			blocking: true,
 			variables: {
 				team: event.params.team,
-				filter: { name: filter, environments } as TeamJobsFilter,
+				filter: { name: filter, environments, states } as TeamJobsFilter,
 				orderBy: {
 					field: urlToOrderField(JobOrderField, JobOrderField.ISSUES, event.url),
 					direction: urlToOrderDirection(event.url, OrderDirection.DESC)

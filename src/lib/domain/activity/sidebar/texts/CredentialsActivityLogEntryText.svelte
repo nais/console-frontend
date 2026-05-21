@@ -1,7 +1,9 @@
 <script lang="ts">
 	import type { SidebarActivityLogFragment$data } from '$houdini';
-	import Time from '$lib/ui/Time.svelte';
-	import { BodyShort } from '@nais/ds-svelte-community';
+	import { BodyLong } from '@nais/ds-svelte-community';
+	import Meta from '../../Meta.svelte';
+
+	import { activityLogResourceLink } from '../../utils';
 
 	let {
 		data
@@ -22,19 +24,27 @@
 </script>
 
 <div>
-	{serviceLabel} credentials created
-	{#if data.resourceName}
-		for <strong>{data.resourceName}</strong>
-	{/if}
-	{#if data.credentialsData.permission}
-		with {data.credentialsData.permission} access
-	{/if}
-	(TTL: {data.credentialsData.ttl})
-	{#if data.environmentName}
-		in {data.environmentName}
-	{/if}
-	<BodyShort textColor="subtle" size="small">
-		By {data.actor}
-		<Time time={data.createdAt} distance />
-	</BodyShort>
+	<BodyLong size="small">
+		{serviceLabel} credentials created
+		{#if data.resourceName && data.environmentName}
+			for <a
+				href={activityLogResourceLink(
+					data.environmentName,
+					data.resourceType,
+					data.resourceName,
+					data.teamSlug
+				)}>{data.resourceName}</a
+			>
+		{:else if data.resourceName}
+			for {data.resourceName}
+		{/if}
+		{#if data.credentialsData.permission}
+			with {data.credentialsData.permission} access
+		{/if}
+		(TTL: {data.credentialsData.ttl})
+		{#if data.environmentName}
+			in {data.environmentName}
+		{/if}.
+	</BodyLong>
+	<Meta actor={data.actor} createdAt={data.createdAt} />
 </div>

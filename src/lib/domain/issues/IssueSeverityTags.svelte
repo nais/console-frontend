@@ -17,13 +17,13 @@
 	class:stacked={layout === 'stacked'}
 >
 	{#if critical > 0}
-		<Tag variant="error" size="xsmall">{critical} critical issue{critical > 1 ? 's' : ''}</Tag>
+		<Tag variant="error" size="xsmall">{critical} critical {critical > 1 ? 'issues' : 'issue'}</Tag>
 	{/if}
 	{#if warning > 0}
-		<Tag variant="warning" size="xsmall">{warning} warning{warning > 1 ? 's' : ''}</Tag>
+		<Tag variant="warning" size="xsmall">{warning} {warning > 1 ? 'warnings' : 'warning'}</Tag>
 	{/if}
 	{#if todo > 0}
-		<Tag variant="info" size="xsmall">{todo} todo{todo > 1 ? 's' : ''}</Tag>
+		<Tag variant="info" size="xsmall">{todo} {todo > 1 ? 'todos' : 'todo'}</Tag>
 	{/if}
 </div>
 

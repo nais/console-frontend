@@ -73,7 +73,8 @@
 		font-size: 0.9rem;
 	}
 	.cm-host :global(.cm-editor.cm-focused) {
-		outline: none;
+		outline: 2px solid var(--ax-border-focus);
+		outline-offset: -2px;
 	}
 	.cm-host :global(.cm-content) {
 		padding: 10px 12px;

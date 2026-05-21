@@ -164,7 +164,12 @@
 		<IconLabel label={pathToFavoriteLabel(path)} icon={StarFillIcon} size="medium" href={path} />
 		<div class="actions">
 			<Tooltip placement="bottom" content="Remove from favorites">
-				<Button icon={TrashIcon} onclick={removeFavorite} variant="tertiary-neutral" />
+				<Button
+					icon={TrashIcon}
+					onclick={removeFavorite}
+					variant="tertiary-neutral"
+					aria-label="Remove from favorites"
+				/>
 			</Tooltip>
 			<div class="drag-handle" aria-label="Drag to reorder" title="Drag to reorder">
 				<DragVerticalIcon />

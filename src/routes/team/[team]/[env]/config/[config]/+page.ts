@@ -3,7 +3,10 @@ import { addPageMeta } from '$lib/utils/pageMeta';
 
 export async function load(event) {
 	return {
-		...(await addPageMeta(event, { title: event.params.config })),
+		...(await addPageMeta(event, {
+			title: event.params.config,
+			docPath: '/services/config/'
+		})),
 		...(await load_Config({
 			event,
 			variables: {

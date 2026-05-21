@@ -208,7 +208,7 @@
 	.card {
 		margin-bottom: 1rem;
 		background-color: var(--ax-bg-sunken);
-		border-radius: 12px;
+		border-radius: var(--ax-radius-12);
 		align-items: stretch;
 		border: 1px solid var(--ax-border-neutral);
 		padding: var(--ax-space-20);

@@ -4,7 +4,7 @@ import { addPageMeta } from '$lib/utils/pageMeta';
 export async function load(event) {
 	const parent = await event.parent();
 	return {
-		...(await addPageMeta(event, { title: 'Settings' })),
+		...(await addPageMeta(event, { title: 'Team Settings' })),
 		...(await load_TeamSettings({
 			event,
 			variables: {

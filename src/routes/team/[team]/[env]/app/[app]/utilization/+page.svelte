@@ -5,6 +5,7 @@
 	import { UtilizationResourceType, type ResourceUtilizationForApp$result } from '$houdini';
 	import AnnotationSeries from '$lib/chart/AnnotationSeries.svelte';
 	import { docURL } from '$lib/doc';
+	import SurfaceCard from '$lib/ui/SurfaceCard.svelte';
 	import {
 		euroValueFormatter,
 		formatKubernetesCPU,
@@ -28,7 +29,6 @@
 		ToggleGroupItem,
 		Tr
 	} from '@nais/ds-svelte-community';
-	import { WalletFillIcon } from '@nais/ds-svelte-community/icons';
 	import { format } from 'date-fns';
 	import { AreaChart, Tooltip, type ChartAnnotations } from 'layerchart';
 	import prettyBytes from 'pretty-bytes';
@@ -287,14 +287,13 @@
 
 <GraphErrors errors={$ResourceUtilizationForApp.errors} />
 
+<Heading as="h2" size="medium" spacing>Utilization</Heading>
+
 <div class="wrapper">
 	{#if $ResourceUtilizationForApp.data}
 		{@const utilization = $ResourceUtilizationForApp.data.team.environment.application.utilization}
 		<div class="grid">
-			<div class="card">
-				<Heading as="h2" size="medium" spacing
-					><WalletFillIcon class="heading-aligned-icon" /> Cost of Unutilized CPU</Heading
-				>
+			<SurfaceCard title="Cost of Unutilized CPU" level="h3" bordered>
 				<BodyShort spacing
 					>Estimate of annual cost of unutilized CPU for application <strong
 						>{$ResourceUtilizationForApp.data.team.environment.application.name}</strong
@@ -317,11 +316,8 @@
 						)}
 					</div>
 				</div>
-			</div>
-			<div class="card">
-				<Heading as="h2" size="medium" spacing
-					><WalletFillIcon class="heading-aligned-icon" /> Cost of Unutilized Memory</Heading
-				>
+			</SurfaceCard>
+			<SurfaceCard title="Cost of Unutilized Memory" level="h3" bordered>
 				<BodyShort spacing
 					>Estimate of annual cost of unutilized memory for application <strong
 						>{$ResourceUtilizationForApp.data.team.environment.application.name}</strong
@@ -344,10 +340,10 @@
 						)}
 					</div>
 				</div>
-			</div>
+			</SurfaceCard>
 		</div>
 		{#if !$ResourceUtilizationForApp.errors && (!isIn10PercentRange(cpuReq, cpuReqRecommendation) || cpuLimit || !isIn10PercentRange(memReq, memReqRecommendation) || !isIn10PercentRange(memLimit, memLimitRecommendation))}
-			<Heading as="h2" size="medium" spacing>Resource Settings and Recommendations</Heading>
+			<Heading as="h3" size="medium" spacing>Resource Settings and Recommendations</Heading>
 			<BodyLong>
 				<div>
 					⚠️ Your app's resource settings are outside the recommended range. Consider adjusting them
@@ -443,7 +439,7 @@
 
 		<div class="section">
 			<div class="heading-with-toggle">
-				<Heading as="h2" size="medium" spacing>CPU Usage</Heading>
+				<Heading as="h3" size="medium" spacing>CPU Usage</Heading>
 				<ToggleGroup
 					value={interval}
 					onchange={(interval) => changeParams({ interval }, { noScroll: true })}
@@ -453,7 +449,7 @@
 					{/each}
 				</ToggleGroup>
 			</div>
-			<div class="chart h-82.5">
+			<div class="chart h-64">
 				<AreaChart
 					series={cpuChartData}
 					x="timestamp"
@@ -578,7 +574,7 @@
 					contention gracefully. In many cases, workloads can burst beyond their requests when
 					resources are available, ensuring smooth operation during short spikes in demand.
 				</BodyLong>
-				<Heading as="h3" size="small" spacing>Optimize your CPU settings</Heading>
+				<Heading as="h4" size="small" spacing>Optimize your CPU settings</Heading>
 				<BodyLong>
 					<div>
 						✅ If CPU usage is consistently below the request, consider lowering the request to
@@ -603,7 +599,7 @@
 		</div>
 		<div class="section" bind:clientWidth={chartWidth}>
 			<div class="heading-with-toggle">
-				<Heading as="h2" size="medium" spacing>Memory Usage</Heading>
+				<Heading as="h3" size="medium" spacing>Memory Usage</Heading>
 				<ToggleGroup
 					value={interval}
 					onchange={(interval) => changeParams({ interval }, { noScroll: true })}
@@ -614,7 +610,7 @@
 				</ToggleGroup>
 			</div>
 
-			<div class="chart h-82.5">
+			<div class="chart h-64">
 				<AreaChart
 					series={memoryChartData}
 					x="timestamp"
@@ -755,7 +751,7 @@
 			</ReadMore>
 		</div>
 	{:else}
-		<div style="height: 380px; display: flex; justify-content: center; align-items: center;">
+		<div class="loading-centered" role="status" aria-label="Loading">
 			<Loader size="3xlarge" />
 		</div>
 	{/if}
@@ -776,21 +772,15 @@
 	}
 
 	.grid {
-		margin-top: 1rem;
 		display: grid;
 		grid-template-columns: repeat(2, 1fr);
-		column-gap: 1rem;
-		row-gap: 1rem;
-	}
-
-	.card {
-		border-radius: 12px;
-		align-items: stretch;
+		column-gap: var(--ax-space-16);
+		row-gap: var(--ax-space-16);
 	}
 
 	.cost-wrapper {
 		display: flex;
-		gap: 1rem;
+		gap: var(--ax-space-16);
 		justify-content: center;
 	}
 
@@ -805,6 +795,7 @@
 
 	.chart {
 		margin-top: var(--ax-space-16);
+		padding-inline: var(--spacing-layout);
 
 		:global(.annotation) {
 			background-color: var(--ax-bg-neutral-soft);

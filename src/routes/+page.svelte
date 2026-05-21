@@ -43,7 +43,7 @@
 		<div class="content-wrapper">
 			<div class="header">
 				<Heading as="h1" size="large">My Teams</Heading>
-				<Button as="a" size="medium" href="/team/create" variant="primary" onclick={pageModalClick}>
+				<Button as="a" size="small" href="/team/create" variant="primary" onclick={pageModalClick}>
 					Create team
 				</Button>
 			</div>
@@ -78,14 +78,14 @@
 
 <style>
 	.page {
-		padding-top: 4rem;
+		padding-top: var(--spacing-layout);
 	}
 	.content-wrapper {
 		background: var(--ax-bg-default);
 		position: relative;
 		top: -40px;
 		padding: var(--ax-space-24);
-		border-radius: 12px;
+		border-radius: var(--ax-radius-12);
 		max-width: 900px;
 		margin-inline: auto;
 	}

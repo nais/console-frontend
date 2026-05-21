@@ -129,10 +129,9 @@
 
 {#if !$Teams.fetching}
 	<!-- Desktop Table View -->
-	<div class="table-container">
+	<div class="table-scroll" role="region" aria-label="Teams table">
 		<Table
 			size="small"
-			zebraStripes
 			sort={{
 				orderBy: tableSort.orderBy || TeamOrderField.SLUG,
 				direction: tableSort.direction === 'ASC' ? 'ascending' : 'descending'
@@ -163,7 +162,11 @@
 		</Table>
 	</div>
 {:else}
-	<div style="display: flex; justify-content: center; align-items: center; height: 500px;">
+	<div
+		style="display: flex; justify-content: center; align-items: center; height: 500px;"
+		role="status"
+		aria-label="Loading"
+	>
 		<Loader size="3xlarge" />
 	</div>
 {/if}
@@ -195,19 +198,6 @@
 		padding-bottom: var(--spacing-layout);
 		max-width: 100%;
 		overflow-x: auto;
-	}
-
-	.table-container {
-		max-width: 100%;
-		min-width: 0;
-		overflow-x: auto;
-		overscroll-behavior-x: contain;
-		-webkit-overflow-scrolling: touch;
-	}
-
-	.table-container :global(table) {
-		width: max-content;
-		min-width: 100%;
 	}
 
 	@media (max-width: 767px) {

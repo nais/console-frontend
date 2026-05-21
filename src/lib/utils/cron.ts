@@ -15,28 +15,25 @@ function getNextRunTime(
 	cronTimeZone: string,
 	localTimeZone: string,
 	context?: CronContext
-): string {
+): { formatted: string; date: Date } | null {
 	try {
 		const interval = CronExpressionParser.parse(expression, {
 			currentDate: new Date(),
 			tz: cronTimeZone
 		});
 
-		const nextRunInCronTZ = interval.next().toISOString();
+		const nextDate = interval.next().toDate();
 
-		if (!nextRunInCronTZ) {
-			throw new Error('Invalid cron expression');
-		}
-
-		const nextRunInLocalTZ = DateTime.fromISO(nextRunInCronTZ, { zone: 'utc' }).setZone(
-			localTimeZone
-		);
+		const nextRunInLocalTZ = DateTime.fromJSDate(nextDate).setZone(localTimeZone);
 
 		if (!nextRunInLocalTZ.isValid) {
 			throw new Error(`Invalid DateTime for time zone: ${localTimeZone}`);
 		}
 
-		return nextRunInLocalTZ.toFormat('cccc, dd LLL yyyy HH:mm');
+		return {
+			formatted: nextRunInLocalTZ.toFormat('cccc, dd LLL yyyy HH:mm'),
+			date: nextDate
+		};
 	} catch (error) {
 		console.error('Invalid cron schedule while calculating next run time', {
 			expression,
@@ -46,7 +43,7 @@ function getNextRunTime(
 			error,
 			errorMessage: error instanceof Error ? error.message : String(error)
 		});
-		return 'Invalid cron expression or time zone';
+		return null;
 	}
 }
 
@@ -58,7 +55,7 @@ export function getLocalizedCronDescription({
 	expression: string;
 	timeZone: string;
 	context?: CronContext;
-}): { description?: string; nextRun?: string; error?: string } {
+}): { description?: string; nextRun?: string; nextRunDate?: Date; error?: string } {
 	try {
 		const description = cronstrue.toString(expression, {
 			verbose: true,
@@ -67,9 +64,14 @@ export function getLocalizedCronDescription({
 
 		const descriptionString = description + ' (' + timeZone + ')';
 
-		const nextRun = getNextRunTime(expression, timeZone, 'Europe/Oslo', context);
+		const nextRunResult = getNextRunTime(expression, timeZone, 'Europe/Oslo', context);
 
-		return { description: descriptionString, nextRun: nextRun, error: undefined };
+		return {
+			description: descriptionString,
+			nextRun: nextRunResult?.formatted,
+			nextRunDate: nextRunResult?.date,
+			error: undefined
+		};
 	} catch (error) {
 		console.error('Invalid cron schedule while generating description', {
 			expression,
@@ -78,6 +80,11 @@ export function getLocalizedCronDescription({
 			error,
 			errorMessage: error instanceof Error ? error.message : String(error)
 		});
-		return { description: undefined, nextRun: undefined, error: String(error) };
+		return {
+			description: undefined,
+			nextRun: undefined,
+			nextRunDate: undefined,
+			error: String(error)
+		};
 	}
 }

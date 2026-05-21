@@ -7,7 +7,6 @@
 	import Time from '$lib/ui/Time.svelte';
 	import { BodyShort, Button, Heading, TextField } from '@nais/ds-svelte-community';
 	import { get } from 'svelte/store';
-	import { getTeamContext } from '../../../../teamContext.svelte';
 	import type { PageProps } from './$types';
 
 	let { data }: PageProps = $props();
@@ -24,7 +23,6 @@
 		}
 	`);
 
-	const teamCtx = getTeamContext();
 	let confirmation = $state('');
 
 	const submit = async () => {
@@ -40,7 +38,6 @@
 		});
 
 		if (resp.data?.deleteApplication.success) {
-			teamCtx.refetchInventory();
 			goto(`/team/${app.team.slug}?deleted=app/${app.name}`);
 		}
 	};
@@ -176,7 +173,7 @@
 
 	form {
 		display: flex;
-		gap: 1rem;
+		gap: var(--ax-space-16);
 	}
 
 	.field-wrapper {
@@ -198,7 +195,7 @@
 	}
 	.danger-zone {
 		padding: var(--ax-space-16);
-		border-radius: 8px;
+		border-radius: var(--ax-radius-8);
 		border: 1px solid var(--ax-border-danger);
 	}
 

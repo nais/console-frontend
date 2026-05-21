@@ -51,13 +51,10 @@
 		filteredEnvs.length === allEnvs.length ? '' : filteredEnvs.join(',')
 	);
 
-	$effect(() => {
-		const environments = filteredEnvs.length === allEnvs.length ? '' : filteredEnvs.join(',');
-
-		if (environments !== (page.url.searchParams.get('environments') ?? '')) {
-			changeQuery({ environments });
-		}
-	});
+	function handleEnvironmentChange(newEnvs: string[]) {
+		const environments = newEnvs.length === allEnvs.length ? '' : newEnvs.join(',');
+		changeQuery({ environments });
+	}
 
 	function handleIntervalChange(newInterval: Interval) {
 		interval = newInterval;
@@ -71,27 +68,25 @@
 
 <div class="page">
 	<div class="container">
+		<Heading as="h1" size="large">Tenant Deployments</Heading>
 		<GraphErrors errors={$TenantDeployments.errors} />
 		{#if $TenantDeployments.fetching}
-			<div class="loading">
+			<div class="loading-centered" role="status" aria-label="Loading">
 				<Loader size="3xlarge" />
 			</div>
 		{:else if $TenantDeployments.data}
 			<div>
-				<div class="header">
-					<Heading as="h1" size="large">Tenant Deployments</Heading>
-					<div class="toggles">
-						<ToggleGroup
-							size="small"
-							label="Interval"
-							value={interval}
-							onchange={(i) => handleIntervalChange(i as Interval)}
-						>
-							{#each intervalOptions as option (option)}
-								<ToggleGroupItem value={option}>{option}</ToggleGroupItem>
-							{/each}
-						</ToggleGroup>
-					</div>
+				<div class="toggles">
+					<ToggleGroup
+						size="small"
+						label="Interval"
+						value={interval}
+						onchange={(i) => handleIntervalChange(i as Interval)}
+					>
+						{#each intervalOptions as option (option)}
+							<ToggleGroupItem value={option}>{option}</ToggleGroupItem>
+						{/each}
+					</ToggleGroup>
 				</div>
 
 				{#if $TenantDeployments.data?.deployments.pageInfo.totalCount > 0}
@@ -122,7 +117,7 @@
 										: filteredEnvs.length > 0
 											? 'indeterminate'
 											: false}
-									onchange={(checked) => (filteredEnvs = checked ? allEnvs : [])}
+									onchange={(checked) => handleEnvironmentChange(checked ? allEnvs : [])}
 								>
 									All environments
 								</ActionMenuCheckboxItem>
@@ -130,9 +125,11 @@
 									<ActionMenuCheckboxItem
 										checked={filteredEnvs.includes(name)}
 										onchange={(checked) =>
-											(filteredEnvs = checked
-												? [...filteredEnvs, name]
-												: filteredEnvs.filter((env) => env !== name))}
+											handleEnvironmentChange(
+												checked
+													? [...filteredEnvs, name]
+													: filteredEnvs.filter((env) => env !== name)
+											)}
 									>
 										{name}
 									</ActionMenuCheckboxItem>
@@ -173,19 +170,6 @@
 		display: flex;
 		flex-direction: column;
 		gap: var(--spacing-layout);
-
-		.loading {
-			display: flex;
-			justify-content: center;
-			align-items: center;
-			min-height: 400px;
-		}
-	}
-	.header {
-		display: flex;
-		flex-direction: row;
-		justify-content: space-between;
-		align-items: center;
 	}
 	.toggles {
 		display: flex;
@@ -198,12 +182,6 @@
 	/* Mobile responsive styles */
 	@media (max-width: 767px) {
 		.container {
-			gap: var(--ax-space-16);
-		}
-
-		.header {
-			flex-direction: column;
-			align-items: flex-start;
 			gap: var(--ax-space-16);
 		}
 

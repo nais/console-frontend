@@ -121,7 +121,7 @@
 	{/snippet}
 
 	{#each errors as error (error)}
-		<Alert variant="error">{error}</Alert>
+		<Alert variant="error" role="alert">{error}</Alert>
 	{/each}
 
 	<form
@@ -147,7 +147,7 @@
 			<option value="OWNER">Owner</option>
 			<option value="MEMBER">Member</option>
 		</Select>
-		<Detail style="margin-top: 0.5rem; color: var(--ax-text-subtle)">
+		<Detail style="margin-top: 0.5rem; color: var(--ax-text-neutral-subtle)">
 			{#if role === 'OWNER'}
 				Full access including member administration
 			{:else}

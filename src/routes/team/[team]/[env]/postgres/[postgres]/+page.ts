@@ -3,7 +3,10 @@ import { addPageMeta } from '$lib/utils/pageMeta';
 
 export async function load(event) {
 	return {
-		...(await addPageMeta(event, { title: event.params.postgres })),
+		...(await addPageMeta(event, {
+			title: event.params.postgres,
+			docPath: '/persistence/postgresql/explanations/postgres-cluster/'
+		})),
 		...(await load_PostgresInstance({
 			event,
 			variables: {

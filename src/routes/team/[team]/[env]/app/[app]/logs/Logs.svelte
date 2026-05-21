@@ -411,7 +411,7 @@
 	.log-wrapper {
 		display: flex;
 		flex-direction: column;
-		gap: 0.5rem;
+		gap: var(--ax-space-8);
 		max-height: 70vh;
 		overflow-y: auto;
 	}
@@ -421,7 +421,7 @@
 		max-width: fit-content;
 		font-family: monospace;
 		font-size: 0.8rem;
-		gap: 0.5rem;
+		gap: var(--ax-space-8);
 		margin-right: 2rem;
 		.date {
 			text-align: right;
@@ -430,7 +430,7 @@
 		.instance-color {
 			min-width: 4px;
 			max-width: 4px;
-			border-radius: 0.25rem;
+			border-radius: var(--ax-radius-4);
 		}
 		.instance {
 			text-align: center;
@@ -449,7 +449,7 @@
 		background-color: var(--ax-bg-brand-blue-moderate);
 		min-width: 4px;
 		max-width: 4px;
-		border-radius: 0.25rem;
+		border-radius: var(--ax-radius-4);
 	}
 
 	@media (max-width: 767px), (max-height: 500px) {

@@ -7,7 +7,7 @@
 	import ListItem from '$lib/ui/ListItem.svelte';
 	import Pagination from '$lib/ui/Pagination.svelte';
 	import { changeParams } from '$lib/utils/searchparams';
-	import { severityToColor, suppressionStateLabels } from '$lib/utils/vulnerabilities';
+	import { suppressionStateLabels } from '$lib/utils/vulnerabilities';
 	import {
 		Alert,
 		BodyShort,
@@ -16,8 +16,7 @@
 		Heading,
 		Loader,
 		ReadMore,
-		Search,
-		Tag
+		Search
 	} from '@nais/ds-svelte-community';
 	import { MagnifyingGlassIcon } from '@nais/ds-svelte-community/icons';
 	import type { PageProps } from './$types';
@@ -68,7 +67,7 @@
 		</form>
 
 		{#if $CVEDetails.fetching}
-			<div class="loading">
+			<div class="loading" role="status" aria-label="Loading">
 				<Loader size="3xlarge" />
 			</div>
 		{:else if isNotFoundError($CVEDetails.errors)}
@@ -81,12 +80,7 @@
 				<div class="header">
 					<div class="title-row">
 						<Heading as="h1" size="large">{cve.identifier}</Heading>
-						<Tag
-							variant="neutral"
-							style="background-color: {severityToColor({ severity: cve.severity.toLowerCase() })};"
-						>
-							{cve.severity}
-						</Tag>
+						<span class="severity-badge {cve.severity}">{cve.severity}</span>
 					</div>
 					{#if cve.title}
 						<Detail>{cve.title}</Detail>
@@ -105,15 +99,10 @@
 						<div>
 							<Detail as="dt">Severity</Detail>
 							<BodyShort as="dd">
-								<Tag
-									size="small"
-									variant="neutral"
-									style="background-color: {severityToColor({
-										severity: cve.severity.toLowerCase()
-									})};"
+								<span
+									class="severity-badge {cve.severity}"
+									style="font-size: var(--ax-font-size-small)">{cve.severity}</span
 								>
-									{cve.severity}
-								</Tag>
 							</BodyShort>
 						</div>
 						<div>
@@ -146,7 +135,7 @@
 					{/if}
 				</Heading>
 				{#if $CVEWorkloads.fetching}
-					<div class="loading">
+					<div class="loading" role="status" aria-label="Loading">
 						<Loader size="3xlarge" />
 					</div>
 				{:else if $CVEWorkloads.data}
@@ -279,7 +268,7 @@
 
 	.card {
 		padding: var(--ax-space-16);
-		border-radius: 8px;
+		border-radius: var(--ax-radius-8);
 	}
 
 	.details-list {
@@ -287,6 +276,19 @@
 		flex-wrap: wrap;
 		gap: var(--ax-space-24);
 		margin: 0;
+		align-items: stretch;
+
+		& > div {
+			display: grid;
+			grid-template-rows: auto 1fr;
+			gap: var(--ax-space-4);
+		}
+
+		& > div :global(dd) {
+			display: flex;
+			align-items: center;
+			margin: 0;
+		}
 	}
 
 	.count {

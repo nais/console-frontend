@@ -16,26 +16,31 @@ declare global {
 		interface PageData {
 			meta: {
 				title: string;
+				pageHeaderTitle?: string;
 				breadcrumbs?: { label: string; href?: RouteId }[];
 				tag?: {
 					label: string;
 					variant: TagProps['variant'];
 				};
+				docPath?: string;
 			};
 		}
 		interface LayoutData {
 			meta: {
 				title?: string;
+				pageHeaderTitle?: string;
 				breadcrumbs?: { label: string; href?: RouteId }[];
 				tag?: {
 					label: string;
 					variant: TagProps['variant'];
 				};
+				docPath?: string;
 			};
 		}
 		// interface Platform {}
 		interface PageState {
 			modalHref?: string;
+			showMessage?: { id: string; type: 'success' | 'error'; text: string; target?: string }[];
 		}
 	}
 }

@@ -9,7 +9,6 @@
 		Button,
 		CopyButton,
 		Heading,
-		HelpText,
 		Loader,
 		Modal,
 		Table,
@@ -17,19 +16,20 @@
 		Td,
 		Th,
 		Thead,
+		ToggleGroup,
+		ToggleGroupItem,
 		Tr
 	} from '@nais/ds-svelte-community';
 
-	import SidebarActivity from '$lib/domain/activity/sidebar/SidebarActivity.svelte';
+	import ResourceActivityCard from '$lib/domain/activity/ResourceActivityCard.svelte';
 	import WorkloadLink from '$lib/domain/workload/WorkloadLink.svelte';
 	import GraphErrors from '$lib/ui/GraphErrors.svelte';
+	import ManifestCard from '$lib/ui/ManifestCard.svelte';
 	import Textarea from '$lib/ui/Textarea.svelte';
 	import { getConfigPermissions } from '$lib/utils/configPermissions';
 	import { DocPencilIcon, DownloadIcon, TrashIcon } from '@nais/ds-svelte-community/icons';
 	import type { PageProps } from './$types';
 	import AddKeyValue from './AddKeyValue.svelte';
-	import Manifest from './Manifest.svelte';
-	import Metadata from './Metadata.svelte';
 	import Workloads from './Workloads.svelte';
 
 	let { data }: PageProps = $props();
@@ -46,6 +46,7 @@
 	let deleteConfigOpen = $state(false);
 	let deleteValueOpen = $state(false);
 	let editValueOpen = $state(false);
+	let manifestMode: string = $state('env');
 
 	let keyToDelete = $state('');
 	let keyToEdit = $state('');
@@ -232,7 +233,9 @@
 <GraphErrors errors={$Config.errors} />
 
 {#if $Config.fetching}
-	<Loader />
+	<div class="loading-centered" role="status" aria-label="Loading">
+		<Loader size="3xlarge" />
+	</div>
 {:else if config}
 	<Confirm
 		confirmText="Delete"
@@ -241,7 +244,7 @@
 		onconfirm={deleteConfig}
 	>
 		{#snippet header()}
-			<Heading as="h1" size="large">Delete Config</Heading>
+			<Heading as="h2" size="large">Delete Config</Heading>
 		{/snippet}
 		<p>
 			This will permanently delete the config named <b>{config.name}</b>
@@ -268,7 +271,7 @@
 		onconfirm={deleteValueFromConfig}
 	>
 		{#snippet header()}
-			<Heading as="h1" size="large">Delete Key From Config</Heading>
+			<Heading as="h2" size="large">Delete Key From Config</Heading>
 		{/snippet}
 		<p>
 			This will permanently delete the key <b>{keyToDelete}</b> from the config named
@@ -290,138 +293,132 @@
 		Are you sure you want to delete <b>{keyToDelete}</b> from this config?
 	</Confirm>
 
-	<div class="wrapper">
+	<div class="layout-two-column">
 		<div class="content">
-			<div class="alerts">
-				{#if $deleteMutation.errors}
-					<GraphErrors errors={$deleteMutation.errors} />
-				{/if}
-			</div>
-			<div class="data-heading">
-				<div style="display: flex; align-items: center; gap: var(--ax-space-8);">
-					<Heading as="h2">Config Data</Heading>
-					<HelpText title="Config data" placement="right">
-						A config contains a set of key-value pairs that can be used as environment variables
-						(envFrom) or mounted as files (filesFrom) in your workloads.
-					</HelpText>
+			<section aria-labelledby="config-data-heading">
+				<div class="section-header">
+					<Heading as="h2" id="config-data-heading" size="medium" spacing>Config Data</Heading>
+					<div class="header-buttons">
+						{#if canMutate}
+							<Button variant="danger" size="small" onclick={openDeleteModal} icon={TrashIcon}>
+								Delete
+							</Button>
+						{/if}
+					</div>
 				</div>
-				<div class="header-buttons">
-					{#if canMutate}
-						<Button
-							class="delete-config"
-							title="Delete config from environment"
-							variant="danger"
-							size="small"
-							onclick={openDeleteModal}
-							icon={TrashIcon}
-						>
-							Delete
-						</Button>
-					{/if}
-				</div>
-			</div>
+				<GraphErrors errors={$deleteMutation.errors} />
 
-			<div class="table-container">
-				<Table size="small" style="margin-top: 2rem">
-					<Thead>
-						<Tr>
-							<Th>Key</Th>
-							<Th>Value</Th>
-							<Th align="right">Actions</Th>
-						</Tr>
-					</Thead>
-					<Tbody>
-						{#each config.values as entry (entry.name)}
+				<div class="table-scroll" role="region" aria-label="Configuration key-value pairs">
+					<Table size="small">
+						<Thead>
 							<Tr>
-								<Td>
-									<p class="key">
-										{entry.name}
-									</p>
-								</Td>
-								<Td>
-									{#if isBinaryValue(entry)}
-										<span class="binary-label">Binary data ({formatBinarySize(entry.value)})</span>
-									{:else}
-										<code class="value">
-											{entry.value}
-										</code>
-									{/if}
-								</Td>
-								<Td style="width: 120px" align="right">
-									<div class="buttons">
+								<Th>Key</Th>
+								<Th>Value</Th>
+								<Th align="right">Actions</Th>
+							</Tr>
+						</Thead>
+						<Tbody>
+							{#each config.values as entry (entry.name)}
+								<Tr>
+									<Td>
+										<p class="key">
+											{entry.name}
+										</p>
+									</Td>
+									<Td>
 										{#if isBinaryValue(entry)}
-											<Button
-												size="small"
-												variant="tertiary"
-												title="Download binary value"
-												onclick={() => downloadBinaryValue(entry.name, entry.value)}
-												icon={DownloadIcon}
-											/>
+											<span class="binary-label">Binary data ({formatBinarySize(entry.value)})</span
+											>
 										{:else}
-											<CopyButton
-												activeText="Value copied"
-												variant="action"
-												size="small"
-												copyText={entry.value}
-											/>
-											{#if canMutate}
+											<code class="value">
+												{entry.value}
+											</code>
+										{/if}
+									</Td>
+									<Td style="width: 120px" align="right">
+										<div class="buttons">
+											{#if isBinaryValue(entry)}
 												<Button
 													size="small"
 													variant="tertiary"
-													title="Edit config value"
-													onclick={() => {
-														openEditValueModal(entry.name, entry.value);
-													}}
-													icon={DocPencilIcon}
+													title="Download binary value"
+													onclick={() => downloadBinaryValue(entry.name, entry.value)}
+													icon={DownloadIcon}
 												/>
+											{:else}
+												<CopyButton
+													activeText="Value copied"
+													variant="action"
+													size="small"
+													copyText={entry.value}
+												/>
+												{#if canMutate}
+													<Button
+														size="small"
+														variant="tertiary"
+														title="Edit config value"
+														onclick={() => {
+															openEditValueModal(entry.name, entry.value);
+														}}
+														icon={DocPencilIcon}
+													/>
+												{/if}
 											{/if}
-										{/if}
-										{#if canMutate}
-											<Button
-												size="small"
-												variant="tertiary-neutral"
-												title="Delete key and value"
-												onclick={() => {
-													openDeleteValueModal(entry.name);
-												}}
-											>
-												{#snippet icon()}
-													<TrashIcon style="color:var(--ax-text-danger-decoration)!important" />
-												{/snippet}
-											</Button>
-										{/if}
-									</div>
-								</Td>
-							</Tr>
-						{/each}
-					</Tbody>
-				</Table>
-			</div>
-			{#if canMutate}
-				<AddKeyValue
-					initial={config.values.map((v) => ({ name: v.name }))}
-					{teamSlug}
-					{env}
-					{configName}
-					onSuccess={() => {
-						Config.fetch();
-					}}
-				/>
-			{/if}
+											{#if canMutate}
+												<Button
+													size="small"
+													variant="tertiary-neutral"
+													title="Delete key and value"
+													onclick={() => {
+														openDeleteValueModal(entry.name);
+													}}
+												>
+													{#snippet icon()}
+														<TrashIcon style="color:var(--ax-text-danger-decoration)!important" />
+													{/snippet}
+												</Button>
+											{/if}
+										</div>
+									</Td>
+								</Tr>
+							{/each}
+						</Tbody>
+					</Table>
+				</div>
+				{#if canMutate}
+					<AddKeyValue
+						initial={config.values.map((v) => ({ name: v.name }))}
+						{teamSlug}
+						{env}
+						{configName}
+						onSuccess={() => {
+							Config.fetch();
+						}}
+					/>
+				{/if}
+			</section>
 		</div>
-		<div class="sidebar">
-			<Metadata lastModifiedAt={config.lastModifiedAt} lastModifiedBy={config.lastModifiedBy} />
+
+		<div class="layout-sidebar">
+			<ManifestCard
+				title="Use this config"
+				manifest={manifestMode === 'env'
+					? `spec:\n  envFrom:\n    - configmap: ${configName}`
+					: `spec:\n  filesFrom:\n    - configmap: ${configName}\n      mountPath: /var/run/configmaps/${configName}`}
+			>
+				<ToggleGroup size="small" value={manifestMode} onchange={(val) => (manifestMode = val)}>
+					<ToggleGroupItem value="env">Environment</ToggleGroupItem>
+					<ToggleGroupItem value="files">Files</ToggleGroupItem>
+				</ToggleGroup>
+			</ManifestCard>
 			<Workloads workloads={config.workloads} />
-			<Manifest {configName} />
-			{#if config}
-				<SidebarActivity activityLog={config} direct={config.activityLog} />
-			{/if}
+			<ResourceActivityCard resourceType="config" resource={config} />
 		</div>
 	</div>
 {/if}
 <Modal bind:open={editValueOpen} onclose={cancelEditValue} width="medium">
 	{#snippet header()}
-		<Heading as="h1" size="large">Editing Value of Key <i>{keyToEdit}</i></Heading>
+		<Heading as="h2" size="large">Editing Value of Key <i>{keyToEdit}</i></Heading>
 	{/snippet}
 	{#if ($Config.data?.team.environment.config.workloads.nodes ?? []).length > 0}
 		<Alert variant="info" size="small">
@@ -445,23 +442,23 @@
 </Modal>
 
 <style>
-	.wrapper {
-		display: grid;
-		grid-template-columns: minmax(0, 1fr) 300px;
-		gap: var(--spacing-layout);
-		align-items: start;
-		min-width: 0;
-	}
-
 	.content {
-		min-width: 0;
-	}
-
-	.sidebar {
 		display: flex;
 		flex-direction: column;
 		gap: var(--ax-space-16);
 		min-width: 0;
+	}
+
+	.section-header {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: var(--ax-space-8);
+	}
+
+	.header-buttons {
+		display: flex;
+		gap: var(--ax-space-8);
 	}
 
 	.buttons {
@@ -469,36 +466,8 @@
 		display: flex;
 	}
 
-	.alerts {
-		margin-bottom: 1rem;
-	}
 	.entry {
-		margin: 2rem 0;
-	}
-
-	.data-heading {
-		display: flex;
-		align-items: flex-start;
-		justify-content: space-between;
-		gap: 0.5rem;
-		flex-wrap: wrap;
-	}
-
-	.header-buttons {
-		display: flex;
-		gap: var(--ax-space-8);
-		flex-wrap: wrap;
-	}
-
-	.table-container {
-		max-width: 100%;
-		min-width: 0;
-		overflow-x: auto;
-	}
-
-	.table-container :global(table) {
-		width: max-content;
-		min-width: 100%;
+		margin: var(--ax-space-32) 0;
 	}
 
 	.value {
@@ -509,7 +478,7 @@
 
 	.binary-label {
 		font-size: var(--ax-font-size-small);
-		color: var(--ax-text-subtle);
+		color: var(--ax-text-neutral-subtle);
 		font-style: italic;
 	}
 
@@ -520,17 +489,9 @@
 	}
 
 	@media (max-width: 767px) {
-		.wrapper {
-			grid-template-columns: 1fr;
-		}
-
-		.data-heading {
+		.section-header {
 			flex-direction: column;
-		}
-
-		.header-buttons {
-			width: 100%;
-			justify-content: flex-start;
+			align-items: flex-start;
 		}
 	}
 </style>

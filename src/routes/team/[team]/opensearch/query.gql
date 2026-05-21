@@ -1,8 +1,6 @@
 query OpenSearch(
 	$team: Slug!
 	$orderBy: OpenSearchOrder
-	$from: Date!
-	$to: Date!
 	$first: Int
 	$last: Int
 	$before: Cursor
@@ -10,18 +8,6 @@ query OpenSearch(
 ) @cache(policy: CacheAndNetwork) {
 	team(slug: $team) {
 		slug
-
-		cost {
-			daily(from: $from, to: $to, filter: { services: ["OpenSearch"] }) {
-				series {
-					services {
-						service
-					}
-					date
-					sum
-				}
-			}
-		}
 
 		openSearches(first: $first, last: $last, orderBy: $orderBy, before: $before, after: $after)
 			@paginate(mode: SinglePage) {

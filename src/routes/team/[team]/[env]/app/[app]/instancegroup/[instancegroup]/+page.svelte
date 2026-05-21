@@ -1,22 +1,15 @@
 <script lang="ts">
+	import { goto } from '$app/navigation';
+	import { page } from '$app/state';
 	import type { InstanceGroupDetail$result, ValueEncoding$options } from '$houdini';
 	import { ValueEncoding } from '$houdini';
-	import { pageHeaderState } from '$lib/stores/pageHeaderState.svelte';
+	import Resource from '$lib/domain/resources/Resource.svelte';
+	import WorkloadImageCard from '$lib/domain/workload/WorkloadImageCard.svelte';
 	import GraphErrors from '$lib/ui/GraphErrors.svelte';
+	import List from '$lib/ui/List.svelte';
+	import SurfaceCard from '$lib/ui/SurfaceCard.svelte';
 	import Time from '$lib/ui/Time.svelte';
-	import {
-		Alert,
-		BodyShort,
-		Heading,
-		Loader,
-		Table,
-		Tag,
-		Tbody,
-		Td,
-		Th,
-		Thead,
-		Tr
-	} from '@nais/ds-svelte-community';
+	import { Alert, Heading, Loader, Select, Tag } from '@nais/ds-svelte-community';
 	import prettyBytes from 'pretty-bytes';
 	import { SvelteMap } from 'svelte/reactivity';
 	import ViewSecretModal from '../../../../secret/[secret]/ViewSecretModal.svelte';
@@ -50,6 +43,21 @@
 	);
 	const role = $derived(incoming && group?.id === incoming.id ? 'incoming' : 'current');
 
+	function groupLabel(g: InstanceGroup) {
+		const r = incoming && g.id === incoming.id ? 'Incoming' : 'Current';
+		return allGroups.length > 1 ? `${g.name} (${r})` : g.name;
+	}
+
+	function handleGroupChange(e: Event) {
+		const target = e.target as HTMLSelectElement;
+		const name = target.value;
+		if (name && name !== page.params.instancegroup) {
+			goto(
+				`/team/${page.params.team}/${page.params.env}/app/${page.params.app}/instancegroup/${name}`
+			);
+		}
+	}
+
 	const hasFailing = $derived(group?.instances.some((i) => i.status.state === 'FAILING') ?? false);
 
 	const baseUrl = $derived(
@@ -69,13 +77,6 @@
 	let pendingFileDownload = $state<{ fileName: string; keyName: string } | null>(null);
 
 	const mountErrors = $derived(group?.mountedFiles.filter((f) => f.error !== null) ?? []);
-
-	$effect(() => {
-		pageHeaderState.error = hasFailing;
-		return () => {
-			pageHeaderState.error = false;
-		};
-	});
 
 	// Collect source names that have errors — used to filter out env vars and files from broken sources
 	const erroredSourceNames = $derived(
@@ -147,6 +148,77 @@
 	);
 	const memReq = $derived(application?.resources.requests.memory ?? 0);
 
+	const cpuRequestDisplay = $derived.by(() => {
+		if (application?.resources.requests.cpu) {
+			return `${application.resources.requests.cpu.toFixed(3)} CPUs`;
+		}
+
+		if (application?.utilization.requested_cpu) {
+			return `${application.utilization.requested_cpu.toFixed(3)} CPUs (default)`;
+		}
+
+		return 'Not set';
+	});
+
+	const cpuLimitDisplay = $derived.by(() => {
+		if (application?.resources.limits.cpu) {
+			return `${application.resources.limits.cpu.toFixed(3)} CPUs`;
+		}
+
+		if (application?.utilization.limit_cpu) {
+			return `${application.utilization.limit_cpu.toFixed(3)} CPUs (default)`;
+		}
+
+		return 'Not set';
+	});
+
+	const memoryRequestDisplay = $derived.by(() => {
+		if (application?.resources.requests.memory != null) {
+			return prettyBytes(application!.resources.requests.memory, {
+				locale: 'en',
+				minimumFractionDigits: 2,
+				maximumFractionDigits: 2,
+				binary: true
+			});
+		}
+
+		if (application?.utilization.requested_memory) {
+			return `${prettyBytes(application.utilization.requested_memory, {
+				locale: 'en',
+				minimumFractionDigits: 2,
+				maximumFractionDigits: 2,
+				binary: true
+			})} (default)`;
+		}
+
+		return 'Not set';
+	});
+
+	const memoryLimitDisplay = $derived.by(() => {
+		if (application?.resources.limits.memory) {
+			return prettyBytes(application.resources.limits.memory, {
+				locale: 'en',
+				minimumFractionDigits: 2,
+				maximumFractionDigits: 2,
+				binary: true
+			});
+		}
+
+		if (application?.utilization.limit_memory) {
+			return `${prettyBytes(application.utilization.limit_memory, {
+				locale: 'en',
+				minimumFractionDigits: 2,
+				maximumFractionDigits: 2,
+				binary: true
+			})} (default)`;
+		}
+
+		return 'Not set';
+	});
+
+	const cpuUsageDisplay = $derived(`${usage_cpu_percent.toFixed(1)}%`);
+	const memoryUsageDisplay = $derived(`${usage_memory_percent.toFixed(1)}%`);
+
 	function renameStrategy(type: string) {
 		if (type === 'CPUScalingStrategy') return 'CPU usage';
 		if (type === 'KafkaLagScalingStrategy') return 'Kafka Lag';
@@ -199,260 +271,193 @@
 	}
 </script>
 
+<div class="heading-row">
+	{#if hasFailing}
+		<Tag size="small" variant="error">Failing</Tag>
+	{/if}
+	{#if allGroups.length > 1}
+		<Tag size="small" variant={role === 'incoming' ? 'alt1' : 'neutral'}>
+			{role === 'incoming' ? 'Incoming' : 'Current'}
+		</Tag>
+	{/if}
+</div>
+
+{#if allGroups.length > 1}
+	<div class="group-selector">
+		<Select
+			label="Switch instance group"
+			size="small"
+			value={instanceGroupName}
+			onchange={handleGroupChange}
+		>
+			{#each allGroups as g (g.id)}
+				<option value={g.name}>{groupLabel(g)}</option>
+			{/each}
+		</Select>
+	</div>
+{/if}
+
 <GraphErrors errors={$InstanceGroupDetail.errors} />
 
 {#if $InstanceGroupDetail.fetching}
-	<div style="display: flex; justify-content: center; align-items: center; height: 500px;">
+	<div class="loading" role="status" aria-label="Loading">
 		<Loader size="3xlarge" />
 	</div>
 {:else if !group}
 	<Alert variant="warning">Instance group "{instanceGroupName}" not found.</Alert>
 {:else}
-	<div class="page">
-		<div class="table-container">
-			<Table size="small">
-				<Tbody>
-					<Tr>
-						<Th>Image</Th>
-						<Td><code>{group.image.name}:{group.image.tag}</code></Td>
-					</Tr>
-					{#if incoming || hasFailing}
-						<Tr>
-							<Th>Status</Th>
-							<Td>
-								<span class="status-tags">
-									{#if hasFailing}
-										<Tag size="small" variant="error">Failing</Tag>
-									{/if}
-									{#if incoming}
-										<Tag size="small" variant={role === 'incoming' ? 'alt1' : 'neutral'}>
-											{role === 'incoming' ? 'Incoming' : 'Current'}
-										</Tag>
-									{/if}
-								</span>
-							</Td>
-						</Tr>
-					{/if}
-				</Tbody>
-			</Table>
-		</div>
+	<div class="page-content">
+		<div class="page layout-two-column">
+			<div class="main-column">
+				{#if group.instances.length > 0}
+					<section class="section">
+						<List title="Instances" count={group.instances.length} level="h3">
+							<ul class="instancegroup-list instances-list">
+								{#each group.instances as instance (instance.id)}
+									<li class="instancegroup-list-item instances-item">
+										<div class="instancegroup-list-cell">
+											<span class="instancegroup-list-label">Name</span>
+											<a href="{baseUrl}/logs?instance={instance.name}" class="instance-link">
+												{instance.name}
+											</a>
+										</div>
 
-		{#if group.instances.length > 0}
-			<section>
-				<Heading as="h3" size="small" spacing>
-					Instances ({group.instances.length})
-				</Heading>
-				<div class="table-container">
-					<Table size="small" zebraStripes>
-						<Thead>
-							<Tr>
-								<Th>Name</Th>
-								<Th>Status</Th>
-								<Th>Message</Th>
-								<Th>Restarts</Th>
-								<Th>Created</Th>
-							</Tr>
-						</Thead>
-						<Tbody>
-							{#each group.instances as instance (instance.id)}
-								<Tr>
-									<Td>
-										<a href="{baseUrl}/logs?instance={instance.name}">{instance.name}</a>
-									</Td>
-									<Td>
-										<Tag
-											size="small"
-											variant={instance.status.state === 'RUNNING'
-												? 'success'
-												: instance.status.state === 'FAILING'
-													? 'error'
-													: instance.status.state === 'TERMINATED'
-														? 'neutral'
-														: 'info'}
-										>
-											{stateName(instance.status.state)}
-										</Tag>
-									</Td>
-									<Td>
-										{#if instance.status.lastExitReason && instance.restarts > 0}
-											<span class="exit-info">
-												Last exit: {instance.status
-													.lastExitReason}{#if instance.status.lastExitCode !== null && instance.status.lastExitCode !== undefined}
-													(code {instance.status
-														.lastExitCode}){/if}{#if instance.status.lastExitTimestamp}, <Time
-														time={instance.status.lastExitTimestamp}
-														distance
-													/>{/if}
+										<div class="instancegroup-list-cell">
+											<span class="instancegroup-list-label">Status</span>
+											<Tag
+												size="small"
+												variant={instance.status.state === 'RUNNING'
+													? 'success'
+													: instance.status.state === 'FAILING'
+														? 'error'
+														: instance.status.state === 'TERMINATED'
+															? 'neutral'
+															: 'info'}
+											>
+												{stateName(instance.status.state)}
+											</Tag>
+										</div>
+
+										<div class="instancegroup-list-cell">
+											<span class="instancegroup-list-label">Message</span>
+											{#if instance.status.lastExitReason && instance.restarts > 0}
+												<span class="exit-info">
+													Last exit: {instance.status
+														.lastExitReason}{#if instance.status.lastExitCode !== null && instance.status.lastExitCode !== undefined}
+														(code {instance.status
+															.lastExitCode}){/if}{#if instance.status.lastExitTimestamp}, <Time
+															time={instance.status.lastExitTimestamp}
+															distance
+														/>{/if}
+												</span>
+											{:else if instance.status.message && instance.status.message.toLowerCase() !== instance.status.state.toLowerCase()}
+												{instance.status.message}
+											{:else}
+												<span class="muted">—</span>
+											{/if}
+										</div>
+
+										<div class="instancegroup-list-cell instance-meta">
+											<span class="instancegroup-list-label">Restarts &amp; age</span>
+											<span class="meta-text">
+												{#if instance.restarts > 0}{instance.restarts}
+													{instance.restarts === 1 ? 'restart' : 'restarts'} ·{/if}
+												Started <Time time={instance.created} distance />
 											</span>
-										{:else if instance.status.message && instance.status.message.toLowerCase() !== instance.status.state.toLowerCase()}
-											{instance.status.message}
-										{:else}
-											<span class="muted">-</span>
-										{/if}
-									</Td>
-									<Td>{instance.restarts}</Td>
-									<Td><Time time={instance.created} distance /></Td>
-								</Tr>
-							{/each}
-						</Tbody>
-					</Table>
-				</div>
-			</section>
-		{/if}
-
-		{#if application}
-			<section>
-				{#if !isIn50PercentRange(cpuReq, cpuReqRecommendation) || !isIn50PercentRange(memReq, memReqRecommendation)}
-					<Alert variant="info" size="small" style="margin-bottom: var(--ax-space-8);">
-						CPU and/or memory requests differ by more than 50% from the recommended values. Consider
-						adjusting the requested resources. See the <a href="{baseUrl}/utilization"
-							>utilization</a
-						> page for details.
-					</Alert>
-				{/if}
-
-				<Heading as="h3" size="small" spacing>Resources</Heading>
-				<BodyShort
-					size="small"
-					style="color: var(--ax-text-neutral-subtle); margin-bottom: var(--ax-space-4)"
-				>
-					Request is the guaranteed amount of resources allocated to the application. Limit is the
-					maximum it can use before being throttled (CPU) or terminated (memory).
-				</BodyShort>
-				<div class="table-container">
-					<Table size="small" zebraStripes>
-						<Thead>
-							<Tr>
-								<Th>Resource</Th>
-								<Th>Request</Th>
-								<Th>Limit</Th>
-								<Th>Usage</Th>
-							</Tr>
-						</Thead>
-						<Tbody>
-							<Tr>
-								<Td>CPU</Td>
-								<Td>
-									<code>
-										{#if application.resources.requests.cpu}
-											{application.resources.requests.cpu.toFixed(3)} CPUs
-										{:else if application.utilization.requested_cpu}
-											{application.utilization.requested_cpu.toFixed(3)} CPUs (default)
-										{:else}
-											Not set
-										{/if}
-									</code>
-								</Td>
-								<Td>
-									<code>
-										{#if application.resources.limits.cpu}
-											{application.resources.limits.cpu.toFixed(3)} CPUs
-										{:else if application.utilization.limit_cpu}
-											{application.utilization.limit_cpu.toFixed(3)} CPUs (default)
-										{:else}
-											Not set
-										{/if}
-									</code>
-								</Td>
-								<Td><code>{usage_cpu_percent.toFixed(1)}%</code></Td>
-							</Tr>
-							<Tr>
-								<Td>Memory</Td>
-								<Td>
-									<code>
-										{#if application.resources.requests.memory !== null}
-											{prettyBytes(application.resources.requests.memory, {
-												locale: 'en',
-												minimumFractionDigits: 2,
-												maximumFractionDigits: 2,
-												binary: true
-											})}
-										{:else}
-											{prettyBytes(application.utilization.requested_memory, {
-												locale: 'en',
-												minimumFractionDigits: 2,
-												maximumFractionDigits: 2,
-												binary: true
-											})} (default)
-										{/if}
-									</code>
-								</Td>
-								<Td>
-									<code>
-										{#if application.resources.limits.memory}
-											{prettyBytes(application.resources.limits.memory, {
-												locale: 'en',
-												minimumFractionDigits: 2,
-												maximumFractionDigits: 2,
-												binary: true
-											})}
-										{:else if application.utilization.limit_memory}
-											{prettyBytes(application.utilization.limit_memory, {
-												locale: 'en',
-												minimumFractionDigits: 2,
-												maximumFractionDigits: 2,
-												binary: true
-											})} (default)
-										{:else}
-											Not set
-										{/if}
-									</code>
-								</Td>
-								<Td><code>{usage_memory_percent.toFixed(1)}%</code></Td>
-							</Tr>
-						</Tbody>
-					</Table>
-				</div>
-			</section>
-
-			{#if application.resources.scaling}
-				{@const scaling = application.resources.scaling}
-				{#if scaling.minInstances !== scaling.maxInstances}
-					<section>
-						<Heading as="h3" size="small" spacing>Scaling</Heading>
-						<div class="table-container">
-							<Table size="small" zebraStripes>
-								<Thead>
-									<Tr>
-										<Th>Strategy</Th>
-										<Th>Threshold</Th>
-										<Th>Min instances</Th>
-										<Th>Max instances</Th>
-									</Tr>
-								</Thead>
-								<Tbody>
-									{#if scaling.strategies && scaling.strategies.length > 0}
-										{#each scaling.strategies as strategy (strategy)}
-											<Tr>
-												<Td>{renameStrategy(strategy.__typename)}</Td>
-												<Td>
-													<code>
-														{#if strategy.__typename === 'KafkaLagScalingStrategy'}
-															{strategy.threshold}
-														{:else}
-															{strategy.threshold}%
-														{/if}
-													</code>
-												</Td>
-												<Td><code>{scaling.minInstances}</code></Td>
-												<Td><code>{scaling.maxInstances}</code></Td>
-											</Tr>
-										{/each}
-									{:else}
-										<Tr>
-											<Td>CPU usage</Td>
-											<Td><code>50%</code></Td>
-											<Td><code>{scaling.minInstances}</code></Td>
-											<Td><code>{scaling.maxInstances}</code></Td>
-										</Tr>
-									{/if}
-								</Tbody>
-							</Table>
-						</div>
+										</div>
+									</li>
+								{/each}
+							</ul>
+						</List>
 					</section>
 				{/if}
-			{/if}
-		{/if}
+
+				{#if application}
+					<section class="section">
+						<Heading as="h3" size="small">
+							{#if application.resources.scaling && application.resources.scaling.minInstances !== application.resources.scaling.maxInstances}
+								Resources and Scaling
+							{:else}
+								Resources
+							{/if}
+						</Heading>
+						{#if !isIn50PercentRange(cpuReq, cpuReqRecommendation) || !isIn50PercentRange(memReq, memReqRecommendation)}
+							<Alert variant="info" size="small">
+								CPU and/or memory requests differ by more than 50% from the recommended values.
+								Consider adjusting the requested resources. See the <a href="{baseUrl}/utilization"
+									>utilization</a
+								> page for details.
+							</Alert>
+						{/if}
+
+						<div class="resource-cards">
+							<Resource
+								title="CPU"
+								request={cpuRequestDisplay}
+								limit={cpuLimitDisplay}
+								usage={cpuUsageDisplay}
+							/>
+
+							<Resource
+								title="Memory"
+								request={memoryRequestDisplay}
+								limit={memoryLimitDisplay}
+								usage={memoryUsageDisplay}
+							/>
+						</div>
+
+						{#if application.resources.scaling}
+							{@const scaling = application.resources.scaling}
+							{#if scaling.minInstances !== scaling.maxInstances}
+								<SurfaceCard level="h4">
+									<div class="scaling-stats">
+										{#if scaling.strategies && scaling.strategies.length > 0}
+											{#each scaling.strategies as strategy (strategy)}
+												<div class="scaling-stat">
+													<span class="kv-label">Strategy</span>
+													<span class="kv-value">{renameStrategy(strategy.__typename)}</span>
+												</div>
+												<div class="scaling-stat">
+													<span class="kv-label">Threshold</span>
+													<span class="kv-value">
+														<code>
+															{#if strategy.__typename === 'KafkaLagScalingStrategy'}
+																{strategy.threshold}
+															{:else}
+																{strategy.threshold}%
+															{/if}
+														</code>
+													</span>
+												</div>
+											{/each}
+										{:else}
+											<div class="scaling-stat">
+												<span class="kv-label">Strategy</span>
+												<span class="kv-value">CPU usage</span>
+											</div>
+											<div class="scaling-stat">
+												<span class="kv-label">Threshold</span>
+												<span class="kv-value"><code>50%</code></span>
+											</div>
+										{/if}
+										<div class="scaling-stat">
+											<span class="kv-label">Instances</span>
+											<span class="kv-value"
+												><code>{scaling.minInstances} – {scaling.maxInstances}</code></span
+											>
+										</div>
+									</div>
+								</SurfaceCard>
+							{/if}
+						{/if}
+					</section>
+				{/if}
+			</div>
+
+			<div class="layout-sidebar">
+				<WorkloadImageCard imageName={group.image.name} tag={group.image.tag} />
+			</div>
+		</div>
 
 		<EnvironmentVariables
 			envVars={visibleEnvVars}
@@ -489,15 +494,40 @@
 {/if}
 
 <style>
-	.page {
-		display: flex;
-		flex-direction: column;
-		gap: var(--spacing-layout);
+	.group-selector {
+		max-width: 20rem;
+		margin-bottom: var(--ax-space-16);
 	}
 
-	section {
+	.page-content {
 		display: flex;
 		flex-direction: column;
+		gap: var(--ax-space-40);
+		width: 100%;
+	}
+
+	.page {
+		width: 100%;
+	}
+
+	.main-column {
+		display: flex;
+		flex-direction: column;
+		gap: var(--ax-space-24);
+	}
+
+	.heading-row {
+		display: flex;
+		align-items: center;
+		gap: var(--ax-space-8);
+		margin-bottom: var(--ax-space-8);
+	}
+
+	.section {
+		display: flex;
+		flex-direction: column;
+		gap: var(--ax-space-16);
+		width: 100%;
 	}
 
 	.page :global(code) {
@@ -505,8 +535,54 @@
 		color: var(--ax-text-neutral);
 	}
 
+	.resource-cards {
+		display: grid;
+		grid-template-columns: 1fr 1fr;
+		gap: var(--ax-space-12);
+	}
+
+	.kv-label {
+		font-size: var(--ax-font-size-small);
+		color: var(--ax-text-neutral-subtle);
+	}
+
+	.kv-value {
+		font-size: var(--ax-font-size-small);
+	}
+
+	.scaling-stats {
+		display: flex;
+		flex-wrap: wrap;
+		gap: var(--ax-space-24);
+	}
+
+	.scaling-stat {
+		display: flex;
+		flex-direction: column;
+		gap: var(--ax-space-4);
+	}
+
+	@media (max-width: 767px) {
+		.resource-cards {
+			grid-template-columns: 1fr;
+		}
+	}
+
 	.muted {
 		color: var(--ax-text-neutral-subtle);
+	}
+
+	.instances-list {
+		--instancegroup-list-columns: minmax(0, 2.5fr) 7.5rem minmax(0, 2fr) auto;
+	}
+
+	.instances-item {
+		align-items: center;
+	}
+
+	.meta-text {
+		color: var(--ax-text-neutral-subtle);
+		white-space: nowrap;
 	}
 
 	.exit-info {
@@ -514,15 +590,16 @@
 		overflow-wrap: anywhere;
 	}
 
-	.status-tags {
-		display: flex;
-		gap: var(--ax-space-4);
-		flex-wrap: wrap;
+	.instance-link {
+		overflow-wrap: anywhere;
+		word-break: break-word;
 	}
 
-	.table-container {
-		width: 100%;
-		overflow-x: auto;
+	.loading {
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		height: 500px;
 	}
 
 	a {

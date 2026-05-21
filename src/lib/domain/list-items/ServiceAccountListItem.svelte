@@ -3,7 +3,7 @@
 	import ListItem from '$lib/ui/ListItem.svelte';
 	import Time from '$lib/ui/Time.svelte';
 	import { Detail, Tooltip } from '@nais/ds-svelte-community';
-	import { TokenIcon } from '@nais/ds-svelte-community/icons';
+	import { RobotIcon } from '@nais/ds-svelte-community/icons';
 	import { format } from 'date-fns';
 	import { enGB } from 'date-fns/locale';
 
@@ -27,7 +27,7 @@
 		as="h4"
 		size="large"
 		label={serviceAccount.name}
-		icon={TokenIcon}
+		icon={RobotIcon}
 		description={serviceAccount.description}
 	/>
 

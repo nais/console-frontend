@@ -1,5 +1,7 @@
 <script lang="ts">
-	import VulnerabilitySummaryTenant from '$lib/domain/vulnerability/VulnerabilitySummaryTenant.svelte';
+	import VulnerabilitySummaryMetrics from '$lib/domain/vulnerability/VulnerabilitySummaryMetrics.svelte';
+	import SurfaceCard from '$lib/ui/SurfaceCard.svelte';
+	import { Heading } from '@nais/ds-svelte-community';
 	import VulnerabilityHistory from '../VulnerabilityHistory.svelte';
 	import VulnerabilityLeaderBoard from '../VulnerabilityLeaderBoard.svelte';
 	import type { PageProps } from './$types';
@@ -9,13 +11,15 @@
 </script>
 
 <div class="wrapper">
-	<div class="header">
-		{#if $TenantVulnerabilites.data?.vulnerabilitySummary}
-			<VulnerabilitySummaryTenant
+	<Heading as="h1" size="large">Vulnerabilities</Heading>
+
+	{#if $TenantVulnerabilites.data?.vulnerabilitySummary}
+		<SurfaceCard title="Summary" level="h2" bordered>
+			<VulnerabilitySummaryMetrics
 				vulnerabilitySummary={$TenantVulnerabilites.data?.vulnerabilitySummary}
 			/>
-		{/if}
-	</div>
+		</SurfaceCard>
+	{/if}
 
 	<VulnerabilityHistory />
 

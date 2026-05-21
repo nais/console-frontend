@@ -1,10 +1,16 @@
 <script lang="ts">
-	import { fragment, graphql, type WorkloadDeploy } from '$houdini';
-	import ExternalLink from '$lib/ui/ExternalLink.svelte';
-	import IconLabel from '$lib/ui/IconLabel.svelte';
-	import Time from '$lib/ui/Time.svelte';
-	import { BodyShort, Tag } from '@nais/ds-svelte-community';
-	import { RocketIcon } from '@nais/ds-svelte-community/icons';
+	import {
+		DeploymentStatusState,
+		fragment,
+		graphql,
+		type DeploymentStatusState$options,
+		type WorkloadDeploy
+	} from '$houdini';
+	import Meta from '$lib/domain/activity/Meta.svelte';
+	import GitHubIcon from '$lib/icons/GitHubIcon.svelte';
+	import SurfaceCard from '$lib/ui/SurfaceCard.svelte';
+	import { BodyShort, Tag, Tooltip } from '@nais/ds-svelte-community';
+	import { ExternalLinkIcon } from '@nais/ds-svelte-community/icons';
 
 	interface Props {
 		workload: WorkloadDeploy;
@@ -13,71 +19,139 @@
 	let { workload }: Props = $props();
 
 	let data = $derived(
-		fragment(
-			workload,
-			graphql(`
-				fragment WorkloadDeploy on Workload {
-					deployments(first: 1) {
-						nodes {
-							createdAt
-							repository
-							statuses {
+		workload
+			? fragment(
+					workload,
+					graphql(`
+						fragment WorkloadDeploy on Workload {
+							deployments(first: 1) {
 								nodes {
-									state
+									createdAt
+									repository
+									commitSha
+									deployerUsername
+									triggerUrl
+									statuses {
+										nodes {
+											state
+										}
+									}
 								}
 							}
 						}
-					}
-				}
-			`)
-		)
+					`)
+				)
+			: null
 	);
 
 	let deploymentInfo = $derived(
-		$data.deployments.nodes.length > 0 ? $data.deployments.nodes[0] : null
+		$data?.deployments.nodes.length ? $data.deployments.nodes[0] : null
 	);
+
+	let deploymentStatus: 'UNKNOWN' | DeploymentStatusState$options = $derived.by(
+		() => deploymentInfo?.statuses.nodes[0]?.state ?? 'UNKNOWN'
+	);
+
+	let statusPill: {
+		variant: 'success' | 'error' | 'warning' | 'info' | 'neutral';
+		label: string;
+	} = $derived.by(() => {
+		switch (deploymentStatus) {
+			case DeploymentStatusState.SUCCESS:
+				return { variant: 'success', label: 'Success' };
+			case DeploymentStatusState.IN_PROGRESS:
+				return { variant: 'info', label: 'In progress' };
+			case DeploymentStatusState.FAILURE:
+				return { variant: 'error', label: 'Failed' };
+			case DeploymentStatusState.ERROR:
+				return { variant: 'error', label: 'Error' };
+			default:
+				return { variant: 'neutral', label: 'Unknown' };
+		}
+	});
+
+	let workflowUrl = $derived.by(() => {
+		if (deploymentInfo?.triggerUrl) return deploymentInfo.triggerUrl;
+		if (deploymentInfo?.repository) return `https://github.com/${deploymentInfo.repository}`;
+		return null;
+	});
 </script>
 
-<div class="wrapper">
+<SurfaceCard title="Latest deployment">
+	{#snippet headerAside()}
+		{#if deploymentInfo}
+			<Tag size="xsmall" variant={statusPill.variant}>{statusPill.label}</Tag>
+		{/if}
+	{/snippet}
+
 	{#if deploymentInfo}
-		{#if deploymentInfo.createdAt}
-			<IconLabel icon={RocketIcon} size="medium">
-				{#snippet label()}
-					Last deployed <Time time={deploymentInfo.createdAt} distance={true} />
-					{#if deploymentInfo.repository}
-						from
-						<ExternalLink href="https://github.com/{deploymentInfo.repository}">
-							{deploymentInfo.repository}
-						</ExternalLink>
+		<div class="details">
+			{#if deploymentInfo.repository}
+				<span class="workflow-row">
+					<GitHubIcon size="14px" />
+					<span class="repo-name">{deploymentInfo.repository}</span>
+					{#if workflowUrl}
+						<Tooltip content="View workflow on GitHub" placement="top">
+							<a
+								href={workflowUrl}
+								target="_blank"
+								rel="noopener noreferrer"
+								class="workflow-icon"
+								aria-label="View workflow on GitHub"
+							>
+								<ExternalLinkIcon />
+							</a>
+						</Tooltip>
 					{/if}
-				{/snippet}
-			</IconLabel>
-		{/if}
-	{:else}
-		<BodyShort>No deployment metadata found for workload.</BodyShort>
-	{/if}
-	<div style="display: flex; gap: var(--ax-space-8);">
-		{#if deploymentInfo?.statuses && deploymentInfo.statuses.nodes && deploymentInfo.statuses.nodes.length > 0}
-			{#if deploymentInfo?.statuses.nodes[0].state === 'FAILURE'}
-				<Tag variant="error" size="small">Failed</Tag>
+				</span>
 			{/if}
-		{/if}
-	</div>
-</div>
+
+			{#if deploymentInfo.deployerUsername && deploymentInfo.createdAt}
+				<Meta actor={deploymentInfo.deployerUsername} createdAt={deploymentInfo.createdAt} />
+			{:else if deploymentInfo.createdAt}
+				<Meta actor="unknown" createdAt={deploymentInfo.createdAt} />
+			{/if}
+		</div>
+	{:else}
+		<BodyShort size="small">No deployment metadata found for workload.</BodyShort>
+	{/if}
+</SurfaceCard>
 
 <style>
-	.wrapper {
-		margin-top: -2rem;
+	.details {
 		display: flex;
-		gap: var(--ax-space-12);
+		flex-direction: column;
+		gap: var(--ax-space-2);
+		min-width: 0;
+	}
+
+	.workflow-row {
+		display: inline-flex;
+		align-items: center;
+		gap: var(--ax-space-4);
+		font-size: var(--ax-font-size-medium);
+		line-height: var(--ax-font-line-height-large);
+	}
+
+	.repo-name {
+		font-weight: var(--ax-font-weight-bold);
+		color: var(--ax-text-neutral);
+	}
+
+	.workflow-icon {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		color: var(--ax-text-neutral-subtle);
+		text-decoration: none;
+	}
+
+	.workflow-row :global(.ds-svelte-tooltip-wrapper) {
+		display: inline-flex;
 		align-items: center;
 	}
 
-	@media (max-width: 767px), (max-height: 500px) {
-		.wrapper {
-			margin-top: 0;
-			align-items: flex-start;
-			flex-wrap: wrap;
-		}
+	.workflow-icon:hover {
+		color: var(--ax-text-neutral);
 	}
 </style>

@@ -8,7 +8,7 @@ import { addPageMeta } from '$lib/utils/pageMeta';
 
 export async function load(event) {
 	return {
-		...(await addPageMeta(event, { title: event.params.kafka })),
+		...(await addPageMeta(event, { title: event.params.kafka, docPath: '/persistence/kafka/' })),
 		...(await load_KafkaTopic({
 			event,
 			variables: {

@@ -1,5 +1,6 @@
 <script lang="ts">
 	import PageHeader from '$lib/ui/PageHeader.svelte';
+	import { createHeaderActionsContext } from '$lib/ui/headerActionsContext.svelte';
 	import { Alert } from '@nais/ds-svelte-community';
 	import type { LayoutProps } from './$types';
 	import Menu from './Menu.svelte';
@@ -7,10 +8,10 @@
 	import { createTeamContext } from './teamContext.svelte';
 
 	let { data, children }: LayoutProps = $props();
-	let { deletionInProgress, lastSuccessfulSync, teamSlug, UserInfo, viewerIsMember } =
-		$derived(data);
+	let { deletionInProgress, lastSuccessfulSync, UserInfo, viewerIsMember } = $derived(data);
 
 	createTeamContext();
+	createHeaderActionsContext();
 
 	const isAdmin = $derived(
 		$UserInfo.data?.me.__typename === 'User' ? $UserInfo.data?.me.isAdmin : false
@@ -30,8 +31,8 @@
 		>
 	{/if}
 
-	<div class="main">
-		<Menu features={$UserInfo.data?.features} member={viewerIsMember} {teamSlug} {isAdmin} />
+	<main class="main">
+		<Menu features={$UserInfo.data?.features} member={viewerIsMember} {isAdmin} />
 		<div class="container">
 			<PageHeader>
 				{#snippet beforeBreadcrumbs()}
@@ -40,7 +41,7 @@
 			</PageHeader>
 			<div>{@render children?.()}</div>
 		</div>
-	</div>
+	</main>
 </div>
 
 <style>

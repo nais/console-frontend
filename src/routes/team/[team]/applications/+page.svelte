@@ -1,22 +1,23 @@
 <script lang="ts">
 	import { page } from '$app/state';
-	import { ApplicationOrderField, OrderDirection } from '$houdini';
-	import { docURL } from '$lib/doc';
-	import AggregatedCostForApplications from '$lib/domain/cost/AggregatedCostForApplications.svelte';
+	import {
+		ApplicationOrderField,
+		OrderDirection,
+		type ApplicationOrderField$options,
+		type OrderDirection$options
+	} from '$houdini';
 	import AppListItem from '$lib/domain/list-items/AppListItem.svelte';
-	import ExternalLink from '$lib/ui/ExternalLink.svelte';
+	import WorkloadListFilters from '$lib/domain/workload/WorkloadListFilters.svelte';
 	import GraphErrors from '$lib/ui/GraphErrors.svelte';
 	import List from '$lib/ui/List.svelte';
-	import OrderByMenu from '$lib/ui/OrderByMenu.svelte';
 	import Pagination from '$lib/ui/Pagination.svelte';
+	import SurfaceCard from '$lib/ui/SurfaceCard.svelte';
 	import { changeParams } from '$lib/utils/searchparams';
-	import { BodyLong, Button, Search } from '@nais/ds-svelte-community';
-	import { ActionMenu, ActionMenuCheckboxItem } from '@nais/ds-svelte-community/experimental';
-	import { ChevronDownIcon } from '@nais/ds-svelte-community/icons';
+	import { BodyLong } from '@nais/ds-svelte-community';
 	import type { PageProps } from './$types';
 
 	let { data }: PageProps = $props();
-	let { Applications, ApplicationsListMetadata, teamSlug } = $derived(data);
+	let { Applications, ApplicationsListMetadata } = $derived(data);
 
 	let filter = $state($Applications.variables?.filter?.name ?? '');
 
@@ -27,19 +28,47 @@
 		$ApplicationsListMetadata.data?.team.totalApplications.pageInfo.totalCount ?? 0
 	);
 
-	const allEnvs = $derived(
-		$ApplicationsListMetadata.data?.team.environments.map((env) => env.environment.name) ?? []
+	let selectedEnvironments: string[] = $derived(
+		page.url.searchParams.get('environments')?.split(',').filter(Boolean) ?? []
 	);
 
-	let filteredEnvs = $derived(page.url.searchParams.get('environments')?.split(',') ?? allEnvs);
+	let selectedStates: string[] = $derived(
+		page.url.searchParams.get('states')?.split(',').filter(Boolean) ?? []
+	);
 
-	$effect(() => {
-		const environments = filteredEnvs.length === allEnvs.length ? '' : filteredEnvs.join(',');
+	const sortFields: { value: ApplicationOrderField$options; label: string }[] = [
+		{ value: ApplicationOrderField.ISSUES, label: 'Issues' },
+		{ value: ApplicationOrderField.NAME, label: 'Name' },
+		{ value: ApplicationOrderField.DEPLOYMENT_TIME, label: 'Deploy time' },
+		{ value: ApplicationOrderField.ENVIRONMENT, label: 'Environment' },
+		{ value: ApplicationOrderField.STATE, label: 'State' }
+	];
 
-		if (environments !== (page.url.searchParams.get('environments') ?? '')) {
-			changeQuery({ environments });
-		}
-	});
+	const currentSortField: ApplicationOrderField$options = $derived(
+		(Object.values(ApplicationOrderField).find((f) =>
+			page.url.searchParams.get('sort')?.startsWith(f)
+		) as ApplicationOrderField$options | undefined) ?? ApplicationOrderField.ISSUES
+	);
+
+	const currentSortDirection: OrderDirection$options = $derived(
+		(Object.values(OrderDirection).find((d) => page.url.searchParams.get('sort')?.endsWith(d)) as
+			| OrderDirection$options
+			| undefined) ?? OrderDirection.DESC
+	);
+
+	function setSort(field: ApplicationOrderField$options) {
+		const defaultDirection =
+			field === ApplicationOrderField.NAME || field === ApplicationOrderField.ENVIRONMENT
+				? OrderDirection.ASC
+				: OrderDirection.DESC;
+		const direction =
+			field === currentSortField
+				? currentSortDirection === OrderDirection.ASC
+					? OrderDirection.DESC
+					: OrderDirection.ASC
+				: defaultDirection;
+		changeParams({ sort: `${field}-${direction}`, after: '', before: '' }, { noScroll: true });
+	}
 
 	const changeQuery = (
 		params: {
@@ -47,112 +76,46 @@
 			before?: string;
 			newFilter?: string;
 			environments?: string;
+			states?: string;
 		} = {}
 	) => {
-		const currentEnvironments =
-			filteredEnvs.length === allEnvs.length ? '' : filteredEnvs.join(',');
-		changeParams({
-			before: params.before ?? before,
-			after: params.after ?? after,
-			filter: params.newFilter ?? filter,
-			environments: params.environments ?? currentEnvironments
-		});
+		changeParams(
+			{
+				before: params.before ?? before,
+				after: params.after ?? after,
+				filter: params.newFilter ?? filter,
+				environments: params.environments ?? (selectedEnvironments.join(',') || ''),
+				states: params.states ?? (selectedStates.join(',') || '')
+			},
+			{ noScroll: true }
+		);
 	};
+
+	function handleStatesChange(selected: string[]) {
+		changeQuery({
+			states: selected.join(','),
+			after: '',
+			before: ''
+		});
+	}
+
+	function handleEnvironmentsChange(selected: string[]) {
+		changeQuery({
+			environments: selected.join(','),
+			after: '',
+			before: ''
+		});
+	}
 </script>
 
 <GraphErrors errors={$Applications.errors} />
 
-<div class="wrapper">
+<div class="layout-two-column">
 	<div>
-		<BodyLong spacing>
-			{#if totalApplications == 0}
-				<strong>No applications found.</strong>
-			{/if}
-			Applications are long-running processes designed to handle continuous workloads and remain active
-			until stopped or restarted.
-			<ExternalLink href={docURL('/workloads/application')}
-				>Learn more about applications and how to get started.</ExternalLink
-			>
-		</BodyLong>
 		{#if totalApplications > 0}
 			{@const apps = $Applications.data?.team.applications}
-			<div class="search">
-				<form
-					onsubmit={(e) => {
-						e.preventDefault();
-						changeQuery({ newFilter: filter });
-					}}
-				>
-					<Search
-						clearButton={true}
-						clearButtonLabel="Clear"
-						label="filter applications"
-						placeholder="Filter by name"
-						hideLabel={true}
-						size="small"
-						variant="simple"
-						width="100%"
-						autocomplete="off"
-						bind:value={filter}
-						onclear={() => {
-							filter = '';
-							changeQuery({ newFilter: '' });
-						}}
-					/>
-				</form>
-			</div>
 
-			<List
-				title="{apps?.pageInfo.totalCount ?? 0} application{apps?.pageInfo.totalCount !== 1
-					? 's'
-					: ''}
-						{apps?.pageInfo.totalCount !== totalApplications ? `(of total ${totalApplications})` : ''}"
-			>
-				{#snippet menu()}
-					<div class="applications-list-menu">
-						<ActionMenu>
-							{#snippet trigger(props)}
-								<Button
-									variant="tertiary-neutral"
-									size="small"
-									iconPosition="right"
-									{...props}
-									icon={ChevronDownIcon}
-								>
-									<span style="font-weight: normal">Environment</span>
-								</Button>
-							{/snippet}
-							<ActionMenuCheckboxItem
-								checked={$ApplicationsListMetadata.data?.team.environments.every((env) =>
-									filteredEnvs.includes(env.environment.name)
-								)
-									? true
-									: filteredEnvs.length > 0
-										? 'indeterminate'
-										: false}
-								onchange={(checked) => (filteredEnvs = checked ? allEnvs : [])}
-							>
-								All environments
-							</ActionMenuCheckboxItem>
-							{#each $ApplicationsListMetadata.data?.team.environments ?? [] as { environment, id } (id)}
-								<ActionMenuCheckboxItem
-									checked={filteredEnvs.includes(environment.name)}
-									onchange={(checked) =>
-										(filteredEnvs = checked
-											? [...filteredEnvs, environment.name]
-											: filteredEnvs.filter((env) => env !== environment.name))}
-								>
-									{environment.name}
-								</ActionMenuCheckboxItem>
-							{/each}
-						</ActionMenu>
-						<OrderByMenu
-							orderField={ApplicationOrderField}
-							defaultOrderField={ApplicationOrderField.ISSUES}
-							defaultOrderDirection={OrderDirection.DESC}
-						/>
-					</div>
-				{/snippet}
+			<List title="Apps" count={apps?.pageInfo.totalCount ?? 0}>
 				{#each apps?.nodes ?? [] as app (app.id)}
 					<AppListItem {app} />
 				{/each}
@@ -168,66 +131,36 @@
 					}
 				}}
 			/>
+		{:else}
+			<BodyLong><strong>No applications found.</strong></BodyLong>
 		{/if}
 	</div>
-	<div class="right-column">
-		{#if totalApplications > 0}
-			<AggregatedCostForApplications {teamSlug} totalCount={totalApplications} />
-		{/if}
+	<div class="layout-sidebar">
+		<SurfaceCard title="Filters">
+			<WorkloadListFilters
+				{filter}
+				searchPlaceholder="Search apps..."
+				searchLabel="Search applications"
+				{sortFields}
+				{currentSortField}
+				{currentSortDirection}
+				states={$Applications.data?.team.applications.facets?.states ?? []}
+				environments={$Applications.data?.team.applications.facets?.environments ?? []}
+				{selectedStates}
+				{selectedEnvironments}
+				onFilterInput={(v) => (filter = v)}
+				onFilterSubmit={() => changeQuery({ newFilter: filter })}
+				onFilterClear={() => {
+					filter = '';
+					changeQuery({ newFilter: '' });
+				}}
+				onSort={(field) => setSort(field as ApplicationOrderField$options)}
+				onStatesChange={handleStatesChange}
+				onEnvironmentsChange={handleEnvironmentsChange}
+			/>
+		</SurfaceCard>
 	</div>
 </div>
 
 <style>
-	.wrapper {
-		display: grid;
-		grid-template-columns: 1fr 300px;
-		gap: var(--spacing-layout);
-	}
-
-	.right-column {
-		display: grid;
-		gap: var(--ax-space-24);
-	}
-
-	.search {
-		display: flex;
-		justify-content: flex-end;
-		margin-bottom: 1rem;
-	}
-
-	/* Mobile responsive layout */
-	@media (max-width: 767px) {
-		.wrapper {
-			grid-template-columns: 1fr;
-			gap: var(--ax-space-24);
-		}
-
-		.search {
-			justify-content: stretch;
-		}
-
-		.applications-list-menu {
-			display: flex;
-			gap: var(--ax-space-8);
-			flex-wrap: nowrap;
-			overflow-x: auto;
-			max-width: 100%;
-		}
-
-		.applications-list-menu > * {
-			flex: 0 0 auto;
-		}
-	}
-
-	/* Landscape on mobile phones: keep single column despite wider viewport */
-	@media (max-height: 500px) {
-		.wrapper {
-			grid-template-columns: 1fr;
-			gap: var(--ax-space-24);
-		}
-
-		.search {
-			justify-content: stretch;
-		}
-	}
 </style>

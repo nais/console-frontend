@@ -112,7 +112,9 @@
 <div class="onboarding">
 	<Heading as="h1" size="xlarge" spacing>Welcome to Nais Console! 🎉</Heading>
 	{#if $teamsQuery.fetching}
-		<Loader size="3xlarge" />
+		<div role="status" aria-label="Loading">
+			<Loader size="3xlarge" />
+		</div>
 	{:else if teams}
 		<div class="content">
 			<BodyShort>

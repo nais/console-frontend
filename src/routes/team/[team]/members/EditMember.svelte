@@ -35,14 +35,6 @@
 		});
 	});
 
-	let previousOpen = $state(open);
-	$effect(() => {
-		if (previousOpen && !open) {
-			onclosed?.();
-		}
-		previousOpen = open;
-	});
-
 	const alterRole = graphql(`
 		mutation UpdateMemberRoleMutation($input: SetTeamMemberRoleInput!) {
 			setTeamMemberRole(input: $input) {
@@ -71,7 +63,7 @@
 	};
 </script>
 
-<Modal bind:open>
+<Modal bind:open onclose={() => onclosed?.()}>
 	{#snippet header()}
 		<Heading>Edit Member</Heading>
 	{/snippet}
@@ -91,7 +83,7 @@
 				<option value="OWNER">Owner</option>
 				<option value="MEMBER">Member</option>
 			</Select>
-			<Detail style="margin-top: 0.5rem; color: var(--ax-text-subtle)">
+			<Detail style="margin-top: 0.5rem; color: var(--ax-text-neutral-subtle)">
 				{#if member.role === 'OWNER'}
 					Full access including member administration
 				{:else}

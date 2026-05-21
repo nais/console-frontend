@@ -3,10 +3,9 @@
 	import { enhance } from '$app/forms';
 	import { resolve } from '$app/paths';
 	import { page } from '$app/state';
-	import ExternalLink from '$lib/ui/ExternalLink.svelte';
 	import { docURL } from '$lib/doc';
+	import ExternalLink from '$lib/ui/ExternalLink.svelte';
 	import { Alert, BodyLong, Button, ErrorMessage, TextField } from '@nais/ds-svelte-community';
-	import { getTeamContext } from '../../../../teamContext.svelte';
 	import type { PageProps } from './$houdini';
 
 	let { form, data }: PageProps = $props();
@@ -18,8 +17,6 @@
 	let usesCount = $derived(
 		$DeleteValkeyData.data?.team.environment.valkey.access.pageInfo.totalCount ?? 0
 	);
-
-	const teamCtx = getTeamContext();
 </script>
 
 {#if usesCount > 0}
@@ -46,15 +43,7 @@
 	<ErrorMessage>{form.error}</ErrorMessage>
 {/if}
 
-<form
-	method="POST"
-	use:enhance={() => {
-		return async ({ update }) => {
-			await update();
-			teamCtx.refetchInventory();
-		};
-	}}
->
+<form method="POST" use:enhance>
 	<TextField
 		name="name"
 		bind:value={name}

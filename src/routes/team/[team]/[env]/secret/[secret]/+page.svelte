@@ -9,7 +9,6 @@
 		Button,
 		CopyButton,
 		Heading,
-		HelpText,
 		Loader,
 		Modal,
 		Table,
@@ -17,13 +16,16 @@
 		Td,
 		Th,
 		Thead,
+		ToggleGroup,
+		ToggleGroupItem,
 		Tr
 	} from '@nais/ds-svelte-community';
 	import { SvelteMap } from 'svelte/reactivity';
 
-	import SidebarActivity from '$lib/domain/activity/sidebar/SidebarActivity.svelte';
+	import ResourceActivityCard from '$lib/domain/activity/ResourceActivityCard.svelte';
 	import WorkloadLink from '$lib/domain/workload/WorkloadLink.svelte';
 	import GraphErrors from '$lib/ui/GraphErrors.svelte';
+	import ManifestCard from '$lib/ui/ManifestCard.svelte';
 	import Textarea from '$lib/ui/Textarea.svelte';
 	import { getSecretPermissions } from '$lib/utils/secretPermissions';
 	import {
@@ -35,8 +37,6 @@
 	} from '@nais/ds-svelte-community/icons';
 	import type { PageProps } from './$types';
 	import AddKeyValue from './AddKeyValue.svelte';
-	import Manifest from './Manifest.svelte';
-	import Metadata from './Metadata.svelte';
 	import ViewSecretModal from './ViewSecretModal.svelte';
 	import Workloads from './Workloads.svelte';
 
@@ -55,6 +55,7 @@
 
 	let deleteSecretOpen = $state(false);
 	let deleteValueOpen = $state(false);
+	let manifestMode: string = $state('env');
 	let editValueOpen = $state(false);
 	let viewSecretsModalOpen = $state(false);
 
@@ -272,7 +273,9 @@
 <GraphErrors errors={$Secret.errors} />
 
 {#if $Secret.fetching}
-	<Loader />
+	<div class="loading-centered" role="status" aria-label="Loading">
+		<Loader size="3xlarge" />
+	</div>
 {:else if secret}
 	<Confirm
 		confirmText="Delete"
@@ -281,7 +284,7 @@
 		onconfirm={deleteSecret}
 	>
 		{#snippet header()}
-			<Heading as="h1" size="large">Delete Secret</Heading>
+			<Heading as="h2" size="large">Delete Secret</Heading>
 		{/snippet}
 		<p>
 			This will permanently delete the secret named <b>{secret.name}</b>
@@ -308,7 +311,7 @@
 		onconfirm={deleteValueFromSecret}
 	>
 		{#snippet header()}
-			<Heading as="h1" size="large">Delete Key From Secret</Heading>
+			<Heading as="h2" size="large">Delete Key From Secret</Heading>
 		{/snippet}
 		<p>
 			This will permanently delete the key <b>{keyToDelete}</b> from the secret named
@@ -338,213 +341,201 @@
 		onSuccess={handleRevealSuccess}
 	/>
 
-	<div
-		style="display: flex; flex-direction: row; justify-content: flex-end; padding-bottom: var(--spacing-layout);"
-	></div>
-	<div class="wrapper">
+	<div class="layout-two-column">
 		<div class="content">
-			<div class="alerts">
-				{#if $deleteMutation.errors}
-					<GraphErrors errors={$deleteMutation.errors} />
-				{/if}
-			</div>
-			<div class="data-heading">
-				<div style="display: flex; align-items: center; gap: var(--ax-space-8);">
-					<Heading as="h2">Secret Data</Heading>
-					<HelpText title="Secret data" placement="right">
-						A secret contains a set of key-value pairs.
-					</HelpText>
-				</div>
-				<div class="header-buttons">
-					{#if canRevealValues}
-						{#if secretsRevealed}
-							<Button
-								variant="secondary"
-								size="small"
-								onclick={hideSecrets}
-								icon={EyeSlashIcon}
-								title="Hide secrets"
-							>
-								Hide values
-							</Button>
-						{:else}
-							<Button
-								variant="secondary"
-								size="small"
-								onclick={revealSecrets}
-								icon={PadlockLockedIcon}
-								title="View secrets (requires justification)"
-							>
-								View values
+			<section aria-labelledby="secret-data-heading">
+				<div class="section-header">
+					<Heading as="h2" id="secret-data-heading" size="medium" spacing>Secret Data</Heading>
+					<div class="header-buttons">
+						{#if canRevealValues}
+							{#if secretsRevealed}
+								<Button variant="secondary" size="small" onclick={hideSecrets} icon={EyeSlashIcon}>
+									Hide values
+								</Button>
+							{:else}
+								<Button
+									variant="secondary"
+									size="small"
+									onclick={revealSecrets}
+									icon={PadlockLockedIcon}
+								>
+									View values
+								</Button>
+							{/if}
+						{/if}
+						{#if canMutate}
+							<Button variant="danger" size="small" onclick={openDeleteModal} icon={TrashIcon}>
+								Delete
 							</Button>
 						{/if}
-					{/if}
-					{#if canMutate}
-						<Button
-							class="delete-secret"
-							title="Delete secret from environment"
-							variant="danger"
-							size="small"
-							onclick={openDeleteModal}
-							icon={TrashIcon}
-						>
-							Delete
-						</Button>
-					{/if}
+					</div>
 				</div>
-			</div>
+				<GraphErrors errors={$deleteMutation.errors} />
 
-			<div class="table-container">
-				<Table size="small" style="margin-top: 2rem">
-					<Thead>
-						<Tr>
-							<Th>Key</Th>
-							<Th>Value</Th>
-							<Th align="right">Actions</Th>
-						</Tr>
-					</Thead>
-					<Tbody>
-						{#each secret.keys as keyName (keyName)}
+				<div class="table-scroll" role="region" aria-label="Secret key-value pairs">
+					<Table size="small">
+						<Thead>
 							<Tr>
-								<Td>
-									<p class="key">
-										{keyName}
-									</p>
-								</Td>
-								<Td>
-									{#if secretsRevealed && revealedValues.has(keyName)}
-										{#if isBinaryKey(keyName)}
-											<span class="binary-label"
-												>Binary data ({formatBinarySize(
-													revealedValues.get(keyName)?.value ?? ''
-												)})</span
-											>
-										{:else}
-											<code class="value">
-												{revealedValues.get(keyName)?.value}
-											</code>
-										{/if}
-									{:else}
-										<code class="value"> •••••••••••••••••••• </code>
-									{/if}
-								</Td>
-								<Td style="width: 120px" align="right">
-									<div class="buttons">
+								<Th>Key</Th>
+								<Th>Value</Th>
+								<Th align="right">Actions</Th>
+							</Tr>
+						</Thead>
+						<Tbody>
+							{#each secret.keys as keyName (keyName)}
+								<Tr>
+									<Td>
+										<p class="key">
+											{keyName}
+										</p>
+									</Td>
+									<Td>
 										{#if secretsRevealed && revealedValues.has(keyName)}
 											{#if isBinaryKey(keyName)}
-												<Button
-													size="small"
-													variant="tertiary"
-													title="Download binary value"
-													onclick={() => downloadBinaryValue(keyName)}
-													icon={DownloadIcon}
-												/>
+												<span class="binary-label"
+													>Binary data ({formatBinarySize(
+														revealedValues.get(keyName)?.value ?? ''
+													)})</span
+												>
 											{:else}
-												<CopyButton
-													activeText="Value copied"
-													variant="action"
-													size="small"
-													copyText={revealedValues.get(keyName)?.value ?? ''}
-												/>
-												{#if canEditValues}
+												<code class="value">
+													{revealedValues.get(keyName)?.value}
+												</code>
+											{/if}
+										{:else}
+											<code class="value"> •••••••••••••••••••• </code>
+										{/if}
+									</Td>
+									<Td style="width: 120px" align="right">
+										<div class="buttons">
+											{#if secretsRevealed && revealedValues.has(keyName)}
+												{#if isBinaryKey(keyName)}
 													<Button
 														size="small"
 														variant="tertiary"
-														title="Edit secret value"
-														onclick={() => {
-															openEditValueModal(keyName, revealedValues.get(keyName)?.value ?? '');
-														}}
-														icon={DocPencilIcon}
+														title="Download binary value"
+														onclick={() => downloadBinaryValue(keyName)}
+														icon={DownloadIcon}
 													/>
+												{:else}
+													<CopyButton
+														activeText="Value copied"
+														variant="action"
+														size="small"
+														copyText={revealedValues.get(keyName)?.value ?? ''}
+													/>
+													{#if canEditValues}
+														<Button
+															size="small"
+															variant="tertiary"
+															title="Edit secret value"
+															onclick={() => {
+																openEditValueModal(
+																	keyName,
+																	revealedValues.get(keyName)?.value ?? ''
+																);
+															}}
+															icon={DocPencilIcon}
+														/>
+													{/if}
 												{/if}
 											{/if}
-										{/if}
-										{#if canMutate}
-											<Button
-												size="small"
-												variant="tertiary-neutral"
-												title="Delete key and value"
-												onclick={() => {
-													openDeleteValueModal(keyName);
-												}}
-											>
-												{#snippet icon()}
-													<TrashIcon style="color:var(--ax-text-danger-decoration)!important" />
-												{/snippet}
-											</Button>
-										{/if}
-									</div>
-								</Td>
-							</Tr>
-						{/each}
-					</Tbody>
-				</Table>
-			</div>
-			{#if canMutate}
-				<AddKeyValue
-					initial={secret.keys.map((k) => ({ name: k }))}
-					{teamSlug}
-					{env}
-					{secretName}
-					onSuccess={() => {
-						Secret.fetch();
-					}}
-				/>
-			{/if}
+											{#if canMutate}
+												<Button
+													size="small"
+													variant="tertiary-neutral"
+													title="Delete key and value"
+													onclick={() => {
+														openDeleteValueModal(keyName);
+													}}
+												>
+													{#snippet icon()}
+														<TrashIcon style="color:var(--ax-text-danger-decoration)!important" />
+													{/snippet}
+												</Button>
+											{/if}
+										</div>
+									</Td>
+								</Tr>
+							{/each}
+						</Tbody>
+					</Table>
+				</div>
+				{#if canMutate}
+					<AddKeyValue
+						initial={secret.keys.map((k) => ({ name: k }))}
+						{teamSlug}
+						{env}
+						{secretName}
+						onSuccess={() => {
+							Secret.fetch();
+						}}
+					/>
+				{/if}
+			</section>
 		</div>
-		<div class="sidebar">
-			<Metadata lastModifiedAt={secret.lastModifiedAt} lastModifiedBy={secret.lastModifiedBy} />
-			<Workloads workloads={secret.workloads} />
-			<Manifest {secretName} />
-			{#if secret}
-				<SidebarActivity activityLog={secret} direct={secret.activityLog} />
-			{/if}
-		</div>
-	</div>
-{/if}
-<Modal bind:open={editValueOpen} onclose={cancelEditValue} width="medium">
-	{#snippet header()}
-		<Heading as="h1" size="large">Editing Value of Key <i>{keyToEdit}</i></Heading>
-	{/snippet}
-	{#if ($Secret.data?.team.environment.secret.workloads.nodes ?? []).length > 0}
-		<Alert variant="info" size="small">
-			<BodyShort
-				>Editing this secret will cause a restart of the applications listed below.</BodyShort
+
+		<div class="layout-sidebar">
+			<ManifestCard
+				title="Use this secret"
+				manifest={manifestMode === 'env'
+					? `spec:\n  envFrom:\n    - secret: ${secretName}`
+					: `spec:\n  filesFrom:\n    - secret: ${secretName}\n      mountPath: /var/run/secrets/${secretName}`}
 			>
-			<ul>
-				{#each $Secret.data?.team.environment.secret.workloads.nodes ?? [] as workload (workload.id)}
-					<li><WorkloadLink {workload} /></li>
-				{/each}
-			</ul>
-		</Alert>
-	{/if}
-	<div class="entry">
-		<Textarea bind:text={valueToEdit} label="Value" description="Example: some-value" />
+				<ToggleGroup size="small" value={manifestMode} onchange={(val) => (manifestMode = val)}>
+					<ToggleGroupItem value="env">Environment</ToggleGroupItem>
+					<ToggleGroupItem value="files">Files</ToggleGroupItem>
+				</ToggleGroup>
+			</ManifestCard>
+			<Workloads workloads={secret.workloads} />
+			<ResourceActivityCard resourceType="secret" resource={secret} />
+		</div>
 	</div>
-	{#snippet footer()}
-		<Button variant="primary" size="small" onclick={editValueForKey}>Save</Button>
-		<Button variant="secondary" size="small" onclick={cancelEditValue}>Cancel</Button>
-	{/snippet}
-</Modal>
+
+	<Modal bind:open={editValueOpen} onclose={cancelEditValue} width="medium">
+		{#snippet header()}
+			<Heading as="h2" size="large">Editing Value of Key <i>{keyToEdit}</i></Heading>
+		{/snippet}
+		{#if ($Secret.data?.team.environment.secret.workloads.nodes ?? []).length > 0}
+			<Alert variant="info" size="small">
+				<BodyShort
+					>Editing this secret will cause a restart of the applications listed below.</BodyShort
+				>
+				<ul>
+					{#each $Secret.data?.team.environment.secret.workloads.nodes ?? [] as workload (workload.id)}
+						<li><WorkloadLink {workload} /></li>
+					{/each}
+				</ul>
+			</Alert>
+		{/if}
+		<div class="entry">
+			<Textarea bind:text={valueToEdit} label="Value" description="Example: some-value" />
+		</div>
+		{#snippet footer()}
+			<Button variant="primary" size="small" onclick={editValueForKey}>Save</Button>
+			<Button variant="secondary" size="small" onclick={cancelEditValue}>Cancel</Button>
+		{/snippet}
+	</Modal>
+{/if}
 
 <style>
-	.wrapper {
-		display: grid;
-		grid-template-columns: minmax(0, 1fr) 300px;
-		gap: var(--spacing-layout);
-		align-items: start;
-		min-width: 0;
-	}
-
 	.content {
-		min-width: 0;
-	}
-
-	.sidebar {
 		display: flex;
 		flex-direction: column;
 		gap: var(--ax-space-16);
 		min-width: 0;
+	}
+
+	.section-header {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: var(--ax-space-8);
+	}
+
+	.header-buttons {
+		display: flex;
+		gap: var(--ax-space-8);
 	}
 
 	.buttons {
@@ -552,36 +543,8 @@
 		display: flex;
 	}
 
-	.alerts {
-		margin-bottom: 1rem;
-	}
 	.entry {
-		margin: 2rem 0;
-	}
-
-	.data-heading {
-		display: flex;
-		align-items: flex-start;
-		justify-content: space-between;
-		gap: 0.5rem;
-		flex-wrap: wrap;
-	}
-
-	.header-buttons {
-		display: flex;
-		gap: var(--ax-space-8);
-		flex-wrap: wrap;
-	}
-
-	.table-container {
-		max-width: 100%;
-		min-width: 0;
-		overflow-x: auto;
-	}
-
-	.table-container :global(table) {
-		width: max-content;
-		min-width: 100%;
+		margin: var(--ax-space-32) 0;
 	}
 
 	.value {
@@ -592,7 +555,7 @@
 
 	.binary-label {
 		font-size: var(--ax-font-size-small);
-		color: var(--ax-text-subtle);
+		color: var(--ax-text-neutral-subtle);
 		font-style: italic;
 	}
 
@@ -603,17 +566,9 @@
 	}
 
 	@media (max-width: 767px) {
-		.wrapper {
-			grid-template-columns: 1fr;
-		}
-
-		.data-heading {
+		.section-header {
 			flex-direction: column;
-		}
-
-		.header-buttons {
-			width: 100%;
-			justify-content: flex-start;
+			align-items: flex-start;
 		}
 	}
 </style>

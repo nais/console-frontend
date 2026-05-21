@@ -1,42 +1,64 @@
 <script lang="ts">
+	import { page } from '$app/state';
 	import { OrderDirection, ValkeyOrderField } from '$houdini';
 	import { docURL } from '$lib/doc';
-	import PersistenceCost from '$lib/domain/cost/PersistenceCost.svelte';
 	import IssueSeverityTags from '$lib/domain/issues/IssueSeverityTags.svelte';
 	import { envTagVariant } from '$lib/envTagVariant';
 	import ExternalLink from '$lib/ui/ExternalLink.svelte';
 	import GraphErrors from '$lib/ui/GraphErrors.svelte';
-	import IconLabel from '$lib/ui/IconLabel.svelte';
 	import List from '$lib/ui/List.svelte';
+	import ListFilters from '$lib/ui/ListFilters.svelte';
 	import ListItem from '$lib/ui/ListItem.svelte';
-	import OrderByMenu from '$lib/ui/OrderByMenu.svelte';
 	import PageModal, { pageModalClick } from '$lib/ui/PageModal.svelte';
 	import Pagination from '$lib/ui/Pagination.svelte';
 	import RunningIndicator from '$lib/ui/RunningIndicator.svelte';
+	import SurfaceCard from '$lib/ui/SurfaceCard.svelte';
 	import TooltipAlignHack from '$lib/ui/TooltipAlignHack.svelte';
 	import { countIssuesBySeverity } from '$lib/utils/issueCounts';
 	import { changeParams } from '$lib/utils/searchparams';
-	import { BodyLong, Button } from '@nais/ds-svelte-community';
+	import { Button, Tag } from '@nais/ds-svelte-community';
 	import { CircleFillIcon, PlusIcon } from '@nais/ds-svelte-community/icons';
-	import { endOfYesterday, startOfMonth, subMonths } from 'date-fns';
 	import type { PageProps } from './$types';
 	import CreatePage from './create/+page.svelte';
+
+	type ValkeyOrderFieldOptions = (typeof ValkeyOrderField)[keyof typeof ValkeyOrderField];
+	type OrderDirectionOptions = (typeof OrderDirection)[keyof typeof OrderDirection];
 
 	let { data }: PageProps = $props();
 	let { Valkeys, viewerIsMember } = $derived(data);
 
-	let cost = $derived(() => {
-		const costData = $Valkeys.data?.team.cost;
-		const teamSlug = $Valkeys.data?.team.slug;
+	const sortFields: { value: ValkeyOrderFieldOptions; label: string }[] = [
+		{ value: ValkeyOrderField.ISSUES, label: 'Issues' },
+		{ value: ValkeyOrderField.NAME, label: 'Name' },
+		{ value: ValkeyOrderField.ENVIRONMENT, label: 'Environment' },
+		{ value: ValkeyOrderField.STATE, label: 'State' }
+	];
 
-		if (!costData || !teamSlug) return null;
+	const currentSortField: ValkeyOrderFieldOptions = $derived(
+		(Object.values(ValkeyOrderField).find((f) =>
+			page.url.searchParams.get('sort')?.startsWith(f)
+		) as ValkeyOrderFieldOptions | undefined) ?? ValkeyOrderField.ISSUES
+	);
 
-		return {
-			costData,
-			teamSlug,
-			pageName: 'Valkey'
-		};
-	});
+	const currentSortDirection: OrderDirectionOptions = $derived(
+		(Object.values(OrderDirection).find((d) => page.url.searchParams.get('sort')?.endsWith(d)) as
+			| OrderDirectionOptions
+			| undefined) ?? OrderDirection.DESC
+	);
+
+	function setSort(field: ValkeyOrderFieldOptions) {
+		const defaultDirection =
+			field === ValkeyOrderField.NAME || field === ValkeyOrderField.ENVIRONMENT
+				? OrderDirection.ASC
+				: OrderDirection.DESC;
+		const direction =
+			field === currentSortField
+				? currentSortDirection === OrderDirection.ASC
+					? OrderDirection.DESC
+					: OrderDirection.ASC
+				: defaultDirection;
+		changeParams({ sort: `${field}-${direction}`, after: '', before: '' });
+	}
 
 	let create = $derived({
 		buttonText: 'Create Valkey',
@@ -50,92 +72,65 @@
 <GraphErrors errors={$Valkeys.errors} />
 
 {#if $Valkeys.data}
-	{#snippet createButton()}
-		{#if create && create.viewerIsMember}
-			<div class="button">
-				<Button
-					variant="secondary"
-					size="small"
-					as="a"
-					href={create.url}
-					icon={PlusIcon}
-					onclick={pageModalClick}
-				>
-					{create.buttonText}
-				</Button>
-			</div>
-		{/if}
-	{/snippet}
-
-	{#if $Valkeys.data.team.valkeys.pageInfo.totalCount}
-		<div class="content-wrapper">
-			<div>
-				<BodyLong spacing>
-					Valkey is a key value database that is used for storing and querying data. It is a good
-					choice for storing data that is not relational in nature and often used for caching.
-					<ExternalLink href={docURL('/persistence/valkey')}
-						>Learn more about Valkey and how to get started.</ExternalLink
-					>
-				</BodyLong>
-
-				{@render createButton()}
-				<List title="{$Valkeys.data.team.valkeys.pageInfo.totalCount} entries">
-					{#snippet menu()}
-						<OrderByMenu
-							orderField={ValkeyOrderField}
-							defaultOrderField={ValkeyOrderField.ISSUES}
-							defaultOrderDirection={OrderDirection.DESC}
-						/>
-					{/snippet}
+	<div class="layout-two-column">
+		<div>
+			<List title="Valkey" count={$Valkeys.data.team.valkeys.pageInfo.totalCount}>
+				{#snippet actions()}
+					{#if create && create.viewerIsMember}
+						<Button
+							variant="secondary"
+							size="small"
+							as="a"
+							href={create.url}
+							icon={PlusIcon}
+							onclick={pageModalClick}
+						>
+							{create.buttonText}
+						</Button>
+					{/if}
+				{/snippet}
+				{#if $Valkeys.data.team.valkeys.nodes.length > 0}
 					{#each $Valkeys.data.team.valkeys.nodes as instance (instance.id)}
-						<ListItem>
-							<IconLabel
-								as="h4"
-								href="/team/{instance.team.slug}/{instance.teamEnvironment.environment
-									.name}/valkey/{instance.name}"
-								size="large"
-								label={instance.name}
-								tag={{
-									label: instance.teamEnvironment.environment.name,
-									variant: envTagVariant(instance.teamEnvironment.environment.name)
-								}}
-							>
-								{#snippet icon()}
-									<TooltipAlignHack
-										content={{
-											RUNNING: 'Instance is running',
-											UNKNOWN: 'Unknown status',
-											POWEROFF: 'Powered off',
-											REBALANCING: 'Rebalancing',
-											REBUILDING: 'Rebuilding'
-										}[instance.state] ?? ''}
-									>
-										{#if instance.state === 'RUNNING'}
-											<RunningIndicator />
-										{:else if instance.state === 'REBALANCING'}
-											<div class="status-indicator rebalancing">
-												<CircleFillIcon />
-											</div>
-										{:else if instance.state === 'REBUILDING'}
-											<div class="status-indicator rebuilding">
-												<CircleFillIcon />
-											</div>
-										{:else if instance.state === 'POWEROFF'}
-											<div
-												style="width: 24px; color: var(--ax-bg-danger-strong); font-size: 0.7rem"
-											>
-												<CircleFillIcon />
-											</div>
-										{:else}
-											<div
-												style="width: 24px; color: var(--ax-bg-info-moderate-pressed); font-size: 0.7rem"
-											>
-												<CircleFillIcon />
-											</div>
-										{/if}
-									</TooltipAlignHack>
-								{/snippet}
-							</IconLabel>
+						<ListItem interactive>
+							<div class="name-group">
+								<TooltipAlignHack
+									content={{
+										RUNNING: 'Instance is running',
+										UNKNOWN: 'Unknown status',
+										POWEROFF: 'Powered off',
+										REBALANCING: 'Rebalancing',
+										REBUILDING: 'Rebuilding'
+									}[instance.state] ?? ''}
+								>
+									{#if instance.state === 'RUNNING'}
+										<RunningIndicator />
+									{:else if instance.state === 'REBALANCING'}
+										<div class="status-indicator rebalancing">
+											<CircleFillIcon />
+										</div>
+									{:else if instance.state === 'REBUILDING'}
+										<div class="status-indicator rebuilding">
+											<CircleFillIcon />
+										</div>
+									{:else if instance.state === 'POWEROFF'}
+										<CircleFillIcon style="color: var(--ax-bg-danger-strong); font-size: 0.7rem" />
+									{:else}
+										<CircleFillIcon
+											style="color: var(--ax-bg-info-moderate-pressed); font-size: 0.7rem"
+										/>
+									{/if}
+								</TooltipAlignHack>
+								<a
+									href="/team/{instance.team.slug}/{instance.teamEnvironment.environment
+										.name}/valkey/{instance.name}"
+									class="item-name">{instance.name}</a
+								>
+								<Tag
+									size="xsmall"
+									variant={envTagVariant(instance.teamEnvironment.environment.name)}
+									>{instance.teamEnvironment.environment.name}</Tag
+								>
+							</div>
 							{#if (instance.issues?.pageInfo.totalCount ?? 0) > 0}
 								{@const criticalCount = countIssuesBySeverity(instance.issues?.edges, 'CRITICAL')}
 								{@const warningCount = countIssuesBySeverity(instance.issues?.edges, 'WARNING')}
@@ -151,82 +146,61 @@
 							{/if}
 						</ListItem>
 					{/each}
-				</List>
-				<Pagination
-					page={$Valkeys.data.team.valkeys.pageInfo}
-					loaders={{
-						loadPreviousPage: () =>
-							changeParams(
-								{
-									after: '',
-									before: $Valkeys.data?.team.valkeys.pageInfo.startCursor ?? ''
-								},
-								{ noScroll: true }
-							),
-						loadNextPage: () =>
-							changeParams(
-								{ before: '', after: $Valkeys.data?.team.valkeys.pageInfo.endCursor ?? '' },
-								{ noScroll: true }
-							)
-					}}
-				/>
-			</div>
-			<div class="right-column">
-				{#if cost()}
-					{@const costData = cost()!}
-					<div>
-						<PersistenceCost
-							pageName={costData.pageName}
-							costData={costData.costData}
-							teamSlug={costData.teamSlug}
-							from={startOfMonth(subMonths(new Date(), 1))}
-							to={endOfYesterday()}
-							service="Valkey"
-						/>
-					</div>
+				{:else}
+					<ListItem>
+						<p>
+							No Valkey instances found. Valkey is a key value database that is used for storing and
+							querying data. It is a good choice for storing data that is not relational in nature
+							and often used for caching.
+							<ExternalLink href={docURL('/persistence/valkey')}
+								>Learn more about Valkey and how to get started.</ExternalLink
+							>
+						</p>
+					</ListItem>
 				{/if}
-			</div>
+			</List>
+			<Pagination
+				page={$Valkeys.data.team.valkeys.pageInfo}
+				loaders={{
+					loadPreviousPage: () =>
+						changeParams(
+							{
+								after: '',
+								before: $Valkeys.data?.team.valkeys.pageInfo.startCursor ?? ''
+							},
+							{ noScroll: true }
+						),
+					loadNextPage: () =>
+						changeParams(
+							{ before: '', after: $Valkeys.data?.team.valkeys.pageInfo.endCursor ?? '' },
+							{ noScroll: true }
+						)
+				}}
+			/>
 		</div>
-	{:else}
-		<div class="content-wrapper">
-			<BodyLong as="div">
-				{@render createButton()}
-
-				<strong>No Valkey instances found.</strong> Valkey is a key value database that is used for
-				storing and querying data. It is a good choice for storing data that is not relational in
-				nature and often used for caching.
-				<ExternalLink href={docURL('/persistence/valkey')}
-					>Learn more about Valkey and how to get started.</ExternalLink
-				>
-			</BodyLong>
+		<div class="layout-sidebar">
+			<SurfaceCard title="Filters">
+				<ListFilters
+					{sortFields}
+					{currentSortField}
+					{currentSortDirection}
+					onSort={(field) => setSort(field as ValkeyOrderFieldOptions)}
+				/>
+			</SurfaceCard>
 		</div>
-	{/if}
+	</div>
 
 	{#if create}
 		<PageModal content={create.page} header={create.header} />
 	{/if}
 
 	<style>
-		.content-wrapper {
-			display: grid;
-			gap: var(--ax-space-24);
-			grid-template-columns: 1fr 300px;
-		}
 		.right {
 			display: flex;
 			gap: var(--ax-space-6);
 			align-items: center;
 		}
 
-		.right-column {
-			display: grid;
-			gap: var(--ax-space-24);
-		}
-		.button {
-			display: flex;
-			justify-content: flex-end;
-			margin-bottom: var(--spacing-layout);
-		}
 		/* Valkey state indicators */
 		.status-indicator {
 			width: 24px;
@@ -258,14 +232,34 @@
 
 		/* Mobile responsive layout */
 		@media (max-width: 767px), (max-height: 500px) {
-			.content-wrapper {
-				grid-template-columns: 1fr;
-			}
-
 			.right {
 				align-items: flex-end;
 				margin-top: var(--ax-space-6);
 			}
+		}
+
+		.name-group {
+			display: flex;
+			align-items: center;
+			gap: var(--ax-space-8);
+			min-width: 0;
+		}
+		.name-group :global(.aksel-tag) {
+			white-space: nowrap;
+			flex-shrink: 0;
+		}
+		.item-name {
+			color: var(--ax-text-neutral);
+			text-decoration: none;
+			font-weight: 500;
+			white-space: nowrap;
+			overflow: hidden;
+			text-overflow: ellipsis;
+			min-width: 0;
+			flex: 0 1 auto;
+		}
+		.item-name:hover {
+			text-decoration: underline;
 		}
 	</style>
 {/if}

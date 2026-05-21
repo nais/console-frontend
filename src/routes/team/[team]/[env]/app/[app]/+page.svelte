@@ -1,116 +1,67 @@
 <script lang="ts">
-	import { onNavigate } from '$app/navigation';
 	import { page } from '$app/state';
-	import { graphql } from '$houdini';
-	import SidebarActivity from '$lib/domain/activity/sidebar/SidebarActivity.svelte';
-	import AggregatedCostForWorkload from '$lib/domain/cost/AggregatedCostForWorkload.svelte';
-	import IssueListItem from '$lib/domain/list-items/IssueListItem.svelte';
+	import WorkloadActivityCard from '$lib/domain/activity/WorkloadActivityCard.svelte';
+	import CostOverviewChart from '$lib/domain/cost/CostOverviewChart.svelte';
+	import CriticalIssuesCard from '$lib/domain/issues/CriticalIssuesCard.svelte';
 	import Persistence from '$lib/domain/persistence/Persistence.svelte';
 	import Configs from '$lib/domain/resources/Configs.svelte';
-	import NetworkPolicy from '$lib/domain/resources/NetworkPolicy.svelte';
 	import Secrets from '$lib/domain/resources/Secrets.svelte';
 	import WorkloadDeploy from '$lib/domain/workload/WorkloadDeploy.svelte';
-	import Confirm from '$lib/ui/Confirm.svelte';
+	import WorkloadHealth from '$lib/domain/workload/WorkloadHealth.svelte';
 	import GraphErrors from '$lib/ui/GraphErrors.svelte';
-	import IncomingIndicator from '$lib/ui/IncomingIndicator.svelte';
-	import List from '$lib/ui/List.svelte';
-	import RunningIndicator from '$lib/ui/RunningIndicator.svelte';
+	import PageModal from '$lib/ui/PageModal.svelte';
 	import Time from '$lib/ui/Time.svelte';
-	import { Alert, Button, Heading, Loader, Tag } from '@nais/ds-svelte-community';
-	import { ArrowCirclepathIcon, TrashIcon } from '@nais/ds-svelte-community/icons';
+	import { Alert, Heading, Loader } from '@nais/ds-svelte-community';
+	import { onMount } from 'svelte';
 	import type { PageProps } from './$types';
-	import Ingresses from './Ingresses.svelte';
+	import InstanceGroups from './InstanceGroups.svelte';
+	import EnvPage from './env/+page.svelte';
+	import ResizePage from './resize/+page.svelte';
 
 	let { data }: PageProps = $props();
-	let { App, teamSlug, viewerIsMember } = $derived(data);
+	let { App, AppInstanceGroups, teamSlug } = $derived(data);
 
-	const instanceGroups = $derived($App.data?.team.environment.application.instanceGroups ?? []);
+	const refetchInstanceGroups = () => {
+		AppInstanceGroups.fetch({ policy: 'CacheAndNetwork' });
+	};
 
-	// The newest group that isn't fully running is "incoming" (a rollout in progress).
-	// Everything else is "current". If there's only one group, it's always current.
-	const incoming = $derived(
-		instanceGroups.length > 1
-			? instanceGroups.reduce((newest, g) =>
-					new Date(g.created) > new Date(newest.created) ? g : newest
-				)
-			: null
-	);
-
-	function groupRole(group: (typeof instanceGroups)[number]) {
-		if (incoming && group.id === incoming.id) return 'incoming';
-		return 'current';
-	}
-
-	const restartAppMutation = () =>
-		graphql(`
-			mutation RestartApp($team: Slug!, $environment: String!, $application: String!) {
-				restartApplication(
-					input: { teamSlug: $team, environmentName: $environment, name: $application }
-				) {
-					application {
-						name
-					}
-				}
-			}
-		`);
-	let restartApp = $state(restartAppMutation());
-
-	onNavigate(() => {
-		restartApp = restartAppMutation();
+	onMount(() => {
+		const interval = setInterval(refetchInstanceGroups, 10_000);
+		return () => clearInterval(interval);
 	});
+
+	let appData = $derived(App ? $App.data : undefined);
+	let appErrors = $derived(App ? $App.errors : undefined);
+	let appFetching = $derived(App ? $App.fetching : false);
+	let app = $derived(appData?.team?.environment?.application ?? null);
+	let appInstanceGroups = $derived(
+		$AppInstanceGroups.data?.team?.environment?.application?.instanceGroups ?? []
+	);
+	let criticalEdges = $derived(
+		app?.issues.edges.filter((e) => e.node.severity === 'CRITICAL') ?? []
+	);
 
 	let application = $derived(page.params.app);
 	let environment = $derived(page.params.env);
-
-	let restart = $state(false);
-
-	const submit = () => {
-		if (!application || !environment) {
-			console.error('Application or environment is not defined');
-			return;
-		}
-		restartApp.mutate({
-			application,
-			environment,
-			team: teamSlug
-		});
-	};
 </script>
 
-{#if $App.data}
-	{@const app = $App.data.team.environment.application}
-	<div class="workload-deploy-wrapper">
-		<WorkloadDeploy workload={app} />
-	</div>
-{/if}
+<GraphErrors errors={appErrors} />
 
-<GraphErrors errors={$App.errors} />
-
-{#if $App.fetching}
-	<div style="display: flex; justify-content: center; align-items: center; height: 500px;">
+{#if appFetching}
+	<div
+		style="display: flex; justify-content: center; align-items: center; height: 500px;"
+		role="status"
+		aria-label="Loading"
+	>
 		<Loader size="3xlarge" />
 	</div>
 {/if}
-{#if $App.data}
-	{@const app = $App.data.team.environment.application}
-
+{#if app}
 	<div class="wrapper">
 		<div class="app-content">
 			<div class="main-section">
-				{#if viewerIsMember}
-					<div class="detail-actions">
-						<Button
-							as="a"
-							variant="danger"
-							size="small"
-							href="/team/{page.params.team}/{page.params.env}/app/{page.params.app}/delete"
-							icon={TrashIcon}
-						>
-							Delete
-						</Button>
-					</div>
-				{/if}
-				{#if app.deletionStartedAt}
+				<Heading as="h2" class="aksel-sr-only">Overview</Heading>
+				{#if app?.deletionStartedAt}
 					<Alert variant="info" size="small" fullWidth={false}>
 						This application is being deleted. Deletion started <Time
 							time={app.deletionStartedAt}
@@ -118,98 +69,58 @@
 						/>. If the deletion is taking too long, contact the Nais team.
 					</Alert>
 				{/if}
-				{#if $App.data.team.environment.application.issues.edges.length > 0}
-					<div>
-						<Heading as="h3" spacing>Issues</Heading>
-						<List>
-							{#each $App.data.team.environment.application.issues.edges as edge (edge.node.id)}
-								<IssueListItem item={edge.node} />
-							{/each}
-						</List>
-					</div>
+				{#if criticalEdges.length > 0}
+					<CriticalIssuesCard
+						title={`Critical issues (${criticalEdges.length})`}
+						viewAllHref="/team/{page.params.team}/{page.params.env}/app/{page.params.app}/issues"
+						issues={criticalEdges}
+					/>
 				{/if}
-				<div style="display:flex; flex-direction: column; gap: var(--ax-space-16);">
-					<div class="instances-header">
-						<Heading as="h3" size="medium">Instance groups</Heading>
-						{#if viewerIsMember}
-							<Button
-								variant="secondary"
-								size="small"
-								onclick={() => (restart = true)}
-								icon={ArrowCirclepathIcon}
-								disabled={app.deletionStartedAt !== null}
-							>
-								Restart app
-							</Button>
-						{/if}
-					</div>
-					{#each app.instanceGroups as group (group.id)}
-						{@const role = groupRole(group)}
-						{@const hasFailing = group.instances.some((i) => i.status.state === 'FAILING')}
-
-						<a
-							href="/team/{app.team.slug}/{app.teamEnvironment.environment
-								.name}/app/{app.name}/instancegroup/{group.name}"
-							class="instance-group-link"
-							class:incoming={role === 'incoming'}
-						>
-							{#if role === 'incoming'}
-								<IncomingIndicator />
-							{:else}
-								<RunningIndicator />
-							{/if}
-							<div class="instance-group-info">
-								<span class="instance-group-status">
-									{group.readyInstances}/{group.desiredInstances} running
-								</span>
-								<span class="instance-group-meta">
-									{group.image.tag} &middot; Updated <Time time={group.created} distance />
-								</span>
-							</div>
-							{#if hasFailing}
-								<Tag size="small" variant="error">Failing</Tag>
-							{/if}
-							{#if incoming}
-								{#if role === 'incoming'}
-									<Tag size="small" variant="alt1">Incoming</Tag>
-								{:else}
-									<Tag size="small" variant="neutral">Current</Tag>
-								{/if}
-							{/if}
-						</a>
-					{/each}
-				</div>
-				<div>
-					<Ingresses app={$App.data} />
-				</div>
-				<div>
-					<NetworkPolicy workload={app} />
-				</div>
-				<div>
-					<Persistence workload={app} />
-				</div>
+				<WorkloadHealth
+					{teamSlug}
+					environment={environment ?? ''}
+					workload={app?.name ?? ''}
+					workloadType="app"
+					criticalIssues={app?.criticalIssues.pageInfo.totalCount ?? 0}
+					warningIssues={app?.warningIssues.pageInfo.totalCount ?? 0}
+					todoIssues={app?.todoIssues.pageInfo.totalCount ?? 0}
+					readyInstances={appInstanceGroups.reduce((sum, g) => sum + g.readyInstances, 0) ?? 0}
+					desiredInstances={appInstanceGroups.reduce((sum, g) => sum + g.desiredInstances, 0) ?? 0}
+					loading={appFetching}
+				/>
+				{#if environment}
+					<InstanceGroups
+						appName={app.name}
+						environmentName={environment}
+						{teamSlug}
+						instanceGroups={appInstanceGroups}
+					/>
+					<CostOverviewChart workload={app.name} {environment} {teamSlug} />
+				{/if}
 			</div>
-			<div class="sidebar">
-				{#if environment}
-					<AggregatedCostForWorkload workload={app.name} {environment} {teamSlug} />
+			<div class="layout-sidebar">
+				<WorkloadDeploy workload={app} />
+				{#if environment && application}
+					<WorkloadActivityCard
+						{teamSlug}
+						env={environment}
+						workload={application}
+						workloadType="app"
+						viewAllHref="/team/{teamSlug}/{environment}/app/{application}/activity-log"
+					/>
 				{/if}
+				<Persistence workload={app} />
 				{#if environment}
-					<Configs {environment} workload={app.name} {teamSlug} />
-					<Secrets workload={app.name} {environment} {teamSlug} />
+					<Configs {environment} workload={app?.name ?? ''} {teamSlug} />
+					<Secrets workload={app?.name ?? ''} {environment} {teamSlug} />
 				{/if}
-				<SidebarActivity activityLog={app} direct={app.activityLog} />
 			</div>
 		</div>
-		<Confirm bind:open={restart} onconfirm={submit}>
-			{#snippet header()}
-				<Heading as="h1" size="medium">Restart {application}</Heading>
-			{/snippet}
-			This will restart all instances of
-			<strong>{application}</strong> in
-			<strong>{environment}</strong>.
-			<br />
-			Are you sure?
-		</Confirm>
+		{#if page.state.modalHref?.includes('/resize')}
+			<PageModal content={ResizePage} header="Resize app" />
+		{:else if page.state.modalHref?.includes('/env')}
+			<PageModal content={EnvPage} header="Set environment variables" />
+		{/if}
 	</div>
 {/if}
 
@@ -232,95 +143,10 @@
 		gap: var(--spacing-layout);
 	}
 
-	.instances-header {
-		display: flex;
-		justify-content: space-between;
-		align-items: center;
-	}
-
-	.detail-actions {
-		display: flex;
-		justify-content: flex-end;
-		gap: var(--ax-space-8);
-		flex-wrap: wrap;
-	}
-
-	.sidebar {
-		display: flex;
-		flex-direction: column;
-		gap: var(--spacing-layout);
-	}
-
-	.workload-deploy-wrapper {
-		margin-top: -2rem;
-		padding-bottom: var(--spacing-layout);
-	}
-
-	.instance-group-link {
-		display: flex;
-		align-items: center;
-		gap: var(--ax-space-12);
-		padding: var(--ax-space-12) var(--ax-space-16);
-		border: 1px solid var(--ax-border-neutral);
-		border-radius: var(--ax-radius-8);
-		text-decoration: none;
-		color: inherit;
-	}
-
-	.instance-group-link:hover {
-		background-color: var(--ax-bg-neutral-moderate-hover);
-	}
-
-	.instance-group-link.incoming {
-		border-style: dashed;
-	}
-
-	.instance-group-info {
-		display: flex;
-		flex-direction: column;
-		gap: var(--ax-space-2);
-		flex: 1;
-		min-width: 0;
-	}
-
-	.instance-group-status {
-		font-weight: var(--ax-font-weight-bold);
-	}
-
-	.instance-group-meta {
-		font-size: var(--ax-font-size-small);
-		color: var(--ax-text-neutral-subtle);
-		overflow-wrap: anywhere;
-	}
-
 	/* Mobile responsive layout */
 	@media (max-width: 767px), (max-height: 500px) {
 		.app-content {
 			grid-template-columns: 1fr;
-		}
-
-		.workload-deploy-wrapper {
-			margin-top: 0;
-		}
-
-		.detail-actions :global(button),
-		.detail-actions :global(a) {
-			width: 100%;
-		}
-
-		.instances-header {
-			flex-direction: column;
-			align-items: flex-start;
-			gap: var(--ax-space-12);
-		}
-
-		.instance-group-link {
-			flex-wrap: wrap;
-			align-items: flex-start;
-		}
-
-		.instances-header :global(button) {
-			width: 100%;
 		}
 	}
 </style>

@@ -72,7 +72,7 @@
 		display: inline-flex;
 		flex-direction: row;
 		align-items: center;
-		gap: 0.5rem;
+		gap: var(--ax-space-8);
 	}
 
 	textarea {

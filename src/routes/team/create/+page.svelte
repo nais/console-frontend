@@ -154,7 +154,12 @@
 			};
 		}}
 	>
-		<TextField name="name" value={form?.input.slug} oninput={handleTeamSlugInput}>
+		<TextField
+			name="name"
+			value={form?.input.slug}
+			oninput={handleTeamSlugInput}
+			aria-describedby="team-slug-error"
+		>
 			{#snippet label()}
 				Identifier / Name
 			{/snippet}
@@ -165,10 +170,15 @@
 			{/snippet}
 		</TextField>
 		{#if teamSlugError !== 'no_error' && teamSlugError !== ''}
-			<p style:color="var(--ax-text-danger)">{teamSlugError}</p>
+			<p id="team-slug-error" style:color="var(--ax-text-danger)" role="alert">{teamSlugError}</p>
 		{/if}
 		<br />
-		<TextField name="description" value={form?.input.purpose} oninput={handlePurposeInput}>
+		<TextField
+			name="description"
+			value={form?.input.purpose}
+			oninput={handlePurposeInput}
+			aria-describedby="purpose-error"
+		>
 			{#snippet label()}
 				Purpose of the team
 			{/snippet}
@@ -177,13 +187,14 @@
 			{/snippet}
 		</TextField>
 		{#if purposeError !== 'no_error' && purposeError !== ''}
-			<p style:color="var(--ax-text-danger)">{purposeError}</p>
+			<p id="purpose-error" style:color="var(--ax-text-danger)" role="alert">{purposeError}</p>
 		{/if}
 		<br />
 		<TextField
 			name="slackChannel"
 			value={form?.input.slackChannel}
 			oninput={handleSlackChannelInput}
+			aria-describedby="slack-channel-error"
 		>
 			{#snippet label()}
 				Slack channel
@@ -193,7 +204,9 @@
 			{/snippet}
 		</TextField>
 		{#if slackChannelError !== 'no_error' && slackChannelError !== ''}
-			<p style:color="var(--ax-text-danger)">{slackChannelError}</p>
+			<p id="slack-channel-error" style:color="var(--ax-text-danger)" role="alert">
+				{slackChannelError}
+			</p>
 		{/if}
 		<br />
 		<Button loading={saving} {disabled} icon={FloppydiskIcon}>Create team</Button>

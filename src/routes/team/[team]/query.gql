@@ -16,17 +16,17 @@ query TeamOverview($team: Slug!) @cache(policy: NetworkOnly) {
 			}
 		}
 
-		todos: issues(filter: { severity: TODO }) {
+		criticalIssues: issues(filter: { severity: CRITICAL }) {
 			pageInfo {
 				totalCount
 			}
 		}
-		warnings: issues(filter: { severity: WARNING }) {
+		warningIssues: issues(filter: { severity: WARNING }) {
 			pageInfo {
 				totalCount
 			}
 		}
-		criticals: issues(filter: { severity: CRITICAL }) {
+		todoIssues: issues(filter: { severity: TODO }) {
 			pageInfo {
 				totalCount
 			}
