@@ -3,8 +3,12 @@
 	import { page } from '$app/state';
 	import { Tab, TabList, Tabs } from '@nais/ds-svelte-community';
 	import type { LayoutProps } from './$types';
+	import AppActions from './AppActions.svelte';
 
-	let { children }: LayoutProps = $props();
+	let { data, children }: LayoutProps = $props();
+	let { AppLayout, viewerIsMember } = $derived(data);
+
+	let app = $derived($AppLayout.data?.team?.environment?.application ?? null);
 
 	let routeId = $derived(page.route.id ?? '');
 	let tabs = $derived([
@@ -61,6 +65,10 @@
 	);
 	let visibleTabs = $derived(tabs.some((tab) => tab.value === activeTab) ? tabs : []);
 </script>
+
+{#if app}
+	<AppActions {viewerIsMember} {app} />
+{/if}
 
 {#if visibleTabs.length > 0}
 	<Tabs value={activeTab} size="small">
