@@ -272,7 +272,6 @@
 </script>
 
 <div class="heading-row">
-	<Heading as="h2" size="medium" spacing>{instanceGroupName}</Heading>
 	{#if hasFailing}
 		<Tag size="small" variant="error">Failing</Tag>
 	{/if}
