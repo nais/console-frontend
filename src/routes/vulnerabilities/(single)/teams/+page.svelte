@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { page } from '$app/state';
 	import { OrderDirection, TeamOrderField } from '$houdini';
 	import GraphErrors from '$lib/ui/GraphErrors.svelte';
 	import { urlToOrderDirection, urlToOrderField } from '$lib/ui/OrderByMenu.svelte';
@@ -17,7 +18,6 @@
 		type TableSortState
 	} from '@nais/ds-svelte-community';
 	import { CheckmarkIcon } from '@nais/ds-svelte-community/icons';
-	import { page } from '$app/state';
 	import type { PageProps } from './$types';
 
 	let { data }: PageProps = $props();

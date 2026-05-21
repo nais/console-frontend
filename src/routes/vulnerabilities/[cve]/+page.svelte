@@ -7,7 +7,7 @@
 	import ListItem from '$lib/ui/ListItem.svelte';
 	import Pagination from '$lib/ui/Pagination.svelte';
 	import { changeParams } from '$lib/utils/searchparams';
-	import { severityToColor, suppressionStateLabels } from '$lib/utils/vulnerabilities';
+	import { suppressionStateLabels } from '$lib/utils/vulnerabilities';
 	import {
 		Alert,
 		BodyShort,
@@ -16,8 +16,7 @@
 		Heading,
 		Loader,
 		ReadMore,
-		Search,
-		Tag
+		Search
 	} from '@nais/ds-svelte-community';
 	import { MagnifyingGlassIcon } from '@nais/ds-svelte-community/icons';
 	import type { PageProps } from './$types';
@@ -81,12 +80,7 @@
 				<div class="header">
 					<div class="title-row">
 						<Heading as="h1" size="large">{cve.identifier}</Heading>
-						<Tag
-							variant="neutral"
-							style="background-color: {severityToColor({ severity: cve.severity.toLowerCase() })};"
-						>
-							{cve.severity}
-						</Tag>
+						<span class="severity-tag {cve.severity}">{cve.severity}</span>
 					</div>
 					{#if cve.title}
 						<Detail>{cve.title}</Detail>
@@ -105,15 +99,10 @@
 						<div>
 							<Detail as="dt">Severity</Detail>
 							<BodyShort as="dd">
-								<Tag
-									size="small"
-									variant="neutral"
-									style="background-color: {severityToColor({
-										severity: cve.severity.toLowerCase()
-									})};"
+								<span
+									class="severity-tag {cve.severity}"
+									style="font-size: var(--ax-font-size-small)">{cve.severity}</span
 								>
-									{cve.severity}
-								</Tag>
 							</BodyShort>
 						</div>
 						<div>
@@ -287,6 +276,19 @@
 		flex-wrap: wrap;
 		gap: var(--ax-space-24);
 		margin: 0;
+		align-items: stretch;
+
+		& > div {
+			display: grid;
+			grid-template-rows: auto 1fr;
+			gap: var(--ax-space-4);
+		}
+
+		& > div :global(dd) {
+			display: flex;
+			align-items: center;
+			margin: 0;
+		}
 	}
 
 	.count {
@@ -342,5 +344,38 @@
 	}
 	code {
 		font-size: 0.9rem;
+	}
+
+	.severity-tag {
+		border-radius: var(--ax-radius-4);
+		padding: 4px 10px;
+		display: inline-flex;
+		align-items: center;
+		font-weight: var(--ax-font-weight-bold);
+
+		&.CRITICAL {
+			background-color: var(--ax-bg-danger-moderate);
+			color: var(--ax-text-danger);
+		}
+		&.HIGH {
+			background-color: color-mix(
+				in srgb,
+				var(--ax-bg-danger-moderate),
+				var(--ax-bg-warning-moderate)
+			);
+			color: color-mix(in oklab, var(--ax-text-danger), var(--ax-text-warning));
+		}
+		&.MEDIUM {
+			background-color: var(--ax-bg-warning-moderate);
+			color: var(--ax-text-warning);
+		}
+		&.LOW {
+			background-color: var(--ax-bg-success-moderate);
+			color: var(--ax-text-success);
+		}
+		&.UNASSIGNED {
+			background-color: var(--ax-bg-neutral-moderate);
+			color: var(--ax-text-neutral-subtle);
+		}
 	}
 </style>

@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { page } from '$app/state';
 	import { CVEOrderField, OrderDirection } from '$houdini';
 	import GraphErrors from '$lib/ui/GraphErrors.svelte';
 	import { urlToOrderDirection, urlToOrderField } from '$lib/ui/OrderByMenu.svelte';
@@ -18,7 +19,6 @@
 		Tr,
 		type TableSortState
 	} from '@nais/ds-svelte-community';
-	import { page } from '$app/state';
 	import type { PageProps } from './$types';
 
 	let { data }: PageProps = $props();
