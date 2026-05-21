@@ -79,12 +79,13 @@ export const sbomStatusDetails = (source: SbomStatusSource): SbomStatusDetails =
 		};
 	}
 
+	const hasMissingVulnerabilityData =
+		indicator === 'healthy' && source.hasVulnerabilityData === false;
 	const iconIndicator =
-		indicator === 'no-sbom' || (indicator === 'healthy' && source.hasVulnerabilityData === false)
-			? 'no-sbom'
-			: indicator;
-	const label =
-		indicator === 'processing'
+		hasMissingVulnerabilityData || indicator === 'no-sbom' ? 'no-sbom' : indicator;
+	const label = hasMissingVulnerabilityData
+		? 'Vulnerability data unavailable'
+		: indicator === 'processing'
 			? (formatProcessingDuration(source.sbomProcessingStartedAt) ?? baseLabel)
 			: baseLabel;
 	return { status, indicator, iconIndicator, label };

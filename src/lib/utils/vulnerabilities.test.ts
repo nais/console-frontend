@@ -176,12 +176,12 @@ describe('vulnerabilities', () => {
 			});
 		});
 
-		test('READY status without vulnerability data returns a no-sbom icon indicator', () => {
+		test('READY status without vulnerability data returns a no-sbom icon indicator and unavailable label', () => {
 			expect(sbomStatusDetails({ status: 'READY', hasVulnerabilityData: false })).toEqual({
 				status: 'READY',
 				indicator: 'healthy',
 				iconIndicator: 'no-sbom',
-				label: 'SBOM up to date'
+				label: 'Vulnerability data unavailable'
 			});
 		});
 
