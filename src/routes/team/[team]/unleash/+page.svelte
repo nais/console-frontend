@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { goto } from '$app/navigation';
+	import { page } from '$app/state';
 	import { graphql } from '$houdini';
 	import { docURL } from '$lib/doc';
 	import CpuIcon from '$lib/icons/CpuIcon.svelte';
@@ -21,6 +23,7 @@
 		Table,
 		Tbody,
 		Td,
+		TextField,
 		Th,
 		Thead,
 		Tooltip,
@@ -246,6 +249,42 @@
 				allowedTeamSlug: teamName
 			})
 			.then(() => Unleash.fetch({ policy: 'CacheAndNetwork' }));
+
+	// Delete Unleash instance
+	const deleteUnleashInstance = graphql(`
+		mutation DeleteUnleashInstance($team: Slug!) {
+			deleteUnleashInstance(input: { teamSlug: $team }) {
+				unleashDeleted
+			}
+		}
+	`);
+
+	let deleteConfirmOpen = $state(false);
+	let deleteConfirmation = $state('');
+	let deleting = $state(false);
+	let deleteError = $state('');
+	const allowedTeamsCount = $derived(unleash?.allowedTeams.nodes.length ?? 0);
+	const canDelete = $derived(allowedTeamsCount === 1 && unleash?.ready);
+	const deleteConfirmed = $derived(deleteConfirmation === unleash?.name);
+
+	const deleteUnleash = async () => {
+		deleting = true;
+		deleteError = '';
+		try {
+			const result = await deleteUnleashInstance.mutate({ team: teamSlug });
+			if (result.errors && result.errors.length > 0) {
+				deleteError = extractErrorMessages(result.errors).join(', ');
+			} else if (result.data?.deleteUnleashInstance.unleashDeleted) {
+				goto(`/team/${page.params.team}?deleted=unleash`);
+			} else {
+				deleteError = 'Failed to delete the Unleash instance. Please try again.';
+			}
+		} catch (e) {
+			deleteError = e instanceof Error ? e.message : 'An unexpected error occurred.';
+		} finally {
+			deleting = false;
+		}
+	};
 </script>
 
 {#if $Unleash.errors}
@@ -308,6 +347,24 @@
 	</Alert>
 {/if}
 
+{#if $deleteUnleashInstance.errors}
+	<Alert variant="error" size="small" style="margin-bottom: 1rem;">
+		{#each new Set(extractErrorMessages($deleteUnleashInstance.errors)) as error (error)}
+			{error}<br />
+		{/each}
+		<Button variant="tertiary" size="small" onclick={() => ($deleteUnleashInstance.errors = [])}>
+			Dismiss
+		</Button>
+	</Alert>
+{/if}
+
+{#if deleteError}
+	<Alert variant="error" size="small" style="margin-bottom: 1rem;">
+		{deleteError}
+		<Button variant="tertiary" size="small" onclick={() => (deleteError = '')}>Dismiss</Button>
+	</Alert>
+{/if}
+
 {#if !enabled}
 	<Alert style="margin-bottom: 1rem;" variant="info">
 		Unleash is not enabled for this tenant. Contact your administrator.
@@ -342,6 +399,48 @@
 		<BodyShort>Are you sure you want to remove this team?</BodyShort>
 	</Confirm>
 
+	{#if viewerIsMember}
+		<Confirm
+			confirmText="Delete"
+			variant="danger"
+			bind:open={deleteConfirmOpen}
+			onconfirm={deleteUnleash}
+			disabled={!canDelete || !deleteConfirmed}
+		>
+			{#snippet header()}
+				<Heading>Delete Unleash Instance</Heading>
+			{/snippet}
+			{#if !canDelete}
+				<Alert variant="warning" size="small" style="margin-bottom: var(--ax-space-8);">
+					{#if !unleash.ready}
+						The Unleash instance must be ready before it can be deleted.
+					{:else if allowedTeamsCount > 1}
+						Revoke access for all other teams before deleting. Currently {allowedTeamsCount - 1} other
+						team{allowedTeamsCount > 2 ? 's have' : ' has'} access.
+					{/if}
+				</Alert>
+			{:else}
+				<BodyShort spacing>
+					This will permanently delete the Unleash instance <b>{unleash.name}</b> and all its data.
+				</BodyShort>
+				<BodyShort spacing>
+					This action cannot be undone. To confirm, type <b>{unleash.name}</b> below:
+				</BodyShort>
+				<TextField
+					label="Confirm instance name"
+					hideLabel
+					bind:value={deleteConfirmation}
+					placeholder={unleash.name}
+				/>
+				{#if !deleteConfirmed && deleteConfirmation.length > 0}
+					<Alert variant="error" size="small" style="margin-top: var(--ax-space-4);">
+						The instance name does not match.
+					</Alert>
+				{/if}
+			{/if}
+		</Confirm>
+	{/if}
+
 	{#if addTeamModalOpen}
 		<TeamSearchModal
 			bind:open={addTeamModalOpen}
@@ -354,6 +453,24 @@
 
 	<div class="layout-two-column">
 		<div class="content">
+			{#if viewerIsMember}
+				<div class="detail-actions">
+					<Button
+						variant="danger"
+						size="small"
+						loading={deleting}
+						onclick={() => {
+							deleteConfirmation = '';
+							deleteError = '';
+							deleteConfirmOpen = true;
+						}}
+						icon={TrashIcon}
+					>
+						Delete
+					</Button>
+				</div>
+			{/if}
+
 			<section aria-labelledby="info-heading">
 				<Heading as="h2" id="info-heading" size="medium" spacing>Instance details</Heading>
 				<dl class="settings-list">
