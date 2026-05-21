@@ -43,7 +43,7 @@
 		<div class="content-wrapper">
 			<div class="header">
 				<Heading as="h1" size="large">My Teams</Heading>
-				<Button as="a" size="medium" href="/team/create" variant="primary" onclick={pageModalClick}>
+				<Button as="a" size="small" href="/team/create" variant="primary" onclick={pageModalClick}>
 					Create team
 				</Button>
 			</div>

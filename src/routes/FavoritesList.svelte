@@ -8,7 +8,7 @@
 
 <div class="favorites-list">
 	<div class="header">
-		<Heading as="h2" size="large">My Favorites</Heading>
+		<Heading as="h2" size="large" spacing>My Favorites</Heading>
 	</div>
 
 	<SortableList
