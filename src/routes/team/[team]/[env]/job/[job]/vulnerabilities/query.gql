@@ -50,6 +50,7 @@ query JobImageDetails($team: Slug!, $env: String!, $job: String!) @cache(policy:
 						unassigned
 						riskScore
 						lastUpdated
+						staleImageTag
 					}
 					workloadReferences {
 						nodes {

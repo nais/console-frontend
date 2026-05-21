@@ -150,7 +150,24 @@ describe('vulnerabilities', () => {
 	});
 
 	describe('SbomStatus helpers', () => {
-		test('READY status returns healthy indicator and SBOM up to date label', () => {
+		test('READY status with staleImageTag returns stale iconIndicator', () => {
+			const result = sbomStatusDetails({ status: 'READY', staleImageTag: 'sha256-abc123' });
+			expect(result.status).toBe('READY');
+			expect(result.indicator).toBe('healthy');
+			expect(result.iconIndicator).toBe('stale');
+			expect(result.label).toBe('Scanning updated image — results from previous tag sha256-abc123');
+		});
+
+		test('READY status with null staleImageTag is unaffected', () => {
+			expect(sbomStatusDetails({ status: 'READY', staleImageTag: null })).toEqual({
+				status: 'READY',
+				indicator: 'healthy',
+				iconIndicator: 'healthy',
+				label: 'SBOM up to date'
+			});
+		});
+
+		test('READY status without staleImageTag is unaffected', () => {
 			expect(sbomStatusDetails({ status: 'READY' })).toEqual({
 				status: 'READY',
 				indicator: 'healthy',
@@ -168,8 +185,20 @@ describe('vulnerabilities', () => {
 			});
 		});
 
+		test('PROCESSING with null processingStartedAt returns warning indicator', () => {
+			expect(sbomStatusDetails({ status: 'PROCESSING', sbomProcessingStartedAt: null })).toEqual({
+				status: 'PROCESSING',
+				indicator: 'warning',
+				iconIndicator: 'warning',
+				label: 'Problem analysing the SBOM'
+			});
+		});
+
 		test('PROCESSING status returns processing indicator', () => {
-			const result = sbomStatusDetails({ status: 'PROCESSING' });
+			const result = sbomStatusDetails({
+				status: 'PROCESSING',
+				sbomProcessingStartedAt: new Date()
+			});
 			expect(result.status).toBe('PROCESSING');
 			expect(result.indicator).toBe('processing');
 			expect(result.iconIndicator).toBe('processing');

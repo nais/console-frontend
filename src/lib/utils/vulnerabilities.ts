@@ -8,12 +8,13 @@ export type SbomStatus = SBOMStatus$options;
 
 export type SbomStatusIndicator = 'healthy' | 'processing' | 'warning' | 'no-sbom';
 
-export type SbomStatusIconIndicator = SbomStatusIndicator;
+export type SbomStatusIconIndicator = SbomStatusIndicator | 'stale';
 
 export interface SbomStatusSource {
 	status: SbomStatus;
 	sbomProcessingStartedAt?: Date | null;
 	hasVulnerabilityData?: boolean;
+	staleImageTag?: string | null;
 }
 
 export interface SbomStatusDetails {
@@ -59,6 +60,25 @@ export const sbomStatusDetails = (source: SbomStatusSource): SbomStatusDetails =
 	const status = source.status ?? 'NO_SBOM';
 	const indicator = sbomStatusIndicators[status] ?? 'no-sbom';
 	const baseLabel = sbomStatusLabels[status] ?? 'No SBOM found';
+
+	if (indicator === 'healthy' && source.staleImageTag) {
+		return {
+			status,
+			indicator,
+			iconIndicator: 'stale',
+			label: `Scanning updated image — results from previous tag ${source.staleImageTag}`
+		};
+	}
+
+	if (indicator === 'processing' && !source.sbomProcessingStartedAt) {
+		return {
+			status,
+			indicator: 'warning',
+			iconIndicator: 'warning',
+			label: 'Problem analysing the SBOM'
+		};
+	}
+
 	const iconIndicator =
 		indicator === 'no-sbom' || (indicator === 'healthy' && source.hasVulnerabilityData === false)
 			? 'no-sbom'

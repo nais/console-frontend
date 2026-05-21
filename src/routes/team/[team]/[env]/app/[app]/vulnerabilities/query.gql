@@ -52,6 +52,7 @@ query ApplicationImageDetails($team: Slug!, $env: String!, $app: String!)
 						unassigned
 						riskScore
 						lastUpdated
+						staleImageTag
 					}
 					workloadReferences {
 						nodes {
