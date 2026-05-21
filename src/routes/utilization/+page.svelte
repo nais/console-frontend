@@ -3,6 +3,7 @@
 	import { UtilizationResourceType, type TenantUtilization$result } from '$houdini';
 	import UtilizationChart from '$lib/chart/UtilizationChart.svelte';
 	import GraphErrors from '$lib/ui/GraphErrors.svelte';
+	import IconLabel from '$lib/ui/IconLabel.svelte';
 	import Pagination from '$lib/ui/Pagination.svelte';
 	import SurfaceCard from '$lib/ui/SurfaceCard.svelte';
 	import { euroValueFormatter } from '$lib/utils/formatters';
@@ -23,6 +24,7 @@
 		Tr,
 		type TableSortState
 	} from '@nais/ds-svelte-community';
+	import { PersonGroupIcon } from '@nais/ds-svelte-community/icons';
 	import prettyBytes from 'pretty-bytes';
 	import type { PageProps } from './$types';
 
@@ -259,9 +261,11 @@
 							{#each paginatedTable as overage (overage)}
 								<Tr>
 									<Td>
-										<a href={`/team/${overage.teamSlug}/utilization`}>
-											{overage.teamSlug}
-										</a>
+										<IconLabel
+											label={overage.teamSlug}
+											href={`/team/${overage.teamSlug}/utilization`}
+											icon={PersonGroupIcon}
+										/>
 									</Td>
 									<Td>
 										{overage.unusedCpu.toLocaleString('en-GB', {
