@@ -81,13 +81,14 @@
 
 <div class="page">
 	<div class="container">
+		<Heading as="h1" size="large">Tenant Cost</Heading>
 		<div class="wrapper">
 			<!-- <GraphErrors errors={$TenantCost.errors} /> -->
 
-			<div class="graph">
+			<section class="graph" aria-labelledby="cost-by-service-heading">
 				<div class="heading">
 					<div class="content">
-						<Heading as="h2" spacing>Cost by Service</Heading>
+						<Heading as="h2" spacing id="cost-by-service-heading">Cost by Service</Heading>
 						<BodyLong>
 							Service cost distribution for <strong>{page.data.tenantName?.toUpperCase()}</strong>.
 							Some services are missing cost data. Figures are based on data from Google Cloud and
@@ -171,17 +172,13 @@
 						</BarChart>
 					</LegendWrapper>
 				{:else}
-					<div
-						style="display: flex; justify-content: center; align-items: center; height: 500px;"
-						role="status"
-						aria-label="Loading"
-					>
+					<div class="loading-centered" role="status" aria-label="Loading">
 						<Loader size="3xlarge" />
 					</div>
 				{/if}
-			</div>
-			<div>
-				<Heading as="h2" spacing>Team Cost last 12 months</Heading>
+			</section>
+			<section aria-labelledby="team-cost-heading">
+				<Heading as="h2" spacing id="team-cost-heading">Team Cost last 12 months</Heading>
 				<BodyLong spacing>
 					This table shows the cost for each team over the last 12 months. The cost is aggregated
 					from all services used by the team.
@@ -218,9 +215,7 @@
 								</ListItem>
 							{/each}
 						{:else}
-							<div
-								style="display: flex; justify-content: center; align-items: center; height: 200px;"
-							>
+							<div class="loading-centered" role="status" aria-label="Loading">
 								<Loader size="3xlarge" />
 							</div>
 						{/if}
@@ -248,7 +243,7 @@
 							)
 					}}
 				/>
-			</div>
+			</section>
 		</div>
 	</div>
 </div>
@@ -266,7 +261,7 @@
 		gap: var(--spacing-layout);
 	}
 
-	.graph {
+	section.graph {
 		display: flex;
 		flex-direction: column;
 		gap: var(--ax-space-16);

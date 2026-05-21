@@ -119,7 +119,7 @@
 	<GraphErrors errors={$costQuery.errors} />
 
 	{#if $costQuery.fetching}
-		<div class="loading" role="status" aria-label="Loading">
+		<div class="loading-centered" role="status" aria-label="Loading">
 			<Loader size="3xlarge" />
 		</div>
 	{:else}
@@ -169,13 +169,6 @@
 		justify-content: space-between;
 		gap: var(--ax-space-8);
 		margin-bottom: var(--ax-space-16);
-	}
-
-	.loading {
-		display: flex;
-		justify-content: center;
-		align-items: center;
-		height: 200px;
 	}
 
 	.env-section {
