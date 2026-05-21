@@ -24,17 +24,13 @@
 		</div>
 
 		<section class="workloads-section" aria-labelledby="most_vulnerable_workloads">
-			<div class="heading">
-				<div class="content">
-					<Heading as="h2" size="medium" spacing id="most_vulnerable_workloads"
-						>Most Vulnerable Workloads</Heading
-					>
-					<BodyLong spacing>
-						This team's workloads ranked by security risk using Risk Score (default sorting). Focus
-						remediation efforts where they'll have the greatest impact.
-					</BodyLong>
-				</div>
-			</div>
+			<Heading as="h2" size="medium" spacing id="most_vulnerable_workloads"
+				>Most Vulnerable Workloads</Heading
+			>
+			<BodyLong spacing>
+				This team's workloads ranked by security risk using Risk Score (default sorting). Focus
+				remediation efforts where they'll have the greatest impact.
+			</BodyLong>
 
 			<WorkloadsWithVulnerabilities team={teamSlug} />
 		</section>
@@ -45,19 +41,6 @@
 	.wrapper {
 		display: grid;
 		gap: var(--ax-space-32);
-		min-width: 0;
-	}
-
-	.heading {
-		display: flex;
-		justify-content: space-between;
-		align-items: flex-end;
-		gap: var(--spacing-layout);
-		min-width: 0;
-	}
-
-	.content {
-		max-width: 80ch;
 		min-width: 0;
 	}
 
@@ -86,12 +69,5 @@
 		display: grid;
 		gap: var(--ax-space-32);
 		min-width: 0;
-	}
-
-	@media (max-width: 767px) {
-		.heading {
-			flex-direction: column;
-			align-items: flex-start;
-		}
 	}
 </style>
