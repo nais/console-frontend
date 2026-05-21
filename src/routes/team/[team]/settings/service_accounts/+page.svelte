@@ -2,11 +2,13 @@
 	import ServiceAccountListItem from '$lib/domain/list-items/ServiceAccountListItem.svelte';
 	import GraphErrors from '$lib/ui/GraphErrors.svelte';
 	import List from '$lib/ui/List.svelte';
+	import PageModal, { pageModalClick } from '$lib/ui/PageModal.svelte';
 	import Pagination from '$lib/ui/Pagination.svelte';
 	import { changeParams } from '$lib/utils/searchparams';
 	import { BodyLong, Button } from '@nais/ds-svelte-community';
 	import { PlusIcon } from '@nais/ds-svelte-community/icons';
 	import type { PageProps } from './$types';
+	import CreatePage from './create/+page.svelte';
 
 	let { data }: PageProps = $props();
 	let { TeamServiceAccounts, viewerIsOwner, isAdmin, teamSlug } = $derived(data);
@@ -22,6 +24,8 @@
 			after: params.after ?? after
 		});
 	};
+
+	const createUrl = $derived(`/team/${teamSlug}/settings/service_accounts/create`);
 </script>
 
 <GraphErrors errors={$TeamServiceAccounts.errors} />
@@ -41,7 +45,8 @@
 						variant="secondary"
 						icon={PlusIcon}
 						as="a"
-						href="/team/{teamSlug}/settings/service_accounts/create"
+						href={createUrl}
+						onclick={pageModalClick}
 					>
 						Create service account
 					</Button>
@@ -72,7 +77,8 @@
 				variant="secondary"
 				icon={PlusIcon}
 				as="a"
-				href="/team/{teamSlug}/settings/service_accounts/create"
+				href={createUrl}
+				onclick={pageModalClick}
 			>
 				Create service account
 			</Button>
@@ -80,3 +86,7 @@
 		<BodyLong><strong>No service accounts found.</strong></BodyLong>
 	{/if}
 </div>
+
+{#if viewerIsOwner || isAdmin}
+	<PageModal content={CreatePage} header="Create service account" />
+{/if}
