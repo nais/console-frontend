@@ -27,7 +27,7 @@
 					}
 					name
 
-					runs(first: 999) @list(name: "All_Runs") {
+					runs(first: 20) @list(name: "All_Runs") {
 						edges {
 							node {
 								id
@@ -50,6 +50,9 @@
 								}
 							}
 						}
+						pageInfo {
+							totalCount
+						}
 					}
 				}
 			`)
@@ -57,11 +60,11 @@
 	);
 
 	let runEdges = $derived($data?.runs?.edges ?? []);
-	let runCount = $derived(runEdges.length);
+	let totalCount = $derived($data?.runs?.pageInfo?.totalCount ?? runEdges.length);
 </script>
 
 {#if $data}
-	<List title="Job runs" count={runCount} level="h2">
+	<List title="Job runs" count={totalCount} level="h2">
 		{#each runEdges as run (run.node.id)}
 			{#if run.node.instances.pageInfo.totalCount > 0}
 				{#if $data.team?.slug && $data.teamEnvironment?.environment?.name && $data.name}

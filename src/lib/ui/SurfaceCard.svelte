@@ -65,16 +65,6 @@
 		gap: var(--ax-space-8);
 	}
 
-	:global(.eyebrow) {
-		font-size: var(--ax-font-size-medium) !important;
-		font-weight: var(--ax-font-weight-bold) !important;
-		line-height: var(--ax-font-line-height-large) !important;
-		color: var(--ax-text-neutral-subtle);
-		text-transform: uppercase;
-		letter-spacing: 0.04em;
-		margin: 0;
-	}
-
 	.content {
 		display: flex;
 		flex-direction: column;

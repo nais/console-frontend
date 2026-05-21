@@ -41,7 +41,9 @@
 		await teamHealth.loadNextPage({ first: 5 });
 	}
 
-	const hasCriticalIssues = $derived($teamHealth.data?.team?.issues?.pageInfo?.totalCount ?? 0 > 0);
+	const hasCriticalIssues = $derived(
+		($teamHealth.data?.team?.issues?.pageInfo?.totalCount ?? 0) > 0
+	);
 	const totalCount = $derived($teamHealth.data?.team?.issues?.pageInfo?.totalCount ?? 0);
 </script>
 

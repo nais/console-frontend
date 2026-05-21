@@ -1,4 +1,4 @@
-query JobRunsQuery($job: String!, $team: Slug!, $env: String!) {
+query JobRunsQuery($job: String!, $team: Slug!, $env: String!) @cache(policy: CacheAndNetwork) {
 	team(slug: $team) {
 		environment(name: $env) {
 			job(name: $job) {

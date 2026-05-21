@@ -13,17 +13,23 @@
 	const inventoryQuery = graphql(`
 		query TeamInventoryOverview($team: Slug!) @cache(policy: CacheAndNetwork) {
 			team(slug: $team) {
-				applications(first: 500) {
-					nodes {
-						state
+				applications(first: 0) {
+					facets {
+						states {
+							state
+							count
+						}
 					}
 					pageInfo {
 						totalCount
 					}
 				}
-				jobs(first: 500) {
-					nodes {
-						state
+				jobs(first: 0) {
+					facets {
+						states {
+							state
+							count
+						}
 					}
 					pageInfo {
 						totalCount
@@ -67,21 +73,21 @@
 	});
 
 	let appStates = $derived.by(() => {
-		const nodes = $inventoryQuery.data?.team?.applications?.nodes ?? [];
+		const facets = $inventoryQuery.data?.team?.applications?.facets?.states ?? [];
 		const total = $inventoryQuery.data?.team?.applications?.pageInfo?.totalCount ?? 0;
-		const running = nodes.filter((n) => n.state === 'RUNNING').length;
-		const notRunning = nodes.filter((n) => n.state === 'NOT_RUNNING').length;
-		const unknown = nodes.filter((n) => n.state === 'UNKNOWN').length;
+		const running = facets.find((f) => f.state === 'RUNNING')?.count ?? 0;
+		const notRunning = facets.find((f) => f.state === 'NOT_RUNNING')?.count ?? 0;
+		const unknown = facets.find((f) => f.state === 'UNKNOWN')?.count ?? 0;
 		return { total, running, notRunning, unknown };
 	});
 
 	let jobStates = $derived.by(() => {
-		const nodes = $inventoryQuery.data?.team?.jobs?.nodes ?? [];
+		const facets = $inventoryQuery.data?.team?.jobs?.facets?.states ?? [];
 		const total = $inventoryQuery.data?.team?.jobs?.pageInfo?.totalCount ?? 0;
-		const running = nodes.filter((n) => n.state === 'RUNNING').length;
-		const failed = nodes.filter((n) => n.state === 'FAILED').length;
-		const completed = nodes.filter((n) => n.state === 'COMPLETED').length;
-		const unknown = nodes.filter((n) => n.state === 'UNKNOWN').length;
+		const running = facets.find((f) => f.state === 'RUNNING')?.count ?? 0;
+		const failed = facets.find((f) => f.state === 'FAILED')?.count ?? 0;
+		const completed = facets.find((f) => f.state === 'COMPLETED')?.count ?? 0;
+		const unknown = facets.find((f) => f.state === 'UNKNOWN')?.count ?? 0;
 		return { total, running, failed, completed, unknown };
 	});
 

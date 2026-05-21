@@ -16,7 +16,7 @@
 	const form = $derived(page.form);
 
 	let min = $derived(form?.min ?? scaling?.minInstances ?? 0);
-	let max = $derived(form?.min ?? scaling?.maxInstances ?? 0);
+	let max = $derived(form?.max ?? scaling?.maxInstances ?? 0);
 
 	let success = $state(false);
 	let successMessage = $state('');
