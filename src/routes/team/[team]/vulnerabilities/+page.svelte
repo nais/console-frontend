@@ -23,7 +23,7 @@
 			<VulnerabilitySummary {teamSlug} />
 		</div>
 
-		<div class="workloads-section">
+		<section class="workloads-section" aria-labelledby="most_vulnerable_workloads">
 			<div class="heading">
 				<div class="content">
 					<Heading as="h2" size="medium" spacing id="most_vulnerable_workloads"
@@ -37,7 +37,7 @@
 			</div>
 
 			<WorkloadsWithVulnerabilities team={teamSlug} />
-		</div>
+		</section>
 	</div>
 {/if}
 

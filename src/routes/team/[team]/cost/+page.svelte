@@ -52,7 +52,7 @@
 				/>
 			</div>
 		{:else}
-			<div class="loading" role="status" aria-label="Loading">
+			<div class="loading-centered" role="status" aria-label="Loading">
 				<Loader size="3xlarge" />
 			</div>
 		{/if}
@@ -80,12 +80,5 @@
 		height: 350px;
 		min-width: 0;
 		padding-inline: var(--spacing-layout);
-	}
-
-	.loading {
-		display: flex;
-		justify-content: center;
-		align-items: center;
-		height: 300px;
 	}
 </style>
