@@ -4,6 +4,7 @@
 	import List from '$lib/ui/List.svelte';
 	import ListItem from '$lib/ui/ListItem.svelte';
 	import { Button } from '@nais/ds-svelte-community';
+	import { onMount } from 'svelte';
 
 	interface Props {
 		teamSlug: string;
@@ -13,6 +14,11 @@
 	}
 
 	let { teamSlug, environment, jobName, ondelete }: Props = $props();
+
+	onMount(() => {
+		const interval = setInterval(() => refetch(), 10_000);
+		return () => clearInterval(interval);
+	});
 
 	const runsQuery = graphql(`
 		query JobRunsList($team: Slug!, $env: String!, $job: String!, $first: Int!)

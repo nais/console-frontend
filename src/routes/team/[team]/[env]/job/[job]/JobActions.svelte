@@ -47,7 +47,25 @@
 				}
 			) {
 				jobRun {
+					id
 					name
+					startTime
+					completionTime
+					duration
+					instances {
+						pageInfo {
+							totalCount
+						}
+					}
+					status {
+						message
+						state
+					}
+					trigger {
+						type
+						actor
+					}
+					...All_Runs_insert @prepend
 				}
 			}
 		}
