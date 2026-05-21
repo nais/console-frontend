@@ -51,13 +51,10 @@
 		filteredEnvs.length === allEnvs.length ? '' : filteredEnvs.join(',')
 	);
 
-	$effect(() => {
-		const environments = filteredEnvs.length === allEnvs.length ? '' : filteredEnvs.join(',');
-
-		if (environments !== (page.url.searchParams.get('environments') ?? '')) {
-			changeQuery({ environments });
-		}
-	});
+	function handleEnvironmentChange(newEnvs: string[]) {
+		const environments = newEnvs.length === allEnvs.length ? '' : newEnvs.join(',');
+		changeQuery({ environments });
+	}
 
 	function handleIntervalChange(newInterval: Interval) {
 		interval = newInterval;
@@ -122,7 +119,7 @@
 										: filteredEnvs.length > 0
 											? 'indeterminate'
 											: false}
-									onchange={(checked) => (filteredEnvs = checked ? allEnvs : [])}
+									onchange={(checked) => handleEnvironmentChange(checked ? allEnvs : [])}
 								>
 									All environments
 								</ActionMenuCheckboxItem>
@@ -130,9 +127,11 @@
 									<ActionMenuCheckboxItem
 										checked={filteredEnvs.includes(name)}
 										onchange={(checked) =>
-											(filteredEnvs = checked
-												? [...filteredEnvs, name]
-												: filteredEnvs.filter((env) => env !== name))}
+											handleEnvironmentChange(
+												checked
+													? [...filteredEnvs, name]
+													: filteredEnvs.filter((env) => env !== name)
+											)}
 									>
 										{name}
 									</ActionMenuCheckboxItem>

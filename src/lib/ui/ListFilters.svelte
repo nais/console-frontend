@@ -1,5 +1,5 @@
 <script module lang="ts">
-	let persistedSortOpen = true;
+	let persistedSortOpen = $state(true);
 </script>
 
 <script lang="ts">
@@ -39,12 +39,6 @@
 		onSort,
 		children
 	}: Props = $props();
-
-	let sortOpen = $state(persistedSortOpen);
-
-	$effect(() => {
-		persistedSortOpen = sortOpen;
-	});
 </script>
 
 <div class="filters">
@@ -62,7 +56,7 @@
 	{/if}
 
 	{#if sortFields && sortFields.length > 0 && onSort}
-		<details class="filter-section" bind:open={sortOpen}>
+		<details class="filter-section" bind:open={persistedSortOpen}>
 			<summary class="section-heading">Sort By</summary>
 			<div class="sort-options">
 				{#each sortFields as { value, label } (value)}

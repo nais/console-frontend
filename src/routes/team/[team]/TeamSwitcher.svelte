@@ -27,6 +27,7 @@
 	$effect(() => {
 		if (open) {
 			userTeams.fetch();
+			selected = 0;
 		}
 	});
 
@@ -39,12 +40,6 @@
 	const currentTeam = $derived(page.params.team);
 
 	let selected = $state(0);
-
-	$effect(() => {
-		if (open) {
-			selected = 0;
-		}
-	});
 
 	function selectTeam(slug: string) {
 		open = false;
