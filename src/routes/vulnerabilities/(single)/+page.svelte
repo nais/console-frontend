@@ -1,5 +1,5 @@
 <script lang="ts">
-	import VulnerabilitySummaryTenant from '$lib/domain/vulnerability/VulnerabilitySummaryTenant.svelte';
+	import VulnerabilitySummaryMetrics from '$lib/domain/vulnerability/VulnerabilitySummaryMetrics.svelte';
 	import SurfaceCard from '$lib/ui/SurfaceCard.svelte';
 	import { Heading } from '@nais/ds-svelte-community';
 	import VulnerabilityHistory from '../VulnerabilityHistory.svelte';
@@ -15,7 +15,7 @@
 
 	{#if $TenantVulnerabilites.data?.vulnerabilitySummary}
 		<SurfaceCard title="Summary" level="h2" bordered>
-			<VulnerabilitySummaryTenant
+			<VulnerabilitySummaryMetrics
 				vulnerabilitySummary={$TenantVulnerabilites.data?.vulnerabilitySummary}
 			/>
 		</SurfaceCard>

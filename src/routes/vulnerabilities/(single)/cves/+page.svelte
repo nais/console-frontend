@@ -1,112 +1,147 @@
 <script lang="ts">
 	import { CVEOrderField, OrderDirection } from '$houdini';
 	import GraphErrors from '$lib/ui/GraphErrors.svelte';
-	import List from '$lib/ui/List.svelte';
-	import ListItem from '$lib/ui/ListItem.svelte';
-	import OrderByMenu from '$lib/ui/OrderByMenu.svelte';
+	import { urlToOrderDirection, urlToOrderField } from '$lib/ui/OrderByMenu.svelte';
 	import Pagination from '$lib/ui/Pagination.svelte';
 	import { changeParams } from '$lib/utils/searchparams';
 	import { severityToVariant } from '$lib/utils/vulnerabilities';
-	import { BodyLong, BodyShort, Detail, Heading, Loader, Tag } from '@nais/ds-svelte-community';
+	import {
+		BodyLong,
+		Heading,
+		Loader,
+		Table,
+		Tag,
+		Tbody,
+		Td,
+		Th,
+		Thead,
+		Tr,
+		type TableSortState
+	} from '@nais/ds-svelte-community';
+	import { page } from '$app/state';
 	import type { PageProps } from './$types';
 
 	let { data }: PageProps = $props();
 	let { CVES } = $derived(data);
+
+	const currentOrderField = $derived(
+		urlToOrderField(CVEOrderField, CVEOrderField.CVSS_SCORE, page.url)
+	);
+
+	const currentOrderDirection = $derived(urlToOrderDirection(page.url, OrderDirection.DESC));
+
+	const tableSortState = $derived.by(
+		(): TableSortState => ({
+			orderBy: currentOrderField,
+			direction: currentOrderDirection === OrderDirection.ASC ? 'ascending' : 'descending'
+		})
+	);
+
+	const handleSortChange = (key: string) => {
+		const nextDirection =
+			currentOrderField === key
+				? currentOrderDirection === OrderDirection.ASC
+					? OrderDirection.DESC
+					: OrderDirection.ASC
+				: key === CVEOrderField.IDENTIFIER
+					? OrderDirection.ASC
+					: OrderDirection.DESC;
+
+		changeParams(
+			{
+				sort: `${key}-${nextDirection}`,
+				after: '',
+				before: ''
+			},
+			{ noScroll: true }
+		);
+	};
 </script>
 
 <div class="wrapper">
 	<GraphErrors errors={$CVES.errors} />
 	<div>
 		<Heading as="h2" spacing>CVE Database</Heading>
-		<BodyLong spacing>
+		<BodyLong>
 			Browse the complete list of Common Vulnerabilities and Exposures (CVEs) affecting your
 			workloads. Each CVE entry includes severity rating, CVSS score, description, and the number of
 			affected workloads.
 		</BodyLong>
 	</div>
+
 	{#if $CVES.fetching && !$CVES.data}
-		<div
-			style="display: flex; justify-content: center; align-items: center; height: 500px;"
-			role="status"
-			aria-label="Loading"
-		>
+		<div class="loading-centered" role="status" aria-label="Loading">
 			<Loader size="3xlarge" />
 		</div>
 	{:else}
-		<List title="CVEs">
-			{#snippet menu()}
-				<OrderByMenu
-					orderField={CVEOrderField}
-					defaultOrderField={CVEOrderField.CVSS_SCORE}
-					defaultOrderDirection={OrderDirection.DESC}
-				/>
-			{/snippet}
-			{#if $CVES.fetching}
-				<div
-					style="display: flex; justify-content: center; align-items: center; height: 500px;"
-					role="status"
-					aria-label="Loading"
-				>
-					<Loader size="3xlarge" />
-				</div>
-			{:else if $CVES.data?.cves.nodes}
-				{#each $CVES.data.cves.nodes as cve (cve.identifier)}
-					<ListItem href="/vulnerabilities/{cve.identifier}">
-						<div class="cve-row">
-							<div class="cve-main">
-								<div class="cve-id-section">
-									<BodyShort weight="semibold">{cve.identifier}</BodyShort>
-									<Tag variant={severityToVariant(cve.severity)} size="small">{cve.severity}</Tag>
+		<div class="table-scroll" role="region" aria-label="CVE database">
+			<Table size="small" sort={tableSortState} onsortchange={handleSortChange}>
+				<Thead>
+					<Tr>
+						<Th sortable={true} sortKey={CVEOrderField.IDENTIFIER}>CVE</Th>
+						<Th sortable={true} sortKey={CVEOrderField.SEVERITY}>Severity</Th>
+						<Th sortable={true} sortKey={CVEOrderField.CVSS_SCORE}>CVSS</Th>
+						<Th>Title</Th>
+						<Th sortable={true} sortKey={CVEOrderField.AFFECTED_WORKLOADS_COUNT}>Workloads</Th>
+					</Tr>
+				</Thead>
+				<Tbody>
+					{#if $CVES.fetching}
+						<Tr>
+							<Td colspan={999}>
+								<div class="loading-centered" role="status" aria-label="Loading">
+									<Loader size="3xlarge" />
 								</div>
-								<Detail>{cve.title}</Detail>
-							</div>
-							<div class="cve-stats">
-								<div class="cve-stat">
-									<Detail textColor="subtle">CVSS:</Detail>
-									<Detail>{cve.cvssScore?.toFixed(1) ?? 'N/A'}</Detail>
-								</div>
-								<div class="cve-stat">
-									<Detail textColor="subtle">Workloads:</Detail>
-									<Detail>{cve.workloads.pageInfo.totalCount}</Detail>
-								</div>
-							</div>
-						</div>
-					</ListItem>
-				{/each}
-			{:else}
-				<div style="text-align: center; padding: 2rem;">
-					<Detail>No CVEs found</Detail>
-				</div>
-			{/if}
-		</List>
+							</Td>
+						</Tr>
+					{:else}
+						{#each $CVES.data?.cves.nodes ?? [] as cve (cve.identifier)}
+							<Tr>
+								<Td>
+									<a href="/vulnerabilities/{cve.identifier}">{cve.identifier}</a>
+								</Td>
+								<Td>
+									<Tag variant={severityToVariant(cve.severity)} size="small"
+										>{cve.severity.toLowerCase()}</Tag
+									>
+								</Td>
+								<Td>{cve.cvssScore?.toFixed(1) ?? 'N/A'}</Td>
+								<Td>{cve.title}</Td>
+								<Td>{cve.workloads.pageInfo.totalCount}</Td>
+							</Tr>
+						{:else}
+							<Tr>
+								<Td colspan={999}>No CVEs found.</Td>
+							</Tr>
+						{/each}
+					{/if}
+				</Tbody>
+			</Table>
+		</div>
 	{/if}
 
-	{#if $CVES.data?.cves.pageInfo}
-		<Pagination
-			page={$CVES.data.cves.pageInfo}
-			loaders={{
-				loadPreviousPage: () => {
-					changeParams(
-						{
-							before: $CVES.data?.cves.pageInfo.startCursor ?? '',
-							after: ''
-						},
-						{ noScroll: true }
-					);
-				},
-				loadNextPage: () => {
-					changeParams(
-						{
-							after: $CVES.data?.cves.pageInfo.endCursor ?? '',
-							before: ''
-						},
-						{ noScroll: true }
-					);
-				}
-			}}
-			fetching={$CVES.fetching}
-		/>
-	{/if}
+	<Pagination
+		page={$CVES.data?.cves.pageInfo}
+		fetching={$CVES.fetching}
+		loaders={{
+			loadPreviousPage: () =>
+				changeParams(
+					{
+						before: $CVES.data?.cves.pageInfo.startCursor ?? '',
+						after: ''
+					},
+					{ noScroll: true }
+				),
+			loadNextPage: () =>
+				changeParams(
+					{
+						after: $CVES.data?.cves.pageInfo.endCursor ?? '',
+						before: ''
+					},
+					{ noScroll: true }
+				)
+		}}
+	/>
 </div>
 
 <style>
@@ -115,38 +150,5 @@
 		flex-direction: column;
 		gap: var(--spacing-layout);
 		margin-top: var(--spacing-layout);
-	}
-
-	.cve-row {
-		display: flex;
-		justify-content: space-between;
-		align-items: flex-start;
-		gap: var(--ax-space-16);
-		width: 100%;
-	}
-
-	.cve-main {
-		display: flex;
-		flex-direction: column;
-		gap: var(--ax-space-8);
-		flex: 1;
-	}
-
-	.cve-id-section {
-		display: flex;
-		align-items: center;
-		gap: var(--ax-space-8);
-	}
-
-	.cve-stats {
-		display: flex;
-		gap: var(--ax-space-16);
-		flex-shrink: 0;
-	}
-
-	.cve-stat {
-		display: flex;
-		gap: 0.25rem;
-		align-items: center;
 	}
 </style>
