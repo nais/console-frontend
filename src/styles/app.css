@@ -299,3 +299,56 @@ html {
 		height: 100%;
 	}
 }
+
+.severity-badge {
+	border-radius: var(--ax-radius-4);
+	padding: 2px 8px;
+	font-weight: var(--ax-font-weight-bold);
+	white-space: nowrap;
+	display: inline-flex;
+	align-items: center;
+	text-decoration: none;
+	color: inherit;
+
+	&.CRITICAL {
+		background-color: var(--ax-bg-danger-moderate);
+		color: var(--ax-text-danger);
+	}
+	&.HIGH {
+		background-color: color-mix(
+			in srgb,
+			var(--ax-bg-danger-moderate),
+			var(--ax-bg-warning-moderate)
+		);
+		color: color-mix(in oklab, var(--ax-text-danger), var(--ax-text-warning));
+	}
+	&.MEDIUM {
+		background-color: var(--ax-bg-warning-moderate);
+		color: var(--ax-text-warning);
+	}
+	&.LOW {
+		background-color: var(--ax-bg-success-moderate);
+		color: var(--ax-text-success);
+	}
+	&.UNASSIGNED {
+		background-color: var(--ax-bg-neutral-moderate);
+		color: var(--ax-text-neutral-subtle);
+	}
+	&.RISK_SCORE {
+		background-color: var(--ax-bg-neutral-moderate);
+		color: var(--ax-text-neutral);
+	}
+}
+
+a.severity-badge {
+	display: flex;
+	justify-content: center;
+	padding: 4px 10px;
+	min-width: 2.75rem;
+	width: fit-content;
+	margin: 0 auto;
+
+	&:hover {
+		opacity: 0.8;
+	}
+}

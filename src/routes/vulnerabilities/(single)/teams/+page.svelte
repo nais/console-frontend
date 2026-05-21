@@ -2,6 +2,7 @@
 	import { page } from '$app/state';
 	import { OrderDirection, TeamOrderField } from '$houdini';
 	import GraphErrors from '$lib/ui/GraphErrors.svelte';
+	import IconLabel from '$lib/ui/IconLabel.svelte';
 	import { urlToOrderDirection, urlToOrderField } from '$lib/ui/OrderByMenu.svelte';
 	import Pagination from '$lib/ui/Pagination.svelte';
 	import { changeParams } from '$lib/utils/searchparams';
@@ -17,7 +18,7 @@
 		Tr,
 		type TableSortState
 	} from '@nais/ds-svelte-community';
-	import { CheckmarkIcon } from '@nais/ds-svelte-community/icons';
+	import { CheckmarkIcon, PersonGroupIcon } from '@nais/ds-svelte-community/icons';
 	import type { PageProps } from './$types';
 
 	let { data }: PageProps = $props();
@@ -125,7 +126,11 @@
 					{#each $TenantVulnerabilites.data?.teams.nodes ?? [] as team (team.slug)}
 						<Tr>
 							<Td>
-								<a href="/team/{team.slug}/vulnerabilities">{team.slug}</a>
+								<IconLabel
+									label={team.slug}
+									href="/team/{team.slug}/vulnerabilities"
+									icon={PersonGroupIcon}
+								/>
 							</Td>
 							{#each severityColumns as column (column.sortKey)}
 								<Td class="severity-cell">
@@ -133,7 +138,7 @@
 									{#if count > 0}
 										<a
 											href="/team/{team.slug}/vulnerabilities"
-											class="vulnerability-count {column.className}"
+											class="severity-badge {column.className}"
 										>
 											{count}
 										</a>
@@ -144,22 +149,19 @@
 							{/each}
 							<Td class="severity-cell">
 								{#if team.vulnerabilitySummary.riskScore > 0}
-									<a
-										href="/team/{team.slug}/vulnerabilities"
-										class="vulnerability-count RISK_SCORE"
-									>
+									<a href="/team/{team.slug}/vulnerabilities" class="severity-badge RISK_SCORE">
 										{team.vulnerabilitySummary.riskScore}
 									</a>
 								{:else}
 									<CheckmarkIcon class="no-vulnerability" />
 								{/if}
 							</Td>
-							<Td class="coverage-cell">
+							<Td class="numeric-cell">
 								<span class:low-coverage={team.vulnerabilitySummary.coverage < 100}>
 									{team.vulnerabilitySummary.coverage.toFixed(0)}%
 								</span>
 							</Td>
-							<Td>{team.workloads.pageInfo.totalCount}</Td>
+							<Td class="numeric-cell">{team.workloads.pageInfo.totalCount}</Td>
 						</Tr>
 					{:else}
 						<Tr>
@@ -207,68 +209,8 @@
 		text-align: center;
 	}
 
-	.vulnerability-count {
-		border-radius: var(--ax-radius-4);
-		padding: 4px 10px;
-		color: inherit;
-		text-decoration: none;
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		min-width: 2.75rem;
-		width: fit-content;
-		margin: 0 auto;
-
-		&.CRITICAL {
-			background-color: var(--ax-bg-danger-moderate);
-			color: var(--ax-text-danger);
-			&:hover {
-				background-color: color-mix(in srgb, var(--ax-bg-danger-moderate) 80%, transparent);
-			}
-		}
-		&.HIGH {
-			background-color: color-mix(
-				in srgb,
-				var(--ax-bg-danger-moderate),
-				var(--ax-bg-warning-moderate)
-			);
-			color: color-mix(in oklab, var(--ax-text-danger), var(--ax-text-warning));
-			&:hover {
-				background-color: color-mix(
-					in srgb,
-					var(--ax-bg-danger-moderate) 40%,
-					var(--ax-bg-warning-moderate) 40%
-				);
-			}
-		}
-		&.MEDIUM {
-			background-color: var(--ax-bg-warning-moderate);
-			color: var(--ax-text-warning);
-			&:hover {
-				background-color: color-mix(in srgb, var(--ax-bg-warning-moderate) 80%, transparent);
-			}
-		}
-		&.LOW {
-			background-color: var(--ax-bg-success-moderate);
-			color: var(--ax-text-success);
-			&:hover {
-				background-color: color-mix(in srgb, var(--ax-bg-success-moderate) 80%, transparent);
-			}
-		}
-		&.UNASSIGNED {
-			background-color: var(--ax-bg-neutral-moderate);
-			color: var(--ax-text-neutral-subtle);
-			&:hover {
-				background-color: color-mix(in srgb, var(--ax-bg-neutral-moderate) 80%, transparent);
-			}
-		}
-		&.RISK_SCORE {
-			background-color: var(--ax-bg-neutral-moderate);
-			color: var(--ax-text-neutral);
-			&:hover {
-				background-color: color-mix(in srgb, var(--ax-bg-neutral-moderate) 80%, transparent);
-			}
-		}
+	:global(.numeric-cell) {
+		text-align: right;
 	}
 
 	:global(.no-vulnerability) {

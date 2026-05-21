@@ -80,7 +80,7 @@
 				<div class="header">
 					<div class="title-row">
 						<Heading as="h1" size="large">{cve.identifier}</Heading>
-						<span class="severity-tag {cve.severity}">{cve.severity}</span>
+						<span class="severity-badge {cve.severity}">{cve.severity}</span>
 					</div>
 					{#if cve.title}
 						<Detail>{cve.title}</Detail>
@@ -100,7 +100,7 @@
 							<Detail as="dt">Severity</Detail>
 							<BodyShort as="dd">
 								<span
-									class="severity-tag {cve.severity}"
+									class="severity-badge {cve.severity}"
 									style="font-size: var(--ax-font-size-small)">{cve.severity}</span
 								>
 							</BodyShort>
@@ -344,38 +344,5 @@
 	}
 	code {
 		font-size: 0.9rem;
-	}
-
-	.severity-tag {
-		border-radius: var(--ax-radius-4);
-		padding: 4px 10px;
-		display: inline-flex;
-		align-items: center;
-		font-weight: var(--ax-font-weight-bold);
-
-		&.CRITICAL {
-			background-color: var(--ax-bg-danger-moderate);
-			color: var(--ax-text-danger);
-		}
-		&.HIGH {
-			background-color: color-mix(
-				in srgb,
-				var(--ax-bg-danger-moderate),
-				var(--ax-bg-warning-moderate)
-			);
-			color: color-mix(in oklab, var(--ax-text-danger), var(--ax-text-warning));
-		}
-		&.MEDIUM {
-			background-color: var(--ax-bg-warning-moderate);
-			color: var(--ax-text-warning);
-		}
-		&.LOW {
-			background-color: var(--ax-bg-success-moderate);
-			color: var(--ax-text-success);
-		}
-		&.UNASSIGNED {
-			background-color: var(--ax-bg-neutral-moderate);
-			color: var(--ax-text-neutral-subtle);
-		}
 	}
 </style>
