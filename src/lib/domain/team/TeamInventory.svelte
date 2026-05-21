@@ -13,29 +13,20 @@
 	const inventoryQuery = graphql(`
 		query TeamInventoryOverview($team: Slug!) @cache(policy: CacheAndNetwork) {
 			team(slug: $team) {
-				applications(first: 0) {
-					facets {
-						states {
-							state
-							count
-						}
-					}
-					pageInfo {
-						totalCount
-					}
-				}
-				jobs(first: 0) {
-					facets {
-						states {
-							state
-							count
-						}
-					}
-					pageInfo {
-						totalCount
-					}
-				}
 				inventoryCounts {
+					applications {
+						total
+						running
+						notRunning
+						unknown
+					}
+					jobs {
+						total
+						running
+						failed
+						completed
+						unknown
+					}
 					sqlInstances {
 						total
 					}
@@ -72,26 +63,28 @@
 		inventoryQuery.fetch({ variables: { team: teamSlug } });
 	});
 
+	let counts = $derived($inventoryQuery.data?.team?.inventoryCounts);
+
 	let appStates = $derived.by(() => {
-		const facets = $inventoryQuery.data?.team?.applications?.facets?.states ?? [];
-		const total = $inventoryQuery.data?.team?.applications?.pageInfo?.totalCount ?? 0;
-		const running = facets.find((f) => f.state === 'RUNNING')?.count ?? 0;
-		const notRunning = facets.find((f) => f.state === 'NOT_RUNNING')?.count ?? 0;
-		const unknown = facets.find((f) => f.state === 'UNKNOWN')?.count ?? 0;
-		return { total, running, notRunning, unknown };
+		const apps = counts?.applications;
+		return {
+			total: apps?.total ?? 0,
+			running: apps?.running ?? 0,
+			notRunning: apps?.notRunning ?? 0,
+			unknown: apps?.unknown ?? 0
+		};
 	});
 
 	let jobStates = $derived.by(() => {
-		const facets = $inventoryQuery.data?.team?.jobs?.facets?.states ?? [];
-		const total = $inventoryQuery.data?.team?.jobs?.pageInfo?.totalCount ?? 0;
-		const running = facets.find((f) => f.state === 'RUNNING')?.count ?? 0;
-		const failed = facets.find((f) => f.state === 'FAILED')?.count ?? 0;
-		const completed = facets.find((f) => f.state === 'COMPLETED')?.count ?? 0;
-		const unknown = facets.find((f) => f.state === 'UNKNOWN')?.count ?? 0;
-		return { total, running, failed, completed, unknown };
+		const jobs = counts?.jobs;
+		return {
+			total: jobs?.total ?? 0,
+			running: jobs?.running ?? 0,
+			failed: jobs?.failed ?? 0,
+			completed: jobs?.completed ?? 0,
+			unknown: jobs?.unknown ?? 0
+		};
 	});
-
-	let counts = $derived($inventoryQuery.data?.team?.inventoryCounts);
 
 	let resources = $derived.by(() => {
 		if (!counts) return [];

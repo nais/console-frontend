@@ -100,6 +100,11 @@
 			</div>
 			<div class="layout-sidebar">
 				<WorkloadDeploy workload={app} />
+				<Persistence workload={app} />
+				{#if environment}
+					<Configs {environment} workload={app?.name ?? ''} {teamSlug} />
+					<Secrets workload={app?.name ?? ''} {environment} {teamSlug} />
+				{/if}
 				{#if environment && application}
 					<WorkloadActivityCard
 						{teamSlug}
@@ -108,11 +113,6 @@
 						workloadType="app"
 						viewAllHref="/team/{teamSlug}/{environment}/app/{application}/activity-log"
 					/>
-				{/if}
-				<Persistence workload={app} />
-				{#if environment}
-					<Configs {environment} workload={app?.name ?? ''} {teamSlug} />
-					<Secrets workload={app?.name ?? ''} {environment} {teamSlug} />
 				{/if}
 			</div>
 		</div>
