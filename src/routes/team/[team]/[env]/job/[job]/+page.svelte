@@ -16,25 +16,20 @@
 	import SurfaceCard from '$lib/ui/SurfaceCard.svelte';
 	import Time from '$lib/ui/Time.svelte';
 	import { Alert, BodyShort, Heading, Loader } from '@nais/ds-svelte-community';
-	import { onMount } from 'svelte';
 	import type { PageProps } from './$types';
 	import EnvPage from './env/+page.svelte';
 	import Runs from './Runs.svelte';
 	import Schedule from './Schedule.svelte';
 
 	let { data }: PageProps = $props();
-	let { Job, JobRunsQuery, teamSlug, viewerIsMember } = $derived(data);
+	let { Job, teamSlug, viewerIsMember } = $derived(data);
 
-	onMount(() => {
-		const interval = setInterval(() => JobRunsQuery.fetch({ policy: 'CacheAndNetwork' }), 10_000);
-		return () => clearInterval(interval);
-	});
+	let runsComponent: ReturnType<typeof Runs> | undefined = $state();
 
 	let jobData = $derived(Job ? $Job.data : undefined);
 	let jobErrors = $derived(Job ? $Job.errors : undefined);
 	let jobFetching = $derived(Job ? $Job.fetching : false);
 	let job = $derived(jobData?.team?.environment?.job ?? null);
-	let jobRuns = $derived($JobRunsQuery.data?.team?.environment?.job ?? null);
 
 	const deleteJobRunMutation = graphql(`
 		mutation DeleteJobRun($teamSlug: Slug!, $environment: String!, $runName: String!) {
@@ -78,7 +73,7 @@
 		if (!resp.data?.deleteJobRun.success) return;
 
 		deleteRunName = '';
-		setTimeout(() => JobRunsQuery.fetch({ policy: 'NetworkOnly' }), 500);
+		setTimeout(() => runsComponent?.refetch(), 500);
 	};
 </script>
 
@@ -127,8 +122,14 @@
 					loading={jobFetching}
 				/>
 				<SurfaceCard>
-					{#if jobRuns}
-						<Runs job={jobRuns} ondelete={viewerIsMember ? handleDeleteRun : undefined} />
+					{#if teamSlug && environment && jobName}
+						<Runs
+							bind:this={runsComponent}
+							{teamSlug}
+							{environment}
+							{jobName}
+							ondelete={viewerIsMember ? handleDeleteRun : undefined}
+						/>
 					{/if}
 				</SurfaceCard>
 				<SurfaceCard>
