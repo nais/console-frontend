@@ -132,7 +132,6 @@
 	<div class="table-scroll" role="region" aria-label="Teams table">
 		<Table
 			size="small"
-			zebraStripes
 			sort={{
 				orderBy: tableSort.orderBy || TeamOrderField.SLUG,
 				direction: tableSort.direction === 'ASC' ? 'ascending' : 'descending'

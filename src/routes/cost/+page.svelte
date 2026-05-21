@@ -222,7 +222,7 @@
 				</BodyLong>
 
 				<div class="table-scroll">
-					<Table size="small" zebraStripes sort={tableSortState} onsortchange={handleSortChange}>
+					<Table size="small" sort={tableSortState} onsortchange={handleSortChange}>
 						<Thead>
 							<Tr>
 								<Th sortable sortKey={TeamOrderField.SLUG}>Team</Th>
