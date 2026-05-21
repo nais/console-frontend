@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { fragment, graphql, type Manifest } from '$houdini';
+	import SurfaceCard from '$lib/ui/SurfaceCard.svelte';
 	import { CopyButton } from '@nais/ds-svelte-community';
 	import Highlight, { LineNumbers } from 'svelte-highlight';
 	import { yaml } from 'svelte-highlight/languages';
@@ -27,7 +28,7 @@
 </script>
 
 {#if $manifest}
-	<div class="manifest-card">
+	<SurfaceCard bordered>
 		<div class="copy-button">
 			<CopyButton
 				text="Copy manifest"
@@ -42,22 +43,10 @@
 				<LineNumbers {highlighted} hideBorder wrapLines />
 			</Highlight>
 		</div>
-	</div>
+	</SurfaceCard>
 {/if}
 
 <style>
-	.manifest-card {
-		display: flex;
-		flex-direction: column;
-		gap: var(--ax-space-12);
-		padding: var(--ax-space-16);
-		border-radius: var(--ax-radius-8);
-		background: var(--surface-elevated-background);
-		box-shadow: var(--surface-elevated-shadow);
-		width: 100%;
-		min-width: 0;
-	}
-
 	.copy-button {
 		display: flex;
 		justify-content: flex-end;
@@ -70,11 +59,5 @@
 		border-radius: var(--ax-radius-8);
 		overflow: hidden;
 		background: var(--ax-bg-default);
-	}
-
-	@media (max-width: 767px) {
-		.manifest-card {
-			padding: var(--ax-space-12);
-		}
 	}
 </style>
