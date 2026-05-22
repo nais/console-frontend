@@ -10,6 +10,7 @@
 	import {
 		Accordion,
 		AccordionItem,
+		CopyButton,
 		Detail,
 		Heading,
 		Loader,
@@ -119,8 +120,12 @@
 								</span>
 							</span>
 						{/snippet}
-						<div class="chart-content">
-							<div class="chart-controls">
+					<div class="chart-content">
+						<div class="ingress-copy">
+							<code class="ingress-url-text">{ingress.url}</code>
+							<CopyButton copyText={ingress.url} size="xsmall" variant="action" />
+						</div>
+						<div class="chart-controls">
 								<ToggleGroup
 									value={interval}
 									size="small"
@@ -205,6 +210,18 @@
 		display: flex;
 		gap: var(--ax-space-8);
 		color: var(--ax-text-neutral-subtle);
+	}
+
+	.ingress-copy {
+		display: flex;
+		align-items: center;
+		gap: var(--ax-space-4);
+	}
+
+	.ingress-url-text {
+		font-family: monospace;
+		font-size: var(--ax-font-size-small);
+		color: var(--ax-text-neutral);
 	}
 
 	.chart-loading {
