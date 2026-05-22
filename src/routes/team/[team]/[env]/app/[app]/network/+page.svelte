@@ -120,12 +120,12 @@
 								</span>
 							</span>
 						{/snippet}
-					<div class="chart-content">
-						<div class="ingress-copy">
-							<code class="ingress-url-text">{ingress.url}</code>
-							<CopyButton copyText={ingress.url} size="xsmall" variant="action" />
-						</div>
-						<div class="chart-controls">
+						<div class="chart-content">
+							<div class="ingress-copy">
+								<code class="ingress-url-text">{ingress.url}</code>
+								<CopyButton copyText={ingress.url} size="xsmall" variant="action" />
+							</div>
+							<div class="chart-controls">
 								<ToggleGroup
 									value={interval}
 									size="small"
