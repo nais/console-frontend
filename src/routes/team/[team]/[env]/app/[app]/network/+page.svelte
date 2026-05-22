@@ -122,8 +122,11 @@
 						{/snippet}
 						<div class="chart-content">
 							<div class="ingress-copy">
-								<code class="ingress-url-text">{ingress.url}</code>
-								<CopyButton copyText={ingress.url} size="xsmall" variant="action" />
+								<code class="ingress-url-text">{ingress.url}</code><CopyButton
+									copyText={ingress.url}
+									size="xsmall"
+									variant="action"
+								/>
 							</div>
 							<div class="chart-controls">
 								<ToggleGroup
@@ -213,9 +216,11 @@
 	}
 
 	.ingress-copy {
-		display: flex;
-		align-items: center;
-		gap: var(--ax-space-4);
+		word-break: break-all;
+	}
+
+	.ingress-copy :global(button) {
+		vertical-align: middle;
 	}
 
 	.ingress-url-text {
