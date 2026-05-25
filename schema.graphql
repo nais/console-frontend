@@ -19,6 +19,9 @@ enum ActivityLogActivityType {
   """An application was scaled."""
   APPLICATION_SCALED
 
+  """An application was updated."""
+  APPLICATION_UPDATED
+
   """All activity log entries related to direct cluster changes."""
   CLUSTER_AUDIT
 
@@ -40,9 +43,6 @@ enum ActivityLogActivityType {
   """A generic kubernetes resource was created via apply."""
   GENERIC_KUBERNETES_RESOURCE_CREATED
 
-  """A generic kubernetes resource was updated via apply."""
-  GENERIC_KUBERNETES_RESOURCE_UPDATED
-
   """Activity log entries related to job deletion."""
   JOB_DELETED
 
@@ -51,6 +51,9 @@ enum ActivityLogActivityType {
 
   """Activity log entries related to job triggering."""
   JOB_TRIGGERED
+
+  """Activity log entries related to job updates."""
+  JOB_UPDATED
 
   """OpenSearch was created."""
   OPENSEARCH_CREATED
@@ -1169,6 +1172,7 @@ type ApplicationStateFacetItem {
   state: ApplicationState!
 }
 
+"""Activity log entry for when an application is updated."""
 type ApplicationUpdatedActivityLogEntry implements ActivityLogEntry & Node {
   """
   The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
@@ -1179,7 +1183,7 @@ type ApplicationUpdatedActivityLogEntry implements ActivityLogEntry & Node {
   createdAt: Time!
 
   """Data associated with the update."""
-  data: GenericKubernetesResourceActivityLogEntryData!
+  data: ApplicationUpdatedActivityLogEntryData!
 
   """The environment name that the entry belongs to."""
   environmentName: String
@@ -1198,6 +1202,17 @@ type ApplicationUpdatedActivityLogEntry implements ActivityLogEntry & Node {
 
   """The team slug that the entry belongs to."""
   teamSlug: Slug!
+}
+
+"""Data associated with an application update activity log entry."""
+type ApplicationUpdatedActivityLogEntryData {
+  """The fields that changed during the update."""
+  changedFields: [ResourceChangedField!]!
+
+  """
+  GitHub Actions OIDC token claims at the time of the apply. Only present when the request was authenticated via a GitHub token.
+  """
+  gitHubActorClaims: GitHubActorClaims
 }
 
 input AssignRoleToServiceAccountInput {
@@ -2758,6 +2773,19 @@ enum EnvironmentWorkloadOrderField {
   TEAM_SLUG
 }
 
+"""
+Raised when a workload with external ingresses has one or more ACT_NOW priority vulnerabilities.
+"""
+type ExternalIngressActNowVulnerabilityIssue implements Issue & Node {
+  id: ID!
+  ingresses: [String!]!
+  message: String!
+  priorityActNow: Int!
+  severity: Severity!
+  teamEnvironment: TeamEnvironment!
+  workload: Workload!
+}
+
 type ExternalIngressCriticalVulnerabilityIssue implements Issue & Node {
   cvssScore: Float!
   id: ID!
@@ -3353,6 +3381,7 @@ enum IssueType {
   APPLICATION_RESTART_LOOP
   DEPRECATED_INGRESS
   DEPRECATED_REGISTRY
+  EXTERNAL_INGRESS_ACT_NOW_VULNERABILITY
   EXTERNAL_INGRESS_CRITICAL_VULNERABILITY
   FAILED_SYNCHRONIZATION
   INVALID_SPEC
@@ -3967,6 +3996,7 @@ type JobTriggeredActivityLogEntry implements ActivityLogEntry & Node {
   teamSlug: Slug!
 }
 
+"""Activity log entry for when a job is updated."""
 type JobUpdatedActivityLogEntry implements ActivityLogEntry & Node {
   """
   The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
@@ -3977,7 +4007,7 @@ type JobUpdatedActivityLogEntry implements ActivityLogEntry & Node {
   createdAt: Time!
 
   """Data associated with the update."""
-  data: GenericKubernetesResourceActivityLogEntryData!
+  data: JobUpdatedActivityLogEntryData!
 
   """The environment name that the entry belongs to."""
   environmentName: String
@@ -3996,6 +4026,17 @@ type JobUpdatedActivityLogEntry implements ActivityLogEntry & Node {
 
   """The team slug that the entry belongs to."""
   teamSlug: Slug!
+}
+
+"""Data associated with a job update activity log entry."""
+type JobUpdatedActivityLogEntryData {
+  """The fields that changed during the update."""
+  changedFields: [ResourceChangedField!]!
+
+  """
+  GitHub Actions OIDC token claims at the time of the apply. Only present when the request was authenticated via a GitHub token.
+  """
+  gitHubActorClaims: GitHubActorClaims
 }
 
 type KafkaCredentials {
@@ -4536,6 +4577,15 @@ type Mutation {
   """Trigger a job"""
   triggerJob(input: TriggerJobInput!): TriggerJobPayload!
 
+  """
+  Update specific fields on an application. Only provided fields are applied.
+  Changes are temporary and will be overwritten on next deploy.
+  """
+  updateApplication(
+    """Input for updating an application."""
+    input: UpdateApplicationInput!
+  ): UpdateApplicationPayload!
+
   """Update a value within a config."""
   updateConfigValue(input: UpdateConfigValueInput!): UpdateConfigValuePayload!
 
@@ -4544,6 +4594,15 @@ type Mutation {
   This mutation is currently unstable and may change in the future.
   """
   updateImageVulnerability(input: UpdateImageVulnerabilityInput!): UpdateImageVulnerabilityPayload!
+
+  """
+  Update specific fields on a job. Only provided fields are applied.
+  Changes are temporary and will be overwritten on next deploy.
+  """
+  updateJob(
+    """Input for updating a job."""
+    input: UpdateJobInput!
+  ): UpdateJobPayload!
 
   """Update an existing OpenSearch instance."""
   updateOpenSearch(input: UpdateOpenSearchInput!): UpdateOpenSearchPayload!
@@ -9192,6 +9251,39 @@ type UnleashReleaseChannelIssue implements Issue & Node {
   unleash: UnleashInstance!
 }
 
+"""Input for updating an application."""
+input UpdateApplicationInput {
+  """Name of the environment where the application runs."""
+  environmentName: String!
+
+  """Update environment variables. Variables are merged with existing ones."""
+  environmentVariables: [UpdateWorkloadEnvironmentVariableInput!]
+
+  """Name of the application."""
+  name: String!
+
+  """Update the replica configuration."""
+  replicas: UpdateApplicationReplicasInput
+
+  """Slug of the team that owns the application."""
+  teamSlug: Slug!
+}
+
+"""Payload for updating an application."""
+type UpdateApplicationPayload {
+  """The updated application."""
+  application: Application
+}
+
+"""Input for updating the replica configuration of an application."""
+input UpdateApplicationReplicasInput {
+  """Maximum number of replicas."""
+  max: Int!
+
+  """Minimum number of replicas."""
+  min: Int!
+}
+
 input UpdateConfigValueInput {
   """The environment the config exists in."""
   environmentName: String!
@@ -9228,6 +9320,26 @@ input UpdateImageVulnerabilityInput {
 type UpdateImageVulnerabilityPayload {
   """The vulnerability updated."""
   vulnerability: ImageVulnerability
+}
+
+input UpdateJobInput {
+  """Name of the environment where the job runs."""
+  environmentName: String!
+
+  """Update environment variables. Variables are merged with existing ones."""
+  environmentVariables: [UpdateWorkloadEnvironmentVariableInput!]
+
+  """Name of the job."""
+  name: String!
+
+  """Slug of the team that owns the job."""
+  teamSlug: Slug!
+}
+
+"""Payload for updating a job."""
+type UpdateJobPayload {
+  """The updated job."""
+  job: Job
 }
 
 input UpdateOpenSearchInput {
@@ -9414,6 +9526,17 @@ input UpdateValkeyInput {
 type UpdateValkeyPayload {
   """Valkey instance that was updated."""
   valkey: Valkey!
+}
+
+"""
+Input for setting an environment variable on a workload. To remove a variable, set value to null.
+"""
+input UpdateWorkloadEnvironmentVariableInput {
+  """Name of the environment variable."""
+  name: String!
+
+  """Value of the environment variable. Set to null to remove the variable."""
+  value: String
 }
 
 """

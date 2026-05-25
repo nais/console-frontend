@@ -21,7 +21,8 @@
 		Heading,
 		Loader,
 		ReadMore,
-		Search
+		Search,
+		Tag
 	} from '@nais/ds-svelte-community';
 	import { MagnifyingGlassIcon } from '@nais/ds-svelte-community/icons';
 	import { SvelteSet } from 'svelte/reactivity';
