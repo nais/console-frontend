@@ -20,7 +20,8 @@
 		Detail,
 		Heading,
 		Loader,
-		Search
+		Search,
+		Tag
 	} from '@nais/ds-svelte-community';
 	import { MagnifyingGlassIcon } from '@nais/ds-svelte-community/icons';
 	import { SvelteSet } from 'svelte/reactivity';
@@ -102,6 +103,7 @@
 		return nodes
 			.filter((n) => selectedIds.has(n.vulnerability.id))
 			.map((n) => ({
+				rowKey: `${n.vulnerability.id}:${n.workload.team.slug}:${n.workload.teamEnvironment.environment.name}:${n.workload.name}`,
 				vulnerabilityId: n.vulnerability.id,
 				workloadName: n.workload.name,
 				teamSlug: n.workload.team.slug,
