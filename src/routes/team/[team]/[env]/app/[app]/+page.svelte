@@ -14,8 +14,7 @@
 	import PageModal from '$lib/ui/PageModal.svelte';
 	import Time from '$lib/ui/Time.svelte';
 	import { sbomStatusDetails } from '$lib/utils/vulnerabilities';
-	import { Alert, Button, Heading, Loader, Tag } from '@nais/ds-svelte-community';
-	import { ArrowCirclepathIcon, TrashIcon } from '@nais/ds-svelte-community/icons';
+	import { Alert, Heading, Loader } from '@nais/ds-svelte-community';
 	import { onMount } from 'svelte';
 	import type { PageProps } from './$types';
 	import InstanceGroups from './InstanceGroups.svelte';
