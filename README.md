@@ -11,7 +11,7 @@ cd .configs
 nix develop
 ```
 
-This provides the same Node.js 22 and Git setup. The flake is regularly updated to track the latest nixpkgs-unstable.
+This provides the same Node.js 24 and Git setup. The flake is regularly updated to track the latest nixpkgs-unstable.
 
 ### Local Development
 
@@ -91,7 +91,7 @@ This project implements several security measures to protect against supply chai
 
 ### Lifecycle Script Control
 
-pnpm v11 blocks lifecycle scripts by default (`blockExoticSubdeps=true`). Only packages listed in `pnpm-workspace.yaml` under `allowBuilds` can run lifecycle scripts.
+pnpm v11 blocks lifecycle scripts by default. Only packages listed in `pnpm-workspace.yaml` under `allowBuilds` can run lifecycle scripts.
 
 ### Dependency Update Policy
 
