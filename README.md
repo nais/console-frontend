@@ -2,42 +2,6 @@
 
 ## Development
 
-### Containerized Development (Recommended)
-
-For enhanced security and isolation, we recommend using a containerized development environment:
-
-#### VS Code Dev Containers
-
-1. Install the [Dev Containers extension](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers)
-2. Open the project in VS Code
-3. Click "Reopen in Container" when prompted (or run command: `Dev Containers: Reopen in Container`)
-4. The container will automatically install dependencies and configure allowed scripts
-5. Use the integrated terminal in VS Code to run commands (all terminals opened in VS Code will run inside the container)
-
-#### JetBrains IDEs (IntelliJ, WebStorm, etc.)
-
-Use the built-in [Dev Containers support](https://www.jetbrains.com/help/idea/connect-to-devcontainer.html) available in recent versions.
-
-#### Other Editors (Zed, Vim, etc.)
-
-Manually use Docker to run the development environment:
-
-```bash
-# Use the devcontainer image directly
-docker run -it -v $(pwd):/workspaces/console-frontend -w /workspaces/console-frontend -p 5173:5173 mcr.microsoft.com/devcontainers/javascript-node:22 bash
-
-# Inside the container, run your development commands
-pnpm install
-pnpm run dev
-```
-
-#### Benefits
-
-- Isolated development environment (protection against supply chain attacks)
-- Consistent Node.js version across team
-- Pre-configured extensions and settings (VS Code/JetBrains)
-- All npm commands run in a secure, sandboxed environment
-
 ### Nix
 
 For users with [Nix](https://nixos.org/) installed, you can use the provided flake for a reproducible development environment:
@@ -47,7 +11,7 @@ cd .configs
 nix develop
 ```
 
-This provides the same Node.js 22 and Git setup as the devcontainer. The flake is regularly updated to track the latest nixpkgs-unstable.
+This provides the same Node.js 22 and Git setup. The flake is regularly updated to track the latest nixpkgs-unstable.
 
 ### Local Development
 
@@ -106,20 +70,19 @@ The MCP server helps AI assistants provide accurate, up-to-date Svelte 5 guidanc
 
 #### Using the nais API proxy
 
-To connect to a nais-api instance, run the [nais CLI](https://github.com/nais/cli) proxy on your **host machine** (outside the devcontainer):
+To connect to a nais-api instance, run the [nais CLI](https://github.com/nais/cli) proxy on your **host machine**:
 
 ```bash
-# On your host machine
 nais auth login -n
 nais alpha api proxy
 ```
 
-Inside the devcontainer, update your `.env` to use `host.docker.internal` to access the host machine:
+Then set your `.env`:
 
 ```bash
-VITE_GRAPHQL_ENDPOINT="http://host.docker.internal:4242/graphql"
-VITE_PROXY_ENDPOINT="http://host.docker.internal:4242"
-VITE_SCHEMA_ENDPOINT="http://host.docker.internal:4242/graphql"
+VITE_GRAPHQL_ENDPOINT="http://localhost:4242/graphql"
+VITE_PROXY_ENDPOINT="http://localhost:4242"
+VITE_SCHEMA_ENDPOINT="http://localhost:4242/graphql"
 ```
 
 ## Security Hardening
@@ -156,13 +119,7 @@ pnpm run check-age <package-name> <version>
 
 ### Package Installation Security (npq)
 
-The devcontainer automatically aliases `pnpm` to `npq-hero`, which provides interactive security checks before installing packages. When you run `pnpm add <package>` in the container, npq will:
-
-- Check packages against known security vulnerabilities
-- Verify package popularity and trustworthiness
-- Alert you to suspicious patterns
-
-**Note:** This alias only affects terminal sessions in the devcontainer.
+Use `pnpm dlx npq install` (or `pnpm run install-safe`) to run interactive security checks before installing packages.
 
 ## User
 
