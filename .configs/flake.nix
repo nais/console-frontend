@@ -23,20 +23,19 @@
       # Development environment output
       devShells = forAllSystems ({ pkgs }: {
         default = pkgs.mkShell {
-          # The Nix packages provided in the environment
-          # Matches Node.js 22 from devcontainer setup
           packages = with pkgs; [
-            nodejs_22
+            nodejs_24
+            pnpm
             git
           ];
 
           shellHook = ''
             echo "Console Frontend development environment"
             echo "Node.js version: $(node --version)"
-            echo "npm version: $(npm --version)"
+            echo "pnpm version: $(pnpm --version)"
             echo ""
-            echo "Run 'npm install' to install dependencies"
-            echo "Run 'npm run dev' to start the development server"
+            echo "Run 'pnpm install' to install dependencies"
+            echo "Run 'pnpm run dev' to start the development server"
           '';
         };
       });

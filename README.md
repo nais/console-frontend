@@ -11,7 +11,7 @@ cd .configs
 nix develop
 ```
 
-This provides the same Node.js 24 and Git setup. The flake is regularly updated to track the latest nixpkgs-unstable.
+This provides Node.js 24, pnpm, and Git. The flake is regularly updated to track the latest nixpkgs-unstable.
 
 ### Local Development
 
