@@ -5,15 +5,15 @@ import { execFileSync } from 'child_process';
 const args = process.argv.slice(2);
 
 if (args.length < 2) {
-	console.error('Usage: npm run check-age <package> <version>');
-	console.error('Example: npm run check-age storybook 10.1.8');
+	console.error('Usage: pnpm run check-age <package> <version>');
+	console.error('Example: pnpm run check-age svelte 5.0.0');
 	process.exit(1);
 }
 
 const [packageName, version] = args;
 
 try {
-	const output = execFileSync('npm', ['view', `${packageName}@${version}`, 'time', '--json'], {
+	const output = execFileSync('pnpm', ['view', `${packageName}@${version}`, 'time', '--json'], {
 		encoding: 'utf-8'
 	});
 

@@ -15,17 +15,15 @@ jobs:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # ratchet:actions/checkout@v6
       - uses: jdx/mise-action@1648a7812b9aeae629881980618f079932869151 # ratchet:jdx/mise-action@v4
       - name: Install dependencies
-        run: npm ci
-      - name: Lockfile lint
-        run: npm run lockfile-lint
+        run: pnpm install --frozen-lockfile
       - name: Sync SvelteKit
-        run: npx svelte-kit sync
+        run: pnpm exec svelte-kit sync
       - name: Type check
-        run: npm run check
+        run: pnpm run check
       - name: Lint
-        run: npm run lint
+        run: pnpm run lint
       - name: Run tests
-        run: npm run test -- --run
+        run: pnpm run test -- --run
       - name: Helm lint
         run: helm lint --strict ./charts
 

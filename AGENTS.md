@@ -7,9 +7,9 @@ Guidelines for AI agents working with this project.
 ## Local Development
 
 ```bash
-npm install
+pnpm install
 cp .env.example .env
-npm run dev
+pnpm run dev
 ```
 
 ### Test Users
@@ -45,14 +45,14 @@ This file is auto-generated from [nais/api](https://github.com/nais/api) and mus
 
 ## Common Commands
 
-| Task        | Command          |
-| ----------- | ---------------- |
-| Run locally | `npm run dev`    |
-| Build       | `npm run build`  |
-| Type check  | `npm run check`  |
-| Lint        | `npm run lint`   |
-| Format code | `npm run format` |
-| Run tests   | `npm run test`   |
+| Task        | Command           |
+| ----------- | ----------------- |
+| Run locally | `pnpm run dev`    |
+| Build       | `pnpm run build`  |
+| Type check  | `pnpm run check`  |
+| Lint        | `pnpm run lint`   |
+| Format code | `pnpm run format` |
+| Run tests   | `pnpm run test`   |
 
 ---
 
@@ -394,14 +394,13 @@ All UI changes and accessibility work must meet this level:
 
 Run these checks in order (mirrors the CI pipeline in `.github/workflows/pr.yaml`):
 
-1. `npm run lockfile-lint` — validate lockfile
-2. `npx svelte-kit sync` — sync SvelteKit generated files
-3. `npm run check` — Houdini generation + svelte-check (type check, `--fail-on-warnings`)
-4. `npm run lint` — Prettier + ESLint
-5. `npm run test -- --run` — run all tests
-6. `helm lint --strict ./charts` — Helm chart validation (requires helm CLI)
+1. `pnpm exec svelte-kit sync` — sync SvelteKit generated files
+2. `pnpm run check` — Houdini generation + svelte-check (type check, `--fail-on-warnings`)
+3. `pnpm run lint` — Prettier + ESLint
+4. `pnpm run test -- --run` — run all tests
+5. `helm lint --strict ./charts` — Helm chart validation (requires helm CLI)
 
-All of these must pass before committing. If prettier reports issues, fix them with `npm run format` and include the formatting in the same commit.
+All of these must pass before committing. If prettier reports issues, fix them with `pnpm run format` and include the formatting in the same commit.
 
 ### File Naming:
 
