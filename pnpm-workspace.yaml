@@ -1,0 +1,8 @@
+overrides:
+  "@sveltejs/kit>cookie": "^0.7.0"
+
+allowBuilds:
+  esbuild: true
+
+minimumReleaseAge: 4320
+savePrefix: ""

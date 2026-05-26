@@ -1,10 +1,5 @@
 {
-	"ignoreDependencies": [
-		"houdini-svelte",
-		"pino-pretty",
-		"husky",
-		"@lavamoat/preinstall-always-fail"
-	],
+	"ignoreDependencies": ["houdini-svelte", "pino-pretty", "husky"],
 	"ignoreUnresolved": ["\\$app/.+", "\\$env/.+"],
 	"ignore": ["houdini.config.js", "src/client.ts"]
 }

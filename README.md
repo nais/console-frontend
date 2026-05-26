@@ -1,7 +1,5 @@
 # Console frontend
 
-📚 **[View Component Library (Storybook)](https://nais.io/console-frontend/)**
-
 ## Development
 
 ### Containerized Development (Recommended)
@@ -26,11 +24,11 @@ Manually use Docker to run the development environment:
 
 ```bash
 # Use the devcontainer image directly
-docker run -it -v $(pwd):/workspaces/console-frontend -w /workspaces/console-frontend -p 5173:5173 -p 6006:6006 mcr.microsoft.com/devcontainers/javascript-node:22 bash
+docker run -it -v $(pwd):/workspaces/console-frontend -w /workspaces/console-frontend -p 5173:5173 mcr.microsoft.com/devcontainers/javascript-node:22 bash
 
 # Inside the container, run your development commands
-npm install && npx allow-scripts auto
-npm run dev
+pnpm install
+pnpm run dev
 ```
 
 #### Benefits
@@ -56,16 +54,16 @@ This provides the same Node.js 22 and Git setup as the devcontainer. The flake i
 The following snippet contains the most important commands for development.
 
 ```bash
-npm install
+pnpm install
 cp .env.example .env # Copy the example environment file
-npm run build # Build the project
-npm run dev # Starts a development server on port 5173
+pnpm run build # Build the project
+pnpm run dev # Starts a development server on port 5173
 
-npm run check # Check for various issues
-npm run lint # Lint the code
-npm run format # Format the code (Or use a Prettier extension in  your editor)
-npm run test # Run tests with Vitest
-npm run lockfile-lint # Validate package-lock.json security
+pnpm run check # Check for various issues
+pnpm run lint # Lint the code
+pnpm run format # Format the code (Or use a Prettier extension in  your editor)
+pnpm run test # Run tests with Vitest
+pnpm run lockfile-lint # Validate pnpm-lock.yaml security
 ```
 
 ### Mobile responsiveness
@@ -86,46 +84,7 @@ Styles use `@layer` ordering and design tokens from `@nais/ds-svelte-community`:
 - **Tokens**: Use `--ax-space-*`, `--ax-radius-*`, `--ax-text-*` variables — never hardcode spacing, radii, or colors
 - **Utility classes**: `src/styles/app.css` provides `.layout-two-column`, `.layout-sidebar`, `.table-scroll`, `.detail-actions`, `.loading-centered` for common patterns
 - **LayerChart theming**: `src/styles/layerchart.css` maps chart library variables to design tokens. The `.dark` block must mirror the `:root` declarations (tokens resolve differently per scope)
-- **Validation**: Run `npm run lint` — ESLint includes custom rules for missing CSS variables and unused GraphQL files
-
-#### Storybook
-
-The project includes a component library documented with Storybook:
-
-```bash
-npm run storybook # Start Storybook dev server on port 6006
-npm run build-storybook # Build static Storybook for deployment
-```
-
-**Story files:**
-
-Component stories are located throughout the codebase alongside their components:
-
-- `src/lib/ui/*.stories.svelte` - UI component stories
-- `src/lib/domain/**/*.stories.svelte` - Domain-specific component stories
-
-Storybook configuration files are in `.storybook/`.
-
-**Upgrading Storybook:**
-
-When upgrading Storybook, use the upgrade script which automatically updates all related packages and reformats the files:
-
-```bash
-npm run upgrade-storybook <version>
-# Example: npm run upgrade-storybook 10.1.11
-```
-
-This will upgrade all Storybook packages together and reformat all project files:
-
-- `storybook`
-- `@storybook/sveltekit`
-- `@storybook/addon-docs`
-- `@storybook/addon-themes`
-- `@storybook/addon-svelte-csf`
-- `@chromatic-com/storybook`
-- `eslint-plugin-storybook`
-
-Note: The upgrade script automatically checks the 14-day cooldown policy. To manually check a version's age before upgrading, use `npm run check-age storybook <version>`.
+- **Validation**: Run `pnpm run lint` — ESLint includes custom rules for missing CSS variables and unused GraphQL files
 
 #### AI-Assisted Development
 
@@ -170,15 +129,7 @@ This project implements several security measures to protect against supply chai
 
 ### Lifecycle Script Control
 
-- **`.npmrc`**: Contains `ignore-scripts=true` to disable all lifecycle scripts (preinstall, install, postinstall) by default
-- **`@lavamoat/allow-scripts`**: Explicitly allowlists packages that need to run lifecycle scripts
-- **`@lavamoat/preinstall-always-fail`**: Prevents accidental script execution during development
-
-Only packages listed in `package.json` under `lavamoat.allowScripts` can run lifecycle scripts. To update the allowlist:
-
-```bash
-npm run allow-scripts
-```
+pnpm v11 blocks lifecycle scripts by default (`blockExoticSubdeps=true`). Only packages listed in `pnpm-workspace.yaml` under `allowBuilds` can run lifecycle scripts.
 
 ### Dependency Update Policy
 
@@ -189,47 +140,41 @@ npm run allow-scripts
 To check for outdated dependencies:
 
 ```bash
-npm run check-outdated
+pnpm run check-outdated
 ```
 
 To update outdated dependencies (respects 14-day cooldown):
 
 ```bash
-npm run update-outdated
+pnpm run update-outdated
 ```
 
 To check when a specific package version was published:
 
 ```bash
-npm run check-age <package-name> <version>
-# Example: npm run check-age storybook 10.1.3
+pnpm run check-age <package-name> <version>
 ```
 
 ### Lockfile Validation
 
-- **`lockfile-lint`**: Validates `package-lock.json` integrity
+- **`lockfile-lint`**: Validates `pnpm-lock.yaml` integrity
 - Runs in CI/CD to detect tampering or unexpected changes
 
 To manually validate the lockfile:
 
 ```bash
-npm run lockfile-lint
+pnpm run lockfile-lint
 ```
 
 ### Package Installation Security (npq)
 
-The devcontainer automatically aliases `npm` to `npq-hero`, which provides interactive security checks before installing packages. When you run `npm install <package>` in the container, npq will:
+The devcontainer automatically aliases `pnpm` to `npq-hero`, which provides interactive security checks before installing packages. When you run `pnpm add <package>` in the container, npq will:
 
 - Check packages against known security vulnerabilities
 - Verify package popularity and trustworthiness
 - Alert you to suspicious patterns
 
 **Note:** This alias only affects terminal sessions in the devcontainer.
-
-**Additional info:**
-
-- When running `npm install` without package names (i.e., to install all dependencies), or when running `npm ci`, `npq-hero` does **not** perform interactive security checks.
-- Security checks are only performed when installing or updating specific packages (e.g., `npm install <package>`).
 
 ## User
 

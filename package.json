@@ -2,42 +2,31 @@
 	"name": "console-frontend",
 	"version": "0.0.1",
 	"private": true,
-	"packageManager": "npm@11.6.1",
+	"packageManager": "pnpm@11.3.0",
 	"scripts": {
-		"allow-scripts": "allow-scripts",
-		"build-storybook": "storybook build",
 		"build": "vite build",
 		"check-age": "node check-package-age.mjs",
 		"check-outdated": "node check-updates-cooldown.mjs",
 		"check:watch": "svelte-check --tsconfig ./tsconfig.json --watch",
-		"check": "npx houdini generate && svelte-check --tsconfig ./tsconfig.json --fail-on-warnings",
+		"check": "pnpm exec houdini generate && svelte-check --tsconfig ./tsconfig.json --fail-on-warnings",
 		"dev-live-share": "vite dev --host ::",
 		"dev": "vite dev",
 		"eslint": "eslint .",
 		"format": "prettier --write .",
-		"install-safe": "npx npq install",
+		"install-safe": "pnpm dlx npq install",
 		"lint-staged": "lint-staged",
 		"lint": "prettier --check . && eslint .",
-		"lockfile-lint": "lockfile-lint --path package-lock.json",
+		"lockfile-lint": "lockfile-lint --path pnpm-lock.yaml --type pnpm",
 		"prepare": "svelte-kit sync || echo ''",
 		"preview": "vite preview",
-		"storybook": "storybook dev -p 6006",
 		"test": "vitest",
-		"update-outdated": "node check-updates-cooldown.mjs --install",
-		"upgrade-storybook": "node upgrade-storybook.mjs"
+		"update-outdated": "node check-updates-cooldown.mjs --install"
 	},
 	"devDependencies": {
-		"@chromatic-com/storybook": "5.1.2",
 		"@eslint/compat": "2.0.5",
 		"@eslint/js": "10.0.1",
-		"@lavamoat/allow-scripts": "5.0.1",
-		"@lavamoat/preinstall-always-fail": "3.0.0",
 		"@layerstack/utils": "2.0.0-next.18",
 		"@nais/ds-svelte-community": "2.0.0-next.8",
-		"@storybook/addon-docs": "10.3.6",
-		"@storybook/addon-svelte-csf": "5.1.2",
-		"@storybook/addon-themes": "10.3.6",
-		"@storybook/sveltekit": "10.3.6",
 		"@sveltejs/adapter-node": "5.5.4",
 		"@sveltejs/kit": "2.60.1",
 		"@sveltejs/vite-plugin-svelte": "6.2.4",
@@ -49,7 +38,6 @@
 		"date-fns": "4.1.0",
 		"eslint": "10.3.0",
 		"eslint-config-prettier": "10.1.8",
-		"eslint-plugin-storybook": "10.3.6",
 		"eslint-plugin-svelte": "3.17.1",
 		"eslint-plugin-unicorn": "64.0.0",
 		"globals": "17.6.0",
@@ -64,7 +52,6 @@
 		"prettier-plugin-svelte": "3.5.1",
 		"prettier-plugin-tailwindcss": "0.8.0",
 		"semver": "7.7.4",
-		"storybook": "10.3.6",
 		"svelte": "5.55.9",
 		"svelte-check": "4.4.8",
 		"tailwindcss": "4.2.4",
@@ -96,11 +83,6 @@
 		"svelte-highlight": "7.9.0",
 		"yaml": "2.8.4"
 	},
-	"overrides": {
-		"@sveltejs/kit": {
-			"cookie": "^0.7.0"
-		}
-	},
 	"lint-staged": {
 		"*.{js,ts,svelte,gql,css,md,json}": "prettier --write",
 		"*.{js,ts,svelte,gql}": [
@@ -111,11 +93,5 @@
 	"graphql": {
 		"schema": "https://localhost:3000/graphql",
 		"documents": "**/*.{graphql,js,ts,jsx,tsx,svelte}"
-	},
-	"lavamoat": {
-		"allowScripts": {
-			"@lavamoat/preinstall-always-fail": false,
-			"vite>esbuild": true
-		}
 	}
 }

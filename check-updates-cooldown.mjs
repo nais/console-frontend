@@ -10,9 +10,7 @@ const SHOULD_INSTALL = process.argv.includes('--install');
 
 // Packages that require special upgrade commands
 /** @type {Record<string, (version: string) => string>} */
-const SPECIAL_UPGRADES = {
-	storybook: (version) => `npx storybook@${version} upgrade`
-};
+const SPECIAL_UPGRADES = {};
 
 function getCooldownDate() {
 	const date = new Date();
@@ -26,7 +24,7 @@ function getCooldownDate() {
  */
 function getPackageVersionsWithDates(packageName) {
 	try {
-		const output = execSync(`npm view ${packageName} time --json`, {
+		const output = execSync(`pnpm view ${packageName} time --json`, {
 			encoding: 'utf-8',
 			stdio: ['pipe', 'pipe', 'ignore']
 		});
@@ -53,7 +51,7 @@ function getPackageVersionsWithDates(packageName) {
  */
 function isVersionDeprecated(packageName, version) {
 	try {
-		const output = execSync(`npm view ${packageName}@${version} deprecated --json`, {
+		const output = execSync(`pnpm view ${packageName}@${version} deprecated --json`, {
 			encoding: 'utf-8',
 			stdio: ['pipe', 'pipe', 'ignore']
 		});
@@ -193,43 +191,7 @@ async function main() {
 	if (SHOULD_INSTALL) {
 		console.log('\n🔄 Installing updates...\n');
 
-		// Group storybook-related packages
-		const storybookUpdates = allUpdates.filter(
-			({ packageName }) => packageName === 'storybook' || packageName.startsWith('@storybook/')
-		);
-		const otherUpdates = allUpdates.filter(
-			({ packageName }) => packageName !== 'storybook' && !packageName.startsWith('@storybook/')
-		);
-
-		// Handle Storybook updates as a group
-		if (storybookUpdates.length > 0) {
-			const storybookVersion = storybookUpdates.find(
-				(u) => u.packageName === 'storybook'
-			)?.newVersion;
-			if (storybookVersion) {
-				const command = `npx storybook@${storybookVersion} upgrade`;
-				console.log(
-					`📦 Running Storybook upgrade (updates ${storybookUpdates.length} packages): ${command}...`
-				);
-				try {
-					execSync(command, { stdio: 'inherit' });
-					console.log(`✅ Storybook upgraded successfully to ${storybookVersion}\n`);
-				} catch (error) {
-					console.error(
-						`❌ Failed to upgrade Storybook:`,
-						error instanceof Error ? error.message : String(error),
-						'\n'
-					);
-				}
-			} else {
-				console.log(
-					`⚠️  Skipping @storybook/* packages - main 'storybook' package not in update list\n`
-				);
-			}
-		}
-
-		// Handle other updates
-		for (const { packageName, newVersion } of otherUpdates) {
+		for (const { packageName, newVersion } of allUpdates) {
 			const specialUpgrade = SPECIAL_UPGRADES[packageName];
 
 			if (specialUpgrade) {
@@ -248,7 +210,7 @@ async function main() {
 			} else {
 				console.log(`📦 Installing ${packageName}@${newVersion}...`);
 				try {
-					execSync(`npx npq install ${packageName}@${newVersion}`, {
+					execSync(`pnpm dlx npq install ${packageName}@${newVersion}`, {
 						stdio: 'inherit'
 					});
 					console.log(`✅ ${packageName}@${newVersion} installed successfully\n`);
@@ -266,34 +228,15 @@ async function main() {
 	} else {
 		console.log(`\n💡 To update manually:`);
 
-		// Group storybook packages in dry-run output too
-		const storybookUpdates = allUpdates.filter(
-			({ packageName }) => packageName === 'storybook' || packageName.startsWith('@storybook/')
-		);
-		const otherUpdates = allUpdates.filter(
-			({ packageName }) => packageName !== 'storybook' && !packageName.startsWith('@storybook/')
-		);
-
-		if (storybookUpdates.length > 0) {
-			const storybookVersion = storybookUpdates.find(
-				(u) => u.packageName === 'storybook'
-			)?.newVersion;
-			if (storybookVersion) {
-				console.log(
-					`   npx storybook@${storybookVersion} upgrade  # Updates ${storybookUpdates.length} storybook packages`
-				);
-			}
-		}
-
-		otherUpdates.forEach(({ packageName, newVersion }) => {
+		allUpdates.forEach(({ packageName, newVersion }) => {
 			const specialUpgrade = SPECIAL_UPGRADES[packageName];
 			if (specialUpgrade) {
 				console.log(`   ${specialUpgrade(newVersion)}`);
 			} else {
-				console.log(`   npx npq install ${packageName}@${newVersion}`);
+				console.log(`   pnpm dlx npq install ${packageName}@${newVersion}`);
 			}
 		});
-		console.log(`\n   Or run: npm run update-outdated\n`);
+		console.log(`\n   Or run: pnpm run update-outdated\n`);
 	}
 }
 
