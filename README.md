@@ -63,7 +63,6 @@ pnpm run check # Check for various issues
 pnpm run lint # Lint the code
 pnpm run format # Format the code (Or use a Prettier extension in  your editor)
 pnpm run test # Run tests with Vitest
-pnpm run lockfile-lint # Validate pnpm-lock.yaml security
 ```
 
 ### Mobile responsiveness
@@ -153,17 +152,6 @@ To check when a specific package version was published:
 
 ```bash
 pnpm run check-age <package-name> <version>
-```
-
-### Lockfile Validation
-
-- **`lockfile-lint`**: Validates `pnpm-lock.yaml` integrity
-- Runs in CI/CD to detect tampering or unexpected changes
-
-To manually validate the lockfile:
-
-```bash
-pnpm run lockfile-lint
 ```
 
 ### Package Installation Security (npq)

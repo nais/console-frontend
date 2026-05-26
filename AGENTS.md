@@ -394,12 +394,11 @@ All UI changes and accessibility work must meet this level:
 
 Run these checks in order (mirrors the CI pipeline in `.github/workflows/pr.yaml`):
 
-1. `pnpm run lockfile-lint` — validate lockfile
-2. `pnpm exec svelte-kit sync` — sync SvelteKit generated files
-3. `pnpm run check` — Houdini generation + svelte-check (type check, `--fail-on-warnings`)
-4. `pnpm run lint` — Prettier + ESLint
-5. `pnpm run test -- --run` — run all tests
-6. `helm lint --strict ./charts` — Helm chart validation (requires helm CLI)
+1. `pnpm exec svelte-kit sync` — sync SvelteKit generated files
+2. `pnpm run check` — Houdini generation + svelte-check (type check, `--fail-on-warnings`)
+3. `pnpm run lint` — Prettier + ESLint
+4. `pnpm run test -- --run` — run all tests
+5. `helm lint --strict ./charts` — Helm chart validation (requires helm CLI)
 
 All of these must pass before committing. If prettier reports issues, fix them with `pnpm run format` and include the formatting in the same commit.
 

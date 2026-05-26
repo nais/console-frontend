@@ -3,7 +3,7 @@ FROM node:${NODE_VERSION}-alpine AS node-with-deps
 RUN corepack enable && corepack prepare pnpm@11.3.0 --activate
 WORKDIR /usr/app
 
-COPY package.json pnpm-lock.yaml svelte.config.js .npmrc ./
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml svelte.config.js .npmrc ./
 
 RUN pnpm install --frozen-lockfile
 
@@ -20,7 +20,7 @@ WORKDIR /usr/app
 
 ENV NODE_ENV=production
 
-COPY --from=node-with-deps /usr/app/package.json /usr/app/pnpm-lock.yaml /usr/app/.npmrc ./
+COPY --from=node-with-deps /usr/app/package.json /usr/app/pnpm-lock.yaml /usr/app/pnpm-workspace.yaml /usr/app/.npmrc ./
 RUN pnpm install --frozen-lockfile --prod
 
 COPY --from=node-with-deps /usr/app/build ./
