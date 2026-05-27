@@ -250,6 +250,13 @@
 				{/if}
 			</div>
 
+			{#if viewerIsMember}
+				<BodyShort>
+					Select workloads to suppress this vulnerability. Suppressed findings will be excluded from
+					vulnerability reports.
+				</BodyShort>
+			{/if}
+
 			{#if $TeamCVEWorkloads.fetching}
 				<div class="loading" role="status" aria-label="Loading">
 					<Loader size="3xlarge" />
