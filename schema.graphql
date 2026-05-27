@@ -10780,8 +10780,15 @@ type WorkloadVulnerabilitySummaryEdge {
   node: WorkloadVulnerabilitySummary!
 }
 
-type WorkloadWithVulnerability {
+"""A workload affected by a specific vulnerability."""
+type WorkloadWithVulnerability implements Node {
+  """The globally unique ID of the workload vulnerability node."""
+  id: ID!
+
+  """The vulnerability affecting the workload."""
   vulnerability: ImageVulnerability!
+
+  """The workload affected by the vulnerability."""
   workload: Workload!
 }
 
