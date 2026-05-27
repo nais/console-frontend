@@ -250,8 +250,10 @@
 											<Checkbox
 												checked={selectedIds.has(vuln.id)}
 												onchange={() => toggleSelect(vuln.id)}
-												hideLabel>Select {workload.name}</Checkbox
+												hideLabel
 											>
+												Select {workload.name}
+											</Checkbox>
 										{/if}
 										<div class="workload-container">
 											<WorkloadLink {workload} />
