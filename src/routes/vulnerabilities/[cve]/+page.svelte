@@ -187,7 +187,7 @@
 						</div>
 					</dl>
 					{#if cve.description}
-						<ReadMore header="Description" size="medium" open={true}>
+						<ReadMore header="Description" size="medium" open={false}>
 							{cve.description}
 						</ReadMore>
 					{/if}
@@ -241,7 +241,7 @@
 							</div>
 						{/if}
 						<List>
-							{#each workloads.nodes as node (node.workload.id)}
+							{#each workloads.nodes as node (node.vulnerability.id)}
 								{@const workload = node.workload}
 								{@const vuln = node.vulnerability}
 								<ListItem>
