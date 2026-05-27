@@ -1,0 +1,40 @@
+query TeamCVEWorkloads($identifier: String!, $first: Int, $filter: CVEWorkloadsFilter)
+@cache(policy: CacheAndNetwork) {
+	cve(identifier: $identifier) {
+		id
+		workloads(first: $first, filter: $filter) {
+			pageInfo {
+				totalCount
+			}
+			nodes {
+				id
+				workload {
+					__typename
+					id
+					name
+					team {
+						slug
+					}
+					teamEnvironment {
+						environment {
+							name
+						}
+					}
+					image {
+						name
+						tag
+					}
+				}
+				vulnerability {
+					id
+					identifier
+					severity
+					package
+					suppression {
+						state
+					}
+				}
+			}
+		}
+	}
+}
