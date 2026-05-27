@@ -17,13 +17,6 @@
 
 {#if $TeamVulnerabilities.data}
 	<div class="wrapper">
-		<div class="cve-search-section">
-			<Heading as="h2" size="xsmall">Search for vulnerability</Heading>
-			<BodyLong size="small">Find details and suppress a CVE across your team's workloads.</BodyLong
-			>
-			<TeamCveSearch team={teamSlug} />
-		</div>
-
 		{#if $TeamVulnerabilities.data.team.vulnerabilitySummary}
 			<SurfaceCard title="Summary" level="h2" bordered>
 				<VulnerabilitySummaryMetrics
@@ -32,21 +25,28 @@
 			</SurfaceCard>
 		{/if}
 
-		<div class="graphs">
-			<TeamVulnerabilityHistoryGraph {teamSlug} />
-			<TeamMeanTimeToFixHistoryGraph {teamSlug} />
-		</div>
-
-		<section aria-labelledby="most_vulnerable_workloads">
-			<Heading as="h2" size="medium" spacing id="most_vulnerable_workloads"
-				>Most Vulnerable Workloads</Heading
+		<section aria-labelledby="workload-vulnerabilities">
+			<Heading as="h2" size="medium" spacing id="workload-vulnerabilities"
+				>Workload Vulnerabilities</Heading
 			>
-			<BodyLong spacing>
-				This team's workloads ranked by security risk using Risk Score (default sorting). Focus
-				remediation efforts where they'll have the greatest impact.
-			</BodyLong>
+
+			<div class="cve-search-section">
+				<Heading as="h3" size="small" id="cve-search">Search for vulnerability</Heading>
+				<BodyLong size="small"
+					>Find details and suppress a CVE across your team's workloads.</BodyLong
+				>
+				<TeamCveSearch team={teamSlug} />
+			</div>
 
 			<WorkloadsWithVulnerabilities team={teamSlug} />
+		</section>
+
+		<section aria-label="Vulnerability History">
+			<TeamVulnerabilityHistoryGraph {teamSlug} />
+		</section>
+
+		<section aria-label="Mean Time to Fix">
+			<TeamMeanTimeToFixHistoryGraph {teamSlug} />
 		</section>
 	</div>
 {/if}
@@ -62,11 +62,6 @@
 		display: flex;
 		flex-direction: column;
 		gap: var(--ax-space-8);
-	}
-
-	.graphs {
-		display: grid;
-		gap: var(--ax-space-32);
-		min-width: 0;
+		padding-bottom: var(--spacing-layout);
 	}
 </style>
