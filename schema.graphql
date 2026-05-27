@@ -2773,19 +2773,6 @@ enum EnvironmentWorkloadOrderField {
   TEAM_SLUG
 }
 
-"""
-Raised when a workload with external ingresses has one or more ACT_NOW priority vulnerabilities.
-"""
-type ExternalIngressActNowVulnerabilityIssue implements Issue & Node {
-  id: ID!
-  ingresses: [String!]!
-  message: String!
-  priorityActNow: Int!
-  severity: Severity!
-  teamEnvironment: TeamEnvironment!
-  workload: Workload!
-}
-
 type ExternalIngressCriticalVulnerabilityIssue implements Issue & Node {
   cvssScore: Float!
   id: ID!
@@ -3381,7 +3368,6 @@ enum IssueType {
   APPLICATION_RESTART_LOOP
   DEPRECATED_INGRESS
   DEPRECATED_REGISTRY
-  EXTERNAL_INGRESS_ACT_NOW_VULNERABILITY
   EXTERNAL_INGRESS_CRITICAL_VULNERABILITY
   FAILED_SYNCHRONIZATION
   INVALID_SPEC
