@@ -11,7 +11,7 @@ export async function load(event) {
 	});
 
 	const countData = await TeamCVEWorkloadsCount.fetch();
-	const totalCount = Math.max(countData.data?.cve.workloads.pageInfo.totalCount ?? 1, 1);
+	const totalCount = Math.max(countData.data?.cve?.workloads.pageInfo.totalCount ?? 1, 1);
 
 	return {
 		...(await addPageMeta(event, {
