@@ -1390,6 +1390,11 @@ type CVE implements Node {
     before: Cursor
 
     """
+    Filter workloads. When teamSlugs is set only workloads belonging to those teams are returned.
+    """
+    filter: CVEWorkloadsFilter
+
+    """
     Get the first n items in the connection. This can be used in combination with the after parameter.
     """
     first: Int
@@ -1434,6 +1439,16 @@ enum CVEOrderField {
   CVSS_SCORE
   IDENTIFIER
   SEVERITY
+}
+
+"""
+Filter for workloads affected by a CVE. When teamSlugs is provided only workloads belonging to those teams are returned.
+"""
+input CVEWorkloadsFilter {
+  """
+  Team identifiers used to limit results to workloads owned by those teams.
+  """
+  teamSlugs: [Slug!]
 }
 
 input ChangeDeploymentKeyInput {
@@ -10765,8 +10780,15 @@ type WorkloadVulnerabilitySummaryEdge {
   node: WorkloadVulnerabilitySummary!
 }
 
-type WorkloadWithVulnerability {
+"""A workload affected by a specific vulnerability."""
+type WorkloadWithVulnerability implements Node {
+  """The globally unique ID of the workload vulnerability node."""
+  id: ID!
+
+  """The vulnerability affecting the workload."""
   vulnerability: ImageVulnerability!
+
+  """The workload affected by the vulnerability."""
   workload: Workload!
 }
 

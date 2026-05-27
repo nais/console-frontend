@@ -15,7 +15,6 @@
 		Detail,
 		Heading,
 		Loader,
-		ReadMore,
 		Search
 	} from '@nais/ds-svelte-community';
 	import { MagnifyingGlassIcon } from '@nais/ds-svelte-community/icons';
@@ -116,11 +115,6 @@
 							</BodyShort>
 						</div>
 					</dl>
-					{#if cve.description}
-						<ReadMore header="Description" size="medium" open={true}>
-							{cve.description}
-						</ReadMore>
-					{/if}
 				</div>
 			</div>
 		{:else if hasOtherErrors($CVEDetails.errors)}
