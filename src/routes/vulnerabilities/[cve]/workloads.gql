@@ -21,6 +21,7 @@ query CVEWorkloads(
 			nodes {
 				workload {
 					__typename
+					id
 					name
 					team {
 						slug

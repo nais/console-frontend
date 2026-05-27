@@ -241,7 +241,7 @@
 							</div>
 						{/if}
 						<List>
-							{#each workloads.nodes as node (node.vulnerability.id)}
+							{#each workloads.nodes as node (node.workload.id)}
 								{@const workload = node.workload}
 								{@const vuln = node.vulnerability}
 								<ListItem>
