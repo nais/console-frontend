@@ -1,9 +1,9 @@
 <script lang="ts">
 	import { envTagVariant } from '$lib/envTagVariant';
 	import WarningIcon from '$lib/icons/WarningIcon.svelte';
-	import { BriefcaseClockIcon, PackageIcon } from '@nais/ds-svelte-community/icons';
 	import IconLabel from '$lib/ui/IconLabel.svelte';
 	import TooltipAlignHack from '$lib/ui/TooltipAlignHack.svelte';
+	import { BriefcaseClockIcon, PackageIcon } from '@nais/ds-svelte-community/icons';
 
 	interface Props {
 		workload: {
@@ -17,8 +17,9 @@
 		hideTeam?: boolean;
 		hideEnv?: boolean;
 		warning?: string;
+		hrefSuffix?: string;
 	}
-	let { workload, hideTeam, hideEnv, warning }: Props = $props();
+	let { workload, hideTeam, hideEnv, warning, hrefSuffix = '' }: Props = $props();
 </script>
 
 <IconLabel
@@ -31,7 +32,7 @@
 				variant: envTagVariant(workload.teamEnvironment.environment.name)
 			}}
 	href="/team/{workload.team.slug}/{workload.teamEnvironment.environment
-		.name}/{workload.__typename === 'Job' ? 'job' : 'app'}/{workload.name}"
+		.name}/{workload.__typename === 'Job' ? 'job' : 'app'}/{workload.name}{hrefSuffix}"
 >
 	{#snippet icon()}
 		{#if warning}
