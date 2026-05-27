@@ -1,9 +1,5 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
-	import { graphql } from '$houdini';
-	import BulkSuppressCVE, {
-		type BulkSuppressWorkload
-	} from '$lib/domain/vulnerability/BulkSuppressCVE.svelte';
 	import WorkloadLink from '$lib/domain/workload/WorkloadLink.svelte';
 	import ExternalLink from '$lib/ui/ExternalLink.svelte';
 	import GraphErrors from '$lib/ui/GraphErrors.svelte';
@@ -16,50 +12,25 @@
 		Alert,
 		BodyShort,
 		Button,
-		Checkbox,
 		Detail,
 		Heading,
 		Loader,
-		ReadMore,
-		Search,
-		Tag
+		Search
 	} from '@nais/ds-svelte-community';
 	import { MagnifyingGlassIcon } from '@nais/ds-svelte-community/icons';
-	import { SvelteSet } from 'svelte/reactivity';
 	import type { PageProps } from './$types';
 
 	let { data }: PageProps = $props();
-	let { CVEDetails, CVEWorkloads, teamSlug } = $derived(data);
+	let { CVEDetails, CVEWorkloads } = $derived(data);
 
 	let searchValue = $state('');
-	let selectedIds = new SvelteSet<string>();
-	let bulkOpen = $state(false);
-
-	const teamRoles = graphql(`
-		query CVEPageTeamRoles($team: Slug!) @cache(policy: CacheAndNetwork) {
-			team(slug: $team) {
-				viewerIsMember
-			}
-		}
-	`);
-
-	$effect(() => {
-		if (teamSlug) {
-			teamRoles.fetch({ variables: { team: teamSlug } });
-		}
-	});
-
-	const viewerIsMember = $derived(
-		teamSlug ? ($teamRoles.data?.team.viewerIsMember ?? false) : false
-	);
 
 	const handleSearch = async (event: SubmitEvent) => {
 		event.preventDefault();
 		const identifier = searchValue.trim();
 		if (identifier) {
-			searchValue = '';
-			const query = teamSlug ? `?team=${encodeURIComponent(teamSlug)}` : '';
-			await goto(`/vulnerabilities/${encodeURIComponent(identifier)}${query}`);
+			searchValue = ''; // Clear the input after submitting
+			await goto(`/vulnerabilities/${encodeURIComponent(identifier)}`);
 		}
 	};
 
@@ -73,48 +44,6 @@
 
 	const hasDetailsLink = (detailsLink?: string | null) => {
 		return Boolean(detailsLink?.trim());
-	};
-
-	const toggleSelect = (id: string) => {
-		if (selectedIds.has(id)) {
-			selectedIds.delete(id);
-		} else {
-			selectedIds.add(id);
-		}
-	};
-
-	const toggleAll = (nodes: { vulnerability: { id: string } }[]) => {
-		if (allSelected(nodes)) {
-			nodes.forEach((n) => selectedIds.delete(n.vulnerability.id));
-		} else {
-			nodes.forEach((n) => selectedIds.add(n.vulnerability.id));
-		}
-	};
-
-	const allSelected = (nodes: { vulnerability: { id: string } }[]) => {
-		return nodes.length > 0 && nodes.every((n) => selectedIds.has(n.vulnerability.id));
-	};
-
-	const anySelected = (nodes: { vulnerability: { id: string } }[]) => {
-		return nodes.some((n) => selectedIds.has(n.vulnerability.id));
-	};
-
-	const bulkWorkloads = $derived.by((): BulkSuppressWorkload[] => {
-		const nodes = $CVEWorkloads.data?.cve.workloads.nodes ?? [];
-		return nodes
-			.filter((n) => selectedIds.has(n.vulnerability.id))
-			.map((n) => ({
-				vulnerabilityId: n.vulnerability.id,
-				workloadName: n.workload.name,
-				teamSlug: n.workload.team.slug,
-				environmentName: n.workload.teamEnvironment.environment.name,
-				package: n.vulnerability.package
-			}));
-	});
-
-	const onSuppressed = () => {
-		selectedIds.clear();
-		CVEWorkloads.fetch({ policy: 'NetworkOnly' });
 	};
 </script>
 
@@ -186,42 +115,19 @@
 							</BodyShort>
 						</div>
 					</dl>
-					{#if cve.description}
-						<ReadMore header="Description" size="medium" open={false}>
-							{cve.description}
-						</ReadMore>
-					{/if}
 				</div>
 			</div>
 		{:else if hasOtherErrors($CVEDetails.errors)}
 			<GraphErrors errors={$CVEDetails.errors} />
 		{/if}
-
 		{#if !isNotFoundError($CVEWorkloads.errors)}
 			<div>
-				<div class="workloads-header">
-					<Heading as="h2" size="small" spacing>
-						Affected Workloads
-						{#if $CVEWorkloads.data?.cve.workloads.pageInfo.totalCount ?? 0 > 0}
-							<span class="count">({$CVEWorkloads.data?.cve.workloads.pageInfo.totalCount})</span>
-						{/if}
-						{#if teamSlug && $teamRoles.data?.team}
-							<Tag variant="neutral" size="small">Filtered: {teamSlug}</Tag>
-						{/if}
-					</Heading>
-					{#if teamSlug && $teamRoles.data?.team && viewerIsMember && bulkWorkloads.length > 0}
-						<Button
-							variant="primary"
-							size="small"
-							onclick={() => {
-								bulkOpen = true;
-							}}
-						>
-							Suppress {bulkWorkloads.length} selected
-						</Button>
+				<Heading as="h2" size="small" spacing>
+					Affected Workloads
+					{#if $CVEWorkloads.data?.cve.workloads.pageInfo.totalCount ?? 0 > 0}
+						<span class="count">({$CVEWorkloads.data?.cve.workloads.pageInfo.totalCount})</span>
 					{/if}
-				</div>
-
+				</Heading>
 				{#if $CVEWorkloads.fetching}
 					<div class="loading" role="status" aria-label="Loading">
 						<Loader size="3xlarge" />
@@ -229,61 +135,39 @@
 				{:else if $CVEWorkloads.data}
 					{@const workloads = $CVEWorkloads.data.cve.workloads}
 					{#if workloads.nodes.length > 0}
-						{#if teamSlug && viewerIsMember}
-							<div class="select-all-row">
-								<Checkbox
-									checked={allSelected(workloads.nodes)}
-									indeterminate={anySelected(workloads.nodes) && !allSelected(workloads.nodes)}
-									onchange={() => toggleAll(workloads.nodes)}
-								>
-									Select all on this page
-								</Checkbox>
-							</div>
-						{/if}
 						<List>
-							{#each workloads.nodes as node (node.vulnerability.id)}
+							{#each workloads.nodes as node ([node.workload.name, node.workload.team.slug, node.workload.teamEnvironment.environment.name, node.vulnerability.package].join('|'))}
 								{@const workload = node.workload}
 								{@const vuln = node.vulnerability}
 								<ListItem>
-									<div class="workload-row">
-										{#if teamSlug && viewerIsMember}
-											<Checkbox
-												checked={selectedIds.has(vuln.id)}
-												onchange={() => toggleSelect(vuln.id)}
-												hideLabel
-											>
-												Select {workload.name}
-											</Checkbox>
-										{/if}
-										<div class="workload-container">
-											<WorkloadLink {workload} />
-											<dl class="workload-details">
-												<div class="detail-row">
-													<Detail as="dt">Package</Detail>
-													<BodyShort as="dd"><code>{vuln.package}</code></BodyShort>
-												</div>
-												<div class="detail-row">
-													<Detail as="dt">Image</Detail>
-													{#if workload.image}
-														<BodyShort as="dd">
-															<code>{workload.image.name}:{workload.image.tag}</code>
-														</BodyShort>
-													{:else}
-														<BodyShort as="dd">-</BodyShort>
-													{/if}
-												</div>
-												{#if vuln.suppression}
-													<div class="detail-row">
-														<Detail as="dt">Suppression</Detail>
-														<BodyShort as="dd">
-															<code
-																>{suppressionStateLabels[vuln.suppression.state] ?? 'Unknown'}</code
-															>
-														</BodyShort>
-													</div>
+									<div class="workload-container">
+										<WorkloadLink {workload} />
+										<dl class="workload-details">
+											<div class="detail-row">
+												<Detail as="dt">Package</Detail>
+												<BodyShort as="dd"><code>{vuln.package}</code></BodyShort>
+											</div>
+											<div class="detail-row">
+												<Detail as="dt">Image</Detail>
+												{#if workload.image}
+													<BodyShort as="dd">
+														<code>{workload.image.name}:{workload.image.tag}</code>
+													</BodyShort>
+												{:else}
+													<BodyShort as="dd">-</BodyShort>
 												{/if}
-											</dl>
-										</div>
+											</div>
+											{#if vuln.suppression}
+												<div class="detail-row">
+													<Detail as="dt">Suppression</Detail>
+													<BodyShort as="dd">
+														<code
+															>{suppressionStateLabels[vuln.suppression.state] ?? 'Unknown'}</code
+														>
+													</BodyShort>
+												</div>
+											{/if}
+										</dl>
 									</div>
 								</ListItem>
 							{/each}
@@ -320,15 +204,6 @@
 		{/if}
 	</div>
 </div>
-
-{#if teamSlug && viewerIsMember && $CVEDetails.data}
-	<BulkSuppressCVE
-		bind:open={bulkOpen}
-		cveIdentifier={$CVEDetails.data.cve.identifier}
-		workloads={bulkWorkloads}
-		onsuppressed={onSuppressed}
-	/>
-{/if}
 
 <style>
 	.container {
@@ -415,27 +290,7 @@
 		color: var(--ax-text-neutral);
 	}
 
-	.workloads-header {
-		display: flex;
-		align-items: center;
-		justify-content: space-between;
-		gap: var(--ax-space-12);
-		flex-wrap: wrap;
-		margin-bottom: var(--ax-space-8);
-	}
-
-	.select-all-row {
-		margin-bottom: var(--ax-space-8);
-	}
-
-	.workload-row {
-		display: flex;
-		align-items: flex-start;
-		gap: var(--ax-space-12);
-	}
-
 	.workload-container {
-		flex: 1;
 		display: grid;
 		grid-template-columns: minmax(200px, 300px) 1fr;
 		gap: var(--ax-space-24);

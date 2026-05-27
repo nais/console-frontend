@@ -3,7 +3,6 @@ query CVEDetails($identifier: String!) @cache(policy: CacheAndNetwork) {
 		id
 		identifier
 		title
-		description
 		severity
 		cvssScore
 		detailsLink
