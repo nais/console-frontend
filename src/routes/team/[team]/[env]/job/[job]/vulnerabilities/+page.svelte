@@ -9,7 +9,11 @@
 	let { JobImageDetails, viewerIsMember } = $derived(data);
 
 	$effect(() => {
-		if ($JobImageDetails.data?.team.environment.workload.image.sbom.status !== 'PROCESSING') return;
+		const workload = $JobImageDetails.data?.team.environment.workload;
+		const shouldPoll =
+			workload?.image.sbom.status === 'PROCESSING' ||
+			!!workload?.image.vulnerabilitySummary?.staleImageTag;
+		if (!shouldPoll) return;
 		const interval = setInterval(() => {
 			if (document.hidden) return;
 			JobImageDetails.fetch({ policy: 'NetworkOnly' });
