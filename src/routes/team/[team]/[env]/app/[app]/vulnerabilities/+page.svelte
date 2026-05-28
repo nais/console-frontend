@@ -7,6 +7,19 @@
 	let { data }: PageProps = $props();
 
 	let { ApplicationImageDetails, viewerIsMember } = $derived(data);
+
+	$effect(() => {
+		const workload = $ApplicationImageDetails.data?.team.environment.workload;
+		const shouldPoll =
+			workload?.image.sbom.status === 'PROCESSING' ||
+			!!workload?.image.vulnerabilitySummary?.staleImageTag;
+		if (!shouldPoll) return;
+		const interval = setInterval(() => {
+			if (document.hidden) return;
+			ApplicationImageDetails.fetch({ policy: 'NetworkOnly' });
+		}, 20000);
+		return () => clearInterval(interval);
+	});
 </script>
 
 <Heading as="h2" size="medium" spacing>Vulnerabilities</Heading>

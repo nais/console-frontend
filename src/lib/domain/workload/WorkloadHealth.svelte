@@ -2,7 +2,7 @@
 	import { graphql } from '$houdini';
 	import IssuePills from '$lib/domain/issues/IssuePills.svelte';
 	import SurfaceCard from '$lib/ui/SurfaceCard.svelte';
-	import { Loader } from '@nais/ds-svelte-community';
+	import { Loader, Tooltip } from '@nais/ds-svelte-community';
 	import {
 		BriefcaseClockIcon,
 		PackageIcon,
@@ -51,6 +51,9 @@
 				environment(name: $env) {
 					application(name: $app) {
 						image {
+							sbom {
+								status
+							}
 							vulnerabilitySummary {
 								critical
 							}
@@ -68,6 +71,9 @@
 				environment(name: $env) {
 					job(name: $job) {
 						image {
+							sbom {
+								status
+							}
 							vulnerabilitySummary {
 								critical
 							}
@@ -139,11 +145,33 @@
 		}
 	});
 
-	let criticalVulnerabilities = $derived(
+	let imageData = $derived(
 		workloadType === 'app'
-			? $vulnQuery?.data?.team?.environment?.application?.image?.vulnerabilitySummary?.critical
-			: $jobVulnQuery?.data?.team?.environment?.job?.image?.vulnerabilitySummary?.critical
+			? $vulnQuery?.data?.team?.environment?.application?.image
+			: $jobVulnQuery?.data?.team?.environment?.job?.image
 	);
+
+	let criticalVulnerabilities = $derived(imageData?.vulnerabilitySummary?.critical);
+	let sbomProcessing = $derived(imageData?.sbom?.status === 'PROCESSING');
+
+	$effect(() => {
+		if (!sbomProcessing) return;
+		const interval = setInterval(() => {
+			if (document.hidden) return;
+			if (workloadType === 'app') {
+				vulnQuery.fetch({
+					variables: { team: teamSlug, env: environment, app: workload },
+					policy: 'NetworkOnly'
+				});
+			} else {
+				jobVulnQuery.fetch({
+					variables: { team: teamSlug, env: environment, job: workload },
+					policy: 'NetworkOnly'
+				});
+			}
+		}, 10_000);
+		return () => clearInterval(interval);
+	});
 
 	let costTrend = $derived.by(() => {
 		const series =
@@ -162,11 +190,18 @@
 		return { current, previous, change };
 	});
 
+	let hasData = $derived(
+		workloadType === 'app'
+			? !!$vulnQuery?.data && !!$costQuery?.data
+			: !!$jobVulnQuery?.data && !!$jobCostQuery?.data
+	);
+
 	let dataLoading = $derived(
 		loading ||
-			(workloadType === 'app'
-				? $vulnQuery?.fetching || $costQuery?.fetching
-				: $jobVulnQuery?.fetching || $jobCostQuery?.fetching)
+			(!hasData &&
+				(workloadType === 'app'
+					? $vulnQuery?.fetching || $costQuery?.fetching
+					: $jobVulnQuery?.fetching || $jobCostQuery?.fetching))
 	);
 
 	let instancesHealthy = $derived(readyInstances >= desiredInstances && desiredInstances > 0);
@@ -229,6 +264,13 @@
 					>
 					<span class="metric-label">Critical vulns</span>
 				</div>
+				{#if sbomProcessing}
+					<div class="metric-processing">
+						<Tooltip content="Scanning for vulnerabilities…">
+							<Loader size="xsmall" />
+						</Tooltip>
+					</div>
+				{/if}
 			</a>
 
 			{#if workloadType === 'app'}
@@ -322,6 +364,7 @@
 	}
 
 	.metric {
+		position: relative;
 		display: flex;
 		align-items: center;
 		gap: var(--ax-space-12);
@@ -410,5 +453,11 @@
 		.metrics {
 			grid-template-columns: 1fr;
 		}
+	}
+
+	.metric-processing {
+		position: absolute;
+		top: var(--ax-space-12);
+		right: var(--ax-space-12);
 	}
 </style>

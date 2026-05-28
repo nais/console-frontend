@@ -38,7 +38,7 @@
 			</div>
 			<div>
 				<dt>Tag</dt>
-				<dd><code>{tag}</code></dd>
+				<dd><code class="tag">{tag}</code></dd>
 			</div>
 		</dl>
 	{:else}
@@ -57,7 +57,7 @@
 			</div>
 			<div>
 				<dt>Tag</dt>
-				<dd><code>{tag}</code></dd>
+				<dd><code class="tag">{tag}</code></dd>
 			</div>
 		</dl>
 	{/if}
@@ -93,5 +93,9 @@
 	code {
 		font-size: var(--ax-font-size-small);
 		font-family: monospace;
+	}
+
+	.tag {
+		word-break: break-all;
 	}
 </style>

@@ -20,7 +20,10 @@ query JobImageDetails($team: Slug!, $env: String!, $job: String!) @cache(policy:
 					id
 					name
 					tag
-					hasSBOM
+					sbom {
+						status
+						processingStartedAt
+					}
 					activityLog {
 						pageInfo {
 							hasNextPage
@@ -47,6 +50,7 @@ query JobImageDetails($team: Slug!, $env: String!, $job: String!) @cache(policy:
 						unassigned
 						riskScore
 						lastUpdated
+						staleImageTag
 					}
 					workloadReferences {
 						nodes {
