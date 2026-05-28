@@ -210,7 +210,7 @@ async function main() {
 			} else {
 				console.log(`📦 Installing ${packageName}@${newVersion}...`);
 				try {
-					execSync(`pnpm dlx npq install ${packageName}@${newVersion}`, {
+					execSync(`pnpm add ${packageName}@${newVersion}`, {
 						stdio: 'inherit'
 					});
 					console.log(`✅ ${packageName}@${newVersion} installed successfully\n`);
@@ -233,7 +233,7 @@ async function main() {
 			if (specialUpgrade) {
 				console.log(`   ${specialUpgrade(newVersion)}`);
 			} else {
-				console.log(`   pnpm dlx npq install ${packageName}@${newVersion}`);
+				console.log(`   pnpm add ${packageName}@${newVersion}`);
 			}
 		});
 		console.log(`\n   Or run: pnpm run update-outdated\n`);
