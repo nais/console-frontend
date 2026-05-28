@@ -231,6 +231,20 @@ describe('vulnerabilities', () => {
 			});
 			expect(result.label).toBe('Scanning for vulnerabilities · 5 min');
 		});
+
+		test('PROCESSING with staleImageTag returns stale iconIndicator and processing indicator', () => {
+			const result = sbomStatusDetails({
+				status: 'PROCESSING',
+				sbomProcessingStartedAt: new Date(),
+				staleImageTag: '2026.05.27-12.02-aa6e29b'
+			});
+			expect(result.status).toBe('PROCESSING');
+			expect(result.indicator).toBe('processing');
+			expect(result.iconIndicator).toBe('stale');
+			expect(result.label).toBe(
+				'Scanning updated image — results from previous tag 2026.05.27-12.02-aa6e29b'
+			);
+		});
 	});
 
 	describe('formatProcessingDuration', () => {

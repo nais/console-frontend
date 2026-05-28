@@ -7,6 +7,15 @@
 	let { data }: PageProps = $props();
 
 	let { JobImageDetails, viewerIsMember } = $derived(data);
+
+	$effect(() => {
+		if ($JobImageDetails.data?.team.environment.workload.image.sbom.status !== 'PROCESSING') return;
+		const interval = setInterval(() => {
+			if (document.hidden) return;
+			JobImageDetails.fetch({ policy: 'NetworkOnly' });
+		}, 20000);
+		return () => clearInterval(interval);
+	});
 </script>
 
 <Heading as="h2" size="medium" spacing>Vulnerabilities</Heading>

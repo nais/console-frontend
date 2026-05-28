@@ -70,6 +70,15 @@ export const sbomStatusDetails = (source: SbomStatusSource): SbomStatusDetails =
 		};
 	}
 
+	if (indicator === 'processing' && source.staleImageTag) {
+		return {
+			status,
+			indicator: 'processing',
+			iconIndicator: 'stale',
+			label: `Scanning updated image — results from previous tag ${source.staleImageTag}`
+		};
+	}
+
 	if (indicator === 'processing' && !source.sbomProcessingStartedAt) {
 		return {
 			status,
