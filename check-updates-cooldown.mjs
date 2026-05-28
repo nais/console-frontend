@@ -210,7 +210,7 @@ async function main() {
 			} else {
 				console.log(`📦 Installing ${packageName}@${newVersion}...`);
 				try {
-					execSync(`pnpm dlx npq install ${packageName}@${newVersion}`, {
+					execSync(`pnpm add ${packageName}@${newVersion}`, {
 						stdio: 'inherit'
 					});
 					console.log(`✅ ${packageName}@${newVersion} installed successfully\n`);
