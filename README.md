@@ -117,9 +117,9 @@ To check when a specific package version was published:
 pnpm run check-age <package-name> <version>
 ```
 
-### Package Installation Security (npq)
+### Package Installation Security
 
-Use `pnpm dlx npq install` (or `pnpm run install-safe`) to run interactive security checks before installing packages.
+The 14-day cooldown enforced by `check-updates-cooldown.mjs` is the primary supply-chain defense. Run `pnpm audit` to check for known vulnerabilities after installing.
 
 ## User
 
