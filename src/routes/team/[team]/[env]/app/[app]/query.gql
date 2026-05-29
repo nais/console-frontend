@@ -41,18 +41,6 @@ query App($app: String!, $team: Slug!, $env: String!) {
 				}
 
 				deletionStartedAt
-				deployments(first: 1) {
-					nodes {
-						triggerUrl
-						statuses {
-							nodes {
-								state
-								message
-								createdAt
-							}
-						}
-					}
-				}
 
 				...Persistence
 				...WorkloadDeploy

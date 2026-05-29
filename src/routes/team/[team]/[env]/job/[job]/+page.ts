@@ -1,4 +1,4 @@
-import { load_Job } from '$houdini';
+import { load_Job, load_JobDeployment } from '$houdini';
 import { addPageMeta } from '$lib/utils/pageMeta';
 
 const rows = 6;
@@ -16,6 +16,14 @@ export async function load(event) {
 				env: event.params.env,
 				job: event.params.job,
 				...(before ? { before, last: rows } : { after, first: rows })
+			}
+		})),
+		...(await load_JobDeployment({
+			event,
+			variables: {
+				team: event.params.team,
+				env: event.params.env,
+				job: event.params.job
 			}
 		}))
 	};

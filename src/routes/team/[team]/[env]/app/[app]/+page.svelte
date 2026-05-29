@@ -16,14 +16,15 @@
 	import InstanceGroups from './InstanceGroups.svelte';
 
 	let { data }: PageProps = $props();
-	let { App, AppInstanceGroups, teamSlug } = $derived(data);
+	let { App, AppInstanceGroups, AppDeployment, teamSlug } = $derived(data);
 
-	const refetchInstanceGroups = () => {
+	const refetchPolled = () => {
 		AppInstanceGroups.fetch({ policy: 'CacheAndNetwork' });
+		AppDeployment.fetch({ policy: 'CacheAndNetwork' });
 	};
 
 	onMount(() => {
-		const interval = setInterval(refetchInstanceGroups, 10_000);
+		const interval = setInterval(refetchPolled, 10_000);
 		return () => clearInterval(interval);
 	});
 
