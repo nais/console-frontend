@@ -9,14 +9,11 @@
 	import WorkloadDeploy from '$lib/domain/workload/WorkloadDeploy.svelte';
 	import WorkloadHealth from '$lib/domain/workload/WorkloadHealth.svelte';
 	import GraphErrors from '$lib/ui/GraphErrors.svelte';
-	import PageModal from '$lib/ui/PageModal.svelte';
 	import Time from '$lib/ui/Time.svelte';
 	import { Alert, Heading, Loader } from '@nais/ds-svelte-community';
 	import { onMount } from 'svelte';
 	import type { PageProps } from './$types';
 	import InstanceGroups from './InstanceGroups.svelte';
-	import EnvPage from './env/+page.svelte';
-	import ResizePage from './resize/+page.svelte';
 
 	let { data }: PageProps = $props();
 	let { App, AppInstanceGroups, teamSlug } = $derived(data);
@@ -116,11 +113,6 @@
 				{/if}
 			</div>
 		</div>
-		{#if page.state.modalHref?.includes('/resize')}
-			<PageModal content={ResizePage} header="Resize app" />
-		{:else if page.state.modalHref?.includes('/env')}
-			<PageModal content={EnvPage} header="Set environment variables" />
-		{/if}
 	</div>
 {/if}
 
