@@ -12,12 +12,10 @@
 	import WorkloadHealth from '$lib/domain/workload/WorkloadHealth.svelte';
 	import Confirm from '$lib/ui/Confirm.svelte';
 	import GraphErrors from '$lib/ui/GraphErrors.svelte';
-	import PageModal from '$lib/ui/PageModal.svelte';
 	import SurfaceCard from '$lib/ui/SurfaceCard.svelte';
 	import Time from '$lib/ui/Time.svelte';
 	import { Alert, BodyShort, Heading, Loader } from '@nais/ds-svelte-community';
 	import type { PageProps } from './$types';
-	import EnvPage from './env/+page.svelte';
 	import Runs from './Runs.svelte';
 	import Schedule from './Schedule.svelte';
 
@@ -186,7 +184,6 @@
 				Are you sure you want to delete the job run <strong>{deleteRunName}</strong>?
 			</BodyShort>
 		</Confirm>
-		<PageModal content={EnvPage} header="Set environment variables" />
 	</div>
 {/if}
 

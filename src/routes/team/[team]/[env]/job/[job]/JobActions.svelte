@@ -4,7 +4,8 @@
 	import Manifest from '$lib/domain/resources/Manifest.svelte';
 	import ActionConfirm from '$lib/ui/ActionConfirm.svelte';
 	import HeaderActions from '$lib/ui/HeaderActions.svelte';
-	import { pageModalClick } from '$lib/ui/PageModal.svelte';
+	import PageModal, { pageModalClick } from '$lib/ui/PageModal.svelte';
+	import EnvPage from './env/+page.svelte';
 	import { generateJobRunName } from '$lib/utils/jobRunName';
 	import { Button, Heading, Modal, TextField } from '@nais/ds-svelte-community';
 	import {
@@ -158,6 +159,10 @@
 		<Manifest workload={job} />
 	{/if}
 </Modal>
+
+{#if page.state.modalHref?.includes('/env')}
+	<PageModal content={EnvPage} header="Set environment variables" />
+{/if}
 
 <style>
 	.action-menu-button {

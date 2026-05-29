@@ -4,8 +4,10 @@
 	import Manifest from '$lib/domain/resources/Manifest.svelte';
 	import ActionConfirm from '$lib/ui/ActionConfirm.svelte';
 	import HeaderActions from '$lib/ui/HeaderActions.svelte';
-	import { pageModalClick } from '$lib/ui/PageModal.svelte';
+	import PageModal, { pageModalClick } from '$lib/ui/PageModal.svelte';
 	import { Button, Heading, Modal } from '@nais/ds-svelte-community';
+	import EnvPage from './env/+page.svelte';
+	import ResizePage from './resize/+page.svelte';
 	import {
 		ActionMenu,
 		ActionMenuDivider,
@@ -191,6 +193,12 @@
 		<Manifest workload={app} />
 	{/if}
 </Modal>
+
+{#if page.state.modalHref?.includes('/resize')}
+	<PageModal content={ResizePage} header="Resize app" />
+{:else if page.state.modalHref?.includes('/env')}
+	<PageModal content={EnvPage} header="Set environment variables" />
+{/if}
 
 <style>
 	.action-menu-button {
