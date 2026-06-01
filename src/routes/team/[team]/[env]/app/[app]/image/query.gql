@@ -1,0 +1,16 @@
+query SetImageVersionData($team: Slug!, $env: String!, $app: String!) {
+	team(slug: $team) {
+		environment(name: $env) {
+			application(name: $app) {
+				image {
+					name
+					tag
+				}
+				history {
+					image
+					deployedAt
+				}
+			}
+		}
+	}
+}
