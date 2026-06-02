@@ -19,12 +19,10 @@ query CVES($first: Int, $last: Int, $before: Cursor, $after: Cursor, $orderBy: C
 			detailsLink
 			cvssScore
 			priority
-			signals {
-				epssScore
-				epssPercentile
-				hasKevEntry
-				knownRansomwareUse
-			}
+			epssScore
+			epssPercentile
+			hasKevEntry
+			knownRansomwareUse
 			workloads {
 				pageInfo {
 					totalCount

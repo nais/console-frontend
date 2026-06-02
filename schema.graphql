@@ -1433,11 +1433,26 @@ type CVE implements Node {
   """Link to the CVE details."""
   detailsLink: String!
 
+  """EPSS percentile of the CVE."""
+  epssPercentile: Float
+
+  """EPSS score of the CVE (probability of exploitation)."""
+  epssScore: Float
+
+  """Whether the CVE has a Known Exploited Vulnerability (KEV) entry."""
+  hasKevEntry: Boolean!
+
   """The globally unique ID of the CVE."""
   id: ID!
 
   """The unique identifier of the CVE. E.g. CVE-****-****."""
   identifier: String!
+
+  """Whether the CVE is known to be used in ransomware attacks."""
+  knownRansomwareUse: Boolean!
+
+  """Priority of the CVE based on threat intelligence signals."""
+  priority: CVEPriority!
 
   """Severity of the CVE."""
   severity: ImageVulnerabilitySeverity!
@@ -1502,7 +1517,28 @@ enum CVEOrderField {
   AFFECTED_WORKLOADS_COUNT
   CVSS_SCORE
   IDENTIFIER
+  PRIORITY
   SEVERITY
+}
+
+enum CVEPriority {
+  """
+  Vulnerability is known to be actively exploited and requires immediate action.
+  """
+  ACT_NOW
+
+  """
+  Vulnerability has a critical or high severity and elevated EPSS percentile.
+  """
+  ELEVATED
+
+  """
+  Vulnerability is associated with ransomware or has a high EPSS percentile.
+  """
+  HIGH
+
+  """Vulnerability requires monitoring but no immediate action."""
+  MONITOR
 }
 
 """
@@ -2916,6 +2952,19 @@ enum EnvironmentWorkloadOrderField {
   TEAM_SLUG
 }
 
+"""
+Raised when a workload with external ingresses has one or more ACT_NOW priority vulnerabilities.
+"""
+type ExternalIngressActNowVulnerabilityIssue implements Issue & Node {
+  id: ID!
+  ingresses: [String!]!
+  message: String!
+  priorityActNow: Int!
+  severity: Severity!
+  teamEnvironment: TeamEnvironment!
+  workload: Workload!
+}
+
 type ExternalIngressCriticalVulnerabilityIssue implements Issue & Node {
   cvssScore: Float!
   id: ID!
@@ -3187,6 +3236,7 @@ input ImageVulnerabilityOrder {
 enum ImageVulnerabilityOrderField {
   IDENTIFIER
   PACKAGE
+  PRIORITY
   SEVERITY
   SEVERITY_SINCE
   STATE
@@ -3224,6 +3274,18 @@ type ImageVulnerabilitySummary {
 
   """Number of vulnerabilities with severity MEDIUM."""
   medium: Int!
+
+  """Number of vulnerabilities with priority ACT_NOW."""
+  priorityActNow: Int!
+
+  """Number of vulnerabilities with priority ELEVATED."""
+  priorityElevated: Int!
+
+  """Number of vulnerabilities with priority HIGH."""
+  priorityHigh: Int!
+
+  """Number of vulnerabilities with priority MONITOR."""
+  priorityMonitor: Int!
 
   """Risk score of the image."""
   riskScore: Int!
@@ -3518,6 +3580,7 @@ enum IssueType {
   APPLICATION_RESTART_LOOP
   DEPRECATED_INGRESS
   DEPRECATED_REGISTRY
+  EXTERNAL_INGRESS_ACT_NOW_VULNERABILITY
   EXTERNAL_INGRESS_CRITICAL_VULNERABILITY
   FAILED_SYNCHRONIZATION
   INVALID_SPEC
@@ -10715,6 +10778,16 @@ enum VulnerabilitySummaryOrderByField {
 
   """Order by name."""
   NAME
+
+  """
+  Order by priority ACT_NOW count"
+  """
+  VULNERABILITY_PRIORITY_ACT_NOW
+
+  """
+  Order by priority HIGH count"
+  """
+  VULNERABILITY_PRIORITY_HIGH
 
   """
   Order by risk score"
