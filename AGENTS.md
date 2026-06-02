@@ -416,7 +416,7 @@ All of these must pass before committing. If prettier reports issues, fix them w
 When asked to address Copilot (or other) review comments on a PR:
 
 1. Fetch the review comments and implement the fixes
-2. Commit and push the changes
+2. Commit and push the changes — **do this before replying or resolving**
 3. Reply to **each** review comment thread individually with a short summary of what was done (or why no change was needed)
 4. Resolve each review thread after replying
 
