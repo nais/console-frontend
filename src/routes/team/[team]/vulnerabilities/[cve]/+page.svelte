@@ -128,8 +128,11 @@
 
 	async function loadMore() {
 		loadingMore = true;
-		await workloadsQuery.loadNextPage({ first: rows });
-		loadingMore = false;
+		try {
+			await workloadsQuery.loadNextPage({ first: rows });
+		} finally {
+			loadingMore = false;
+		}
 	}
 
 	const toggleSelect = (vulnId: string) => {
@@ -217,9 +220,14 @@
 	});
 
 	const onSuppressed = () => {
+		const loadedCount = ($workloadsQuery.data?.cve.workloads.edges ?? []).length;
 		selectedIds.clear();
 		workloadsQuery.fetch({
-			variables: { identifier: cveIdentifier, first: rows, filter: { teamSlugs: [teamSlug] } },
+			variables: {
+				identifier: cveIdentifier,
+				first: Math.max(rows, loadedCount),
+				filter: { teamSlugs: [teamSlug] }
+			},
 			policy: 'NetworkOnly'
 		});
 	};
