@@ -7,6 +7,7 @@
 	import PageModal, { pageModalClick } from '$lib/ui/PageModal.svelte';
 	import { Button, Heading, Modal } from '@nais/ds-svelte-community';
 	import EnvPage from './env/+page.svelte';
+	import ImagePage from './image/+page.svelte';
 	import ResizePage from './resize/+page.svelte';
 	import {
 		ActionMenu,
@@ -18,6 +19,7 @@
 		ArrowsUpDownIcon,
 		FileTextIcon,
 		MenuElipsisVerticalIcon,
+		PackageIcon,
 		PencilWritingIcon,
 		StopIcon,
 		TrashIcon
@@ -148,6 +150,13 @@
 			>
 				<ActionMenuItem icon={PencilWritingIcon}>Set environment variables</ActionMenuItem>
 			</a>
+			<a
+				class="action-menu-button"
+				href="/team/{teamSlug}/{environment}/app/{application}/image"
+				onclick={pageModalClick}
+			>
+				<ActionMenuItem icon={PackageIcon}>Set image version</ActionMenuItem>
+			</a>
 		{/if}
 		<button class="action-menu-button" onclick={() => (showManifest = true)}>
 			<ActionMenuItem icon={FileTextIcon}>View manifest</ActionMenuItem>
@@ -198,6 +207,8 @@
 	<PageModal content={ResizePage} header="Resize app" />
 {:else if page.state.modalHref?.includes('/env')}
 	<PageModal content={EnvPage} header="Set environment variables" />
+{:else if page.state.modalHref?.includes('/image')}
+	<PageModal content={ImagePage} header="Set image version" />
 {/if}
 
 <style>
