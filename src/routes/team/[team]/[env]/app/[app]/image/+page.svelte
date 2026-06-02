@@ -1,9 +1,9 @@
 <script lang="ts">
-	import { enhance } from '$app/forms';
+	import { applyAction, enhance } from '$app/forms';
 	import { goto } from '$app/navigation';
 	import { page } from '$app/state';
-	import Time from '$lib/ui/Time.svelte';
 	import { isPossiblyInModal } from '$lib/ui/PageModal.svelte';
+	import Time from '$lib/ui/Time.svelte';
 	import { parseImage } from '$lib/utils/image';
 	import {
 		Alert,
@@ -13,6 +13,7 @@
 		Radio,
 		RadioGroup
 	} from '@nais/ds-svelte-community';
+	import { tick } from 'svelte';
 	import type { PageProps } from './$houdini';
 
 	let { data }: PageProps = $props();
@@ -47,12 +48,6 @@
 			invalidateAll: true
 		});
 	};
-
-	$effect(() => {
-		if (success) {
-			queueMicrotask(() => closeButtonEl?.focus());
-		}
-	});
 </script>
 
 {#if success}
@@ -71,8 +66,9 @@
 			return async ({ result }) => {
 				if (result.type === 'redirect') {
 					success = true;
+					await tick();
+					closeButtonEl?.focus();
 				} else if (result.type === 'failure') {
-					const { applyAction } = await import('$app/forms');
 					await applyAction(result);
 				}
 			};
@@ -123,12 +119,14 @@
 		display: flex;
 		flex-direction: column;
 		gap: var(--ax-space-8);
-		width: 500px;
+		max-width: 500px;
+		width: 100%;
 		align-items: flex-start;
 	}
 
 	form {
-		width: 600px;
+		max-width: 600px;
+		width: 100%;
 		display: flex;
 		flex-direction: column;
 		gap: var(--ax-space-16);
@@ -150,7 +148,7 @@
 	}
 
 	.release-time {
-		color: var(--ax-text-neutral);
+		color: var(--ax-text-subtle);
 		font-size: var(--ax-font-size-small);
 	}
 

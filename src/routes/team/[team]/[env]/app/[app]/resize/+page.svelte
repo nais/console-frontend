@@ -1,9 +1,10 @@
 <script lang="ts">
-	import { enhance } from '$app/forms';
+	import { applyAction, enhance } from '$app/forms';
 	import { goto } from '$app/navigation';
 	import { page } from '$app/state';
 	import { isPossiblyInModal } from '$lib/ui/PageModal.svelte';
 	import { Alert, BodyLong, Button, ErrorMessage, TextField } from '@nais/ds-svelte-community';
+	import { tick } from 'svelte';
 	import type { PageProps } from './$houdini';
 
 	let { data }: PageProps = $props();
@@ -28,12 +29,6 @@
 			invalidateAll: true
 		});
 	};
-
-	$effect(() => {
-		if (success) {
-			queueMicrotask(() => closeButtonEl?.focus());
-		}
-	});
 </script>
 
 {#if success}
@@ -50,8 +45,9 @@
 				if (result.type === 'redirect') {
 					successMessage = `Successfully resized application to ${min} - ${max} replicas.`;
 					success = true;
+					await tick();
+					closeButtonEl?.focus();
 				} else if (result.type === 'failure') {
-					const { applyAction } = await import('$app/forms');
 					await applyAction(result);
 				}
 			};
