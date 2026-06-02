@@ -4,7 +4,11 @@ query TeamCVEPage($identifier: String!) @cache(policy: CacheAndNetwork) {
 		identifier
 		title
 		severity
+		priority
 		cvssScore
+		epssPercentile
+		hasKevEntry
+		knownRansomwareUse
 		detailsLink
 	}
 }

@@ -1523,11 +1523,6 @@ enum CVEOrderField {
 
 enum CVEPriority {
   """
-  Vulnerability is known to be actively exploited and requires immediate action.
-  """
-  ACT_NOW
-
-  """
   Vulnerability has a critical or high severity and elevated EPSS percentile.
   """
   ELEVATED
@@ -1536,6 +1531,11 @@ enum CVEPriority {
   Vulnerability is associated with ransomware or has a high EPSS percentile.
   """
   HIGH
+
+  """
+  Vulnerability is known to be actively exploited and requires immediate action.
+  """
+  IMMEDIATE
 
   """Vulnerability requires monitoring but no immediate action."""
   MONITOR
@@ -2953,7 +2953,7 @@ enum EnvironmentWorkloadOrderField {
 }
 
 """
-Raised when a workload with external ingresses has one or more ACT_NOW priority vulnerabilities.
+Raised when a workload with external ingresses has one or more IMMEDIATE risk-tier vulnerabilities.
 """
 type ExternalIngressActNowVulnerabilityIssue implements Issue & Node {
   id: ID!
@@ -3275,16 +3275,16 @@ type ImageVulnerabilitySummary {
   """Number of vulnerabilities with severity MEDIUM."""
   medium: Int!
 
-  """Number of vulnerabilities with priority ACT_NOW."""
+  """Number of vulnerabilities with risk tier IMMEDIATE."""
   priorityActNow: Int!
 
-  """Number of vulnerabilities with priority ELEVATED."""
+  """Number of vulnerabilities with risk tier ELEVATED."""
   priorityElevated: Int!
 
-  """Number of vulnerabilities with priority HIGH."""
+  """Number of vulnerabilities with risk tier HIGH."""
   priorityHigh: Int!
 
-  """Number of vulnerabilities with priority MONITOR."""
+  """Number of vulnerabilities with risk tier MONITOR."""
   priorityMonitor: Int!
 
   """Risk score of the image."""
@@ -10780,12 +10780,12 @@ enum VulnerabilitySummaryOrderByField {
   NAME
 
   """
-  Order by priority ACT_NOW count"
+  Order by IMMEDIATE risk-tier count"
   """
   VULNERABILITY_PRIORITY_ACT_NOW
 
   """
-  Order by priority HIGH count"
+  Order by HIGH risk-tier count"
   """
   VULNERABILITY_PRIORITY_HIGH
 

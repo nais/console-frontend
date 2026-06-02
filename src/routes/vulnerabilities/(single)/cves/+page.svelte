@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { page } from '$app/state';
 	import { CVEOrderField, OrderDirection } from '$houdini';
+	import PriorityBadge from '$lib/domain/vulnerability/PriorityBadge.svelte';
 	import GraphErrors from '$lib/ui/GraphErrors.svelte';
 	import { urlToOrderDirection, urlToOrderField } from '$lib/ui/OrderByMenu.svelte';
 	import Pagination from '$lib/ui/Pagination.svelte';
@@ -80,6 +81,7 @@
 					<Tr>
 						<Th sortable={true} sortKey={CVEOrderField.IDENTIFIER}>CVE</Th>
 						<Th sortable={true} sortKey={CVEOrderField.SEVERITY}>Severity</Th>
+						<Th sortable={true} sortKey={CVEOrderField.PRIORITY}>Priority</Th>
 						<Th sortable={true} sortKey={CVEOrderField.CVSS_SCORE}>CVSS</Th>
 						<Th>Title</Th>
 						<Th sortable={true} sortKey={CVEOrderField.AFFECTED_WORKLOADS_COUNT}>Workloads</Th>
@@ -104,6 +106,9 @@
 									<Tag variant={severityToVariant(cve.severity)} size="small"
 										>{cve.severity.toLowerCase()}</Tag
 									>
+								</Td>
+								<Td>
+									<PriorityBadge priority={cve.priority} size="small" />
 								</Td>
 								<Td>{cve.cvssScore?.toFixed(1) ?? 'N/A'}</Td>
 								<Td>{cve.title}</Td>

@@ -4,6 +4,7 @@
 	import BulkSuppressCVE, {
 		type BulkSuppressWorkload
 	} from '$lib/domain/vulnerability/BulkSuppressCVE.svelte';
+	import PriorityBadge from '$lib/domain/vulnerability/PriorityBadge.svelte';
 	import WorkloadLink from '$lib/domain/workload/WorkloadLink.svelte';
 	import ExternalLink from '$lib/ui/ExternalLink.svelte';
 	import GraphErrors from '$lib/ui/GraphErrors.svelte';
@@ -280,6 +281,24 @@
 								class="severity-badge {cve.severity}"
 								style="font-size: var(--ax-font-size-small)">{cve.severity}</span
 							>
+						</BodyShort>
+					</div>
+					<div>
+						<Detail as="dt">Priority</Detail>
+						<BodyShort as="dd"><PriorityBadge priority={cve.priority} size="small" /></BodyShort>
+					</div>
+					<div>
+						<Detail as="dt">Exploitation Signals</Detail>
+						<BodyShort as="dd">
+							{#if cve.hasKevEntry}
+								KEV
+							{:else if cve.knownRansomwareUse}
+								Known ransomware use
+							{:else if cve.epssPercentile != null}
+								EPSS p{Math.round(cve.epssPercentile * 100)}
+							{:else}
+								None
+							{/if}
 						</BodyShort>
 					</div>
 					<div>
