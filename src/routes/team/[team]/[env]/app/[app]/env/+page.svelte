@@ -1,10 +1,11 @@
 <script lang="ts">
-	import { enhance } from '$app/forms';
+	import { applyAction, enhance } from '$app/forms';
 	import { goto } from '$app/navigation';
 	import { page } from '$app/state';
 	import { isPossiblyInModal } from '$lib/ui/PageModal.svelte';
 	import { Alert, BodyLong, Button, ErrorMessage, TextField } from '@nais/ds-svelte-community';
 	import { PlusIcon, TrashIcon } from '@nais/ds-svelte-community/icons';
+	import { tick } from 'svelte';
 	import { SvelteSet } from 'svelte/reactivity';
 
 	const form = $derived(page.form);
@@ -43,12 +44,6 @@
 			invalidateAll: true
 		});
 	};
-
-	$effect(() => {
-		if (success) {
-			queueMicrotask(() => closeButtonEl?.focus());
-		}
-	});
 </script>
 
 {#if success}
@@ -66,8 +61,9 @@
 			return async ({ result }) => {
 				if (result.type === 'redirect') {
 					success = true;
+					await tick();
+					closeButtonEl?.focus();
 				} else if (result.type === 'failure') {
-					const { applyAction } = await import('$app/forms');
 					await applyAction(result);
 				}
 			};
