@@ -414,6 +414,14 @@
 													>
 												</div>
 											{/if}
+											{#if group.nodes[0]?.vulnerability.fixVersion}
+												<div>
+													<Detail as="dt">Fix Version</Detail>
+													<Detail as="dd"
+														><code>{group.nodes[0].vulnerability.fixVersion}</code></Detail
+													>
+												</div>
+											{/if}
 											<div>
 												<Detail as="dt">Workloads</Detail>
 												<Detail as="dd">{group.nodes.length} affected</Detail>

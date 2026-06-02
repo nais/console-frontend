@@ -166,6 +166,12 @@
 												<Detail as="dt">Package</Detail>
 												<BodyShort as="dd"><code>{vuln.package}</code></BodyShort>
 											</div>
+											{#if vuln.fixVersion}
+												<div class="detail-row">
+													<Detail as="dt">Fix Version</Detail>
+													<BodyShort as="dd"><code>{vuln.fixVersion}</code></BodyShort>
+												</div>
+											{/if}
 											<div class="detail-row">
 												<Detail as="dt">Image</Detail>
 												{#if workload.image}

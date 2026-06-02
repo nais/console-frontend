@@ -3173,6 +3173,9 @@ type ImageVulnerability implements Node {
   """Description of the vulnerability."""
   description: String!
 
+  """First known package version that contains a fix."""
+  fixVersion: String
+
   """The globally unique ID of the image vulnerability node."""
   id: ID!
 
