@@ -4,31 +4,6 @@ metadata:
   name: '{{ .Release.Name }}'
   namespace: nais-system
   annotations:
-    nginx.ingress.kubernetes.io/proxy-buffer-size: 8k
-    nginx.ingress.kubernetes.io/configuration-snippet: |
-      more_set_headers "X-Robots-Tag: noindex";
-    prometheus.io/path: /isAlive
-    prometheus.io/scrape: "true"
-spec:
-  ingressClassName: 'nais-ingress-external'
-  rules:
-    - host: '{{ .Values.host }}'
-      http:
-        paths:
-          - backend:
-              service:
-                name: '{{ .Release.Name }}'
-                port:
-                  number: 80
-            path: /
-            pathType: Prefix
----
-apiVersion: networking.k8s.io/v1
-kind: Ingress
-metadata:
-  name: '{{ .Release.Name }}-haproxy'
-  namespace: nais-system
-  annotations:
     haproxy.org/response-set-header: X-Robots-Tag "noindex"
     prometheus.io/path: /isAlive
     prometheus.io/scrape: "true"
