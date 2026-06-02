@@ -87,10 +87,10 @@
 		{#if releases.length === 0}
 			<BodyLong>No previous releases were found for this application.</BodyLong>
 		{:else}
-			<RadioGroup legend="Previous releases" size="small" name="image" bind:value={selected}>
+			<RadioGroup legend="Releases" size="small" name="image" bind:value={selected}>
 				{#each releases as release (release.image + release.deployedAt.toISOString())}
 					{@const isCurrent = release.image === currentImage}
-					<Radio value={release.image} disabled={isCurrent}>
+					<Radio value={release.image}>
 						<span class="release-label">
 							<code class="release-tag">{tagFor(release.image)}</code>
 							{#if isCurrent}<span class="release-current">(current)</span>{/if}
