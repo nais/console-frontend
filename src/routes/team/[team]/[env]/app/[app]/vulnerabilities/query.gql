@@ -45,6 +45,10 @@ query ApplicationImageDetails($team: Slug!, $env: String!, $app: String!)
 						}
 					}
 					vulnerabilitySummary {
+						priorityActNow
+						priorityHigh
+						priorityElevated
+						priorityMonitor
 						critical
 						high
 						medium

@@ -43,6 +43,10 @@ query JobImageDetails($team: Slug!, $env: String!, $job: String!) @cache(policy:
 						}
 					}
 					vulnerabilitySummary {
+						priorityActNow
+						priorityHigh
+						priorityElevated
+						priorityMonitor
 						critical
 						high
 						medium
