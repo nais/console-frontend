@@ -81,6 +81,10 @@
 								severity
 								package
 								fixVersion
+								epssScore
+								epssPercentile
+								hasKevEntry
+								knownRansomwareUse
 								suppression {
 									state
 								}
@@ -122,6 +126,17 @@
 
 	const hasDetailsLink = (detailsLink?: string | null) => {
 		return Boolean(detailsLink?.trim());
+	};
+
+	const inlineSignal = (vuln: {
+		hasKevEntry: boolean;
+		knownRansomwareUse: boolean;
+		epssPercentile: number | null;
+	}) => {
+		if (vuln.hasKevEntry) return 'KEV';
+		if (vuln.knownRansomwareUse) return 'Known ransomware use';
+		if (vuln.epssPercentile != null) return `EPSS p${Math.round(vuln.epssPercentile * 100)}`;
+		return 'None';
 	};
 
 	let loadingMore = $state(false);
@@ -446,6 +461,10 @@
 													><code>{group.nodes[0]?.vulnerability.fixVersion ?? 'Unknown'}</code
 													></Detail
 												>
+											</div>
+											<div>
+												<Detail as="dt">Signals</Detail>
+												<Detail as="dd">{inlineSignal(group.nodes[0].vulnerability)}</Detail>
 											</div>
 											<div>
 												<Detail as="dt">Workloads</Detail>

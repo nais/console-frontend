@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { page } from '$app/state';
-	import { CVEOrderField, OrderDirection } from '$houdini';
+	import { graphql, CVEOrderField, OrderDirection } from '$houdini';
 	import PriorityBadge from '$lib/domain/vulnerability/PriorityBadge.svelte';
 	import GraphErrors from '$lib/ui/GraphErrors.svelte';
 	import { urlToOrderDirection, urlToOrderField } from '$lib/ui/OrderByMenu.svelte';
@@ -36,6 +36,37 @@
 		ELEVATED: 'Elevated',
 		MONITOR: 'Monitor'
 	};
+
+	const cveTierTotals = graphql(`
+		query CVETierTotals($first: Int!, $after: Cursor) {
+			cves(first: $first, after: $after, orderBy: { field: IDENTIFIER, direction: ASC }) {
+				pageInfo {
+					hasNextPage
+					endCursor
+				}
+				nodes {
+					id
+					priority
+					workloads {
+						pageInfo {
+							totalCount
+						}
+					}
+				}
+			}
+		}
+	`);
+
+	let tierSummaries = $state(
+		tierOrder.map((tier) => ({
+			tier,
+			label: tierLabels[tier],
+			cves: 0,
+			workloads: 0
+		}))
+	);
+
+	let tierSummaryLoading = $state(false);
 
 	const currentOrderField = $derived(
 		urlToOrderField(CVEOrderField, CVEOrderField.PRIORITY, page.url)
@@ -131,29 +162,56 @@
 			.filter((group) => group.nodes.length > 0);
 	});
 
-	const tierSummaries = $derived.by(() => {
-		const byTier = new SvelteMap<string, { cves: number; workloads: number }>();
-		for (const tier of tierOrder) {
-			byTier.set(tier, { cves: 0, workloads: 0 });
-		}
+	$effect(() => {
+		let cancelled = false;
 
-		for (const cve of $CVES.data?.cves.nodes ?? []) {
-			const tier = cve.priority;
-			if (!byTier.has(tier)) {
+		const loadTierSummaries = async () => {
+			tierSummaryLoading = true;
+			const byTier = new SvelteMap<string, { cves: number; workloads: number }>();
+			for (const tier of tierOrder) {
 				byTier.set(tier, { cves: 0, workloads: 0 });
 			}
-			const current = byTier.get(tier);
-			if (!current) continue;
-			current.cves += 1;
-			current.workloads += cve.workloads.pageInfo.totalCount;
-		}
 
-		return tierOrder.map((tier) => ({
-			tier,
-			label: tierLabels[tier],
-			cves: byTier.get(tier)?.cves ?? 0,
-			workloads: byTier.get(tier)?.workloads ?? 0
-		}));
+			let after: string | null = null;
+			let hasNextPage = true;
+
+			while (hasNextPage && !cancelled) {
+				await cveTierTotals.fetch({
+					policy: 'NetworkOnly',
+					variables: {
+						first: 50,
+						after
+					}
+				});
+
+				const connection = $cveTierTotals.data?.cves;
+				for (const cve of connection?.nodes ?? []) {
+					const current = byTier.get(cve.priority);
+					if (!current) continue;
+					current.cves += 1;
+					current.workloads += cve.workloads.pageInfo.totalCount;
+				}
+
+				hasNextPage = connection?.pageInfo.hasNextPage ?? false;
+				after = connection?.pageInfo.endCursor ?? null;
+			}
+
+			if (cancelled) return;
+
+			tierSummaries = tierOrder.map((tier) => ({
+				tier,
+				label: tierLabels[tier],
+				cves: byTier.get(tier)?.cves ?? 0,
+				workloads: byTier.get(tier)?.workloads ?? 0
+			}));
+			tierSummaryLoading = false;
+		};
+
+		void loadTierSummaries();
+
+		return () => {
+			cancelled = true;
+		};
 	});
 
 	const explainPriority = (cve: CveNode) => {
@@ -212,6 +270,11 @@
 				</div>
 				<Heading as="h3" size="xsmall">{tier.cves} CVE{tier.cves === 1 ? '' : 's'}</Heading>
 				<BodyShort size="small" textColor="subtle">{tier.workloads} affected workloads</BodyShort>
+				{#if tierSummaryLoading}
+					<BodyShort size="small" textColor="subtle"
+						>Calculating total across all pages...</BodyShort
+					>
+				{/if}
 			</div>
 		{/each}
 	</div>

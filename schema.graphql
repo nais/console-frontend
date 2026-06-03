@@ -3173,14 +3173,26 @@ type ImageVulnerability implements Node {
   """Description of the vulnerability."""
   description: String!
 
+  """EPSS percentile of the vulnerability (0-1)."""
+  epssPercentile: Float
+
+  """EPSS score of the vulnerability."""
+  epssScore: Float
+
   """First known package version that contains a fix."""
   fixVersion: String
+
+  """Whether the vulnerability has a CISA KEV entry."""
+  hasKevEntry: Boolean!
 
   """The globally unique ID of the image vulnerability node."""
   id: ID!
 
   """The unique identifier of the vulnerability. E.g. CVE-****-****."""
   identifier: String!
+
+  """Whether the vulnerability has known ransomware use."""
+  knownRansomwareUse: Boolean!
 
   """Package name of the vulnerability."""
   package: String!
