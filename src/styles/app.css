@@ -310,7 +310,8 @@ html {
 	text-decoration: none;
 	color: inherit;
 
-	&.CRITICAL {
+	&.CRITICAL,
+	&.IMMEDIATE {
 		background-color: var(--ax-bg-danger-moderate);
 		color: var(--ax-text-danger);
 	}
@@ -322,11 +323,13 @@ html {
 		);
 		color: color-mix(in oklab, var(--ax-text-danger), var(--ax-text-warning));
 	}
-	&.MEDIUM {
+	&.MEDIUM,
+	&.ELEVATED {
 		background-color: var(--ax-bg-warning-moderate);
 		color: var(--ax-text-warning);
 	}
-	&.LOW {
+	&.LOW,
+	&.MONITOR {
 		background-color: var(--ax-bg-success-moderate);
 		color: var(--ax-text-success);
 	}

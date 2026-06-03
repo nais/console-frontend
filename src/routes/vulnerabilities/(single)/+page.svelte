@@ -14,7 +14,7 @@
 	<Heading as="h1" size="large">Vulnerabilities</Heading>
 
 	{#if $TenantVulnerabilites.data?.vulnerabilitySummary}
-		<SurfaceCard title="Summary" level="h2" bordered>
+		<SurfaceCard title="Priority" level="h2" bordered>
 			<VulnerabilitySummaryMetrics
 				vulnerabilitySummary={$TenantVulnerabilites.data?.vulnerabilitySummary}
 			/>

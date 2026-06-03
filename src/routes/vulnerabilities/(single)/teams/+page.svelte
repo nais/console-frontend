@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { page } from '$app/state';
 	import { OrderDirection, TeamOrderField } from '$houdini';
+	import PriorityBadge from '$lib/domain/vulnerability/PriorityBadge.svelte';
 	import GraphErrors from '$lib/ui/GraphErrors.svelte';
 	import IconLabel from '$lib/ui/IconLabel.svelte';
 	import { urlToOrderDirection, urlToOrderField } from '$lib/ui/OrderByMenu.svelte';
@@ -57,36 +58,38 @@
 		);
 	};
 
-	const severityColumns = [
+	type CVEPriorityOption = 'IMMEDIATE' | 'HIGH' | 'ELEVATED' | 'MONITOR';
+
+	const priorityColumns = [
 		{
 			sortKey: TeamOrderField.CRITICAL_VULNERABILITIES,
-			label: 'Critical',
+			label: 'Immediate',
 			summaryKey: 'critical',
-			className: 'CRITICAL'
+			priority: 'IMMEDIATE' as CVEPriorityOption
 		},
 		{
 			sortKey: TeamOrderField.HIGH_VULNERABILITIES,
 			label: 'High',
 			summaryKey: 'high',
-			className: 'HIGH'
+			priority: 'HIGH' as CVEPriorityOption
 		},
 		{
 			sortKey: TeamOrderField.MEDIUM_VULNERABILITIES,
-			label: 'Medium',
+			label: 'Elevated',
 			summaryKey: 'medium',
-			className: 'MEDIUM'
+			priority: 'ELEVATED' as CVEPriorityOption
 		},
 		{
 			sortKey: TeamOrderField.LOW_VULNERABILITIES,
-			label: 'Low',
+			label: 'Monitor',
 			summaryKey: 'low',
-			className: 'LOW'
+			priority: 'MONITOR' as CVEPriorityOption
 		},
 		{
 			sortKey: TeamOrderField.UNASSIGNED_VULNERABILITIES,
 			label: 'Unassigned',
 			summaryKey: 'unassigned',
-			className: 'UNASSIGNED'
+			priority: null
 		}
 	] as const;
 
@@ -114,8 +117,14 @@
 				<Thead>
 					<Tr>
 						<Th sortable={true} sortKey={TeamOrderField.SLUG}>Team</Th>
-						{#each severityColumns as column (column.sortKey)}
-							<Th sortable={true} sortKey={column.sortKey}>{column.label}</Th>
+						{#each priorityColumns as column (column.sortKey + column.label)}
+							<Th sortable={true} sortKey={column.sortKey}>
+								{#if column.priority}
+									<PriorityBadge priority={column.priority} />
+								{:else}
+									{column.label}
+								{/if}
+							</Th>
 						{/each}
 						<Th sortable={true} sortKey={TeamOrderField.RISK_SCORE}>Risk score</Th>
 						<Th sortable={true} sortKey={TeamOrderField.SBOM_COVERAGE}>SBOM coverage</Th>
@@ -132,13 +141,13 @@
 									icon={PersonGroupIcon}
 								/>
 							</Td>
-							{#each severityColumns as column (column.sortKey)}
+							{#each priorityColumns as column (column.sortKey + column.label)}
 								<Td class="severity-cell">
 									{@const count = team.vulnerabilitySummary[column.summaryKey as SeverityKey]}
 									{#if count > 0}
 										<a
 											href="/team/{team.slug}/vulnerabilities"
-											class="severity-badge {column.className}"
+											class="severity-badge {column.priority ?? 'UNASSIGNED'}"
 										>
 											{count}
 										</a>
