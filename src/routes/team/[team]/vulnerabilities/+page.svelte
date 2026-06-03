@@ -18,7 +18,7 @@
 {#if $TeamVulnerabilities.data}
 	<div class="wrapper">
 		{#if $TeamVulnerabilities.data.team.vulnerabilitySummary}
-			<SurfaceCard title="Summary" level="h2" bordered>
+			<SurfaceCard title="Priority" level="h2" bordered>
 				<VulnerabilitySummaryMetrics
 					vulnerabilitySummary={$TeamVulnerabilities.data.team.vulnerabilitySummary}
 				/>

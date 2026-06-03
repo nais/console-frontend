@@ -264,29 +264,11 @@
 			{#if cve.title}
 				<BodyShort>{cve.title}</BodyShort>
 			{/if}
+			<PriorityBadge priority={cve.priority} size="medium" />
 
 			<section aria-labelledby="cve-details">
 				<Heading as="h2" size="small" spacing id="cve-details">Details</Heading>
 				<dl class="details-list">
-					{#if cve.cvssScore}
-						<div>
-							<Detail as="dt">CVSS Score</Detail>
-							<BodyShort as="dd"><strong>{cve.cvssScore.toFixed(1)}</strong></BodyShort>
-						</div>
-					{/if}
-					<div>
-						<Detail as="dt">Severity</Detail>
-						<BodyShort as="dd">
-							<span
-								class="severity-badge {cve.severity}"
-								style="font-size: var(--ax-font-size-small)">{cve.severity}</span
-							>
-						</BodyShort>
-					</div>
-					<div>
-						<Detail as="dt">Priority</Detail>
-						<BodyShort as="dd"><PriorityBadge priority={cve.priority} size="small" /></BodyShort>
-					</div>
 					<div>
 						<Detail as="dt">Exploitation Signals</Detail>
 						<BodyShort as="dd">
@@ -312,6 +294,49 @@
 						</BodyShort>
 					</div>
 				</dl>
+				<details class="advanced-section">
+					<summary>Advanced / Severity</summary>
+					<dl class="advanced-list">
+						<div>
+							<Detail as="dt">Severity</Detail>
+							<BodyShort as="dd">{cve.severity}</BodyShort>
+						</div>
+						<div>
+							<Detail as="dt">CVSS Score</Detail>
+							<BodyShort as="dd">{cve.cvssScore?.toFixed(1) ?? 'N/A'}</BodyShort>
+						</div>
+						<div>
+							<Detail as="dt">EPSS</Detail>
+							<BodyShort as="dd">{cve.epssScore?.toFixed(4) ?? 'N/A'}</BodyShort>
+						</div>
+						<div>
+							<Detail as="dt">EPSS Percentile</Detail>
+							<BodyShort as="dd"
+								>{cve.epssPercentile != null
+									? `${Math.round(cve.epssPercentile * 100)}%`
+									: 'N/A'}</BodyShort
+							>
+						</div>
+						<div>
+							<Detail as="dt">KEV</Detail>
+							<BodyShort as="dd">{cve.hasKevEntry ? 'Yes' : 'No'}</BodyShort>
+						</div>
+						<div>
+							<Detail as="dt">Ransomware use</Detail>
+							<BodyShort as="dd">{cve.knownRansomwareUse ? 'Known' : 'Not known'}</BodyShort>
+						</div>
+						<div>
+							<Detail as="dt">Details</Detail>
+							<BodyShort as="dd"
+								>{#if hasDetailsLink(cve.detailsLink)}
+									<ExternalLink href={cve.detailsLink}>Open source details</ExternalLink>
+								{:else}
+									N/A
+								{/if}</BodyShort
+							>
+						</div>
+					</dl>
+				</details>
 			</section>
 		</div>
 	{:else if hasOtherErrors($TeamCVEPage.errors)}
@@ -414,14 +439,13 @@
 													>
 												</div>
 											{/if}
-											{#if group.nodes[0]?.vulnerability.fixVersion}
-												<div>
-													<Detail as="dt">Fix Version</Detail>
-													<Detail as="dd"
-														><code>{group.nodes[0].vulnerability.fixVersion}</code></Detail
-													>
-												</div>
-											{/if}
+											<div>
+												<Detail as="dt">Fix Version</Detail>
+												<Detail as="dd"
+													><code>{group.nodes[0]?.vulnerability.fixVersion ?? 'Unknown'}</code
+													></Detail
+												>
+											</div>
 											<div>
 												<Detail as="dt">Workloads</Detail>
 												<Detail as="dd">{group.nodes.length} affected</Detail>
@@ -532,6 +556,27 @@
 		}
 	}
 
+	.advanced-section {
+		margin-top: var(--ax-space-12);
+	}
+
+	.advanced-section summary {
+		cursor: pointer;
+		color: var(--ax-text-subtle);
+		font-size: var(--ax-font-size-small);
+	}
+
+	.advanced-list {
+		display: grid;
+		grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+		gap: var(--ax-space-8);
+		margin: var(--ax-space-8) 0 0;
+	}
+
+	.advanced-list :global(dd) {
+		margin: 0;
+	}
+
 	.count {
 		font-weight: normal;
 		color: var(--ax-text-neutral);
@@ -607,12 +652,6 @@
 		display: flex;
 		flex-direction: column;
 		gap: var(--ax-space-8);
-	}
-
-	.vuln-group-workload {
-		display: flex;
-		flex-direction: column;
-		gap: var(--ax-space-2);
 	}
 
 	code {
