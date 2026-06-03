@@ -209,7 +209,7 @@
 			return;
 		}
 
-		await goto('/team/' + teamSlug + '/secrets');
+		await goto('/team/' + teamSlug + '/secrets', { invalidateAll: true });
 	};
 
 	const openDeleteModal = () => {
