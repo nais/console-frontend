@@ -34,7 +34,7 @@
 
 	const rowKey = (node: { id: string }) => node.id;
 
-	const rows = 5;
+	const rows = 50;
 
 	const teamRoles = graphql(`
 		query TeamCVEPageTeamRoles($team: Slug!) @cache(policy: CacheAndNetwork) {
