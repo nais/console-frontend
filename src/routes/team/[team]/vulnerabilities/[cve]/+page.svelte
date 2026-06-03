@@ -80,6 +80,7 @@
 								identifier
 								severity
 								package
+								fixVersion
 								suppression {
 									state
 								}
