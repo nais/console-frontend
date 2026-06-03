@@ -27,7 +27,7 @@ query Applications(
 			}
 			facets {
 				environments {
-					environmentName
+					value
 					count
 				}
 				states {

@@ -13,7 +13,7 @@
 	}
 
 	interface EnvironmentFacet {
-		environmentName: string;
+		value: string;
 		count: number;
 	}
 
@@ -50,7 +50,7 @@
 	// a filtered card where some activity types have 0 entries).
 	const availableActivityTypes = $derived(new Set(activityTypes.map((f) => f.activityType)));
 	const availableResourceTypes = $derived(new Set(resourceTypes.map((f) => f.resourceType)));
-	const availableEnvironments = $derived(new Set(environments.map((f) => f.environmentName)));
+	const availableEnvironments = $derived(new Set(environments.map((f) => f.value)));
 
 	function toggleActivityType(type: ActivityLogActivityType$options) {
 		const isSelected = selectedActivityTypes.includes(type);
@@ -120,14 +120,14 @@
 		<details class="facet-section" open>
 			<summary class="facet-heading">Environments</summary>
 			<div class="facet-list">
-				{#each environments as facet (facet.environmentName)}
+				{#each environments as facet (facet.value)}
 					<label class="facet-item">
 						<input
 							type="checkbox"
-							checked={selectedEnvironments.includes(facet.environmentName)}
-							onchange={() => toggleEnvironment(facet.environmentName)}
+							checked={selectedEnvironments.includes(facet.value)}
+							onchange={() => toggleEnvironment(facet.value)}
 						/>
-						<span class="facet-label">{facet.environmentName}</span>
+						<span class="facet-label">{facet.value}</span>
 						<span class="facet-count">{facet.count}</span>
 					</label>
 				{/each}

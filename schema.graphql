@@ -335,15 +335,6 @@ enum ActivityLogEntryResourceType {
   VULNERABILITY
 }
 
-"""A single facet item for environments."""
-type ActivityLogEnvironmentFacetItem {
-  """Number of matching entries."""
-  count: Int!
-
-  """The environment name."""
-  environmentName: String!
-}
-
 """
 Facets for activity log entries, providing distribution counts across different dimensions.
 """
@@ -354,7 +345,7 @@ type ActivityLogFacets {
   activityTypes: [ActivityLogActivityTypeFacetItem!]!
 
   """Distribution of entries by environment."""
-  environments: [ActivityLogEnvironmentFacetItem!]!
+  environments: [StringFacetItem!]!
 
   """Distribution of entries by resource type."""
   resourceTypes: [ActivityLogResourceTypeFacetItem!]!
@@ -932,21 +923,12 @@ type ApplicationEdge {
   node: Application!
 }
 
-"""A single facet item for environments."""
-type ApplicationEnvironmentFacetItem {
-  """Number of matching applications."""
-  count: Int!
-
-  """The environment name."""
-  environmentName: String!
-}
-
 """
 Facets for applications, providing distribution counts across different dimensions.
 """
 type ApplicationFacets {
   """Distribution of applications by environment."""
-  environments: [ApplicationEnvironmentFacetItem!]!
+  environments: [StringFacetItem!]!
 
   """Distribution of applications by state."""
   states: [ApplicationStateFacetItem!]!
@@ -1313,6 +1295,12 @@ enum BigQueryDatasetAccessOrderField {
 
 type BigQueryDatasetConnection {
   edges: [BigQueryDatasetEdge!]!
+
+  """
+  Facets for BigQuery datasets. Provides distribution counts to help narrow down results.
+  Facet counts are computed over the full result set (ignoring pagination) but respect the current filter.
+  """
+  facets: BigQueryDatasetFacets
   nodes: [BigQueryDataset!]!
   pageInfo: PageInfo!
 }
@@ -1324,6 +1312,23 @@ type BigQueryDatasetCost {
 type BigQueryDatasetEdge {
   cursor: Cursor!
   node: BigQueryDataset!
+}
+
+"""
+Facets for BigQuery datasets, providing distribution counts across different dimensions.
+"""
+type BigQueryDatasetFacets {
+  """Distribution of datasets by environment."""
+  environments: [StringFacetItem!]!
+}
+
+"""Input for filtering BigQuery datasets."""
+input BigQueryDatasetFilter {
+  """Filter by environments."""
+  environments: [String!]
+
+  """Filter by the name of the dataset."""
+  name: String
 }
 
 input BigQueryDatasetOrder {
@@ -1341,6 +1346,17 @@ type BigQueryDatasetStatus {
   lastModifiedTime: Time
 }
 
+"""
+A shared facet item representing a boolean distribution (e.g., in-use, high availability).
+"""
+type BooleanFacetItem {
+  """Number of matching resources."""
+  count: Int!
+
+  """The boolean value."""
+  value: Boolean!
+}
+
 type Bucket implements Node & Persistence {
   cascadingDelete: Boolean!
   environment: TeamEnvironment! @deprecated(reason: "Use the `teamEnvironment` field instead.")
@@ -1355,6 +1371,12 @@ type Bucket implements Node & Persistence {
 
 type BucketConnection {
   edges: [BucketEdge!]!
+
+  """
+  Facets for buckets. Provides distribution counts to help narrow down results.
+  Facet counts are computed over the full result set (ignoring pagination) but respect the current filter.
+  """
+  facets: BucketFacets
   nodes: [Bucket!]!
   pageInfo: PageInfo!
 }
@@ -1362,6 +1384,23 @@ type BucketConnection {
 type BucketEdge {
   cursor: Cursor!
   node: Bucket!
+}
+
+"""
+Facets for buckets, providing distribution counts across different dimensions.
+"""
+type BucketFacets {
+  """Distribution of buckets by environment."""
+  environments: [StringFacetItem!]!
+}
+
+"""Input for filtering buckets."""
+input BucketFilter {
+  """Filter by environments."""
+  environments: [String!]
+
+  """Filter by the name of the bucket."""
+  name: String
 }
 
 input BucketOrder {
@@ -1632,6 +1671,12 @@ type ConfigConnection {
   """List of edges."""
   edges: [ConfigEdge!]!
 
+  """
+  Facets for configs. Provides distribution counts to help narrow down results.
+  Facet counts are computed over the full result set (ignoring pagination) but respect the current filter.
+  """
+  facets: ConfigFacets
+
   """List of nodes."""
   nodes: [Config!]!
 
@@ -1703,8 +1748,22 @@ type ConfigEdge {
   node: Config!
 }
 
+"""
+Facets for configs, providing distribution counts across different dimensions.
+"""
+type ConfigFacets {
+  """Distribution of configs by environment."""
+  environments: [StringFacetItem!]!
+
+  """Distribution of configs by whether they are in use by any workload."""
+  inUse: [BooleanFacetItem!]!
+}
+
 """Input for filtering the configs of a team."""
 input ConfigFilter {
+  """Filter by environments."""
+  environments: [String!]
+
   """Filter by usage of the config."""
   inUse: Boolean
 
@@ -3795,21 +3854,12 @@ type JobEdge {
   node: Job!
 }
 
-"""A single facet item for environments."""
-type JobEnvironmentFacetItem {
-  """Number of matching jobs."""
-  count: Int!
-
-  """The environment name."""
-  environmentName: String!
-}
-
 """
 Facets for jobs, providing distribution counts across different dimensions.
 """
 type JobFacets {
   """Distribution of jobs by environment."""
-  environments: [JobEnvironmentFacetItem!]!
+  environments: [StringFacetItem!]!
 
   """Distribution of jobs by state."""
   states: [JobStateFacetItem!]!
@@ -4209,6 +4259,12 @@ type KafkaTopicConfiguration {
 
 type KafkaTopicConnection {
   edges: [KafkaTopicEdge!]!
+
+  """
+  Facets for Kafka topics. Provides distribution counts to help narrow down results.
+  Facet counts are computed over the full result set (ignoring pagination) but respect the current filter.
+  """
+  facets: KafkaTopicFacets
   nodes: [KafkaTopic!]!
   pageInfo: PageInfo!
 }
@@ -4216,6 +4272,29 @@ type KafkaTopicConnection {
 type KafkaTopicEdge {
   cursor: Cursor!
   node: KafkaTopic!
+}
+
+"""
+Facets for Kafka topics, providing distribution counts across different dimensions.
+"""
+type KafkaTopicFacets {
+  """Distribution of topics by environment."""
+  environments: [StringFacetItem!]!
+
+  """Distribution of topics by Kafka pool."""
+  pools: [StringFacetItem!]!
+}
+
+"""Input for filtering Kafka topics."""
+input KafkaTopicFilter {
+  """Filter by environments."""
+  environments: [String!]
+
+  """Filter by the name of the topic."""
+  name: String
+
+  """Filter by Kafka pool."""
+  pools: [String!]
 }
 
 input KafkaTopicOrder {
@@ -4863,6 +4942,12 @@ enum OpenSearchAccessOrderField {
 
 type OpenSearchConnection {
   edges: [OpenSearchEdge!]!
+
+  """
+  Facets for OpenSearch instances. Provides distribution counts to help narrow down results.
+  Facet counts are computed over the full result set (ignoring pagination) but respect the current filter.
+  """
+  facets: OpenSearchFacets
   nodes: [OpenSearch!]!
   pageInfo: PageInfo!
 }
@@ -4947,6 +5032,29 @@ type OpenSearchDeletedActivityLogEntry implements ActivityLogEntry & Node {
 type OpenSearchEdge {
   cursor: Cursor!
   node: OpenSearch!
+}
+
+"""
+Facets for OpenSearch instances, providing distribution counts across different dimensions.
+"""
+type OpenSearchFacets {
+  """Distribution of instances by environment."""
+  environments: [StringFacetItem!]!
+
+  """Distribution of instances by tier."""
+  tiers: [OpenSearchTierFacetItem!]!
+}
+
+"""Input for filtering OpenSearch instances."""
+input OpenSearchFilter {
+  """Filter by environments."""
+  environments: [String!]
+
+  """Filter by the name of the instance."""
+  name: String
+
+  """Filter by tier."""
+  tiers: [OpenSearchTier!]
 }
 
 type OpenSearchIssue implements Issue & Node {
@@ -5066,6 +5174,15 @@ enum OpenSearchState {
 enum OpenSearchTier {
   HIGH_AVAILABILITY
   SINGLE_NODE
+}
+
+"""A single facet item for OpenSearch tiers."""
+type OpenSearchTierFacetItem {
+  """Number of matching instances."""
+  count: Int!
+
+  """The OpenSearch tier."""
+  tier: OpenSearchTier!
 }
 
 type OpenSearchUpdatedActivityLogEntry implements ActivityLogEntry & Node {
@@ -5303,6 +5420,12 @@ type PostgresInstanceAudit {
 
 type PostgresInstanceConnection {
   edges: [PostgresInstanceEdge!]!
+
+  """
+  Facets for Postgres instances. Provides distribution counts to help narrow down results.
+  Facet counts are computed over the full result set (ignoring pagination) but respect the current filter.
+  """
+  facets: PostgresInstanceFacets
   nodes: [PostgresInstance!]!
   pageInfo: PageInfo!
 }
@@ -5310,6 +5433,41 @@ type PostgresInstanceConnection {
 type PostgresInstanceEdge {
   cursor: Cursor!
   node: PostgresInstance!
+}
+
+"""
+Facets for Postgres instances, providing distribution counts across different dimensions.
+"""
+type PostgresInstanceFacets {
+  """Distribution of instances by environment."""
+  environments: [StringFacetItem!]!
+
+  """Distribution of instances by high availability."""
+  highAvailability: [BooleanFacetItem!]!
+
+  """Distribution of instances by major version."""
+  majorVersions: [StringFacetItem!]!
+
+  """Distribution of instances by state."""
+  states: [PostgresInstanceStateFacetItem!]!
+}
+
+"""Input for filtering Postgres instances."""
+input PostgresInstanceFilter {
+  """Filter by environments."""
+  environments: [String!]
+
+  """Filter by high availability."""
+  highAvailability: Boolean
+
+  """Filter by major versions."""
+  majorVersions: [String!]
+
+  """Filter by the name of the instance."""
+  name: String
+
+  """Filter by instance state."""
+  states: [PostgresInstanceState!]
 }
 
 type PostgresInstanceMaintenanceWindow {
@@ -5337,6 +5495,15 @@ enum PostgresInstanceState {
   AVAILABLE
   DEGRADED
   PROGRESSING
+}
+
+"""A single facet item for Postgres instance states."""
+type PostgresInstanceStateFacetItem {
+  """Number of matching instances."""
+  count: Int!
+
+  """The Postgres instance state."""
+  state: PostgresInstanceState!
 }
 
 type Price {
@@ -6519,6 +6686,12 @@ type SecretConnection {
   """List of edges."""
   edges: [SecretEdge!]!
 
+  """
+  Facets for secrets. Provides distribution counts to help narrow down results.
+  Facet counts are computed over the full result set (ignoring pagination) but respect the current filter.
+  """
+  facets: SecretFacets
+
   """List of nodes."""
   nodes: [Secret!]!
 
@@ -6590,8 +6763,22 @@ type SecretEdge {
   node: Secret!
 }
 
+"""
+Facets for secrets, providing distribution counts across different dimensions.
+"""
+type SecretFacets {
+  """Distribution of secrets by environment."""
+  environments: [StringFacetItem!]!
+
+  """Distribution of secrets by whether they are in use by any workload."""
+  inUse: [BooleanFacetItem!]!
+}
+
 """Input for filtering the secrets of a team."""
 input SecretFilter {
+  """Filter by environments."""
+  environments: [String!]
+
   """Filter by usage of the secret."""
   inUse: Boolean
 
@@ -7635,6 +7822,17 @@ type StartValkeyMaintenancePayload {
   error: String
 }
 
+"""
+A shared facet item representing a string value distribution (e.g., pool name, version).
+"""
+type StringFacetItem {
+  """Number of matching resources."""
+  count: Int!
+
+  """The string value."""
+  value: String!
+}
+
 """The subscription root for the Nais GraphQL API."""
 type Subscription {
   """
@@ -7742,6 +7940,9 @@ type Team implements ActivityLogger & Node {
     """Get items before this cursor."""
     before: Cursor
 
+    """Filtering options for items returned from the connection."""
+    filter: BigQueryDatasetFilter
+
     """
     Get the first n items in the connection. This can be used in combination with the after parameter.
     """
@@ -7763,6 +7964,9 @@ type Team implements ActivityLogger & Node {
 
     """Get items before this cursor."""
     before: Cursor
+
+    """Filtering options for items returned from the connection."""
+    filter: BucketFilter
 
     """
     Get the first n items in the connection. This can be used in combination with the after parameter.
@@ -7909,6 +8113,9 @@ type Team implements ActivityLogger & Node {
     """Get items before this cursor."""
     before: Cursor
 
+    """Filtering options for items returned from the connection."""
+    filter: KafkaTopicFilter
+
     """
     Get the first n items in the connection. This can be used in combination with the after parameter.
     """
@@ -7959,6 +8166,9 @@ type Team implements ActivityLogger & Node {
     """Get items before this cursor."""
     before: Cursor
 
+    """Filtering options for items returned from the connection."""
+    filter: OpenSearchFilter
+
     """
     Get the first n items in the connection. This can be used in combination with the after parameter.
     """
@@ -7980,6 +8190,9 @@ type Team implements ActivityLogger & Node {
 
     """Get items before this cursor."""
     before: Cursor
+
+    """Filtering options for items returned from the connection."""
+    filter: PostgresInstanceFilter
 
     """
     Get the first n items in the connection. This can be used in combination with the after parameter.
@@ -8100,6 +8313,9 @@ type Team implements ActivityLogger & Node {
 
     """Get items before this cursor."""
     before: Cursor
+
+    """Filtering options for items returned from the connection."""
+    filter: ValkeyFilter
 
     """
     Get the first n items in the connection. This can be used in combination with the after parameter.
@@ -10100,6 +10316,12 @@ enum ValkeyAccessOrderField {
 
 type ValkeyConnection {
   edges: [ValkeyEdge!]!
+
+  """
+  Facets for Valkey instances. Provides distribution counts to help narrow down results.
+  Facet counts are computed over the full result set (ignoring pagination) but respect the current filter.
+  """
+  facets: ValkeyFacets
   nodes: [Valkey!]!
   pageInfo: PageInfo!
 }
@@ -10184,6 +10406,29 @@ type ValkeyDeletedActivityLogEntry implements ActivityLogEntry & Node {
 type ValkeyEdge {
   cursor: Cursor!
   node: Valkey!
+}
+
+"""
+Facets for Valkey instances, providing distribution counts across different dimensions.
+"""
+type ValkeyFacets {
+  """Distribution of instances by environment."""
+  environments: [StringFacetItem!]!
+
+  """Distribution of instances by tier."""
+  tiers: [ValkeyTierFacetItem!]!
+}
+
+"""Input for filtering Valkey instances."""
+input ValkeyFilter {
+  """Filter by environments."""
+  environments: [String!]
+
+  """Filter by the name of the instance."""
+  name: String
+
+  """Filter by tier."""
+  tiers: [ValkeyTier!]
 }
 
 type ValkeyIssue implements Issue & Node {
@@ -10321,6 +10566,15 @@ enum ValkeyState {
 enum ValkeyTier {
   HIGH_AVAILABILITY
   SINGLE_NODE
+}
+
+"""A single facet item for Valkey tiers."""
+type ValkeyTierFacetItem {
+  """Number of matching instances."""
+  count: Int!
+
+  """The Valkey tier."""
+  tier: ValkeyTier!
 }
 
 type ValkeyUpdatedActivityLogEntry implements ActivityLogEntry & Node {

@@ -29,7 +29,7 @@ query Jobs(
 
 			facets {
 				environments {
-					environmentName
+					value
 					count
 				}
 				states {
