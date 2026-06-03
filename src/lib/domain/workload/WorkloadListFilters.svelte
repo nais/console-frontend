@@ -8,7 +8,7 @@
 	}
 
 	interface EnvironmentFacet {
-		environmentName: string;
+		value: string;
 		count: number;
 	}
 
@@ -60,7 +60,7 @@
 	}
 
 	const availableStates = $derived(new Set(states.map((f) => f.state)));
-	const availableEnvironments = $derived(new Set(environments.map((f) => f.environmentName)));
+	const availableEnvironments = $derived(new Set(environments.map((f) => f.value)));
 
 	function toggleState(state: string) {
 		const isSelected = selectedStates.includes(state);
@@ -114,14 +114,14 @@
 		<details class="filter-section" open>
 			<summary class="section-heading">Environments</summary>
 			<div class="facet-list">
-				{#each environments as facet (facet.environmentName)}
+				{#each environments as facet (facet.value)}
 					<label class="facet-item">
 						<input
 							type="checkbox"
-							checked={selectedEnvironments.includes(facet.environmentName)}
-							onchange={() => toggleEnvironment(facet.environmentName)}
+							checked={selectedEnvironments.includes(facet.value)}
+							onchange={() => toggleEnvironment(facet.value)}
 						/>
-						<span class="facet-label">{facet.environmentName}</span>
+						<span class="facet-label">{facet.value}</span>
 						<span class="facet-count">{facet.count}</span>
 					</label>
 				{/each}

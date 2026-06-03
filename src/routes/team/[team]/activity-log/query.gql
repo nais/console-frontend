@@ -34,7 +34,7 @@ query ActivityLog(
 					count
 				}
 				environments {
-					environmentName
+					value
 					count
 				}
 			}
