@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import { page } from '$app/state';
-	import { ValueEncoding, graphql, type ValueEncoding$options } from '$houdini';
+	import { ValueEncoding, cache, graphql, type ValueEncoding$options } from '$houdini';
 	import Confirm from '$lib/ui/Confirm.svelte';
 	import {
 		Alert,
@@ -199,6 +199,7 @@
 	`);
 
 	const deleteSecret = async () => {
+		const secretId = secret?.id;
 		await deleteMutation.mutate({
 			name: secretName,
 			team: teamSlug,
@@ -209,7 +210,11 @@
 			return;
 		}
 
-		await goto('/team/' + teamSlug + '/secrets', { invalidateAll: true });
+		if (secretId) {
+			cache.get('Secret', { id: secretId }).delete();
+		}
+
+		await goto('/team/' + teamSlug + '/secrets');
 	};
 
 	const openDeleteModal = () => {
