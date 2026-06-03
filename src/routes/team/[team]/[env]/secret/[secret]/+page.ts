@@ -19,11 +19,16 @@ export async function load(event) {
 		secret: event.params.secret
 	};
 
+	const secretName = event.params.secret.toLowerCase();
 	for (let i = 0; i < MAX_RETRIES; i++) {
-		const result = await load_Secret({ event, variables });
+		const result = await load_Secret({ event, variables, blocking: true });
 		const { errors } = get(result.Secret);
-		const isNotFound = errors?.some((e) => e.message.toLowerCase().includes('not found'));
-		if (!isNotFound || i === MAX_RETRIES - 1) {
+		const isSecretNotFound = errors?.some(
+			(e) =>
+				e.message.toLowerCase().includes('not found') &&
+				e.message.toLowerCase().includes(secretName)
+		);
+		if (!isSecretNotFound || i === MAX_RETRIES - 1) {
 			return { ...meta, ...result };
 		}
 		await sleep(RETRY_DELAY);
