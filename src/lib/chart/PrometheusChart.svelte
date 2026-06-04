@@ -21,6 +21,8 @@
 	type PrometheusChartProps = {
 		environmentName: string;
 		query: string;
+		title?: string;
+		description?: string;
 		height?: `${number}px`;
 		labelFormatter: (labels: { name: string; value: string }[]) => string;
 		colorizer?: (label: string, index: number) => string;
@@ -32,6 +34,8 @@
 	let {
 		environmentName,
 		query,
+		title,
+		description,
 		labelFormatter,
 		colorizer = colorFunc,
 		height = '300px',
@@ -270,6 +274,15 @@
 </script>
 
 <div class="prometheus-chart-wrapper" use:intersect={handleIntersection}>
+	{#if title}
+		<div class="prometheus-chart-header">
+			<Heading as="h3" size="small">{title}</Heading>
+			{#if description}
+				<BodyShort size="small" class="prometheus-chart-description">{description}</BodyShort>
+			{/if}
+		</div>
+	{/if}
+
 	<button
 		class="query-info-button"
 		onclick={() => (showQueryModal = true)}
@@ -399,6 +412,15 @@
 	.prometheus-chart-wrapper {
 		position: relative;
 		margin-bottom: 3rem;
+	}
+
+	.prometheus-chart-header {
+		margin-bottom: var(--ax-space-8);
+		padding-right: 2.5rem;
+	}
+
+	.prometheus-chart-header :global(.prometheus-chart-description) {
+		color: var(--ax-text-neutral-subtle);
 	}
 
 	.prometheus-chart-overlay {

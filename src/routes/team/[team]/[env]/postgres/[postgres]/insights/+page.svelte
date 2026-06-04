@@ -22,7 +22,7 @@
 	};
 </script>
 
-<div class="mb-2 flex justify-end">
+<div class="flex justify-end sticky top-0 z-100 p-2">
 	<ToggleGroup
 		bind:value={interval}
 		onchange={() => {
@@ -37,6 +37,8 @@
 
 <PrometheusChart
 	{interval}
+	title="CPU utilization"
+	description="CPU usage as a percentage of the requested CPU, per pod."
 	query={`100 * (
   sum by (namespace, pod) (
     rate(container_cpu_usage_seconds_total{
@@ -72,6 +74,8 @@ clamp_min(
 
 <PrometheusChart
 	{interval}
+	title="Memory utilization"
+	description="Working set memory as a percentage of the requested memory, per pod."
 	query={`100 *
 (
   sum by (namespace, pod) (
@@ -108,6 +112,8 @@ clamp_min(
 
 <PrometheusChart
 	{interval}
+	title="Disk utilization"
+	description="Used disk space as a percentage of volume capacity, per pod."
 	query={`100 *
 (
   sum by (namespace, pod) (

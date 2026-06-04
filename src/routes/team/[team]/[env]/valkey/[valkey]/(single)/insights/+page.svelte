@@ -30,7 +30,7 @@
 	};
 </script>
 
-<div class="mb-2 flex justify-end">
+<div class="flex justify-end sticky top-0 z-100 p-2">
 	<ToggleGroup
 		bind:value={interval}
 		onchange={() => {
@@ -45,6 +45,8 @@
 
 <PrometheusChart
 	{interval}
+	title="CPU utilization"
+	description="Percentage of CPU used, broken down per core."
 	query={`100 - avg by (cpu) (cpu_usage_idle{service="${aivenServiceName}"})`}
 	environmentName={envName}
 	height="300px"
@@ -54,6 +56,8 @@
 
 <PrometheusChart
 	{interval}
+	title="Memory utilization"
+	description="Percentage of available memory currently in use."
 	query={`100 - avg(mem_available_percent{service="${aivenServiceName}"})`}
 	environmentName={envName}
 	height="300px"
@@ -64,6 +68,8 @@
 
 <PrometheusChart
 	{interval}
+	title="Disk utilization"
+	description="Percentage of disk capacity currently in use."
 	query={`avg(disk_used_percent{service="${aivenServiceName}"})`}
 	environmentName={envName}
 	height="300px"
@@ -73,6 +79,8 @@
 
 <PrometheusChart
 	{interval}
+	title="Network received"
+	description="Rate of data received over the network."
 	query={`avg(rate(net_bytes_recv{service="${aivenServiceName}"}[$__rate_interval]))`}
 	environmentName={envName}
 	height="300px"
@@ -83,6 +91,8 @@
 
 <PrometheusChart
 	{interval}
+	title="Network sent"
+	description="Rate of data sent over the network."
 	query={`avg(rate(net_bytes_sent{service="${aivenServiceName}"}[$__rate_interval]))`}
 	environmentName={envName}
 	height="300px"
