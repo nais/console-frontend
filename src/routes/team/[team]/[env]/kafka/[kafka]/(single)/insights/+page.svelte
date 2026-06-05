@@ -68,16 +68,6 @@
 
 <PrometheusChart
 	{environmentName}
-	title="Messages per second (broker)"
-	description="Rate of messages produced to the topic, averaged over 2 minutes."
-	query={`sum by(topic) (rate(kafka_server_BrokerTopicMetrics_MessagesInPerSec_Count{topic="${fullTopicName}"}[2m]))`}
-	{interval}
-	labelFormatter={() => 'Messages/sec (Broker)'}
-	formatYValue={(value) => `${value.toFixed(2)} msg/s`}
-/>
-
-<PrometheusChart
-	{environmentName}
 	title="Bytes in"
 	description="Rate of data produced to the topic by clients."
 	query={`sum by(topic) (rate(kafka_server_BrokerTopicMetrics_BytesInPerSec_Count{topic="${fullTopicName}"}[2m]))`}
