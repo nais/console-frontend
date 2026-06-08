@@ -79,13 +79,12 @@
 	const majorVersionFacets = $derived(
 		$PostgresInstances.data?.team.postgresInstances.facets?.majorVersions ?? []
 	);
-	const availableMajorVersions = $derived(new Set(majorVersionFacets.map((f) => f.value)));
 
 	function toggleMajorVersion(version: string) {
 		const isSelected = selectedMajorVersions.includes(version);
 		const next = isSelected
-			? selectedMajorVersions.filter((v) => v !== version && availableMajorVersions.has(v))
-			: [...selectedMajorVersions.filter((v) => availableMajorVersions.has(v)), version];
+			? selectedMajorVersions.filter((v) => v !== version)
+			: [...selectedMajorVersions, version];
 		changeParams({ majorVersions: next.join(','), after: '', before: '' }, { noScroll: true });
 	}
 

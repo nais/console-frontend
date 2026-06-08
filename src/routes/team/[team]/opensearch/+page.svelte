@@ -82,13 +82,10 @@
 	}
 
 	const tierFacets = $derived($OpenSearch.data?.team.openSearches.facets?.tiers ?? []);
-	const availableTiers = $derived(new Set<string>(tierFacets.map((f) => f.tier)));
 
 	function toggleTier(tier: string) {
 		const isSelected = selectedTiers.includes(tier);
-		const next = isSelected
-			? selectedTiers.filter((t) => t !== tier && availableTiers.has(t))
-			: [...selectedTiers.filter((t) => availableTiers.has(t)), tier];
+		const next = isSelected ? selectedTiers.filter((t) => t !== tier) : [...selectedTiers, tier];
 		changeParams({ tiers: next.join(','), after: '', before: '' }, { noScroll: true });
 	}
 </script>

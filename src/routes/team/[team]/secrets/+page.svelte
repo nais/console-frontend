@@ -43,7 +43,6 @@
 
 	const inUseFacets = $derived($Secrets.data?.team.secrets.facets?.inUse ?? []);
 	const environmentFacets = $derived($Secrets.data?.team.secrets.facets?.environments ?? []);
-	const availableEnvironments = $derived(new Set(environmentFacets.map((f) => f.value)));
 
 	function toggleInUse(value: string) {
 		const next = inUseFilter === value ? '' : value;
@@ -53,8 +52,8 @@
 	function toggleEnvironment(env: string) {
 		const isSelected = selectedEnvironments.includes(env);
 		const next = isSelected
-			? selectedEnvironments.filter((e) => e !== env && availableEnvironments.has(e))
-			: [...selectedEnvironments.filter((e) => availableEnvironments.has(e)), env];
+			? selectedEnvironments.filter((e) => e !== env)
+			: [...selectedEnvironments, env];
 		changeParams({ environments: next.join(','), after: '', before: '' }, { noScroll: true });
 	}
 

@@ -62,22 +62,19 @@
 		return capitalizeFirstLetter(state.split('_').join(' ').toLowerCase());
 	}
 
-	const availableStates = $derived(new Set(states.map((f) => f.state)));
-	const availableEnvironments = $derived(new Set(environments.map((f) => f.value)));
-
 	function toggleState(state: string) {
 		const isSelected = selectedStates.includes(state);
 		const next = isSelected
-			? selectedStates.filter((s) => s !== state && availableStates.has(s))
-			: [...selectedStates.filter((s) => availableStates.has(s)), state];
+			? selectedStates.filter((s) => s !== state)
+			: [...selectedStates, state];
 		onStatesChange(next);
 	}
 
 	function toggleEnvironment(env: string) {
 		const isSelected = selectedEnvironments.includes(env);
 		const next = isSelected
-			? selectedEnvironments.filter((e) => e !== env && availableEnvironments.has(e))
-			: [...selectedEnvironments.filter((e) => availableEnvironments.has(e)), env];
+			? selectedEnvironments.filter((e) => e !== env)
+			: [...selectedEnvironments, env];
 		onEnvironmentsChange(next);
 	}
 </script>

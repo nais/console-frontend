@@ -61,13 +61,10 @@
 	}
 
 	const poolFacets = $derived($KafkaTopics.data?.team.kafkaTopics.facets?.pools ?? []);
-	const availablePools = $derived(new Set(poolFacets.map((f) => f.value)));
 
 	function togglePool(pool: string) {
 		const isSelected = selectedPools.includes(pool);
-		const next = isSelected
-			? selectedPools.filter((p) => p !== pool && availablePools.has(p))
-			: [...selectedPools.filter((p) => availablePools.has(p)), pool];
+		const next = isSelected ? selectedPools.filter((p) => p !== pool) : [...selectedPools, pool];
 		changeParams({ pools: next.join(','), after: '', before: '' }, { noScroll: true });
 	}
 </script>
