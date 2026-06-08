@@ -79,6 +79,12 @@
 	const majorVersionFacets = $derived(
 		$PostgresInstances.data?.team.postgresInstances.facets?.majorVersions ?? []
 	);
+	const displayMajorVersionFacets = $derived([
+		...majorVersionFacets,
+		...selectedMajorVersions
+			.filter((v) => !majorVersionFacets.some((f) => f.value === v))
+			.map((v) => ({ value: v, count: 0 }))
+	]);
 
 	function toggleMajorVersion(version: string) {
 		const isSelected = selectedMajorVersions.includes(version);
@@ -194,11 +200,11 @@
 					onStatesChange={handleStatesChange}
 					onEnvironmentsChange={handleEnvironmentsChange}
 				>
-					{#if majorVersionFacets.length > 0}
+					{#if displayMajorVersionFacets.length > 0}
 						<details class="filter-section" open>
 							<summary class="section-heading">Major version</summary>
 							<div class="facet-list">
-								{#each majorVersionFacets as facet (facet.value)}
+								{#each displayMajorVersionFacets as facet (facet.value)}
 									<label class="facet-item">
 										<input
 											type="checkbox"
@@ -212,21 +218,23 @@
 							</div>
 						</details>
 					{/if}
-					{#if highAvailabilityFacets.length > 0}
+					{#if highAvailabilityFacets.length > 0 || selectedHighAvailability !== ''}
 						<details class="filter-section" open>
 							<summary class="section-heading">High availability</summary>
 							<div class="facet-list">
-								{#each highAvailabilityFacets as facet (String(facet.value))}
+								{#each [true, false] as haValue (String(haValue))}
+									{@const count =
+										highAvailabilityFacets.find((f) => f.value === haValue)?.count ?? 0}
 									<label class="facet-item">
 										<input
 											type="checkbox"
-											checked={selectedHighAvailability === String(facet.value)}
-											onchange={() => toggleHighAvailability(String(facet.value))}
+											checked={selectedHighAvailability === String(haValue)}
+											onchange={() => toggleHighAvailability(String(haValue))}
 										/>
 										<span class="facet-label"
-											>{capitalizeFirstLetter(facet.value ? 'high availability' : 'standard')}</span
+											>{capitalizeFirstLetter(haValue ? 'high availability' : 'standard')}</span
 										>
-										<span class="facet-count">{facet.count}</span>
+										<span class="facet-count">{count}</span>
 									</label>
 								{/each}
 							</div>

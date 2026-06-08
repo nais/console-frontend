@@ -13,16 +13,19 @@ const rows = 25;
 export async function load(event) {
 	const after = event.url.searchParams.get('after') || '';
 	const before = event.url.searchParams.get('before') || '';
-	const environments: string[] | undefined =
-		event.url.searchParams.get('environments')?.split(',').filter(Boolean) || undefined;
+	const envParam = event.url.searchParams.get('environments')?.split(',').filter(Boolean);
+	const environments = envParam?.length ? envParam : undefined;
 	const validStates = new Set<string>(Object.values(PostgresInstanceState));
-	const states =
-		event.url.searchParams
-			.get('states')
-			?.split(',')
-			.filter((s) => validStates.has(s)) || undefined;
-	const majorVersions: string[] | undefined =
-		event.url.searchParams.get('majorVersions')?.split(',').filter(Boolean) || undefined;
+	const statesParam = event.url.searchParams
+		.get('states')
+		?.split(',')
+		.filter((s) => validStates.has(s));
+	const states = statesParam?.length ? statesParam : undefined;
+	const majorVersionsParam = event.url.searchParams
+		.get('majorVersions')
+		?.split(',')
+		.filter(Boolean);
+	const majorVersions = majorVersionsParam?.length ? majorVersionsParam : undefined;
 	const highAvailabilityParam = event.url.searchParams.get('highAvailability');
 	const highAvailability =
 		highAvailabilityParam === 'true' ? true : highAvailabilityParam === 'false' ? false : undefined;

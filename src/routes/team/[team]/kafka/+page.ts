@@ -7,10 +7,10 @@ const rows = 25;
 export async function load(event) {
 	const after = event.url.searchParams.get('after') || '';
 	const before = event.url.searchParams.get('before') || '';
-	const environments: string[] | undefined =
-		event.url.searchParams.get('environments')?.split(',').filter(Boolean) || undefined;
-	const pools: string[] | undefined =
-		event.url.searchParams.get('pools')?.split(',').filter(Boolean) || undefined;
+	const envParam = event.url.searchParams.get('environments')?.split(',').filter(Boolean);
+	const environments = envParam?.length ? envParam : undefined;
+	const poolsParam = event.url.searchParams.get('pools')?.split(',').filter(Boolean);
+	const pools = poolsParam?.length ? poolsParam : undefined;
 
 	return {
 		...(await addPageMeta(event, {

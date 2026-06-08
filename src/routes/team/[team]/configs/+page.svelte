@@ -43,6 +43,12 @@
 
 	const inUseFacets = $derived($Configs.data?.team.configs.facets?.inUse ?? []);
 	const environmentFacets = $derived($Configs.data?.team.configs.facets?.environments ?? []);
+	const displayEnvironmentFacets = $derived([
+		...environmentFacets,
+		...selectedEnvironments
+			.filter((e) => !environmentFacets.some((f) => f.value === e))
+			.map((e) => ({ value: e, count: 0 }))
+	]);
 
 	function toggleInUse(value: string) {
 		const next = inUseFilter === value ? '' : value;
@@ -222,11 +228,11 @@
 					}}
 					onSort={(field) => setSort(field as ConfigOrderFieldOptions)}
 				>
-					{#if environmentFacets.length > 0}
+					{#if displayEnvironmentFacets.length > 0}
 						<details class="filter-section" open>
 							<summary class="section-heading">Environments</summary>
 							<div class="facet-list">
-								{#each environmentFacets as facet (facet.value)}
+								{#each displayEnvironmentFacets as facet (facet.value)}
 									<label class="facet-item">
 										<input
 											type="checkbox"
@@ -240,19 +246,20 @@
 							</div>
 						</details>
 					{/if}
-					{#if inUseFacets.length > 0}
+					{#if inUseFacets.length > 0 || inUseFilter !== null}
 						<details class="filter-section" open>
 							<summary class="section-heading">Usage</summary>
 							<div class="facet-list">
-								{#each inUseFacets as facet (String(facet.value))}
+								{#each ['true', 'false'] as value (value)}
+									{@const count = inUseFacets.find((f) => String(f.value) === value)?.count ?? 0}
 									<label class="facet-item">
 										<input
 											type="checkbox"
-											checked={inUseFilter === String(facet.value)}
-											onchange={() => toggleInUse(String(facet.value))}
+											checked={inUseFilter === value}
+											onchange={() => toggleInUse(value)}
 										/>
-										<span class="facet-label">{facet.value ? 'In use' : 'Not in use'}</span>
-										<span class="facet-count">{facet.count}</span>
+										<span class="facet-label">{value === 'true' ? 'In use' : 'Not in use'}</span>
+										<span class="facet-count">{count}</span>
 									</label>
 								{/each}
 							</div>

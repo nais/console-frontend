@@ -32,14 +32,14 @@ export async function load(event) {
 
 	const after = url.searchParams.get('after') || '';
 	const before = url.searchParams.get('before') || '';
-	const environments: string[] | undefined =
-		url.searchParams.get('environments')?.split(',').filter(Boolean) || undefined;
+	const envParam = url.searchParams.get('environments')?.split(',').filter(Boolean);
+	const environments = envParam?.length ? envParam : undefined;
 	const validOpenSearchTiers = new Set<string>(Object.values(OpenSearchTier));
-	const tiers =
-		url.searchParams
-			.get('tiers')
-			?.split(',')
-			.filter((t) => validOpenSearchTiers.has(t)) || undefined;
+	const tiersParam = url.searchParams
+		.get('tiers')
+		?.split(',')
+		.filter((t) => validOpenSearchTiers.has(t));
+	const tiers = tiersParam?.length ? tiersParam : undefined;
 
 	return {
 		...(await addPageMeta(event, {

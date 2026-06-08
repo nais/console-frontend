@@ -82,6 +82,12 @@
 	}
 
 	const tierFacets = $derived($OpenSearch.data?.team.openSearches.facets?.tiers ?? []);
+	const displayTierFacets = $derived([
+		...tierFacets,
+		...selectedTiers
+			.filter((t) => !tierFacets.some((f) => f.tier === t))
+			.map((t) => ({ tier: t, count: 0 }))
+	]);
 
 	function toggleTier(tier: string) {
 		const isSelected = selectedTiers.includes(tier);
@@ -209,11 +215,11 @@
 					onSort={(field) => setSort(field as OpenSearchOrderFieldOptions)}
 					onEnvironmentsChange={handleEnvironmentsChange}
 				>
-					{#if tierFacets.length > 0}
+					{#if displayTierFacets.length > 0}
 						<details class="filter-section" open>
 							<summary class="section-heading">Tier</summary>
 							<div class="facet-list">
-								{#each tierFacets as facet (facet.tier)}
+								{#each displayTierFacets as facet (facet.tier)}
 									<label class="facet-item">
 										<input
 											type="checkbox"

@@ -31,14 +31,14 @@ export async function load(event) {
 
 	const after = event.url.searchParams.get('after') || '';
 	const before = event.url.searchParams.get('before') || '';
-	const environments: string[] | undefined =
-		event.url.searchParams.get('environments')?.split(',').filter(Boolean) || undefined;
+	const envParam = event.url.searchParams.get('environments')?.split(',').filter(Boolean);
+	const environments = envParam?.length ? envParam : undefined;
 	const validValkeyTiers = new Set<string>(Object.values(ValkeyTier));
-	const tiers =
-		event.url.searchParams
-			.get('tiers')
-			?.split(',')
-			.filter((t) => validValkeyTiers.has(t)) || undefined;
+	const tiersParam = event.url.searchParams
+		.get('tiers')
+		?.split(',')
+		.filter((t) => validValkeyTiers.has(t));
+	const tiers = tiersParam?.length ? tiersParam : undefined;
 
 	return {
 		...(await addPageMeta(event, {

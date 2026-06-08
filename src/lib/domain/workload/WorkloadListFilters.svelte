@@ -62,6 +62,19 @@
 		return capitalizeFirstLetter(state.split('_').join(' ').toLowerCase());
 	}
 
+	const displayStates = $derived([
+		...states,
+		...selectedStates
+			.filter((s) => !states.some((f) => f.state === s))
+			.map((s) => ({ state: s, count: 0 }))
+	]);
+	const displayEnvironments = $derived([
+		...environments,
+		...selectedEnvironments
+			.filter((e) => !environments.some((f) => f.value === e))
+			.map((e) => ({ value: e, count: 0 }))
+	]);
+
 	function toggleState(state: string) {
 		const isSelected = selectedStates.includes(state);
 		const next = isSelected
@@ -91,11 +104,11 @@
 	{onFilterClear}
 	{onSort}
 >
-	{#if states.length > 0}
+	{#if displayStates.length > 0}
 		<details class="filter-section" open>
 			<summary class="section-heading">Status</summary>
 			<div class="facet-list">
-				{#each states as facet (facet.state)}
+				{#each displayStates as facet (facet.state)}
 					<label class="facet-item">
 						<input
 							type="checkbox"
@@ -110,11 +123,11 @@
 		</details>
 	{/if}
 
-	{#if environments.length > 0}
+	{#if displayEnvironments.length > 0}
 		<details class="filter-section" open>
 			<summary class="section-heading">Environments</summary>
 			<div class="facet-list">
-				{#each environments as facet (facet.value)}
+				{#each displayEnvironments as facet (facet.value)}
 					<label class="facet-item">
 						<input
 							type="checkbox"

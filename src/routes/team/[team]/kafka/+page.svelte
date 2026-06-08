@@ -61,6 +61,12 @@
 	}
 
 	const poolFacets = $derived($KafkaTopics.data?.team.kafkaTopics.facets?.pools ?? []);
+	const displayPoolFacets = $derived([
+		...poolFacets,
+		...selectedPools
+			.filter((p) => !poolFacets.some((f) => f.value === p))
+			.map((p) => ({ value: p, count: 0 }))
+	]);
 
 	function togglePool(pool: string) {
 		const isSelected = selectedPools.includes(pool);
@@ -135,11 +141,11 @@
 					onSort={(field) => setSort(field as KafkaTopicOrderFieldOptions)}
 					onEnvironmentsChange={handleEnvironmentsChange}
 				>
-					{#if poolFacets.length > 0}
+					{#if displayPoolFacets.length > 0}
 						<details class="filter-section" open>
 							<summary class="section-heading">Pools</summary>
 							<div class="facet-list">
-								{#each poolFacets as facet (facet.value)}
+								{#each displayPoolFacets as facet (facet.value)}
 									<label class="facet-item">
 										<input
 											type="checkbox"
