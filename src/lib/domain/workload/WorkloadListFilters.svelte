@@ -144,6 +144,3 @@
 
 	{@render children?.()}
 </ListFilters>
-
-<style>
-</style>
