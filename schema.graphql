@@ -2836,6 +2836,11 @@ type Environment implements Node {
   """Unique name of the environment."""
   name: String!
 
+  """
+  The OIDC issuer URL for workload identity tokens in the environment. Null for environments that do not support workload identity.
+  """
+  oidcIssuerURL: String
+
   """Nais workloads in the environment."""
   workloads(
     """Get items after this cursor."""

@@ -3,12 +3,12 @@
 	import { BigQueryDatasetOrderField, OrderDirection } from '$houdini';
 	import { docURL } from '$lib/doc';
 	import WorkloadLink from '$lib/domain/workload/WorkloadLink.svelte';
+	import WorkloadListFilters from '$lib/domain/workload/WorkloadListFilters.svelte';
 	import { envTagVariant } from '$lib/envTagVariant';
 	import BigQueryIcon from '$lib/icons/BigQueryIcon.svelte';
 	import ExternalLink from '$lib/ui/ExternalLink.svelte';
 	import GraphErrors from '$lib/ui/GraphErrors.svelte';
 	import List from '$lib/ui/List.svelte';
-	import ListFilters from '$lib/ui/ListFilters.svelte';
 	import ListItem from '$lib/ui/ListItem.svelte';
 	import Pagination from '$lib/ui/Pagination.svelte';
 	import SurfaceCard from '$lib/ui/SurfaceCard.svelte';
@@ -48,6 +48,14 @@
 					: OrderDirection.ASC
 				: OrderDirection.ASC;
 		changeParams({ sort: `${field}-${direction}`, after: '', before: '' });
+	}
+
+	const selectedEnvironments: string[] = $derived(
+		page.url.searchParams.get('environments')?.split(',').filter(Boolean) ?? []
+	);
+
+	function handleEnvironmentsChange(selected: string[]) {
+		changeParams({ environments: selected.join(','), after: '', before: '' }, { noScroll: true });
 	}
 </script>
 
@@ -116,11 +124,14 @@
 		</div>
 		<div class="layout-sidebar">
 			<SurfaceCard title="Filters">
-				<ListFilters
+				<WorkloadListFilters
 					{sortFields}
 					{currentSortField}
 					{currentSortDirection}
+					environments={$BigQuery.data?.team.bigQueryDatasets.facets?.environments ?? []}
+					{selectedEnvironments}
 					onSort={(field) => setSort(field as BigQueryOrderFieldOptions)}
+					onEnvironmentsChange={handleEnvironmentsChange}
 				/>
 			</SurfaceCard>
 		</div>

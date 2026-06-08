@@ -2,15 +2,16 @@
 	import { page } from '$app/state';
 	import { OrderDirection, PostgresInstanceOrderField } from '$houdini';
 	import { docURL } from '$lib/doc';
+	import WorkloadListFilters from '$lib/domain/workload/WorkloadListFilters.svelte';
 	import { envTagVariant } from '$lib/envTagVariant';
 	import ExternalLink from '$lib/ui/ExternalLink.svelte';
 	import GraphErrors from '$lib/ui/GraphErrors.svelte';
 	import List from '$lib/ui/List.svelte';
-	import ListFilters from '$lib/ui/ListFilters.svelte';
 	import ListItem from '$lib/ui/ListItem.svelte';
 	import Pagination from '$lib/ui/Pagination.svelte';
 	import SurfaceCard from '$lib/ui/SurfaceCard.svelte';
 	import TooltipAlignHack from '$lib/ui/TooltipAlignHack.svelte';
+	import { capitalizeFirstLetter } from '$lib/utils/formatters';
 	import { changeParams } from '$lib/utils/searchparams';
 	import { Alert, Loader, Tag } from '@nais/ds-svelte-community';
 	import { CircleFillIcon } from '@nais/ds-svelte-community/icons';
@@ -54,6 +55,53 @@
 		($PostgresInstances.data?.team.inventoryCounts.sqlInstances.total ?? 0) > 0
 	);
 	let cloudSqlTeamSlug = $derived($PostgresInstances.data?.team.slug ?? data.teamSlug);
+
+	const selectedEnvironments: string[] = $derived(
+		page.url.searchParams.get('environments')?.split(',').filter(Boolean) ?? []
+	);
+	const selectedStates: string[] = $derived(
+		page.url.searchParams.get('states')?.split(',').filter(Boolean) ?? []
+	);
+	const selectedMajorVersions: string[] = $derived(
+		page.url.searchParams.get('majorVersions')?.split(',').filter(Boolean) ?? []
+	);
+	const selectedHighAvailability: string = $derived(
+		page.url.searchParams.get('highAvailability') ?? ''
+	);
+
+	function handleEnvironmentsChange(selected: string[]) {
+		changeParams({ environments: selected.join(','), after: '', before: '' }, { noScroll: true });
+	}
+	function handleStatesChange(selected: string[]) {
+		changeParams({ states: selected.join(','), after: '', before: '' }, { noScroll: true });
+	}
+
+	const majorVersionFacets = $derived(
+		$PostgresInstances.data?.team.postgresInstances.facets?.majorVersions ?? []
+	);
+	const displayMajorVersionFacets = $derived([
+		...majorVersionFacets,
+		...selectedMajorVersions
+			.filter((v) => !majorVersionFacets.some((f) => f.value === v))
+			.map((v) => ({ value: v, count: 0 }))
+	]);
+
+	function toggleMajorVersion(version: string) {
+		const isSelected = selectedMajorVersions.includes(version);
+		const next = isSelected
+			? selectedMajorVersions.filter((v) => v !== version)
+			: [...selectedMajorVersions, version];
+		changeParams({ majorVersions: next.join(','), after: '', before: '' }, { noScroll: true });
+	}
+
+	const highAvailabilityFacets = $derived(
+		$PostgresInstances.data?.team.postgresInstances.facets?.highAvailability ?? []
+	);
+
+	function toggleHighAvailability(value: string) {
+		const next = selectedHighAvailability === value ? '' : value;
+		changeParams({ highAvailability: next, after: '', before: '' }, { noScroll: true });
+	}
 </script>
 
 <GraphErrors errors={$PostgresInstances.errors} />
@@ -140,12 +188,59 @@
 		</div>
 		<div class="layout-sidebar">
 			<SurfaceCard title="Filters">
-				<ListFilters
+				<WorkloadListFilters
 					{sortFields}
 					{currentSortField}
 					{currentSortDirection}
+					states={$PostgresInstances.data?.team.postgresInstances.facets?.states ?? []}
+					{selectedStates}
+					environments={$PostgresInstances.data?.team.postgresInstances.facets?.environments ?? []}
+					{selectedEnvironments}
 					onSort={(field) => setSort(field as PostgresOrderFieldOptions)}
-				/>
+					onStatesChange={handleStatesChange}
+					onEnvironmentsChange={handleEnvironmentsChange}
+				>
+					{#if displayMajorVersionFacets.length > 0}
+						<details class="filter-section" open>
+							<summary class="section-heading">Major version</summary>
+							<div class="facet-list">
+								{#each displayMajorVersionFacets as facet (facet.value)}
+									<label class="facet-item">
+										<input
+											type="checkbox"
+											checked={selectedMajorVersions.includes(facet.value)}
+											onchange={() => toggleMajorVersion(facet.value)}
+										/>
+										<span class="facet-label">{facet.value}</span>
+										<span class="facet-count">{facet.count}</span>
+									</label>
+								{/each}
+							</div>
+						</details>
+					{/if}
+					{#if highAvailabilityFacets.length > 0 || selectedHighAvailability !== ''}
+						<details class="filter-section" open>
+							<summary class="section-heading">High availability</summary>
+							<div class="facet-list">
+								{#each [true, false] as haValue (String(haValue))}
+									{@const count =
+										highAvailabilityFacets.find((f) => f.value === haValue)?.count ?? 0}
+									<label class="facet-item">
+										<input
+											type="checkbox"
+											checked={selectedHighAvailability === String(haValue)}
+											onchange={() => toggleHighAvailability(String(haValue))}
+										/>
+										<span class="facet-label"
+											>{capitalizeFirstLetter(haValue ? 'high availability' : 'standard')}</span
+										>
+										<span class="facet-count">{count}</span>
+									</label>
+								{/each}
+							</div>
+						</details>
+					{/if}
+				</WorkloadListFilters>
 			</SurfaceCard>
 		</div>
 	</div>

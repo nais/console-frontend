@@ -1,6 +1,7 @@
 <script lang="ts">
 	import ListFilters from '$lib/ui/ListFilters.svelte';
 	import { capitalizeFirstLetter } from '$lib/utils/formatters';
+	import type { Snippet } from 'svelte';
 
 	interface StateFacet {
 		state: string;
@@ -18,22 +19,23 @@
 	}
 
 	interface Props {
-		filter: string;
-		searchPlaceholder: string;
-		searchLabel: string;
+		filter?: string;
+		searchPlaceholder?: string;
+		searchLabel?: string;
 		sortFields: SortField[];
 		currentSortField: string;
 		currentSortDirection: string;
 		states?: StateFacet[];
 		environments?: EnvironmentFacet[];
-		selectedStates: string[];
-		selectedEnvironments: string[];
-		onFilterInput: (value: string) => void;
-		onFilterSubmit: () => void;
-		onFilterClear: () => void;
+		selectedStates?: string[];
+		selectedEnvironments?: string[];
+		onFilterInput?: (value: string) => void;
+		onFilterSubmit?: () => void;
+		onFilterClear?: () => void;
 		onSort: (field: string) => void;
-		onStatesChange: (selected: string[]) => void;
-		onEnvironmentsChange: (selected: string[]) => void;
+		onStatesChange?: (selected: string[]) => void;
+		onEnvironmentsChange?: (selected: string[]) => void;
+		children?: Snippet;
 	}
 
 	let {
@@ -45,36 +47,47 @@
 		currentSortDirection,
 		states = [],
 		environments = [],
-		selectedStates,
-		selectedEnvironments,
+		selectedStates = [],
+		selectedEnvironments = [],
 		onFilterInput,
 		onFilterSubmit,
 		onFilterClear,
 		onSort,
-		onStatesChange,
-		onEnvironmentsChange
+		onStatesChange = () => {},
+		onEnvironmentsChange = () => {},
+		children
 	}: Props = $props();
 
 	function stateLabel(state: string): string {
 		return capitalizeFirstLetter(state.split('_').join(' ').toLowerCase());
 	}
 
-	const availableStates = $derived(new Set(states.map((f) => f.state)));
-	const availableEnvironments = $derived(new Set(environments.map((f) => f.value)));
+	const displayStates = $derived([
+		...states,
+		...selectedStates
+			.filter((s) => !states.some((f) => f.state === s))
+			.map((s) => ({ state: s, count: 0 }))
+	]);
+	const displayEnvironments = $derived([
+		...environments,
+		...selectedEnvironments
+			.filter((e) => !environments.some((f) => f.value === e))
+			.map((e) => ({ value: e, count: 0 }))
+	]);
 
 	function toggleState(state: string) {
 		const isSelected = selectedStates.includes(state);
 		const next = isSelected
-			? selectedStates.filter((s) => s !== state && availableStates.has(s))
-			: [...selectedStates.filter((s) => availableStates.has(s)), state];
+			? selectedStates.filter((s) => s !== state)
+			: [...selectedStates, state];
 		onStatesChange(next);
 	}
 
 	function toggleEnvironment(env: string) {
 		const isSelected = selectedEnvironments.includes(env);
 		const next = isSelected
-			? selectedEnvironments.filter((e) => e !== env && availableEnvironments.has(e))
-			: [...selectedEnvironments.filter((e) => availableEnvironments.has(e)), env];
+			? selectedEnvironments.filter((e) => e !== env)
+			: [...selectedEnvironments, env];
 		onEnvironmentsChange(next);
 	}
 </script>
@@ -91,11 +104,11 @@
 	{onFilterClear}
 	{onSort}
 >
-	{#if states.length > 0}
+	{#if displayStates.length > 0}
 		<details class="filter-section" open>
 			<summary class="section-heading">Status</summary>
 			<div class="facet-list">
-				{#each states as facet (facet.state)}
+				{#each displayStates as facet (facet.state)}
 					<label class="facet-item">
 						<input
 							type="checkbox"
@@ -110,11 +123,11 @@
 		</details>
 	{/if}
 
-	{#if environments.length > 0}
+	{#if displayEnvironments.length > 0}
 		<details class="filter-section" open>
 			<summary class="section-heading">Environments</summary>
 			<div class="facet-list">
-				{#each environments as facet (facet.value)}
+				{#each displayEnvironments as facet (facet.value)}
 					<label class="facet-item">
 						<input
 							type="checkbox"
@@ -128,87 +141,6 @@
 			</div>
 		</details>
 	{/if}
+
+	{@render children?.()}
 </ListFilters>
-
-<style>
-	.filter-section {
-		display: flex;
-		flex-direction: column;
-		gap: var(--ax-space-8);
-	}
-
-	.section-heading {
-		font-size: var(--ax-font-size-small);
-		font-weight: 500;
-		color: var(--ax-text-neutral-subtle);
-		margin: 0;
-		letter-spacing: 0.01em;
-		border-bottom: 1px solid var(--ax-border-neutral-subtleA);
-		padding-bottom: var(--ax-space-6);
-		cursor: pointer;
-		list-style: none;
-		display: flex;
-		align-items: center;
-		justify-content: space-between;
-	}
-
-	.section-heading::-webkit-details-marker {
-		display: none;
-	}
-
-	.section-heading::after {
-		content: '';
-		width: 0.4em;
-		height: 0.4em;
-		border-right: 2px solid currentColor;
-		border-bottom: 2px solid currentColor;
-		transform: rotate(45deg);
-		transition: transform 150ms ease;
-		flex-shrink: 0;
-	}
-
-	.filter-section[open] > .section-heading::after {
-		transform: rotate(-135deg);
-	}
-
-	.facet-list {
-		display: flex;
-		flex-direction: column;
-	}
-
-	.facet-item {
-		display: flex;
-		align-items: center;
-		gap: var(--ax-space-8);
-		padding: var(--ax-space-6) 0;
-		font-size: var(--ax-font-size-small);
-		cursor: pointer;
-	}
-
-	.facet-item:hover {
-		color: var(--ax-text-neutral);
-	}
-
-	.facet-item input[type='checkbox'] {
-		width: 1rem;
-		height: 1rem;
-		margin: 0;
-		flex-shrink: 0;
-		cursor: pointer;
-		accent-color: var(--ax-text-accent);
-	}
-
-	.facet-label {
-		flex: 1;
-		overflow: hidden;
-		text-overflow: ellipsis;
-		white-space: nowrap;
-		min-width: 0;
-	}
-
-	.facet-count {
-		flex-shrink: 0;
-		font-size: 0.6875rem;
-		color: var(--ax-text-neutral-subtle);
-	}
-</style>
