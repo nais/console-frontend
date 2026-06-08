@@ -1,6 +1,7 @@
 import {
 	load_OpenSearch,
 	OpenSearchOrderField,
+	OpenSearchTier,
 	OrderDirection,
 	type OpenSearchFilter
 } from '$houdini';
@@ -33,8 +34,12 @@ export async function load(event) {
 	const before = url.searchParams.get('before') || '';
 	const environments: string[] | undefined =
 		url.searchParams.get('environments')?.split(',').filter(Boolean) || undefined;
-	const tiers: string[] | undefined =
-		url.searchParams.get('tiers')?.split(',').filter(Boolean) || undefined;
+	const validOpenSearchTiers = new Set<string>(Object.values(OpenSearchTier));
+	const tiers =
+		url.searchParams
+			.get('tiers')
+			?.split(',')
+			.filter((t) => validOpenSearchTiers.has(t)) || undefined;
 
 	return {
 		...(await addPageMeta(event, {

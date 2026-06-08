@@ -2,6 +2,7 @@ import {
 	load_PostgresInstances,
 	OrderDirection,
 	PostgresInstanceOrderField,
+	PostgresInstanceState,
 	type PostgresInstanceFilter
 } from '$houdini';
 import { urlToOrderDirection, urlToOrderField } from '$lib/ui/OrderByMenu.svelte';
@@ -14,8 +15,12 @@ export async function load(event) {
 	const before = event.url.searchParams.get('before') || '';
 	const environments: string[] | undefined =
 		event.url.searchParams.get('environments')?.split(',').filter(Boolean) || undefined;
-	const states: string[] | undefined =
-		event.url.searchParams.get('states')?.split(',').filter(Boolean) || undefined;
+	const validStates = new Set<string>(Object.values(PostgresInstanceState));
+	const states =
+		event.url.searchParams
+			.get('states')
+			?.split(',')
+			.filter((s) => validStates.has(s)) || undefined;
 	const majorVersions: string[] | undefined =
 		event.url.searchParams.get('majorVersions')?.split(',').filter(Boolean) || undefined;
 	const highAvailabilityParam = event.url.searchParams.get('highAvailability');
