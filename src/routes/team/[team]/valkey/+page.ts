@@ -1,4 +1,4 @@
-import { load_Valkeys, OrderDirection, ValkeyOrderField } from '$houdini';
+import { load_Valkeys, OrderDirection, ValkeyOrderField, type ValkeyFilter } from '$houdini';
 import { urlToOrderDirection, urlToOrderField } from '$lib/ui/OrderByMenu.svelte';
 import { addPageMeta } from '$lib/utils/pageMeta';
 import { error } from '@sveltejs/kit';
@@ -25,6 +25,10 @@ export async function load(event) {
 
 	const after = event.url.searchParams.get('after') || '';
 	const before = event.url.searchParams.get('before') || '';
+	const environments: string[] | undefined =
+		event.url.searchParams.get('environments')?.split(',').filter(Boolean) || undefined;
+	const tiers: string[] | undefined =
+		event.url.searchParams.get('tiers')?.split(',').filter(Boolean) || undefined;
 
 	return {
 		...(await addPageMeta(event, {
@@ -36,6 +40,7 @@ export async function load(event) {
 			event,
 			variables: {
 				team: event.params.team,
+				filter: { environments, tiers } as ValkeyFilter,
 				orderBy: {
 					field: urlToOrderField(ValkeyOrderField, ValkeyOrderField.ISSUES, event.url),
 					direction: urlToOrderDirection(event.url, OrderDirection.DESC)

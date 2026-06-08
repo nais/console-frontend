@@ -36,22 +36,27 @@
 	let after: string = $derived($Configs.variables?.after ?? '');
 	let before: string = $derived($Configs.variables?.before ?? '');
 
-	const allUsages = ['inUse', 'notInUse'];
-	let activeUsages: string[] = $derived.by(() => {
-		const param = page.url.searchParams.get('filter');
-		if (param === 'inUse') return ['inUse'];
-		if (param === 'notInUse') return ['notInUse'];
-		return allUsages;
-	});
+	const inUseFilter = $derived(page.url.searchParams.get('inUse'));
+	const selectedEnvironments: string[] = $derived(
+		page.url.searchParams.get('environments')?.split(',').filter(Boolean) ?? []
+	);
 
-	const toggleUsage = (key: string) => {
-		const next = activeUsages.includes(key)
-			? activeUsages.filter((s) => s !== key)
-			: [...activeUsages, key];
-		if (next.length === 0) return;
-		const filter = next.length === allUsages.length ? '' : next[0];
-		changeParams({ filter, after: '', before: '' });
-	};
+	const inUseFacets = $derived($Configs.data?.team.configs.facets?.inUse ?? []);
+	const environmentFacets = $derived($Configs.data?.team.configs.facets?.environments ?? []);
+	const availableEnvironments = $derived(new Set(environmentFacets.map((f) => f.value)));
+
+	function toggleInUse(value: string) {
+		const next = inUseFilter === value ? '' : value;
+		changeParams({ inUse: next, after: '', before: '' }, { noScroll: true });
+	}
+
+	function toggleEnvironment(env: string) {
+		const isSelected = selectedEnvironments.includes(env);
+		const next = isSelected
+			? selectedEnvironments.filter((e) => e !== env && availableEnvironments.has(e))
+			: [...selectedEnvironments.filter((e) => availableEnvironments.has(e)), env];
+		changeParams({ environments: next.join(','), after: '', before: '' }, { noScroll: true });
+	}
 
 	const changeQuery = (
 		params: {
@@ -63,7 +68,8 @@
 		changeParams({
 			before: params.before ?? before,
 			after: params.after ?? after,
-			nameFilter: params.newFilter ?? filter
+			nameFilter: params.newFilter ?? filter,
+			environments: selectedEnvironments.join(',')
 		});
 	};
 
@@ -217,27 +223,42 @@
 					}}
 					onSort={(field) => setSort(field as ConfigOrderFieldOptions)}
 				>
-					<details class="usage-section" open>
-						<summary class="usage-heading">Usage</summary>
-						<div class="facet-list">
-							<label class="facet-item">
-								<input
-									type="checkbox"
-									checked={activeUsages.includes('inUse')}
-									onchange={() => toggleUsage('inUse')}
-								/>
-								<span class="facet-label">In use</span>
-							</label>
-							<label class="facet-item">
-								<input
-									type="checkbox"
-									checked={activeUsages.includes('notInUse')}
-									onchange={() => toggleUsage('notInUse')}
-								/>
-								<span class="facet-label">Not in use</span>
-							</label>
-						</div>
-					</details>
+					{#if environmentFacets.length > 0}
+						<details class="filter-section" open>
+							<summary class="section-heading">Environments</summary>
+							<div class="facet-list">
+								{#each environmentFacets as facet (facet.value)}
+									<label class="facet-item">
+										<input
+											type="checkbox"
+											checked={selectedEnvironments.includes(facet.value)}
+											onchange={() => toggleEnvironment(facet.value)}
+										/>
+										<span class="facet-label">{facet.value}</span>
+										<span class="facet-count">{facet.count}</span>
+									</label>
+								{/each}
+							</div>
+						</details>
+					{/if}
+					{#if inUseFacets.length > 0}
+						<details class="filter-section" open>
+							<summary class="section-heading">Usage</summary>
+							<div class="facet-list">
+								{#each inUseFacets as facet (String(facet.value))}
+									<label class="facet-item">
+										<input
+											type="checkbox"
+											checked={inUseFilter === String(facet.value)}
+											onchange={() => toggleInUse(String(facet.value))}
+										/>
+										<span class="facet-label">{facet.value ? 'In use' : 'Not in use'}</span>
+										<span class="facet-count">{facet.count}</span>
+									</label>
+								{/each}
+							</div>
+						</details>
+					{/if}
 				</ListFilters>
 			</SurfaceCard>
 			<TeamActivityCard
@@ -264,72 +285,6 @@
 		flex-direction: column;
 		align-items: end;
 		gap: var(--ax-space-2);
-	}
-
-	.usage-section {
-		display: flex;
-		flex-direction: column;
-		gap: var(--ax-space-8);
-	}
-
-	.usage-heading {
-		font-size: var(--ax-font-size-small);
-		font-weight: 500;
-		color: var(--ax-text-neutral-subtle);
-		letter-spacing: 0.01em;
-		border-bottom: 1px solid var(--ax-border-neutral-subtleA);
-		padding-bottom: var(--ax-space-6);
-		cursor: pointer;
-		list-style: none;
-		display: flex;
-		align-items: center;
-		justify-content: space-between;
-	}
-
-	.usage-heading::-webkit-details-marker {
-		display: none;
-	}
-
-	.usage-heading::after {
-		content: '';
-		width: 0.4em;
-		height: 0.4em;
-		border-right: 2px solid currentColor;
-		border-bottom: 2px solid currentColor;
-		transform: rotate(45deg);
-		transition: transform 150ms ease;
-		flex-shrink: 0;
-	}
-
-	.usage-section[open] > .usage-heading::after {
-		transform: rotate(-135deg);
-	}
-
-	.facet-list {
-		display: flex;
-		flex-direction: column;
-	}
-
-	.facet-item {
-		display: flex;
-		align-items: center;
-		gap: var(--ax-space-8);
-		padding: var(--ax-space-6) 0;
-		font-size: var(--ax-font-size-medium);
-		cursor: pointer;
-	}
-
-	.facet-item:hover {
-		color: var(--ax-text-neutral);
-	}
-
-	.facet-item input[type='checkbox'] {
-		width: 1rem;
-		height: 1rem;
-		margin: 0;
-		flex-shrink: 0;
-		cursor: pointer;
-		accent-color: var(--ax-text-accent);
 	}
 
 	.name-group {

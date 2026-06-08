@@ -1,4 +1,4 @@
-import { BucketOrderField, load_Buckets } from '$houdini';
+import { BucketOrderField, load_Buckets, type BucketFilter } from '$houdini';
 import { urlToOrderDirection, urlToOrderField } from '$lib/ui/OrderByMenu.svelte';
 import { addPageMeta } from '$lib/utils/pageMeta';
 
@@ -7,6 +7,8 @@ const rows = 25;
 export async function load(event) {
 	const after = event.url.searchParams.get('after') || '';
 	const before = event.url.searchParams.get('before') || '';
+	const environments: string[] | undefined =
+		event.url.searchParams.get('environments')?.split(',').filter(Boolean) || undefined;
 
 	return {
 		...(await addPageMeta(event, {
@@ -18,6 +20,7 @@ export async function load(event) {
 			event,
 			variables: {
 				team: event.params.team,
+				filter: { environments } as BucketFilter,
 				orderBy: {
 					field: urlToOrderField(BucketOrderField, BucketOrderField.NAME, event.url),
 					direction: urlToOrderDirection(event.url)

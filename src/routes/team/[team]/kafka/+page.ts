@@ -1,4 +1,4 @@
-import { KafkaTopicOrderField, load_KafkaTopics } from '$houdini';
+import { KafkaTopicOrderField, load_KafkaTopics, type KafkaTopicFilter } from '$houdini';
 import { urlToOrderDirection, urlToOrderField } from '$lib/ui/OrderByMenu.svelte';
 import { addPageMeta } from '$lib/utils/pageMeta';
 
@@ -7,6 +7,10 @@ const rows = 25;
 export async function load(event) {
 	const after = event.url.searchParams.get('after') || '';
 	const before = event.url.searchParams.get('before') || '';
+	const environments: string[] | undefined =
+		event.url.searchParams.get('environments')?.split(',').filter(Boolean) || undefined;
+	const pools: string[] | undefined =
+		event.url.searchParams.get('pools')?.split(',').filter(Boolean) || undefined;
 
 	return {
 		...(await addPageMeta(event, {
@@ -18,6 +22,7 @@ export async function load(event) {
 			event,
 			variables: {
 				team: event.params.team,
+				filter: { environments, pools } as KafkaTopicFilter,
 				orderBy: {
 					field: urlToOrderField(KafkaTopicOrderField, KafkaTopicOrderField.NAME, event.url),
 					direction: urlToOrderDirection(event.url)

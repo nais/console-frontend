@@ -1,11 +1,12 @@
 query PostgresInstances(
 	$team: Slug!
 	$orderBy: PostgresInstanceOrder
+	$filter: PostgresInstanceFilter
 	$first: Int
 	$last: Int
 	$before: Cursor
 	$after: Cursor
-) {
+) @cache(policy: CacheAndNetwork, partial: true) {
 	team(slug: $team) {
 		slug
 		inventoryCounts {
@@ -18,6 +19,7 @@ query PostgresInstances(
 			first: $first
 			last: $last
 			orderBy: $orderBy
+			filter: $filter
 			before: $before
 			after: $after
 		) @paginate(mode: SinglePage) {
@@ -29,6 +31,24 @@ query PostgresInstances(
 				totalCount
 				startCursor
 				endCursor
+			}
+			facets {
+				environments {
+					value
+					count
+				}
+				states {
+					state
+					count
+				}
+				majorVersions {
+					value
+					count
+				}
+				highAvailability {
+					value
+					count
+				}
 			}
 			nodes {
 				id

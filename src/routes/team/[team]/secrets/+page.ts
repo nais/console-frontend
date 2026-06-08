@@ -4,13 +4,19 @@ import { addPageMeta } from '$lib/utils/pageMeta';
 
 const rows = 25;
 export async function load(event) {
-	const filter = event.url.searchParams.get('filter') || '';
 	const nameFilter = event.url.searchParams.get('nameFilter') || '';
+	const inUse = event.url.searchParams.get('inUse');
+	const environments: string[] | undefined =
+		event.url.searchParams.get('environments')?.split(',').filter(Boolean) || undefined;
 
 	let filterVar: SecretFilter | undefined = undefined;
 
-	if (filter === 'inUse' || filter === 'notInUse') {
-		filterVar = { inUse: filter === 'inUse' ? true : false };
+	if (inUse === 'true' || inUse === 'false') {
+		filterVar = { inUse: inUse === 'true' };
+	}
+
+	if (environments?.length) {
+		filterVar = { ...filterVar, environments };
 	}
 
 	if (nameFilter) {

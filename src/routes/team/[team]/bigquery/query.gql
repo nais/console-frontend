@@ -1,16 +1,23 @@
 query BigQuery(
 	$team: Slug!
 	$orderBy: BigQueryDatasetOrder
+	$filter: BigQueryDatasetFilter
 	$first: Int
 	$last: Int
 	$before: Cursor
 	$after: Cursor
-) {
+) @cache(policy: CacheAndNetwork, partial: true) {
 	team(slug: $team) {
 		slug
 
-		bigQueryDatasets(first: $first, last: $last, orderBy: $orderBy, before: $before, after: $after)
-			@paginate(mode: SinglePage) {
+		bigQueryDatasets(
+			first: $first
+			last: $last
+			orderBy: $orderBy
+			filter: $filter
+			before: $before
+			after: $after
+		) @paginate(mode: SinglePage) {
 			pageInfo {
 				hasNextPage
 				hasPreviousPage
@@ -19,6 +26,12 @@ query BigQuery(
 				totalCount
 				startCursor
 				endCursor
+			}
+			facets {
+				environments {
+					value
+					count
+				}
 			}
 			nodes {
 				id

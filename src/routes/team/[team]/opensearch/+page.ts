@@ -1,4 +1,9 @@
-import { load_OpenSearch, OpenSearchOrderField, OrderDirection } from '$houdini';
+import {
+	load_OpenSearch,
+	OpenSearchOrderField,
+	OrderDirection,
+	type OpenSearchFilter
+} from '$houdini';
 import { urlToOrderDirection, urlToOrderField } from '$lib/ui/OrderByMenu.svelte';
 import { addPageMeta } from '$lib/utils/pageMeta';
 import { error } from '@sveltejs/kit';
@@ -26,6 +31,10 @@ export async function load(event) {
 
 	const after = url.searchParams.get('after') || '';
 	const before = url.searchParams.get('before') || '';
+	const environments: string[] | undefined =
+		url.searchParams.get('environments')?.split(',').filter(Boolean) || undefined;
+	const tiers: string[] | undefined =
+		url.searchParams.get('tiers')?.split(',').filter(Boolean) || undefined;
 
 	return {
 		...(await addPageMeta(event, {
@@ -37,6 +46,7 @@ export async function load(event) {
 			event,
 			variables: {
 				team: event.params.team,
+				filter: { environments, tiers } as OpenSearchFilter,
 				orderBy: {
 					field: urlToOrderField(OpenSearchOrderField, OpenSearchOrderField.ISSUES, event.url),
 					direction: urlToOrderDirection(event.url, OrderDirection.DESC)

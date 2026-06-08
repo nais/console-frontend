@@ -1,6 +1,7 @@
 query Valkeys(
 	$team: Slug!
 	$orderBy: ValkeyOrder
+	$filter: ValkeyFilter
 	$first: Int
 	$last: Int
 	$before: Cursor
@@ -9,8 +10,14 @@ query Valkeys(
 	team(slug: $team) {
 		slug
 
-		valkeys(first: $first, last: $last, orderBy: $orderBy, before: $before, after: $after)
-			@paginate(mode: SinglePage) {
+		valkeys(
+			first: $first
+			last: $last
+			orderBy: $orderBy
+			filter: $filter
+			before: $before
+			after: $after
+		) @paginate(mode: SinglePage) {
 			pageInfo {
 				hasNextPage
 				hasPreviousPage
@@ -19,6 +26,16 @@ query Valkeys(
 				pageEnd
 				startCursor
 				endCursor
+			}
+			facets {
+				environments {
+					value
+					count
+				}
+				tiers {
+					tier
+					count
+				}
 			}
 			nodes {
 				id

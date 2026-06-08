@@ -3,17 +3,18 @@
 	import { OpenSearchOrderField, OrderDirection } from '$houdini';
 	import { docURL } from '$lib/doc';
 	import IssueSeverityTags from '$lib/domain/issues/IssueSeverityTags.svelte';
+	import WorkloadListFilters from '$lib/domain/workload/WorkloadListFilters.svelte';
 	import { envTagVariant } from '$lib/envTagVariant';
 	import ExternalLink from '$lib/ui/ExternalLink.svelte';
 	import GraphErrors from '$lib/ui/GraphErrors.svelte';
 	import List from '$lib/ui/List.svelte';
-	import ListFilters from '$lib/ui/ListFilters.svelte';
 	import ListItem from '$lib/ui/ListItem.svelte';
 	import PageModal, { pageModalClick } from '$lib/ui/PageModal.svelte';
 	import Pagination from '$lib/ui/Pagination.svelte';
 	import RunningIndicator from '$lib/ui/RunningIndicator.svelte';
 	import SurfaceCard from '$lib/ui/SurfaceCard.svelte';
 	import TooltipAlignHack from '$lib/ui/TooltipAlignHack.svelte';
+	import { capitalizeFirstLetter } from '$lib/utils/formatters';
 	import { countIssuesBySeverity } from '$lib/utils/issueCounts';
 	import { changeParams } from '$lib/utils/searchparams';
 	import { Button, Tag } from '@nais/ds-svelte-community';
@@ -68,6 +69,28 @@
 		header: 'Create OpenSearch',
 		viewerIsMember: viewerIsMember
 	});
+
+	const selectedEnvironments: string[] = $derived(
+		page.url.searchParams.get('environments')?.split(',').filter(Boolean) ?? []
+	);
+	const selectedTiers: string[] = $derived(
+		page.url.searchParams.get('tiers')?.split(',').filter(Boolean) ?? []
+	);
+
+	function handleEnvironmentsChange(selected: string[]) {
+		changeParams({ environments: selected.join(','), after: '', before: '' }, { noScroll: true });
+	}
+
+	const tierFacets = $derived($OpenSearch.data?.team.openSearches.facets?.tiers ?? []);
+	const availableTiers = $derived(new Set<string>(tierFacets.map((f) => f.tier)));
+
+	function toggleTier(tier: string) {
+		const isSelected = selectedTiers.includes(tier);
+		const next = isSelected
+			? selectedTiers.filter((t) => t !== tier && availableTiers.has(t))
+			: [...selectedTiers.filter((t) => availableTiers.has(t)), tier];
+		changeParams({ tiers: next.join(','), after: '', before: '' }, { noScroll: true });
+	}
 </script>
 
 <GraphErrors errors={$OpenSearch.errors} />
@@ -180,12 +203,36 @@
 		</div>
 		<div class="layout-sidebar">
 			<SurfaceCard title="Filters">
-				<ListFilters
+				<WorkloadListFilters
 					{sortFields}
 					{currentSortField}
 					{currentSortDirection}
+					environments={$OpenSearch.data?.team.openSearches.facets?.environments ?? []}
+					{selectedEnvironments}
 					onSort={(field) => setSort(field as OpenSearchOrderFieldOptions)}
-				/>
+					onEnvironmentsChange={handleEnvironmentsChange}
+				>
+					{#if tierFacets.length > 0}
+						<details class="filter-section" open>
+							<summary class="section-heading">Tier</summary>
+							<div class="facet-list">
+								{#each tierFacets as facet (facet.tier)}
+									<label class="facet-item">
+										<input
+											type="checkbox"
+											checked={selectedTiers.includes(facet.tier)}
+											onchange={() => toggleTier(facet.tier)}
+										/>
+										<span class="facet-label"
+											>{capitalizeFirstLetter(facet.tier.split('_').join(' ').toLowerCase())}</span
+										>
+										<span class="facet-count">{facet.count}</span>
+									</label>
+								{/each}
+							</div>
+						</details>
+					{/if}
+				</WorkloadListFilters>
 			</SurfaceCard>
 		</div>
 	</div>

@@ -1,16 +1,23 @@
 query Buckets(
 	$team: Slug!
 	$orderBy: BucketOrder
+	$filter: BucketFilter
 	$first: Int
 	$last: Int
 	$before: Cursor
 	$after: Cursor
-) {
+) @cache(policy: CacheAndNetwork, partial: true) {
 	team(slug: $team) {
 		slug
 
-		buckets(first: $first, last: $last, orderBy: $orderBy, before: $before, after: $after)
-			@paginate(mode: SinglePage) {
+		buckets(
+			first: $first
+			last: $last
+			orderBy: $orderBy
+			filter: $filter
+			before: $before
+			after: $after
+		) @paginate(mode: SinglePage) {
 			pageInfo {
 				hasNextPage
 				hasPreviousPage
@@ -19,6 +26,12 @@ query Buckets(
 				totalCount
 				startCursor
 				endCursor
+			}
+			facets {
+				environments {
+					value
+					count
+				}
 			}
 			nodes {
 				id

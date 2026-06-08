@@ -1,6 +1,7 @@
 query OpenSearch(
 	$team: Slug!
 	$orderBy: OpenSearchOrder
+	$filter: OpenSearchFilter
 	$first: Int
 	$last: Int
 	$before: Cursor
@@ -9,8 +10,14 @@ query OpenSearch(
 	team(slug: $team) {
 		slug
 
-		openSearches(first: $first, last: $last, orderBy: $orderBy, before: $before, after: $after)
-			@paginate(mode: SinglePage) {
+		openSearches(
+			first: $first
+			last: $last
+			orderBy: $orderBy
+			filter: $filter
+			before: $before
+			after: $after
+		) @paginate(mode: SinglePage) {
 			pageInfo {
 				hasNextPage
 				hasPreviousPage
@@ -19,6 +26,16 @@ query OpenSearch(
 				pageEnd
 				startCursor
 				endCursor
+			}
+			facets {
+				environments {
+					value
+					count
+				}
+				tiers {
+					tier
+					count
+				}
 			}
 			nodes {
 				id

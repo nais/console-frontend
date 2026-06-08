@@ -2,12 +2,12 @@
 	import { page } from '$app/state';
 	import { KafkaTopicOrderField, OrderDirection } from '$houdini';
 	import { docURL } from '$lib/doc';
+	import WorkloadListFilters from '$lib/domain/workload/WorkloadListFilters.svelte';
 	import { envTagVariant } from '$lib/envTagVariant';
 	import KafkaIcon from '$lib/icons/KafkaIcon.svelte';
 	import ExternalLink from '$lib/ui/ExternalLink.svelte';
 	import GraphErrors from '$lib/ui/GraphErrors.svelte';
 	import List from '$lib/ui/List.svelte';
-	import ListFilters from '$lib/ui/ListFilters.svelte';
 	import ListItem from '$lib/ui/ListItem.svelte';
 	import Pagination from '$lib/ui/Pagination.svelte';
 	import SurfaceCard from '$lib/ui/SurfaceCard.svelte';
@@ -47,6 +47,28 @@
 					: OrderDirection.ASC
 				: OrderDirection.ASC;
 		changeParams({ sort: `${field}-${direction}`, after: '', before: '' });
+	}
+
+	const selectedEnvironments: string[] = $derived(
+		page.url.searchParams.get('environments')?.split(',').filter(Boolean) ?? []
+	);
+	const selectedPools: string[] = $derived(
+		page.url.searchParams.get('pools')?.split(',').filter(Boolean) ?? []
+	);
+
+	function handleEnvironmentsChange(selected: string[]) {
+		changeParams({ environments: selected.join(','), after: '', before: '' }, { noScroll: true });
+	}
+
+	const poolFacets = $derived($KafkaTopics.data?.team.kafkaTopics.facets?.pools ?? []);
+	const availablePools = $derived(new Set(poolFacets.map((f) => f.value)));
+
+	function togglePool(pool: string) {
+		const isSelected = selectedPools.includes(pool);
+		const next = isSelected
+			? selectedPools.filter((p) => p !== pool && availablePools.has(p))
+			: [...selectedPools.filter((p) => availablePools.has(p)), pool];
+		changeParams({ pools: next.join(','), after: '', before: '' }, { noScroll: true });
 	}
 </script>
 
@@ -107,12 +129,34 @@
 		</div>
 		<div class="layout-sidebar">
 			<SurfaceCard title="Filters">
-				<ListFilters
+				<WorkloadListFilters
 					{sortFields}
 					{currentSortField}
 					{currentSortDirection}
+					environments={$KafkaTopics.data?.team.kafkaTopics.facets?.environments ?? []}
+					{selectedEnvironments}
 					onSort={(field) => setSort(field as KafkaTopicOrderFieldOptions)}
-				/>
+					onEnvironmentsChange={handleEnvironmentsChange}
+				>
+					{#if poolFacets.length > 0}
+						<details class="filter-section" open>
+							<summary class="section-heading">Pools</summary>
+							<div class="facet-list">
+								{#each poolFacets as facet (facet.value)}
+									<label class="facet-item">
+										<input
+											type="checkbox"
+											checked={selectedPools.includes(facet.value)}
+											onchange={() => togglePool(facet.value)}
+										/>
+										<span class="facet-label">{facet.value}</span>
+										<span class="facet-count">{facet.count}</span>
+									</label>
+								{/each}
+							</div>
+						</details>
+					{/if}
+				</WorkloadListFilters>
 			</SurfaceCard>
 		</div>
 	</div>
