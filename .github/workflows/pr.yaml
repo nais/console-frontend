@@ -12,8 +12,8 @@ jobs:
     permissions:
       contents: read
     steps:
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # ratchet:actions/checkout@v6
-      - uses: jdx/mise-action@1648a7812b9aeae629881980618f079932869151 # ratchet:jdx/mise-action@v4
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # ratchet:actions/checkout@v6
+      - uses: jdx/mise-action@dba19683ed58901619b14f395a24841710cb4925 # ratchet:jdx/mise-action@v4
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
       - name: Sync SvelteKit
@@ -35,11 +35,11 @@ jobs:
     name: Build and push
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # ratchet:actions/checkout@v6
-      - uses: jdx/mise-action@1648a7812b9aeae629881980618f079932869151 # ratchet:jdx/mise-action@v4
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # ratchet:actions/checkout@v6
+      - uses: jdx/mise-action@dba19683ed58901619b14f395a24841710cb4925 # ratchet:jdx/mise-action@v4
       - id: node_version
         run: echo "node_version=$(mise current node)" >> $GITHUB_OUTPUT
-      - uses: nais/platform-build-push-sign@df590279b21bc5978519685752f9eaddd546043c # ratchet:nais/platform-build-push-sign@main
+      - uses: nais/platform-build-push-sign@31014e4bcac554cb52525fe2364244c5166b84d2 # ratchet:nais/platform-build-push-sign@main
         id: build-push-sign
         with:
           name: ${{ env.NAME }}
