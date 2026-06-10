@@ -69,19 +69,22 @@
 		if (!deployId) return;
 
 		let attempts = 0;
+		let timeout: ReturnType<typeof setTimeout> | undefined;
 
 		const tryScroll = async () => {
 			await tick();
-			const el = wrapperEl?.querySelector(`#${deployId}`);
+			const el = wrapperEl?.querySelector(`#${CSS.escape(deployId)}`);
 			if (el) {
 				el.scrollIntoView({ behavior: 'smooth', block: 'center' });
-			} else if (attempts < 10) {
-				attempts++;
-				setTimeout(tryScroll, 100);
+			} else if (attempts++ < 10) {
+				timeout = setTimeout(tryScroll, 100);
 			}
 		};
 
-		setTimeout(tryScroll, 100);
+		timeout = setTimeout(tryScroll, 100);
+		return () => {
+			if (timeout) clearTimeout(timeout);
+		};
 	});
 </script>
 

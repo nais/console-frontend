@@ -6,7 +6,7 @@
 	import type { TimelineModes } from './shared/texts/types';
 
 	interface Props {
-		entries: ActivityLogEntryFragment[];
+		entries: ({ id: string } & ActivityLogEntryFragment)[];
 		hasNextPage: boolean;
 		loading: boolean;
 		loadMore: () => void;
@@ -21,7 +21,7 @@
 
 <div class="timeline">
 	{#if entries.length > 0}
-		{#each entries as entry, i (i)}
+		{#each entries as entry (entry.id)}
 			<ActivityLogListItem item={entry} {mode} />
 		{/each}
 

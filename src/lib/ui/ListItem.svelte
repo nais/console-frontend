@@ -14,8 +14,10 @@
 		{@render children()}
 	</a>
 {:else}
-	<div class="list-item" class:interactive class:highlight>
-		{@render children()}
+	<div class="animatable" class:highlight>
+		<div class="list-item" class:interactive>
+			{@render children()}
+		</div>
 	</div>
 {/if}
 
@@ -66,10 +68,16 @@
 		outline-offset: -2px;
 	}
 
+	.animatable {
+		transition:
+			background-color 0.8s ease,
+			opacity 0.8s ease,
+			padding-left 0.8s ease;
+	}
+
 	.highlight {
 		background-color: var(--ax-accent-400);
 		padding-left: 0.5rem;
 		opacity: 1;
-		border-left-width: 4px;
 	}
 </style>

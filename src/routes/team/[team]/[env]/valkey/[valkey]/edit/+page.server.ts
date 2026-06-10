@@ -1,5 +1,6 @@
 import {
 	graphql,
+	type ResourceLabelInput,
 	ValkeyMaxMemoryPolicy,
 	type ValkeyMaxMemoryPolicy$options,
 	ValkeyMemory,
@@ -31,19 +32,51 @@ export const actions = {
 		const databases = data.get('databases') as string | null;
 		const labelsJson = data.get('labels') as string | null;
 
+		const allProps = {
+			tier,
+			memory,
+			max_memory_policy,
+			notify_keyspace_events,
+			databases,
+			labels: labelsJson
+		};
+
 		if (!tier || !memory) {
 			return fail(400, {
+				...allProps,
 				success: false,
-				error: 'Missing required fields',
-				tier,
-				memory,
-				max_memory_policy,
-				notify_keyspace_events,
-				databases
+				error: 'Missing required fields'
 			});
 		}
 
-		const labels = labelsJson ? JSON.parse(labelsJson) : undefined;
+		let labels: ResourceLabelInput[] | undefined = undefined;
+		if (labelsJson) {
+			try {
+				labels = JSON.parse(labelsJson) as ResourceLabelInput[];
+				if (!Array.isArray(labels)) {
+					return fail(400, {
+						...allProps,
+						success: false,
+						error: 'Labels must be an array'
+					});
+				}
+				for (const label of labels) {
+					if (typeof label.key !== 'string' || typeof label.value !== 'string') {
+						return fail(400, {
+							...allProps,
+							success: false,
+							error: 'Each label must have a string key and value'
+						});
+					}
+				}
+			} catch {
+				return fail(400, {
+					...allProps,
+					success: false,
+					error: 'Invalid labels payload'
+				});
+			}
+		}
 
 		const res = await mutation.mutate(
 			{
@@ -58,7 +91,7 @@ export const actions = {
 						: ValkeyMaxMemoryPolicy[max_memory_policy as keyof typeof ValkeyMaxMemoryPolicy],
 					notifyKeyspaceEvents: notify_keyspace_events, // empty strings are always passed along to clear any previously set value
 					databases: databases ? parseInt(databases, 10) : null,
-					labels: labels
+					labels
 				}
 			},
 			{ event }

@@ -5,7 +5,8 @@ import {
 	OpenSearchMemory,
 	type OpenSearchMemory$options,
 	OpenSearchTier,
-	type OpenSearchTier$options
+	type OpenSearchTier$options,
+	type ResourceLabelInput
 } from '$houdini';
 import { fail, redirect } from '@sveltejs/kit';
 
@@ -54,7 +55,34 @@ export const actions = {
 			});
 		}
 
-		const labels = labelsJson ? JSON.parse(labelsJson) : undefined;
+		let labels: ResourceLabelInput[] | undefined = undefined;
+		if (labelsJson) {
+			try {
+				labels = JSON.parse(labelsJson) as ResourceLabelInput[];
+				if (!Array.isArray(labels)) {
+					return fail(400, {
+						...allProps,
+						success: false,
+						error: 'Labels must be an array'
+					});
+				}
+				for (const label of labels) {
+					if (typeof label.key !== 'string' || typeof label.value !== 'string') {
+						return fail(400, {
+							...allProps,
+							success: false,
+							error: 'Each label must have a string key and value'
+						});
+					}
+				}
+			} catch {
+				return fail(400, {
+					...allProps,
+					success: false,
+					error: 'Invalid labels payload'
+				});
+			}
+		}
 
 		const res = await mutation.mutate(
 			{
@@ -66,7 +94,7 @@ export const actions = {
 					memory: OpenSearchMemory[memory as keyof typeof OpenSearchMemory],
 					version: OpenSearchMajorVersion[version as keyof typeof OpenSearchMajorVersion],
 					storageGB: storageGB,
-					labels: labels
+					labels
 				}
 			},
 			{ event }
