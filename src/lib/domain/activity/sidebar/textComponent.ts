@@ -57,6 +57,7 @@ import ValkeyCreatedActivityLogEntryText from './texts/ValkeyCreatedActivityLogE
 import ValkeyDeletedActivityLogEntryText from './texts/ValkeyDeletedActivityLogEntryText.svelte';
 import ValkeyUpdatedActivityLogEntryText from './texts/ValkeyUpdatedActivityLogEntryText.svelte';
 import VulnerabilityUpdatedActivityLogEntryText from './texts/VulnerabilityUpdatedActivityLogEntryText.svelte';
+import SecretUpdatedActivityLogEntryText from './texts/SecretUpdatedActivityLogEntryText.svelte';
 
 export function sidebarTextComponent(kind: string): Component<{ data: unknown }> {
 	switch (kind) {
@@ -74,6 +75,8 @@ export function sidebarTextComponent(kind: string): Component<{ data: unknown }>
 			return RepositoryAddedActivityLogEntryText as Component<{ data: unknown }>;
 		case 'RepositoryRemovedActivityLogEntry':
 			return RepositoryRemovedActivityLogEntryText as Component<{ data: unknown }>;
+		case 'SecretUpdatedActivityLogEntry':
+			return SecretUpdatedActivityLogEntryText as Component<{ data: unknown }>;
 		case 'SecretValueAddedActivityLogEntry':
 			return SecretValueAddedActivityLogEntryText as Component<{ data: unknown }>;
 		case 'SecretValueUpdatedActivityLogEntry':

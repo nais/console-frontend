@@ -5,6 +5,7 @@ import {
 	OrderDirection,
 	type TeamApplicationsFilter
 } from '$houdini';
+import { parseLabelsParam } from '$lib/domain/labels/labels';
 import { urlToOrderDirection, urlToOrderField } from '$lib/ui/OrderByMenu.svelte';
 import { addPageMeta } from '$lib/utils/pageMeta';
 
@@ -17,6 +18,8 @@ export async function load(event) {
 
 	const states: string[] | undefined =
 		event.url.searchParams.get('states')?.split(',').filter(Boolean) || undefined;
+
+	const labels = parseLabelsParam(event.url.searchParams.get('labels'));
 
 	const after = event.url.searchParams.get('after') || '';
 	const before = event.url.searchParams.get('before') || '';
@@ -32,7 +35,7 @@ export async function load(event) {
 			blocking: true,
 			variables: {
 				team: event.params.team,
-				filter: { name: filter, environments, states } as TeamApplicationsFilter,
+				filter: { name: filter, environments, states, labels } as TeamApplicationsFilter,
 				orderBy: {
 					field: urlToOrderField(ApplicationOrderField, ApplicationOrderField.ISSUES, event.url),
 					direction: urlToOrderDirection(event.url, OrderDirection.DESC)

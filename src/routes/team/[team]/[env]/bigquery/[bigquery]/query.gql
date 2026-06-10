@@ -9,6 +9,10 @@ query BigQueryDataset($environment: String!, $team: Slug!, $name: String!) {
 
 				id
 				name
+				labels {
+					key
+					value
+				}
 				status {
 					creationTime
 					lastModifiedTime

@@ -11,6 +11,10 @@ query OpenSearchInstance(
 				__typename
 				id
 				name
+				labels {
+					key
+					value
+				}
 				version {
 					actual
 					desiredMajor

@@ -33,6 +33,7 @@
 						first: 5
 						filter: {
 							activityTypes: [
+								SECRET_UPDATED
 								SECRET_CREATED
 								SECRET_VALUE_ADDED
 								SECRET_VALUE_UPDATED

@@ -110,6 +110,15 @@
 									valueName
 								}
 							}
+							... on SecretUpdatedActivityLogEntry {
+								secretUpdatedData: data {
+									updatedFields {
+										field
+										oldValue
+										newValue
+									}
+								}
+							}
 							... on SecretValueUpdatedActivityLogEntry {
 								secretValueUpdatedData: data {
 									valueName

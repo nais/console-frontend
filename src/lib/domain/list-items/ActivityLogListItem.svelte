@@ -33,6 +33,7 @@
 	import RepositoryRemovedActivityLogEntryText from '../activity/shared/texts/RepositoryRemovedActivityLogEntryText.svelte';
 	import SecretCreatedActivityLogEntryText from '../activity/shared/texts/SecretCreatedActivityLogEntryText.svelte';
 	import SecretDeletedActivityLogEntryText from '../activity/shared/texts/SecretDeletedActivityLogEntryText.svelte';
+	import SecretUpdatedActivityLogEntryText from '../activity/shared/texts/SecretUpdatedActivityLogEntryText.svelte';
 	import SecretValueAddedActivityLogEntryText from '../activity/shared/texts/SecretValueAddedActivityLogEntryText.svelte';
 	import SecretValueRemovedActivityLogEntryText from '../activity/shared/texts/SecretValueRemovedActivityLogEntryText.svelte';
 	import SecretValueUpdatedActivityLogEntryText from '../activity/shared/texts/SecretValueUpdatedActivityLogEntryText.svelte';
@@ -196,6 +197,15 @@
 					}
 					... on RepositoryRemovedActivityLogEntry {
 						__typename
+					}
+					... on SecretUpdatedActivityLogEntry {
+						secretUpdated: data {
+							updatedFields {
+								field
+								newValue
+								oldValue
+							}
+						}
 					}
 					... on SecretCreatedActivityLogEntry {
 						__typename
@@ -374,6 +384,8 @@
 				return RepositoryAddedActivityLogEntryText as Component<{ data: unknown }>;
 			case 'RepositoryRemovedActivityLogEntry':
 				return RepositoryRemovedActivityLogEntryText as Component<{ data: unknown }>;
+			case 'SecretUpdatedActivityLogEntry':
+				return SecretUpdatedActivityLogEntryText as Component<{ data: unknown }>;
 			case 'SecretCreatedActivityLogEntry':
 				return SecretCreatedActivityLogEntryText as Component<{ data: unknown }>;
 			case 'SecretDeletedActivityLogEntry':

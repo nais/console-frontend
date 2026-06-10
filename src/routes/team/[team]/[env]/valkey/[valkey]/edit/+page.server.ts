@@ -29,6 +29,7 @@ export const actions = {
 		const max_memory_policy = data.get('max_memory_policy') as ValkeyMaxMemoryPolicy$options | null;
 		const notify_keyspace_events = data.get('notify_keyspace_events') as string | null;
 		const databases = data.get('databases') as string | null;
+		const labelsJson = data.get('labels') as string | null;
 
 		if (!tier || !memory) {
 			return fail(400, {
@@ -42,6 +43,8 @@ export const actions = {
 			});
 		}
 
+		const labels = labelsJson ? JSON.parse(labelsJson) : undefined;
+
 		const res = await mutation.mutate(
 			{
 				input: {
@@ -54,7 +57,8 @@ export const actions = {
 						? null
 						: ValkeyMaxMemoryPolicy[max_memory_policy as keyof typeof ValkeyMaxMemoryPolicy],
 					notifyKeyspaceEvents: notify_keyspace_events, // empty strings are always passed along to clear any previously set value
-					databases: databases ? parseInt(databases, 10) : null
+					databases: databases ? parseInt(databases, 10) : null,
+					labels: labels
 				}
 			},
 			{ event }

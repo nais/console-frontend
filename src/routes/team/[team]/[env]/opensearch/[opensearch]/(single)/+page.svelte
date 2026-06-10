@@ -3,6 +3,9 @@
 	import { graphql, OpenSearchAccessOrderField } from '$houdini';
 	import { docURL } from '$lib/doc';
 	import PersistenceActivityCard from '$lib/domain/activity/PersistenceActivityCard.svelte';
+	import Labels from '$lib/domain/labels/Labels.svelte';
+	import LabelsEditorModal from '$lib/domain/labels/LabelsEditorModal.svelte';
+	import type { Label } from '$lib/domain/labels/labels';
 	import IssueListItem from '$lib/domain/list-items/IssueListItem.svelte';
 	import ServiceMaintenanceListItem from '$lib/domain/list-items/ServiceMaintenanceListItem.svelte';
 	import WorkloadLink from '$lib/domain/workload/WorkloadLink.svelte';
@@ -59,6 +62,60 @@
 
 	let { data }: PageProps = $props();
 	let { OpenSearchInstance, viewerIsMember, teamSlug } = $derived(data);
+
+	let labelsModalOpen = $state(false);
+
+	const updateOpenSearchLabels = graphql(`
+		mutation updateOpenSearchLabels(
+			$name: String!
+			$team: Slug!
+			$env: String!
+			$labels: [ResourceLabelInput!]
+			$memory: OpenSearchMemory!
+			$tier: OpenSearchTier!
+			$storageGB: Int!
+			$version: OpenSearchMajorVersion!
+		) {
+			updateOpenSearch(
+				input: {
+					name: $name
+					teamSlug: $team
+					environmentName: $env
+					labels: $labels
+					memory: $memory
+					tier: $tier
+					storageGB: $storageGB
+					version: $version
+				}
+			) {
+				openSearch {
+					id
+					labels {
+						key
+						value
+					}
+				}
+			}
+		}
+	`);
+
+	const saveLabels = async (labels: Label[]) => {
+		const instance = $OpenSearchInstance.data?.team.environment.openSearch;
+		if (!instance) return;
+		await updateOpenSearchLabels.mutate({
+			name: instance.name,
+			team: teamSlug,
+			env: instance.teamEnvironment.environment.name,
+			labels,
+			memory: instance.memory,
+			tier: instance.tier,
+			storageGB: instance.storageGB,
+			version: instance.version.desiredMajor
+		});
+		if ($updateOpenSearchLabels.errors) return;
+		labelsModalOpen = false;
+		OpenSearchInstance.fetch();
+	};
 
 	let tableSort = $derived({
 		orderBy: $OpenSearchInstance.variables?.orderBy?.field,
@@ -277,9 +334,23 @@
 				manifest={`spec:\n  openSearch:\n    - instance: ${instance.name.replace(`opensearch-${teamSlug}-`, '')}`}
 			/>
 
+			<Labels
+				labels={instance.labels ?? []}
+				onEdit={viewerIsMember ? () => (labelsModalOpen = true) : undefined}
+			/>
 			<PersistenceActivityCard resourceType="opensearch" resource={instance} />
 		</div>
 	</div>
+
+	{#if labelsModalOpen}
+		<LabelsEditorModal
+			labels={instance.labels}
+			title="Edit OpenSearch labels"
+			errors={$updateOpenSearchLabels.errors}
+			onsave={saveLabels}
+			onclose={() => (labelsModalOpen = false)}
+		/>
+	{/if}
 {/if}
 
 <style>

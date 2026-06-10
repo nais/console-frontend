@@ -1,4 +1,5 @@
 <script lang="ts">
+	import Labels from '$lib/domain/labels/Labels.svelte';
 	import WorkloadLink from '$lib/domain/workload/WorkloadLink.svelte';
 	import WarningIcon from '$lib/icons/WarningIcon.svelte';
 	import ExternalLink from '$lib/ui/ExternalLink.svelte';
@@ -82,6 +83,7 @@
 					</div>
 				{/if}
 			</SurfaceCard>
+			<Labels labels={bucket.labels ?? []} />
 		</div>
 	</div>
 {/if}

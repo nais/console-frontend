@@ -36,6 +36,11 @@ query OpenSearch(
 					tier
 					count
 				}
+				labels {
+					key
+					value
+					count
+				}
 			}
 			nodes {
 				id

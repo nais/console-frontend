@@ -28,6 +28,7 @@ export const actions = {
 		const memory = data.get('memory') as OpenSearchMemory$options | null;
 		const version = data.get('version') as OpenSearchMajorVersion$options | null;
 		const storage = data.get('storageGB') as string | null;
+		const labelsJson = data.get('labels') as string | null;
 
 		const allProps = {
 			tier,
@@ -53,6 +54,8 @@ export const actions = {
 			});
 		}
 
+		const labels = labelsJson ? JSON.parse(labelsJson) : undefined;
+
 		const res = await mutation.mutate(
 			{
 				input: {
@@ -62,7 +65,8 @@ export const actions = {
 					tier: OpenSearchTier[tier as keyof typeof OpenSearchTier],
 					memory: OpenSearchMemory[memory as keyof typeof OpenSearchMemory],
 					version: OpenSearchMajorVersion[version as keyof typeof OpenSearchMajorVersion],
-					storageGB: storageGB
+					storageGB: storageGB,
+					labels: labels
 				}
 			},
 			{ event }

@@ -40,6 +40,11 @@ query Configs(
 					value
 					count
 				}
+				labels {
+					key
+					value
+					count
+				}
 			}
 			nodes {
 				id

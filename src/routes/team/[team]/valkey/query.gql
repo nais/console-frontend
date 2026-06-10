@@ -36,6 +36,11 @@ query Valkeys(
 					tier
 					count
 				}
+				labels {
+					key
+					value
+					count
+				}
 			}
 			nodes {
 				id

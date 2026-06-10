@@ -23,6 +23,9 @@
 	import { SvelteMap } from 'svelte/reactivity';
 
 	import ResourceActivityCard from '$lib/domain/activity/ResourceActivityCard.svelte';
+	import Labels from '$lib/domain/labels/Labels.svelte';
+	import LabelsEditorModal from '$lib/domain/labels/LabelsEditorModal.svelte';
+	import type { Label } from '$lib/domain/labels/labels';
 	import WorkloadLink from '$lib/domain/workload/WorkloadLink.svelte';
 	import GraphErrors from '$lib/ui/GraphErrors.svelte';
 	import ManifestCard from '$lib/ui/ManifestCard.svelte';
@@ -58,6 +61,7 @@
 	let manifestMode: string = $state('env');
 	let editValueOpen = $state(false);
 	let viewSecretsModalOpen = $state(false);
+	let labelsModalOpen = $state(false);
 
 	let keyToDelete = $state('');
 	let keyToEdit = $state('');
@@ -96,6 +100,34 @@
 		}
 		// Open modal to get justification - values will be returned directly from the mutation
 		viewSecretsModalOpen = true;
+	};
+
+	const updateSecretLabels = graphql(`
+		mutation updateSecretLabels(
+			$name: String!
+			$team: Slug!
+			$env: String!
+			$labels: [ResourceLabelInput!]!
+		) {
+			updateSecret(
+				input: { name: $name, teamSlug: $team, environmentName: $env, labels: $labels }
+			) {
+				secret {
+					id
+					labels {
+						key
+						value
+					}
+				}
+			}
+		}
+	`);
+
+	const saveLabels = async (labels: Label[]) => {
+		await updateSecretLabels.mutate({ name: secretName, team: teamSlug, env: env, labels });
+		if ($updateSecretLabels.errors) return;
+		labelsModalOpen = false;
+		Secret.fetch();
 	};
 
 	const updateSecretValue = graphql(`
@@ -493,6 +525,10 @@
 				</ToggleGroup>
 			</ManifestCard>
 			<Workloads workloads={secret.workloads} />
+			<Labels
+				labels={secret.labels ?? []}
+				onEdit={canMutate ? () => (labelsModalOpen = true) : undefined}
+			/>
 			<ResourceActivityCard resourceType="secret" resource={secret} />
 		</div>
 	</div>
@@ -521,6 +557,16 @@
 			<Button variant="secondary" size="small" onclick={cancelEditValue}>Cancel</Button>
 		{/snippet}
 	</Modal>
+
+	{#if labelsModalOpen}
+		<LabelsEditorModal
+			labels={secret.labels}
+			title="Edit secret labels"
+			errors={$updateSecretLabels.errors}
+			onsave={saveLabels}
+			onclose={() => (labelsModalOpen = false)}
+		/>
+	{/if}
 {/if}
 
 <style>

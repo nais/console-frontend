@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { page } from '$app/state';
 	import PrometheusUtilizationDonut from '$lib/chart/PrometheusUtilizationDonut.svelte';
+	import Labels from '$lib/domain/labels/Labels.svelte';
 	import WorkloadLink from '$lib/domain/workload/WorkloadLink.svelte';
 	import ExternalLink from '$lib/ui/ExternalLink.svelte';
 	import ManifestCard from '$lib/ui/ManifestCard.svelte';
@@ -258,6 +259,7 @@ clamp_min(
 		<div class="layout-sidebar">
 			<ManifestCard title="Use this Postgres" manifest={workloadManifest} />
 
+			<Labels labels={instance.labels ?? []} />
 			<SurfaceCard title="Used by">
 				{#if instance.workloads.nodes.length > 0}
 					<ul class="workloads-list">

@@ -53,8 +53,16 @@
 		page.url.searchParams.get('environments')?.split(',').filter(Boolean) ?? []
 	);
 
+	let selectedLabels: string[] = $derived(
+		page.url.searchParams.get('labels')?.split(',').filter(Boolean) ?? []
+	);
+
 	function handleEnvironmentsChange(selected: string[]) {
 		changeParams({ environments: selected.join(','), after: '', before: '' }, { noScroll: true });
+	}
+
+	function handleLabelsChange(selected: string[]) {
+		changeParams({ labels: selected.join(','), after: '', before: '' }, { noScroll: true });
 	}
 </script>
 
@@ -125,9 +133,12 @@
 					{currentSortField}
 					{currentSortDirection}
 					environments={$Buckets.data?.team.buckets.facets?.environments ?? []}
+					labels={$Buckets.data?.team.buckets.facets?.labels ?? []}
 					{selectedEnvironments}
+					{selectedLabels}
 					onSort={(field) => setSort(field as BucketOrderFieldOptions)}
 					onEnvironmentsChange={handleEnvironmentsChange}
+					onLabelsChange={handleLabelsChange}
 				/>
 			</SurfaceCard>
 		</div>

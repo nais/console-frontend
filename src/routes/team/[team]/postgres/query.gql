@@ -49,6 +49,11 @@ query PostgresInstances(
 					value
 					count
 				}
+				labels {
+					key
+					value
+					count
+				}
 			}
 			nodes {
 				id

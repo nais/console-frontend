@@ -5,6 +5,10 @@ query App($app: String!, $team: Slug!, $env: String!) {
 				__typename
 				id
 				name
+				labels {
+					key
+					value
+				}
 				team {
 					slug
 				}

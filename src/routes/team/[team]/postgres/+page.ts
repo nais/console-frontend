@@ -5,6 +5,7 @@ import {
 	PostgresInstanceState,
 	type PostgresInstanceFilter
 } from '$houdini';
+import { parseLabelsParam } from '$lib/domain/labels/labels';
 import { urlToOrderDirection, urlToOrderField } from '$lib/ui/OrderByMenu.svelte';
 import { addPageMeta } from '$lib/utils/pageMeta';
 
@@ -29,6 +30,7 @@ export async function load(event) {
 	const highAvailabilityParam = event.url.searchParams.get('highAvailability');
 	const highAvailability =
 		highAvailabilityParam === 'true' ? true : highAvailabilityParam === 'false' ? false : undefined;
+	const labels = parseLabelsParam(event.url.searchParams.get('labels'));
 
 	return {
 		...(await addPageMeta(event, {
@@ -40,7 +42,13 @@ export async function load(event) {
 			event,
 			variables: {
 				team: event.params.team,
-				filter: { environments, states, majorVersions, highAvailability } as PostgresInstanceFilter,
+				filter: {
+					environments,
+					states,
+					majorVersions,
+					highAvailability,
+					labels
+				} as PostgresInstanceFilter,
 				orderBy: {
 					field: urlToOrderField(
 						PostgresInstanceOrderField,

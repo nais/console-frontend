@@ -3,6 +3,9 @@
 	import { graphql, ValkeyAccessOrderField } from '$houdini';
 	import { docURL } from '$lib/doc';
 	import PersistenceActivityCard from '$lib/domain/activity/PersistenceActivityCard.svelte';
+	import Labels from '$lib/domain/labels/Labels.svelte';
+	import LabelsEditorModal from '$lib/domain/labels/LabelsEditorModal.svelte';
+	import type { Label } from '$lib/domain/labels/labels';
 	import IssueListItem from '$lib/domain/list-items/IssueListItem.svelte';
 	import ServiceMaintenanceListItem from '$lib/domain/list-items/ServiceMaintenanceListItem.svelte';
 	import WorkloadLink from '$lib/domain/workload/WorkloadLink.svelte';
@@ -58,6 +61,54 @@
 
 	let { data }: PageProps = $props();
 	let { Valkey, viewerIsMember, teamSlug } = $derived(data);
+
+	let labelsModalOpen = $state(false);
+
+	const updateValkeyLabels = graphql(`
+		mutation updateValkeyLabels(
+			$name: String!
+			$team: Slug!
+			$env: String!
+			$labels: [ResourceLabelInput!]
+			$memory: ValkeyMemory!
+			$tier: ValkeyTier!
+		) {
+			updateValkey(
+				input: {
+					name: $name
+					teamSlug: $team
+					environmentName: $env
+					labels: $labels
+					memory: $memory
+					tier: $tier
+				}
+			) {
+				valkey {
+					id
+					labels {
+						key
+						value
+					}
+				}
+			}
+		}
+	`);
+
+	const saveLabels = async (labels: Label[]) => {
+		const instance = $Valkey.data?.team.environment.valkey;
+		if (!instance) return;
+		await updateValkeyLabels.mutate({
+			name: instance.name,
+			team: teamSlug,
+			env: instance.teamEnvironment.environment.name,
+			labels,
+			memory: instance.memory,
+			tier: instance.tier
+		});
+		if ($updateValkeyLabels.errors) return;
+		labelsModalOpen = false;
+		Valkey.fetch();
+	};
 
 	let tableSort = $derived({
 		orderBy: $Valkey.variables?.orderBy?.field,
@@ -275,9 +326,23 @@
 				manifest={`spec:\n  valkey:\n    - instance: ${instance.name.replace(`valkey-${teamSlug}-`, '')}`}
 			/>
 
+			<Labels
+				labels={instance.labels ?? []}
+				onEdit={viewerIsMember ? () => (labelsModalOpen = true) : undefined}
+			/>
 			<PersistenceActivityCard resourceType="valkey" resource={instance} />
 		</div>
 	</div>
+
+	{#if labelsModalOpen}
+		<LabelsEditorModal
+			labels={instance.labels}
+			title="Edit Valkey labels"
+			errors={$updateValkeyLabels.errors}
+			onsave={saveLabels}
+			onclose={() => (labelsModalOpen = false)}
+		/>
+	{/if}
 {/if}
 
 <style>

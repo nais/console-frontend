@@ -1,4 +1,5 @@
 import { ConfigOrderField, load_Configs, OrderDirection, type ConfigFilter } from '$houdini';
+import { parseLabelsParam } from '$lib/domain/labels/labels';
 import { urlToOrderDirection, urlToOrderField } from '$lib/ui/OrderByMenu.svelte';
 import { addPageMeta } from '$lib/utils/pageMeta';
 
@@ -21,6 +22,11 @@ export async function load(event) {
 
 	if (nameFilter) {
 		filterVar = { ...filterVar, name: nameFilter };
+	}
+
+	const labels = parseLabelsParam(event.url.searchParams.get('labels'));
+	if (labels) {
+		filterVar = { ...filterVar, labels };
 	}
 
 	const after = event.url.searchParams.get('after') || '';
