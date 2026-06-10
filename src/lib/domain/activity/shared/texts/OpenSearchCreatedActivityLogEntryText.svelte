@@ -1,14 +1,14 @@
 <script lang="ts">
 	import Meta from '../../Meta.svelte';
-	import { resourceTypeToText } from '$lib/domain/activity/sidebar/texts/utils';
-
-	import { activityLogResourceLink } from '../../utils';
-	import type { ActivityLogEntry } from './types';
+	import { activityLogResourceLink, resourceTypeToText } from '../../utils';
+	import type { ActivityLogEntry, TimelineModes } from './types';
 
 	let {
-		data
+		data,
+		mode
 	}: {
 		data: ActivityLogEntry<'OpenSearchCreatedActivityLogEntry'>;
+		mode?: TimelineModes;
 	} = $props();
 </script>
 
@@ -31,5 +31,5 @@
 		in {data.environmentName}
 	{/if}.
 
-	<Meta actor={data.actor} createdAt={data.createdAt} />
+	<Meta actor={data.actor} createdAt={data.createdAt} {mode} />
 </div>

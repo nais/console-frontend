@@ -43,67 +43,16 @@
 							}
 							edges {
 								node {
-									__typename
 									id
 									actor
-									createdAt
 									message
+									createdAt
 									resourceName
 									resourceType
 									environmentName
 									teamSlug
-									... on ApplicationCreatedActivityLogEntry {
-										__typename
-									}
-									... on ApplicationDeletedActivityLogEntry {
-										__typename
-									}
-									... on ApplicationRestartedActivityLogEntry {
-										__typename
-									}
-									... on DeploymentActivityLogEntry {
-										deploymentData: data {
-											triggerURL
-										}
-									}
-									... on ApplicationScaledActivityLogEntry {
-										appScaled: data {
-											newSize
-											direction
-										}
-									}
-									... on ApplicationUpdatedActivityLogEntry {
-										applicationUpdatedData: data {
-											changedFields {
-												field
-												oldValue
-												newValue
-											}
-										}
-									}
-									... on JobRunDeletedActivityLogEntry {
-										jobRunDeletedData: data {
-											runName
-										}
-									}
-									... on JobCreatedActivityLogEntry {
-										__typename
-									}
-									... on JobDeletedActivityLogEntry {
-										__typename
-									}
-									... on JobTriggeredActivityLogEntry {
-										__typename
-									}
-									... on JobUpdatedActivityLogEntry {
-										jobUpdatedData: data {
-											changedFields {
-												field
-												oldValue
-												newValue
-											}
-										}
-									}
+									__typename
+									...ActivityLogEntryFragment
 								}
 							}
 						}
@@ -130,67 +79,16 @@
 							}
 							edges {
 								node {
-									__typename
 									id
 									actor
-									createdAt
 									message
+									createdAt
 									resourceName
 									resourceType
 									environmentName
 									teamSlug
-									... on ApplicationCreatedActivityLogEntry {
-										__typename
-									}
-									... on ApplicationDeletedActivityLogEntry {
-										__typename
-									}
-									... on ApplicationRestartedActivityLogEntry {
-										__typename
-									}
-									... on DeploymentActivityLogEntry {
-										deploymentData: data {
-											triggerURL
-										}
-									}
-									... on ApplicationScaledActivityLogEntry {
-										appScaled: data {
-											newSize
-											direction
-										}
-									}
-									... on ApplicationUpdatedActivityLogEntry {
-										applicationUpdatedData: data {
-											changedFields {
-												field
-												oldValue
-												newValue
-											}
-										}
-									}
-									... on JobRunDeletedActivityLogEntry {
-										jobRunDeletedData: data {
-											runName
-										}
-									}
-									... on JobCreatedActivityLogEntry {
-										__typename
-									}
-									... on JobDeletedActivityLogEntry {
-										__typename
-									}
-									... on JobTriggeredActivityLogEntry {
-										__typename
-									}
-									... on JobUpdatedActivityLogEntry {
-										jobUpdatedData: data {
-											changedFields {
-												field
-												oldValue
-												newValue
-											}
-										}
-									}
+									__typename
+									...ActivityLogEntryFragment
 								}
 							}
 						}

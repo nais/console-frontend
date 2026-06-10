@@ -1,13 +1,15 @@
 <script lang="ts">
-	import Meta from '../../Meta.svelte';
 	import { ReadMore } from '@nais/ds-svelte-community';
+	import Meta from '../../Meta.svelte';
 	import { activityLogResourceLink } from '../../utils';
-	import type { ActivityLogEntry } from './types';
+	import type { ActivityLogEntry, TimelineModes } from './types';
 
 	let {
-		data
+		data,
+		mode = 'full'
 	}: {
 		data: ActivityLogEntry<'ApplicationUpdatedActivityLogEntry'>;
+		mode?: TimelineModes;
 	} = $props();
 </script>
 
@@ -29,7 +31,7 @@
 	{#if data.environmentName}
 		in {data.environmentName}
 	{/if}.
-	{#if data.applicationUpdated.changedFields.length > 0}
+	{#if mode === 'full' && data.applicationUpdated.changedFields.length > 0}
 		<ReadMore header="Updated fields">
 			<dl>
 				{#each data.applicationUpdated.changedFields as field (field.field)}
@@ -52,7 +54,7 @@
 		</ReadMore>
 	{/if}
 
-	<Meta actor={data.actor} createdAt={data.createdAt} />
+	<Meta actor={data.actor} createdAt={data.createdAt} {mode} />
 </div>
 
 <style>

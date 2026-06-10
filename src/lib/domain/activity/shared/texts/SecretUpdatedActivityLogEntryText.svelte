@@ -1,12 +1,14 @@
 <script lang="ts">
 	import Meta from '../../Meta.svelte';
 
-	import type { ActivityLogEntry } from './types';
+	import type { ActivityLogEntry, TimelineModes } from './types';
 
 	let {
-		data
+		data,
+		mode = 'full'
 	}: {
 		data: ActivityLogEntry<'SecretUpdatedActivityLogEntry'>;
+		mode?: TimelineModes;
 	} = $props();
 
 	const formatFieldName = (field: string): string => {
@@ -23,7 +25,7 @@
 	{#if data.environmentName}
 		in {data.environmentName}
 	{/if}.
-	{#if data.secretUpdated?.updatedFields?.length}
+	{#if mode === 'full' && data.secretUpdated?.updatedFields?.length}
 		{#each data.secretUpdated.updatedFields as field (field.field)}
 			<strong>{formatFieldName(field.field)}</strong>
 			{#if field.oldValue != null && field.newValue != null}
@@ -38,5 +40,13 @@
 		{/each}
 	{/if}
 
-	<Meta actor={data.actor} createdAt={data.createdAt} />
+	<Meta
+		actor={data.actor}
+		createdAt={data.createdAt}
+		{mode}
+		link={{
+			...data,
+			activityType: 'SECRET_UPDATED'
+		}}
+	/>
 </div>

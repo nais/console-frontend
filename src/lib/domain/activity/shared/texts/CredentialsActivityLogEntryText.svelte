@@ -1,12 +1,14 @@
 <script lang="ts">
 	import Meta from '../../Meta.svelte';
 
-	import type { ActivityLogEntry } from './types';
+	import type { ActivityLogEntry, TimelineModes } from './types';
 
 	let {
-		data
+		data,
+		mode
 	}: {
 		data: ActivityLogEntry<'CredentialsActivityLogEntry'>;
+		mode?: TimelineModes;
 	} = $props();
 
 	const serviceTypeLabel: Record<string, string> = {
@@ -27,5 +29,5 @@
 		with {data.credentialsData.permission} access
 	{/if}
 	(TTL: {data.credentialsData.ttl})
-	<Meta actor={data.actor} createdAt={data.createdAt} />
+	<Meta actor={data.actor} createdAt={data.createdAt} {mode} />
 </div>

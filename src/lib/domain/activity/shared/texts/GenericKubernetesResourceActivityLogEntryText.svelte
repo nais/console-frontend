@@ -1,19 +1,21 @@
 <script lang="ts">
-	import Meta from '../../Meta.svelte';
 	import { ReadMore } from '@nais/ds-svelte-community';
-	import type { ActivityLogEntry } from './types';
+	import Meta from '../../Meta.svelte';
+	import type { ActivityLogEntry, TimelineModes } from './types';
 
 	let {
-		data
+		data,
+		mode = 'full'
 	}: {
 		data: ActivityLogEntry<'GenericKubernetesResourceActivityLogEntry'>;
+		mode?: TimelineModes;
 	} = $props();
 </script>
 
 <div>
 	Applied {data.genericKubernetesData.kind.toLowerCase()}
 	<strong>{data.resourceName}</strong>{data.environmentName ? ` in ${data.environmentName}` : ''}.
-	{#if data.genericKubernetesData.changedFields.length > 0}
+	{#if mode === 'full' && data.genericKubernetesData.changedFields.length > 0}
 		<ReadMore header="Changed fields">
 			<dl>
 				{#each data.genericKubernetesData.changedFields as field (field.field)}
@@ -36,7 +38,7 @@
 		</ReadMore>
 	{/if}
 
-	<Meta actor={data.actor} createdAt={data.createdAt} />
+	<Meta actor={data.actor} createdAt={data.createdAt} {mode} />
 </div>
 
 <style>

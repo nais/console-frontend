@@ -1,66 +1,20 @@
 <script lang="ts">
+	import { page } from '$app/state';
 	import { fragment, graphql, type ActivityLogEntryFragment } from '$houdini';
 	import ListItem from '$lib/ui/ListItem.svelte';
-	import { Tooltip } from '@nais/ds-svelte-community';
+	import { BodyLong, Tooltip } from '@nais/ds-svelte-community';
 	import { QuestionmarkIcon } from '@nais/ds-svelte-community/icons';
-	import type { Component } from 'svelte';
 	import { icons } from '../activity/activity-log-icons';
 	import { activityTooltip } from '../activity/activity-log-tooltip';
-	import ApplicationCreatedActivityLogEntryText from '../activity/shared/texts/ApplicationCreatedActivityLogEntryText.svelte';
-	import ApplicationDeletedActivityLogEntryText from '../activity/shared/texts/ApplicationDeletedActivityLogEntryText.svelte';
-	import ApplicationRestartedActivityLogEntryText from '../activity/shared/texts/ApplicationRestartedActivityLogEntryText.svelte';
-	import ApplicationScaledActivityLogEntryText from '../activity/shared/texts/ApplicationScaledActivityLogEntryText.svelte';
-	import ApplicationUpdatedActivityLogEntryText from '../activity/shared/texts/ApplicationUpdatedActivityLogEntryText.svelte';
-	import ClusterAuditActivityLogEntryText from '../activity/shared/texts/ClusterAuditActivityLogEntryText.svelte';
-	import ConfigCreatedActivityLogEntryText from '../activity/shared/texts/ConfigCreatedActivityLogEntryText.svelte';
-	import ConfigDeletedActivityLogEntryText from '../activity/shared/texts/ConfigDeletedActivityLogEntryText.svelte';
-	import ConfigUpdatedActivityLogEntryText from '../activity/shared/texts/ConfigUpdatedActivityLogEntryText.svelte';
-	import CredentialsActivityLogEntryText from '../activity/shared/texts/CredentialsActivityLogEntryText.svelte';
-	import DefaultText from '../activity/shared/texts/DefaultText.svelte';
-	import DeploymentActivityLogEntryText from '../activity/shared/texts/DeploymentActivityLogEntryText.svelte';
-	import GenericKubernetesResourceActivityLogEntryText from '../activity/shared/texts/GenericKubernetesResourceActivityLogEntryText.svelte';
-	import JobCreatedActivityLogEntryText from '../activity/shared/texts/JobCreatedActivityLogEntryText.svelte';
-	import JobDeletedActivityLogEntryText from '../activity/shared/texts/JobDeletedActivityLogEntryText.svelte';
-	import JobRunDeletedActivityLogEntryText from '../activity/shared/texts/JobRunDeletedActivityLogEntryText.svelte';
-	import JobTriggeredActivityLogEntryText from '../activity/shared/texts/JobTriggeredActivityLogEntryText.svelte';
-	import JobUpdatedActivityLogEntryText from '../activity/shared/texts/JobUpdatedActivityLogEntryText.svelte';
-	import OpenSearchCreatedActivityLogEntryText from '../activity/shared/texts/OpenSearchCreatedActivityLogEntryText.svelte';
-	import OpenSearchDeletedActivityLogEntryText from '../activity/shared/texts/OpenSearchDeletedActivityLogEntryText.svelte';
-	import OpenSearchUpdatedActivityLogEntryText from '../activity/shared/texts/OpenSearchUpdatedActivityLogEntryText.svelte';
-	import PostgresDeletedActivityLogEntryText from '../activity/shared/texts/PostgresDeletedActivityLogEntryText.svelte';
-	import PostgresGrantAccessActivityLogEntryText from '../activity/shared/texts/PostgresGrantAccessActivityLogEntryText.svelte';
-	import RepositoryAddedActivityLogEntryText from '../activity/shared/texts/RepositoryAddedActivityLogEntryText.svelte';
-	import RepositoryRemovedActivityLogEntryText from '../activity/shared/texts/RepositoryRemovedActivityLogEntryText.svelte';
-	import SecretCreatedActivityLogEntryText from '../activity/shared/texts/SecretCreatedActivityLogEntryText.svelte';
-	import SecretDeletedActivityLogEntryText from '../activity/shared/texts/SecretDeletedActivityLogEntryText.svelte';
-	import SecretUpdatedActivityLogEntryText from '../activity/shared/texts/SecretUpdatedActivityLogEntryText.svelte';
-	import SecretValueAddedActivityLogEntryText from '../activity/shared/texts/SecretValueAddedActivityLogEntryText.svelte';
-	import SecretValueRemovedActivityLogEntryText from '../activity/shared/texts/SecretValueRemovedActivityLogEntryText.svelte';
-	import SecretValueUpdatedActivityLogEntryText from '../activity/shared/texts/SecretValueUpdatedActivityLogEntryText.svelte';
-	import SecretValuesViewedActivityLogEntryText from '../activity/shared/texts/SecretValuesViewedActivityLogEntryText.svelte';
-	import ServiceMaintenanceActivityLogEntryText from '../activity/shared/texts/ServiceMaintenanceActivityLogEntryText.svelte';
-	import TeamConfirmDeleteKeyActivityLogEntryText from '../activity/shared/texts/TeamConfirmDeleteKeyActivityLogEntryText.svelte';
-	import TeamCreateDeleteKeyActivityLogEntryText from '../activity/shared/texts/TeamCreateDeleteKeyActivityLogEntryText.svelte';
-	import TeamCreatedActivityLogEntryText from '../activity/shared/texts/TeamCreatedActivityLogEntryText.svelte';
-	import TeamDeployKeyUpdatedActivityLogEntryText from '../activity/shared/texts/TeamDeployKeyUpdatedActivityLogEntryText.svelte';
-	import TeamEnvironmentUpdatedActivityLogEntryText from '../activity/shared/texts/TeamEnvironmentUpdatedActivityLogEntryText.svelte';
-	import TeamMemberAddedActivityLogEntryText from '../activity/shared/texts/TeamMemberAddedActivityLogEntryText.svelte';
-	import TeamMemberRemovedActivityLogEntryText from '../activity/shared/texts/TeamMemberRemovedActivityLogEntryText.svelte';
-	import TeamMemberSetRoleActivityLogEntryText from '../activity/shared/texts/TeamMemberSetRoleActivityLogEntryText.svelte';
-	import TeamUpdatedActivityLogEntryText from '../activity/shared/texts/TeamUpdatedActivityLogEntryText.svelte';
-	import UnleashInstanceCreatedActivityLogEntryText from '../activity/shared/texts/UnleashInstanceCreatedActivityLogEntryText.svelte';
-	import UnleashInstanceDeletedActivityLogEntryText from '../activity/shared/texts/UnleashInstanceDeletedActivityLogEntryText.svelte';
-	import UnleashInstanceUpdatedActivityLogEntryText from '../activity/shared/texts/UnleashInstanceUpdatedActivityLogEntryText.svelte';
-	import ValkeyCreatedActivityLogEntryText from '../activity/shared/texts/ValkeyCreatedActivityLogEntryText.svelte';
-	import ValkeyDeletedActivityLogEntryText from '../activity/shared/texts/ValkeyDeletedActivityLogEntryText.svelte';
-	import ValkeyUpdatedActivityLogEntryText from '../activity/shared/texts/ValkeyUpdatedActivityLogEntryText.svelte';
-	import VulnerabilityUpdatedActivityLogEntryText from '../activity/shared/texts/VulnerabilityUpdatedActivityLogEntryText.svelte';
+	import { activityTextComponent } from '../activity/activityTextComponents';
+	import type { TimelineModes } from '../activity/shared/texts/types';
 
 	interface Props {
 		item: ActivityLogEntryFragment;
+		mode?: TimelineModes;
 	}
 
-	let { item }: Props = $props();
+	let { item, mode = 'full' }: Props = $props();
 
 	let data = $derived(
 		fragment(
@@ -334,125 +288,39 @@
 
 	const Icon = $derived(icons[$data.__typename] || QuestionmarkIcon);
 
-	function textComponent(typename: string): Component<{ data: unknown }> {
-		switch (typename) {
-			case 'ApplicationDeletedActivityLogEntry':
-				return ApplicationDeletedActivityLogEntryText as Component<{ data: unknown }>;
-			case 'ApplicationCreatedActivityLogEntry':
-				return ApplicationCreatedActivityLogEntryText as Component<{ data: unknown }>;
-			case 'ApplicationRestartedActivityLogEntry':
-				return ApplicationRestartedActivityLogEntryText as Component<{ data: unknown }>;
-			case 'ApplicationScaledActivityLogEntry':
-				return ApplicationScaledActivityLogEntryText as Component<{ data: unknown }>;
-			case 'ApplicationUpdatedActivityLogEntry':
-				return ApplicationUpdatedActivityLogEntryText as Component<{ data: unknown }>;
-			case 'ClusterAuditActivityLogEntry':
-				return ClusterAuditActivityLogEntryText as Component<{ data: unknown }>;
-			case 'ConfigCreatedActivityLogEntry':
-				return ConfigCreatedActivityLogEntryText as Component<{ data: unknown }>;
-			case 'ConfigDeletedActivityLogEntry':
-				return ConfigDeletedActivityLogEntryText as Component<{ data: unknown }>;
-			case 'ConfigUpdatedActivityLogEntry':
-				return ConfigUpdatedActivityLogEntryText as Component<{ data: unknown }>;
-			case 'CredentialsActivityLogEntry':
-				return CredentialsActivityLogEntryText as Component<{ data: unknown }>;
-			case 'DeploymentActivityLogEntry':
-				return DeploymentActivityLogEntryText as Component<{ data: unknown }>;
-			case 'GenericKubernetesResourceActivityLogEntry':
-				return GenericKubernetesResourceActivityLogEntryText as Component<{ data: unknown }>;
-			case 'JobCreatedActivityLogEntry':
-				return JobCreatedActivityLogEntryText as Component<{ data: unknown }>;
-			case 'JobDeletedActivityLogEntry':
-				return JobDeletedActivityLogEntryText as Component<{ data: unknown }>;
-			case 'JobRunDeletedActivityLogEntry':
-				return JobRunDeletedActivityLogEntryText as Component<{ data: unknown }>;
-			case 'JobTriggeredActivityLogEntry':
-				return JobTriggeredActivityLogEntryText as Component<{ data: unknown }>;
-			case 'JobUpdatedActivityLogEntry':
-				return JobUpdatedActivityLogEntryText as Component<{ data: unknown }>;
-			case 'OpenSearchCreatedActivityLogEntry':
-				return OpenSearchCreatedActivityLogEntryText as Component<{ data: unknown }>;
-			case 'OpenSearchDeletedActivityLogEntry':
-				return OpenSearchDeletedActivityLogEntryText as Component<{ data: unknown }>;
-			case 'OpenSearchUpdatedActivityLogEntry':
-				return OpenSearchUpdatedActivityLogEntryText as Component<{ data: unknown }>;
-			case 'PostgresDeletedActivityLogEntry':
-				return PostgresDeletedActivityLogEntryText as Component<{ data: unknown }>;
-			case 'PostgresGrantAccessActivityLogEntry':
-				return PostgresGrantAccessActivityLogEntryText as Component<{ data: unknown }>;
-			case 'RepositoryAddedActivityLogEntry':
-				return RepositoryAddedActivityLogEntryText as Component<{ data: unknown }>;
-			case 'RepositoryRemovedActivityLogEntry':
-				return RepositoryRemovedActivityLogEntryText as Component<{ data: unknown }>;
-			case 'SecretUpdatedActivityLogEntry':
-				return SecretUpdatedActivityLogEntryText as Component<{ data: unknown }>;
-			case 'SecretCreatedActivityLogEntry':
-				return SecretCreatedActivityLogEntryText as Component<{ data: unknown }>;
-			case 'SecretDeletedActivityLogEntry':
-				return SecretDeletedActivityLogEntryText as Component<{ data: unknown }>;
-			case 'SecretValueAddedActivityLogEntry':
-				return SecretValueAddedActivityLogEntryText as Component<{ data: unknown }>;
-			case 'SecretValueRemovedActivityLogEntry':
-				return SecretValueRemovedActivityLogEntryText as Component<{ data: unknown }>;
-			case 'SecretValueUpdatedActivityLogEntry':
-				return SecretValueUpdatedActivityLogEntryText as Component<{ data: unknown }>;
-			case 'SecretValuesViewedActivityLogEntry':
-				return SecretValuesViewedActivityLogEntryText as Component<{ data: unknown }>;
-			case 'ServiceMaintenanceActivityLogEntry':
-				return ServiceMaintenanceActivityLogEntryText as Component<{ data: unknown }>;
-			case 'TeamConfirmDeleteKeyActivityLogEntry':
-				return TeamConfirmDeleteKeyActivityLogEntryText as Component<{ data: unknown }>;
-			case 'TeamCreateDeleteKeyActivityLogEntry':
-				return TeamCreateDeleteKeyActivityLogEntryText as Component<{ data: unknown }>;
-			case 'TeamCreatedActivityLogEntry':
-				return TeamCreatedActivityLogEntryText as Component<{ data: unknown }>;
-			case 'TeamDeployKeyUpdatedActivityLogEntry':
-				return TeamDeployKeyUpdatedActivityLogEntryText as Component<{ data: unknown }>;
-			case 'TeamEnvironmentUpdatedActivityLogEntry':
-				return TeamEnvironmentUpdatedActivityLogEntryText as Component<{ data: unknown }>;
-			case 'TeamMemberAddedActivityLogEntry':
-				return TeamMemberAddedActivityLogEntryText as Component<{ data: unknown }>;
-			case 'TeamMemberRemovedActivityLogEntry':
-				return TeamMemberRemovedActivityLogEntryText as Component<{ data: unknown }>;
-			case 'TeamMemberSetRoleActivityLogEntry':
-				return TeamMemberSetRoleActivityLogEntryText as Component<{ data: unknown }>;
-			case 'TeamUpdatedActivityLogEntry':
-				return TeamUpdatedActivityLogEntryText as Component<{ data: unknown }>;
-			case 'UnleashInstanceCreatedActivityLogEntry':
-				return UnleashInstanceCreatedActivityLogEntryText as Component<{ data: unknown }>;
-			case 'UnleashInstanceDeletedActivityLogEntry':
-				return UnleashInstanceDeletedActivityLogEntryText as Component<{ data: unknown }>;
-			case 'UnleashInstanceUpdatedActivityLogEntry':
-				return UnleashInstanceUpdatedActivityLogEntryText as Component<{ data: unknown }>;
-			case 'ValkeyCreatedActivityLogEntry':
-				return ValkeyCreatedActivityLogEntryText as Component<{ data: unknown }>;
-			case 'ValkeyDeletedActivityLogEntry':
-				return ValkeyDeletedActivityLogEntryText as Component<{ data: unknown }>;
-			case 'ValkeyUpdatedActivityLogEntry':
-				return ValkeyUpdatedActivityLogEntryText as Component<{ data: unknown }>;
-			case 'VulnerabilityUpdatedActivityLogEntry':
-				return VulnerabilityUpdatedActivityLogEntryText as Component<{ data: unknown }>;
-			default:
-				return DefaultText as Component<{ data: unknown }>;
-		}
-	}
-
-	const TextComponent = $derived(textComponent($data.__typename));
+	const TextComponent = $derived(activityTextComponent($data.__typename));
 </script>
 
-<ListItem interactive>
-	<div class="activity-log-list-item">
-		<Tooltip content={activityTooltip($data.__typename)}>
-			<div class="surface-icon surface-icon-timeline">
-				<Icon />
-			</div>
-		</Tooltip>
+{#if mode === 'full'}
+	<ListItem interactive highlight={page.url.searchParams.get('id') === $data.id}>
+		<div class="activity-log-list-item" id={$data.id}>
+			<Tooltip content={activityTooltip($data.__typename)}>
+				<div class="surface-icon surface-icon-timeline">
+					<Icon />
+				</div>
+			</Tooltip>
 
-		<div class="activity-text">
-			<TextComponent data={$data} />
+			<div class="activity-text">
+				<TextComponent data={$data} {mode} />
+			</div>
+		</div>
+	</ListItem>
+{:else}
+	<div class="activity-item">
+		<div class="activity-icon">
+			<Icon width="75%" height="75%" />
+		</div>
+		<div class="content">
+			{#if mode === 'sidebar'}
+				<BodyLong size="small">
+					<TextComponent data={$data} {mode} />
+				</BodyLong>
+			{:else}
+				<TextComponent data={$data} {mode} />
+			{/if}
 		</div>
 	</div>
-</ListItem>
+{/if}
 
 <style>
 	.activity-log-list-item {
@@ -471,5 +339,49 @@
 	.activity-text {
 		min-width: 0;
 		overflow-wrap: anywhere;
+	}
+
+	.activity-icon {
+		position: relative;
+		z-index: 1;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		width: 2rem;
+		height: 2rem;
+		font-size: 1rem;
+		flex-shrink: 0;
+		border-radius: var(--ax-radius-8);
+		color: var(--ax-text-brand-blue-decoration);
+		background: var(--ax-bg-brand-blue-softA);
+	}
+
+	.activity-item {
+		display: flex;
+		position: relative;
+		padding-bottom: 0.75rem;
+	}
+
+	.content {
+		flex: 1 1 auto;
+		min-width: 0;
+		overflow-wrap: anywhere;
+		padding: 0 0 0 var(--ax-space-8);
+	}
+
+	.activity-item:not(:last-child)::before {
+		background: var(--ax-border-neutral-subtleA);
+		content: '';
+		top: 2rem;
+		bottom: calc(-1 * var(--ax-space-4));
+		left: calc(1rem - 1px);
+		position: absolute;
+		width: 2px;
+	}
+
+	@media (max-width: 767px) {
+		.activity-item:not(:last-child)::before {
+			display: none;
+		}
 	}
 </style>

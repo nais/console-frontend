@@ -1,12 +1,14 @@
 <script lang="ts">
 	import Meta from '../../Meta.svelte';
 
-	import type { ActivityLogEntry } from './types';
+	import type { ActivityLogEntry, TimelineModes } from './types';
 
 	let {
-		data
+		data,
+		mode = 'full'
 	}: {
 		data: ActivityLogEntry<'TeamEnvironmentUpdatedActivityLogEntry'>;
+		mode?: TimelineModes;
 	} = $props();
 </script>
 
@@ -15,12 +17,12 @@
 	{#if data.environmentName}
 		in {data.environmentName}
 	{/if}.
-	{#if data.teamEnvironmentUpdated.updatedFields.length > 0}
+	{#if mode === 'full' && data.teamEnvironmentUpdated.updatedFields.length > 0}
 		{#each data.teamEnvironmentUpdated.updatedFields as field (field)}
 			<strong>{field.field}</strong>: Changed from <i>{field.oldValue}</i> to
 			<i>{field.newValue}</i>.
 		{/each}
 	{/if}
 
-	<Meta actor={data.actor} createdAt={data.createdAt} />
+	<Meta actor={data.actor} createdAt={data.createdAt} {mode} />
 </div>

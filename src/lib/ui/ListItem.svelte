@@ -4,8 +4,9 @@
 	const {
 		children,
 		href,
-		interactive = false
-	}: { children: Snippet; href?: string; interactive?: boolean } = $props();
+		interactive = false,
+		highlight = false
+	}: { children: Snippet; href?: string; interactive?: boolean; highlight?: boolean } = $props();
 </script>
 
 {#if href}
@@ -13,7 +14,7 @@
 		{@render children()}
 	</a>
 {:else}
-	<div class="list-item" class:interactive>
+	<div class="list-item" class:interactive class:highlight>
 		{@render children()}
 	</div>
 {/if}
@@ -63,5 +64,12 @@
 	a.list-item:focus-visible {
 		outline: 2px solid var(--ax-border-focus);
 		outline-offset: -2px;
+	}
+
+	.highlight {
+		background-color: var(--ax-accent-400);
+		padding-left: 0.5rem;
+		opacity: 1;
+		border-left-width: 4px;
 	}
 </style>

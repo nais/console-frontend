@@ -6,9 +6,7 @@
 		type ResourceActivityCardSecretFragment
 	} from '$houdini';
 	import SurfaceCard from '$lib/ui/SurfaceCard.svelte';
-
 	import ActivityTimeline from './ActivityTimeline.svelte';
-	import { sidebarTextComponent } from './sidebar/textComponent';
 
 	interface SecretProps {
 		resourceType: 'secret';
@@ -45,50 +43,16 @@
 					) @paginate(mode: Infinite) {
 						edges {
 							node {
-								__typename
 								id
 								actor
-								createdAt
 								message
+								createdAt
 								resourceName
 								resourceType
 								environmentName
 								teamSlug
-								... on SecretCreatedActivityLogEntry {
-									id
-								}
-								... on SecretDeletedActivityLogEntry {
-									id
-								}
-								... on SecretUpdatedActivityLogEntry {
-									secretUpdatedData: data {
-										updatedFields {
-											field
-											oldValue
-											newValue
-										}
-									}
-								}
-								... on SecretValueAddedActivityLogEntry {
-									secretValueAddedData: data {
-										valueName
-									}
-								}
-								... on SecretValueUpdatedActivityLogEntry {
-									secretValueUpdatedData: data {
-										valueName
-									}
-								}
-								... on SecretValueRemovedActivityLogEntry {
-									secretValueRemovedData: data {
-										valueName
-									}
-								}
-								... on SecretValuesViewedActivityLogEntry {
-									secretValuesViewedData: data {
-										reason
-									}
-								}
+								__typename
+								...ActivityLogEntryFragment
 							}
 						}
 					}
@@ -108,30 +72,16 @@
 					) @paginate(mode: Infinite) {
 						edges {
 							node {
-								__typename
 								id
 								actor
-								createdAt
 								message
+								createdAt
 								resourceName
 								resourceType
 								environmentName
 								teamSlug
-								... on ConfigCreatedActivityLogEntry {
-									id
-								}
-								... on ConfigDeletedActivityLogEntry {
-									id
-								}
-								... on ConfigUpdatedActivityLogEntry {
-									configUpdatedData: data {
-										updatedFields {
-											field
-											oldValue
-											newValue
-										}
-									}
-								}
+								__typename
+								...ActivityLogEntryFragment
 							}
 						}
 					}
@@ -168,11 +118,5 @@
 </script>
 
 <SurfaceCard title="Activity">
-	<ActivityTimeline
-		{entries}
-		{hasNextPage}
-		loading={loadingMore}
-		{loadMore}
-		textComponentFn={sidebarTextComponent}
-	/>
+	<ActivityTimeline {entries} {hasNextPage} loading={loadingMore} {loadMore} mode="sidebar" />
 </SurfaceCard>
