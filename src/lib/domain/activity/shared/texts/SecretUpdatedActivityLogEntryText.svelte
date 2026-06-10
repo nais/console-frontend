@@ -5,7 +5,7 @@
 
 	let {
 		data,
-		mode = 'full'
+		mode
 	}: {
 		data: ActivityLogEntry<'SecretUpdatedActivityLogEntry'>;
 		mode?: TimelineModes;

@@ -4,7 +4,6 @@
 	import { Loader } from '@nais/ds-svelte-community';
 
 	import ActivityTimeline from './ActivityTimeline.svelte';
-	import { workloadTextComponent } from './workload/textComponent';
 
 	interface Props {
 		teamSlug: string;
@@ -156,13 +155,7 @@
 			<Loader size="3xlarge" />
 		</div>
 	{:else}
-		<ActivityTimeline
-			{entries}
-			{hasNextPage}
-			loading={loadingMore}
-			{loadMore}
-			textComponentFn={workloadTextComponent}
-		/>
+		<ActivityTimeline {entries} {hasNextPage} loading={loadingMore} {loadMore} />
 	{/if}
 </SurfaceCard>
 

@@ -5,7 +5,7 @@
 
 	let {
 		data,
-		mode = 'full'
+		mode
 	}: {
 		data: ActivityLogEntry<'GenericKubernetesResourceActivityLogEntry'>;
 		mode?: TimelineModes;
@@ -38,7 +38,15 @@
 		</ReadMore>
 	{/if}
 
-	<Meta actor={data.actor} createdAt={data.createdAt} {mode} />
+	<Meta
+		actor={data.actor}
+		createdAt={data.createdAt}
+		{mode}
+		link={{
+			...data,
+			activityType: 'GENERIC_KUBERNETES_RESOURCE_CREATED'
+		}}
+	/>
 </div>
 
 <style>

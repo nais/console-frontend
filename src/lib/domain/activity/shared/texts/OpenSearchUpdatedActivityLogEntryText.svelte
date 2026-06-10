@@ -6,7 +6,7 @@
 
 	let {
 		data,
-		mode = 'full'
+		mode
 	}: {
 		data: ActivityLogEntry<'OpenSearchUpdatedActivityLogEntry'>;
 		mode?: TimelineModes;
@@ -54,7 +54,15 @@
 		</ReadMore>
 	{/if}
 
-	<Meta actor={data.actor} createdAt={data.createdAt} {mode} />
+	<Meta
+		actor={data.actor}
+		createdAt={data.createdAt}
+		{mode}
+		link={{
+			...data,
+			activityType: 'OPENSEARCH_UPDATED'
+		}}
+	/>
 </div>
 
 <style>

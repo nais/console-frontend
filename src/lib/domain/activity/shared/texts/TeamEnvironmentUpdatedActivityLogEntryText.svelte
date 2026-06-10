@@ -5,7 +5,7 @@
 
 	let {
 		data,
-		mode = 'full'
+		mode
 	}: {
 		data: ActivityLogEntry<'TeamEnvironmentUpdatedActivityLogEntry'>;
 		mode?: TimelineModes;
@@ -24,5 +24,13 @@
 		{/each}
 	{/if}
 
-	<Meta actor={data.actor} createdAt={data.createdAt} {mode} />
+	<Meta
+		actor={data.actor}
+		createdAt={data.createdAt}
+		{mode}
+		link={{
+			...data,
+			activityType: 'TEAM_ENVIRONMENT_UPDATED'
+		}}
+	/>
 </div>

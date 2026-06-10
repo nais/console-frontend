@@ -2,7 +2,6 @@
 	import type { ActivityLogEntryFragment } from '$houdini';
 	import ActivityLogListItem from '$lib/domain/list-items/ActivityLogListItem.svelte';
 	import { Button } from '@nais/ds-svelte-community';
-	import { type Component } from 'svelte';
 	import type { TimelineModes } from './shared/texts/types';
 
 	interface Props {
@@ -10,9 +9,6 @@
 		hasNextPage: boolean;
 		loading: boolean;
 		loadMore: () => void;
-		textComponentFn?: (
-			typename: string | null
-		) => Component<{ data: unknown; mode?: TimelineModes }>;
 		mode?: TimelineModes;
 	}
 
