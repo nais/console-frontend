@@ -6,7 +6,7 @@
 	let {
 		data
 	}: {
-		data: ActivityLogEntry<'ConfigUpdatedActivityLogEntry'>;
+		data: ActivityLogEntry<'SecretUpdatedActivityLogEntry'>;
 	} = $props();
 
 	const formatFieldName = (field: string): string => {
@@ -19,12 +19,12 @@
 </script>
 
 <div>
-	Updated config <strong>{data.resourceName}</strong>
+	Updated Secret <strong>{data.resourceName}</strong>
 	{#if data.environmentName}
 		in {data.environmentName}
 	{/if}.
-	{#if data.configUpdated?.updatedFields.length}
-		{#each data.configUpdated.updatedFields as field (field.field)}
+	{#if data.secretUpdated?.updatedFields?.length}
+		{#each data.secretUpdated.updatedFields as field (field.field)}
 			<strong>{formatFieldName(field.field)}</strong>
 			{#if field.oldValue != null && field.newValue != null}
 				changed from <i>{field.oldValue}</i> to <i>{field.newValue}</i>.

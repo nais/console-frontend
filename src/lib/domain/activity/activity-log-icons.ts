@@ -61,6 +61,7 @@ export const icons: { [typename: string]: Component } = {
 	SecretValueRemovedActivityLogEntry: PadlockLockedIcon,
 	SecretValueUpdatedActivityLogEntry: PadlockLockedIcon,
 	SecretValuesViewedActivityLogEntry: PadlockLockedIcon,
+	SecretUpdatedActivityLogEntry: PadlockLockedIcon,
 
 	/* Configs */
 	ConfigCreatedActivityLogEntry: FileTextIcon,

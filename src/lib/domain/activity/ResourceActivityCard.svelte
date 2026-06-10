@@ -60,6 +60,15 @@
 								... on SecretDeletedActivityLogEntry {
 									id
 								}
+								... on SecretUpdatedActivityLogEntry {
+									secretUpdatedData: data {
+										updatedFields {
+											field
+											oldValue
+											newValue
+										}
+									}
+								}
 								... on SecretValueAddedActivityLogEntry {
 									secretValueAddedData: data {
 										valueName
