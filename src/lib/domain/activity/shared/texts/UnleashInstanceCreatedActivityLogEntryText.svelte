@@ -14,5 +14,13 @@
 
 <div>
 	Unleash instance <a href="/team/{data.teamSlug}/unleash">{data.resourceName}</a> created
-	<Meta actor={data.actor} createdAt={data.createdAt} {mode} />
+	<Meta
+		actor={data.actor}
+		createdAt={data.createdAt}
+		{mode}
+		link={{
+			...data,
+			activityType: 'UNLEASH_INSTANCE_CREATED'
+		}}
+	/>
 </div>

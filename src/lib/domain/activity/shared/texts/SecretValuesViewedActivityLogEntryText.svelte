@@ -32,5 +32,13 @@
 		<BodyShort size="small"><em>Reason: {data.secretValuesViewed.reason}</em></BodyShort>
 	{/if}
 
-	<Meta actor={data.actor} createdAt={data.createdAt} {mode} />
+	<Meta
+		actor={data.actor}
+		createdAt={data.createdAt}
+		{mode}
+		link={{
+			...data,
+			activityType: 'SECRET_VALUES_VIEWED'
+		}}
+	/>
 </div>

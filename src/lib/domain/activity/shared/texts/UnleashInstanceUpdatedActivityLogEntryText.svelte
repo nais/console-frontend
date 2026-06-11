@@ -27,5 +27,13 @@
 		{environmentSuffix}.
 	{/if}
 
-	<Meta actor={data.actor} createdAt={data.createdAt} {mode} />
+	<Meta
+		actor={data.actor}
+		createdAt={data.createdAt}
+		{mode}
+		link={{
+			...data,
+			activityType: 'UNLEASH_INSTANCE_UPDATED'
+		}}
+	/>
 </div>
