@@ -1,6 +1,6 @@
 <script lang="ts">
 	import SurfaceCard from '$lib/ui/SurfaceCard.svelte';
-	import { Button, Tag } from '@nais/ds-svelte-community';
+	import { Button } from '@nais/ds-svelte-community';
 	import { NotePencilIcon } from '@nais/ds-svelte-community/icons';
 
 	interface Label {
@@ -33,7 +33,7 @@
 		{#if labels.length > 0}
 			<div class="labels">
 				{#each labels as label (label.key)}
-					<Tag size="small" variant="neutral">{label.key}={label.value}</Tag>
+					<span class="label" title="{label.key}={label.value}">{label.key}={label.value}</span>
 				{/each}
 			</div>
 		{:else}
@@ -45,8 +45,18 @@
 <style>
 	.labels {
 		display: flex;
-		flex-wrap: wrap;
+		flex-direction: column;
 		gap: var(--ax-space-4);
+		min-width: 0;
+	}
+
+	.label {
+		min-width: 0;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+		font-size: var(--ax-font-size-small);
+		color: var(--ax-text-neutral);
 	}
 
 	.empty {
