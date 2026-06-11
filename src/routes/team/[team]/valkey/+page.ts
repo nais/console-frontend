@@ -5,6 +5,7 @@ import {
 	ValkeyTier,
 	type ValkeyFilter
 } from '$houdini';
+import { parseLabelsParam } from '$lib/domain/labels/labels';
 import { urlToOrderDirection, urlToOrderField } from '$lib/ui/OrderByMenu.svelte';
 import { addPageMeta } from '$lib/utils/pageMeta';
 import { error } from '@sveltejs/kit';
@@ -39,6 +40,7 @@ export async function load(event) {
 		?.split(',')
 		.filter((t) => validValkeyTiers.has(t));
 	const tiers = tiersParam?.length ? tiersParam : undefined;
+	const labels = parseLabelsParam(event.url.searchParams.get('labels'));
 
 	return {
 		...(await addPageMeta(event, {
@@ -50,7 +52,7 @@ export async function load(event) {
 			event,
 			variables: {
 				team: event.params.team,
-				filter: { environments, tiers } as ValkeyFilter,
+				filter: { environments, tiers, labels } as ValkeyFilter,
 				orderBy: {
 					field: urlToOrderField(ValkeyOrderField, ValkeyOrderField.ISSUES, event.url),
 					direction: urlToOrderDirection(event.url, OrderDirection.DESC)

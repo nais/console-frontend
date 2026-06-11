@@ -1,16 +1,18 @@
 <script lang="ts">
 	import Meta from '../../Meta.svelte';
 
-	import type { ActivityLogEntry } from './types';
+	import type { ActivityLogEntry, TimelineModes } from './types';
 
 	let {
-		data
+		data,
+		mode
 	}: {
 		data: ActivityLogEntry<'SecretDeletedActivityLogEntry'>;
+		mode?: TimelineModes;
 	} = $props();
 </script>
 
 <div>
 	Secret <strong>{data.resourceName}</strong> was deleted
-	<Meta actor={data.actor} createdAt={data.createdAt} />
+	<Meta actor={data.actor} createdAt={data.createdAt} {mode} />
 </div>

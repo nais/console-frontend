@@ -35,6 +35,11 @@ query KafkaTopics(
 					value
 					count
 				}
+				labels {
+					key
+					value
+					count
+				}
 			}
 
 			nodes {

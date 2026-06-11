@@ -1,14 +1,15 @@
 <script lang="ts">
-	import Meta from '../../Meta.svelte';
 	import { ReadMore } from '@nais/ds-svelte-community';
-	import { resourceTypeToText } from '../../sidebar/texts/utils';
-	import { activityLogResourceLink } from '../../utils';
-	import type { ActivityLogEntry } from './types';
+	import Meta from '../../Meta.svelte';
+	import { activityLogResourceLink, resourceTypeToText } from '../../utils';
+	import type { ActivityLogEntry, TimelineModes } from './types';
 
 	let {
-		data
+		data,
+		mode
 	}: {
 		data: ActivityLogEntry<'OpenSearchUpdatedActivityLogEntry'>;
+		mode?: TimelineModes;
 	} = $props();
 </script>
 
@@ -30,7 +31,7 @@
 	{#if data.environmentName}
 		in {data.environmentName}
 	{/if}.
-	{#if data.opensearchData.updatedFields.length > 0}
+	{#if mode === 'full' && data.opensearchData.updatedFields.length > 0}
 		<ReadMore header="Updated fields">
 			<dl>
 				{#each data.opensearchData.updatedFields as field (field)}
@@ -53,7 +54,15 @@
 		</ReadMore>
 	{/if}
 
-	<Meta actor={data.actor} createdAt={data.createdAt} />
+	<Meta
+		actor={data.actor}
+		createdAt={data.createdAt}
+		{mode}
+		link={{
+			...data,
+			activityType: 'OPENSEARCH_UPDATED'
+		}}
+	/>
 </div>
 
 <style>

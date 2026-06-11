@@ -5,7 +5,7 @@ import DefaultText from './texts/DefaultText.svelte';
 import DeploymentActivityLogEntryText from './texts/DeploymentActivityLogEntryText.svelte';
 import JobActivityLogEntryText from './texts/JobActivityLogEntryText.svelte';
 
-export function workloadTextComponent(kind: string): Component<{ data: unknown }> {
+export function workloadTextComponent(kind: string | null): Component<{ data: unknown }> {
 	switch (kind) {
 		case 'DeploymentActivityLogEntry':
 			return DeploymentActivityLogEntryText as Component<{ data: unknown }>;

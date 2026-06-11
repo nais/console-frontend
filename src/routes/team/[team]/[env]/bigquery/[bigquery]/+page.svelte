@@ -1,4 +1,5 @@
 <script lang="ts">
+	import Labels from '$lib/domain/labels/Labels.svelte';
 	import WorkloadLink from '$lib/domain/workload/WorkloadLink.svelte';
 	import WarningIcon from '$lib/icons/WarningIcon.svelte';
 	import GraphErrors from '$lib/ui/GraphErrors.svelte';
@@ -123,6 +124,7 @@
 					</div>
 				{/if}
 			</SurfaceCard>
+			<Labels labels={bq.labels ?? []} />
 		</div>
 	</div>
 {/if}

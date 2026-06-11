@@ -6,9 +6,7 @@
 		type PersistenceActivityCardValkeyFragment
 	} from '$houdini';
 	import SurfaceCard from '$lib/ui/SurfaceCard.svelte';
-
 	import ActivityTimeline from './ActivityTimeline.svelte';
-	import { sidebarTextComponent } from './sidebar/textComponent';
 
 	interface ValkeyProps {
 		resourceType: 'valkey';
@@ -43,39 +41,16 @@
 					) @paginate(mode: Infinite) {
 						edges {
 							node {
-								__typename
 								id
 								actor
-								createdAt
 								message
+								createdAt
 								resourceName
 								resourceType
 								environmentName
 								teamSlug
-								... on ValkeyCreatedActivityLogEntry {
-									id
-								}
-								... on ValkeyDeletedActivityLogEntry {
-									id
-								}
-								... on ValkeyUpdatedActivityLogEntry {
-									valkeyData: data {
-										updatedFields {
-											field
-											newValue
-											oldValue
-										}
-									}
-								}
-								... on ServiceMaintenanceActivityLogEntry {
-									id
-								}
-								... on CredentialsActivityLogEntry {
-									credentialsData: data {
-										permission
-										ttl
-									}
-								}
+								__typename
+								...ActivityLogEntryFragment
 							}
 						}
 					}
@@ -105,39 +80,16 @@
 					) @paginate(mode: Infinite) {
 						edges {
 							node {
-								__typename
 								id
 								actor
-								createdAt
 								message
+								createdAt
 								resourceName
 								resourceType
 								environmentName
 								teamSlug
-								... on OpenSearchCreatedActivityLogEntry {
-									id
-								}
-								... on OpenSearchDeletedActivityLogEntry {
-									id
-								}
-								... on OpenSearchUpdatedActivityLogEntry {
-									opensearchData: data {
-										updatedFields {
-											field
-											newValue
-											oldValue
-										}
-									}
-								}
-								... on ServiceMaintenanceActivityLogEntry {
-									id
-								}
-								... on CredentialsActivityLogEntry {
-									credentialsData: data {
-										permission
-										ttl
-									}
-								}
+								__typename
+								...ActivityLogEntryFragment
 							}
 						}
 					}
@@ -174,11 +126,5 @@
 </script>
 
 <SurfaceCard title="Activity">
-	<ActivityTimeline
-		{entries}
-		{hasNextPage}
-		loading={loadingMore}
-		{loadMore}
-		textComponentFn={sidebarTextComponent}
-	/>
+	<ActivityTimeline {entries} {hasNextPage} loading={loadingMore} {loadMore} />
 </SurfaceCard>

@@ -3,6 +3,7 @@
 	import { ActivityLogActivityType, ConfigOrderField, OrderDirection } from '$houdini';
 	import { docURL } from '$lib/doc';
 	import TeamActivityCard from '$lib/domain/activity/TeamActivityCard.svelte';
+	import LabelFacets from '$lib/domain/labels/LabelFacets.svelte';
 	import { envTagVariant } from '$lib/envTagVariant';
 	import ExternalLink from '$lib/ui/ExternalLink.svelte';
 	import GraphErrors from '$lib/ui/GraphErrors.svelte';
@@ -40,6 +41,9 @@
 	const selectedEnvironments: string[] = $derived(
 		page.url.searchParams.get('environments')?.split(',').filter(Boolean) ?? []
 	);
+	let selectedLabels: string[] = $derived(
+		page.url.searchParams.get('labels')?.split(',').filter(Boolean) ?? []
+	);
 
 	const inUseFacets = $derived($Configs.data?.team.configs.facets?.inUse ?? []);
 	const environmentFacets = $derived($Configs.data?.team.configs.facets?.environments ?? []);
@@ -63,18 +67,28 @@
 		changeParams({ environments: next.join(','), after: '', before: '' }, { noScroll: true });
 	}
 
+	function handleLabelsChange(selected: string[]) {
+		changeQuery({
+			labels: selected.join(','),
+			after: '',
+			before: ''
+		});
+	}
+
 	const changeQuery = (
 		params: {
 			after?: string;
 			before?: string;
 			newFilter?: string;
+			labels?: string;
 		} = {}
 	) => {
 		changeParams({
 			before: params.before ?? before,
 			after: params.after ?? after,
 			nameFilter: params.newFilter ?? filter,
-			environments: selectedEnvironments.join(',')
+			environments: selectedEnvironments.join(','),
+			labels: params.labels ?? (selectedLabels.join(',') || '')
 		});
 	};
 
@@ -264,6 +278,13 @@
 								{/each}
 							</div>
 						</details>
+					{/if}
+					{#if ($Configs.data?.team.configs.facets?.labels ?? []).length > 0}
+						<LabelFacets
+							labels={$Configs.data?.team.configs.facets?.labels ?? []}
+							{selectedLabels}
+							onLabelsChange={handleLabelsChange}
+						/>
 					{/if}
 				</ListFilters>
 			</SurfaceCard>

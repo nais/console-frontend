@@ -6,6 +6,10 @@ query SqlInstance($env: String!, $team: Slug!, $name: String!) {
 				__typename
 				id
 				name
+				labels {
+					key
+					value
+				}
 				teamEnvironment {
 					environment {
 						name

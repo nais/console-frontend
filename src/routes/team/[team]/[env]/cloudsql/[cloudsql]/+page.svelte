@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { page } from '$app/state';
 	import StaticUtilizationDonut from '$lib/chart/StaticUtilizationDonut.svelte';
+	import Labels from '$lib/domain/labels/Labels.svelte';
 	import IssueListItem from '$lib/domain/list-items/IssueListItem.svelte';
 	import WorkloadLink from '$lib/domain/workload/WorkloadLink.svelte';
 	import ExternalLink from '$lib/ui/ExternalLink.svelte';
@@ -135,6 +136,7 @@
 					<BodyShort>Instance does not belong to any workload</BodyShort>
 				{/if}
 			</SurfaceCard>
+			<Labels labels={instance.labels ?? []} />
 		</div>
 	</div>
 {/if}

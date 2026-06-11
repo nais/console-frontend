@@ -5,6 +5,7 @@ import {
 	OrderDirection,
 	type OpenSearchFilter
 } from '$houdini';
+import { parseLabelsParam } from '$lib/domain/labels/labels';
 import { urlToOrderDirection, urlToOrderField } from '$lib/ui/OrderByMenu.svelte';
 import { addPageMeta } from '$lib/utils/pageMeta';
 import { error } from '@sveltejs/kit';
@@ -40,6 +41,7 @@ export async function load(event) {
 		?.split(',')
 		.filter((t) => validOpenSearchTiers.has(t));
 	const tiers = tiersParam?.length ? tiersParam : undefined;
+	const labels = parseLabelsParam(url.searchParams.get('labels'));
 
 	return {
 		...(await addPageMeta(event, {
@@ -51,7 +53,7 @@ export async function load(event) {
 			event,
 			variables: {
 				team: event.params.team,
-				filter: { environments, tiers } as OpenSearchFilter,
+				filter: { environments, tiers, labels } as OpenSearchFilter,
 				orderBy: {
 					field: urlToOrderField(OpenSearchOrderField, OpenSearchOrderField.ISSUES, event.url),
 					direction: urlToOrderDirection(event.url, OrderDirection.DESC)

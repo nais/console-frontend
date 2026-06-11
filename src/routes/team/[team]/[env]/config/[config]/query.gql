@@ -9,6 +9,10 @@ query Config($config: String!, $team: Slug!, $env: String!) @cache(policy: Netwo
 		environment(name: $env) {
 			config(name: $config) {
 				name
+				labels {
+					key
+					value
+				}
 				teamEnvironment {
 					environment {
 						name

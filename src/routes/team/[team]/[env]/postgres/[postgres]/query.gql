@@ -5,6 +5,10 @@ query PostgresInstance($env: String!, $team: Slug!, $name: String!) {
 			postgresInstance(name: $name) {
 				id
 				name
+				labels {
+					key
+					value
+				}
 				workloads(first: 50) {
 					pageInfo {
 						totalCount

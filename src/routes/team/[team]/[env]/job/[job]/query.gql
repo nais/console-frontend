@@ -5,6 +5,10 @@ query Job($job: String!, $team: Slug!, $env: String!) @cache(policy: NetworkOnly
 				__typename
 				id
 				name
+				labels {
+					key
+					value
+				}
 				deletionStartedAt
 				team {
 					slug

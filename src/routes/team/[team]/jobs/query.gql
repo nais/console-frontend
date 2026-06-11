@@ -36,6 +36,11 @@ query Jobs(
 					state
 					count
 				}
+				labels {
+					key
+					value
+					count
+				}
 			}
 
 			nodes {

@@ -143,6 +143,12 @@ storageGB = "${storage}"
 		{/snippet}
 	</TextField>
 
+	<input
+		type="hidden"
+		name="labels"
+		value={JSON.stringify($UpdateOpenSearchData.data?.team.environment.openSearch.labels ?? [])}
+	/>
+
 	<BodyShort>
 		Estimated cost: <strong
 			>{openSearchPlanCosts[tier][memory].toLocaleString('no-NO', {

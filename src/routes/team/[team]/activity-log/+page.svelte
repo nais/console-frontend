@@ -8,6 +8,7 @@
 	import Pagination from '$lib/ui/Pagination.svelte';
 	import SurfaceCard from '$lib/ui/SurfaceCard.svelte';
 	import { changeParams } from '$lib/utils/searchparams';
+	import { tick } from 'svelte';
 	import type { PageProps } from './$types';
 
 	let { data }: PageProps = $props();
@@ -58,16 +59,43 @@
 			{ noScroll: true }
 		);
 	}
+
+	let wrapperEl: HTMLElement | undefined = $state(undefined);
+
+	$effect(() => {
+		if (!wrapperEl) return;
+
+		const deployId = page.url.searchParams.get('id');
+		if (!deployId) return;
+
+		let attempts = 0;
+		let timeout: ReturnType<typeof setTimeout> | undefined;
+
+		const tryScroll = async () => {
+			await tick();
+			const el = wrapperEl?.querySelector(`#${CSS.escape(deployId)}`);
+			if (el) {
+				el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+			} else if (attempts++ < 10) {
+				timeout = setTimeout(tryScroll, 100);
+			}
+		};
+
+		timeout = setTimeout(tryScroll, 100);
+		return () => {
+			if (timeout) clearTimeout(timeout);
+		};
+	});
 </script>
 
 <div>
 	{#if $ActivityLog.data}
 		{@const ae = $ActivityLog.data.team.activityLog}
 		<div class="layout-two-column">
-			<div>
+			<div bind:this={wrapperEl}>
 				<List title="Activity Log" count={ae.pageInfo.totalCount}>
 					{#each ae.nodes || [] as item (item.id)}
-						<ActivityLogItem {item} />
+						<ActivityLogItem {item} mode="full" />
 					{/each}
 				</List>
 				{#if ae.pageInfo.hasPreviousPage || ae.pageInfo.hasNextPage}

@@ -32,8 +32,8 @@
 			Job triggered.
 		{:else if data.__typename === 'JobUpdatedActivityLogEntry'}
 			Job updated.
-			{#if data.jobUpdatedData?.changedFields?.length}
-				{#each data.jobUpdatedData.changedFields as field (field.field)}
+			{#if data.jobUpdated?.changedFields?.length}
+				{#each data.jobUpdated.changedFields as field (field.field)}
 					<strong>{field.field}</strong>
 					{#if field.oldValue != null && field.newValue != null}
 						changed from <i>{field.oldValue}</i> to <i>{field.newValue}</i>.

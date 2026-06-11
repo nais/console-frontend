@@ -1,16 +1,18 @@
 <script lang="ts">
 	import Meta from '../../Meta.svelte';
 
-	import type { ActivityLogEntry } from './types';
+	import type { ActivityLogEntry, TimelineModes } from './types';
 
 	let {
-		data
+		data,
+		mode
 	}: {
 		data: ActivityLogEntry<'TeamDeployKeyUpdatedActivityLogEntry'>;
+		mode?: TimelineModes;
 	} = $props();
 </script>
 
 <div>
 	Updated deploy key for team <a href="/team/{data.teamSlug}">{data.resourceName}</a>
-	<Meta actor={data.actor} createdAt={data.createdAt} />
+	<Meta actor={data.actor} createdAt={data.createdAt} {mode} />
 </div>

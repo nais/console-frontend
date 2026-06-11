@@ -148,6 +148,12 @@ ${notifyKeyspaceEvents ? `notify_keyspace_events = "${notifyKeyspaceEvents}"` : 
 		</Alert>
 	{/if}
 
+	<input
+		type="hidden"
+		name="labels"
+		value={JSON.stringify($UpdateValkeyData.data?.team.environment.valkey.labels ?? [])}
+	/>
+
 	<Button type="submit">Save changes</Button>
 </form>
 

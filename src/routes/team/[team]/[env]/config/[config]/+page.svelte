@@ -22,6 +22,9 @@
 	} from '@nais/ds-svelte-community';
 
 	import ResourceActivityCard from '$lib/domain/activity/ResourceActivityCard.svelte';
+	import Labels from '$lib/domain/labels/Labels.svelte';
+	import LabelsEditorModal from '$lib/domain/labels/LabelsEditorModal.svelte';
+	import type { Label } from '$lib/domain/labels/labels';
 	import WorkloadLink from '$lib/domain/workload/WorkloadLink.svelte';
 	import GraphErrors from '$lib/ui/GraphErrors.svelte';
 	import ManifestCard from '$lib/ui/ManifestCard.svelte';
@@ -46,11 +49,40 @@
 	let deleteConfigOpen = $state(false);
 	let deleteValueOpen = $state(false);
 	let editValueOpen = $state(false);
+	let labelsModalOpen = $state(false);
 	let manifestMode: string = $state('env');
 
 	let keyToDelete = $state('');
 	let keyToEdit = $state('');
 	let valueToEdit = $state('');
+
+	const updateConfigLabels = graphql(`
+		mutation updateConfigLabels(
+			$name: String!
+			$team: Slug!
+			$env: String!
+			$labels: [ResourceLabelInput!]!
+		) {
+			updateConfig(
+				input: { name: $name, teamSlug: $team, environmentName: $env, labels: $labels }
+			) {
+				config {
+					id
+					labels {
+						key
+						value
+					}
+				}
+			}
+		}
+	`);
+
+	const saveLabels = async (labels: Label[]) => {
+		await updateConfigLabels.mutate({ name: configName, team: teamSlug, env: env, labels });
+		if ($updateConfigLabels.errors) return;
+		labelsModalOpen = false;
+		Config.fetch();
+	};
 
 	const updateConfigValue = graphql(`
 		mutation updateConfigValue(
@@ -412,9 +444,23 @@
 				</ToggleGroup>
 			</ManifestCard>
 			<Workloads workloads={config.workloads} />
+			<Labels
+				labels={config.labels ?? []}
+				onEdit={canMutate ? () => (labelsModalOpen = true) : undefined}
+			/>
 			<ResourceActivityCard resourceType="config" resource={config} />
 		</div>
 	</div>
+
+	{#if labelsModalOpen}
+		<LabelsEditorModal
+			labels={config.labels}
+			title="Edit config labels"
+			errors={$updateConfigLabels.errors}
+			onsave={saveLabels}
+			onclose={() => (labelsModalOpen = false)}
+		/>
+	{/if}
 {/if}
 <Modal bind:open={editValueOpen} onclose={cancelEditValue} width="medium">
 	{#snippet header()}

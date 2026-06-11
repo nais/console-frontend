@@ -32,6 +32,11 @@ query BigQuery(
 					value
 					count
 				}
+				labels {
+					key
+					value
+					count
+				}
 			}
 			nodes {
 				id

@@ -1,40 +1,24 @@
 <script lang="ts">
+	import type { ActivityLogEntryFragment } from '$houdini';
+	import ActivityLogListItem from '$lib/domain/list-items/ActivityLogListItem.svelte';
 	import { Button } from '@nais/ds-svelte-community';
-	import { RocketIcon } from '@nais/ds-svelte-community/icons';
-	import type { Component } from 'svelte';
-
-	import { icons } from './activity-log-icons';
-
-	interface Entry {
-		id: string;
-		__typename: string;
-		[key: string]: unknown;
-	}
+	import type { TimelineModes } from './shared/texts/types';
 
 	interface Props {
-		entries: Entry[];
+		entries: ({ id: string } & ActivityLogEntryFragment)[];
 		hasNextPage: boolean;
 		loading: boolean;
 		loadMore: () => void;
-		textComponentFn: (typename: string) => Component<{ data: unknown }>;
+		mode?: TimelineModes;
 	}
 
-	let { entries, hasNextPage, loading, loadMore, textComponentFn }: Props = $props();
+	let { entries, hasNextPage, loading, loadMore, mode = 'sidebar' }: Props = $props();
 </script>
 
 <div class="timeline">
 	{#if entries.length > 0}
 		{#each entries as entry (entry.id)}
-			{@const Icon = icons[entry.__typename] || RocketIcon}
-			{@const TextComponent = textComponentFn(entry.__typename)}
-			<div class="activity-item">
-				<div class="activity-icon">
-					<Icon width="75%" height="75%" />
-				</div>
-				<div class="content">
-					<TextComponent data={entry} />
-				</div>
-			</div>
+			<ActivityLogListItem item={entry} {mode} />
 		{/each}
 
 		{#if hasNextPage}
@@ -55,44 +39,6 @@
 		min-width: 0;
 	}
 
-	.activity-icon {
-		position: relative;
-		z-index: 1;
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		width: 2rem;
-		height: 2rem;
-		font-size: 1rem;
-		flex-shrink: 0;
-		border-radius: var(--ax-radius-8);
-		color: var(--ax-text-brand-blue-decoration);
-		background: var(--ax-bg-brand-blue-softA);
-	}
-
-	.activity-item {
-		display: flex;
-		position: relative;
-		padding-bottom: 0.75rem;
-	}
-
-	.content {
-		flex: 1 1 auto;
-		min-width: 0;
-		overflow-wrap: anywhere;
-		padding: 0 0 0 var(--ax-space-8);
-	}
-
-	.activity-item:not(:last-child)::before {
-		background: var(--ax-border-neutral-subtleA);
-		content: '';
-		top: 2rem;
-		bottom: calc(-1 * var(--ax-space-4));
-		left: calc(1rem - 1px);
-		position: absolute;
-		width: 2px;
-	}
-
 	.empty {
 		text-align: center;
 		color: var(--ax-text-neutral);
@@ -104,11 +50,5 @@
 		display: flex;
 		justify-content: center;
 		padding-top: var(--ax-space-4);
-	}
-
-	@media (max-width: 767px) {
-		.activity-item:not(:last-child)::before {
-			display: none;
-		}
 	}
 </style>

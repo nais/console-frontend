@@ -76,9 +76,16 @@
 	const selectedTiers: string[] = $derived(
 		page.url.searchParams.get('tiers')?.split(',').filter(Boolean) ?? []
 	);
+	let selectedLabels: string[] = $derived(
+		page.url.searchParams.get('labels')?.split(',').filter(Boolean) ?? []
+	);
 
 	function handleEnvironmentsChange(selected: string[]) {
 		changeParams({ environments: selected.join(','), after: '', before: '' }, { noScroll: true });
+	}
+
+	function handleLabelsChange(selected: string[]) {
+		changeParams({ labels: selected.join(','), after: '', before: '' }, { noScroll: true });
 	}
 
 	const tierFacets = $derived($OpenSearch.data?.team.openSearches.facets?.tiers ?? []);
@@ -211,9 +218,12 @@
 					{currentSortField}
 					{currentSortDirection}
 					environments={$OpenSearch.data?.team.openSearches.facets?.environments ?? []}
+					labels={$OpenSearch.data?.team.openSearches.facets?.labels ?? []}
 					{selectedEnvironments}
+					{selectedLabels}
 					onSort={(field) => setSort(field as OpenSearchOrderFieldOptions)}
 					onEnvironmentsChange={handleEnvironmentsChange}
+					onLabelsChange={handleLabelsChange}
 				>
 					{#if displayTierFacets.length > 0}
 						<details class="filter-section" open>

@@ -11,6 +11,10 @@ query UpdateOpenSearchData($environment: String!, $team: Slug!, $name: String!)
 					desiredMajor
 				}
 				storageGB
+				labels {
+					key
+					value
+				}
 			}
 		}
 	}

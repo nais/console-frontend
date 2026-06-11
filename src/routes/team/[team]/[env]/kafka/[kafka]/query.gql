@@ -11,6 +11,10 @@ query KafkaTopic(
 				id
 				__typename
 				name
+				labels {
+					key
+					value
+				}
 				teamEnvironment {
 					environment {
 						name

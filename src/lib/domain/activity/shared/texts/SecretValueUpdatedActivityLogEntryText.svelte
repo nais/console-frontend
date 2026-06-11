@@ -2,12 +2,14 @@
 	import Meta from '../../Meta.svelte';
 
 	import { activityLogResourceLink } from '../../utils';
-	import type { ActivityLogEntry } from './types';
+	import type { ActivityLogEntry, TimelineModes } from './types';
 
 	let {
-		data
+		data,
+		mode
 	}: {
 		data: ActivityLogEntry<'SecretValueUpdatedActivityLogEntry'>;
+		mode?: TimelineModes;
 	} = $props();
 </script>
 
@@ -26,5 +28,13 @@
 		{data.resourceName}
 	{/if}
 	was updated
-	<Meta actor={data.actor} createdAt={data.createdAt} />
+	<Meta
+		actor={data.actor}
+		createdAt={data.createdAt}
+		{mode}
+		link={{
+			...data,
+			activityType: 'SECRET_VALUE_UPDATED'
+		}}
+	/>
 </div>

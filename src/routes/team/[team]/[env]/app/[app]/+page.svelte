@@ -3,6 +3,7 @@
 	import WorkloadActivityCard from '$lib/domain/activity/WorkloadActivityCard.svelte';
 	import CostOverviewChart from '$lib/domain/cost/CostOverviewChart.svelte';
 	import CriticalIssuesCard from '$lib/domain/issues/CriticalIssuesCard.svelte';
+	import Labels from '$lib/domain/labels/Labels.svelte';
 	import Persistence from '$lib/domain/persistence/Persistence.svelte';
 	import Configs from '$lib/domain/resources/Configs.svelte';
 	import Secrets from '$lib/domain/resources/Secrets.svelte';
@@ -103,6 +104,7 @@
 					<Configs {environment} workload={app?.name ?? ''} {teamSlug} />
 					<Secrets workload={app?.name ?? ''} {environment} {teamSlug} />
 				{/if}
+				<Labels labels={app.labels ?? []} />
 				{#if environment && application}
 					<WorkloadActivityCard
 						{teamSlug}

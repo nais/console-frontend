@@ -1,4 +1,5 @@
 <script lang="ts">
+	import Labels from '$lib/domain/labels/Labels.svelte';
 	import WorkloadLink from '$lib/domain/workload/WorkloadLink.svelte';
 	import GraphErrors from '$lib/ui/GraphErrors.svelte';
 
@@ -45,6 +46,7 @@
 	{@const topic = $KafkaTopic.data.team.environment.kafkaTopic}
 
 	<div class="content">
+		<Labels labels={topic.labels ?? []} />
 		{#if topic.configuration}
 			<section aria-labelledby="topic-config-heading">
 				<Heading as="h2" id="topic-config-heading" size="medium" spacing

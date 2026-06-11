@@ -68,12 +68,19 @@
 	const selectedHighAvailability: string = $derived(
 		page.url.searchParams.get('highAvailability') ?? ''
 	);
+	let selectedLabels: string[] = $derived(
+		page.url.searchParams.get('labels')?.split(',').filter(Boolean) ?? []
+	);
 
 	function handleEnvironmentsChange(selected: string[]) {
 		changeParams({ environments: selected.join(','), after: '', before: '' }, { noScroll: true });
 	}
 	function handleStatesChange(selected: string[]) {
 		changeParams({ states: selected.join(','), after: '', before: '' }, { noScroll: true });
+	}
+
+	function handleLabelsChange(selected: string[]) {
+		changeParams({ labels: selected.join(','), after: '', before: '' }, { noScroll: true });
 	}
 
 	const majorVersionFacets = $derived(
@@ -195,10 +202,13 @@
 					states={$PostgresInstances.data?.team.postgresInstances.facets?.states ?? []}
 					{selectedStates}
 					environments={$PostgresInstances.data?.team.postgresInstances.facets?.environments ?? []}
+					labels={$PostgresInstances.data?.team.postgresInstances.facets?.labels ?? []}
 					{selectedEnvironments}
+					{selectedLabels}
 					onSort={(field) => setSort(field as PostgresOrderFieldOptions)}
 					onStatesChange={handleStatesChange}
 					onEnvironmentsChange={handleEnvironmentsChange}
+					onLabelsChange={handleLabelsChange}
 				>
 					{#if displayMajorVersionFacets.length > 0}
 						<details class="filter-section" open>

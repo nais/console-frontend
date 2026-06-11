@@ -34,6 +34,10 @@
 		page.url.searchParams.get('states')?.split(',').filter(Boolean) ?? []
 	);
 
+	let selectedLabels: string[] = $derived(
+		page.url.searchParams.get('labels')?.split(',').filter(Boolean) ?? []
+	);
+
 	const sortFields: { value: JobOrderField$options; label: string }[] = [
 		{ value: JobOrderField.ISSUES, label: 'Issues' },
 		{ value: JobOrderField.NAME, label: 'Name' },
@@ -78,6 +82,7 @@
 			newFilter?: string;
 			environments?: string;
 			states?: string;
+			labels?: string;
 		} = {}
 	) => {
 		changeParams(
@@ -86,7 +91,8 @@
 				after: params.after ?? after,
 				filter: params.newFilter ?? filter,
 				environments: params.environments ?? (selectedEnvironments.join(',') || ''),
-				states: params.states ?? (selectedStates.join(',') || '')
+				states: params.states ?? (selectedStates.join(',') || ''),
+				labels: params.labels ?? (selectedLabels.join(',') || '')
 			},
 			{ noScroll: true }
 		);
@@ -103,6 +109,14 @@
 	function handleEnvironmentsChange(selected: string[]) {
 		changeQuery({
 			environments: selected.join(','),
+			after: '',
+			before: ''
+		});
+	}
+
+	function handleLabelsChange(selected: string[]) {
+		changeQuery({
+			labels: selected.join(','),
 			after: '',
 			before: ''
 		});
@@ -147,8 +161,10 @@
 				{currentSortDirection}
 				states={$Jobs.data?.team.jobs.facets?.states ?? []}
 				environments={$Jobs.data?.team.jobs.facets?.environments ?? []}
+				labels={$Jobs.data?.team.jobs.facets?.labels ?? []}
 				{selectedStates}
 				{selectedEnvironments}
+				{selectedLabels}
 				onFilterInput={(v) => (filter = v)}
 				onFilterSubmit={() => changeQuery({ newFilter: filter })}
 				onFilterClear={() => {
@@ -158,6 +174,7 @@
 				onSort={(field) => setSort(field as JobOrderField$options)}
 				onStatesChange={handleStatesChange}
 				onEnvironmentsChange={handleEnvironmentsChange}
+				onLabelsChange={handleLabelsChange}
 			/>
 		</SurfaceCard>
 	</div>

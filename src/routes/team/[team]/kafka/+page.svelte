@@ -55,9 +55,16 @@
 	const selectedPools: string[] = $derived(
 		page.url.searchParams.get('pools')?.split(',').filter(Boolean) ?? []
 	);
+	let selectedLabels: string[] = $derived(
+		page.url.searchParams.get('labels')?.split(',').filter(Boolean) ?? []
+	);
 
 	function handleEnvironmentsChange(selected: string[]) {
 		changeParams({ environments: selected.join(','), after: '', before: '' }, { noScroll: true });
+	}
+
+	function handleLabelsChange(selected: string[]) {
+		changeParams({ labels: selected.join(','), after: '', before: '' }, { noScroll: true });
 	}
 
 	const poolFacets = $derived($KafkaTopics.data?.team.kafkaTopics.facets?.pools ?? []);
@@ -137,9 +144,12 @@
 					{currentSortField}
 					{currentSortDirection}
 					environments={$KafkaTopics.data?.team.kafkaTopics.facets?.environments ?? []}
+					labels={$KafkaTopics.data?.team.kafkaTopics.facets?.labels ?? []}
 					{selectedEnvironments}
+					{selectedLabels}
 					onSort={(field) => setSort(field as KafkaTopicOrderFieldOptions)}
 					onEnvironmentsChange={handleEnvironmentsChange}
+					onLabelsChange={handleLabelsChange}
 				>
 					{#if displayPoolFacets.length > 0}
 						<details class="filter-section" open>

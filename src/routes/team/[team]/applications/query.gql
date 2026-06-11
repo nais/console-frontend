@@ -34,6 +34,11 @@ query Applications(
 					state
 					count
 				}
+				labels {
+					key
+					value
+					count
+				}
 			}
 			nodes {
 				__typename

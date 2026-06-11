@@ -36,8 +36,8 @@
 			{/if}
 		{:else if data.__typename === 'ApplicationUpdatedActivityLogEntry'}
 			App updated.
-			{#if data.applicationUpdatedData?.changedFields?.length}
-				{#each data.applicationUpdatedData.changedFields as field (field.field)}
+			{#if data.applicationUpdated?.changedFields?.length}
+				{#each data.applicationUpdated.changedFields as field (field.field)}
 					<strong>{field.field}</strong>
 					{#if field.oldValue != null && field.newValue != null}
 						changed from <i>{field.oldValue}</i> to <i>{field.newValue}</i>.
