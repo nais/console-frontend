@@ -14,5 +14,13 @@
 
 <div>
 	<strong>{data.resourceName}</strong> was authorized for deploy
-	<Meta actor={data.actor} createdAt={data.createdAt} {mode} />
+	<Meta
+		actor={data.actor}
+		createdAt={data.createdAt}
+		{mode}
+		link={{
+			...data,
+			activityType: 'REPOSITORY_ADDED'
+		}}
+	/>
 </div>

@@ -29,5 +29,13 @@
 		with {data.credentialsData.permission} access
 	{/if}
 	(TTL: {data.credentialsData.ttl})
-	<Meta actor={data.actor} createdAt={data.createdAt} {mode} />
+	<Meta
+		actor={data.actor}
+		createdAt={data.createdAt}
+		{mode}
+		link={{
+			...data,
+			activityType: 'CREDENTIALS_CREATED'
+		}}
+	/>
 </div>

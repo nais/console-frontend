@@ -28,5 +28,13 @@
 		{data.resourceName}
 	{/if}
 	created
-	<Meta actor={data.actor} createdAt={data.createdAt} {mode} />
+	<Meta
+		actor={data.actor}
+		createdAt={data.createdAt}
+		{mode}
+		link={{
+			...data,
+			activityType: 'SECRET_CREATED'
+		}}
+	/>
 </div>

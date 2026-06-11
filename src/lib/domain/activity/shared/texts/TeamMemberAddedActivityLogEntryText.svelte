@@ -14,5 +14,13 @@
 
 <div>
 	{data.teamMemberAdded.userEmail} added to team
-	<Meta actor={data.actor} createdAt={data.createdAt} {mode} />
+	<Meta
+		actor={data.actor}
+		createdAt={data.createdAt}
+		{mode}
+		link={{
+			...data,
+			activityType: 'TEAM_MEMBER_ADDED'
+		}}
+	/>
 </div>

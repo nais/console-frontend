@@ -1,6 +1,6 @@
 <script lang="ts">
-	import Meta from '../../Meta.svelte';
 	import Time from '$lib/ui/Time.svelte';
+	import Meta from '../../Meta.svelte';
 
 	import type { ActivityLogEntry, TimelineModes } from './types';
 
@@ -21,5 +21,13 @@
 		in {data.environmentName}
 	{/if}
 
-	<Meta actor={data.actor} createdAt={data.createdAt} {mode} />
+	<Meta
+		actor={data.actor}
+		createdAt={data.createdAt}
+		{mode}
+		link={{
+			...data,
+			activityType: 'POSTGRES_GRANT_ACCESS'
+		}}
+	/>
 </div>
