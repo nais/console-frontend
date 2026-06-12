@@ -73,29 +73,25 @@
 	<div class="layout-two-column">
 		<div>
 			<List title="BigQuery" count={$BigQuery.data.team.bigQueryDatasets.pageInfo.totalCount}>
-				{#if $BigQuery.data.team.bigQueryDatasets.nodes.length > 0}
-					{#each $BigQuery.data.team.bigQueryDatasets.nodes as instance (instance.id)}
-						<ListItem interactive>
-							<div class="name-group">
-								<BigQueryIcon style="font-size: 1.25rem; flex-shrink: 0" />
-								<a
-									href="/team/{instance.team.slug}/{instance.teamEnvironment.environment
-										.name}/bigquery/{instance.name}"
-									class="item-name">{instance.name}</a
-								>
-								<Tag
-									size="xsmall"
-									variant={envTagVariant(instance.teamEnvironment.environment.name)}
-									>{instance.teamEnvironment.environment.name}</Tag
-								>
+				{#each $BigQuery.data.team.bigQueryDatasets.edges as { node: instance } (instance.id)}
+					<ListItem interactive>
+						<div class="name-group">
+							<BigQueryIcon style="font-size: 1.25rem; flex-shrink: 0" />
+							<a
+								href="/team/{instance.team.slug}/{instance.teamEnvironment.environment
+									.name}/bigquery/{instance.name}"
+								class="item-name">{instance.name}</a
+							>
+							<Tag size="xsmall" variant={envTagVariant(instance.teamEnvironment.environment.name)}
+								>{instance.teamEnvironment.environment.name}</Tag
+							>
+						</div>
+						{#if instance.workload}
+							<div class="right">
+								Owner: <WorkloadLink workload={instance.workload} hideTeam hideEnv />
 							</div>
-							{#if instance.workload}
-								<div class="right">
-									Owner: <WorkloadLink workload={instance.workload} hideTeam hideEnv />
-								</div>
-							{/if}
-						</ListItem>
-					{/each}
+						{/if}
+					</ListItem>
 				{:else}
 					<ListItem>
 						<p>
@@ -106,7 +102,7 @@
 							>
 						</p>
 					</ListItem>
-				{/if}
+				{/each}
 			</List>
 			<Pagination
 				page={$BigQuery.data.team.bigQueryDatasets.pageInfo}

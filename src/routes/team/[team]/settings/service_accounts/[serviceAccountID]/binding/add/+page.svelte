@@ -33,16 +33,18 @@
 
 	const searchQuery = $derived(
 		graphql(`
-			query AddBindingWorkloadSearch($query: String!, $team: Slug!) {
-				search(filter: { query: $query, types: [APPLICATION, JOB], teams: [$team] }) {
-					nodes {
-						__typename
-						... on Workload {
-							id
-							name
-							teamEnvironment {
-								environment {
-									name
+			query AddBindingWorkloadSearch($query: String!, $teams: [Slug!]!) {
+				search(filter: { query: $query, types: [APPLICATION, JOB], teams: $teams }) {
+					edges {
+						node {
+							__typename
+							... on Workload {
+								id
+								name
+								teamEnvironment {
+									environment {
+										name
+									}
 								}
 							}
 						}
@@ -59,7 +61,7 @@
 	$effect(() => {
 		if (searchString) {
 			const timeout = setTimeout(() => {
-				searchQuery.fetch({ variables: { query: searchString, team: page.params.team ?? '' } });
+				searchQuery.fetch({ variables: { query: searchString, teams: [page.params.team ?? ''] } });
 			}, 300);
 
 			return () => clearTimeout(timeout);
@@ -68,18 +70,20 @@
 
 	const results = $derived(
 		searchString && $searchQuery.data
-			? $searchQuery.data.search.nodes.filter(
-					(
-						n
-					): n is typeof n & {
-						__typename: 'Application' | 'Job';
-						id: string;
-						name: string;
-						teamEnvironment: { environment: { name: string } };
-					} =>
-						(n.__typename === 'Application' || n.__typename === 'Job') &&
-						!n.teamEnvironment.environment.name.endsWith('-fss')
-				)
+			? $searchQuery.data.search.edges
+					.map(({ node }) => node)
+					.filter(
+						(
+							n
+						): n is typeof n & {
+							__typename: 'Application' | 'Job';
+							id: string;
+							name: string;
+							teamEnvironment: { environment: { name: string } };
+						} =>
+							(n.__typename === 'Application' || n.__typename === 'Job') &&
+							!n.teamEnvironment.environment.name.endsWith('-fss')
+					)
 			: []
 	);
 

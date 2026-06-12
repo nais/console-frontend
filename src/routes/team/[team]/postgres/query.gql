@@ -55,20 +55,22 @@ query PostgresInstances(
 					count
 				}
 			}
-			nodes {
-				id
-				__typename
-				name
-				teamEnvironment {
-					environment {
-						name
+			edges {
+				node {
+					id
+					__typename
+					name
+					teamEnvironment {
+						environment {
+							name
+						}
 					}
+					team {
+						slug
+					}
+					majorVersion
+					state
 				}
-				team {
-					slug
-				}
-				majorVersion
-				state
 			}
 		}
 	}

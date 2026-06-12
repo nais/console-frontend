@@ -89,7 +89,7 @@
 						</Tr>
 					</Thead>
 					<Tbody>
-						{#each topic.acl.nodes as a (a)}
+						{#each topic.acl.edges as { node: a } (a)}
 							<Tr>
 								<Td class="team-cell">
 									{#if a.teamName === '*'}

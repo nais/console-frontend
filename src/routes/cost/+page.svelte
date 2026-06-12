@@ -233,7 +233,7 @@
 						</Thead>
 						<Tbody>
 							{#if !$TenantCost.fetching}
-								{#each $TenantCost.data?.teams.nodes ?? [] as team (team.slug)}
+								{#each $TenantCost.data?.teams.edges ?? [] as { node: team } (team.slug)}
 									<Tr>
 										<Td>
 											<IconLabel

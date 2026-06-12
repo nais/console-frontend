@@ -134,42 +134,38 @@
 			{@render cloudSqlRelocationAlert()}
 
 			<List title="Postgres" count={si.pageInfo.totalCount}>
-				{#if si.nodes.length > 0}
-					{#each si.nodes as instance (instance.id)}
-						<ListItem interactive>
-							<div class="name-group">
-								<TooltipAlignHack
-									content={{
-										DEGRADED: 'DEGRADED',
-										PROGRESSING: 'PROGRESSING',
-										AVAILABLE: 'AVAILABLE'
-									}[instance.state] ?? ''}
-								>
-									<CircleFillIcon
-										style="color: var({{
-											AVAILABLE: '--ax-bg-success-strong',
-											DEGRADED: '--ax-bg-danger-strong',
-											PROGRESSING: '--ax-bg-warning-moderate-pressed'
-										}[instance.state] ?? '--ax-bg-info-strong'}); font-size: 0.7rem"
-									/>
-								</TooltipAlignHack>
-								<a
-									href="/team/{instance.team.slug}/{instance.teamEnvironment.environment
-										.name}/postgres/{instance.name}"
-									class="item-name">{instance.name}</a
-								>
-								<Tag
-									size="xsmall"
-									variant={envTagVariant(instance.teamEnvironment.environment.name)}
-									>{instance.teamEnvironment.environment.name}</Tag
-								>
-							</div>
+				{#each si.edges as { node: instance } (instance.id)}
+					<ListItem interactive>
+						<div class="name-group">
+							<TooltipAlignHack
+								content={{
+									DEGRADED: 'DEGRADED',
+									PROGRESSING: 'PROGRESSING',
+									AVAILABLE: 'AVAILABLE'
+								}[instance.state] ?? ''}
+							>
+								<CircleFillIcon
+									style="color: var({{
+										AVAILABLE: '--ax-bg-success-strong',
+										DEGRADED: '--ax-bg-danger-strong',
+										PROGRESSING: '--ax-bg-warning-moderate-pressed'
+									}[instance.state] ?? '--ax-bg-info-strong'}); font-size: 0.7rem"
+								/>
+							</TooltipAlignHack>
+							<a
+								href="/team/{instance.team.slug}/{instance.teamEnvironment.environment
+									.name}/postgres/{instance.name}"
+								class="item-name">{instance.name}</a
+							>
+							<Tag size="xsmall" variant={envTagVariant(instance.teamEnvironment.environment.name)}
+								>{instance.teamEnvironment.environment.name}</Tag
+							>
+						</div>
 
-							<div class="right">
-								<div>Version: <code>{instance.majorVersion}</code></div>
-							</div>
-						</ListItem>
-					{/each}
+						<div class="right">
+							<div>Version: <code>{instance.majorVersion}</code></div>
+						</div>
+					</ListItem>
 				{:else}
 					<ListItem>
 						<p>
@@ -180,7 +176,7 @@
 							>
 						</p>
 					</ListItem>
-				{/if}
+				{/each}
 			</List>
 
 			<Pagination

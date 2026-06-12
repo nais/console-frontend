@@ -95,7 +95,7 @@
 							</Td>
 						</Tr>
 					{:else}
-						{#each $CVES.data?.cves.nodes ?? [] as cve (cve.identifier)}
+						{#each $CVES.data?.cves.edges ?? [] as { node: cve } (cve.identifier)}
 							<Tr>
 								<Td>
 									<a href="/vulnerabilities/{cve.identifier}">{cve.identifier}</a>

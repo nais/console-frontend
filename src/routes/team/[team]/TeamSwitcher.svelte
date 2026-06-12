@@ -13,9 +13,11 @@
 				__typename
 				... on User {
 					teams(first: 50) @paginate(mode: SinglePage) {
-						nodes {
-							team {
-								slug
+						edges {
+							node {
+								team {
+									slug
+								}
 							}
 						}
 					}
@@ -32,8 +34,8 @@
 	});
 
 	const teams = $derived(
-		($userTeams.data?.me.__typename === 'User' ? $userTeams.data.me.teams.nodes : []).map(
-			(n) => n.team.slug
+		($userTeams.data?.me.__typename === 'User' ? $userTeams.data.me.teams.edges : []).map(
+			({ node }) => node.team.slug
 		)
 	);
 

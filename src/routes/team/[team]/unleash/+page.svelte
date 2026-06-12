@@ -263,7 +263,7 @@
 	let deleteConfirmation = $state('');
 	let deleting = $state(false);
 	let deleteError = $state('');
-	const allowedTeamsCount = $derived(unleash?.allowedTeams.nodes.length ?? 0);
+	const allowedTeamsCount = $derived(unleash?.allowedTeams.edges.length ?? 0);
 	const canDelete = $derived(allowedTeamsCount === 1 && unleash?.ready);
 	const deleteConfirmed = $derived(deleteConfirmation === unleash?.name);
 
@@ -447,7 +447,7 @@
 			{addTeam}
 			{removeTeam}
 			currentTeam={teamSlug}
-			teamsWithAccess={unleash.allowedTeams.nodes.map((t) => t.slug)}
+			teamsWithAccess={unleash.allowedTeams.edges.map(({ node: t }) => t.slug)}
 		/>
 	{/if}
 
@@ -586,7 +586,7 @@
 							</Tr>
 						</Thead>
 						<Tbody>
-							{#each unleash.allowedTeams.nodes as team (team.slug)}
+							{#each unleash.allowedTeams.edges as { node: team } (team.slug)}
 								<Tr>
 									<Td>
 										<a href="/team/{team.slug}">{team.slug}</a>

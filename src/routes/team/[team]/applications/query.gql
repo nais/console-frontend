@@ -40,43 +40,45 @@ query Applications(
 					count
 				}
 			}
-			nodes {
-				__typename
-				id
-				name
-				teamEnvironment {
-					environment {
-						name
-					}
-				}
-				team {
-					slug
-				}
-				state
-				issues {
-					pageInfo {
-						totalCount
-					}
-					edges {
-						node {
-							severity
+			edges {
+				node {
+					__typename
+					id
+					name
+					teamEnvironment {
+						environment {
+							name
 						}
 					}
-				}
-				deployments(first: 1) {
-					nodes {
-						createdAt
+					team {
+						slug
 					}
-				}
-				instances {
-					pageInfo {
-						totalCount
+					state
+					issues {
+						pageInfo {
+							totalCount
+						}
+						edges {
+							node {
+								severity
+							}
+						}
 					}
-					edges {
-						node {
-							status {
-								message
-								state
+					deployments(first: 1) {
+						nodes {
+							createdAt
+						}
+					}
+					instances {
+						pageInfo {
+							totalCount
+						}
+						edges {
+							node {
+								status {
+									message
+									state
+								}
 							}
 						}
 					}

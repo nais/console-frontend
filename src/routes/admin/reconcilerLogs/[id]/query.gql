@@ -16,13 +16,15 @@ query ReconcilerLogs($id: ID!) {
 					pageStart
 					pageEnd
 				}
-				nodes {
-					id
-					correlationID
-					createdAt
-					message
-					team {
-						slug
+				edges {
+					node {
+						id
+						correlationID
+						createdAt
+						message
+						team {
+							slug
+						}
 					}
 				}
 			}

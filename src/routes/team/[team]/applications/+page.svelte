@@ -130,7 +130,7 @@
 			{@const apps = $Applications.data?.team.applications}
 
 			<List title="Apps" count={apps?.pageInfo.totalCount ?? 0}>
-				{#each apps?.nodes ?? [] as app (app.id)}
+				{#each apps?.edges ?? [] as { node: app } (app.id)}
 					<AppListItem {app} />
 				{/each}
 			</List>

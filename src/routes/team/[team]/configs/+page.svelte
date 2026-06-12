@@ -133,9 +133,11 @@
 					return {
 						name: env.environment.name,
 						configs:
-							$Configs.data?.team.configs.nodes
-								.filter((node) => node.teamEnvironment.environment.name === env.environment.name)
-								.map((node) => {
+							$Configs.data?.team.configs.edges
+								.filter(
+									({ node }) => node.teamEnvironment.environment.name === env.environment.name
+								)
+								.map(({ node }) => {
 									return {
 										name: node.name,
 										lastModifiedAt: node.lastModifiedAt ? new Date(node.lastModifiedAt) : null
@@ -166,42 +168,40 @@
 						</Button>
 					{/if}
 				{/snippet}
-				{#if configs.nodes.length > 0}
-					{#each configs.nodes as config (config.id)}
-						<ListItem interactive>
-							<div class="name-group">
-								<FileTextIcon style="font-size: 1.25rem; flex-shrink: 0" />
-								<a
-									href="/team/{teamSlug}/{config.teamEnvironment.environment
-										.name}/config/{config.name}"
-									class="item-name">{config.name}</a
-								>
-								<Tag size="xsmall" variant={envTagVariant(config.teamEnvironment.environment.name)}
-									>{config.teamEnvironment.environment.name}</Tag
-								>
-							</div>
-							<div class="right">
-								{#if config.workloads.pageInfo.totalCount > 0}
-									<Detail
-										>Config is in use by {config.workloads.pageInfo.totalCount} workload{config
-											.workloads.pageInfo.totalCount > 1
-											? 's'
-											: ''}</Detail
-									>
-								{:else}
-									<Detail>Config is not in use</Detail>
-								{/if}
+				{#each configs.edges as { node: config } (config.id)}
+					<ListItem interactive>
+						<div class="name-group">
+							<FileTextIcon style="font-size: 1.25rem; flex-shrink: 0" />
+							<a
+								href="/team/{teamSlug}/{config.teamEnvironment.environment
+									.name}/config/{config.name}"
+								class="item-name">{config.name}</a
+							>
+							<Tag size="xsmall" variant={envTagVariant(config.teamEnvironment.environment.name)}
+								>{config.teamEnvironment.environment.name}</Tag
+							>
+						</div>
+						<div class="right">
+							{#if config.workloads.pageInfo.totalCount > 0}
 								<Detail
-									>Last modified:
-									{#if config.lastModifiedAt}
-										<Time time={config.lastModifiedAt} distance />
-									{:else}
-										<code>n/a</code>
-									{/if}
-								</Detail>
-							</div>
-						</ListItem>
-					{/each}
+									>Config is in use by {config.workloads.pageInfo.totalCount} workload{config
+										.workloads.pageInfo.totalCount > 1
+										? 's'
+										: ''}</Detail
+								>
+							{:else}
+								<Detail>Config is not in use</Detail>
+							{/if}
+							<Detail
+								>Last modified:
+								{#if config.lastModifiedAt}
+									<Time time={config.lastModifiedAt} distance />
+								{:else}
+									<code>n/a</code>
+								{/if}
+							</Detail>
+						</div>
+					</ListItem>
 				{:else}
 					<ListItem>
 						<p>
@@ -211,7 +211,7 @@
 							>
 						</p>
 					</ListItem>
-				{/if}
+				{/each}
 			</List>
 			<Pagination
 				page={configs.pageInfo}

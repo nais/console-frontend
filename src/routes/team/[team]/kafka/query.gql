@@ -42,16 +42,18 @@ query KafkaTopics(
 				}
 			}
 
-			nodes {
-				id
-				__typename
-				name
-				team {
-					slug
-				}
-				teamEnvironment {
-					environment {
-						name
+			edges {
+				node {
+					id
+					__typename
+					name
+					team {
+						slug
+					}
+					teamEnvironment {
+						environment {
+							name
+						}
 					}
 				}
 			}

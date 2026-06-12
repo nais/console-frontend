@@ -10,11 +10,13 @@ query TenantCost($first: Int, $last: Int, $before: Cursor, $after: Cursor, $orde
 			startCursor
 			totalCount
 		}
-		nodes {
-			slug
-			cost {
-				monthlySummary {
-					sum
+		edges {
+			node {
+				slug
+				cost {
+					monthlySummary {
+						sum
+					}
 				}
 			}
 		}

@@ -46,18 +46,20 @@ query Configs(
 					count
 				}
 			}
-			nodes {
-				id
-				name
-				lastModifiedAt
-				teamEnvironment {
-					environment {
-						name
+			edges {
+				node {
+					id
+					name
+					lastModifiedAt
+					teamEnvironment {
+						environment {
+							name
+						}
 					}
-				}
-				workloads {
-					pageInfo {
-						totalCount
+					workloads {
+						pageInfo {
+							totalCount
+						}
 					}
 				}
 			}

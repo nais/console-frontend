@@ -42,26 +42,28 @@ query Valkeys(
 					count
 				}
 			}
-			nodes {
-				id
-				__typename
-				name
-				team {
-					slug
-				}
-				teamEnvironment {
-					environment {
-						name
+			edges {
+				node {
+					id
+					__typename
+					name
+					team {
+						slug
 					}
-				}
-				state
-				issues {
-					pageInfo {
-						totalCount
+					teamEnvironment {
+						environment {
+							name
+						}
 					}
-					edges {
-						node {
-							severity
+					state
+					issues {
+						pageInfo {
+							totalCount
+						}
+						edges {
+							node {
+								severity
+							}
 						}
 					}
 				}

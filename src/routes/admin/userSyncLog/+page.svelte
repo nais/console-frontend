@@ -22,7 +22,7 @@
 				</Tr>
 			</Thead>
 			<Tbody>
-				{#each $UserSyncLogs.data.userSyncLog.nodes || [] as entry (entry.id)}
+				{#each $UserSyncLogs.data.userSyncLog.edges || [] as { node: entry } (entry.id)}
 					<Tr>
 						<Td>
 							{#if entry.__typename === 'RoleAssignedUserSyncLogEntry'}

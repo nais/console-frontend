@@ -31,29 +31,31 @@ query JobDeploys(
 						startCursor
 						endCursor
 					}
-					nodes {
-						id
-						resources {
-							nodes {
-								id
-								kind
-								name
+					edges {
+						node {
+							id
+							resources {
+								nodes {
+									id
+									kind
+									name
+								}
 							}
-						}
-						statuses {
-							nodes {
-								state
-								message
-								createdAt
+							statuses {
+								nodes {
+									state
+									message
+									createdAt
+								}
 							}
+							environmentName
+							teamSlug
+							triggerUrl
+							createdAt
+							repository
+							commitSha
+							deployerUsername
 						}
-						environmentName
-						teamSlug
-						triggerUrl
-						createdAt
-						repository
-						commitSha
-						deployerUsername
 					}
 				}
 			}

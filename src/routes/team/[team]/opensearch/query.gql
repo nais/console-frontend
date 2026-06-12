@@ -42,26 +42,28 @@ query OpenSearch(
 					count
 				}
 			}
-			nodes {
-				id
-				__typename
-				name
-				teamEnvironment {
-					environment {
-						name
+			edges {
+				node {
+					id
+					__typename
+					name
+					teamEnvironment {
+						environment {
+							name
+						}
 					}
-				}
-				team {
-					slug
-				}
-				state
-				issues {
-					pageInfo {
-						totalCount
+					team {
+						slug
 					}
-					edges {
-						node {
-							severity
+					state
+					issues {
+						pageInfo {
+							totalCount
+						}
+						edges {
+							node {
+								severity
+							}
 						}
 					}
 				}

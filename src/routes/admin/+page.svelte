@@ -20,7 +20,7 @@
 				</Tr>
 			</Thead>
 			<Tbody>
-				{#each $AdminUsers.data.users.nodes || [] as user (user.id)}
+				{#each $AdminUsers.data.users.edges || [] as { node: user } (user.id)}
 					<Tr>
 						<Td>{user.name}</Td>
 						<Td>{user.email}</Td>

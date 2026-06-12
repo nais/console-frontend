@@ -32,16 +32,18 @@ query TeamIssues(
 				pageEnd
 				totalCount
 			}
-			nodes {
-				id
-				__typename
+			edges {
+				node {
+					id
+					__typename
 
-				teamEnvironment {
-					environment {
-						name
+					teamEnvironment {
+						environment {
+							name
+						}
 					}
+					...IssueFragment
 				}
-				...IssueFragment
 			}
 		}
 		todos: issues(filter: { severity: TODO }) {

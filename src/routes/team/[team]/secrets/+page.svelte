@@ -133,9 +133,11 @@
 					return {
 						name: env.environment.name,
 						secrets:
-							$Secrets.data?.team.secrets.nodes
-								.filter((node) => node.teamEnvironment.environment.name === env.environment.name)
-								.map((node) => {
+							$Secrets.data?.team.secrets.edges
+								.filter(
+									({ node }) => node.teamEnvironment.environment.name === env.environment.name
+								)
+								.map(({ node }) => {
 									return {
 										name: node.name,
 										lastModifiedAt: node.lastModifiedAt ? new Date(node.lastModifiedAt) : null
@@ -166,42 +168,40 @@
 						</Button>
 					{/if}
 				{/snippet}
-				{#if secrets.nodes.length > 0}
-					{#each secrets.nodes as secret (secret.id)}
-						<ListItem interactive>
-							<div class="name-group">
-								<PadlockLockedIcon style="font-size: 1.25rem; flex-shrink: 0" />
-								<a
-									href="/team/{teamSlug}/{secret.teamEnvironment.environment
-										.name}/secret/{secret.name}"
-									class="item-name">{secret.name}</a
-								>
-								<Tag size="xsmall" variant={envTagVariant(secret.teamEnvironment.environment.name)}
-									>{secret.teamEnvironment.environment.name}</Tag
-								>
-							</div>
-							<div class="right">
-								{#if secret.workloads.pageInfo.totalCount > 0}
-									<Detail
-										>Secret is in use by {secret.workloads.pageInfo.totalCount} workload{secret
-											.workloads.pageInfo.totalCount > 1
-											? 's'
-											: ''}</Detail
-									>
-								{:else}
-									<Detail>Secret is not in use</Detail>
-								{/if}
+				{#each secrets.edges as { node: secret } (secret.id)}
+					<ListItem interactive>
+						<div class="name-group">
+							<PadlockLockedIcon style="font-size: 1.25rem; flex-shrink: 0" />
+							<a
+								href="/team/{teamSlug}/{secret.teamEnvironment.environment
+									.name}/secret/{secret.name}"
+								class="item-name">{secret.name}</a
+							>
+							<Tag size="xsmall" variant={envTagVariant(secret.teamEnvironment.environment.name)}
+								>{secret.teamEnvironment.environment.name}</Tag
+							>
+						</div>
+						<div class="right">
+							{#if secret.workloads.pageInfo.totalCount > 0}
 								<Detail
-									>Last modified:
-									{#if secret.lastModifiedAt}
-										<Time time={secret.lastModifiedAt} distance />
-									{:else}
-										<code>n/a</code>
-									{/if}
-								</Detail>
-							</div>
-						</ListItem>
-					{/each}
+									>Secret is in use by {secret.workloads.pageInfo.totalCount} workload{secret
+										.workloads.pageInfo.totalCount > 1
+										? 's'
+										: ''}</Detail
+								>
+							{:else}
+								<Detail>Secret is not in use</Detail>
+							{/if}
+							<Detail
+								>Last modified:
+								{#if secret.lastModifiedAt}
+									<Time time={secret.lastModifiedAt} distance />
+								{:else}
+									<code>n/a</code>
+								{/if}
+							</Detail>
+						</div>
+					</ListItem>
 				{:else}
 					<ListItem>
 						<p>
@@ -211,7 +211,7 @@
 							>
 						</p>
 					</ListItem>
-				{/if}
+				{/each}
 			</List>
 			<Pagination
 				page={secrets.pageInfo}

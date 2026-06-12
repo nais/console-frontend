@@ -18,7 +18,7 @@
 	let tenantName = $derived(data.tenantName);
 
 	let userTeams = $derived(
-		$UserTeams.data?.me.__typename == 'User' && $UserTeams.data.me.teams?.nodes.length
+		$UserTeams.data?.me.__typename == 'User' && $UserTeams.data.me.teams?.edges.length
 	);
 
 	let name = $derived($UserInfo.data?.me.__typename == 'User' ? $UserInfo.data.me.name : '');
@@ -50,7 +50,7 @@
 			{#if $UserTeams.data}
 				{#if $UserTeams.data.me.__typename == 'User'}
 					<List>
-						{#each $UserTeams.data.me.teams.nodes as node (node.team.id)}
+						{#each $UserTeams.data.me.teams.edges as { node } (node.team.id)}
 							<TeamListItem team={node.team} />
 						{:else}
 							<BodyLong>

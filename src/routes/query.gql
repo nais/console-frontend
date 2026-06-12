@@ -12,11 +12,13 @@ query UserTeams @cache(policy: CacheAndNetwork) {
 					endCursor
 					totalCount
 				}
-				nodes {
-					team {
-						id
-						slug
-						purpose
+				edges {
+					node {
+						team {
+							id
+							slug
+							purpose
+						}
 					}
 				}
 			}
