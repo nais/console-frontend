@@ -87,7 +87,7 @@
 
 	const teams = $derived(
 		teamSearchQuery === ''
-			? $teamsQuery.data?.teams.edges
+			? $teamsQuery.data?.teams.edges.map(({ node }) => node)
 			: ($teamSearch.data?.search.edges.map((e) => e.node).filter((n) => n.__typename === 'Team') ??
 					$teamsQuery.data?.teams.edges.map((e) => e.node))
 	);

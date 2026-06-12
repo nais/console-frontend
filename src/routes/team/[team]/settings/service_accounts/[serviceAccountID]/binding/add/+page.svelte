@@ -70,18 +70,20 @@
 
 	const results = $derived(
 		searchString && $searchQuery.data
-			? $searchQuery.data.search.edges.filter(
-					({
-						node: n
-					}): n is typeof n & {
-						__typename: 'Application' | 'Job';
-						id: string;
-						name: string;
-						teamEnvironment: { environment: { name: string } };
-					} =>
-						(n.__typename === 'Application' || n.__typename === 'Job') &&
-						!n.teamEnvironment.environment.name.endsWith('-fss')
-				)
+			? $searchQuery.data.search.edges
+					.map(({ node }) => node)
+					.filter(
+						(
+							n
+						): n is typeof n & {
+							__typename: 'Application' | 'Job';
+							id: string;
+							name: string;
+							teamEnvironment: { environment: { name: string } };
+						} =>
+							(n.__typename === 'Application' || n.__typename === 'Job') &&
+							!n.teamEnvironment.environment.name.endsWith('-fss')
+					)
 			: []
 	);
 
