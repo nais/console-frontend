@@ -6404,8 +6404,6 @@ A user-defined label attached to a resource.
 Labels are key-value pairs that teams can use to organize and filter their
 resources. Both the key and the value may contain letters, numbers, hyphens,
 underscores and dots, and may be at most 63 characters long.
-
-Keys must be prefixed with labels.nais.io/.
 """
 type ResourceLabel {
   """The label key."""
