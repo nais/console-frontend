@@ -1,7 +1,9 @@
 export const LABEL_MAX_LENGTH = 63;
 
-const CHARSET = /^[a-zA-Z0-9._/-]+$/;
-const CHARSET_MESSAGE = 'Must consist of letters, numbers, hyphens, underscores, or dots';
+const KEY_CHARSET = /^[a-zA-Z0-9._/-]+$/;
+const KEY_CHARSET_MESSAGE = 'Must consist of letters, numbers, hyphens, underscores, slash or dots';
+const VALUE_CHARSET = /^[a-zA-Z0-9._-]+$/;
+const VALUE_CHARSET_MESSAGE = 'Must consist of letters, numbers, hyphens, underscores, or dots';
 
 export interface Label {
 	key: string;
@@ -21,8 +23,8 @@ export function labelKeyError(suffix: string): string {
 	if (key.length > LABEL_MAX_LENGTH) {
 		return `Must be at most ${LABEL_MAX_LENGTH} characters`;
 	}
-	if (!CHARSET.test(key)) {
-		return CHARSET_MESSAGE;
+	if (!KEY_CHARSET.test(key)) {
+		return KEY_CHARSET_MESSAGE;
 	}
 	return '';
 }
@@ -35,8 +37,8 @@ export function labelValueError(value: string): string {
 	if (v.length > LABEL_MAX_LENGTH) {
 		return `Must be at most ${LABEL_MAX_LENGTH} characters`;
 	}
-	if (!CHARSET.test(v)) {
-		return CHARSET_MESSAGE;
+	if (!VALUE_CHARSET.test(v)) {
+		return VALUE_CHARSET_MESSAGE;
 	}
 	return '';
 }

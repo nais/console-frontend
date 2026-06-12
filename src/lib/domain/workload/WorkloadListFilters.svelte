@@ -157,23 +157,6 @@
 
 	{#if labels.length > 0}
 		<LabelFacets {labels} {onLabelsChange} {selectedLabels} />
-		<!-- <details class="filter-section" open>
-			<summary class="section-heading">Labels</summary>
-			<div class="facet-list">
-				{#each labels as facet (labelId(facet))}
-					{@const display = `${facet.key}=${facet.value}`}
-					<label class="facet-item">
-						<input
-							type="checkbox"
-							checked={selectedLabels.includes(labelId(facet))}
-							onchange={() => toggleLabel(facet)}
-						/>
-						<span title={display} class="facet-label">{display}</span>
-						<span class="facet-count">{facet.count}</span>
-					</label>
-				{/each}
-			</div>
-		</details> -->
 	{/if}
 
 	{@render children?.()}
