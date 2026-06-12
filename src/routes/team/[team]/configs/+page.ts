@@ -26,7 +26,7 @@ export async function load(event) {
 
 	const labels = parseLabelsParam(event.url.searchParams.get('labels'));
 	if (labels) {
-		filterVar = { ...filterVar, labels };
+		filterVar = { ...filterVar, labels } as ConfigFilter;
 	}
 
 	const after = event.url.searchParams.get('after') || '';
