@@ -171,7 +171,7 @@
 
 	{#if labels.length > 0}
 		<details class="filter-section" open>
-			<summary class="section-heading">Labels (labels.nais.io)</summary>
+			<summary class="section-heading">Labels</summary>
 			<div class="facet-list">
 				{#each labels as facet (labelId(facet))}
 					{@const display = `${facet.key}=${facet.value}`}

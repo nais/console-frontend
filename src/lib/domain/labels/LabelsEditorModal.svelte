@@ -48,10 +48,7 @@
 		<Heading as="h2" size="large">{title}</Heading>
 	{/snippet}
 
-	<BodyShort size="small" spacing>
-		Labels are key-value pairs used to organize resources. The <code>labels.nais.io/</code> prefix is
-		added automatically.
-	</BodyShort>
+	<BodyShort size="small" spacing>Labels are key-value pairs used to organize resources.</BodyShort>
 
 	<LabelRows bind:rows />
 
@@ -64,10 +61,3 @@
 		<Button variant="secondary" size="small" type="button" onclick={onclose}>Cancel</Button>
 	{/snippet}
 </Modal>
-
-<style>
-	code {
-		font-family: monospace;
-		font-size: var(--ax-font-size-small);
-	}
-</style>

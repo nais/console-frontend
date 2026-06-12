@@ -1,7 +1,6 @@
-export const LABEL_PREFIX = 'labels.nais.io/';
 export const LABEL_MAX_LENGTH = 63;
 
-const CHARSET = /^[a-zA-Z0-9._-]+$/;
+const CHARSET = /^[a-zA-Z0-9._/-]+$/;
 const CHARSET_MESSAGE = 'Must consist of letters, numbers, hyphens, underscores, or dots';
 
 export interface Label {
@@ -12,15 +11,6 @@ export interface Label {
 export interface LabelRow {
 	key: string;
 	value: string;
-}
-
-export function stripLabelPrefix(key: string): string {
-	return key.startsWith(LABEL_PREFIX) ? key.slice(LABEL_PREFIX.length) : key;
-}
-
-export function withLabelPrefix(suffix: string): string {
-	const trimmed = suffix.trim();
-	return trimmed.startsWith(LABEL_PREFIX) ? trimmed : LABEL_PREFIX + trimmed;
 }
 
 export function labelKeyError(suffix: string): string {
@@ -101,13 +91,12 @@ export function rowsFromArrays(keys: string[], values: string[]): LabelRow[] {
 export function toLabelInput(rows: readonly LabelRow[]): Label[] {
 	return rows
 		.map((row) => ({ key: row.key.trim(), value: row.value.trim() }))
-		.filter((row) => row.key.length > 0)
-		.map((row) => ({ key: withLabelPrefix(row.key), value: row.value }));
+		.filter((row) => row.key.length > 0);
 }
 
 export function toLabelRows(labels: readonly Label[]): LabelRow[] {
 	return labels.map((label) => ({
-		key: stripLabelPrefix(label.key),
+		key: label.key,
 		value: label.value
 	}));
 }

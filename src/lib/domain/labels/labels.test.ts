@@ -1,5 +1,4 @@
 import {
-	LABEL_PREFIX,
 	duplicateLabelKeys,
 	labelKeyError,
 	labelRowsHaveErrors,
@@ -7,35 +6,9 @@ import {
 	rowKeyError,
 	rowValueError,
 	rowsFromArrays,
-	stripLabelPrefix,
 	toLabelInput,
-	toLabelRows,
-	withLabelPrefix
+	toLabelRows
 } from './labels';
-
-describe('stripLabelPrefix', () => {
-	test('removes the prefix when present', () => {
-		expect(stripLabelPrefix(`${LABEL_PREFIX}team`)).toBe('team');
-	});
-
-	test('leaves keys without the prefix untouched', () => {
-		expect(stripLabelPrefix('team')).toBe('team');
-	});
-});
-
-describe('withLabelPrefix', () => {
-	test('adds the prefix to a bare suffix', () => {
-		expect(withLabelPrefix('team')).toBe(`${LABEL_PREFIX}team`);
-	});
-
-	test('does not double-prefix an already prefixed key', () => {
-		expect(withLabelPrefix(`${LABEL_PREFIX}team`)).toBe(`${LABEL_PREFIX}team`);
-	});
-
-	test('trims surrounding whitespace', () => {
-		expect(withLabelPrefix('  team  ')).toBe(`${LABEL_PREFIX}team`);
-	});
-});
 
 describe('labelKeyError', () => {
 	test.each([
@@ -48,7 +21,7 @@ describe('labelKeyError', () => {
 		},
 		{
 			key: 'has/slash',
-			expected: 'Must consist of letters, numbers, hyphens, underscores, or dots'
+			expected: ''
 		},
 		{ key: 'valid', expected: '' },
 		{ key: 'valid.key_1-2', expected: '' },
@@ -171,8 +144,8 @@ describe('toLabelInput', () => {
 				{ key: 'env', value: '' }
 			])
 		).toEqual([
-			{ key: `${LABEL_PREFIX}team`, value: 'platform' },
-			{ key: `${LABEL_PREFIX}env`, value: '' }
+			{ key: `team`, value: 'platform' },
+			{ key: `env`, value: '' }
 		]);
 	});
 
@@ -185,8 +158,8 @@ describe('toLabelRows', () => {
 	test('strips the prefix from existing labels', () => {
 		expect(
 			toLabelRows([
-				{ key: `${LABEL_PREFIX}team`, value: 'platform' },
-				{ key: `${LABEL_PREFIX}env`, value: 'prod' }
+				{ key: `team`, value: 'platform' },
+				{ key: `env`, value: 'prod' }
 			])
 		).toEqual([
 			{ key: 'team', value: 'platform' },
