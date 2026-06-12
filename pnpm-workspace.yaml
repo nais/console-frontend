@@ -8,4 +8,4 @@ minimumReleaseAge: 4320
 savePrefix: ""
 minimumReleaseAgeExclude:
   - "@esbuild/*"
-  - "esbuild@0.28.1"
+  - "esbuild"
