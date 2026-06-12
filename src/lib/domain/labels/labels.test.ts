@@ -17,7 +17,7 @@ describe('labelKeyError', () => {
 		{ key: 'a'.repeat(64), expected: 'Must be at most 63 characters' },
 		{
 			key: 'has space',
-			expected: 'Must consist of letters, numbers, hyphens, underscores, or dots'
+			expected: 'Must consist of letters, numbers, hyphens, underscores, slash or dots'
 		},
 		{
 			key: 'has/slash',
@@ -81,7 +81,7 @@ describe('rowKeyError', () => {
 
 	test('validates the key charset', () => {
 		expect(rowKeyError({ key: 'bad key', value: 'v' }, new Set())).toBe(
-			'Must consist of letters, numbers, hyphens, underscores, or dots'
+			'Must consist of letters, numbers, hyphens, underscores, slash or dots'
 		);
 	});
 });
