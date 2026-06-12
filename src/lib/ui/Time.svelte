@@ -83,8 +83,14 @@
 			}, 1000);
 		}
 	});
+
+	const datetime = $derived.by(() => {
+		// Houdini (pre-new-compiler) may pass Date scalars as strings. Normalize to Date first.
+		const d = time instanceof Date ? time : new Date(time as string);
+		return Number.isNaN(d.getTime()) ? undefined : d.toISOString();
+	});
 </script>
 
-<time datetime={time.toISOString()} {title}>
+<time {datetime} {title}>
 	{text}
 </time>

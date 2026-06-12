@@ -6,7 +6,7 @@ query Applications(
 	$last: Int
 	$before: Cursor
 	$after: Cursor
-) @cache(policy: CacheAndNetwork, partial: true) {
+) @cache(policy: NoCache) {
 	team(slug: $team) {
 		applications(
 			first: $first
