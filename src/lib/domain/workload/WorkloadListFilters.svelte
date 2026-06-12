@@ -2,6 +2,7 @@
 	import ListFilters from '$lib/ui/ListFilters.svelte';
 	import { capitalizeFirstLetter } from '$lib/utils/formatters';
 	import type { Snippet } from 'svelte';
+	import LabelFacets from '../labels/LabelFacets.svelte';
 
 	interface StateFacet {
 		state: string;
@@ -74,10 +75,6 @@
 		return capitalizeFirstLetter(state.split('_').join(' ').toLowerCase());
 	}
 
-	function labelId(label: LabelFacet): string {
-		return `${label.key}:${label.value}`;
-	}
-
 	const displayStates = $derived([
 		...states,
 		...selectedStates
@@ -90,8 +87,6 @@
 			.filter((e) => !environments.some((f) => f.value === e))
 			.map((e) => ({ value: e, count: 0 }))
 	]);
-
-	const availableLabels = $derived(new Set(labels.map((f) => labelId(f))));
 
 	function toggleState(state: string) {
 		const isSelected = selectedStates.includes(state);
@@ -107,15 +102,6 @@
 			? selectedEnvironments.filter((e) => e !== env)
 			: [...selectedEnvironments, env];
 		onEnvironmentsChange(next);
-	}
-
-	function toggleLabel(label: LabelFacet) {
-		const id = labelId(label);
-		const isSelected = selectedLabels.includes(id);
-		const next = isSelected
-			? selectedLabels.filter((l) => l !== id && availableLabels.has(l))
-			: [...selectedLabels.filter((l) => availableLabels.has(l)), id];
-		onLabelsChange(next);
 	}
 </script>
 
@@ -170,25 +156,7 @@
 	{/if}
 
 	{#if labels.length > 0}
-		<details class="filter-section" open>
-			<summary class="section-heading">Labels (labels.nais.io)</summary>
-			<div class="facet-list">
-				{#each labels as facet (labelId(facet))}
-					{@const display = `${facet.key}=${facet.value}`}
-					<label class="facet-item">
-						<input
-							type="checkbox"
-							checked={selectedLabels.includes(labelId(facet))}
-							onchange={() => toggleLabel(facet)}
-						/>
-						<span title={display} class="facet-label"
-							>{display.replace(/^labels\.nais\.io\//, '')}</span
-						>
-						<span class="facet-count">{facet.count}</span>
-					</label>
-				{/each}
-			</div>
-		</details>
+		<LabelFacets {labels} {onLabelsChange} {selectedLabels} />
 	{/if}
 
 	{@render children?.()}

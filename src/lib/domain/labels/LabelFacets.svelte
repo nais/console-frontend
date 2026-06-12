@@ -30,10 +30,10 @@
 </script>
 
 <details class="filter-section" open>
-	<summary class="section-heading">Labels (labels.nais.io)</summary>
+	<summary class="section-heading">Labels</summary>
 	<div class="facet-list">
 		{#each labels as facet (labelId(facet))}
-			{@const display = `${facet.key.replace(/^labels\.nais\.io\//, '')}=${facet.value}`}
+			{@const display = `${facet.key}=${facet.value}`}
 			<label class="facet-item">
 				<input
 					type="checkbox"

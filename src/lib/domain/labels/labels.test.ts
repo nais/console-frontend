@@ -1,5 +1,4 @@
 import {
-	LABEL_PREFIX,
 	duplicateLabelKeys,
 	labelKeyError,
 	labelRowsHaveErrors,
@@ -7,35 +6,9 @@ import {
 	rowKeyError,
 	rowValueError,
 	rowsFromArrays,
-	stripLabelPrefix,
 	toLabelInput,
-	toLabelRows,
-	withLabelPrefix
+	toLabelRows
 } from './labels';
-
-describe('stripLabelPrefix', () => {
-	test('removes the prefix when present', () => {
-		expect(stripLabelPrefix(`${LABEL_PREFIX}team`)).toBe('team');
-	});
-
-	test('leaves keys without the prefix untouched', () => {
-		expect(stripLabelPrefix('team')).toBe('team');
-	});
-});
-
-describe('withLabelPrefix', () => {
-	test('adds the prefix to a bare suffix', () => {
-		expect(withLabelPrefix('team')).toBe(`${LABEL_PREFIX}team`);
-	});
-
-	test('does not double-prefix an already prefixed key', () => {
-		expect(withLabelPrefix(`${LABEL_PREFIX}team`)).toBe(`${LABEL_PREFIX}team`);
-	});
-
-	test('trims surrounding whitespace', () => {
-		expect(withLabelPrefix('  team  ')).toBe(`${LABEL_PREFIX}team`);
-	});
-});
 
 describe('labelKeyError', () => {
 	test.each([
@@ -44,11 +17,11 @@ describe('labelKeyError', () => {
 		{ key: 'a'.repeat(64), expected: 'Must be at most 63 characters' },
 		{
 			key: 'has space',
-			expected: 'Must consist of letters, numbers, hyphens, underscores, or dots'
+			expected: 'Must consist of letters, numbers, hyphens, underscores, slashes or dots'
 		},
 		{
 			key: 'has/slash',
-			expected: 'Must consist of letters, numbers, hyphens, underscores, or dots'
+			expected: ''
 		},
 		{ key: 'valid', expected: '' },
 		{ key: 'valid.key_1-2', expected: '' },
@@ -108,7 +81,7 @@ describe('rowKeyError', () => {
 
 	test('validates the key charset', () => {
 		expect(rowKeyError({ key: 'bad key', value: 'v' }, new Set())).toBe(
-			'Must consist of letters, numbers, hyphens, underscores, or dots'
+			'Must consist of letters, numbers, hyphens, underscores, slashes or dots'
 		);
 	});
 });
@@ -163,7 +136,7 @@ describe('rowsFromArrays', () => {
 });
 
 describe('toLabelInput', () => {
-	test('drops empty rows, trims, and reattaches the prefix', () => {
+	test('drops empty rows and trims', () => {
 		expect(
 			toLabelInput([
 				{ key: '  team  ', value: '  platform  ' },
@@ -171,8 +144,8 @@ describe('toLabelInput', () => {
 				{ key: 'env', value: '' }
 			])
 		).toEqual([
-			{ key: `${LABEL_PREFIX}team`, value: 'platform' },
-			{ key: `${LABEL_PREFIX}env`, value: '' }
+			{ key: `team`, value: 'platform' },
+			{ key: `env`, value: '' }
 		]);
 	});
 
@@ -182,11 +155,11 @@ describe('toLabelInput', () => {
 });
 
 describe('toLabelRows', () => {
-	test('strips the prefix from existing labels', () => {
+	test('maps existing labels to editor rows', () => {
 		expect(
 			toLabelRows([
-				{ key: `${LABEL_PREFIX}team`, value: 'platform' },
-				{ key: `${LABEL_PREFIX}env`, value: 'prod' }
+				{ key: `team`, value: 'platform' },
+				{ key: `env`, value: 'prod' }
 			])
 		).toEqual([
 			{ key: 'team', value: 'platform' },

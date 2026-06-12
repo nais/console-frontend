@@ -1,8 +1,10 @@
-export const LABEL_PREFIX = 'labels.nais.io/';
 export const LABEL_MAX_LENGTH = 63;
 
-const CHARSET = /^[a-zA-Z0-9._-]+$/;
-const CHARSET_MESSAGE = 'Must consist of letters, numbers, hyphens, underscores, or dots';
+const KEY_CHARSET = /^[a-zA-Z0-9._/-]+$/;
+const KEY_CHARSET_MESSAGE =
+	'Must consist of letters, numbers, hyphens, underscores, slashes or dots';
+const VALUE_CHARSET = /^[a-zA-Z0-9._-]+$/;
+const VALUE_CHARSET_MESSAGE = 'Must consist of letters, numbers, hyphens, underscores, or dots';
 
 export interface Label {
 	key: string;
@@ -14,15 +16,6 @@ export interface LabelRow {
 	value: string;
 }
 
-export function stripLabelPrefix(key: string): string {
-	return key.startsWith(LABEL_PREFIX) ? key.slice(LABEL_PREFIX.length) : key;
-}
-
-export function withLabelPrefix(suffix: string): string {
-	const trimmed = suffix.trim();
-	return trimmed.startsWith(LABEL_PREFIX) ? trimmed : LABEL_PREFIX + trimmed;
-}
-
 export function labelKeyError(suffix: string): string {
 	const key = suffix.trim();
 	if (key.length === 0) {
@@ -31,8 +24,8 @@ export function labelKeyError(suffix: string): string {
 	if (key.length > LABEL_MAX_LENGTH) {
 		return `Must be at most ${LABEL_MAX_LENGTH} characters`;
 	}
-	if (!CHARSET.test(key)) {
-		return CHARSET_MESSAGE;
+	if (!KEY_CHARSET.test(key)) {
+		return KEY_CHARSET_MESSAGE;
 	}
 	return '';
 }
@@ -45,8 +38,8 @@ export function labelValueError(value: string): string {
 	if (v.length > LABEL_MAX_LENGTH) {
 		return `Must be at most ${LABEL_MAX_LENGTH} characters`;
 	}
-	if (!CHARSET.test(v)) {
-		return CHARSET_MESSAGE;
+	if (!VALUE_CHARSET.test(v)) {
+		return VALUE_CHARSET_MESSAGE;
 	}
 	return '';
 }
@@ -101,13 +94,12 @@ export function rowsFromArrays(keys: string[], values: string[]): LabelRow[] {
 export function toLabelInput(rows: readonly LabelRow[]): Label[] {
 	return rows
 		.map((row) => ({ key: row.key.trim(), value: row.value.trim() }))
-		.filter((row) => row.key.length > 0)
-		.map((row) => ({ key: withLabelPrefix(row.key), value: row.value }));
+		.filter((row) => row.key.length > 0);
 }
 
 export function toLabelRows(labels: readonly Label[]): LabelRow[] {
 	return labels.map((label) => ({
-		key: stripLabelPrefix(label.key),
+		key: label.key,
 		value: label.value
 	}));
 }

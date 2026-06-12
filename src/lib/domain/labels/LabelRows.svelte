@@ -1,19 +1,13 @@
 <script lang="ts">
 	import { Button, TextField } from '@nais/ds-svelte-community';
 	import { PlusIcon, TrashIcon } from '@nais/ds-svelte-community/icons';
-	import {
-		LABEL_PREFIX,
-		duplicateLabelKeys,
-		rowKeyError,
-		rowValueError,
-		type LabelRow
-	} from './labels';
+	import { duplicateLabelKeys, rowKeyError, rowValueError, type LabelRow } from './labels';
 
 	let { rows = $bindable() }: { rows: LabelRow[] } = $props();
 
 	let duplicates = $derived(duplicateLabelKeys(rows));
 
-	const keyInputStyle = `font-family: monospace; font-size: var(--ax-font-size-small); padding-left: calc(${LABEL_PREFIX.length}ch + var(--ax-space-12));`;
+	const keyInputStyle = `font-family: monospace; font-size: var(--ax-font-size-small); padding-left: var(--ax-space-12);`;
 
 	function addRow() {
 		rows.push({ key: '', value: '' });
@@ -31,7 +25,6 @@
 	{#each rows as row, i (i)}
 		<div class="label-row">
 			<div class="key-field">
-				<span class="prefix" aria-hidden="true">{LABEL_PREFIX}</span>
 				<TextField
 					size="small"
 					label="Label key"
@@ -95,19 +88,6 @@
 
 	.key-field {
 		position: relative;
-	}
-
-	.prefix {
-		position: absolute;
-		top: 0;
-		left: var(--ax-space-8);
-		height: 2rem;
-		display: flex;
-		align-items: center;
-		font-family: monospace;
-		font-size: var(--ax-font-size-small);
-		color: var(--ax-text-neutral-subtle);
-		pointer-events: none;
 	}
 
 	@media (max-width: 600px) {
