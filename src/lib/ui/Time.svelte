@@ -85,20 +85,9 @@
 	});
 
 	const datetime = $derived.by(() => {
-		// This is a hack to work around a bug in houdini prior to their new compiler.
-		try {
-			return time.toISOString();
-		} catch {
-			if (typeof time === 'string') {
-				try {
-					const date = new Date(time);
-					return date.toISOString();
-				} catch {
-					return undefined;
-				}
-			}
-			return undefined;
-		}
+		// Houdini (pre-new-compiler) may pass Date scalars as strings. Normalize to Date first.
+		const d = time instanceof Date ? time : new Date(time as string);
+		return Number.isNaN(d.getTime()) ? undefined : d.toISOString();
 	});
 </script>
 
