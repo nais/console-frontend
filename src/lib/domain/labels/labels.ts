@@ -1,7 +1,8 @@
 export const LABEL_MAX_LENGTH = 63;
 
 const KEY_CHARSET = /^[a-zA-Z0-9._/-]+$/;
-const KEY_CHARSET_MESSAGE = 'Must consist of letters, numbers, hyphens, underscores, slash or dots';
+const KEY_CHARSET_MESSAGE =
+	'Must consist of letters, numbers, hyphens, underscores, slashes or dots';
 const VALUE_CHARSET = /^[a-zA-Z0-9._-]+$/;
 const VALUE_CHARSET_MESSAGE = 'Must consist of letters, numbers, hyphens, underscores, or dots';
 
