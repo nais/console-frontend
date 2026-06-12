@@ -11,12 +11,14 @@ query AdminServiceAccounts($first: Int, $last: Int, $before: Cursor, $after: Cur
 			startCursor
 			endCursor
 		}
-		nodes {
-			id
-			name
-			description
-			createdAt
-			lastUsedAt
+		edges {
+			node {
+				id
+				name
+				description
+				createdAt
+				lastUsedAt
+			}
 		}
 	}
 }

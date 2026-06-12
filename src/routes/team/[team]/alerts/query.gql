@@ -26,29 +26,31 @@ query Alerts(
 				pageEnd
 				totalCount
 			}
-			nodes {
-				id
-				name
-				state
-				query
-				duration
-				... on PrometheusAlert {
-					alarms {
-						action
-						consequence
-						since
-						summary
-						state
-						value
+			edges {
+				node {
+					id
+					name
+					state
+					query
+					duration
+					... on PrometheusAlert {
+						alarms {
+							action
+							consequence
+							since
+							summary
+							state
+							value
+						}
+						ruleGroup
 					}
-					ruleGroup
-				}
-				team {
-					slug
-				}
-				teamEnvironment {
-					environment {
-						name
+					team {
+						slug
+					}
+					teamEnvironment {
+						environment {
+							name
+						}
 					}
 				}
 			}

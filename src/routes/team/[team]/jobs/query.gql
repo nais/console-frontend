@@ -43,52 +43,54 @@ query Jobs(
 				}
 			}
 
-			nodes {
-				__typename
-				id
-				name
-				schedule {
-					expression
-					timeZone
-					nextRun
-				}
-				teamEnvironment {
-					environment {
-						name
+			edges {
+				node {
+					__typename
+					id
+					name
+					schedule {
+						expression
+						timeZone
+						nextRun
 					}
-				}
-				team {
-					slug
-				}
-				runs(first: 1) {
-					pageInfo {
-						totalCount
+					teamEnvironment {
+						environment {
+							name
+						}
 					}
+					team {
+						slug
+					}
+					runs(first: 1) {
+						pageInfo {
+							totalCount
+						}
 
-					edges {
-						node {
-							startTime
-							status {
-								state
-								message
+						edges {
+							node {
+								startTime
+								status {
+									state
+									message
+								}
 							}
 						}
 					}
-				}
-				issues {
-					pageInfo {
-						totalCount
-					}
-					edges {
-						node {
-							severity
+					issues {
+						pageInfo {
+							totalCount
+						}
+						edges {
+							node {
+								severity
+							}
 						}
 					}
-				}
-				state
-				deployments(first: 1) {
-					nodes {
-						createdAt
+					state
+					deployments(first: 1) {
+						nodes {
+							createdAt
+						}
 					}
 				}
 			}

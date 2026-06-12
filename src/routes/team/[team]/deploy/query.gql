@@ -11,29 +11,31 @@ query Deployments($team: Slug!, $first: Int, $last: Int, $before: Cursor, $after
 				startCursor
 				totalCount
 			}
-			nodes {
-				id
-				statuses {
-					nodes {
-						state
-						message
-						createdAt
+			edges {
+				node {
+					id
+					statuses {
+						nodes {
+							state
+							message
+							createdAt
+						}
 					}
-				}
-				resources {
-					nodes {
-						id
-						kind
-						name
+					resources {
+						nodes {
+							id
+							kind
+							name
+						}
 					}
+					environmentName
+					createdAt
+					teamSlug
+					repository
+					commitSha
+					deployerUsername
+					triggerUrl
 				}
-				environmentName
-				createdAt
-				teamSlug
-				repository
-				commitSha
-				deployerUsername
-				triggerUrl
 			}
 		}
 	}

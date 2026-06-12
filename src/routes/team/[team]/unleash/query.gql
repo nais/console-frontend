@@ -12,8 +12,10 @@ query Unleash($team: Slug!) {
 				lastUpdated
 			}
 			allowedTeams(first: 20) @paginate {
-				nodes {
-					slug
+				edges {
+					node {
+						slug
+					}
 				}
 			}
 			webIngress

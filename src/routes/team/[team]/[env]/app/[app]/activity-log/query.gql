@@ -24,8 +24,10 @@ query ApplicationActivityLog(
 						startCursor
 						endCursor
 					}
-					nodes {
-						...ActivityLogEntryFragment
+					edges {
+						node {
+							...ActivityLogEntryFragment
+						}
 					}
 					facets {
 						activityTypes {

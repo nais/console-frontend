@@ -63,7 +63,7 @@
 	<div class="layout-two-column">
 		<div>
 			<List title="Activity log" count={totalCount}>
-				{#each activityLog.nodes ?? [] as item (item)}
+				{#each activityLog.edges ?? [] as { node: item } (item)}
 					<ActivityLogItem {item} />
 				{:else}
 					<ListItem>

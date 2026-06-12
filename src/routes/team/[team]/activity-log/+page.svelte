@@ -94,7 +94,7 @@
 		<div class="layout-two-column">
 			<div bind:this={wrapperEl}>
 				<List title="Activity Log" count={ae.pageInfo.totalCount}>
-					{#each ae.nodes || [] as item (item.id)}
+					{#each ae.edges || [] as { node: item } (item.id)}
 						<ActivityLogItem {item} mode="full" />
 					{/each}
 				</List>

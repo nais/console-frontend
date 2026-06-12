@@ -72,29 +72,25 @@
 	<div class="layout-two-column">
 		<div>
 			<List title="Buckets" count={$Buckets.data.team.buckets.pageInfo.totalCount}>
-				{#if $Buckets.data.team.buckets.nodes.length > 0}
-					{#each $Buckets.data.team.buckets.nodes as instance (instance.id)}
-						<ListItem interactive>
-							<div class="name-group">
-								<BucketIcon style="font-size: 1.25rem; flex-shrink: 0" />
-								<a
-									href="/team/{instance.team.slug}/{instance.teamEnvironment.environment
-										.name}/bucket/{instance.name}"
-									class="item-name">{instance.name}</a
-								>
-								<Tag
-									size="xsmall"
-									variant={envTagVariant(instance.teamEnvironment.environment.name)}
-									>{instance.teamEnvironment.environment.name}</Tag
-								>
+				{#each $Buckets.data.team.buckets.edges as { node: instance } (instance.id)}
+					<ListItem interactive>
+						<div class="name-group">
+							<BucketIcon style="font-size: 1.25rem; flex-shrink: 0" />
+							<a
+								href="/team/{instance.team.slug}/{instance.teamEnvironment.environment
+									.name}/bucket/{instance.name}"
+								class="item-name">{instance.name}</a
+							>
+							<Tag size="xsmall" variant={envTagVariant(instance.teamEnvironment.environment.name)}
+								>{instance.teamEnvironment.environment.name}</Tag
+							>
+						</div>
+						{#if instance.workload}
+							<div class="right">
+								Owner: <WorkloadLink workload={instance.workload} hideTeam hideEnv />
 							</div>
-							{#if instance.workload}
-								<div class="right">
-									Owner: <WorkloadLink workload={instance.workload} hideTeam hideEnv />
-								</div>
-							{/if}
-						</ListItem>
-					{/each}
+						{/if}
+					</ListItem>
 				{:else}
 					<ListItem>
 						<p>
@@ -105,7 +101,7 @@
 							>
 						</p>
 					</ListItem>
-				{/if}
+				{/each}
 			</List>
 			<Pagination
 				page={$Buckets.data.team.buckets.pageInfo}

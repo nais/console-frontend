@@ -36,7 +36,7 @@
 		to query or manage the team's resources.
 	</BodyLong>
 
-	{#if serviceAccounts && serviceAccounts.nodes.length > 0}
+	{#if serviceAccounts && serviceAccounts.edges.length > 0}
 		<List title="Service accounts" count={serviceAccounts.pageInfo.totalCount}>
 			{#snippet actions()}
 				{#if viewerIsOwner || isAdmin}
@@ -52,7 +52,7 @@
 					</Button>
 				{/if}
 			{/snippet}
-			{#each serviceAccounts.nodes as sa (sa.id)}
+			{#each serviceAccounts.edges as { node: sa } (sa.id)}
 				<ServiceAccountListItem
 					serviceAccount={sa}
 					href="/team/{teamSlug}/settings/service_accounts/{sa.id}"

@@ -123,7 +123,7 @@
 					</Tr>
 				</Thead>
 				<Tbody>
-					{#each $TenantVulnerabilites.data?.teams.nodes ?? [] as team (team.slug)}
+					{#each $TenantVulnerabilites.data?.teams.edges ?? [] as { node: team } (team.slug)}
 						<Tr>
 							<Td>
 								<IconLabel

@@ -33,16 +33,18 @@ query JobIssues(
 						pageEnd
 						totalCount
 					}
-					nodes {
-						id
-						__typename
+					edges {
+						node {
+							id
+							__typename
 
-						teamEnvironment {
-							environment {
-								name
+							teamEnvironment {
+								environment {
+									name
+								}
 							}
+							...IssueFragment
 						}
-						...IssueFragment
 					}
 				}
 			}

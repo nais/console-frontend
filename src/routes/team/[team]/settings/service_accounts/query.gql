@@ -12,12 +12,14 @@ query TeamServiceAccounts($team: Slug!, $first: Int, $last: Int, $before: Cursor
 				startCursor
 				endCursor
 			}
-			nodes {
-				id
-				name
-				description
-				createdAt
-				lastUsedAt
+			edges {
+				node {
+					id
+					name
+					description
+					createdAt
+					lastUsedAt
+				}
 			}
 		}
 	}

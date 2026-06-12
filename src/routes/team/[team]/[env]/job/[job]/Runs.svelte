@@ -26,7 +26,7 @@
 			team(slug: $team) {
 				environment(name: $env) {
 					job(name: $job) {
-						runs(first: $first) @paginate(mode: Infinite) @list(name: "All_Runs") {
+						runs(first: $first) @paginate(mode: Infinite, name: "All_Runs") {
 							edges {
 								node {
 									id

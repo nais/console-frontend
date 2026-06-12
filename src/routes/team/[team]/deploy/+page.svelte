@@ -30,7 +30,7 @@
 
 {#if $Deployments.data}
 	<List title="Deployments" count={$Deployments.data.team.deployments.pageInfo.totalCount}>
-		{#each $Deployments.data.team.deployments.nodes as deployment (deployment.id)}
+		{#each $Deployments.data.team.deployments.edges as { node: deployment } (deployment.id)}
 			<DeploymentListItem {deployment} showEnv />
 		{/each}
 	</List>

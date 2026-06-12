@@ -136,7 +136,7 @@
 								{/each}
 							</ActionMenu>
 						{/snippet}
-						{#each $TenantDeployments.data.deployments.nodes as deployment (deployment.id)}
+						{#each $TenantDeployments.data.deployments.edges as { node: deployment } (deployment.id)}
 							<DeploymentWithTeamListItem {deployment} />
 						{/each}
 					</List>

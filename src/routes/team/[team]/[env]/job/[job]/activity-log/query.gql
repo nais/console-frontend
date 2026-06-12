@@ -24,8 +24,10 @@ query JobActivityLog(
 						startCursor
 						endCursor
 					}
-					nodes {
-						...ActivityLogEntryFragment
+					edges {
+						node {
+							...ActivityLogEntryFragment
+						}
 					}
 					facets {
 						activityTypes {

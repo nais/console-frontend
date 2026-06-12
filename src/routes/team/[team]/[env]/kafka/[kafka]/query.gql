@@ -39,21 +39,23 @@ query KafkaTopic(
 						startCursor
 						endCursor
 					}
-					nodes {
-						access
-						workloadName
-						teamName
-						workload {
-							id
-							teamEnvironment {
-								environment {
-									name
+					edges {
+						node {
+							access
+							workloadName
+							teamName
+							workload {
+								id
+								teamEnvironment {
+									environment {
+										name
+									}
 								}
-							}
-							name
-							__typename
-							team {
-								slug
+								name
+								__typename
+								team {
+									slug
+								}
 							}
 						}
 					}

@@ -19,10 +19,12 @@ query ActivityLog(
 				startCursor
 				endCursor
 			}
-			nodes {
-				id
-				__typename
-				...ActivityLogEntryFragment
+			edges {
+				node {
+					id
+					__typename
+					...ActivityLogEntryFragment
+				}
 			}
 			facets {
 				activityTypes {

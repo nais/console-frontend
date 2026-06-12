@@ -131,7 +131,7 @@
 			{@const jobs = $Jobs.data?.team.jobs}
 
 			<List title="Jobs" count={jobs?.pageInfo.totalCount ?? 0}>
-				{#each jobs?.nodes ?? [] as job (job.id)}
+				{#each jobs?.edges ?? [] as { node: job } (job.id)}
 					<JobListItem {job} />
 				{/each}
 			</List>

@@ -115,7 +115,7 @@
 <div class="layout-two-column">
 	<div>
 		<List title="Issues" count={issues?.pageInfo.totalCount ?? 0}>
-			{#each issues?.nodes ?? [] as issue (issue.id)}
+			{#each issues?.edges ?? [] as { node: issue } (issue.id)}
 				<IssueListItem item={issue} />
 			{:else}
 				<ListItem>

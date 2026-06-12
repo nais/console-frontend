@@ -44,14 +44,14 @@
 		</Button>
 	</div>
 
-	{#if serviceAccounts && serviceAccounts.nodes.length > 0}
+	{#if serviceAccounts && serviceAccounts.edges.length > 0}
 		<List
 			title="{serviceAccounts.pageInfo.totalCount} service account{serviceAccounts.pageInfo
 				.totalCount !== 1
 				? 's'
 				: ''}"
 		>
-			{#each serviceAccounts.nodes as sa (sa.id)}
+			{#each serviceAccounts.edges as { node: sa } (sa.id)}
 				<ServiceAccountListItem serviceAccount={sa} href="/admin/service_accounts/{sa.id}" />
 			{/each}
 		</List>

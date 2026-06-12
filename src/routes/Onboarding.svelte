@@ -49,9 +49,11 @@
 					startCursor
 					endCursor
 				}
-				nodes {
-					slug
-					purpose
+				edges {
+					node {
+						slug
+						purpose
+					}
 				}
 			}
 		}
@@ -85,9 +87,9 @@
 
 	const teams = $derived(
 		teamSearchQuery === ''
-			? $teamsQuery.data?.teams.nodes
+			? $teamsQuery.data?.teams.edges
 			: ($teamSearch.data?.search.edges.map((e) => e.node).filter((n) => n.__typename === 'Team') ??
-					$teamsQuery.data?.teams.nodes)
+					$teamsQuery.data?.teams.edges.map((e) => e.node))
 	);
 
 	const pagination = $derived(

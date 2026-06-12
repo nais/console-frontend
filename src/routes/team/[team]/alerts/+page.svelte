@@ -142,8 +142,8 @@
 <div class="layout-two-column">
 	<div>
 		<List title="Alerts" count={alerts?.pageInfo.totalCount ?? 0}>
-			{#if alerts && alerts.nodes.length > 0}
-				{#each alerts.nodes as alert (alert.id)}
+			{#if alerts && alerts.edges.length > 0}
+				{#each alerts.edges as { node: alert } (alert.id)}
 					<details class="item">
 						<summary class="head">
 							<div class="chev">

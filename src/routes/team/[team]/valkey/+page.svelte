@@ -122,63 +122,59 @@
 						</Button>
 					{/if}
 				{/snippet}
-				{#if $Valkeys.data.team.valkeys.nodes.length > 0}
-					{#each $Valkeys.data.team.valkeys.nodes as instance (instance.id)}
-						<ListItem interactive>
-							<div class="name-group">
-								<TooltipAlignHack
-									content={{
-										RUNNING: 'Instance is running',
-										UNKNOWN: 'Unknown status',
-										POWEROFF: 'Powered off',
-										REBALANCING: 'Rebalancing',
-										REBUILDING: 'Rebuilding'
-									}[instance.state] ?? ''}
-								>
-									{#if instance.state === 'RUNNING'}
-										<RunningIndicator />
-									{:else if instance.state === 'REBALANCING'}
-										<div class="status-indicator rebalancing">
-											<CircleFillIcon />
-										</div>
-									{:else if instance.state === 'REBUILDING'}
-										<div class="status-indicator rebuilding">
-											<CircleFillIcon />
-										</div>
-									{:else if instance.state === 'POWEROFF'}
-										<CircleFillIcon style="color: var(--ax-bg-danger-strong); font-size: 0.7rem" />
-									{:else}
-										<CircleFillIcon
-											style="color: var(--ax-bg-info-moderate-pressed); font-size: 0.7rem"
-										/>
-									{/if}
-								</TooltipAlignHack>
-								<a
-									href="/team/{instance.team.slug}/{instance.teamEnvironment.environment
-										.name}/valkey/{instance.name}"
-									class="item-name">{instance.name}</a
-								>
-								<Tag
-									size="xsmall"
-									variant={envTagVariant(instance.teamEnvironment.environment.name)}
-									>{instance.teamEnvironment.environment.name}</Tag
-								>
-							</div>
-							{#if (instance.issues?.pageInfo.totalCount ?? 0) > 0}
-								{@const criticalCount = countIssuesBySeverity(instance.issues?.edges, 'CRITICAL')}
-								{@const warningCount = countIssuesBySeverity(instance.issues?.edges, 'WARNING')}
-								{@const todoCount = countIssuesBySeverity(instance.issues?.edges, 'TODO')}
-
-								<div class="right">
-									<IssueSeverityTags
-										critical={criticalCount}
-										warning={warningCount}
-										todo={todoCount}
+				{#each $Valkeys.data.team.valkeys.edges as { node: instance } (instance.id)}
+					<ListItem interactive>
+						<div class="name-group">
+							<TooltipAlignHack
+								content={{
+									RUNNING: 'Instance is running',
+									UNKNOWN: 'Unknown status',
+									POWEROFF: 'Powered off',
+									REBALANCING: 'Rebalancing',
+									REBUILDING: 'Rebuilding'
+								}[instance.state] ?? ''}
+							>
+								{#if instance.state === 'RUNNING'}
+									<RunningIndicator />
+								{:else if instance.state === 'REBALANCING'}
+									<div class="status-indicator rebalancing">
+										<CircleFillIcon />
+									</div>
+								{:else if instance.state === 'REBUILDING'}
+									<div class="status-indicator rebuilding">
+										<CircleFillIcon />
+									</div>
+								{:else if instance.state === 'POWEROFF'}
+									<CircleFillIcon style="color: var(--ax-bg-danger-strong); font-size: 0.7rem" />
+								{:else}
+									<CircleFillIcon
+										style="color: var(--ax-bg-info-moderate-pressed); font-size: 0.7rem"
 									/>
-								</div>
-							{/if}
-						</ListItem>
-					{/each}
+								{/if}
+							</TooltipAlignHack>
+							<a
+								href="/team/{instance.team.slug}/{instance.teamEnvironment.environment
+									.name}/valkey/{instance.name}"
+								class="item-name">{instance.name}</a
+							>
+							<Tag size="xsmall" variant={envTagVariant(instance.teamEnvironment.environment.name)}
+								>{instance.teamEnvironment.environment.name}</Tag
+							>
+						</div>
+						{#if (instance.issues?.pageInfo.totalCount ?? 0) > 0}
+							{@const criticalCount = countIssuesBySeverity(instance.issues?.edges, 'CRITICAL')}
+							{@const warningCount = countIssuesBySeverity(instance.issues?.edges, 'WARNING')}
+							{@const todoCount = countIssuesBySeverity(instance.issues?.edges, 'TODO')}
+
+							<div class="right">
+								<IssueSeverityTags
+									critical={criticalCount}
+									warning={warningCount}
+									todo={todoCount}
+								/>
+							</div>
+						{/if}
+					</ListItem>
 				{:else}
 					<ListItem>
 						<p>
@@ -190,7 +186,7 @@
 							>
 						</p>
 					</ListItem>
-				{/if}
+				{/each}
 			</List>
 			<Pagination
 				page={$Valkeys.data.team.valkeys.pageInfo}

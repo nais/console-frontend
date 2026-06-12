@@ -81,7 +81,7 @@
 					{#snippet actions()}
 						<DocsLink path="/build/" />
 					{/snippet}
-					{#each deploys.nodes as deployment (deployment.id)}
+					{#each deploys.edges as { node: deployment } (deployment.id)}
 						{@const id = extractIdFromUrl(deployment.triggerUrl ?? '')}
 						<div {id} class:highlight-in={id !== '' && highlightId !== '' && id === highlightId}>
 							<DeploymentListItem {deployment} />

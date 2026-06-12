@@ -22,21 +22,23 @@ query TenantVulnerabilites(
 			startCursor
 			totalCount
 		}
-		nodes {
-			slug
-			workloads {
-				pageInfo {
-					totalCount
+		edges {
+			node {
+				slug
+				workloads {
+					pageInfo {
+						totalCount
+					}
 				}
-			}
-			vulnerabilitySummary {
-				critical
-				high
-				medium
-				low
-				unassigned
-				riskScore
-				coverage
+				vulnerabilitySummary {
+					critical
+					high
+					medium
+					low
+					unassigned
+					riskScore
+					coverage
+				}
 			}
 		}
 	}

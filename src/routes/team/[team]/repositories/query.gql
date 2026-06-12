@@ -27,11 +27,13 @@ query Repositories(
 				startCursor
 				endCursor
 			}
-			nodes {
-				id
-				name
-				team {
-					slug
+			edges {
+				node {
+					id
+					name
+					team {
+						slug
+					}
 				}
 			}
 		}

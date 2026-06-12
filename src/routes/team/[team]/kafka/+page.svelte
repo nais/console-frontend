@@ -88,24 +88,20 @@
 	<div class="layout-two-column">
 		<div>
 			<List title="Kafka" count={$KafkaTopics.data.team.kafkaTopics.pageInfo.totalCount}>
-				{#if $KafkaTopics.data.team.kafkaTopics.nodes.length > 0}
-					{#each $KafkaTopics.data.team.kafkaTopics.nodes as instance (instance.id)}
-						<ListItem interactive>
-							<div class="name-group">
-								<KafkaIcon style="font-size: 1.25rem; flex-shrink: 0" />
-								<a
-									href="/team/{instance.team.slug}/{instance.teamEnvironment.environment
-										.name}/kafka/{instance.name}"
-									class="item-name">{instance.name}</a
-								>
-								<Tag
-									size="xsmall"
-									variant={envTagVariant(instance.teamEnvironment.environment.name)}
-									>{instance.teamEnvironment.environment.name}</Tag
-								>
-							</div>
-						</ListItem>
-					{/each}
+				{#each $KafkaTopics.data.team.kafkaTopics.edges as { node: instance } (instance.id)}
+					<ListItem interactive>
+						<div class="name-group">
+							<KafkaIcon style="font-size: 1.25rem; flex-shrink: 0" />
+							<a
+								href="/team/{instance.team.slug}/{instance.teamEnvironment.environment
+									.name}/kafka/{instance.name}"
+								class="item-name">{instance.name}</a
+							>
+							<Tag size="xsmall" variant={envTagVariant(instance.teamEnvironment.environment.name)}
+								>{instance.teamEnvironment.environment.name}</Tag
+							>
+						</div>
+					</ListItem>
 				{:else}
 					<ListItem>
 						<p>
@@ -116,7 +112,7 @@
 							>
 						</p>
 					</ListItem>
-				{/if}
+				{/each}
 			</List>
 			<Pagination
 				page={$KafkaTopics.data.team.kafkaTopics.pageInfo}

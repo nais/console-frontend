@@ -10,17 +10,19 @@ query CVES($first: Int, $last: Int, $before: Cursor, $after: Cursor, $orderBy: C
 			startCursor
 			totalCount
 		}
-		nodes {
-			id
-			identifier
-			severity
-			title
-			description
-			detailsLink
-			cvssScore
-			workloads {
-				pageInfo {
-					totalCount
+		edges {
+			node {
+				id
+				identifier
+				severity
+				title
+				description
+				detailsLink
+				cvssScore
+				workloads {
+					pageInfo {
+						totalCount
+					}
 				}
 			}
 		}

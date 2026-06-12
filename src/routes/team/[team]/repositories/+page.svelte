@@ -178,7 +178,7 @@
 							</Button>
 						{/if}
 					{/snippet}
-					{#each team.repositories.nodes as repo (repo.id)}
+					{#each team.repositories.edges as { node: repo } (repo.id)}
 						<ListItem interactive>
 							<div class="repo-row">
 								<div class="repo-name">
