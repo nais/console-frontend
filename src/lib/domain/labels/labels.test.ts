@@ -136,7 +136,7 @@ describe('rowsFromArrays', () => {
 });
 
 describe('toLabelInput', () => {
-	test('drops empty rows, trims, and reattaches the prefix', () => {
+	test('drops empty rows and trims', () => {
 		expect(
 			toLabelInput([
 				{ key: '  team  ', value: '  platform  ' },
@@ -155,7 +155,7 @@ describe('toLabelInput', () => {
 });
 
 describe('toLabelRows', () => {
-	test('strips the prefix from existing labels', () => {
+	test('maps existing labels to editor rows', () => {
 		expect(
 			toLabelRows([
 				{ key: `team`, value: 'platform' },
