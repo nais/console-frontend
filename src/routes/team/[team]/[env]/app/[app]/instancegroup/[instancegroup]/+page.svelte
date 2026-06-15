@@ -66,12 +66,6 @@
 		return prefix && g.name.startsWith(prefix) ? g.name.slice(prefix.length) : g.name;
 	}
 
-	function groupHasFailing(g: InstanceGroup) {
-		return g.instances.some((i) => i.status.state === 'FAILING');
-	}
-
-	const hasFailing = $derived(group ? groupHasFailing(group) : false);
-
 	const baseUrl = $derived(
 		application
 			? `/team/${application.team.slug}/${application.teamEnvironment.environment.name}/app/${application.name}`
@@ -313,12 +307,6 @@
 	</div>
 {/if}
 
-{#if hasFailing}
-	<div class="status-row">
-		<Tag size="small" variant="error">Failing</Tag>
-	</div>
-{/if}
-
 <GraphErrors errors={$InstanceGroupDetail.errors} />
 
 {#if $InstanceGroupDetail.fetching}
@@ -526,12 +514,6 @@
 {/if}
 
 <style>
-	.status-row {
-		display: flex;
-		gap: var(--ax-space-8);
-		margin-bottom: var(--ax-space-4);
-	}
-
 	.group-selector {
 		margin-bottom: var(--ax-space-16);
 	}
