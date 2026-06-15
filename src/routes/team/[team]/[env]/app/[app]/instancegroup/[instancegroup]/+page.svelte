@@ -4,12 +4,19 @@
 	import type { InstanceGroupDetail$result, ValueEncoding$options } from '$houdini';
 	import { ValueEncoding } from '$houdini';
 	import Resource from '$lib/domain/resources/Resource.svelte';
-	import WorkloadImageCard from '$lib/domain/workload/WorkloadImageCard.svelte';
 	import GraphErrors from '$lib/ui/GraphErrors.svelte';
 	import List from '$lib/ui/List.svelte';
 	import SurfaceCard from '$lib/ui/SurfaceCard.svelte';
 	import Time from '$lib/ui/Time.svelte';
-	import { Alert, Heading, Loader, Select, Tag } from '@nais/ds-svelte-community';
+	import {
+		Alert,
+		CopyButton,
+		Heading,
+		Loader,
+		Tag,
+		ToggleGroup,
+		ToggleGroupItem
+	} from '@nais/ds-svelte-community';
 	import prettyBytes from 'pretty-bytes';
 	import { SvelteMap } from 'svelte/reactivity';
 	import ViewSecretModal from '../../../../secret/[secret]/ViewSecretModal.svelte';
@@ -41,24 +48,29 @@
 				)
 			: null
 	);
-	const role = $derived(incoming && group?.id === incoming.id ? 'incoming' : 'current');
+	const oldest = $derived(
+		allGroups.length > 1
+			? allGroups.reduce((o, g) => (new Date(g.created) < new Date(o.created) ? g : o))
+			: null
+	);
 
-	function groupLabel(g: InstanceGroup) {
-		const r = incoming && g.id === incoming.id ? 'Incoming' : 'Current';
-		return allGroups.length > 1 ? `${g.name} (${r})` : g.name;
+	function groupRole(g: InstanceGroup): string {
+		if (allGroups.length === 1) return '';
+		if (incoming && g.id === incoming.id) return 'Incoming';
+		if (oldest && g.id === oldest.id) return 'Current';
+		return 'Stalled';
 	}
 
-	function handleGroupChange(e: Event) {
-		const target = e.target as HTMLSelectElement;
-		const name = target.value;
-		if (name && name !== page.params.instancegroup) {
-			goto(
-				`/team/${page.params.team}/${page.params.env}/app/${page.params.app}/instancegroup/${name}`
-			);
-		}
+	function groupShortName(g: InstanceGroup): string {
+		const prefix = application?.name ? `${application.name}-` : '';
+		return prefix && g.name.startsWith(prefix) ? g.name.slice(prefix.length) : g.name;
 	}
 
-	const hasFailing = $derived(group?.instances.some((i) => i.status.state === 'FAILING') ?? false);
+	function groupHasFailing(g: InstanceGroup) {
+		return g.instances.some((i) => i.status.state === 'FAILING');
+	}
+
+	const hasFailing = $derived(group ? groupHasFailing(group) : false);
 
 	const baseUrl = $derived(
 		application
@@ -271,29 +283,39 @@
 	}
 </script>
 
-<div class="heading-row">
-	{#if hasFailing}
-		<Tag size="small" variant="error">Failing</Tag>
-	{/if}
-	{#if allGroups.length > 1}
-		<Tag size="small" variant={role === 'incoming' ? 'alt1' : 'neutral'}>
-			{role === 'incoming' ? 'Incoming' : 'Current'}
-		</Tag>
-	{/if}
-</div>
-
 {#if allGroups.length > 1}
 	<div class="group-selector">
-		<Select
+		<ToggleGroup
 			label="Switch instance group"
 			size="small"
 			value={instanceGroupName}
-			onchange={handleGroupChange}
+			onchange={(v) => {
+				if (v && v !== page.params.instancegroup) {
+					goto(
+						`/team/${page.params.team}/${page.params.env}/app/${page.params.app}/instancegroup/${v}`
+					);
+				}
+			}}
 		>
 			{#each allGroups as g (g.id)}
-				<option value={g.name}>{groupLabel(g)}</option>
+				{@const role = groupRole(g)}
+				<ToggleGroupItem value={g.name}>
+					<span class="toggle-label">
+						<span class="toggle-role-name"
+							><span class="toggle-role">{role}</span>
+							<span class="toggle-name">{groupShortName(g)}</span></span
+						>
+						<span class="toggle-time"><Time time={g.created} distance /></span>
+					</span>
+				</ToggleGroupItem>
 			{/each}
-		</Select>
+		</ToggleGroup>
+	</div>
+{/if}
+
+{#if hasFailing}
+	<div class="status-row">
+		<Tag size="small" variant="error">Failing</Tag>
 	</div>
 {/if}
 
@@ -307,7 +329,7 @@
 	<Alert variant="warning">Instance group "{instanceGroupName}" not found.</Alert>
 {:else}
 	<div class="page-content">
-		<div class="page layout-two-column">
+		<div class="page">
 			<div class="main-column">
 				{#if group.instances.length > 0}
 					<section class="section">
@@ -371,6 +393,20 @@
 						</List>
 					</section>
 				{/if}
+
+				<section class="section">
+					<div class="image-line">
+						<Heading as="h3" size="xsmall">Image</Heading>
+						<div class="image-url">
+							<code>{group.image.name}:{group.image.tag}</code>
+							<CopyButton
+								copyText={`${group.image.name}:${group.image.tag}`}
+								size="xsmall"
+								variant="action"
+							/>
+						</div>
+					</div>
+				</section>
 
 				{#if application}
 					<section class="section">
@@ -453,10 +489,6 @@
 					</section>
 				{/if}
 			</div>
-
-			<div class="layout-sidebar">
-				<WorkloadImageCard imageName={group.image.name} tag={group.image.tag} />
-			</div>
 		</div>
 
 		<EnvironmentVariables
@@ -494,9 +526,43 @@
 {/if}
 
 <style>
+	.status-row {
+		display: flex;
+		gap: var(--ax-space-8);
+		margin-bottom: var(--ax-space-4);
+	}
+
 	.group-selector {
-		max-width: 20rem;
 		margin-bottom: var(--ax-space-16);
+	}
+
+	.toggle-label {
+		display: flex;
+		flex-direction: column;
+		align-items: flex-start;
+		gap: var(--ax-space-2);
+	}
+
+	.toggle-role-name {
+		display: flex;
+		align-items: baseline;
+		gap: var(--ax-space-6);
+	}
+
+	.toggle-role {
+		font-size: var(--ax-font-size-small);
+		font-weight: var(--ax-font-weight-bold);
+	}
+
+	.toggle-name {
+		font-size: var(--ax-font-size-small);
+		font-family: monospace;
+		opacity: 0.75;
+	}
+
+	.toggle-time {
+		font-size: var(--ax-font-size-small);
+		opacity: 0.6;
 	}
 
 	.page-content {
@@ -510,17 +576,28 @@
 		width: 100%;
 	}
 
+	.image-line {
+		display: flex;
+		flex-direction: column;
+		gap: var(--ax-space-4);
+	}
+
+	.image-url {
+		display: flex;
+		align-items: baseline;
+		gap: var(--ax-space-8);
+	}
+
+	.image-line code {
+		font-family: monospace;
+		font-size: var(--ax-font-size-small);
+		word-break: break-all;
+	}
+
 	.main-column {
 		display: flex;
 		flex-direction: column;
 		gap: var(--ax-space-24);
-	}
-
-	.heading-row {
-		display: flex;
-		align-items: center;
-		gap: var(--ax-space-8);
-		margin-bottom: var(--ax-space-8);
 	}
 
 	.section {
@@ -573,7 +650,9 @@
 	}
 
 	.instances-list {
-		--instancegroup-list-columns: minmax(0, 2.5fr) 7.5rem minmax(0, 2fr) auto;
+		--instancegroup-list-columns: 22rem 7.5rem 1fr 14rem;
+		font-size: var(--ax-font-size-small);
+		color: var(--ax-text-neutral-subtle);
 	}
 
 	.instances-item {
@@ -581,16 +660,15 @@
 	}
 
 	.meta-text {
-		color: var(--ax-text-neutral-subtle);
 		white-space: nowrap;
 	}
 
 	.exit-info {
-		font-size: var(--ax-font-size-small);
 		overflow-wrap: anywhere;
 	}
 
 	.instance-link {
+		color: var(--ax-text-neutral);
 		overflow-wrap: anywhere;
 		word-break: break-word;
 	}
