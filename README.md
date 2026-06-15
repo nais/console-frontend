@@ -95,11 +95,9 @@ pnpm v11 blocks lifecycle scripts by default. Only packages listed in `pnpm-work
 
 ### Dependency Update Policy
 
-- **`check-updates-cooldown.mjs`**: Enforces a 14-day cooldown period for dependency updates
-- Only allows updates to packages published at least 14 days ago
-- Reduces risk of compromised packages with malicious updates
+pnpm enforces a 14-day cooldown period via `minimumReleaseAge: 20160` in `pnpm-workspace.yaml`. Only packages published at least 14 days ago are eligible for installation, reducing the risk of newly compromised packages.
 
-To check for outdated dependencies:
+To check for available updates:
 
 ```bash
 pnpm run check-outdated
@@ -111,15 +109,11 @@ To update outdated dependencies (respects 14-day cooldown):
 pnpm run update-outdated
 ```
 
-To check when a specific package version was published:
-
-```bash
-pnpm run check-age <package-name> <version>
-```
+When merging a Dependabot PR for a package newer than 14 days (e.g. a security fix), add the package to `minimumReleaseAgeExclude` in `pnpm-workspace.yaml` before running `pnpm install`.
 
 ### Package Installation Security
 
-The 14-day cooldown enforced by `check-updates-cooldown.mjs` is the primary supply-chain defense. Run `pnpm audit` to check for known vulnerabilities after installing.
+The 14-day cooldown enforced by pnpm's `minimumReleaseAge` is the primary supply-chain defense. Run `pnpm audit` to check for known vulnerabilities after installing.
 
 ## User
 
