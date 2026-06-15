@@ -286,6 +286,7 @@
 {#if allGroups.length > 1}
 	<div class="group-selector">
 		<ToggleGroup
+			label="Switch instance group"
 			size="small"
 			value={instanceGroupName}
 			onchange={(v) => {
@@ -390,19 +391,22 @@
 								{/each}
 							</ul>
 						</List>
-						<div class="image-line">
-							<Heading as="h3" size="xsmall">Image</Heading>
-							<div class="image-url">
-								<code>{group.image.name}:{group.image.tag}</code>
-								<CopyButton
-									copyText={`${group.image.name}:${group.image.tag}`}
-									size="xsmall"
-									variant="action"
-								/>
-							</div>
-						</div>
 					</section>
 				{/if}
+
+				<section class="section">
+					<div class="image-line">
+						<Heading as="h3" size="xsmall">Image</Heading>
+						<div class="image-url">
+							<code>{group.image.name}:{group.image.tag}</code>
+							<CopyButton
+								copyText={`${group.image.name}:${group.image.tag}`}
+								size="xsmall"
+								variant="action"
+							/>
+						</div>
+					</div>
+				</section>
 
 				{#if application}
 					<section class="section">
