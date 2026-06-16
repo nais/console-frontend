@@ -6,7 +6,7 @@ import { ImageVulnerabilitySuppressionState, SBOMStatus } from '$houdini/graphql
 
 export type SbomStatus = SBOMStatus$options;
 
-export type SbomStatusIndicator = 'healthy' | 'processing' | 'warning' | 'no-sbom';
+type SbomStatusIndicator = 'healthy' | 'processing' | 'warning' | 'no-sbom';
 
 export type SbomStatusIconIndicator = SbomStatusIndicator | 'stale';
 
