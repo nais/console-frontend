@@ -20,10 +20,6 @@ export const apmURL = (namespace: string, service: string, tab?: string) => {
 	return tenantURL('grafana', `/a/nais-apm-app/services/${namespace}/${service}${params}`);
 };
 
-export const apmNamespaceURL = (namespace: string) => {
-	return tenantURL('grafana', `/a/nais-apm-app/namespaces/${namespace}`);
-};
-
 export const apmServicesURL = () => {
 	return tenantURL('grafana', '/a/nais-apm-app/services');
 };

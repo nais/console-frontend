@@ -1,4 +1,4 @@
-export const LABEL_MAX_LENGTH = 63;
+const LABEL_MAX_LENGTH = 63;
 
 const KEY_CHARSET = /^[a-zA-Z0-9._/-]+$/;
 const KEY_CHARSET_MESSAGE =
