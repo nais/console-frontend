@@ -67,7 +67,7 @@
 	export function refetch() {
 		runsQuery.fetch({
 			variables: { team: teamSlug, env: environment, job: jobName, first: 20 },
-			policy: 'NetworkOnly'
+			policy: 'NoCache'
 		});
 	}
 
