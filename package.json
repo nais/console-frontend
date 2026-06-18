@@ -63,7 +63,7 @@
 		"@codemirror/view": "6.43.0",
 		"@prometheus-io/codemirror-promql": "0.311.3",
 		"@slack/types": "2.21.1",
-		"@slack/web-api": "7.16.0",
+		"@slack/web-api": "7.17.0",
 		"cron-parser": "5.5.0",
 		"cronstrue": "3.14.0",
 		"d3-array": "3.2.4",

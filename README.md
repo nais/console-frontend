@@ -53,20 +53,9 @@ Styles use `@layer` ordering and design tokens from `@nais/ds-svelte-community`:
 
 The project is configured with AI assistant guidelines and the Svelte MCP (Model Context Protocol) server:
 
-- **[AGENTS.md](AGENTS.md)** - Project guidelines for AI assistants (GitHub Copilot, Cursor, Claude Code, etc.)
-  - Svelte 5 runes patterns
-  - Houdini GraphQL conventions
-  - CSS variable validation rules
-  - Component library usage
-  - Code quality standards
-  - Security patterns
+- **[AGENTS.md](AGENTS.md)** — Project guidelines for AI assistants (GitHub Copilot, Cursor, Claude Code, etc.), covering Svelte 5 runes patterns, Houdini GraphQL conventions, CSS variable rules, component library usage, code quality standards, and security patterns.
 
-- **Svelte MCP Server** - Provides comprehensive Svelte 5 and SvelteKit documentation to AI assistants
-  - Configuration: `.mcp.json` (Cursor, Claude Code, Zed) and `.vscode/mcp.json` (VSCode)
-  - Remote endpoint: `https://mcp.svelte.dev/mcp`
-  - Tools: `list-sections`, `get-documentation`, `svelte-autofixer`, `playground-link`
-
-The MCP server helps AI assistants provide accurate, up-to-date Svelte 5 guidance and catch common issues before you run linters.
+- **Svelte MCP Server** — Provides Svelte 5 and SvelteKit documentation to AI assistants via the official remote endpoint at `https://mcp.svelte.dev/mcp`. In VS Code, it is available through the MCP server registry (no project config needed). For other editors (Cursor, Claude Code, Zed), it is configured in `.mcp.json`. Tools: `list-sections`, `get-documentation`, `svelte-autofixer`, `playground-link`.
 
 #### Using the nais API proxy
 
