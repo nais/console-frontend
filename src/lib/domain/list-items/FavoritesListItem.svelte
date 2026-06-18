@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { favorites } from '$lib/stores/favorites.svelte';
+	import { pageTypeFromPath, trackEvent } from '$lib/tracking';
 	import IconLabel from '$lib/ui/IconLabel.svelte';
 	import ListItem from '$lib/ui/ListItem.svelte';
 	import { Button, Tooltip } from '@nais/ds-svelte-community';
@@ -13,6 +14,11 @@
 
 	function removeFavorite() {
 		favorites.removeFavorite(path);
+		trackEvent('favorite-remove', { pageType: pageTypeFromPath(path) });
+	}
+
+	function handleClick() {
+		trackEvent('favorite-click', { pageType: pageTypeFromPath(path) });
 	}
 
 	function capitalize(str: string): string {
@@ -161,7 +167,13 @@
 
 <ListItem>
 	<div class="row">
-		<IconLabel label={pathToFavoriteLabel(path)} icon={StarFillIcon} size="medium" href={path} />
+		<IconLabel
+			label={pathToFavoriteLabel(path)}
+			icon={StarFillIcon}
+			size="medium"
+			href={path}
+			onclick={handleClick}
+		/>
 		<div class="actions">
 			<Tooltip placement="bottom" content="Remove from favorites">
 				<Button

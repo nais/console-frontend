@@ -1,6 +1,7 @@
 <script lang="ts">
 	import FavoritesListItem from '$lib/domain/list-items/FavoritesListItem.svelte';
 	import { favorites } from '$lib/stores/favorites.svelte';
+	import { trackEvent } from '$lib/tracking';
 	import SortableList from '$lib/ui/SortableList.svelte';
 	import { BodyLong, Heading } from '@nais/ds-svelte-community';
 	import { StarIcon } from '@nais/ds-svelte-community/icons';
@@ -13,7 +14,10 @@
 
 	<SortableList
 		items={favorites.getFavorites()}
-		onReorder={(newOrder) => favorites.setFavorites(newOrder)}
+		onReorder={(newOrder) => {
+			favorites.setFavorites(newOrder);
+			trackEvent('favorite-reorder');
+		}}
 	>
 		{#each favorites.getFavorites().filter(Boolean) as fav (fav)}
 			<FavoritesListItem path={fav} />

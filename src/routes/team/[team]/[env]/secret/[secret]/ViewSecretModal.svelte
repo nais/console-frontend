@@ -6,6 +6,7 @@
 	import { PadlockLockedIcon } from '@nais/ds-svelte-community/icons';
 
 	import type { ValueEncoding$options } from '$houdini';
+	import { trackEvent } from '$lib/tracking';
 
 	interface SecretValue {
 		name: string;
@@ -55,6 +56,7 @@
 		isSubmitting = false;
 
 		if (!$revealSecrets.errors && $revealSecrets.data?.viewSecretValues?.values) {
+			trackEvent('reveal-secret');
 			onSuccess($revealSecrets.data.viewSecretValues.values);
 			handleClose();
 		}

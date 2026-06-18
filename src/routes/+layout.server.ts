@@ -8,6 +8,8 @@ export async function load(event) {
 		tenantName: event.locals.tenantName,
 		githubOrganization: event.locals.githubOrganization,
 		theme: theme as 'dark' | 'light',
-		userAgent: event.request.headers.get('user-agent') || 'unknown'
+		userAgent: event.request.headers.get('user-agent') || 'unknown',
+		trackingEnabled: event.locals.trackingEnabled,
+		trackingWebsiteId: event.locals.trackingWebsiteId
 	};
 }

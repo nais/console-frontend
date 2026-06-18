@@ -43,3 +43,13 @@ values:
     displayName: Number of replicas
     config:
       type: int
+  tracking.enabled:
+    displayName: Enable analytics tracking
+    description: Enable Umami/Innblikk tracking via the ResearchOps sporing script
+    config:
+      type: bool
+  tracking.websiteId:
+    displayName: Tracking website ID
+    description: The Umami/Innblikk website UUID for this tenant
+    config:
+      type: string
