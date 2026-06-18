@@ -123,10 +123,6 @@
 		&.selected {
 			background: color-mix(in srgb, var(--surface-accent-color) 8%, transparent);
 		}
-
-		&.current {
-			background: color-mix(in srgb, var(--surface-accent-color) 6%, transparent);
-		}
 	}
 
 	.team-icon {
