@@ -6,9 +6,9 @@
 		type ConfirmTeamDeletion$result,
 		type QueryResult
 	} from '$houdini';
+	import { trackEvent } from '$lib/tracking';
 	import GraphErrors from '$lib/ui/GraphErrors.svelte';
 	import Time from '$lib/ui/Time.svelte';
-	import { trackEvent } from '$lib/tracking';
 	import { Alert, BodyLong, Button, Modal } from '@nais/ds-svelte-community';
 	import { TrashIcon } from '@nais/ds-svelte-community/icons';
 	import type { PageProps } from './$types';

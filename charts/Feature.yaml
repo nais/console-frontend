@@ -53,3 +53,8 @@ values:
     description: The Umami/Innblikk website UUID for this tenant
     config:
       type: string
+  tracking.dev:
+    displayName: Use dev tracking proxy
+    description: Use the dev sporing script and proxy endpoint instead of production
+    config:
+      type: bool

@@ -47,7 +47,7 @@ Add NAV's ResearchOps "sporing" tracking script to console-frontend. This provid
 
 ### Phase 4: Development & Testing Setup
 
-8. **Dev script variant** — In the `svelte:head` block, conditionally use `sporing-dev.js` (proxy: `reops-event-proxy.ekstern.dev.nav.no`) for non-production. Controlled by `TRACKING_DEV` env var.
+8. **Dev script variant** — In `onMount`, conditionally load `sporing-dev.js` (proxy: `reops-event-proxy.ekstern.dev.nav.no`) for non-production. Controlled by `TRACKING_DEV` env var.
 
 9. **Disable tracking in tests** — Set `localStorage.setItem('sporing.disabled', '1')` in E2E/Playwright setup.
 
@@ -56,8 +56,8 @@ Add NAV's ResearchOps "sporing" tracking script to console-frontend. This provid
 - **Multi-tenant**: Tracking is opt-in per tenant via Helm chart flag (`tracking.enabled`). Disabled by default — only enabled for NAV where no consent is required
 - **No consent UI**: Console for NAV is an internal ansatte tool — cookie consent not required per ResearchOps guidance
 - **No user identification**: Fully anonymous tracking, no `sporing.identify()` calls
-- **URLs sent with paths intact**: Team/app/env names in URLs are organizational identifiers, not PII
-- **Query params stripped**: Search terms and filter values removed via `data-before-send`
+- **Route IDs sent instead of resolved URLs**: `beforeSend` replaces the page URL with the SvelteKit route ID (e.g., `/team/[team]/[env]/app/[app]`), so no team/app/env slugs are ever transmitted. Events are dropped if no route ID is available.
+- **Query params never sent**: Since only route IDs are transmitted, query parameters are inherently excluded
 - **No CSP changes needed currently**: No CSP headers are configured; if CSP is added later, allowlist `cdn.nav.no` (script-src) and `reops-event-proxy.nav.no` + `reops-event-proxy.ekstern.dev.nav.no` (connect-src)
 - **Server-side mutations**: For mutations in `+page.server.ts` (form actions), tracking must happen client-side after the form action succeeds
 

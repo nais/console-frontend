@@ -56,7 +56,7 @@
 				if (routeId && payload.url) {
 					return { ...payload, url: routeId };
 				}
-				return payload;
+				return null;
 			};
 			const script = document.createElement('script');
 			script.defer = true;
