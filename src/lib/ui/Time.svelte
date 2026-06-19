@@ -18,20 +18,22 @@
 
 	let tick = $state(0);
 
-	let fullTimestamp = $derived(format(time, 'dd. MMMM yyyy HH:mm:ss', { locale: enGB }));
+	const normalizedTime = $derived(time instanceof Date ? time : new Date(time as string));
+
+	let fullTimestamp = $derived(format(normalizedTime, 'dd. MMMM yyyy HH:mm:ss', { locale: enGB }));
 
 	function isRecent(): boolean {
-		return differenceInDays(new Date(), time) < DISTANCE_THRESHOLD_DAYS;
+		return differenceInDays(new Date(), normalizedTime) < DISTANCE_THRESHOLD_DAYS;
 	}
 
 	function distanceText(): string {
 		if (isRecent()) {
-			return formatDistanceStrict(time, Date.now(), { addSuffix: true });
+			return formatDistanceStrict(normalizedTime, Date.now(), { addSuffix: true });
 		}
-		if (isSameYear(time, new Date())) {
-			return format(time, 'd MMM, HH:mm', { locale: enGB });
+		if (isSameYear(normalizedTime, new Date())) {
+			return format(normalizedTime, 'd MMM, HH:mm', { locale: enGB });
 		}
-		return format(time, 'd MMM yyyy, HH:mm', { locale: enGB });
+		return format(normalizedTime, 'd MMM yyyy, HH:mm', { locale: enGB });
 	}
 
 	let text = $derived.by(() => {
@@ -39,13 +41,13 @@
 		if (distance) {
 			return distanceText();
 		}
-		return format(time, dateFormat, { locale: enGB });
+		return format(normalizedTime, dateFormat, { locale: enGB });
 	});
 
 	let tooltipContent = $derived.by(() => {
 		void tick;
 		if (distance && !isRecent()) {
-			const relative = formatDistanceStrict(time, Date.now(), { addSuffix: true });
+			const relative = formatDistanceStrict(normalizedTime, Date.now(), { addSuffix: true });
 			return `${fullTimestamp} (${relative})`;
 		}
 		return fullTimestamp;
@@ -61,6 +63,8 @@
 	});
 
 	$effect(() => {
+		void tick;
+
 		if (!distance) {
 			if (interval) {
 				clearInterval(interval);
@@ -86,10 +90,9 @@
 		}, desiredDelay);
 	});
 
-	const datetime = $derived.by(() => {
-		const d = time instanceof Date ? time : new Date(time as string);
-		return Number.isNaN(d.getTime()) ? undefined : d.toISOString();
-	});
+	const datetime = $derived(
+		Number.isNaN(normalizedTime.getTime()) ? undefined : normalizedTime.toISOString()
+	);
 </script>
 
 <Tooltip content={tooltipContent}>
