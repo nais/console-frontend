@@ -71,7 +71,7 @@
 	$effect(() => {
 		void tick;
 
-		if (!distance) {
+		if (!distance || !isValidDate) {
 			if (interval) {
 				clearInterval(interval);
 				interval = undefined;
@@ -99,8 +99,14 @@
 	const datetime = $derived(isValidDate ? normalizedTime.toISOString() : undefined);
 </script>
 
-<Tooltip content={tooltipContent}>
+{#if tooltipContent}
+	<Tooltip content={tooltipContent}>
+		<time {datetime}>
+			{text}
+		</time>
+	</Tooltip>
+{:else}
 	<time {datetime}>
 		{text}
 	</time>
-</Tooltip>
+{/if}
