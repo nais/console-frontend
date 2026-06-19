@@ -82,6 +82,10 @@
 							deleteTeamLoading = false;
 							return;
 						}
+						if (!deleteTeamResp.data?.confirmTeamDeletion.deletionStarted) {
+							deleteTeamLoading = false;
+							return;
+						}
 						trackEvent('delete-team');
 						goto('/team/' + key.team.slug, { replaceState: true });
 					}}>Confirm</Button

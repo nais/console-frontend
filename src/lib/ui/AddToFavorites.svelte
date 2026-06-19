@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { favorites } from '$lib/stores/favorites.svelte';
-	import { pageTypeFromPath, trackEvent } from '$lib/tracking';
+	import { trackEvent } from '$lib/tracking';
 	import { Button, Tooltip } from '@nais/ds-svelte-community';
 	import { StarFillIcon, StarIcon } from '@nais/ds-svelte-community/icons';
 
@@ -13,10 +13,10 @@
 	function toggleFavorite() {
 		if (favorites.isFavorite(path)) {
 			favorites.removeFavorite(path);
-			trackEvent('favorite-remove', { pageType: pageTypeFromPath(path) });
+			trackEvent('favorite-remove');
 		} else {
 			favorites.addFavorite(path);
-			trackEvent('favorite-add', { pageType: pageTypeFromPath(path) });
+			trackEvent('favorite-add');
 		}
 	}
 

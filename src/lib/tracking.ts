@@ -8,14 +8,3 @@ export function trackEvent(name: string, data?: Record<string, string | number |
 		window.sporing.track(name);
 	}
 }
-
-export function pageTypeFromPath(path: string): string {
-	const parts = path.split('/').filter(Boolean);
-	if (parts.length >= 4 && parts[0] === 'team') {
-		return parts[3];
-	}
-	if (parts.length >= 2 && parts[0] === 'team') {
-		return 'team';
-	}
-	return 'other';
-}

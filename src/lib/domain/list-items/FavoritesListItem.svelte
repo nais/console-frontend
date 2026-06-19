@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { favorites } from '$lib/stores/favorites.svelte';
-	import { pageTypeFromPath, trackEvent } from '$lib/tracking';
+	import { trackEvent } from '$lib/tracking';
 	import IconLabel from '$lib/ui/IconLabel.svelte';
 	import ListItem from '$lib/ui/ListItem.svelte';
 	import { Button, Tooltip } from '@nais/ds-svelte-community';
@@ -14,11 +14,11 @@
 
 	function removeFavorite() {
 		favorites.removeFavorite(path);
-		trackEvent('favorite-remove', { pageType: pageTypeFromPath(path) });
+		trackEvent('favorite-remove');
 	}
 
 	function handleClick() {
-		trackEvent('favorite-click', { pageType: pageTypeFromPath(path) });
+		trackEvent('favorite-click');
 	}
 
 	function capitalize(str: string): string {

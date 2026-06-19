@@ -35,15 +35,15 @@ Add NAV's ResearchOps "sporing" tracking script to console-frontend. This provid
    - Exposes typed `trackEvent(name: string, data?: Record<string, string | number | boolean>)` function
    - No-ops gracefully if tracking unavailable
 
-7. **Add event tracking to key user actions** — Import and call `trackEvent()` after successful actions. Start with Tier 1 (highest insight value):
-   - **Favourites**: `favorite-add`, `favorite-remove`, `favorite-reorder`, `favorite-click` — in `src/lib/ui/AddToFavorites.svelte`, `src/lib/domain/list-items/FavoritesListItem.svelte`, `src/routes/FavoritesList.svelte`. Include `{ pageType }` extracted from path (app, job, secret, etc.) — not the full path or resource name.
-   - **Team lifecycle**: `ConfirmTeamDeletion` — in `src/routes/team/[team]/settings/confirm_delete/+page.svelte`
-   - **App lifecycle**: `RestartApp`, `StopApp`, `DeleteApplication` — in `src/routes/team/[team]/[env]/app/[app]/AppActions.svelte`, `src/routes/team/[team]/[env]/app/[app]/delete/+page.svelte`
-   - **Secret access**: `RevealSecretValues` — in `src/routes/team/[team]/[env]/secret/[secret]/ViewSecretModal.svelte`
-   - **Job triggers**: `TriggerJobRun` — in `src/routes/team/[team]/[env]/job/[job]/JobActions.svelte`
-   - **Vulnerability mgmt**: `SuppressFinding` — in `src/lib/domain/vulnerability/SuppressFinding.svelte`
+7. **Add event tracking to key user actions** — Import and call `trackEvent()` after successful actions. Page context (route ID) is automatically included via `beforeSend`. Start with Tier 1 (highest insight value):
+   - **Favourites**: `favorite-add`, `favorite-remove`, `favorite-reorder`, `favorite-click` — in `src/lib/ui/AddToFavorites.svelte`, `src/lib/domain/list-items/FavoritesListItem.svelte`, `src/routes/FavoritesList.svelte`
+   - **Team lifecycle**: `delete-team` — in `src/routes/team/[team]/settings/confirm_delete/+page.svelte`
+   - **App lifecycle**: `restart-app`, `stop-app`, `delete-app` — in `src/routes/team/[team]/[env]/app/[app]/AppActions.svelte`, `src/routes/team/[team]/[env]/app/[app]/delete/+page.svelte`
+   - **Secret access**: `reveal-secret` — in `src/routes/team/[team]/[env]/secret/[secret]/ViewSecretModal.svelte`
+   - **Job triggers**: `trigger-job` — in `src/routes/team/[team]/[env]/job/[job]/JobActions.svelte`
+   - **Vulnerability mgmt**: `suppress-vulnerability` — in `src/lib/domain/vulnerability/SuppressFinding.svelte`
 
-   Track only event name + resource type (e.g., `{ type: 'app' }`). No user identifiers, no resource names.
+   Events carry only the event name. No custom payload data, no user identifiers, no resource names. Page context (route ID pattern) is attached automatically by `beforeSend`.
 
 ### Phase 4: Development & Testing Setup
 

@@ -52,7 +52,7 @@
 
 			window.beforeSend = (_type, payload) => {
 				const routeId = window.__sporingRouteId;
-				if (routeId && payload.url) {
+				if (routeId) {
 					return { ...payload, url: routeId };
 				}
 				return null;
