@@ -85,10 +85,8 @@
 
 		<div class="meta-cell">
 			{#if lastRun}
-				<span
-					class="meta-item run-status"
-					aria-label="Last run {lastRun.status.state.toLowerCase()}"
-				>
+				<span class="meta-item run-status">
+					<span class="aksel-sr-only">Last run {lastRun.status.state.toLowerCase()}</span>
 					{#if lastRun.status.state === 'RUNNING' || lastRun.status.state === 'PENDING'}
 						<Loader size="xsmall" variant="interaction" aria-hidden="true" />
 					{:else if lastRun.status.state === 'SUCCEEDED'}
@@ -102,15 +100,17 @@
 				</span>
 			{/if}
 			{#if job.schedule?.nextRun}
-				<span class="meta-item" aria-label="Next run">
+				<span class="meta-item">
 					<CalendarIcon style="font-size: 14px" aria-hidden="true" />
+					<span class="aksel-sr-only">Next run</span>
 					<Time time={job.schedule.nextRun} distance={true} />
 				</span>
 			{/if}
 			{#if job.deployments.nodes.length > 0}
 				{@const timestamp = job.deployments.nodes[0].createdAt}
-				<span class="meta-item" aria-label="Last deploy">
+				<span class="meta-item">
 					<RocketIcon style="font-size: 14px" aria-hidden="true" />
+					<span class="aksel-sr-only">Last deploy</span>
 					<Time time={timestamp} distance={true} />
 				</span>
 			{/if}

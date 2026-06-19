@@ -76,8 +76,9 @@
 		<div class="meta-cell">
 			{#if app.deployments.nodes.length > 0}
 				{@const timestamp = app.deployments.nodes[0].createdAt}
-				<span class="meta-item" aria-label="Last deploy">
+				<span class="meta-item">
 					<RocketIcon style="font-size: 14px" aria-hidden="true" />
+					<span class="aksel-sr-only">Last deploy</span>
 					<Time time={timestamp} distance={true} />
 				</span>
 			{/if}

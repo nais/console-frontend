@@ -19,10 +19,14 @@
 	let tick = $state(0);
 
 	const normalizedTime = $derived(time instanceof Date ? time : new Date(time as string));
+	const isValidDate = $derived(!Number.isNaN(normalizedTime.getTime()));
 
-	let fullTimestamp = $derived(format(normalizedTime, 'dd. MMMM yyyy HH:mm:ss', { locale: enGB }));
+	let fullTimestamp = $derived(
+		isValidDate ? format(normalizedTime, 'dd. MMMM yyyy HH:mm:ss', { locale: enGB }) : ''
+	);
 
 	function isRecent(): boolean {
+		if (!isValidDate) return false;
 		return differenceInDays(new Date(), normalizedTime) < DISTANCE_THRESHOLD_DAYS;
 	}
 
@@ -38,6 +42,7 @@
 
 	let text = $derived.by(() => {
 		void tick;
+		if (!isValidDate) return '';
 		if (distance) {
 			return distanceText();
 		}
@@ -46,6 +51,7 @@
 
 	let tooltipContent = $derived.by(() => {
 		void tick;
+		if (!isValidDate) return '';
 		if (distance && !isRecent()) {
 			const relative = formatDistanceStrict(normalizedTime, Date.now(), { addSuffix: true });
 			return `${fullTimestamp} (${relative})`;
@@ -90,9 +96,7 @@
 		}, desiredDelay);
 	});
 
-	const datetime = $derived(
-		Number.isNaN(normalizedTime.getTime()) ? undefined : normalizedTime.toISOString()
-	);
+	const datetime = $derived(isValidDate ? normalizedTime.toISOString() : undefined);
 </script>
 
 <Tooltip content={tooltipContent}>
