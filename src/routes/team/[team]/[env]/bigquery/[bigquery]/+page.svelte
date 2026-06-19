@@ -40,11 +40,11 @@
 
 				<dl class="settings-list">
 					<dt>Created</dt>
-					<dd><Time time={bq.status.creationTime} /></dd>
+					<dd><Time time={bq.status.creationTime} distance /></dd>
 
 					<dt>Last modified</dt>
 					<dd>
-						<Time time={bq.status.lastModifiedTime || bq.status.creationTime} />
+						<Time time={bq.status.lastModifiedTime || bq.status.creationTime} distance />
 					</dd>
 
 					<dt>Cascading delete</dt>
