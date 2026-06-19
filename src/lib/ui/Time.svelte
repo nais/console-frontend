@@ -1,63 +1,56 @@
 <script lang="ts">
-	import {
-		differenceInDays,
-		differenceInHours,
-		differenceInMinutes,
-		differenceInMonths,
-		differenceInSeconds,
-		differenceInYears,
-		format,
-		formatDistanceStrict
-	} from 'date-fns';
+	import { Tooltip } from '@nais/ds-svelte-community';
+	import { differenceInDays, format, formatDistanceStrict, isSameYear } from 'date-fns';
 	import { enGB } from 'date-fns/locale';
 	import { onDestroy } from 'svelte';
+
+	const DISTANCE_THRESHOLD_DAYS = 7;
 
 	const {
 		time,
 		dateFormat = 'PPPP',
-		distance = false,
-		short = false
+		distance = false
 	}: {
 		time: Date;
 		dateFormat?: string;
-	} & ({ distance?: false; short?: never } | { distance: true; short?: boolean }) = $props();
+		distance?: boolean;
+	} = $props();
 
-	let title = $derived(format(time, 'dd. MMMM yyyy HH:mm:ss', { locale: enGB }));
+	let tick = $state(0);
+
+	let fullTimestamp = $derived(format(time, 'dd. MMMM yyyy HH:mm:ss', { locale: enGB }));
+
+	function isRecent(): boolean {
+		return differenceInDays(new Date(), time) < DISTANCE_THRESHOLD_DAYS;
+	}
 
 	function distanceText(): string {
-		return formatDistanceStrict(time, Date.now(), { addSuffix: true });
+		if (isRecent()) {
+			return formatDistanceStrict(time, Date.now(), { addSuffix: true });
+		}
+		if (isSameYear(time, new Date())) {
+			return format(time, 'd MMM, HH:mm', { locale: enGB });
+		}
+		return format(time, 'd MMM yyyy, HH:mm', { locale: enGB });
 	}
 
-	function distanceShortText(): string {
-		const now = new Date();
-
-		const seconds = differenceInSeconds(now, time);
-		if (seconds < 60) return `${Math.ceil(seconds)}s`;
-
-		const minutes = differenceInMinutes(now, time);
-		if (minutes < 60) return `${Math.ceil(minutes)}m`;
-
-		const hours = differenceInHours(now, time);
-		if (hours < 24) return `${Math.ceil(hours)}h`;
-
-		const days = differenceInDays(now, time);
-		if (days < 30) return `${Math.ceil(days)}d`;
-
-		const months = differenceInMonths(now, time);
-		if (months < 12) return `${Math.ceil(months)}mo`;
-
-		const years = differenceInYears(now, time);
-		return `${Math.ceil(years)}y`;
-	}
-
-	function getDisplayText(): string {
+	let text = $derived.by(() => {
+		void tick;
 		if (distance) {
-			return short ? distanceShortText() : distanceText();
+			return distanceText();
 		}
 		return format(time, dateFormat, { locale: enGB });
-	}
+	});
 
-	let text: string = $state(getDisplayText());
+	let tooltipContent = $derived.by(() => {
+		void tick;
+		if (distance && !isRecent()) {
+			const relative = formatDistanceStrict(time, Date.now(), { addSuffix: true });
+			return `${fullTimestamp} (${relative})`;
+		}
+		return fullTimestamp;
+	});
+
 	let interval: ReturnType<typeof setTimeout> | undefined = $state();
 
 	onDestroy(() => {
@@ -67,8 +60,6 @@
 	});
 
 	$effect(() => {
-		text = getDisplayText();
-
 		if (!distance) {
 			if (interval) {
 				clearInterval(interval);
@@ -78,19 +69,23 @@
 		}
 
 		if (!interval) {
-			interval = setInterval(() => {
-				text = getDisplayText();
-			}, 1000);
+			interval = setInterval(
+				() => {
+					tick++;
+				},
+				isRecent() ? 1000 : 60_000
+			);
 		}
 	});
 
 	const datetime = $derived.by(() => {
-		// Houdini (pre-new-compiler) may pass Date scalars as strings. Normalize to Date first.
 		const d = time instanceof Date ? time : new Date(time as string);
 		return Number.isNaN(d.getTime()) ? undefined : d.toISOString();
 	});
 </script>
 
-<time {datetime} {title}>
-	{text}
-</time>
+<Tooltip content={tooltipContent}>
+	<time {datetime}>
+		{text}
+	</time>
+</Tooltip>
