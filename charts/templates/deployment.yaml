@@ -27,6 +27,8 @@ spec:
               value: '{{ .Values.tracking.enabled }}'
             - name: 'TRACKING_WEBSITE_ID'
               value: '{{ .Values.tracking.websiteId }}'
+            - name: 'TRACKING_DEV'
+              value: '{{ .Values.tracking.dev }}'
             # - name: 'OTEL_TRACES_EXPORTER'
             #   value: 'otlp'
             # - name: 'OTEL_METRICS_EXPORTER'

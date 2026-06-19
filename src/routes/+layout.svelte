@@ -48,23 +48,21 @@
 
 	onMount(() => {
 		if (data.trackingEnabled && data.trackingWebsiteId) {
+			window.__sporingRouteId = page.route.id ?? undefined;
+
 			// eslint-disable-next-line no-undef
 			window.beforeSend = (_type: string, payload: SporingPayload) => {
-				if (payload.url) {
-					try {
-						// eslint-disable-next-line svelte/prefer-svelte-reactivity
-						const u = new URL(payload.url, location.href);
-						u.search = '';
-						return { ...payload, url: u.toString() };
-					} catch {
-						// ignore
-					}
+				const routeId = window.__sporingRouteId;
+				if (routeId && payload.url) {
+					return { ...payload, url: routeId };
 				}
 				return payload;
 			};
 			const script = document.createElement('script');
 			script.defer = true;
-			script.src = 'https://cdn.nav.no/team-researchops/sporing/sporing.js';
+			script.src = data.trackingDev
+				? 'https://cdn.nav.no/team-researchops/sporing/sporing-dev.js'
+				: 'https://cdn.nav.no/team-researchops/sporing/sporing.js';
 			script.setAttribute('data-website-id', data.trackingWebsiteId);
 			script.setAttribute('data-before-send', 'beforeSend');
 			script.setAttribute('data-tag', 'console');
@@ -96,6 +94,7 @@
 
 	afterNavigate(() => {
 		loading = false;
+		window.__sporingRouteId = page.route.id ?? undefined;
 	});
 
 	const title = $derived.by(() => {

@@ -25,3 +25,4 @@ replicaCount: 2
 tracking:
   enabled: false
   websiteId: ""
+  dev: false

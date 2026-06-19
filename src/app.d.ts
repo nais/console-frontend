@@ -30,6 +30,7 @@ declare global {
 	interface Window {
 		sporing?: Sporing;
 		beforeSend?: (type: string, payload: SporingPayload) => SporingPayload | null;
+		__sporingRouteId?: string;
 	}
 
 	namespace App {
@@ -41,6 +42,7 @@ declare global {
 			githubOrganization: string;
 			trackingEnabled: boolean;
 			trackingWebsiteId: string;
+			trackingDev: boolean;
 		}
 		interface PageData {
 			meta: {

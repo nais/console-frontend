@@ -10,6 +10,7 @@ export async function load(event) {
 		theme: theme as 'dark' | 'light',
 		userAgent: event.request.headers.get('user-agent') || 'unknown',
 		trackingEnabled: event.locals.trackingEnabled,
-		trackingWebsiteId: event.locals.trackingWebsiteId
+		trackingWebsiteId: event.locals.trackingWebsiteId,
+		trackingDev: event.locals.trackingDev
 	};
 }
