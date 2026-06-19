@@ -51,7 +51,8 @@
 		return fullTimestamp;
 	});
 
-	let interval: ReturnType<typeof setTimeout> | undefined = $state();
+	let interval: ReturnType<typeof setInterval> | undefined = $state();
+	let intervalDelay: number | undefined = $state();
 
 	onDestroy(() => {
 		if (interval) {
@@ -64,18 +65,25 @@
 			if (interval) {
 				clearInterval(interval);
 				interval = undefined;
+				intervalDelay = undefined;
 			}
 			return;
 		}
 
-		if (!interval) {
-			interval = setInterval(
-				() => {
-					tick++;
-				},
-				isRecent() ? 1000 : 60_000
-			);
+		const desiredDelay = isRecent() ? 1000 : 60_000;
+
+		if (interval && intervalDelay === desiredDelay) {
+			return;
 		}
+
+		if (interval) {
+			clearInterval(interval);
+		}
+
+		intervalDelay = desiredDelay;
+		interval = setInterval(() => {
+			tick++;
+		}, desiredDelay);
 	});
 
 	const datetime = $derived.by(() => {

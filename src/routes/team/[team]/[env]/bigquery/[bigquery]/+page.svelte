@@ -40,7 +40,7 @@
 
 				<dl class="settings-list">
 					<dt>Created</dt>
-					<dd><Time time={bq.status.creationTime} distance /></dd>
+					<dd><Time time={bq.status.creationTime} dateFormat="d MMM yyyy, HH:mm" /></dd>
 
 					<dt>Last modified</dt>
 					<dd>
