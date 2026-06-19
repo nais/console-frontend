@@ -22,9 +22,9 @@ Add NAV's ResearchOps "sporing" tracking script to console-frontend. This provid
 
 ### Phase 2: Script Integration
 
-3. **Conditionally render tracking script** — Inject via `src/routes/+layout.svelte` using `svelte:head` — render the `<script>` tag only when `data.trackingEnabled` is true. Include `data-before-send` and `data-tag="console"`.
+3. **Conditionally inject tracking script** — In `src/routes/+layout.svelte` `onMount`, dynamically create and append the `<script>` tag when `data.trackingEnabled` is true. Uses `sporing-dev.js` when `data.trackingDev` is true, otherwise production `sporing.js`.
 
-4. **Add `beforeSend` function** — Define as inline script in `svelte:head` before the tracking script. Strips query parameters from URLs while keeping path segments as-is.
+4. **Add `beforeSend` function** — Assigned to `window.beforeSend` in `onMount`. Replaces resolved URLs with SvelteKit route IDs (e.g. `/team/[team]/secrets`) for aggregate page analytics. Route ID is kept in sync via `afterNavigate`.
 
 5. **Add TypeScript type declarations in `src/app.d.ts`** — Declare `window.sporing` with `track()` and `identify()` methods so custom event calls are type-safe. Update `App.Locals` and layout data types for tracking config.
 

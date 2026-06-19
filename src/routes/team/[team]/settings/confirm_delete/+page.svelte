@@ -78,9 +78,11 @@
 							key: key.key,
 							team: key.team.slug
 						});
-						if (!deleteTeamResp.errors) {
-							trackEvent('delete-team');
+						if (deleteTeamResp.errors) {
+							deleteTeamLoading = false;
+							return;
 						}
+						trackEvent('delete-team');
 						goto('/team/' + key.team.slug, { replaceState: true });
 					}}>Confirm</Button
 				>
