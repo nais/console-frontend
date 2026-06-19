@@ -11,14 +11,14 @@
 		dateFormat = 'PPPP',
 		distance = false
 	}: {
-		time: Date;
+		time: Date | string;
 		dateFormat?: string;
 		distance?: boolean;
 	} = $props();
 
 	let tick = $state(0);
 
-	const normalizedTime = $derived(time instanceof Date ? time : new Date(time as string));
+	const normalizedTime = $derived(time instanceof Date ? time : new Date(time));
 	const isValidDate = $derived(!Number.isNaN(normalizedTime.getTime()));
 
 	let fullTimestamp = $derived(
