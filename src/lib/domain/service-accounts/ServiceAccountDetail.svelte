@@ -8,10 +8,8 @@
 	import Confirm from '$lib/ui/Confirm.svelte';
 	import GraphErrors from '$lib/ui/GraphErrors.svelte';
 	import Time from '$lib/ui/Time.svelte';
-	import { BodyLong, Button, Heading, Tooltip } from '@nais/ds-svelte-community';
+	import { BodyLong, Button, Heading } from '@nais/ds-svelte-community';
 	import { TrashIcon } from '@nais/ds-svelte-community/icons';
-	import { format } from 'date-fns';
-	import { enGB } from 'date-fns/locale';
 	import ServiceAccountAuthentications from './ServiceAccountAuthentications.svelte';
 	import ServiceAccountRoles from './ServiceAccountRoles.svelte';
 
@@ -86,22 +84,16 @@
 		<dl class="settings-list">
 			<dt>Created</dt>
 			<dd>
-				<Tooltip content={format(serviceAccount.createdAt, 'PPPP', { locale: enGB })}>
-					<Time time={serviceAccount.createdAt} distance={true} />
-				</Tooltip>
+				<Time time={serviceAccount.createdAt} distance={true} />
 			</dd>
 			<dt>Last updated</dt>
 			<dd>
-				<Tooltip content={format(serviceAccount.updatedAt, 'PPPP', { locale: enGB })}>
-					<Time time={serviceAccount.updatedAt} distance={true} />
-				</Tooltip>
+				<Time time={serviceAccount.updatedAt} distance={true} />
 			</dd>
 			<dt>Last used</dt>
 			<dd>
 				{#if serviceAccount.lastUsedAt}
-					<Tooltip content={format(serviceAccount.lastUsedAt, 'PPPP', { locale: enGB })}>
-						<Time time={serviceAccount.lastUsedAt} distance={true} />
-					</Tooltip>
+					<Time time={serviceAccount.lastUsedAt} distance={true} />
 				{:else}
 					Never
 				{/if}

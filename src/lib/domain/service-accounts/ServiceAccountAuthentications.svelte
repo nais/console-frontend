@@ -9,10 +9,8 @@
 	import ListItem from '$lib/ui/ListItem.svelte';
 	import { pageModalClick } from '$lib/ui/PageModal.svelte';
 	import Time from '$lib/ui/Time.svelte';
-	import { Button, Detail, Heading, Tooltip } from '@nais/ds-svelte-community';
+	import { Button, Detail, Heading } from '@nais/ds-svelte-community';
 	import { BranchingIcon, TokenIcon, TrashIcon } from '@nais/ds-svelte-community/icons';
-	import { format } from 'date-fns';
-	import { enGB } from 'date-fns/locale';
 
 	interface Props {
 		serviceAccount: ServiceAccountAuthenticationFragment;
@@ -148,19 +146,15 @@
 
 					<div class="right">
 						{#if binding.lastUsedAt}
-							<Tooltip content="Last used - {format(binding.lastUsedAt, 'PPPP', { locale: enGB })}">
-								<Detail>
-									Last used <Time time={binding.lastUsedAt} distance={true} />
-								</Detail>
-							</Tooltip>
+							<Detail>
+								Last used <Time time={binding.lastUsedAt} distance={true} />
+							</Detail>
 						{:else}
 							<Detail>Never used</Detail>
 						{/if}
-						<Tooltip content="Created - {format(binding.createdAt, 'PPPP', { locale: enGB })}">
-							<Detail>
-								Created <Time time={binding.createdAt} distance={true} />
-							</Detail>
-						</Tooltip>
+						<Detail>
+							Created <Time time={binding.createdAt} distance={true} />
+						</Detail>
 						{#if canManage}
 							<Button
 								size="xsmall"
@@ -197,25 +191,19 @@
 
 					<div class="right">
 						{#if token.lastUsedAt}
-							<Tooltip content="Last used - {format(token.lastUsedAt, 'PPPP', { locale: enGB })}">
-								<Detail>
-									Last used <Time time={token.lastUsedAt} distance={true} />
-								</Detail>
-							</Tooltip>
+							<Detail>
+								Last used <Time time={token.lastUsedAt} distance={true} />
+							</Detail>
 						{:else}
 							<Detail>Never used</Detail>
 						{/if}
-						<Tooltip content="Created - {format(token.createdAt, 'PPPP', { locale: enGB })}">
-							<Detail>
-								Created <Time time={token.createdAt} distance={true} />
-							</Detail>
-						</Tooltip>
+						<Detail>
+							Created <Time time={token.createdAt} distance={true} />
+						</Detail>
 						{#if token.expiresAt}
-							<Tooltip content="Expires - {format(token.expiresAt, 'PPPP', { locale: enGB })}">
-								<Detail>
-									Expires <Time time={token.expiresAt} distance={true} />
-								</Detail>
-							</Tooltip>
+							<Detail>
+								Expires <Time time={token.expiresAt} distance={true} />
+							</Detail>
 						{/if}
 						{#if canManage}
 							<Button

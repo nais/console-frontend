@@ -7,8 +7,6 @@
 	import { countIssuesBySeverity } from '$lib/utils/issueCounts';
 	import { Tag, Tooltip } from '@nais/ds-svelte-community';
 	import { RocketIcon } from '@nais/ds-svelte-community/icons';
-	import { format } from 'date-fns';
-	import { enGB } from 'date-fns/locale';
 
 	const {
 		app
@@ -78,16 +76,10 @@
 		<div class="meta-cell">
 			{#if app.deployments.nodes.length > 0}
 				{@const timestamp = app.deployments.nodes[0].createdAt}
-				<Tooltip
-					content="Last deploy — {format(timestamp, 'PPPP', {
-						locale: enGB
-					})}"
-				>
-					<span class="meta-item">
-						<RocketIcon style="font-size: 14px" />
-						<Time time={timestamp} distance={true} />
-					</span>
-				</Tooltip>
+				<span class="meta-item">
+					<RocketIcon style="font-size: 14px" />
+					<Time time={timestamp} distance={true} />
+				</span>
 			{/if}
 			<span class="meta-item">
 				{#if app.instances.pageInfo.totalCount === 0}

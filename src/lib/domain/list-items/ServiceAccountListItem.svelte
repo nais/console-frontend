@@ -2,10 +2,8 @@
 	import IconLabel from '$lib/ui/IconLabel.svelte';
 	import ListItem from '$lib/ui/ListItem.svelte';
 	import Time from '$lib/ui/Time.svelte';
-	import { Detail, Tooltip } from '@nais/ds-svelte-community';
+	import { Detail } from '@nais/ds-svelte-community';
 	import { RobotIcon } from '@nais/ds-svelte-community/icons';
-	import { format } from 'date-fns';
-	import { enGB } from 'date-fns/locale';
 
 	const {
 		serviceAccount,
@@ -33,27 +31,15 @@
 
 	<div class="right">
 		{#if serviceAccount.lastUsedAt}
-			<Tooltip
-				content="Last used - {format(serviceAccount.lastUsedAt, 'PPPP', {
-					locale: enGB
-				})}"
-			>
-				<Detail>
-					Last used <Time time={serviceAccount.lastUsedAt} distance={true} />
-				</Detail>
-			</Tooltip>
+			<Detail>
+				Last used <Time time={serviceAccount.lastUsedAt} distance={true} />
+			</Detail>
 		{:else}
 			<Detail>Never used</Detail>
 		{/if}
-		<Tooltip
-			content="Created - {format(serviceAccount.createdAt, 'PPPP', {
-				locale: enGB
-			})}"
-		>
-			<Detail>
-				Created <Time time={serviceAccount.createdAt} distance={true} />
-			</Detail>
-		</Tooltip>
+		<Detail>
+			Created <Time time={serviceAccount.createdAt} distance={true} />
+		</Detail>
 	</div>
 </ListItem>
 
