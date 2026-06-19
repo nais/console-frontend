@@ -10,8 +10,6 @@
 	import { countIssuesBySeverity } from '$lib/utils/issueCounts';
 	import { Loader, Tag, Tooltip } from '@nais/ds-svelte-community';
 	import { CalendarIcon, RocketIcon } from '@nais/ds-svelte-community/icons';
-	import { format } from 'date-fns';
-	import { enGB } from 'date-fns/locale';
 
 	const {
 		job
@@ -87,41 +85,34 @@
 
 		<div class="meta-cell">
 			{#if lastRun}
-				<Tooltip
-					content="Last run {lastRun.status.state.toLowerCase()} — {lastRun.startTime
-						? format(lastRun.startTime, 'PPPp', { locale: enGB })
-						: 'unknown'}"
-				>
-					<span class="meta-item run-status">
-						{#if lastRun.status.state === 'RUNNING' || lastRun.status.state === 'PENDING'}
-							<Loader size="xsmall" variant="interaction" />
-						{:else if lastRun.status.state === 'SUCCEEDED'}
-							<SuccessIcon />
-						{:else if lastRun.status.state === 'FAILED'}
-							<ErrorIcon />
-						{/if}
-						{#if lastRun.startTime}
-							<Time time={lastRun.startTime} distance={true} />
-						{/if}
-					</span>
-				</Tooltip>
+				<span class="meta-item run-status">
+					<span class="aksel-sr-only">Last run {lastRun.status.state.toLowerCase()}</span>
+					{#if lastRun.status.state === 'RUNNING' || lastRun.status.state === 'PENDING'}
+						<Loader size="xsmall" variant="interaction" aria-hidden="true" />
+					{:else if lastRun.status.state === 'SUCCEEDED'}
+						<SuccessIcon aria-hidden="true" />
+					{:else if lastRun.status.state === 'FAILED'}
+						<ErrorIcon aria-hidden="true" />
+					{/if}
+					{#if lastRun.startTime}
+						<Time time={lastRun.startTime} distance={true} />
+					{/if}
+				</span>
 			{/if}
 			{#if job.schedule?.nextRun}
-				<Tooltip content="Next run — {format(job.schedule.nextRun, 'PPPp', { locale: enGB })}">
-					<span class="meta-item">
-						<CalendarIcon style="font-size: 14px" />
-						<Time time={job.schedule.nextRun} distance={true} />
-					</span>
-				</Tooltip>
+				<span class="meta-item">
+					<CalendarIcon style="font-size: 14px" aria-hidden="true" />
+					<span class="aksel-sr-only">Next run</span>
+					<Time time={job.schedule.nextRun} distance={true} />
+				</span>
 			{/if}
 			{#if job.deployments.nodes.length > 0}
 				{@const timestamp = job.deployments.nodes[0].createdAt}
-				<Tooltip content="Last deploy — {format(timestamp, 'PPPP', { locale: enGB })}">
-					<span class="meta-item">
-						<RocketIcon style="font-size: 14px" />
-						<Time time={timestamp} distance={true} />
-					</span>
-				</Tooltip>
+				<span class="meta-item">
+					<RocketIcon style="font-size: 14px" aria-hidden="true" />
+					<span class="aksel-sr-only">Last deploy</span>
+					<Time time={timestamp} distance={true} />
+				</span>
 			{/if}
 		</div>
 	</div>

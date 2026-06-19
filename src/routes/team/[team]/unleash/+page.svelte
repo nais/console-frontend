@@ -685,7 +685,7 @@
 										{extractVersion(channel.currentVersion)}
 										{#if channel.lastUpdated}
 											<br /><span class="channel-date"
-												><Time time={new Date(channel.lastUpdated)} /></span
+												><Time time={new Date(channel.lastUpdated)} distance /></span
 											>
 										{/if}
 									</Td>

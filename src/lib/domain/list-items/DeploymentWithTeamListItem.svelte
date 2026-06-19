@@ -60,7 +60,7 @@
 				</ExternalLink>
 				by {deployment.deployerUsername}
 				{#if deployment.triggerUrl}
-					· <Time time={deployment.createdAt} dateFormat="dd/MM/yyyy HH:mm" /> ·
+					· <Time time={deployment.createdAt} dateFormat="d MMM yyyy, HH:mm" /> ·
 					<ExternalLink href={deployment.triggerUrl}>GitHub action</ExternalLink>
 					to deploy to
 					<Tag size="small" variant={envTagVariant(deployment.environmentName)}>
@@ -89,7 +89,7 @@
 					</ul>
 				{/if}
 			{:else}
-				<Time time={deployment.createdAt} dateFormat="dd/MM/yyyy HH:mm" /> · Deploy to
+				<Time time={deployment.createdAt} dateFormat="d MMM yyyy, HH:mm" /> · Deploy to
 				<Tag size="small" variant={envTagVariant(deployment.environmentName)}>
 					{deployment.environmentName}
 				</Tag>:

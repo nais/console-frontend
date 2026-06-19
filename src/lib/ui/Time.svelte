@@ -1,64 +1,66 @@
 <script lang="ts">
-	import {
-		differenceInDays,
-		differenceInHours,
-		differenceInMinutes,
-		differenceInMonths,
-		differenceInSeconds,
-		differenceInYears,
-		format,
-		formatDistanceStrict
-	} from 'date-fns';
+	import { Tooltip } from '@nais/ds-svelte-community';
+	import { differenceInDays, format, formatDistanceStrict, isSameYear } from 'date-fns';
 	import { enGB } from 'date-fns/locale';
 	import { onDestroy } from 'svelte';
+
+	const DISTANCE_THRESHOLD_DAYS = 7;
 
 	const {
 		time,
 		dateFormat = 'PPPP',
-		distance = false,
-		short = false
+		distance = false
 	}: {
-		time: Date;
+		time: Date | string;
 		dateFormat?: string;
-	} & ({ distance?: false; short?: never } | { distance: true; short?: boolean }) = $props();
+		distance?: boolean;
+	} = $props();
 
-	let title = $derived(format(time, 'dd. MMMM yyyy HH:mm:ss', { locale: enGB }));
+	let tick = $state(0);
+
+	const normalizedTime = $derived(time instanceof Date ? time : new Date(time));
+	const isValidDate = $derived(!Number.isNaN(normalizedTime.getTime()));
+
+	let fullTimestamp = $derived(
+		isValidDate ? format(normalizedTime, 'dd. MMMM yyyy HH:mm:ss', { locale: enGB }) : ''
+	);
+
+	function isRecent(): boolean {
+		if (!isValidDate) return false;
+		return Math.abs(differenceInDays(new Date(), normalizedTime)) < DISTANCE_THRESHOLD_DAYS;
+	}
 
 	function distanceText(): string {
-		return formatDistanceStrict(time, Date.now(), { addSuffix: true });
-	}
-
-	function distanceShortText(): string {
-		const now = new Date();
-
-		const seconds = differenceInSeconds(now, time);
-		if (seconds < 60) return `${Math.ceil(seconds)}s`;
-
-		const minutes = differenceInMinutes(now, time);
-		if (minutes < 60) return `${Math.ceil(minutes)}m`;
-
-		const hours = differenceInHours(now, time);
-		if (hours < 24) return `${Math.ceil(hours)}h`;
-
-		const days = differenceInDays(now, time);
-		if (days < 30) return `${Math.ceil(days)}d`;
-
-		const months = differenceInMonths(now, time);
-		if (months < 12) return `${Math.ceil(months)}mo`;
-
-		const years = differenceInYears(now, time);
-		return `${Math.ceil(years)}y`;
-	}
-
-	function getDisplayText(): string {
-		if (distance) {
-			return short ? distanceShortText() : distanceText();
+		if (isRecent()) {
+			return formatDistanceStrict(normalizedTime, Date.now(), { addSuffix: true });
 		}
-		return format(time, dateFormat, { locale: enGB });
+		if (isSameYear(normalizedTime, new Date())) {
+			return format(normalizedTime, 'd MMM, HH:mm', { locale: enGB });
+		}
+		return format(normalizedTime, 'd MMM yyyy, HH:mm', { locale: enGB });
 	}
 
-	let text: string = $state(getDisplayText());
-	let interval: ReturnType<typeof setTimeout> | undefined = $state();
+	let text = $derived.by(() => {
+		void tick;
+		if (!isValidDate) return '';
+		if (distance) {
+			return distanceText();
+		}
+		return format(normalizedTime, dateFormat, { locale: enGB });
+	});
+
+	let tooltipContent = $derived.by(() => {
+		void tick;
+		if (!isValidDate) return '';
+		if (distance && !isRecent()) {
+			const relative = formatDistanceStrict(normalizedTime, Date.now(), { addSuffix: true });
+			return `${fullTimestamp} (${relative})`;
+		}
+		return fullTimestamp;
+	});
+
+	let interval: ReturnType<typeof setInterval> | undefined = $state();
+	let intervalDelay: number | undefined = $state();
 
 	onDestroy(() => {
 		if (interval) {
@@ -67,30 +69,44 @@
 	});
 
 	$effect(() => {
-		text = getDisplayText();
+		void tick;
 
-		if (!distance) {
+		if (!distance || !isValidDate) {
 			if (interval) {
 				clearInterval(interval);
 				interval = undefined;
+				intervalDelay = undefined;
 			}
 			return;
 		}
 
-		if (!interval) {
-			interval = setInterval(() => {
-				text = getDisplayText();
-			}, 1000);
+		const desiredDelay = isRecent() ? 1000 : 60_000;
+
+		if (interval && intervalDelay === desiredDelay) {
+			return;
 		}
+
+		if (interval) {
+			clearInterval(interval);
+		}
+
+		intervalDelay = desiredDelay;
+		interval = setInterval(() => {
+			tick++;
+		}, desiredDelay);
 	});
 
-	const datetime = $derived.by(() => {
-		// Houdini (pre-new-compiler) may pass Date scalars as strings. Normalize to Date first.
-		const d = time instanceof Date ? time : new Date(time as string);
-		return Number.isNaN(d.getTime()) ? undefined : d.toISOString();
-	});
+	const datetime = $derived(isValidDate ? normalizedTime.toISOString() : undefined);
 </script>
 
-<time {datetime} {title}>
-	{text}
-</time>
+{#if tooltipContent}
+	<Tooltip content={tooltipContent}>
+		<time {datetime}>
+			{text}
+		</time>
+	</Tooltip>
+{:else}
+	<time {datetime}>
+		{text}
+	</time>
+{/if}

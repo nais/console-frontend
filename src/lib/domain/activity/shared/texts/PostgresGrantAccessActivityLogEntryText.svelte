@@ -16,7 +16,7 @@
 <div>
 	Granted access to {data.postgresGrantAccessData.grantee} on {data.resourceType.toLocaleLowerCase()}
 	<strong>{data.resourceName}</strong>
-	until <Time time={data.postgresGrantAccessData.until} dateFormat="dd/MM/yyyy HH:mm" />
+	until <Time time={data.postgresGrantAccessData.until} dateFormat="d MMM yyyy, HH:mm" />
 	{#if data.environmentName}
 		in {data.environmentName}
 	{/if}
