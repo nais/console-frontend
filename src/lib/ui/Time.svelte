@@ -27,7 +27,7 @@
 
 	function isRecent(): boolean {
 		if (!isValidDate) return false;
-		return differenceInDays(new Date(), normalizedTime) < DISTANCE_THRESHOLD_DAYS;
+		return Math.abs(differenceInDays(new Date(), normalizedTime)) < DISTANCE_THRESHOLD_DAYS;
 	}
 
 	function distanceText(): string {
