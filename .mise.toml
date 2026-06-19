@@ -2,6 +2,6 @@
 pin = true
 [tools]
 node = "24.11.1"
-pnpm = "11.7.0"
+pnpm = "11.8.0"
 go = "1.26.3"
 "go:github.com/sethvargo/ratchet" = "0.11.4"
