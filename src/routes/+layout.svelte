@@ -50,8 +50,7 @@
 		if (data.trackingEnabled && data.trackingWebsiteId) {
 			window.__sporingRouteId = page.route.id ?? undefined;
 
-			// eslint-disable-next-line no-undef
-			window.beforeSend = (_type: string, payload: SporingPayload) => {
+			window.beforeSend = (_type, payload) => {
 				const routeId = window.__sporingRouteId;
 				if (routeId && payload.url) {
 					return { ...payload, url: routeId };
