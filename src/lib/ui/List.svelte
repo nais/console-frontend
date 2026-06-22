@@ -93,7 +93,7 @@
 		display: flex;
 		align-items: center;
 		gap: var(--ax-space-8);
-		flex-shrink: 0;
+		min-width: 0;
 	}
 
 	.title {

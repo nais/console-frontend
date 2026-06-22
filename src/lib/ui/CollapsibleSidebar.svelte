@@ -31,9 +31,6 @@
 
 <div class="layout-sidebar desktop-only">
 	{@render children()}
-	{#if extras}
-		{@render extras()}
-	{/if}
 </div>
 
 {#if extras}
@@ -58,7 +55,7 @@
 	}
 
 	.sidebar-extras {
-		display: none;
+		grid-column: 2;
 	}
 
 	@media (max-width: 1024px) {
@@ -67,7 +64,6 @@
 		}
 
 		.sidebar-extras {
-			display: block;
 			grid-column: 1;
 		}
 	}
