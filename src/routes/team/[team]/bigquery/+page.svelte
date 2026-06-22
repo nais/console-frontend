@@ -88,14 +88,14 @@
 					</button>
 				{/snippet}
 				{#each $BigQuery.data.team.bigQueryDatasets.edges as { node: instance } (instance.id)}
-					<ListItem
-						interactive
-						href="/team/{instance.team.slug}/{instance.teamEnvironment.environment
-							.name}/bigquery/{instance.name}"
-					>
+					<ListItem interactive>
 						<div class="name-group">
 							<BigQueryIcon style="font-size: 1.25rem; flex-shrink: 0" />
-							<span class="item-name">{instance.name}</span>
+							<a
+								class="item-name"
+								href="/team/{instance.team.slug}/{instance.teamEnvironment.environment
+									.name}/bigquery/{instance.name}">{instance.name}</a
+							>
 							<Tag size="xsmall" variant={envTagVariant(instance.teamEnvironment.environment.name)}
 								>{instance.teamEnvironment.environment.name}</Tag
 							>

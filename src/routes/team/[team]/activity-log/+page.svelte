@@ -98,15 +98,17 @@
 			<div bind:this={wrapperEl}>
 				<List title="Activity Log" count={ae.pageInfo.totalCount}>
 					{#snippet actions()}
-						<button
-							type="button"
-							class="sidebar-toggle"
-							aria-expanded={filtersOpen}
-							onclick={() => (filtersOpen = !filtersOpen)}
-						>
-							<FunnelIcon aria-hidden="true" style="font-size: 1rem" />
-							Filters
-						</button>
+						{#if ae.facets}
+							<button
+								type="button"
+								class="sidebar-toggle"
+								aria-expanded={filtersOpen}
+								onclick={() => (filtersOpen = !filtersOpen)}
+							>
+								<FunnelIcon aria-hidden="true" style="font-size: 1rem" />
+								Filters
+							</button>
+						{/if}
 					{/snippet}
 					{#each ae.edges || [] as { node: item } (item.id)}
 						<ActivityLogItem {item} mode="full" />

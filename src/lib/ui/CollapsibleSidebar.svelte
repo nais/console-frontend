@@ -13,6 +13,17 @@
 		open?: boolean;
 		label?: string;
 	} = $props();
+
+	$effect(() => {
+		const mql = window.matchMedia('(min-width: 1025px)');
+		const handler = (e: MediaQueryListEvent) => {
+			if (e.matches) {
+				open = false;
+			}
+		};
+		mql.addEventListener('change', handler);
+		return () => mql.removeEventListener('change', handler);
+	});
 </script>
 
 <div class="layout-sidebar desktop-only">
