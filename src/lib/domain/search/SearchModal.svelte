@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { graphql } from '$houdini';
+	import { graphql, type SearchQuery$input } from '$houdini';
 	import { envTagVariant } from '$lib/envTagVariant';
 	import BigQueryIcon from '$lib/icons/BigQueryIcon.svelte';
 	import KafkaIcon from '$lib/icons/KafkaIcon.svelte';
@@ -18,8 +18,8 @@
 	let { open = $bindable() }: { open: boolean } = $props();
 
 	const store = graphql(`
-		query SearchQuery($query: String!, $type: SearchType) {
-			search(first: 20, filter: { query: $query, type: $type }) {
+		query SearchQuery($query: String!, $types: [SearchType!]) {
+			search(first: 20, filter: { query: $query, types: $types }) {
 				nodes {
 					__typename
 					... on Team {
@@ -211,7 +211,12 @@
 				} else {
 					searchQuery = query;
 				}
-				store.fetch({ variables: { query: searchQuery, type } });
+
+				let types: SearchQuery$input['types'] = undefined;
+				if (type) {
+					types = [type];
+				}
+				store.fetch({ variables: { query: searchQuery, types } });
 			}, 300);
 
 			return () => clearTimeout(timeout);

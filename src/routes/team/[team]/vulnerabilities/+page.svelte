@@ -54,6 +54,7 @@
 <style>
 	.wrapper {
 		display: grid;
+		grid-template-columns: minmax(0, 1fr);
 		gap: var(--ax-space-32);
 		min-width: 0;
 	}

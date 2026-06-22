@@ -5,6 +5,7 @@
 	import IssueSeverityTags from '$lib/domain/issues/IssueSeverityTags.svelte';
 	import WorkloadLink from '$lib/domain/workload/WorkloadLink.svelte';
 	import { envTagVariant } from '$lib/envTagVariant';
+	import CollapsibleSidebar from '$lib/ui/CollapsibleSidebar.svelte';
 	import ExternalLink from '$lib/ui/ExternalLink.svelte';
 	import GraphErrors from '$lib/ui/GraphErrors.svelte';
 	import List from '$lib/ui/List.svelte';
@@ -16,13 +17,15 @@
 	import { countIssuesBySeverity } from '$lib/utils/issueCounts';
 	import { changeParams } from '$lib/utils/searchparams';
 	import { Loader, Tag } from '@nais/ds-svelte-community';
-	import { CircleFillIcon } from '@nais/ds-svelte-community/icons';
+	import { CircleFillIcon, FunnelIcon } from '@nais/ds-svelte-community/icons';
 	import type { PageProps } from './$types';
 
 	type SqlOrderFieldOptions = (typeof SqlInstanceOrderField)[keyof typeof SqlInstanceOrderField];
 	type OrderDirectionOptions = (typeof OrderDirection)[keyof typeof OrderDirection];
 
 	let { data }: PageProps = $props();
+
+	let filtersOpen = $state(false);
 
 	let { SqlInstances } = $derived(data);
 
@@ -80,6 +83,17 @@
 	<div class="layout-two-column">
 		<div>
 			<List title="Cloud SQL" count={si.pageInfo.totalCount}>
+				{#snippet actions()}
+					<button
+						type="button"
+						class="sidebar-toggle"
+						aria-expanded={filtersOpen}
+						onclick={() => (filtersOpen = !filtersOpen)}
+					>
+						<FunnelIcon aria-hidden="true" style="font-size: 1rem" />
+						Filters
+					</button>
+				{/snippet}
 				{#each si.edges as { node: instance } (instance.id)}
 					<ListItem interactive>
 						<div class="name-group">
@@ -109,9 +123,9 @@
 								/>
 							</TooltipAlignHack>
 							<a
+								class="item-name"
 								href="/team/{instance.team.slug}/{instance.teamEnvironment.environment
-									.name}/cloudsql/{instance.name}"
-								class="item-name">{instance.name}</a
+									.name}/cloudsql/{instance.name}">{instance.name}</a
 							>
 							<Tag size="xsmall" variant={envTagVariant(instance.teamEnvironment.environment.name)}
 								>{instance.teamEnvironment.environment.name}</Tag
@@ -162,7 +176,7 @@
 				}}
 			/>
 		</div>
-		<div class="layout-sidebar">
+		<CollapsibleSidebar bind:open={filtersOpen}>
 			<SurfaceCard title="Filters">
 				<ListFilters
 					{sortFields}
@@ -171,7 +185,7 @@
 					onSort={(field) => setSort(field as SqlOrderFieldOptions)}
 				/>
 			</SurfaceCard>
-		</div>
+		</CollapsibleSidebar>
 	</div>
 {/if}
 

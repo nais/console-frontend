@@ -5,6 +5,7 @@
 	import WorkloadLink from '$lib/domain/workload/WorkloadLink.svelte';
 	import WorkloadListFilters from '$lib/domain/workload/WorkloadListFilters.svelte';
 	import { envTagVariant } from '$lib/envTagVariant';
+	import CollapsibleSidebar from '$lib/ui/CollapsibleSidebar.svelte';
 	import ExternalLink from '$lib/ui/ExternalLink.svelte';
 	import GraphErrors from '$lib/ui/GraphErrors.svelte';
 	import List from '$lib/ui/List.svelte';
@@ -13,13 +14,14 @@
 	import SurfaceCard from '$lib/ui/SurfaceCard.svelte';
 	import { changeParams } from '$lib/utils/searchparams';
 	import { Tag } from '@nais/ds-svelte-community';
-	import { BucketIcon } from '@nais/ds-svelte-community/icons';
+	import { BucketIcon, FunnelIcon } from '@nais/ds-svelte-community/icons';
 	import type { PageProps } from './$types';
 
 	type BucketOrderFieldOptions = (typeof BucketOrderField)[keyof typeof BucketOrderField];
 	type OrderDirectionOptions = (typeof OrderDirection)[keyof typeof OrderDirection];
 
 	let { data }: PageProps = $props();
+	let filtersOpen = $state(false);
 	let { Buckets } = $derived(data);
 
 	const sortFields: { value: BucketOrderFieldOptions; label: string }[] = [
@@ -72,14 +74,25 @@
 	<div class="layout-two-column">
 		<div>
 			<List title="Buckets" count={$Buckets.data.team.buckets.pageInfo.totalCount}>
+				{#snippet actions()}
+					<button
+						type="button"
+						class="sidebar-toggle"
+						aria-expanded={filtersOpen}
+						onclick={() => (filtersOpen = !filtersOpen)}
+					>
+						<FunnelIcon aria-hidden="true" style="font-size: 1rem" />
+						Filters
+					</button>
+				{/snippet}
 				{#each $Buckets.data.team.buckets.edges as { node: instance } (instance.id)}
 					<ListItem interactive>
 						<div class="name-group">
 							<BucketIcon style="font-size: 1.25rem; flex-shrink: 0" />
 							<a
+								class="item-name"
 								href="/team/{instance.team.slug}/{instance.teamEnvironment.environment
-									.name}/bucket/{instance.name}"
-								class="item-name">{instance.name}</a
+									.name}/bucket/{instance.name}">{instance.name}</a
 							>
 							<Tag size="xsmall" variant={envTagVariant(instance.teamEnvironment.environment.name)}
 								>{instance.teamEnvironment.environment.name}</Tag
@@ -122,7 +135,7 @@
 				}}
 			/>
 		</div>
-		<div class="layout-sidebar">
+		<CollapsibleSidebar bind:open={filtersOpen}>
 			<SurfaceCard title="Filters">
 				<WorkloadListFilters
 					{sortFields}
@@ -137,7 +150,7 @@
 					onLabelsChange={handleLabelsChange}
 				/>
 			</SurfaceCard>
-		</div>
+		</CollapsibleSidebar>
 	</div>
 {/if}
 

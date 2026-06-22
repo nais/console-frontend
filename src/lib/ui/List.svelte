@@ -87,14 +87,13 @@
 		justify-content: space-between;
 		align-items: center;
 		gap: var(--ax-space-16);
-		flex-wrap: wrap;
 	}
 
 	.header-left {
 		display: flex;
 		align-items: center;
 		gap: var(--ax-space-8);
-		flex-shrink: 0;
+		min-width: 0;
 	}
 
 	.title {
@@ -158,6 +157,7 @@
 	.items {
 		display: flex;
 		flex-direction: column;
+		container-type: inline-size;
 	}
 
 	.list.headerless .items {
@@ -172,9 +172,7 @@
 		}
 
 		.header-row {
-			flex-direction: column;
-			align-items: stretch;
-			gap: var(--ax-space-12);
+			flex-wrap: wrap;
 		}
 
 		.search-slot {

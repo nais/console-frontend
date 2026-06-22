@@ -3,6 +3,7 @@
 	import { ActivityLogActivityType, graphql, OrderDirection, RepositoryOrderField } from '$houdini';
 	import TeamActivityCard from '$lib/domain/activity/TeamActivityCard.svelte';
 	import GitHubIcon from '$lib/icons/GitHubIcon.svelte';
+	import CollapsibleSidebar from '$lib/ui/CollapsibleSidebar.svelte';
 	import ExternalLink from '$lib/ui/ExternalLink.svelte';
 	import GraphErrors from '$lib/ui/GraphErrors.svelte';
 	import List from '$lib/ui/List.svelte';
@@ -12,11 +13,12 @@
 	import SurfaceCard from '$lib/ui/SurfaceCard.svelte';
 	import { changeParams } from '$lib/utils/searchparams';
 	import { Alert, Button, Detail, Heading, Modal, TextField } from '@nais/ds-svelte-community';
-	import { PlusIcon, TrashIcon } from '@nais/ds-svelte-community/icons';
+	import { FunnelIcon, PlusIcon, TrashIcon } from '@nais/ds-svelte-community/icons';
 	import type { PageProps } from './$types';
 
 	let { data }: PageProps = $props();
 
+	let filtersOpen = $state(false);
 	let { Repositories, teamSlug, viewerIsMember } = $derived(data);
 
 	type RepositoryOrderFieldOptions =
@@ -177,6 +179,15 @@
 								Add Repository
 							</Button>
 						{/if}
+						<button
+							type="button"
+							class="sidebar-toggle"
+							aria-expanded={filtersOpen}
+							onclick={() => (filtersOpen = !filtersOpen)}
+						>
+							<FunnelIcon aria-hidden="true" style="font-size: 1rem" />
+							Filters
+						</button>
 					{/snippet}
 					{#each team.repositories.edges as { node: repo } (repo.id)}
 						<ListItem interactive>
@@ -218,7 +229,7 @@
 				/>
 			{/if}
 		</div>
-		<div class="layout-sidebar">
+		<CollapsibleSidebar bind:open={filtersOpen}>
 			<SurfaceCard title="Filters">
 				<ListFilters
 					{filter}
@@ -236,17 +247,19 @@
 					onSort={(field) => setSort(field as RepositoryOrderFieldOptions)}
 				/>
 			</SurfaceCard>
-			<TeamActivityCard
-				{teamSlug}
-				viewAllHref="/team/{teamSlug}/activity-log"
-				filter={{
-					activityTypes: [
-						ActivityLogActivityType.REPOSITORY_ADDED,
-						ActivityLogActivityType.REPOSITORY_REMOVED
-					]
-				}}
-			/>
-		</div>
+			{#snippet extras()}
+				<TeamActivityCard
+					{teamSlug}
+					viewAllHref="/team/{teamSlug}/activity-log"
+					filter={{
+						activityTypes: [
+							ActivityLogActivityType.REPOSITORY_ADDED,
+							ActivityLogActivityType.REPOSITORY_REMOVED
+						]
+					}}
+				/>
+			{/snippet}
+		</CollapsibleSidebar>
 	</div>
 
 	<Modal bind:open={addModalOpen} width="small" onclose={() => (addModalOpen = false)}>

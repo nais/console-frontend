@@ -3,6 +3,7 @@
 	import { IssueOrderField, IssueType, OrderDirection } from '$houdini';
 	import IssuesFacets from '$lib/domain/issues/IssuesFacets.svelte';
 	import IssueListItem from '$lib/domain/list-items/IssueListItem.svelte';
+	import CollapsibleSidebar from '$lib/ui/CollapsibleSidebar.svelte';
 	import GraphErrors from '$lib/ui/GraphErrors.svelte';
 	import List from '$lib/ui/List.svelte';
 	import ListFilters from '$lib/ui/ListFilters.svelte';
@@ -10,10 +11,13 @@
 	import Pagination from '$lib/ui/Pagination.svelte';
 	import SurfaceCard from '$lib/ui/SurfaceCard.svelte';
 	import { changeParams } from '$lib/utils/searchparams';
+	import { FunnelIcon } from '@nais/ds-svelte-community/icons';
 	import type { PageProps } from './$types';
 
 	let { data }: PageProps = $props();
 	let { TeamIssues, TeamIssuesMetadata } = $derived(data);
+
+	let filtersOpen = $state(false);
 	let issues = $derived($TeamIssues.data?.team.issues);
 
 	let after: string = $derived($TeamIssues.variables?.after ?? '');
@@ -115,6 +119,17 @@
 <div class="layout-two-column">
 	<div>
 		<List title="Issues" count={issues?.pageInfo.totalCount ?? 0}>
+			{#snippet actions()}
+				<button
+					type="button"
+					class="sidebar-toggle"
+					aria-expanded={filtersOpen}
+					onclick={() => (filtersOpen = !filtersOpen)}
+				>
+					<FunnelIcon aria-hidden="true" style="font-size: 1rem" />
+					Filters
+				</button>
+			{/snippet}
 			{#each issues?.edges ?? [] as { node: issue } (issue.id)}
 				<IssueListItem item={issue} />
 			{:else}
@@ -140,7 +155,7 @@
 			/>
 		{/if}
 	</div>
-	<div class="layout-sidebar">
+	<CollapsibleSidebar bind:open={filtersOpen}>
 		<SurfaceCard title="Filters">
 			<ListFilters
 				{sortFields}
@@ -161,7 +176,7 @@
 				/>
 			</ListFilters>
 		</SurfaceCard>
-	</div>
+	</CollapsibleSidebar>
 </div>
 
 <style>

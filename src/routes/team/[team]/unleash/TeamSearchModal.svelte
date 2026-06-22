@@ -6,7 +6,7 @@
 
 	const teamSearch = graphql(`
 		query TeamSearch($query: String!) {
-			search(first: 25, filter: { query: $query, type: TEAM }) {
+			search(first: 25, filter: { query: $query, types: [TEAM] }) {
 				edges {
 					node {
 						__typename

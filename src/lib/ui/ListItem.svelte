@@ -42,6 +42,13 @@
 		max-width: 100%;
 	}
 
+	@container (max-width: 500px) {
+		.list-item {
+			grid-auto-flow: row;
+			padding: var(--ax-space-12) var(--ax-space-16);
+		}
+	}
+
 	@media (max-width: 767px), (max-height: 500px) {
 		.list-item {
 			grid-auto-flow: row;

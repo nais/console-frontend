@@ -14,7 +14,7 @@
 
 	const teamSearch = graphql(`
 		query OnboardingTeamSearch($query: String!, $after: Cursor, $before: Cursor) {
-			search(first: 25, after: $after, before: $before, filter: { type: TEAM, query: $query })
+			search(first: 25, after: $after, before: $before, filter: { types: [TEAM], query: $query })
 				@paginate {
 				edges {
 					node {

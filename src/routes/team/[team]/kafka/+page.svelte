@@ -5,6 +5,7 @@
 	import WorkloadListFilters from '$lib/domain/workload/WorkloadListFilters.svelte';
 	import { envTagVariant } from '$lib/envTagVariant';
 	import KafkaIcon from '$lib/icons/KafkaIcon.svelte';
+	import CollapsibleSidebar from '$lib/ui/CollapsibleSidebar.svelte';
 	import ExternalLink from '$lib/ui/ExternalLink.svelte';
 	import GraphErrors from '$lib/ui/GraphErrors.svelte';
 	import List from '$lib/ui/List.svelte';
@@ -13,6 +14,7 @@
 	import SurfaceCard from '$lib/ui/SurfaceCard.svelte';
 	import { changeParams } from '$lib/utils/searchparams';
 	import { Tag } from '@nais/ds-svelte-community';
+	import { FunnelIcon } from '@nais/ds-svelte-community/icons';
 	import type { PageProps } from './$types';
 
 	type KafkaTopicOrderFieldOptions =
@@ -20,6 +22,7 @@
 	type OrderDirectionOptions = (typeof OrderDirection)[keyof typeof OrderDirection];
 
 	let { data }: PageProps = $props();
+	let filtersOpen = $state(false);
 	let { KafkaTopics } = $derived(data);
 
 	const sortFields: { value: KafkaTopicOrderFieldOptions; label: string }[] = [
@@ -88,15 +91,26 @@
 	<div class="layout-two-column">
 		<div>
 			<List title="Kafka" count={$KafkaTopics.data.team.kafkaTopics.pageInfo.totalCount}>
+				{#snippet actions()}
+					<button
+						type="button"
+						class="sidebar-toggle"
+						aria-expanded={filtersOpen}
+						onclick={() => (filtersOpen = !filtersOpen)}
+					>
+						<FunnelIcon aria-hidden="true" style="font-size: 1rem" />
+						Filters
+					</button>
+				{/snippet}
 				{#each $KafkaTopics.data.team.kafkaTopics.edges as { node: instance } (instance.id)}
-					<ListItem interactive>
+					<ListItem
+						interactive
+						href="/team/{instance.team.slug}/{instance.teamEnvironment.environment
+							.name}/kafka/{instance.name}"
+					>
 						<div class="name-group">
 							<KafkaIcon style="font-size: 1.25rem; flex-shrink: 0" />
-							<a
-								href="/team/{instance.team.slug}/{instance.teamEnvironment.environment
-									.name}/kafka/{instance.name}"
-								class="item-name">{instance.name}</a
-							>
+							<span class="item-name">{instance.name}</span>
 							<Tag size="xsmall" variant={envTagVariant(instance.teamEnvironment.environment.name)}
 								>{instance.teamEnvironment.environment.name}</Tag
 							>
@@ -133,7 +147,7 @@
 				}}
 			/>
 		</div>
-		<div class="layout-sidebar">
+		<CollapsibleSidebar bind:open={filtersOpen}>
 			<SurfaceCard title="Filters">
 				<WorkloadListFilters
 					{sortFields}
@@ -167,7 +181,7 @@
 					{/if}
 				</WorkloadListFilters>
 			</SurfaceCard>
-		</div>
+		</CollapsibleSidebar>
 	</div>
 
 	<style>

@@ -6,6 +6,7 @@
 	import CodeBlockPromQl from '$lib/domain/monitoring/CodeBlockPromQL.svelte';
 	import { formatSeconds } from '$lib/domain/vulnerability/dateUtils';
 	import { envTagVariant } from '$lib/envTagVariant';
+	import CollapsibleSidebar from '$lib/ui/CollapsibleSidebar.svelte';
 	import ExternalLink from '$lib/ui/ExternalLink.svelte';
 	import List from '$lib/ui/List.svelte';
 	import ListFilters from '$lib/ui/ListFilters.svelte';
@@ -14,12 +15,14 @@
 	import SurfaceCard from '$lib/ui/SurfaceCard.svelte';
 	import { changeParams } from '$lib/utils/searchparams';
 	import { CopyButton, Heading, Tag } from '@nais/ds-svelte-community';
-	import { ChevronRightIcon, ClockDashedIcon } from '@nais/ds-svelte-community/icons';
+	import { ChevronRightIcon, ClockDashedIcon, FunnelIcon } from '@nais/ds-svelte-community/icons';
 	import type { PageProps } from './$types';
 	import PrometheusAlarmDetail from './PrometheusAlarmDetail.svelte';
 
 	let { data }: PageProps = $props();
 	let { Alerts, AlertsMetadata } = $derived(data);
+
+	let filtersOpen = $state(false);
 
 	let alerts = $derived($Alerts.data?.team.alerts);
 	let filter = $state($Alerts.variables?.filter?.name ?? '');
@@ -142,6 +145,17 @@
 <div class="layout-two-column">
 	<div>
 		<List title="Alerts" count={alerts?.pageInfo.totalCount ?? 0}>
+			{#snippet actions()}
+				<button
+					type="button"
+					class="sidebar-toggle"
+					aria-expanded={filtersOpen}
+					onclick={() => (filtersOpen = !filtersOpen)}
+				>
+					<FunnelIcon aria-hidden="true" style="font-size: 1rem" />
+					Filters
+				</button>
+			{/snippet}
 			{#if alerts && alerts.edges.length > 0}
 				{#each alerts.edges as { node: alert } (alert.id)}
 					<details class="item">
@@ -232,7 +246,7 @@
 			}}
 		/>
 	</div>
-	<div class="layout-sidebar">
+	<CollapsibleSidebar bind:open={filtersOpen}>
 		<SurfaceCard title="Filters">
 			<ListFilters
 				{filter}
@@ -259,7 +273,7 @@
 				/>
 			</ListFilters>
 		</SurfaceCard>
-	</div>
+	</CollapsibleSidebar>
 </div>
 
 <style>
