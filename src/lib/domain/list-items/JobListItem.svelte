@@ -46,7 +46,7 @@
 	const lastRun = $derived(job.runs.edges.length ? job.runs.edges[0].node : null);
 </script>
 
-<ListItem interactive>
+<ListItem interactive href={jobHref}>
 	<div class="job-row">
 		<div class="name-group">
 			{#if job.state === JobState.RUNNING}
@@ -68,7 +68,7 @@
 					<span class="status-dot unknown"></span>
 				</Tooltip>
 			{/if}
-			<a href={jobHref} class="job-name">{job.name}</a>
+			<span class="job-name">{job.name}</span>
 			<Tag size="xsmall" variant={envTagVariant(job.teamEnvironment.environment.name)}
 				>{job.teamEnvironment.environment.name}</Tag
 			>
@@ -187,10 +187,6 @@
 		flex: 0 1 auto;
 	}
 
-	.job-name:hover {
-		text-decoration: underline;
-	}
-
 	.issues-cell {
 		display: flex;
 		align-items: center;
@@ -216,6 +212,28 @@
 	.run-status :global(svg) {
 		width: 16px;
 		height: 16px;
+	}
+
+	@container (max-width: 500px) {
+		.job-row {
+			grid-template-columns: 1fr;
+			gap: var(--ax-space-8);
+		}
+
+		.name-group {
+			flex-wrap: wrap;
+		}
+
+		.job-name {
+			flex: 1 1 0;
+			width: auto;
+			min-width: 0;
+		}
+
+		.issues-cell,
+		.meta-cell {
+			justify-content: flex-start;
+		}
 	}
 
 	@media (max-width: 767px) {

@@ -40,7 +40,7 @@
 	);
 </script>
 
-<ListItem interactive>
+<ListItem interactive href={appHref}>
 	<div class="app-row">
 		<div class="name-group">
 			{#if app.state === 'RUNNING'}
@@ -58,7 +58,7 @@
 					<span class="status-dot unknown"></span>
 				</Tooltip>
 			{/if}
-			<a href={appHref} class="app-name">{app.name}</a>
+			<span class="app-name">{app.name}</span>
 			<Tag size="xsmall" variant={envTagVariant(app.teamEnvironment.environment.name)}
 				>{app.teamEnvironment.environment.name}</Tag
 			>
@@ -158,10 +158,6 @@
 		flex: 0 1 auto;
 	}
 
-	.app-name:hover {
-		text-decoration: underline;
-	}
-
 	.issues-cell {
 		display: flex;
 		align-items: center;
@@ -182,6 +178,28 @@
 		display: inline-flex;
 		align-items: center;
 		gap: var(--ax-space-4);
+	}
+
+	@container (max-width: 500px) {
+		.app-row {
+			grid-template-columns: 1fr;
+			gap: var(--ax-space-8);
+		}
+
+		.name-group {
+			flex-wrap: wrap;
+		}
+
+		.app-name {
+			flex: 1 1 0;
+			width: auto;
+			min-width: 0;
+		}
+
+		.issues-cell,
+		.meta-cell {
+			justify-content: flex-start;
+		}
 	}
 
 	@media (max-width: 767px) {
