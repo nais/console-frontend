@@ -98,14 +98,14 @@
 					</button>
 				{/snippet}
 				{#each $KafkaTopics.data.team.kafkaTopics.edges as { node: instance } (instance.id)}
-					<ListItem interactive>
+					<ListItem
+						interactive
+						href="/team/{instance.team.slug}/{instance.teamEnvironment.environment
+							.name}/kafka/{instance.name}"
+					>
 						<div class="name-group">
 							<KafkaIcon style="font-size: 1.25rem; flex-shrink: 0" />
-							<a
-								href="/team/{instance.team.slug}/{instance.teamEnvironment.environment
-									.name}/kafka/{instance.name}"
-								class="item-name">{instance.name}</a
-							>
+							<span class="item-name">{instance.name}</span>
 							<Tag size="xsmall" variant={envTagVariant(instance.teamEnvironment.environment.name)}
 								>{instance.teamEnvironment.environment.name}</Tag
 							>
