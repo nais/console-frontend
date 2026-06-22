@@ -14,13 +14,9 @@
 		label?: string;
 	} = $props();
 
-	let isDesktop = $state(false);
-
 	$effect(() => {
 		const mql = window.matchMedia('(min-width: 1025px)');
-		isDesktop = mql.matches;
 		const handler = (e: MediaQueryListEvent) => {
-			isDesktop = e.matches;
 			if (e.matches) {
 				open = false;
 			}
@@ -30,11 +26,12 @@
 	});
 </script>
 
-{#if isDesktop}
-	<div class="layout-sidebar desktop-only">
-		{@render children()}
-	</div>
-{/if}
+<div class="layout-sidebar desktop-only">
+	{@render children()}
+	{#if extras}
+		{@render extras()}
+	{/if}
+</div>
 
 {#if extras}
 	<div class="sidebar-extras">
@@ -42,7 +39,7 @@
 	</div>
 {/if}
 
-{#if !isDesktop}
+{#if open}
 	<Modal bind:open header={{ heading: label, size: 'small' }} class="filter-drawer">
 		<div class="drawer-content">
 			{@render children()}
@@ -53,14 +50,21 @@
 <style>
 	.desktop-only {
 		display: grid;
+		gap: var(--ax-space-16);
+		align-content: start;
 	}
 
 	.sidebar-extras {
-		grid-column: 2;
+		display: none;
 	}
 
 	@media (max-width: 1024px) {
+		.desktop-only {
+			display: none;
+		}
+
 		.sidebar-extras {
+			display: block;
 			grid-column: 1;
 		}
 	}
