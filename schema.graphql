@@ -675,9 +675,6 @@ type Application implements ActivityLogger & Node & Workload {
     last: Int
   ): DeploymentConnection!
 
-  """The environment the application is deployed in."""
-  environment: TeamEnvironment! @deprecated(reason: "Use the `teamEnvironment` field instead.")
-
   """
   History of previous releases of this application, ordered by most recent first.
   """
@@ -1267,7 +1264,6 @@ type BigQueryDataset implements Node & Persistence {
   cascadingDelete: Boolean!
   cost: BigQueryDatasetCost!
   description: String
-  environment: TeamEnvironment! @deprecated(reason: "Use the `teamEnvironment` field instead.")
   id: ID!
 
   """User-defined labels attached to this BigQuery dataset."""
@@ -1377,7 +1373,6 @@ type BooleanFacetItem {
 
 type Bucket implements Node & Persistence {
   cascadingDelete: Boolean!
-  environment: TeamEnvironment! @deprecated(reason: "Use the `teamEnvironment` field instead.")
   id: ID!
 
   """User-defined labels attached to this bucket."""
@@ -2062,11 +2057,19 @@ input CreateConfigInput {
   """The environment the config exists in."""
   environmentName: String!
 
+  """Initial user-defined labels to apply."""
+  labels: [ResourceLabelInput!]
+
   """The name of the config."""
   name: String!
 
   """The team that owns the config."""
   teamSlug: Slug!
+
+  """
+  Initial config values. The encoding field on each value determines whether it is stored as plain-text data or binary data.
+  """
+  values: [ConfigValueInput!]
 }
 
 type CreateConfigPayload {
@@ -2984,12 +2987,15 @@ interface ExternalNetworkPolicyTarget {
   target: String!
 }
 
+"""
+Deprecated: superseded by WorkloadProblemIssue. No longer produced; retained for backwards compatibility.
+"""
 type FailedSynchronizationIssue implements Issue & Node {
-  id: ID!
-  message: String!
-  severity: Severity!
-  teamEnvironment: TeamEnvironment!
-  workload: Workload!
+  id: ID! @deprecated(reason: "Use WorkloadProblemIssue instead.")
+  message: String! @deprecated(reason: "Use WorkloadProblemIssue instead.")
+  severity: Severity! @deprecated(reason: "Use WorkloadProblemIssue instead.")
+  teamEnvironment: TeamEnvironment! @deprecated(reason: "Use WorkloadProblemIssue instead.")
+  workload: Workload! @deprecated(reason: "Use WorkloadProblemIssue instead.")
 }
 
 type FeatureKafka implements Node {
@@ -3480,12 +3486,15 @@ enum InstanceGroupValueSourceKind {
   SPEC
 }
 
+"""
+Deprecated: superseded by WorkloadProblemIssue. No longer produced; retained for backwards compatibility.
+"""
 type InvalidSpecIssue implements Issue & Node {
-  id: ID!
-  message: String!
-  severity: Severity!
-  teamEnvironment: TeamEnvironment!
-  workload: Workload!
+  id: ID! @deprecated(reason: "Use WorkloadProblemIssue instead.")
+  message: String! @deprecated(reason: "Use WorkloadProblemIssue instead.")
+  severity: Severity! @deprecated(reason: "Use WorkloadProblemIssue instead.")
+  teamEnvironment: TeamEnvironment! @deprecated(reason: "Use WorkloadProblemIssue instead.")
+  workload: Workload! @deprecated(reason: "Use WorkloadProblemIssue instead.")
 }
 
 interface Issue implements Node {
@@ -3562,8 +3571,8 @@ enum IssueType {
   DEPRECATED_INGRESS
   DEPRECATED_REGISTRY
   EXTERNAL_INGRESS_CRITICAL_VULNERABILITY
-  FAILED_SYNCHRONIZATION
-  INVALID_SPEC
+  FAILED_SYNCHRONIZATION @deprecated(reason: "Use WORKLOAD_PROBLEM instead.")
+  INVALID_SPEC @deprecated(reason: "Use WORKLOAD_PROBLEM instead.")
   LAST_RUN_FAILED
   MISSING_SBOM
   NO_RUNNING_INSTANCES
@@ -3573,6 +3582,11 @@ enum IssueType {
   UNLEASH_RELEASE_CHANNEL
   VALKEY
   VULNERABLE_IMAGE
+
+  """
+  Raised when the platform reports a problem in a workload, such as an invalid spec, a failed synchronization or a deprecation.
+  """
+  WORKLOAD_PROBLEM
 }
 
 type Job implements ActivityLogger & Node & Workload {
@@ -3660,9 +3674,6 @@ type Job implements ActivityLogger & Node & Workload {
     """
     last: Int
   ): DeploymentConnection!
-
-  """The environment the job is deployed in."""
-  environment: TeamEnvironment! @deprecated(reason: "Use the `teamEnvironment` field instead.")
 
   """The globally unique ID of the job."""
   id: ID!
@@ -4249,7 +4260,6 @@ type KafkaLagScalingStrategy {
 type KafkaTopic implements Node & Persistence {
   acl(after: Cursor, before: Cursor, filter: KafkaTopicAclFilter, first: Int, last: Int, orderBy: KafkaTopicAclOrder): KafkaTopicAclConnection!
   configuration: KafkaTopicConfiguration
-  environment: TeamEnvironment! @deprecated(reason: "Use the `teamEnvironment` field instead.")
   id: ID!
 
   """User-defined labels attached to this Kafka topic."""
@@ -4953,7 +4963,6 @@ type OpenSearch implements ActivityLogger & Node & Persistence {
     last: Int
   ): ActivityLogEntryConnection!
   cost: OpenSearchCost!
-  environment: TeamEnvironment! @deprecated(reason: "Use the `teamEnvironment` field instead.")
   id: ID!
 
   """Issues that affects the instance."""
@@ -5388,7 +5397,6 @@ type PageInfo {
 }
 
 interface Persistence implements Node {
-  environment: TeamEnvironment! @deprecated(reason: "Use the `teamEnvironment` field instead.")
   id: ID!
 
   """User-defined labels attached to the resource."""
@@ -5465,7 +5473,6 @@ type PostgresGrantAccessActivityLogEntryData {
 type PostgresInstance implements Node & Persistence {
   """Audit logging configuration for the Postgres cluster."""
   audit: PostgresInstanceAudit!
-  environment: TeamEnvironment! @deprecated(reason: "Use the `teamEnvironment` field instead.")
 
   """
   Indicates whether the Postgres cluster is configured for high availability.
@@ -6659,11 +6666,6 @@ input SearchFilter {
   teams: [Slug!]
 
   """
-  The type of entities to search for. If not specified, all types will be searched.
-  """
-  type: SearchType
-
-  """
   The types of entities to search for. If not specified, all types will be searched.
   """
   types: [SearchType!]
@@ -6752,9 +6754,6 @@ type Secret implements ActivityLogger & Node {
     """
     last: Int
   ): ApplicationConnection!
-
-  """The environment the secret exists in."""
-  environment: TeamEnvironment! @deprecated(reason: "Use the `teamEnvironment` field instead.")
 
   """The globally unique ID of the secret."""
   id: ID!
@@ -7788,7 +7787,6 @@ type SqlDatabase implements Node & Persistence {
   charset: String
   collation: String
   deletionPolicy: String
-  environment: TeamEnvironment! @deprecated(reason: "Use the `teamEnvironment` field instead.")
   healthy: Boolean!
   id: ID!
 
@@ -7811,7 +7809,6 @@ type SqlInstance implements Node & Persistence {
   database: SqlDatabase
   diskAutoresize: Boolean
   diskAutoresizeLimit: Int
-  environment: TeamEnvironment! @deprecated(reason: "Use the `teamEnvironment` field instead.")
   flags(after: Cursor, before: Cursor, first: Int, last: Int): SqlInstanceFlagConnection!
   healthy: Boolean!
   highAvailability: Boolean!
@@ -9450,9 +9447,6 @@ type TeamUpdatedActivityLogEntryDataUpdatedField {
 }
 
 type TeamUtilizationData {
-  """The environment for the utilization data."""
-  environment: TeamEnvironment! @deprecated(reason: "Use the `teamEnvironment` field instead.")
-
   """The requested amount of resources"""
   requested: Float!
 
@@ -9513,12 +9507,6 @@ type TeamVulnerabilitySummary {
 input TeamVulnerabilitySummaryFilter {
   """Only return vulnerability summaries for the given environment."""
   environmentName: String
-
-  """
-  Deprecated: use environmentName instead.
-  Only one environment is supported if this list is used.
-  """
-  environments: [String!]
 }
 
 """Input for filtering team workloads."""
@@ -9946,15 +9934,20 @@ input UpdateConfigInput {
   environmentName: String!
 
   """
-  The complete set of user-defined labels to apply. Existing user-defined labels are replaced; send an empty list to remove all labels.
+  The complete set of user-defined labels to apply. When set, existing user-defined labels are replaced; use an empty list to remove all labels. When null, existing labels are left unchanged.
   """
-  labels: [ResourceLabelInput!]!
+  labels: [ResourceLabelInput!]
 
   """The name of the config."""
   name: String!
 
   """The team that owns the config."""
   teamSlug: Slug!
+
+  """
+  The complete set of config values. When set, replaces all existing values; use an empty list to remove all values. When null, existing values are left unchanged. The encoding field on each value determines whether it is stored as plain text or binary (base64-encoded).
+  """
+  values: [ConfigValueInput!]
 }
 
 type UpdateConfigPayload {
@@ -10505,7 +10498,6 @@ type Valkey implements ActivityLogger & Node & Persistence {
   Number of databases the Valkey instance is configured with. Default is 16. Minimum 1, maximum 128. Changing this will cause a restart of the Valkey service.
   """
   databases: Int!
-  environment: TeamEnvironment! @deprecated(reason: "Use the `teamEnvironment` field instead.")
   id: ID!
 
   """Issues that affects the instance."""
@@ -11176,9 +11168,6 @@ interface Workload implements ActivityLogger & Node {
     last: Int
   ): DeploymentConnection!
 
-  """The environment the workload is deployed in."""
-  environment: TeamEnvironment! @deprecated(reason: "Use the `teamEnvironment` field instead.")
-
   """The globally unique ID of the workload."""
   id: ID!
 
@@ -11445,6 +11434,41 @@ enum WorkloadOrderField {
 
   """Order apps by vulnerability severity unassigned"""
   VULNERABILITY_SEVERITY_UNASSIGNED
+}
+
+"""
+An issue surfacing a problem reported by the platform in a workload's status.
+"""
+type WorkloadProblemIssue implements Issue & Node {
+  """For deprecations, the end-of-life date, if known."""
+  endOfLife: Date
+  id: ID!
+  message: String!
+
+  """The kind of problem as reported by the platform."""
+  problemType: WorkloadProblemType!
+  severity: Severity!
+
+  """
+  The workload manifest field path that triggered the problem (for example `image`), if known.
+  """
+  source: String
+  teamEnvironment: TeamEnvironment!
+  workload: Workload!
+}
+
+"""The kind of a problem reported by the platform for a workload."""
+enum WorkloadProblemType {
+  """A feature in use that will be changed or removed in the future."""
+  DEPRECATION
+
+  """
+  A permanent error that prevents the workload from being deployed, e.g. an invalid spec or a failed synchronization.
+  """
+  ERROR
+
+  """A warning about something that might be wrongly configured."""
+  WARNING
 }
 
 """Resource quantities for a workload."""
