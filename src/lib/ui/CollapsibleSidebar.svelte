@@ -15,6 +15,7 @@
 	} = $props();
 
 	$effect(() => {
+		if (typeof window === 'undefined') return;
 		const mql = window.matchMedia('(min-width: 1025px)');
 		if (mql.matches) {
 			open = false;
@@ -56,6 +57,7 @@
 
 	.sidebar-extras {
 		grid-column: 2;
+		margin-top: calc(var(--ax-space-16) - var(--spacing-layout));
 	}
 
 	@media (max-width: 1024px) {
@@ -65,6 +67,7 @@
 
 		.sidebar-extras {
 			grid-column: 1;
+			margin-top: 0;
 		}
 	}
 
@@ -140,12 +143,6 @@
 
 	@media (min-width: 1025px) {
 		:global(dialog.filter-drawer.aksel-modal) {
-			display: none;
-		}
-	}
-
-	@media (max-width: 1024px) {
-		.desktop-only {
 			display: none;
 		}
 	}

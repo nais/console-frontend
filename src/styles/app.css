@@ -59,7 +59,7 @@
 	}
 }
 
-@media (min-width: 1024px) {
+@media (min-width: 1025px) {
 	/* Desktop and beyond */
 	:root {
 		--spacing-layout: var(--ax-space-40);
