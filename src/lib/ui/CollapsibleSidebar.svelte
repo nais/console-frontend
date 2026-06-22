@@ -16,6 +16,9 @@
 
 	$effect(() => {
 		const mql = window.matchMedia('(min-width: 1025px)');
+		if (mql.matches) {
+			open = false;
+		}
 		const handler = (e: MediaQueryListEvent) => {
 			if (e.matches) {
 				open = false;

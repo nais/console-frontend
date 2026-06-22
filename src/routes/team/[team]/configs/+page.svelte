@@ -347,16 +347,16 @@
 		flex: 0 1 auto;
 	}
 
-	@container (max-width: 500px) {
+	@media (max-width: 767px), (max-height: 500px) {
 		.right {
-			align-items: flex-start;
+			align-items: flex-end;
 			margin-top: var(--ax-space-6);
 		}
 	}
 
-	@media (max-width: 767px), (max-height: 500px) {
+	@container (max-width: 500px) {
 		.right {
-			align-items: flex-end;
+			align-items: flex-start;
 			margin-top: var(--ax-space-6);
 		}
 	}
