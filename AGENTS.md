@@ -280,7 +280,12 @@ All list pages use `CollapsibleSidebar` (`$lib/ui/CollapsibleSidebar.svelte`) to
 		<List title="Items" count={items.length}>
 			{#snippet actions()}
 				<!-- Other action buttons (Create, Add, etc.) go FIRST -->
-				<button class="sidebar-toggle" onclick={() => (filtersOpen = !filtersOpen)}>
+				<button
+					type="button"
+					class="sidebar-toggle"
+					aria-expanded={filtersOpen}
+					onclick={() => (filtersOpen = !filtersOpen)}
+				>
 					<FunnelIcon aria-hidden="true" style="font-size: 1rem" />
 					Filters
 				</button>

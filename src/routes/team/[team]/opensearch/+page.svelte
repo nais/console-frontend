@@ -124,7 +124,12 @@
 							{create.buttonText}
 						</Button>
 					{/if}
-					<button class="sidebar-toggle" onclick={() => (filtersOpen = !filtersOpen)}>
+					<button
+						type="button"
+						class="sidebar-toggle"
+						aria-expanded={filtersOpen}
+						onclick={() => (filtersOpen = !filtersOpen)}
+					>
 						<FunnelIcon aria-hidden="true" style="font-size: 1rem" />
 						Filters
 					</button>
