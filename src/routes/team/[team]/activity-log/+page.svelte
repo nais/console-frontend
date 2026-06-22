@@ -3,15 +3,18 @@
 	import { type ActivityLogActivityType$options } from '$houdini';
 	import ActivityLogFacets from '$lib/domain/activity/ActivityLogFacets.svelte';
 	import ActivityLogItem from '$lib/domain/list-items/ActivityLogListItem.svelte';
+	import CollapsibleSidebar from '$lib/ui/CollapsibleSidebar.svelte';
 	import List from '$lib/ui/List.svelte';
 	import ListFilters from '$lib/ui/ListFilters.svelte';
 	import Pagination from '$lib/ui/Pagination.svelte';
 	import SurfaceCard from '$lib/ui/SurfaceCard.svelte';
 	import { changeParams } from '$lib/utils/searchparams';
+	import { FunnelIcon } from '@nais/ds-svelte-community/icons';
 	import { tick } from 'svelte';
 	import type { PageProps } from './$types';
 
 	let { data }: PageProps = $props();
+	let filtersOpen = $state(false);
 	let { ActivityLog } = $derived(data);
 
 	let selectedActivityTypes: ActivityLogActivityType$options[] = $derived(
@@ -94,6 +97,12 @@
 		<div class="layout-two-column">
 			<div bind:this={wrapperEl}>
 				<List title="Activity Log" count={ae.pageInfo.totalCount}>
+					{#snippet actions()}
+						<button class="sidebar-toggle" onclick={() => (filtersOpen = !filtersOpen)}>
+							<FunnelIcon aria-hidden="true" style="font-size: 1rem" />
+							Filters
+						</button>
+					{/snippet}
 					{#each ae.edges || [] as { node: item } (item.id)}
 						<ActivityLogItem {item} mode="full" />
 					{/each}
@@ -126,7 +135,7 @@
 			</div>
 
 			{#if ae.facets}
-				<div class="layout-sidebar">
+				<CollapsibleSidebar bind:open={filtersOpen}>
 					<SurfaceCard title="Filters">
 						<ListFilters>
 							<ActivityLogFacets
@@ -142,7 +151,7 @@
 							/>
 						</ListFilters>
 					</SurfaceCard>
-				</div>
+				</CollapsibleSidebar>
 			{/if}
 		</div>
 	{/if}

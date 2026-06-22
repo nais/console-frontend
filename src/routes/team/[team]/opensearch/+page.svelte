@@ -5,6 +5,7 @@
 	import IssueSeverityTags from '$lib/domain/issues/IssueSeverityTags.svelte';
 	import WorkloadListFilters from '$lib/domain/workload/WorkloadListFilters.svelte';
 	import { envTagVariant } from '$lib/envTagVariant';
+	import CollapsibleSidebar from '$lib/ui/CollapsibleSidebar.svelte';
 	import ExternalLink from '$lib/ui/ExternalLink.svelte';
 	import GraphErrors from '$lib/ui/GraphErrors.svelte';
 	import List from '$lib/ui/List.svelte';
@@ -18,7 +19,7 @@
 	import { countIssuesBySeverity } from '$lib/utils/issueCounts';
 	import { changeParams } from '$lib/utils/searchparams';
 	import { Button, Tag } from '@nais/ds-svelte-community';
-	import { CircleFillIcon, PlusIcon } from '@nais/ds-svelte-community/icons';
+	import { CircleFillIcon, FunnelIcon, PlusIcon } from '@nais/ds-svelte-community/icons';
 	import CreatePage from '../opensearch/create/+page.svelte';
 	import type { PageProps } from './$types';
 
@@ -27,6 +28,7 @@
 	type OrderDirectionOptions = (typeof OrderDirection)[keyof typeof OrderDirection];
 
 	let { data }: PageProps = $props();
+	let filtersOpen = $state(false);
 	let { OpenSearch, viewerIsMember } = $derived(data);
 
 	const sortFields: { value: OpenSearchOrderFieldOptions; label: string }[] = [
@@ -122,6 +124,10 @@
 							{create.buttonText}
 						</Button>
 					{/if}
+					<button class="sidebar-toggle" onclick={() => (filtersOpen = !filtersOpen)}>
+						<FunnelIcon aria-hidden="true" style="font-size: 1rem" />
+						Filters
+					</button>
 				{/snippet}
 				{#each $OpenSearch.data.team.openSearches.edges as { node: instance } (instance.id)}
 					<ListItem interactive>
@@ -207,7 +213,7 @@
 				}}
 			/>
 		</div>
-		<div class="layout-sidebar">
+		<CollapsibleSidebar bind:open={filtersOpen}>
 			<SurfaceCard title="Filters">
 				<WorkloadListFilters
 					{sortFields}
@@ -243,7 +249,7 @@
 					{/if}
 				</WorkloadListFilters>
 			</SurfaceCard>
-		</div>
+		</CollapsibleSidebar>
 	</div>
 
 	{#if create}

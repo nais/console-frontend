@@ -5,6 +5,7 @@
 	import TeamActivityCard from '$lib/domain/activity/TeamActivityCard.svelte';
 	import LabelFacets from '$lib/domain/labels/LabelFacets.svelte';
 	import { envTagVariant } from '$lib/envTagVariant';
+	import CollapsibleSidebar from '$lib/ui/CollapsibleSidebar.svelte';
 	import ExternalLink from '$lib/ui/ExternalLink.svelte';
 	import GraphErrors from '$lib/ui/GraphErrors.svelte';
 	import List from '$lib/ui/List.svelte';
@@ -16,7 +17,7 @@
 	import { getConfigPermissions } from '$lib/utils/configPermissions';
 	import { changeParams } from '$lib/utils/searchparams';
 	import { Button, Detail, Tag } from '@nais/ds-svelte-community';
-	import { FileTextIcon, PlusIcon } from '@nais/ds-svelte-community/icons';
+	import { FileTextIcon, FunnelIcon, PlusIcon } from '@nais/ds-svelte-community/icons';
 	import type { PageProps } from './$types';
 	import CreateConfig, { type EnvironmentType } from './CreateConfig.svelte';
 
@@ -125,6 +126,7 @@
 	}
 
 	let createConfigOpen = $state(false);
+	let filtersOpen = $state(false);
 
 	const environments = $derived.by(() => {
 		return (
@@ -167,16 +169,19 @@
 							Create Config
 						</Button>
 					{/if}
+					<button class="sidebar-toggle" onclick={() => (filtersOpen = !filtersOpen)}>
+						<FunnelIcon aria-hidden="true" style="font-size: 1rem" />
+						Filters
+					</button>
 				{/snippet}
 				{#each configs.edges as { node: config } (config.id)}
-					<ListItem interactive>
+					<ListItem
+						interactive
+						href="/team/{teamSlug}/{config.teamEnvironment.environment.name}/config/{config.name}"
+					>
 						<div class="name-group">
 							<FileTextIcon style="font-size: 1.25rem; flex-shrink: 0" />
-							<a
-								href="/team/{teamSlug}/{config.teamEnvironment.environment
-									.name}/config/{config.name}"
-								class="item-name">{config.name}</a
-							>
+							<span class="item-name">{config.name}</span>
 							<Tag size="xsmall" variant={envTagVariant(config.teamEnvironment.environment.name)}
 								>{config.teamEnvironment.environment.name}</Tag
 							>
@@ -225,7 +230,20 @@
 				}}
 			/>
 		</div>
-		<div class="layout-sidebar" style="gap: var(--ax-space-16)">
+		<CollapsibleSidebar bind:open={filtersOpen}>
+			{#snippet extras()}
+				<TeamActivityCard
+					{teamSlug}
+					viewAllHref="/team/{teamSlug}/activity-log"
+					filter={{
+						activityTypes: [
+							ActivityLogActivityType.CONFIG_CREATED,
+							ActivityLogActivityType.CONFIG_UPDATED,
+							ActivityLogActivityType.CONFIG_DELETED
+						]
+					}}
+				/>
+			{/snippet}
 			<SurfaceCard title="Filters">
 				<ListFilters
 					{filter}
@@ -288,18 +306,7 @@
 					{/if}
 				</ListFilters>
 			</SurfaceCard>
-			<TeamActivityCard
-				{teamSlug}
-				viewAllHref="/team/{teamSlug}/activity-log"
-				filter={{
-					activityTypes: [
-						ActivityLogActivityType.CONFIG_CREATED,
-						ActivityLogActivityType.CONFIG_UPDATED,
-						ActivityLogActivityType.CONFIG_DELETED
-					]
-				}}
-			/>
-		</div>
+		</CollapsibleSidebar>
 	</div>
 	{#if createConfigOpen}
 		<CreateConfig team={teamSlug} bind:open={createConfigOpen} {environments} />
@@ -334,8 +341,12 @@
 		min-width: 0;
 		flex: 0 1 auto;
 	}
-	.item-name:hover {
-		text-decoration: underline;
+
+	@container (max-width: 500px) {
+		.right {
+			align-items: flex-start;
+			margin-top: var(--ax-space-6);
+		}
 	}
 
 	@media (max-width: 767px), (max-height: 500px) {

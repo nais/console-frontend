@@ -2,6 +2,7 @@
 	import { page } from '$app/state';
 	import { ActivityLogActivityType, graphql, OrderDirection, TeamMemberOrderField } from '$houdini';
 	import TeamActivityCard from '$lib/domain/activity/TeamActivityCard.svelte';
+	import CollapsibleSidebar from '$lib/ui/CollapsibleSidebar.svelte';
 	import Confirm from '$lib/ui/Confirm.svelte';
 	import GraphErrors from '$lib/ui/GraphErrors.svelte';
 	import List from '$lib/ui/List.svelte';
@@ -11,12 +12,13 @@
 	import SurfaceCard from '$lib/ui/SurfaceCard.svelte';
 	import { changeParams } from '$lib/utils/searchparams';
 	import { BodyShort, Button, Heading } from '@nais/ds-svelte-community';
-	import { PencilIcon, PlusIcon, TrashIcon } from '@nais/ds-svelte-community/icons';
+	import { FunnelIcon, PencilIcon, PlusIcon, TrashIcon } from '@nais/ds-svelte-community/icons';
 	import type { PageProps } from './$types';
 	import AddMember from './AddMember.svelte';
 	import EditMember from './EditMember.svelte';
 
 	let { data }: PageProps = $props();
+	let filtersOpen = $state(false);
 	let { Members, UserInfo, viewerIsOwner } = $derived(data);
 	let team = $derived($Members.data?.team);
 
@@ -111,6 +113,10 @@
 							icon={PlusIcon}>Add member</Button
 						>
 					{/if}
+					<button class="sidebar-toggle" onclick={() => (filtersOpen = !filtersOpen)}>
+						<FunnelIcon aria-hidden="true" style="font-size: 1rem" />
+						Filters
+					</button>
 				{/snippet}
 				{#if $Members.data?.team.members.edges}
 					{#each $Members.data?.team.members.edges as edge (edge.node.user.id + edge.node.role)}
@@ -184,7 +190,7 @@
 				}}
 			/>
 		</div>
-		<div class="layout-sidebar" style="gap: var(--ax-space-16)">
+		<CollapsibleSidebar bind:open={filtersOpen}>
 			<SurfaceCard title="Filters">
 				<ListFilters
 					{sortFields}
@@ -193,18 +199,20 @@
 					onSort={(field) => setSort(field as TeamMemberOrderFieldOptions)}
 				/>
 			</SurfaceCard>
-			<TeamActivityCard
-				teamSlug={team.slug}
-				viewAllHref="/team/{team.slug}/activity-log"
-				filter={{
-					activityTypes: [
-						ActivityLogActivityType.TEAM_MEMBER_REMOVED,
-						ActivityLogActivityType.TEAM_MEMBER_ADDED,
-						ActivityLogActivityType.TEAM_MEMBER_SET_ROLE
-					]
-				}}
-			/>
-		</div>
+			{#snippet extras()}
+				<TeamActivityCard
+					teamSlug={team.slug}
+					viewAllHref="/team/{team.slug}/activity-log"
+					filter={{
+						activityTypes: [
+							ActivityLogActivityType.TEAM_MEMBER_REMOVED,
+							ActivityLogActivityType.TEAM_MEMBER_ADDED,
+							ActivityLogActivityType.TEAM_MEMBER_SET_ROLE
+						]
+					}}
+				/>
+			{/snippet}
+		</CollapsibleSidebar>
 	</div>
 	{#if team}
 		<AddMember bind:open={addMemberOpen} team={team.slug} oncreated={refetch} />

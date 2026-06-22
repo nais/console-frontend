@@ -6,6 +6,7 @@
 	import WorkloadListFilters from '$lib/domain/workload/WorkloadListFilters.svelte';
 	import { envTagVariant } from '$lib/envTagVariant';
 	import BigQueryIcon from '$lib/icons/BigQueryIcon.svelte';
+	import CollapsibleSidebar from '$lib/ui/CollapsibleSidebar.svelte';
 	import ExternalLink from '$lib/ui/ExternalLink.svelte';
 	import GraphErrors from '$lib/ui/GraphErrors.svelte';
 	import List from '$lib/ui/List.svelte';
@@ -14,6 +15,7 @@
 	import SurfaceCard from '$lib/ui/SurfaceCard.svelte';
 	import { changeParams } from '$lib/utils/searchparams';
 	import { Tag } from '@nais/ds-svelte-community';
+	import { FunnelIcon } from '@nais/ds-svelte-community/icons';
 	import type { PageProps } from './$types';
 
 	type BigQueryOrderFieldOptions =
@@ -21,6 +23,7 @@
 	type OrderDirectionOptions = (typeof OrderDirection)[keyof typeof OrderDirection];
 
 	let { data }: PageProps = $props();
+	let filtersOpen = $state(false);
 	let { BigQuery } = $derived(data);
 
 	const sortFields: { value: BigQueryOrderFieldOptions; label: string }[] = [
@@ -73,6 +76,12 @@
 	<div class="layout-two-column">
 		<div>
 			<List title="BigQuery" count={$BigQuery.data.team.bigQueryDatasets.pageInfo.totalCount}>
+				{#snippet actions()}
+					<button class="sidebar-toggle" onclick={() => (filtersOpen = !filtersOpen)}>
+						<FunnelIcon aria-hidden="true" style="font-size: 1rem" />
+						Filters
+					</button>
+				{/snippet}
 				{#each $BigQuery.data.team.bigQueryDatasets.edges as { node: instance } (instance.id)}
 					<ListItem interactive>
 						<div class="name-group">
@@ -126,7 +135,7 @@
 				}}
 			/>
 		</div>
-		<div class="layout-sidebar">
+		<CollapsibleSidebar bind:open={filtersOpen}>
 			<SurfaceCard title="Filters">
 				<WorkloadListFilters
 					{sortFields}
@@ -141,7 +150,7 @@
 					onLabelsChange={handleLabelsChange}
 				/>
 			</SurfaceCard>
-		</div>
+		</CollapsibleSidebar>
 	</div>
 
 	<style>

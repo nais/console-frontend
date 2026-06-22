@@ -5,6 +5,7 @@
 	import TeamActivityCard from '$lib/domain/activity/TeamActivityCard.svelte';
 	import LabelFacets from '$lib/domain/labels/LabelFacets.svelte';
 	import { envTagVariant } from '$lib/envTagVariant';
+	import CollapsibleSidebar from '$lib/ui/CollapsibleSidebar.svelte';
 	import ExternalLink from '$lib/ui/ExternalLink.svelte';
 	import GraphErrors from '$lib/ui/GraphErrors.svelte';
 	import List from '$lib/ui/List.svelte';
@@ -16,7 +17,7 @@
 	import { changeParams } from '$lib/utils/searchparams';
 	import { getSecretPermissions } from '$lib/utils/secretPermissions';
 	import { Button, Detail, Tag } from '@nais/ds-svelte-community';
-	import { PadlockLockedIcon, PlusIcon } from '@nais/ds-svelte-community/icons';
+	import { FunnelIcon, PadlockLockedIcon, PlusIcon } from '@nais/ds-svelte-community/icons';
 	import type { PageProps } from './$types';
 	import CreateSecret, { type EnvironmentType } from './CreateSecret.svelte';
 
@@ -125,6 +126,7 @@
 	}
 
 	let createSecretOpen = $state(false);
+	let filtersOpen = $state(false);
 
 	const environments = $derived.by(() => {
 		return (
@@ -167,16 +169,19 @@
 							Create Secret
 						</Button>
 					{/if}
+					<button class="sidebar-toggle" onclick={() => (filtersOpen = !filtersOpen)}>
+						<FunnelIcon aria-hidden="true" style="font-size: 1rem" />
+						Filters
+					</button>
 				{/snippet}
 				{#each secrets.edges as { node: secret } (secret.id)}
-					<ListItem interactive>
+					<ListItem
+						interactive
+						href="/team/{teamSlug}/{secret.teamEnvironment.environment.name}/secret/{secret.name}"
+					>
 						<div class="name-group">
 							<PadlockLockedIcon style="font-size: 1.25rem; flex-shrink: 0" />
-							<a
-								href="/team/{teamSlug}/{secret.teamEnvironment.environment
-									.name}/secret/{secret.name}"
-								class="item-name">{secret.name}</a
-							>
+							<span class="item-name">{secret.name}</span>
 							<Tag size="xsmall" variant={envTagVariant(secret.teamEnvironment.environment.name)}
 								>{secret.teamEnvironment.environment.name}</Tag
 							>
@@ -225,7 +230,24 @@
 				}}
 			/>
 		</div>
-		<div class="layout-sidebar" style="gap: var(--ax-space-16)">
+		<CollapsibleSidebar bind:open={filtersOpen}>
+			{#snippet extras()}
+				<TeamActivityCard
+					{teamSlug}
+					viewAllHref="/team/{teamSlug}/activity-log"
+					filter={{
+						activityTypes: [
+							ActivityLogActivityType.SECRET_CREATED,
+							ActivityLogActivityType.SECRET_UPDATED,
+							ActivityLogActivityType.SECRET_VALUE_ADDED,
+							ActivityLogActivityType.SECRET_VALUE_UPDATED,
+							ActivityLogActivityType.SECRET_VALUE_REMOVED,
+							ActivityLogActivityType.SECRET_DELETED,
+							ActivityLogActivityType.SECRET_VALUES_VIEWED
+						]
+					}}
+				/>
+			{/snippet}
 			<SurfaceCard title="Filters">
 				<ListFilters
 					{filter}
@@ -288,22 +310,7 @@
 					{/if}
 				</ListFilters>
 			</SurfaceCard>
-			<TeamActivityCard
-				{teamSlug}
-				viewAllHref="/team/{teamSlug}/activity-log"
-				filter={{
-					activityTypes: [
-						ActivityLogActivityType.SECRET_CREATED,
-						ActivityLogActivityType.SECRET_UPDATED,
-						ActivityLogActivityType.SECRET_VALUE_ADDED,
-						ActivityLogActivityType.SECRET_VALUE_UPDATED,
-						ActivityLogActivityType.SECRET_VALUE_REMOVED,
-						ActivityLogActivityType.SECRET_DELETED,
-						ActivityLogActivityType.SECRET_VALUES_VIEWED
-					]
-				}}
-			/>
-		</div>
+		</CollapsibleSidebar>
 	</div>
 	{#if createSecretOpen}
 		<CreateSecret team={teamSlug} bind:open={createSecretOpen} {environments} />
@@ -316,6 +323,13 @@
 		flex-direction: column;
 		align-items: end;
 		gap: var(--ax-space-2);
+	}
+
+	@container (max-width: 500px) {
+		.right {
+			align-items: flex-start;
+			margin-top: var(--ax-space-6);
+		}
 	}
 
 	@media (max-width: 767px), (max-height: 500px) {
@@ -344,8 +358,5 @@
 		text-overflow: ellipsis;
 		min-width: 0;
 		flex: 0 1 auto;
-	}
-	.item-name:hover {
-		text-decoration: underline;
 	}
 </style>
