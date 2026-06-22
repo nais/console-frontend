@@ -8,16 +8,20 @@
 	} from '$houdini';
 	import AppListItem from '$lib/domain/list-items/AppListItem.svelte';
 	import WorkloadListFilters from '$lib/domain/workload/WorkloadListFilters.svelte';
+	import CollapsibleSidebar from '$lib/ui/CollapsibleSidebar.svelte';
 	import GraphErrors from '$lib/ui/GraphErrors.svelte';
 	import List from '$lib/ui/List.svelte';
 	import Pagination from '$lib/ui/Pagination.svelte';
 	import SurfaceCard from '$lib/ui/SurfaceCard.svelte';
 	import { changeParams } from '$lib/utils/searchparams';
 	import { BodyLong } from '@nais/ds-svelte-community';
+	import { FunnelIcon } from '@nais/ds-svelte-community/icons';
 	import type { PageProps } from './$types';
 
 	let { data }: PageProps = $props();
 	let { Applications, ApplicationsListMetadata } = $derived(data);
+
+	let filtersOpen = $state(false);
 
 	let filter = $state($Applications.variables?.filter?.name ?? '');
 
@@ -130,6 +134,17 @@
 			{@const apps = $Applications.data?.team.applications}
 
 			<List title="Apps" count={apps?.pageInfo.totalCount ?? 0}>
+				{#snippet actions()}
+					<button
+						type="button"
+						class="sidebar-toggle"
+						aria-expanded={filtersOpen}
+						onclick={() => (filtersOpen = !filtersOpen)}
+					>
+						<FunnelIcon aria-hidden="true" style="font-size: 1rem" />
+						Filters
+					</button>
+				{/snippet}
 				{#each apps?.edges ?? [] as { node: app } (app.id)}
 					<AppListItem {app} />
 				{/each}
@@ -149,7 +164,7 @@
 			<BodyLong><strong>No applications found.</strong></BodyLong>
 		{/if}
 	</div>
-	<div class="layout-sidebar">
+	<CollapsibleSidebar bind:open={filtersOpen}>
 		<SurfaceCard title="Filters">
 			<WorkloadListFilters
 				{filter}
@@ -176,7 +191,7 @@
 				onLabelsChange={handleLabelsChange}
 			/>
 		</SurfaceCard>
-	</div>
+	</CollapsibleSidebar>
 </div>
 
 <style>

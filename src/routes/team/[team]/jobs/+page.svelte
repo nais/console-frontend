@@ -8,16 +8,20 @@
 	} from '$houdini';
 	import JobListItem from '$lib/domain/list-items/JobListItem.svelte';
 	import WorkloadListFilters from '$lib/domain/workload/WorkloadListFilters.svelte';
+	import CollapsibleSidebar from '$lib/ui/CollapsibleSidebar.svelte';
 	import GraphErrors from '$lib/ui/GraphErrors.svelte';
 	import List from '$lib/ui/List.svelte';
 	import Pagination from '$lib/ui/Pagination.svelte';
 	import SurfaceCard from '$lib/ui/SurfaceCard.svelte';
 	import { changeParams } from '$lib/utils/searchparams';
 	import { BodyLong } from '@nais/ds-svelte-community';
+	import { FunnelIcon } from '@nais/ds-svelte-community/icons';
 	import type { PageProps } from './$types';
 
 	let { data }: PageProps = $props();
 	let { Jobs, JobsListMetadata } = $derived(data);
+
+	let filtersOpen = $state(false);
 
 	let filter = $state($Jobs.variables?.filter?.name ?? '');
 
@@ -131,6 +135,17 @@
 			{@const jobs = $Jobs.data?.team.jobs}
 
 			<List title="Jobs" count={jobs?.pageInfo.totalCount ?? 0}>
+				{#snippet actions()}
+					<button
+						type="button"
+						class="sidebar-toggle"
+						aria-expanded={filtersOpen}
+						onclick={() => (filtersOpen = !filtersOpen)}
+					>
+						<FunnelIcon aria-hidden="true" style="font-size: 1rem" />
+						Filters
+					</button>
+				{/snippet}
 				{#each jobs?.edges ?? [] as { node: job } (job.id)}
 					<JobListItem {job} />
 				{/each}
@@ -150,7 +165,7 @@
 			<BodyLong><strong>No jobs found.</strong></BodyLong>
 		{/if}
 	</div>
-	<div class="layout-sidebar">
+	<CollapsibleSidebar bind:open={filtersOpen}>
 		<SurfaceCard title="Filters">
 			<WorkloadListFilters
 				{filter}
@@ -177,7 +192,7 @@
 				onLabelsChange={handleLabelsChange}
 			/>
 		</SurfaceCard>
-	</div>
+	</CollapsibleSidebar>
 </div>
 
 <style>
