@@ -249,12 +249,62 @@ This project layers project-level design conventions on top of the `@nais/ds-sve
 
 Global utility classes defined in `src/styles/app.css` for common page patterns. **Use these instead of writing per-component layout CSS:**
 
-- `.layout-two-column` — two-column grid (`1fr 300px`) with `--spacing-layout` gap. Collapses to single column on mobile (`max-width: 767px`).
+- `.layout-two-column` — two-column grid (`1fr 300px`) with `--spacing-layout` gap. Collapses to single column at `≤1024px` (narrow desktop) and `≤767px` (mobile).
 - `.layout-sidebar` — grid with `--ax-space-24` gap, `align-content: start`. Use for the sidebar column inside `.layout-two-column`.
 - `.table-scroll` — horizontal scroll wrapper for wide tables. Wrap the `<Table>` with this instead of per-component overflow CSS.
 - `.detail-actions` — right-aligned flex row for action buttons above content (e.g., edit/delete buttons).
 - `.loading-centered` — centered flex container (300px height) for loading spinners.
 - `.settings-list` — grid-based `<dl>` for key-value pairs (`18ch` label column + `1fr` value column). Collapses to stacked layout on mobile. Bold `dt` with `--ax-text-neutral-subtle` color.
+- `.sidebar-toggle` — hidden by default, shown as `inline-flex` at `≤1024px`. Has `margin-left: auto` to stay right-aligned. Includes a chevron indicator via `::after`.
+
+### CollapsibleSidebar Pattern
+
+All list pages use `CollapsibleSidebar` (`$lib/ui/CollapsibleSidebar.svelte`) to handle filter visibility across breakpoints:
+
+- **Wide desktop (>1024px):** Filters display in the right sidebar column (`.desktop-only`).
+- **Narrow desktop / tablet (≤1024px):** Sidebar collapses. A "Filters" toggle button appears in the List header. Clicking it opens a right-side drawer overlay (uses `Modal`).
+- **Mobile (≤767px):** Same drawer behavior.
+
+#### Usage in list pages:
+
+```svelte
+<script lang="ts">
+	import CollapsibleSidebar from '$lib/ui/CollapsibleSidebar.svelte';
+	import { FunnelIcon } from '@nais/ds-svelte-community/icons';
+
+	let filtersOpen = $state(false);
+</script>
+
+<div class="layout-two-column">
+	<div>
+		<List title="Items" count={items.length}>
+			{#snippet actions()}
+				<!-- Other action buttons (Create, Add, etc.) go FIRST -->
+				<button class="sidebar-toggle" onclick={() => (filtersOpen = !filtersOpen)}>
+					<FunnelIcon aria-hidden="true" style="font-size: 1rem" />
+					Filters
+				</button>
+			{/snippet}
+			<!-- list items -->
+		</List>
+	</div>
+	<CollapsibleSidebar bind:open={filtersOpen}>
+		<SurfaceCard title="Filters">
+			<!-- filter components -->
+		</SurfaceCard>
+		{#snippet extras()}
+			<!-- Optional: TeamActivityCard or other sidebar content -->
+		{/snippet}
+	</CollapsibleSidebar>
+</div>
+```
+
+#### Rules:
+
+1. **Filters button is always last** in the `{#snippet actions()}` — keeps it consistently on the far right
+2. **`extras` snippet** is for content that shows in the sidebar on wide screens but below the list on narrow — never inside the drawer (e.g., TeamActivityCard)
+3. **Do not use `<div class="layout-sidebar">`** for filter sidebars on list pages — use `CollapsibleSidebar` instead
+4. **Container queries**: The `List` component's `.items` div has `container-type: inline-size`. Use `@container (max-width: 500px)` in list item components for reflow
 
 ### Surface System
 
@@ -357,8 +407,20 @@ The `layerchart.css` file has both a `:root` and a `.dark, .dark-theme` block wi
 
 ## Responsive UI / Mobile
 
+### Breakpoints
+
+| Breakpoint | Target                  | Behavior                                                             |
+| ---------- | ----------------------- | -------------------------------------------------------------------- |
+| `>1024px`  | Wide desktop            | Two-column layout, sidebar visible                                   |
+| `≤1024px`  | Narrow desktop / tablet | Single column, sidebar hidden, filter drawer via toggle button       |
+| `≤767px`   | Mobile                  | Single column, compact spacing, container query reflow on list items |
+
+### Guidelines
+
 - New pages and substantial page changes must work on narrow mobile widths, not just desktop layouts.
 - Use existing responsive patterns in the codebase before inventing route-specific mobile solutions.
+- List pages must use `CollapsibleSidebar` for their filter sidebar (see Design Guidelines above).
+- List item components should use `@container (max-width: 500px)` for reflow, not only `@media` queries — this responds to the actual list width, not viewport width.
 - For wide data tables, prefer a horizontal scroll wrapper around the desktop table before introducing a separate mobile card view.
 - Keep pagination outside horizontal scroll containers.
 - Avoid blanket `white-space: nowrap` and large fixed `min-width` rules across entire tables; let value-heavy columns wrap and keep only the columns that need it non-wrapping.
