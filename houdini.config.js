@@ -14,13 +14,8 @@ const config = {
 		}
 	},
 	defaultCachePolicy: 'CacheAndNetwork',
-	features: {
-		imperativeCache: true
-	},
 	plugins: {
-		'houdini-svelte': {
-			forceRunesMode: true
-		}
+		'houdini-svelte': {}
 	},
 	scalars: {
 		Slug: { type: 'string' },

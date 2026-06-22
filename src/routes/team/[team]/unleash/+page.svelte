@@ -37,16 +37,11 @@
 		TrashIcon,
 		XMarkIcon
 	} from '@nais/ds-svelte-community/icons';
+	import { GraphQLError } from 'houdini/runtime';
 	import prettyBytes from 'pretty-bytes';
 	import { onDestroy } from 'svelte';
 	import type { PageProps } from './$types';
 	import TeamSearchModal from './TeamSearchModal.svelte';
-
-	type GraphQLError = {
-		message: string;
-		extensions?: Record<string, unknown>;
-		path?: (string | number)[];
-	};
 
 	function extractErrorMessages(errors: GraphQLError[] | null | undefined): string[] {
 		if (!errors || errors.length === 0) {

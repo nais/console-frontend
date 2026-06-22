@@ -4,9 +4,9 @@ import {
 	load_Alerts,
 	load_AlertsMetadata,
 	OrderDirection,
-	type AlertState$options,
-	type TeamAlertsFilter
+	type AlertState$options
 } from '$houdini';
+import { TeamAlertsFilter } from '$houdini/graphql/inputs';
 import { urlToOrderDirection, urlToOrderField } from '$lib/ui/OrderByMenu.svelte';
 import { addPageMeta } from '$lib/utils/pageMeta';
 
