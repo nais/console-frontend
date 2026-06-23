@@ -16,7 +16,7 @@
 		ActionMenuItem
 	} from '@nais/ds-svelte-community/experimental';
 	import {
-		BranchingIcon,
+		LinkIcon,
 		MenuElipsisVerticalIcon,
 		PencilIcon,
 		ShieldLockIcon,
@@ -151,7 +151,7 @@
 						href="{basePath}/{serviceAccount.id}/binding/add"
 						onclick={pageModalClick}
 					>
-						<ActionMenuItem icon={BranchingIcon}>Add workload binding</ActionMenuItem>
+						<ActionMenuItem icon={LinkIcon}>Add workload binding</ActionMenuItem>
 					</a>
 					<ActionMenuDivider />
 					<button class="action-menu-button" onclick={() => (deleteServiceAccountOpen = true)}>
@@ -162,6 +162,7 @@
 				</ActionMenu>
 			{/if}
 		</div>
+
 		<dl class="settings-list">
 			<dt>Description</dt>
 			<dd>
