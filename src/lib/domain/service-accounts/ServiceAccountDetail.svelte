@@ -262,5 +262,9 @@
 	.action-menu-button {
 		all: unset;
 		display: contents;
+
+		:global(*) {
+			cursor: pointer;
+		}
 	}
 </style>
