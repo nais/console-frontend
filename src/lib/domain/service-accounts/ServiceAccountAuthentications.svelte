@@ -9,7 +9,7 @@
 	import ListItem from '$lib/ui/ListItem.svelte';
 	import Time from '$lib/ui/Time.svelte';
 	import { Button, Detail, Heading } from '@nais/ds-svelte-community';
-	import { BranchingIcon, TokenIcon, TrashIcon } from '@nais/ds-svelte-community/icons';
+	import { LinkIcon, TokenIcon, TrashIcon } from '@nais/ds-svelte-community/icons';
 
 	interface Props {
 		serviceAccount: ServiceAccountAuthenticationFragment;
@@ -98,10 +98,9 @@
 			{#each $data.workloadBindings.edges as { node: binding } (binding.id)}
 				<ListItem>
 					<IconLabel
-						as="h4"
-						size="large"
+						size="medium"
 						label={binding.workload?.name ?? binding.workloadName}
-						icon={BranchingIcon}
+						icon={LinkIcon}
 						tag={{
 							label: binding.workload?.teamEnvironment.environment.name ?? binding.environment,
 							variant: envTagVariant(
@@ -118,16 +117,18 @@
 					/>
 
 					<div class="right">
-						{#if binding.lastUsedAt}
+						<div class="meta">
+							{#if binding.lastUsedAt}
+								<Detail>
+									Last used <Time time={binding.lastUsedAt} distance={true} />
+								</Detail>
+							{:else}
+								<Detail>Never used</Detail>
+							{/if}
 							<Detail>
-								Last used <Time time={binding.lastUsedAt} distance={true} />
+								Created <Time time={binding.createdAt} distance={true} />
 							</Detail>
-						{:else}
-							<Detail>Never used</Detail>
-						{/if}
-						<Detail>
-							Created <Time time={binding.createdAt} distance={true} />
-						</Detail>
+						</div>
 						{#if canManage}
 							<Button
 								size="xsmall"
@@ -155,29 +156,30 @@
 			{#each $data.tokens.edges as { node: token } (token.id)}
 				<ListItem>
 					<IconLabel
-						as="h4"
-						size="large"
+						size="medium"
 						label={token.name}
 						icon={TokenIcon}
 						description="API Token · {token.description}"
 					/>
 
 					<div class="right">
-						{#if token.lastUsedAt}
+						<div class="meta">
+							{#if token.lastUsedAt}
+								<Detail>
+									Last used <Time time={token.lastUsedAt} distance={true} />
+								</Detail>
+							{:else}
+								<Detail>Never used</Detail>
+							{/if}
 							<Detail>
-								Last used <Time time={token.lastUsedAt} distance={true} />
+								Created <Time time={token.createdAt} distance={true} />
 							</Detail>
-						{:else}
-							<Detail>Never used</Detail>
-						{/if}
-						<Detail>
-							Created <Time time={token.createdAt} distance={true} />
-						</Detail>
-						{#if token.expiresAt}
-							<Detail>
-								Expires <Time time={token.expiresAt} distance={true} />
-							</Detail>
-						{/if}
+							{#if token.expiresAt}
+								<Detail>
+									Expires <Time time={token.expiresAt} distance={true} />
+								</Detail>
+							{/if}
+						</div>
 						{#if canManage}
 							<Button
 								size="xsmall"
@@ -278,13 +280,19 @@
 
 	.right {
 		display: flex;
+		align-items: center;
+		gap: var(--ax-space-8);
+	}
+
+	.meta {
+		display: flex;
 		flex-direction: column;
 		align-items: end;
 		gap: var(--ax-space-2);
 	}
 
 	@media (max-width: 767px) {
-		.right {
+		.meta {
 			align-items: flex-end;
 		}
 	}
