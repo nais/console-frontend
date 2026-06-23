@@ -89,119 +89,118 @@
 	const totalMethods = $derived($data.workloadBindings.edges.length + $data.tokens.edges.length);
 </script>
 
-<section aria-labelledby="auth-methods-heading">
-	<Heading size="small" as="h3" id="auth-methods-heading">Authentication methods</Heading>
+<section aria-label="Authentication methods">
 	<GraphErrors errors={removeErrors} dismissable />
 
-	{#if totalMethods > 0}
-		<List title="{totalMethods} authentication method{totalMethods !== 1 ? 's' : ''}" level="h4">
-			{#each $data.workloadBindings.edges as { node: binding } (binding.id)}
-				<ListItem>
-					<IconLabel
-						size="medium"
-						label={binding.workload?.name ?? binding.workloadName}
-						icon={LinkIcon}
-						tag={{
-							label: binding.workload?.teamEnvironment.environment.name ?? binding.environment,
-							variant: envTagVariant(
-								binding.workload?.teamEnvironment.environment.name ?? binding.environment
-							)
-						}}
-						description="Workload binding · {binding.workload?.__typename === 'Application'
-							? 'Application'
-							: binding.workload?.__typename === 'Job'
-								? 'Job'
-								: 'Workload'} · {binding.workload?.team?.slug ?? binding.teamSlug}{binding.isBroken
-							? ' · Broken'
-							: ''}"
-					/>
+	<List title="Authentication methods" count={totalMethods} level="h3" size="small">
+		{#each $data.workloadBindings.edges as { node: binding } (binding.id)}
+			<ListItem>
+				<IconLabel
+					size="medium"
+					label={binding.workload?.name ?? binding.workloadName}
+					icon={LinkIcon}
+					tag={{
+						label: binding.workload?.teamEnvironment.environment.name ?? binding.environment,
+						variant: envTagVariant(
+							binding.workload?.teamEnvironment.environment.name ?? binding.environment
+						)
+					}}
+					description="Workload binding · {binding.workload?.__typename === 'Application'
+						? 'Application'
+						: binding.workload?.__typename === 'Job'
+							? 'Job'
+							: 'Workload'} · {binding.workload?.team?.slug ?? binding.teamSlug}{binding.isBroken
+						? ' · Broken'
+						: ''}"
+				/>
 
-					<div class="right">
-						<div class="meta">
-							{#if binding.lastUsedAt}
-								<Detail>
-									Last used <Time time={binding.lastUsedAt} distance={true} />
-								</Detail>
-							{:else}
-								<Detail>Never used</Detail>
-							{/if}
+				<div class="right">
+					<div class="meta">
+						{#if binding.lastUsedAt}
 							<Detail>
-								Created <Time time={binding.createdAt} distance={true} />
+								Last used <Time time={binding.lastUsedAt} distance={true} />
 							</Detail>
-						</div>
-						{#if canManage}
-							<Button
-								size="xsmall"
-								variant="tertiary-neutral"
-								aria-label="Remove binding for {binding.workload?.name ?? binding.workloadName}"
-								onclick={() => {
-									bindingToRemove = {
-										id: binding.id,
-										workloadName: binding.workload?.name ?? binding.workloadName,
-										environment:
-											binding.workload?.teamEnvironment.environment.name ?? binding.environment
-									};
-									removeBindingOpen = true;
-								}}
-							>
-								{#snippet icon()}<TrashIcon
-										style="color:var(--ax-text-danger-decoration)"
-									/>{/snippet}
-							</Button>
+						{:else}
+							<Detail>Never used</Detail>
+						{/if}
+						<Detail>
+							Created <Time time={binding.createdAt} distance={true} />
+						</Detail>
+					</div>
+					{#if canManage}
+						<Button
+							size="xsmall"
+							variant="tertiary-neutral"
+							aria-label="Remove binding for {binding.workload?.name ?? binding.workloadName}"
+							onclick={() => {
+								bindingToRemove = {
+									id: binding.id,
+									workloadName: binding.workload?.name ?? binding.workloadName,
+									environment:
+										binding.workload?.teamEnvironment.environment.name ?? binding.environment
+								};
+								removeBindingOpen = true;
+							}}
+						>
+							{#snippet icon()}<TrashIcon
+									style="color:var(--ax-text-danger-decoration)"
+								/>{/snippet}
+						</Button>
+					{/if}
+				</div>
+			</ListItem>
+		{/each}
+
+		{#each $data.tokens.edges as { node: token } (token.id)}
+			<ListItem>
+				<IconLabel
+					size="medium"
+					label={token.name}
+					icon={TokenIcon}
+					description="API Token · {token.description}"
+				/>
+
+				<div class="right">
+					<div class="meta">
+						{#if token.lastUsedAt}
+							<Detail>
+								Last used <Time time={token.lastUsedAt} distance={true} />
+							</Detail>
+						{:else}
+							<Detail>Never used</Detail>
+						{/if}
+						<Detail>
+							Created <Time time={token.createdAt} distance={true} />
+						</Detail>
+						{#if token.expiresAt}
+							<Detail>
+								Expires <Time time={token.expiresAt} distance={true} />
+							</Detail>
 						{/if}
 					</div>
-				</ListItem>
-			{/each}
+					{#if canManage}
+						<Button
+							size="xsmall"
+							variant="tertiary-neutral"
+							aria-label="Delete token {token.name}"
+							onclick={() => {
+								tokenToDelete = { id: token.id, name: token.name };
+								deleteTokenOpen = true;
+							}}
+						>
+							{#snippet icon()}<TrashIcon
+									style="color:var(--ax-text-danger-decoration)"
+								/>{/snippet}
+						</Button>
+					{/if}
+				</div>
+			</ListItem>
+		{/each}
 
-			{#each $data.tokens.edges as { node: token } (token.id)}
-				<ListItem>
-					<IconLabel
-						size="medium"
-						label={token.name}
-						icon={TokenIcon}
-						description="API Token · {token.description}"
-					/>
-
-					<div class="right">
-						<div class="meta">
-							{#if token.lastUsedAt}
-								<Detail>
-									Last used <Time time={token.lastUsedAt} distance={true} />
-								</Detail>
-							{:else}
-								<Detail>Never used</Detail>
-							{/if}
-							<Detail>
-								Created <Time time={token.createdAt} distance={true} />
-							</Detail>
-							{#if token.expiresAt}
-								<Detail>
-									Expires <Time time={token.expiresAt} distance={true} />
-								</Detail>
-							{/if}
-						</div>
-						{#if canManage}
-							<Button
-								size="xsmall"
-								variant="tertiary-neutral"
-								aria-label="Delete token {token.name}"
-								onclick={() => {
-									tokenToDelete = { id: token.id, name: token.name };
-									deleteTokenOpen = true;
-								}}
-							>
-								{#snippet icon()}<TrashIcon
-										style="color:var(--ax-text-danger-decoration)"
-									/>{/snippet}
-							</Button>
-						{/if}
-					</div>
-				</ListItem>
-			{/each}
-		</List>
-	{:else}
-		<p>No authentication methods configured.</p>
-	{/if}
+		{#if totalMethods === 0}
+			<ListItem>No authentication methods configured.</ListItem>
+		{/if}
+	</List>
 </section>
 
 <Confirm

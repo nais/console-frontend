@@ -9,14 +9,14 @@
 	import GraphErrors from '$lib/ui/GraphErrors.svelte';
 	import { pageModalClick } from '$lib/ui/PageModal.svelte';
 	import Time from '$lib/ui/Time.svelte';
-	import { BodyLong, Button, Heading, Modal, Textarea } from '@nais/ds-svelte-community';
+	import { Button, Heading, Modal, Textarea } from '@nais/ds-svelte-community';
 	import {
 		ActionMenu,
 		ActionMenuDivider,
 		ActionMenuItem
 	} from '@nais/ds-svelte-community/experimental';
 	import {
-		BranchingIcon,
+		LinkIcon,
 		MenuElipsisVerticalIcon,
 		PencilIcon,
 		ShieldLockIcon,
@@ -151,7 +151,7 @@
 						href="{basePath}/{serviceAccount.id}/binding/add"
 						onclick={pageModalClick}
 					>
-						<ActionMenuItem icon={BranchingIcon}>Add workload binding</ActionMenuItem>
+						<ActionMenuItem icon={LinkIcon}>Add workload binding</ActionMenuItem>
 					</a>
 					<ActionMenuDivider />
 					<button class="action-menu-button" onclick={() => (deleteServiceAccountOpen = true)}>
@@ -162,25 +162,26 @@
 				</ActionMenu>
 			{/if}
 		</div>
-		<BodyLong>
-			{#if editingDescription}
-				<div class="edit-description">
-					<Textarea size="small" label="Description" hideLabel bind:value={newDescription} />
-					<div class="edit-actions">
-						<Button size="xsmall" onclick={saveDescription}>Save</Button>
-						<Button
-							size="xsmall"
-							variant="secondary-neutral"
-							onclick={() => (editingDescription = false)}>Cancel</Button
-						>
-					</div>
-				</div>
-			{:else}
-				{serviceAccount.description}
-			{/if}
-		</BodyLong>
 
 		<dl class="settings-list">
+			<dt>Description</dt>
+			<dd>
+				{#if editingDescription}
+					<div class="edit-description">
+						<Textarea size="small" label="Description" hideLabel bind:value={newDescription} />
+						<div class="edit-actions">
+							<Button size="xsmall" onclick={saveDescription}>Save</Button>
+							<Button
+								size="xsmall"
+								variant="secondary-neutral"
+								onclick={() => (editingDescription = false)}>Cancel</Button
+							>
+						</div>
+					</div>
+				{:else}
+					{serviceAccount.description}
+				{/if}
+			</dd>
 			<dt>Created</dt>
 			<dd>
 				<Time time={serviceAccount.createdAt} distance={true} />
@@ -232,7 +233,6 @@
 		display: flex;
 		flex-direction: column;
 		gap: var(--ax-space-32);
-		max-width: 900px;
 	}
 
 	section {
