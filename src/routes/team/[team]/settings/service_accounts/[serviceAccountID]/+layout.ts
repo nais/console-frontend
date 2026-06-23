@@ -6,7 +6,8 @@ export async function load(event) {
 			event,
 			variables: {
 				id: event.params.serviceAccountID
-			}
+			},
+			blocking: true
 		}))
 	};
 }
