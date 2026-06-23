@@ -9,7 +9,7 @@
 	import GraphErrors from '$lib/ui/GraphErrors.svelte';
 	import { pageModalClick } from '$lib/ui/PageModal.svelte';
 	import Time from '$lib/ui/Time.svelte';
-	import { BodyLong, Button, Heading, Modal, Textarea } from '@nais/ds-svelte-community';
+	import { Button, Heading, Modal, Textarea } from '@nais/ds-svelte-community';
 	import {
 		ActionMenu,
 		ActionMenuDivider,
@@ -162,25 +162,25 @@
 				</ActionMenu>
 			{/if}
 		</div>
-		<BodyLong>
-			{#if editingDescription}
-				<div class="edit-description">
-					<Textarea size="small" label="Description" hideLabel bind:value={newDescription} />
-					<div class="edit-actions">
-						<Button size="xsmall" onclick={saveDescription}>Save</Button>
-						<Button
-							size="xsmall"
-							variant="secondary-neutral"
-							onclick={() => (editingDescription = false)}>Cancel</Button
-						>
-					</div>
-				</div>
-			{:else}
-				{serviceAccount.description}
-			{/if}
-		</BodyLong>
-
 		<dl class="settings-list">
+			<dt>Description</dt>
+			<dd>
+				{#if editingDescription}
+					<div class="edit-description">
+						<Textarea size="small" label="Description" hideLabel bind:value={newDescription} />
+						<div class="edit-actions">
+							<Button size="xsmall" onclick={saveDescription}>Save</Button>
+							<Button
+								size="xsmall"
+								variant="secondary-neutral"
+								onclick={() => (editingDescription = false)}>Cancel</Button
+							>
+						</div>
+					</div>
+				{:else}
+					{serviceAccount.description}
+				{/if}
+			</dd>
 			<dt>Created</dt>
 			<dd>
 				<Time time={serviceAccount.createdAt} distance={true} />
