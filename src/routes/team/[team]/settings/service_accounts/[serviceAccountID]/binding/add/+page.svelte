@@ -5,6 +5,7 @@
 	import { graphql } from '$houdini';
 	import { envTagVariant } from '$lib/envTagVariant';
 	import GraphErrors from '$lib/ui/GraphErrors.svelte';
+	import { isPossiblyInModal } from '$lib/ui/PageModal.svelte';
 	import {
 		Alert,
 		BodyLong,
@@ -107,17 +108,19 @@
 	{#if !serviceAccount}
 		<Alert variant="warning">Service account not found.</Alert>
 	{:else}
-		<Button
-			as="a"
-			size="small"
-			variant="secondary"
-			href={resolve('/team/[team]/settings/service_accounts/[serviceAccountID]', {
-				team: page.params.team!,
-				serviceAccountID: page.params.serviceAccountID!
-			})}
-		>
-			Back to service account
-		</Button>
+		{#if !isPossiblyInModal()}
+			<Button
+				as="a"
+				size="small"
+				variant="secondary"
+				href={resolve('/team/[team]/settings/service_accounts/[serviceAccountID]', {
+					team: page.params.team!,
+					serviceAccountID: page.params.serviceAccountID!
+				})}
+			>
+				Back to service account
+			</Button>
+		{/if}
 
 		<BodyLong>
 			Workload bindings allow Nais Workloads to authenticate as this service account.
