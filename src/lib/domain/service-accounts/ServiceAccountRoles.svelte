@@ -21,6 +21,8 @@
 
 	let { availableRoles, serviceAccountRoles, editable = false }: Props = $props();
 
+	const uid = $props.id();
+
 	const actualRoles = $derived(
 		paginatedFragment(
 			serviceAccountRoles,
@@ -107,8 +109,8 @@
 	};
 </script>
 
-<section aria-labelledby="roles-heading">
-	<Heading size="small" as="h3" id="roles-heading">Assigned Roles</Heading>
+<section aria-labelledby="roles-heading-{uid}">
+	<Heading size="small" as="h3" id="roles-heading-{uid}">Assigned Roles</Heading>
 	{#if editable}
 		<BodyLong>
 			Service accounts have read access to everything a user has access to, except secrets. You can
