@@ -201,11 +201,7 @@
 	</section>
 
 	<ServiceAccountRoles serviceAccountRoles={serviceAccount} {availableRoles} />
-	<ServiceAccountAuthentications
-		{serviceAccount}
-		{canManage}
-		basePath={`${basePath}/${serviceAccount.id}`}
-	/>
+	<ServiceAccountAuthentications {serviceAccount} {canManage} />
 </div>
 
 <Confirm

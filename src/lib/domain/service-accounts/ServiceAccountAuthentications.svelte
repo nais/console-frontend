@@ -7,7 +7,6 @@
 	import IconLabel from '$lib/ui/IconLabel.svelte';
 	import List from '$lib/ui/List.svelte';
 	import ListItem from '$lib/ui/ListItem.svelte';
-	import { pageModalClick } from '$lib/ui/PageModal.svelte';
 	import Time from '$lib/ui/Time.svelte';
 	import { Button, Detail, Heading } from '@nais/ds-svelte-community';
 	import { BranchingIcon, TokenIcon, TrashIcon } from '@nais/ds-svelte-community/icons';
@@ -15,10 +14,9 @@
 	interface Props {
 		serviceAccount: ServiceAccountAuthenticationFragment;
 		canManage?: boolean;
-		basePath: string;
 	}
 
-	let { serviceAccount, canManage = false, basePath }: Props = $props();
+	let { serviceAccount, canManage = false }: Props = $props();
 
 	const data = $derived(
 		fragment(
@@ -89,8 +87,6 @@
 	}
 
 	const totalMethods = $derived($data.workloadBindings.edges.length + $data.tokens.edges.length);
-
-	const saPath = $derived(basePath);
 </script>
 
 <section aria-labelledby="auth-methods-heading">
@@ -98,29 +94,6 @@
 	<GraphErrors errors={removeErrors} dismissable />
 
 	{#if totalMethods > 0}
-		{#if canManage}
-			<div class="actions">
-				<Button
-					size="small"
-					variant="secondary"
-					as="a"
-					href="{saPath}/binding/add"
-					onclick={pageModalClick}
-				>
-					Add workload binding
-				</Button>
-				<Button
-					size="small"
-					variant="secondary"
-					as="a"
-					href="{saPath}/token/create"
-					onclick={pageModalClick}
-				>
-					Create API token
-				</Button>
-			</div>
-		{/if}
-
 		<List title="{totalMethods} authentication method{totalMethods !== 1 ? 's' : ''}">
 			{#each $data.workloadBindings.edges as { node: binding } (binding.id)}
 				<ListItem>
@@ -159,7 +132,7 @@
 							<Button
 								size="xsmall"
 								variant="tertiary-neutral"
-								title="Remove binding"
+								aria-label="Remove binding for {binding.workload?.name ?? binding.workloadName}"
 								onclick={() => {
 									bindingToRemove = {
 										id: binding.id,
@@ -209,7 +182,7 @@
 							<Button
 								size="xsmall"
 								variant="tertiary-neutral"
-								title="Delete token"
+								aria-label="Delete token {token.name}"
 								onclick={() => {
 									tokenToDelete = { id: token.id, name: token.name };
 									deleteTokenOpen = true;
@@ -226,28 +199,6 @@
 		</List>
 	{:else}
 		<p>No authentication methods configured.</p>
-		{#if canManage}
-			<div class="actions">
-				<Button
-					size="small"
-					variant="secondary"
-					as="a"
-					href="{saPath}/binding/add"
-					onclick={pageModalClick}
-				>
-					Add workload binding
-				</Button>
-				<Button
-					size="small"
-					variant="secondary"
-					as="a"
-					href="{saPath}/token/create"
-					onclick={pageModalClick}
-				>
-					Create API token
-				</Button>
-			</div>
-		{/if}
 	{/if}
 </section>
 
@@ -330,11 +281,6 @@
 		flex-direction: column;
 		align-items: end;
 		gap: var(--ax-space-2);
-	}
-
-	.actions {
-		display: flex;
-		gap: var(--ax-space-8);
 	}
 
 	@media (max-width: 767px) {
