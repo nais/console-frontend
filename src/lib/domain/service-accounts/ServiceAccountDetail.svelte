@@ -7,9 +7,22 @@
 	} from '$houdini';
 	import Confirm from '$lib/ui/Confirm.svelte';
 	import GraphErrors from '$lib/ui/GraphErrors.svelte';
+	import { pageModalClick } from '$lib/ui/PageModal.svelte';
 	import Time from '$lib/ui/Time.svelte';
-	import { BodyLong, Button, Heading } from '@nais/ds-svelte-community';
-	import { TrashIcon } from '@nais/ds-svelte-community/icons';
+	import { BodyLong, Button, Heading, Modal, Textarea } from '@nais/ds-svelte-community';
+	import {
+		ActionMenu,
+		ActionMenuDivider,
+		ActionMenuItem
+	} from '@nais/ds-svelte-community/experimental';
+	import {
+		BranchingIcon,
+		MenuElipsisVerticalIcon,
+		PencilIcon,
+		ShieldLockIcon,
+		TokenIcon,
+		TrashIcon
+	} from '@nais/ds-svelte-community/icons';
 	import ServiceAccountAuthentications from './ServiceAccountAuthentications.svelte';
 	import ServiceAccountRoles from './ServiceAccountRoles.svelte';
 
@@ -48,8 +61,45 @@
 		}
 	`);
 
+	const updateServiceAccount = graphql(`
+		mutation UpdateServiceAccount($input: UpdateServiceAccountInput!) {
+			updateServiceAccount(input: $input) {
+				serviceAccount {
+					id
+					description
+				}
+			}
+		}
+	`);
+
 	let errors: { message: string }[] | undefined = $state();
 	let deleteServiceAccountOpen = $state(false);
+	let editRolesOpen = $state(false);
+	let editingDescription = $state(false);
+	let newDescription = $state('');
+
+	function closeMenu(e: Event) {
+		const popover = (e.currentTarget as HTMLElement)?.closest('[popover]') as HTMLElement | null;
+		popover?.hidePopover();
+	}
+
+	function startEditDescription(e: Event) {
+		closeMenu(e);
+		newDescription = serviceAccount.description;
+		editingDescription = true;
+	}
+
+	async function saveDescription() {
+		errors = undefined;
+		const res = await updateServiceAccount.mutate({
+			input: { serviceAccountID: serviceAccount.id, description: newDescription }
+		});
+		if (res.errors) {
+			errors = res.errors;
+			return;
+		}
+		editingDescription = false;
+	}
 
 	async function handleDeleteServiceAccount() {
 		errors = undefined;
@@ -71,15 +121,64 @@
 		<div class="section-header">
 			<Heading size="medium" as="h2" id="sa-heading">{serviceAccount.name}</Heading>
 			{#if canManage}
-				<Button variant="danger" size="small" onclick={() => (deleteServiceAccountOpen = true)}>
-					{#snippet icon()}
-						<TrashIcon />
+				<ActionMenu>
+					{#snippet trigger(props)}
+						<Button
+							variant="secondary"
+							size="small"
+							icon={MenuElipsisVerticalIcon}
+							iconPosition="right"
+							{...props}
+						>
+							Actions
+						</Button>
 					{/snippet}
-					Delete service account
-				</Button>
+					<button class="action-menu-button" onclick={startEditDescription}>
+						<ActionMenuItem icon={PencilIcon}>Edit description</ActionMenuItem>
+					</button>
+					<button class="action-menu-button" onclick={() => (editRolesOpen = true)}>
+						<ActionMenuItem icon={ShieldLockIcon}>Edit roles</ActionMenuItem>
+					</button>
+					<a
+						class="action-menu-button"
+						href="{basePath}/{serviceAccount.id}/token/create"
+						onclick={pageModalClick}
+					>
+						<ActionMenuItem icon={TokenIcon}>Create API token</ActionMenuItem>
+					</a>
+					<a
+						class="action-menu-button"
+						href="{basePath}/{serviceAccount.id}/binding/add"
+						onclick={pageModalClick}
+					>
+						<ActionMenuItem icon={BranchingIcon}>Add workload binding</ActionMenuItem>
+					</a>
+					<ActionMenuDivider />
+					<button class="action-menu-button" onclick={() => (deleteServiceAccountOpen = true)}>
+						<ActionMenuItem icon={TrashIcon} variant="danger">
+							Delete service account
+						</ActionMenuItem>
+					</button>
+				</ActionMenu>
 			{/if}
 		</div>
-		<BodyLong>{serviceAccount.description}</BodyLong>
+		<BodyLong>
+			{#if editingDescription}
+				<div class="edit-description">
+					<Textarea size="small" label="Description" hideLabel bind:value={newDescription} />
+					<div class="edit-actions">
+						<Button size="xsmall" onclick={saveDescription}>Save</Button>
+						<Button
+							size="xsmall"
+							variant="secondary-neutral"
+							onclick={() => (editingDescription = false)}>Cancel</Button
+						>
+					</div>
+				</div>
+			{:else}
+				{serviceAccount.description}
+			{/if}
+		</BodyLong>
 
 		<dl class="settings-list">
 			<dt>Created</dt>
@@ -101,12 +200,8 @@
 		</dl>
 	</section>
 
-	<ServiceAccountRoles serviceAccountRoles={serviceAccount} {availableRoles} {canManage} />
-	<ServiceAccountAuthentications
-		{serviceAccount}
-		{canManage}
-		basePath={`${basePath}/${serviceAccount.id}`}
-	/>
+	<ServiceAccountRoles serviceAccountRoles={serviceAccount} {availableRoles} />
+	<ServiceAccountAuthentications {serviceAccount} {canManage} />
 </div>
 
 <Confirm
@@ -121,6 +216,16 @@
 	Are you sure you want to delete the service account <strong>{serviceAccount.name}</strong>? This
 	action cannot be undone. All tokens and workload bindings will be removed.
 </Confirm>
+
+<Modal bind:open={editRolesOpen} closeButton>
+	{#snippet header()}
+		<Heading size="small" as="h3">Edit roles</Heading>
+	{/snippet}
+	<ServiceAccountRoles serviceAccountRoles={serviceAccount} {availableRoles} editable />
+	{#snippet footer()}
+		<Button size="small" onclick={() => (editRolesOpen = false)}>Done</Button>
+	{/snippet}
+</Modal>
 
 <style>
 	.detail-page {
@@ -141,5 +246,25 @@
 		align-items: center;
 		justify-content: space-between;
 		gap: var(--ax-space-8);
+	}
+
+	.edit-description {
+		display: flex;
+		flex-direction: column;
+		gap: var(--ax-space-8);
+	}
+
+	.edit-actions {
+		display: flex;
+		gap: var(--ax-space-8);
+	}
+
+	.action-menu-button {
+		all: unset;
+		display: contents;
+
+		:global(*) {
+			cursor: pointer;
+		}
 	}
 </style>

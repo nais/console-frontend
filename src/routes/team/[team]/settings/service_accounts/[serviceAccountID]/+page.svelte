@@ -28,7 +28,7 @@
 </script>
 
 <a href="/team/{teamSlug}/settings/service_accounts" class="back-link">
-	<ChevronLeftIcon />
+	<ChevronLeftIcon aria-hidden="true" />
 	Service Accounts
 </a>
 

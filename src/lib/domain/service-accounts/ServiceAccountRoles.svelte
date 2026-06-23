@@ -2,7 +2,6 @@
 	import { graphql, paginatedFragment, type ServiceAccountRolesFragment } from '$houdini';
 	import {
 		BodyLong,
-		Button,
 		Checkbox,
 		CheckboxGroup,
 		ErrorMessage,
@@ -17,10 +16,12 @@
 	interface Props {
 		availableRoles: Role[];
 		serviceAccountRoles: ServiceAccountRolesFragment;
-		canManage?: boolean;
+		editable?: boolean;
 	}
 
-	let { availableRoles, serviceAccountRoles, canManage = false }: Props = $props();
+	let { availableRoles, serviceAccountRoles, editable = false }: Props = $props();
+
+	const uid = $props.id();
 
 	const actualRoles = $derived(
 		paginatedFragment(
@@ -46,6 +47,7 @@
 			assignRoleToServiceAccount(input: $input) {
 				serviceAccount {
 					id
+					...ServiceAccountRolesFragment
 				}
 			}
 		}
@@ -56,12 +58,12 @@
 			revokeRoleFromServiceAccount(input: $input) {
 				serviceAccount {
 					id
+					...ServiceAccountRolesFragment
 				}
 			}
 		}
 	`);
 
-	let editable = $state(false);
 	let mutationError = $state<string | undefined>();
 
 	const list = $derived.by(() => {
@@ -83,7 +85,7 @@
 	const handleOnChange = async (
 		e: Event & { currentTarget: EventTarget & HTMLFieldSetElement }
 	) => {
-		if (!canManage || !editable) {
+		if (!editable) {
 			return;
 		}
 
@@ -107,45 +109,67 @@
 	};
 </script>
 
-<section aria-labelledby="roles-heading">
-	<Heading size="small" as="h3" id="roles-heading">Roles</Heading>
-	<BodyLong>
-		Service accounts have read access to everything a user has access to, except secrets. You can
-		grant additional roles below.
-	</BodyLong>
-	{#if mutationError}
-		<ErrorMessage>{mutationError}</ErrorMessage>
-	{/if}
-	<div class="section-header">
-		<Heading size="xsmall" as="h4">Assigned roles</Heading>
-		{#if canManage}
-			<Button size="small" variant="secondary" onclick={() => (editable = !editable)}>
-				{editable ? 'Done' : 'Edit roles'}
-			</Button>
+<section aria-labelledby="roles-heading-{uid}">
+	<Heading size="small" as="h3" id="roles-heading-{uid}">Assigned Roles</Heading>
+	{#if editable}
+		<BodyLong>
+			Service accounts have read access to everything a user has access to, except secrets. You can
+			grant additional roles below.
+		</BodyLong>
+		{#if mutationError}
+			<ErrorMessage>{mutationError}</ErrorMessage>
 		{/if}
-	</div>
-	<CheckboxGroup
-		value={list.filter((r) => r.hasRole).map((r) => r.name)}
-		legend="Assigned roles"
-		hideLegend
-		onchange={handleOnChange}
-	>
-		{#each list as role (role.name)}
-			<Checkbox value={role.name} description={role.description} disabled={!editable || !canManage}>
-				{role.name}
-			</Checkbox>
+		<CheckboxGroup
+			value={list.filter((r) => r.hasRole).map((r) => r.name)}
+			legend="Assigned roles"
+			hideLegend
+			onchange={handleOnChange}
+		>
+			{#each list as role (role.name)}
+				<Checkbox value={role.name} description={role.description}>
+					{role.name}
+				</Checkbox>
+			{:else}
+				<p>No available roles found.</p>
+			{/each}
+		</CheckboxGroup>
+	{:else}
+		{@const assignedRoles = list.filter((r) => r.hasRole)}
+		{#if assignedRoles.length > 0}
+			<dl class="role-list">
+				{#each assignedRoles as role (role.name)}
+					<div class="role-item">
+						<dt>{role.name}</dt>
+						<dd>{role.description}</dd>
+					</div>
+				{/each}
+			</dl>
 		{:else}
-			<p>No available roles found.</p>
-		{/each}
-	</CheckboxGroup>
+			<p>No roles assigned.</p>
+		{/if}
+	{/if}
 </section>
 
 <style>
-	.section-header {
+	section {
 		display: flex;
-		align-items: center;
-		justify-content: space-between;
+		flex-direction: column;
+		gap: var(--ax-space-12);
+	}
+
+	.role-list {
+		display: flex;
+		flex-direction: column;
 		gap: var(--ax-space-8);
-		margin-top: var(--ax-space-16);
+	}
+
+	.role-item dt {
+		font-weight: var(--ax-font-weight-bold);
+	}
+
+	.role-item dd {
+		margin: 0;
+		color: var(--ax-text-neutral);
+		font-size: var(--ax-font-size-small);
 	}
 </style>

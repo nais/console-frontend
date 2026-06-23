@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
+	import { isPossiblyInModal } from '$lib/ui/PageModal.svelte';
 	import {
 		Alert,
 		BodyLong,
@@ -35,7 +36,9 @@
 			size="small"
 		/>
 	</div>
-	<Button as="a" size="small" variant="secondary" href={backHref}>Back to service account</Button>
+	{#if !isPossiblyInModal()}
+		<Button as="a" size="small" variant="secondary" href={backHref}>Back to service account</Button>
+	{/if}
 {:else}
 	<BodyLong>
 		API tokens should only be used when you need to authenticate to the Nais API from outside of
