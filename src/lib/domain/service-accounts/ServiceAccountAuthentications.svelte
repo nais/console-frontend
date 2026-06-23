@@ -94,7 +94,7 @@
 	<GraphErrors errors={removeErrors} dismissable />
 
 	{#if totalMethods > 0}
-		<List title="{totalMethods} authentication method{totalMethods !== 1 ? 's' : ''}" level="h4">
+		<List>
 			{#each $data.workloadBindings.edges as { node: binding } (binding.id)}
 				<ListItem>
 					<IconLabel
