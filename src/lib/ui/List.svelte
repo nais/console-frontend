@@ -6,6 +6,7 @@
 		count,
 		headerless = false,
 		level = 'h2',
+		size = 'medium',
 		children,
 		menu,
 		search,
@@ -16,6 +17,7 @@
 		count?: number;
 		headerless?: boolean;
 		level?: 'h1' | 'h2' | 'h3' | 'h4';
+		size?: 'medium' | 'small';
 		children: Snippet;
 		menu?: Snippet;
 		search?: Snippet;
@@ -30,7 +32,9 @@
 			<div class="header-row">
 				<div class="header-left">
 					{#if title}
-						<svelte:element this={level} class="title">{title}</svelte:element>
+						<svelte:element this={level} class="title" class:small={size === 'small'}
+							>{title}</svelte:element
+						>
 					{/if}
 					{#if count !== undefined}
 						<span class="count-badge">{count}</span>
@@ -101,6 +105,13 @@
 		font-weight: 600;
 		margin: 0;
 		color: var(--ax-text-neutral);
+	}
+
+	.title.small {
+		font-size: var(--ax-font-size-heading-small);
+		line-height: var(--ax-font-line-height-heading-small);
+		letter-spacing: -0.001em;
+		font-weight: var(--ax-font-weight-bold);
 	}
 
 	.count-badge {
