@@ -233,7 +233,6 @@
 		display: flex;
 		flex-direction: column;
 		gap: var(--ax-space-32);
-		max-width: 900px;
 	}
 
 	section {
