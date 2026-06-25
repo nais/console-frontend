@@ -1,6 +1,6 @@
 ARG NODE_VERSION="24"
 FROM node:${NODE_VERSION}-alpine AS node-with-deps
-RUN corepack enable && corepack prepare pnpm@11.3.0 --activate
+RUN corepack enable && corepack prepare pnpm@11.8.0 --activate
 WORKDIR /usr/app
 
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml svelte.config.js .npmrc ./
@@ -15,7 +15,7 @@ RUN pnpm run build
 
 FROM node:${NODE_VERSION}-alpine
 RUN apk upgrade --no-cache
-RUN corepack enable && corepack prepare pnpm@11.3.0 --activate
+RUN corepack enable && corepack prepare pnpm@11.8.0 --activate
 WORKDIR /usr/app
 
 ENV NODE_ENV=production
