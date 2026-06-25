@@ -47,6 +47,27 @@
 	let refreshCookieInterval: ReturnType<typeof setInterval> | undefined;
 
 	onMount(() => {
+		if (data.trackingEnabled && data.trackingWebsiteId) {
+			window.__sporingRouteId = page.route.id ?? undefined;
+
+			window.beforeSend = (_type, payload) => {
+				const routeId = window.__sporingRouteId;
+				if (routeId) {
+					return { ...payload, url: routeId };
+				}
+				return null;
+			};
+			const script = document.createElement('script');
+			script.defer = true;
+			script.src = data.trackingDev
+				? 'https://cdn.nav.no/team-researchops/sporing/sporing-dev.js'
+				: 'https://cdn.nav.no/team-researchops/sporing/sporing.js';
+			script.setAttribute('data-website-id', data.trackingWebsiteId);
+			script.setAttribute('data-before-send', 'beforeSend');
+			script.setAttribute('data-tag', 'console');
+			document.head.appendChild(script);
+		}
+
 		refreshCookieInterval = setInterval(
 			async () => {
 				if (user?.__typename !== 'User') return;
@@ -72,6 +93,7 @@
 
 	afterNavigate(() => {
 		loading = false;
+		window.__sporingRouteId = page.route.id ?? undefined;
 	});
 
 	const title = $derived.by(() => {

@@ -21,3 +21,8 @@ resources:
     memory: 512Mi
 
 replicaCount: 2
+
+tracking:
+  enabled: false
+  websiteId: ""
+  dev: false

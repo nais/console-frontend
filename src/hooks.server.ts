@@ -20,6 +20,9 @@ export const handle: Handle = async ({ event, resolve }) => {
 
 	event.locals.tenantName = env.TENANT_NAME || '';
 	event.locals.githubOrganization = env.GITHUB_ORGANIZATION || '';
+	event.locals.trackingEnabled = env.TRACKING_ENABLED === 'true';
+	event.locals.trackingWebsiteId = env.TRACKING_WEBSITE_ID || '';
+	event.locals.trackingDev = env.TRACKING_DEV === 'true';
 
 	const response = await resolve(event, {
 		filterSerializedResponseHeaders: () => true

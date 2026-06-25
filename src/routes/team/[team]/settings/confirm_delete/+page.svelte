@@ -6,6 +6,7 @@
 		type ConfirmTeamDeletion$result,
 		type QueryResult
 	} from '$houdini';
+	import { trackEvent } from '$lib/tracking';
 	import GraphErrors from '$lib/ui/GraphErrors.svelte';
 	import Time from '$lib/ui/Time.svelte';
 	import { Alert, BodyLong, Button, Modal } from '@nais/ds-svelte-community';
@@ -77,6 +78,15 @@
 							key: key.key,
 							team: key.team.slug
 						});
+						if (deleteTeamResp.errors) {
+							deleteTeamLoading = false;
+							return;
+						}
+						if (!deleteTeamResp.data?.confirmTeamDeletion.deletionStarted) {
+							deleteTeamLoading = false;
+							return;
+						}
+						trackEvent('delete-team');
 						goto('/team/' + key.team.slug, { replaceState: true });
 					}}>Confirm</Button
 				>
