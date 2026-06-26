@@ -37,7 +37,7 @@
 		TrashIcon,
 		XMarkIcon
 	} from '@nais/ds-svelte-community/icons';
-	import { GraphQLError } from 'houdini/runtime';
+	import type { GraphQLError } from 'houdini/runtime';
 	import prettyBytes from 'pretty-bytes';
 	import { onDestroy } from 'svelte';
 	import type { PageProps } from './$types';
