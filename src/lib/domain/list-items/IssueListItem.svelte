@@ -144,35 +144,62 @@
 		)
 	);
 
-	const resourceName = $derived.by(() => {
-		const d = $data;
-		if ('application' in d && d.application) return d.application.name;
-		if ('job' in d && d.job) return d.job.name;
-		if ('openSearch' in d && d.openSearch) return d.openSearch.name;
-		if ('sqlInstance' in d && d.sqlInstance) return d.sqlInstance.name;
-		if ('valkey' in d && d.valkey) return d.valkey.name;
-		if ('unleash' in d && d.unleash) return d.unleash.name;
-		if ('workload' in d && d.workload) return d.workload.name;
-		return 'Unknown';
-	});
+	const issueTypeKeys = [
+		'DeprecatedIngressIssue',
+		'DeprecatedRegistryIssue',
+		'ExternalIngressCriticalVulnerabilityIssue',
+		'LastRunFailedIssue',
+		'FailedSynchronizationIssue',
+		'InvalidSpecIssue',
+		'MissingSbomIssue',
+		'NoRunningInstancesIssue',
+		'ApplicationRestartLoopIssue',
+		'OpenSearchIssue',
+		'SqlInstanceStateIssue',
+		'SqlInstanceVersionIssue',
+		'ValkeyIssue',
+		'VulnerableImageIssue'
+	] as const;
+
+	const activeTypeName = $derived(
+		issueTypeKeys.find((k) => $data[k] !== null && $data[k] !== undefined) ?? ''
+	);
+
+	const workload = $derived(
+		$data.DeprecatedRegistryIssue?.workload ??
+			$data.ExternalIngressCriticalVulnerabilityIssue?.workload ??
+			$data.FailedSynchronizationIssue?.workload ??
+			$data.InvalidSpecIssue?.workload ??
+			$data.MissingSbomIssue?.workload ??
+			$data.NoRunningInstancesIssue?.workload ??
+			$data.ApplicationRestartLoopIssue?.workload ??
+			$data.VulnerableImageIssue?.workload
+	);
+
+	const resourceName = $derived(
+		$data.DeprecatedIngressIssue?.application.name ??
+			$data.LastRunFailedIssue?.job.name ??
+			$data.OpenSearchIssue?.openSearch.name ??
+			($data.SqlInstanceStateIssue ?? $data.SqlInstanceVersionIssue)?.sqlInstance.name ??
+			$data.ValkeyIssue?.valkey.name ??
+			workload?.name ??
+			'Unknown'
+	);
 
 	const ResourceIcon = $derived.by(() => {
-		const d = $data;
-		if ('openSearch' in d && d.openSearch) return OpenSearchIcon;
-		if ('sqlInstance' in d && d.sqlInstance) return DatabaseIcon;
-		if ('valkey' in d && d.valkey) return ValkeyIcon;
-		if ('unleash' in d && d.unleash) return UnleashIcon;
-		if ('job' in d && d.job) return BriefcaseClockIcon;
-		if ('workload' in d && d.workload && d.workload.__typename === 'Job') return BriefcaseClockIcon;
+		if ($data.OpenSearchIssue) return OpenSearchIcon;
+		if ($data.SqlInstanceStateIssue || $data.SqlInstanceVersionIssue) return DatabaseIcon;
+		if ($data.ValkeyIssue) return ValkeyIcon;
+		if ($data.LastRunFailedIssue || workload?.__typename === 'NaisJob') return BriefcaseClockIcon;
 		return PackageIcon;
 	});
 
 	const issueTitle = $derived.by(() => {
-		const typeName = $data.__typename
+		const enumLike = activeTypeName
 			.replace(/Issue$/, '')
 			.replace(/([a-z])([A-Z])/g, '$1_$2')
 			.toUpperCase();
-		return issueTypeLabel(typeName);
+		return issueTypeLabel(enumLike);
 	});
 </script>
 
@@ -208,20 +235,22 @@
 
 	<div class="detail">
 		<p class="message">{$data.message}</p>
-		{#if $data.__typename === 'DeprecatedIngressIssue' && 'ingresses' in $data}
+		{#if $data.DeprecatedIngressIssue}
 			<div class="extra">
 				<strong>
-					{$data.ingresses.length === 1 ? 'Deprecated ingress:' : 'Deprecated ingresses:'}
+					{$data.DeprecatedIngressIssue.ingresses.length === 1
+						? 'Deprecated ingress:'
+						: 'Deprecated ingresses:'}
 				</strong>
-				{#each $data.ingresses as ingress (ingress)}
+				{#each $data.DeprecatedIngressIssue.ingresses as ingress (ingress)}
 					<span class="ingress">{ingress}</span>
 				{/each}
 			</div>
 		{/if}
-		{#if $data.__typename === 'ExternalIngressCriticalVulnerabilityIssue' && 'cvssScore' in $data}
+		{#if $data.ExternalIngressCriticalVulnerabilityIssue}
 			<div class="extra">
 				<strong>CVSS Score:</strong>
-				{$data.cvssScore}
+				{$data.ExternalIngressCriticalVulnerabilityIssue.cvssScore}
 			</div>
 		{/if}
 	</div>

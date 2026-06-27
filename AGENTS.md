@@ -237,6 +237,70 @@ Additionally, the **masked `$result` type** only includes fields explicitly list
 
 5. **Don't use manual type annotations to work around generated types** — import the `$result` type from `$houdini` instead of writing inline type annotations that duplicate and diverge from the generated types.
 
+### Fragment Types on Interfaces (Houdini 2.0)
+
+When a `fragment()` is defined on an **interface** type, Houdini generates a **flat object** with nullable type-keyed properties — NOT a `__typename`-discriminated union. This is structural and unrelated to the `defaultFragmentMasking` config.
+
+```typescript
+// Generated IssueFragment$data — flat structure, NOT a union
+{
+  teamEnvironment: { ... };     // shared interface fields (always present)
+  message: string;
+  severity: string;
+  DeprecatedIngressIssue: { application: { name: string }; ingresses: string[] } | null;
+  OpenSearchIssue: { openSearch: { name: string } } | null;
+  // ... one nullable property per concrete type
+}
+```
+
+#### Rules for interface fragments:
+
+1. **No `__typename`** — use the type-keyed nullable properties as discriminators:
+
+   ```typescript
+   // Wrong — __typename doesn't exist on the flat fragment type
+   if ($data.__typename === 'DeprecatedIngressIssue') { ... }
+
+   // Correct — check the nullable type-keyed property
+   if ($data.DeprecatedIngressIssue) { ... }
+   ```
+
+2. **Access type-specific fields via the type key**, not directly:
+
+   ```typescript
+   // Wrong — 'application' is not a top-level property
+   if ('application' in d) return d.application.name;
+
+   // Correct
+   if ($data.DeprecatedIngressIssue) return $data.DeprecatedIngressIssue.application.name;
+   ```
+
+3. **Extract shared patterns** into derived values to reduce verbosity. Group types that share the same resource shape:
+
+   ```typescript
+   const workload = $derived(
+   	$data.DeprecatedRegistryIssue?.workload ??
+   		$data.FailedSynchronizationIssue?.workload ??
+   		$data.VulnerableImageIssue?.workload
+   );
+
+   const resourceName = $derived(
+   	$data.DeprecatedIngressIssue?.application.name ??
+   		$data.OpenSearchIssue?.openSearch.name ??
+   		workload?.name ??
+   		'Unknown'
+   );
+   ```
+
+4. **Derive `__typename` from the non-null key** when needed (e.g., for label lookups):
+
+   ```typescript
+   const issueTypeKeys = ['DeprecatedIngressIssue', 'OpenSearchIssue', ...] as const;
+   const activeTypeName = $derived(
+     issueTypeKeys.find((k) => $data[k] !== null && $data[k] !== undefined) ?? ''
+   );
+   ```
+
 ### Example (.gql file for routes):
 
 ```graphql
