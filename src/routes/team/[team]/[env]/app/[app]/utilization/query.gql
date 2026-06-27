@@ -29,12 +29,10 @@ query ResourceUtilizationForApp(
 				}
 				activityLog(first: 100, filter: { activityTypes: [APPLICATION_SCALED, DEPLOYMENT] }) {
 					nodes {
-						id
-						createdAt
-						__typename
 						... on ApplicationScaledActivityLogEntry {
 							id
-							appScaled: data {
+							createdAt
+							data {
 								newSize
 								direction
 							}

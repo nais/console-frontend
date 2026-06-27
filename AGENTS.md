@@ -176,6 +176,67 @@ This project uses **Houdini** for GraphQL, not Apollo or other clients.
 - If you need an overview of all items (e.g., all applications for a team), the backend in [nais/api](https://github.com/nais/api) should expose a dedicated field or resolver that returns the full list without requiring pagination hacks.
 - Do not work around missing backend capabilities by over-fetching on the frontend. Instead, flag it as a missing API feature that needs a backend change.
 
+### Non-Exhaustive Types (Houdini 2.0)
+
+Houdini 2.0 adds a `{ __typename: "non-exhaustive; don't match this" }` catch-all variant to every interface/union result type. This variant has **no fields** — accessing `id`, `createdAt`, etc. on it causes type errors.
+
+Additionally, the **masked `$result` type** only includes fields explicitly listed in each `... on Type { }` inline fragment. Fields selected at the interface level (outside inline fragments) are NOT propagated to each variant's type.
+
+#### Rules for interface/union queries:
+
+1. **Include shared fields in each inline fragment** — don't rely on interface-level field selection:
+
+   ```graphql
+   # Wrong — createdAt won't appear on ApplicationScaledActivityLogEntry in TypeScript
+   activityLog {
+     nodes {
+       id
+       createdAt
+       ... on ApplicationScaledActivityLogEntry {
+         id
+         data { newSize direction }
+       }
+     }
+   }
+
+   # Correct — include createdAt in every inline fragment
+   activityLog {
+     nodes {
+       ... on ApplicationScaledActivityLogEntry {
+         id
+         createdAt
+         data { newSize direction }
+       }
+       ... on DeploymentActivityLogEntry {
+         id
+         createdAt
+       }
+     }
+   }
+   ```
+
+2. **Use `exhaustive()` from `$lib/utils/houdini`** to filter the non-exhaustive catch-all from arrays:
+
+   ```typescript
+   import { exhaustive, type Exhaustive } from '$lib/utils/houdini';
+
+   // Filter out non-exhaustive variants before iterating
+   const realNodes = exhaustive(activityLog.nodes);
+
+   // Use the Exhaustive<T> type for type aliases
+   type LogNode = Exhaustive<(typeof activityLog.nodes)[number]>;
+   ```
+
+3. **For `{#each}` keys on interface arrays** — use index `(i)` instead of `(item.id)` when `id` isn't guaranteed on the non-exhaustive variant:
+
+   ```svelte
+   {#each items as item, i (i)}
+   ```
+
+4. **Avoid aliases in inline fragments on interfaces** — Houdini 2.0 has a bug where `alias: field` generates the original field name in TypeScript types instead of the alias. Use the field name directly.
+
+5. **Don't use manual type annotations to work around generated types** — import the `$result` type from `$houdini` instead of writing inline type annotations that duplicate and diverge from the generated types.
+
 ### Example (.gql file for routes):
 
 ```graphql

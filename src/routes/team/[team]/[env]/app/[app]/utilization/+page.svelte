@@ -11,6 +11,7 @@
 		formatKubernetesCPU,
 		formatKubernetesMemory
 	} from '$lib/utils/formatters';
+	import { exhaustive, type Exhaustive } from '$lib/utils/houdini';
 	import { round, yearlyOverageCost } from '$lib/utils/resources';
 	import { changeParams } from '$lib/utils/searchparams';
 	import { visualizationColors } from '$lib/visualizationColors';
@@ -41,7 +42,9 @@
 
 	type groupedLogs = {
 		timestamp: number;
-		logs: ResourceUtilizationForApp$result['team']['environment']['application']['activityLog']['nodes'];
+		logs: Exhaustive<
+			ResourceUtilizationForApp$result['team']['environment']['application']['activityLog']['nodes'][number]
+		>[];
 	};
 
 	let chartWidth: number | undefined = $state(undefined);
@@ -93,7 +96,7 @@
 			intervalSeconds = Math.ceil(totalSeconds / (chartWidth / annotationWidth));
 		}
 
-		return activityLog.nodes.reduceRight((acc, log) => {
+		return exhaustive(activityLog.nodes).reduceRight((acc, log) => {
 			let logTime = Math.floor(log.createdAt.getTime() / 1000);
 			if (acc.length > 0 && logTime - acc.at(-1)!.timestamp < intervalSeconds) {
 				acc.at(-1)!.logs.push(log);
@@ -503,10 +506,8 @@
 											{#if l.__typename == 'DeploymentActivityLogEntry'}
 												New release
 											{:else if l.__typename == 'ApplicationScaledActivityLogEntry'}
-												Scaled {l.appScaled.direction} to
-												{l.appScaled.newSize}
-											{:else}
-												{l.__typename}
+												Scaled {l.data.direction} to
+												{l.data.newSize}
 											{/if}
 										</div>
 									{/each}
@@ -664,10 +665,8 @@
 											{#if l.__typename == 'DeploymentActivityLogEntry'}
 												New release
 											{:else if l.__typename == 'ApplicationScaledActivityLogEntry'}
-												Scaled {l.appScaled.direction} to
-												{l.appScaled.newSize}
-											{:else}
-												{l.__typename}
+												Scaled {l.data.direction} to
+												{l.data.newSize}
 											{/if}
 										</div>
 									{/each}
