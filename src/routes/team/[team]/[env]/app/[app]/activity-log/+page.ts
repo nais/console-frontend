@@ -1,4 +1,5 @@
-import { load_ApplicationActivityLog, type ActivityLogFilter } from '$houdini';
+import { load_ApplicationActivityLog } from '$houdini';
+import type { ActivityLogFilter } from '$houdini/graphql/inputs';
 import { addPageMeta } from '$lib/utils/pageMeta';
 
 const rows = 20;

@@ -2,9 +2,9 @@ import {
 	IssueOrderField,
 	load_TeamIssues,
 	load_TeamIssuesMetadata,
-	OrderDirection,
-	type IssueFilter
+	OrderDirection
 } from '$houdini';
+import type { IssueFilter } from '$houdini/graphql/inputs';
 import { urlToOrderDirection, urlToOrderField } from '$lib/ui/OrderByMenu.svelte';
 import { addPageMeta } from '$lib/utils/pageMeta';
 

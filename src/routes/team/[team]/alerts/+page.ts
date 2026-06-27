@@ -6,7 +6,7 @@ import {
 	OrderDirection,
 	type AlertState$options
 } from '$houdini';
-import { TeamAlertsFilter } from '$houdini/graphql/inputs';
+import type { TeamAlertsFilter } from '$houdini/graphql/inputs';
 import { urlToOrderDirection, urlToOrderField } from '$lib/ui/OrderByMenu.svelte';
 import { addPageMeta } from '$lib/utils/pageMeta';
 
