@@ -34,7 +34,7 @@ function sseSockets() {
 					operationName: payload.operationName
 				},
 				{
-					next: handlers.next,
+					next: handlers.next as (value: unknown) => void,
 					error: handlers.error,
 					complete: () => {
 						updatesConnectionClosed.set(new Date());
