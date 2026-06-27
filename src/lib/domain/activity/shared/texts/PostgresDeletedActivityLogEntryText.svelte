@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { ActivityLogEntryFragment$data } from '$houdini';
+	import type { ActivityLogEntryFragment$data } from '$houdini';
 	import Meta from '../../Meta.svelte';
 	import type { TimelineModes } from './types';
 
