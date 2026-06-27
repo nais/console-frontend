@@ -35,6 +35,8 @@ query Alerts(
 					duration
 					... on PrometheusAlert {
 						name
+						duration
+						query
 						alarms {
 							action
 							consequence
@@ -44,6 +46,11 @@ query Alerts(
 							value
 						}
 						ruleGroup
+						teamEnvironment {
+							environment {
+								name
+							}
+						}
 					}
 					team {
 						slug
