@@ -2,6 +2,7 @@
 	import GraphErrors from '$lib/ui/GraphErrors.svelte';
 	import Pagination from '$lib/ui/Pagination.svelte';
 	import Time from '$lib/ui/Time.svelte';
+	import { exhaustive } from '$lib/utils/houdini';
 	import { Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte-community';
 	import type { PageProps } from './$types';
 
@@ -22,7 +23,7 @@
 				</Tr>
 			</Thead>
 			<Tbody>
-				{#each $UserSyncLogs.data.userSyncLog.edges || [] as { node: entry } (entry.id)}
+				{#each exhaustive(($UserSyncLogs.data.userSyncLog.edges || []).map((e) => e.node)) as entry, i (i)}
 					<Tr>
 						<Td>
 							{#if entry.__typename === 'RoleAssignedUserSyncLogEntry'}

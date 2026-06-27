@@ -2,20 +2,29 @@ query UserSyncLogs {
 	userSyncLog(first: 20) @paginate(mode: SinglePage) {
 		edges {
 			node {
-				id
-				__typename
-				createdAt
-				message
-				userName
-				userEmail
 				... on UserUpdatedUserSyncLogEntry {
+					id
+					createdAt
+					message
+					userName
+					userEmail
 					oldUserName
 					oldUserEmail
 				}
 				... on RoleAssignedUserSyncLogEntry {
+					id
+					createdAt
+					message
+					userName
+					userEmail
 					roleName
 				}
 				... on RoleRevokedUserSyncLogEntry {
+					id
+					createdAt
+					message
+					userName
+					userEmail
 					roleName
 				}
 			}
