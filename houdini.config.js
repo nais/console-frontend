@@ -6,6 +6,7 @@ const config = {
 	runtimeDir: '.houdini',
 	defaultPaginateMode: 'SinglePage',
 	schemaPath: './schema.graphql',
+	url: '/graphql',
 	watchSchema: {
 		interval: 0,
 		url: 'env:VITE_SCHEMA_ENDPOINT',
