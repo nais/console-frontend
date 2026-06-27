@@ -128,6 +128,38 @@
 
 	type IssueData = typeof $data;
 
+	const issueTypeKeys = [
+		'DeprecatedIngressIssue',
+		'DeprecatedRegistryIssue',
+		'ExternalIngressCriticalVulnerabilityIssue',
+		'LastRunFailedIssue',
+		'FailedSynchronizationIssue',
+		'InvalidSpecIssue',
+		'MissingSbomIssue',
+		'NoRunningInstancesIssue',
+		'ApplicationRestartLoopIssue',
+		'OpenSearchIssue',
+		'SqlInstanceStateIssue',
+		'SqlInstanceVersionIssue',
+		'ValkeyIssue',
+		'VulnerableImageIssue'
+	] as const;
+
+	const activeTypeName = $derived(
+		issueTypeKeys.find((k) => $data[k] !== null && $data[k] !== undefined) ?? ''
+	);
+
+	const workload = $derived(
+		$data.DeprecatedRegistryIssue?.workload ??
+			$data.ExternalIngressCriticalVulnerabilityIssue?.workload ??
+			$data.FailedSynchronizationIssue?.workload ??
+			$data.InvalidSpecIssue?.workload ??
+			$data.MissingSbomIssue?.workload ??
+			$data.NoRunningInstancesIssue?.workload ??
+			$data.ApplicationRestartLoopIssue?.workload ??
+			$data.VulnerableImageIssue?.workload
+	);
+
 	function getResourceInfo(d: IssueData): {
 		name: string;
 		type: 'app' | 'job' | 'database' | 'other';
@@ -136,34 +168,33 @@
 		const env = d.teamEnvironment.environment.name;
 		const team = d.teamEnvironment.team.slug;
 
-		if ('workload' in d && d.workload) {
-			const w = d.workload as { __typename: string; name: string };
-			const type = w.__typename === 'Application' ? 'app' : 'job';
+		if (workload) {
+			const type = workload.__typename === 'Application' ? 'app' : 'job';
 			return {
-				name: w.name,
+				name: workload.name,
 				type: type === 'app' ? 'app' : 'job',
-				href: `/team/${team}/${env}/${type}/${w.name}`
+				href: `/team/${team}/${env}/${type}/${workload.name}`
 			};
 		}
-		if ('application' in d && d.application) {
-			const a = d.application as { name: string };
-			return { name: a.name, type: 'app', href: `/team/${team}/${env}/app/${a.name}` };
+		if (d.DeprecatedIngressIssue) {
+			const name = d.DeprecatedIngressIssue.application.name;
+			return { name, type: 'app', href: `/team/${team}/${env}/app/${name}` };
 		}
-		if ('job' in d && d.job) {
-			const j = d.job as { name: string };
-			return { name: j.name, type: 'job', href: `/team/${team}/${env}/job/${j.name}` };
+		if (d.LastRunFailedIssue) {
+			const name = d.LastRunFailedIssue.job.name;
+			return { name, type: 'job', href: `/team/${team}/${env}/job/${name}` };
 		}
-		if ('sqlInstance' in d && d.sqlInstance) {
-			const s = d.sqlInstance as { name: string };
-			return { name: s.name, type: 'database', href: `/team/${team}/${env}/cloudsql/${s.name}` };
+		if (d.SqlInstanceStateIssue || d.SqlInstanceVersionIssue) {
+			const name = (d.SqlInstanceStateIssue ?? d.SqlInstanceVersionIssue)!.sqlInstance.name;
+			return { name, type: 'database', href: `/team/${team}/${env}/cloudsql/${name}` };
 		}
-		if ('openSearch' in d && d.openSearch) {
-			const o = d.openSearch as { name: string };
-			return { name: o.name, type: 'other', href: `/team/${team}/${env}/opensearch/${o.name}` };
+		if (d.OpenSearchIssue) {
+			const name = d.OpenSearchIssue.openSearch.name;
+			return { name, type: 'other', href: `/team/${team}/${env}/opensearch/${name}` };
 		}
-		if ('valkey' in d && d.valkey) {
-			const v = d.valkey as { name: string };
-			return { name: v.name, type: 'other', href: `/team/${team}/${env}/valkey/${v.name}` };
+		if (d.ValkeyIssue) {
+			const name = d.ValkeyIssue.valkey.name;
+			return { name, type: 'other', href: `/team/${team}/${env}/valkey/${name}` };
 		}
 		if ('unleash' in d && d.unleash) {
 			const u = d.unleash as { name: string };
@@ -195,7 +226,7 @@
 	}
 
 	let resource = $derived(getResourceInfo($data));
-	let title = $derived(getIssueTitle($data.__typename));
+	let title = $derived(getIssueTitle(activeTypeName));
 </script>
 
 <a class="issue-row surface-interactive" href={resource.href}>
