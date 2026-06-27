@@ -146,7 +146,7 @@
 	] as const;
 
 	const activeTypeName = $derived(
-		issueTypeKeys.find((k) => $data[k] !== null && $data[k] !== undefined) ?? ''
+		issueTypeKeys.find((k) => $data[k] !== null && $data[k] !== undefined) ?? 'Unknown'
 	);
 
 	const workload = $derived(

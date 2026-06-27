@@ -3,6 +3,7 @@ query UserSyncLogs {
 		edges {
 			node {
 				... on UserUpdatedUserSyncLogEntry {
+					__typename
 					id
 					createdAt
 					message
@@ -12,6 +13,7 @@ query UserSyncLogs {
 					oldUserEmail
 				}
 				... on RoleAssignedUserSyncLogEntry {
+					__typename
 					id
 					createdAt
 					message
@@ -20,6 +22,7 @@ query UserSyncLogs {
 					roleName
 				}
 				... on RoleRevokedUserSyncLogEntry {
+					__typename
 					id
 					createdAt
 					message
