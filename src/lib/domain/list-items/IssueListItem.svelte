@@ -64,12 +64,6 @@
 							name
 						}
 					}
-					... on FailedSynchronizationIssue {
-						workload {
-							__typename
-							name
-						}
-					}
 					... on InvalidSpecIssue {
 						workload {
 							__typename
