@@ -1036,6 +1036,22 @@ packages:
     peerDependencies:
       '@sveltejs/kit': ^2.4.0
 
+  '@sveltejs/kit@2.65.0':
+    resolution: {integrity: sha512-nUWJ4dSKNo8mIOh+HTL+XyRj8FX9Dyb1ayBxj4q9+WrTJfn4jfTt21p3WUFTnnmdnt9xAXpBKLQ+H9y41x0X7Q==}
+    engines: {node: '>=18.13'}
+    hasBin: true
+    peerDependencies:
+      '@opentelemetry/api': ^1.0.0
+      '@sveltejs/vite-plugin-svelte': ^3.0.0 || ^4.0.0-next.1 || ^5.0.0 || ^6.0.0-next.0 || ^7.0.0
+      svelte: ^4.0.0 || ^5.0.0-next.0
+      typescript: ^5.3.3 || ^6.0.0
+      vite: ^5.0.3 || ^6.0.0 || ^7.0.0-beta.0 || ^8.0.0
+    peerDependenciesMeta:
+      '@opentelemetry/api':
+        optional: true
+      typescript:
+        optional: true
+
   '@sveltejs/kit@2.65.2':
     resolution: {integrity: sha512-ZIkyEmxT1gcq50Opn1ZIIx6vc/yt2zNN0rF5hS6op95gqHtNw8QMKDhjJI+RyjMcbvECRw+FzEeAoBe/MOz9AA==}
     engines: {node: '>=18.13'}
@@ -1972,50 +1988,50 @@ packages:
     resolution: {integrity: sha512-Xwwo44whKBVCYoliBQwaPvtd/2tYFkRQtXDWj1nackaV2JPXx3L0+Jvd8/qCJ2p+ML0/XVkJ2q+Mr+UVdpJK5w==}
     engines: {node: '>=12.0.0'}
 
-  houdini-core-darwin-arm64@2.0.0:
-    resolution: {integrity: sha512-CFA/hMJ7b+G/+M/CbBWy9yrfp1fvM1Gwg96w1Ue+607+dhDkEJVLcIwQWbWztluP3F9QalyG5GOmPcHRvUjQug==}
+  houdini-core-darwin-arm64@2.0.1:
+    resolution: {integrity: sha512-3i4cRysIh1xUi7LcaA3JmaGEYZOtnK4AnJnxU8GxiZlbk5GdpC/Mg3scmLtgYS38XdmDcI3Ro8hlAF0iyWPzIw==}
     cpu: [arm64]
     os: [darwin]
     hasBin: true
 
-  houdini-core-darwin-x64@2.0.0:
-    resolution: {integrity: sha512-pNoxp2U5Wk0smrfQXbiQn/7ZvGdIpMKjIFQfCt8VzPwticL02sfvZNaSfkmHZl3XoNsPYoF263Dl6/o43OSOIA==}
+  houdini-core-darwin-x64@2.0.1:
+    resolution: {integrity: sha512-xezgE/IwoUWLwXZxGWxrDGnKkVp8lhm3P3IPuNKGCkn5uawKpNv0kJRwckgCT9HHAkIGJPnIacSe+gV91J2Oog==}
     cpu: [x64]
     os: [darwin]
     hasBin: true
 
-  houdini-core-linux-arm64@2.0.0:
-    resolution: {integrity: sha512-qy1tYUrd4tjZDwdgXAmk72tpTY+zcp5AQtegZ5qp5rLQNxw2ZpdYEbT+SKsxmk1WL+o0O7l9TIMuecc+0uq0+A==}
+  houdini-core-linux-arm64@2.0.1:
+    resolution: {integrity: sha512-81bjLQHxaN2B9vnoO5POl98FzXLaV7aQBl8r/xhQ8VAi7sF7cHuQ5vT99GURzFq4YvzUdEQYX6yhaMWQLT2duw==}
     cpu: [arm64]
     os: [linux]
     hasBin: true
 
-  houdini-core-linux-x64@2.0.0:
-    resolution: {integrity: sha512-2nwKVHUi6F8UFIcfTozVLLSKPGJyFSyzulNE+r+pa4IuHzaY9LGZQx4bwuooGzMM/u44IS+/Det+mZ7OfmApNQ==}
+  houdini-core-linux-x64@2.0.1:
+    resolution: {integrity: sha512-5tEwfW6AhCXnYMLCetutsFkhhrokhekJpdQeIk6yCt/BtGxkusgJjY+IiZ7kkVJbuI+fbT2w8r1f1edh796TfQ==}
     cpu: [x64]
     os: [linux]
     hasBin: true
 
-  houdini-core-wasm@2.0.0:
-    resolution: {integrity: sha512-TiC01xYR31QcFm8eaLz54wZmSxvKTTUJKgiQd/tN832xm09hDVDzBtjylVENvwLh0OkkJpvZy+GEy7lKPaB2OQ==}
+  houdini-core-wasm@2.0.1:
+    resolution: {integrity: sha512-xSU381qlSeYHwNYcsHvFtfvm9eHY7oGAimnkyKIfRsJV3jo+ZBsS1d/6QX5krZcVmUgC7mRPAoWt2es+UkSW4Q==}
     cpu: [wasm32]
     os: [wasi]
     hasBin: true
 
-  houdini-core-win32-arm64@2.0.0:
-    resolution: {integrity: sha512-Uj2I8qqKnXkmwHYXxQmzM1YaW0xikPzvS/lOlU3ZMvqKA2FDYABXSPB2bAyGNKtYJAl3GhjrvhYpScotJozjuA==}
+  houdini-core-win32-arm64@2.0.1:
+    resolution: {integrity: sha512-c+25w44ogubvp+hOI0wB/RPyFKKo83L+iLiAPUgAVHs4vNHVQ96n07VM7W9yoZMFy013lNX3ff3L/kjNzzDyFQ==}
     cpu: [arm64]
     os: [win32]
     hasBin: true
 
-  houdini-core-win32-x64@2.0.0:
-    resolution: {integrity: sha512-E9SzsIEN7jvOF4l3lgAgaD2Je4T5cV6oH+U4ik9PhUo7P0L5CiPirn+XR8Vr+HTbfUUnSToPF866dLKp9Jh7XA==}
+  houdini-core-win32-x64@2.0.1:
+    resolution: {integrity: sha512-MMmgLkl5uuP7cXuM3VUWA6oULLwxlQ3Jy8LYnhPOh7ba7U6ml+46JxqAH+sYhkn5MEWUmdHtdUIWqjbuIlzwDw==}
     cpu: [x64]
     os: [win32]
     hasBin: true
 
-  houdini-core@2.0.0:
-    resolution: {integrity: sha512-zFM84qhbCGp+JNBQ51JElGjWHB/hxqXTJeVVSCW60EXMCxNZOIXE/E9pQaeavjKIR5DnBZVf21rRDBNeQrhbiA==}
+  houdini-core@2.0.1:
+    resolution: {integrity: sha512-CtkvY26UAu8CeXkfDaCv0DhPkweDgEk9fYFF0Z251ChMXD7YV1ELTh/Zo8vezv3drtFdXtJ7vcRqB0tFYv0NfA==}
     hasBin: true
 
   houdini-svelte-darwin-arm64@3.0.0-next.38:
@@ -3805,6 +3821,26 @@ snapshots:
       '@sveltejs/kit': 2.65.2(@sveltejs/vite-plugin-svelte@7.1.2(svelte@5.56.3(@typescript-eslint/types@8.61.1))(vite@8.0.16(@types/node@25.9.3)(esbuild@0.28.1)(jiti@2.7.0)(yaml@2.9.0)))(svelte@5.56.3(@typescript-eslint/types@8.61.1))(typescript@6.0.3)(vite@8.0.16(@types/node@25.9.3)(esbuild@0.28.1)(jiti@2.7.0)(yaml@2.9.0))
       rollup: 4.61.1
 
+  '@sveltejs/kit@2.65.0(@sveltejs/vite-plugin-svelte@7.1.2(svelte@5.56.3(@typescript-eslint/types@8.61.1))(vite@8.0.16(@types/node@25.9.3)(esbuild@0.28.1)(jiti@2.7.0)(yaml@2.9.0)))(svelte@5.56.3(@typescript-eslint/types@8.61.1))(typescript@6.0.3)(vite@8.0.16(@types/node@25.9.3)(esbuild@0.28.1)(jiti@2.7.0)(yaml@2.9.0))':
+    dependencies:
+      '@standard-schema/spec': 1.1.0
+      '@sveltejs/acorn-typescript': 1.0.10(acorn@8.17.0)
+      '@sveltejs/vite-plugin-svelte': 7.1.2(svelte@5.56.3(@typescript-eslint/types@8.61.1))(vite@8.0.16(@types/node@25.9.3)(esbuild@0.28.1)(jiti@2.7.0)(yaml@2.9.0))
+      '@types/cookie': 0.6.0
+      acorn: 8.17.0
+      cookie: 0.7.2
+      devalue: 5.8.1
+      esm-env: 1.2.2
+      kleur: 4.1.5
+      magic-string: 0.30.21
+      mrmime: 2.0.1
+      set-cookie-parser: 3.1.0
+      sirv: 3.0.2
+      svelte: 5.56.3(@typescript-eslint/types@8.61.1)
+      vite: 8.0.16(@types/node@25.9.3)(esbuild@0.28.1)(jiti@2.7.0)(yaml@2.9.0)
+    optionalDependencies:
+      typescript: 6.0.3
+
   '@sveltejs/kit@2.65.2(@sveltejs/vite-plugin-svelte@7.1.2(svelte@5.56.3(@typescript-eslint/types@8.61.1))(vite@8.0.16(@types/node@25.9.3)(esbuild@0.28.1)(jiti@2.7.0)(yaml@2.9.0)))(svelte@5.56.3(@typescript-eslint/types@8.61.1))(typescript@6.0.3)(vite@8.0.16(@types/node@25.9.3)(esbuild@0.28.1)(jiti@2.7.0)(yaml@2.9.0))':
     dependencies:
       '@standard-schema/spec': 1.1.0
@@ -4769,40 +4805,40 @@ snapshots:
 
   highlight.js@11.11.1: {}
 
-  houdini-core-darwin-arm64@2.0.0:
+  houdini-core-darwin-arm64@2.0.1:
     optional: true
 
-  houdini-core-darwin-x64@2.0.0:
+  houdini-core-darwin-x64@2.0.1:
     optional: true
 
-  houdini-core-linux-arm64@2.0.0:
+  houdini-core-linux-arm64@2.0.1:
     optional: true
 
-  houdini-core-linux-x64@2.0.0:
+  houdini-core-linux-x64@2.0.1:
     optional: true
 
-  houdini-core-wasm@2.0.0:
+  houdini-core-wasm@2.0.1:
     optional: true
 
-  houdini-core-win32-arm64@2.0.0:
+  houdini-core-win32-arm64@2.0.1:
     optional: true
 
-  houdini-core-win32-x64@2.0.0:
+  houdini-core-win32-x64@2.0.1:
     optional: true
 
-  houdini-core@2.0.0(graphql@16.14.2):
+  houdini-core@2.0.1(graphql@16.14.2):
     dependencies:
       '@whatwg-node/server': 0.11.0
       graphql-yoga: 5.21.2(graphql@16.14.2)
       minimatch: 10.2.5
     optionalDependencies:
-      houdini-core-darwin-arm64: 2.0.0
-      houdini-core-darwin-x64: 2.0.0
-      houdini-core-linux-arm64: 2.0.0
-      houdini-core-linux-x64: 2.0.0
-      houdini-core-wasm: 2.0.0
-      houdini-core-win32-arm64: 2.0.0
-      houdini-core-win32-x64: 2.0.0
+      houdini-core-darwin-arm64: 2.0.1
+      houdini-core-darwin-x64: 2.0.1
+      houdini-core-linux-arm64: 2.0.1
+      houdini-core-linux-x64: 2.0.1
+      houdini-core-wasm: 2.0.1
+      houdini-core-win32-arm64: 2.0.1
+      houdini-core-win32-x64: 2.0.1
     transitivePeerDependencies:
       - graphql
 
@@ -4829,7 +4865,7 @@ snapshots:
 
   houdini-svelte@3.0.0-next.38(@sveltejs/vite-plugin-svelte@7.1.2(svelte@5.56.3(@typescript-eslint/types@8.61.1))(vite@8.0.16(@types/node@25.9.3)(esbuild@0.28.1)(jiti@2.7.0)(yaml@2.9.0)))(@types/node@25.9.3)(@typescript-eslint/types@8.61.1)(esbuild@0.28.1)(jiti@2.7.0)(typescript@6.0.3)(yaml@2.9.0):
     dependencies:
-      '@sveltejs/kit': 2.65.2(@sveltejs/vite-plugin-svelte@7.1.2(svelte@5.56.3(@typescript-eslint/types@8.61.1))(vite@8.0.16(@types/node@25.9.3)(esbuild@0.28.1)(jiti@2.7.0)(yaml@2.9.0)))(svelte@5.56.3(@typescript-eslint/types@8.61.1))(typescript@6.0.3)(vite@8.0.16(@types/node@25.9.3)(esbuild@0.28.1)(jiti@2.7.0)(yaml@2.9.0))
+      '@sveltejs/kit': 2.65.0(@sveltejs/vite-plugin-svelte@7.1.2(svelte@5.56.3(@typescript-eslint/types@8.61.1))(vite@8.0.16(@types/node@25.9.3)(esbuild@0.28.1)(jiti@2.7.0)(yaml@2.9.0)))(svelte@5.56.3(@typescript-eslint/types@8.61.1))(typescript@6.0.3)(vite@8.0.16(@types/node@25.9.3)(esbuild@0.28.1)(jiti@2.7.0)(yaml@2.9.0))
       estree-walker: 3.0.3
       rollup: 4.61.1
       svelte: 5.56.3(@typescript-eslint/types@8.61.1)
@@ -4878,7 +4914,7 @@ snapshots:
       glob: 13.0.6
       graphql: 16.14.2
       graphql-yoga: 5.21.2(graphql@16.14.2)
-      houdini-core: 2.0.0(graphql@16.14.2)
+      houdini-core: 2.0.1(graphql@16.14.2)
       kleur: 4.1.5
       memfs: 4.57.7(tslib@2.8.1)
       minimatch: 10.2.5

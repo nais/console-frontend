@@ -9,6 +9,9 @@
 		"skipLibCheck": true,
 		"sourceMap": true,
 		"strict": true,
+		// TODO: Re-enable verbatimModuleSyntax once Houdini fixes codegen (missing `import type` in .houdini/graphql/inputs.ts)
+		"verbatimModuleSyntax": false,
+		"isolatedModules": true,
 		"rootDirs": [".", "./.svelte-kit/types", "./.houdini/types"],
 		"types": ["vitest/globals"]
 	}
