@@ -14,6 +14,7 @@
 			issue,
 			graphql(`
 				fragment CriticalIssueRow on Issue {
+					__typename
 					teamEnvironment {
 						environment {
 							name
@@ -128,36 +129,23 @@
 
 	type IssueData = typeof $data;
 
-	const issueTypeKeys = [
-		'DeprecatedIngressIssue',
-		'DeprecatedRegistryIssue',
-		'ExternalIngressCriticalVulnerabilityIssue',
-		'LastRunFailedIssue',
-		'FailedSynchronizationIssue',
-		'InvalidSpecIssue',
-		'MissingSbomIssue',
-		'NoRunningInstancesIssue',
-		'ApplicationRestartLoopIssue',
-		'OpenSearchIssue',
-		'SqlInstanceStateIssue',
-		'SqlInstanceVersionIssue',
-		'ValkeyIssue',
-		'VulnerableImageIssue'
-	] as const;
+	const activeTypeName = $derived(($data?.__typename as string) ?? 'Unknown');
 
-	const activeTypeName = $derived(
-		issueTypeKeys.find((k) => $data[k] !== null && $data[k] !== undefined) ?? 'Unknown'
-	);
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	const raw = $derived($data as Record<string, any> | null);
 
 	const workload = $derived(
-		$data.DeprecatedRegistryIssue?.workload ??
-			$data.ExternalIngressCriticalVulnerabilityIssue?.workload ??
-			$data.FailedSynchronizationIssue?.workload ??
-			$data.InvalidSpecIssue?.workload ??
-			$data.MissingSbomIssue?.workload ??
-			$data.NoRunningInstancesIssue?.workload ??
-			$data.ApplicationRestartLoopIssue?.workload ??
-			$data.VulnerableImageIssue?.workload
+		$data?.DeprecatedRegistryIssue?.workload ??
+			$data?.ExternalIngressCriticalVulnerabilityIssue?.workload ??
+			$data?.FailedSynchronizationIssue?.workload ??
+			$data?.InvalidSpecIssue?.workload ??
+			$data?.MissingSbomIssue?.workload ??
+			$data?.NoRunningInstancesIssue?.workload ??
+			$data?.ApplicationRestartLoopIssue?.workload ??
+			$data?.VulnerableImageIssue?.workload ??
+			$data?.WorkloadProblemIssue?.workload ??
+			raw?.['workload'] ??
+			null
 	);
 
 	function getResourceInfo(d: IssueData): {
@@ -176,25 +164,33 @@
 				href: `/team/${team}/${env}/${type}/${workload.name}`
 			};
 		}
-		if (d.DeprecatedIngressIssue) {
-			const name = d.DeprecatedIngressIssue.application.name;
-			return { name, type: 'app', href: `/team/${team}/${env}/app/${name}` };
+
+		const da = raw!;
+		if (d.DeprecatedIngressIssue || da['application']) {
+			const name = d.DeprecatedIngressIssue?.application.name ?? da['application']?.name;
+			if (name) return { name, type: 'app', href: `/team/${team}/${env}/app/${name}` };
 		}
-		if (d.LastRunFailedIssue) {
-			const name = d.LastRunFailedIssue.job.name;
-			return { name, type: 'job', href: `/team/${team}/${env}/job/${name}` };
+		if (d.LastRunFailedIssue || da['job']) {
+			const name = d.LastRunFailedIssue?.job.name ?? da['job']?.name;
+			if (name) return { name, type: 'job', href: `/team/${team}/${env}/job/${name}` };
 		}
-		if (d.SqlInstanceStateIssue || d.SqlInstanceVersionIssue) {
-			const name = (d.SqlInstanceStateIssue ?? d.SqlInstanceVersionIssue)!.sqlInstance.name;
-			return { name, type: 'database', href: `/team/${team}/${env}/cloudsql/${name}` };
+		if (d.SqlInstanceStateIssue || d.SqlInstanceVersionIssue || da['sqlInstance']) {
+			const name =
+				(d.SqlInstanceStateIssue ?? d.SqlInstanceVersionIssue)?.sqlInstance.name ??
+				da['sqlInstance']?.name;
+			if (name) return { name, type: 'database', href: `/team/${team}/${env}/cloudsql/${name}` };
 		}
-		if (d.OpenSearchIssue) {
-			const name = d.OpenSearchIssue.openSearch.name;
-			return { name, type: 'other', href: `/team/${team}/${env}/opensearch/${name}` };
+		if (d.OpenSearchIssue || da['openSearch']) {
+			const name = d.OpenSearchIssue?.openSearch.name ?? da['openSearch']?.name;
+			if (name) return { name, type: 'other', href: `/team/${team}/${env}/opensearch/${name}` };
 		}
-		if (d.ValkeyIssue) {
-			const name = d.ValkeyIssue.valkey.name;
-			return { name, type: 'other', href: `/team/${team}/${env}/valkey/${name}` };
+		if (d.ValkeyIssue || da['valkey']) {
+			const name = d.ValkeyIssue?.valkey.name ?? da['valkey']?.name;
+			if (name) return { name, type: 'other', href: `/team/${team}/${env}/valkey/${name}` };
+		}
+		if (d.UnleashReleaseChannelIssue || da['unleash']) {
+			const name = d.UnleashReleaseChannelIssue?.unleash.name ?? da['unleash']?.name;
+			if (name) return { name, type: 'other', href: null };
 		}
 		if ('unleash' in d && d.unleash) {
 			const u = d.unleash as { name: string };
@@ -225,23 +221,27 @@
 		return map[typename] ?? typename;
 	}
 
-	let resource = $derived(getResourceInfo($data));
+	let resource = $derived(
+		$data ? getResourceInfo($data) : { name: 'Unknown', type: 'other' as const, href: null }
+	);
 	let title = $derived(getIssueTitle(activeTypeName));
 </script>
 
-<a class="issue-row surface-interactive" href={resource.href}>
-	<div class="surface-icon">
-		<ExclamationmarkTriangleFillIcon />
-	</div>
-	<VStack gap="space-1">
-		<Heading size="xsmall" level="2">
-			{title} for {resource.name} in {$data.teamEnvironment.environment.name}
-		</Heading>
-		<BodyLong size="small">
-			{$data.message}
-		</BodyLong>
-	</VStack>
-</a>
+{#if $data}
+	<a class="issue-row surface-interactive" href={resource.href}>
+		<div class="surface-icon">
+			<ExclamationmarkTriangleFillIcon />
+		</div>
+		<VStack gap="space-1">
+			<Heading size="xsmall" level="2">
+				{title} for {resource.name} in {$data.teamEnvironment.environment.name}
+			</Heading>
+			<BodyLong size="small">
+				{$data.message}
+			</BodyLong>
+		</VStack>
+	</a>
+{/if}
 
 <style>
 	.issue-row {

@@ -26,6 +26,7 @@
 			item,
 			graphql(`
 				fragment IssueFragment on Issue {
+					__typename
 					teamEnvironment {
 						environment {
 							name
@@ -138,53 +139,59 @@
 		)
 	);
 
-	const issueTypeKeys = [
-		'DeprecatedIngressIssue',
-		'DeprecatedRegistryIssue',
-		'ExternalIngressCriticalVulnerabilityIssue',
-		'LastRunFailedIssue',
-		'FailedSynchronizationIssue',
-		'InvalidSpecIssue',
-		'MissingSbomIssue',
-		'NoRunningInstancesIssue',
-		'ApplicationRestartLoopIssue',
-		'OpenSearchIssue',
-		'SqlInstanceStateIssue',
-		'SqlInstanceVersionIssue',
-		'ValkeyIssue',
-		'VulnerableImageIssue'
-	] as const;
+	const activeTypeName = $derived(($data?.__typename as string) ?? 'Unknown');
 
-	const activeTypeName = $derived(
-		issueTypeKeys.find((k) => $data[k] !== null && $data[k] !== undefined) ?? 'Unknown'
-	);
+	// Houdini 2.0 type-keyed properties may not resolve at runtime — access fields directly as fallback
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	const raw = $derived($data as Record<string, any> | null);
 
 	const workload = $derived(
-		$data.DeprecatedRegistryIssue?.workload ??
-			$data.ExternalIngressCriticalVulnerabilityIssue?.workload ??
-			$data.FailedSynchronizationIssue?.workload ??
-			$data.InvalidSpecIssue?.workload ??
-			$data.MissingSbomIssue?.workload ??
-			$data.NoRunningInstancesIssue?.workload ??
-			$data.ApplicationRestartLoopIssue?.workload ??
-			$data.VulnerableImageIssue?.workload
+		$data?.DeprecatedRegistryIssue?.workload ??
+			$data?.ExternalIngressCriticalVulnerabilityIssue?.workload ??
+			$data?.FailedSynchronizationIssue?.workload ??
+			$data?.InvalidSpecIssue?.workload ??
+			$data?.MissingSbomIssue?.workload ??
+			$data?.NoRunningInstancesIssue?.workload ??
+			$data?.ApplicationRestartLoopIssue?.workload ??
+			$data?.VulnerableImageIssue?.workload ??
+			$data?.WorkloadProblemIssue?.workload ??
+			raw?.['workload'] ??
+			null
 	);
 
 	const resourceName = $derived(
-		$data.DeprecatedIngressIssue?.application.name ??
-			$data.LastRunFailedIssue?.job.name ??
-			$data.OpenSearchIssue?.openSearch.name ??
-			($data.SqlInstanceStateIssue ?? $data.SqlInstanceVersionIssue)?.sqlInstance.name ??
-			$data.ValkeyIssue?.valkey.name ??
+		$data?.DeprecatedIngressIssue?.application.name ??
+			$data?.LastRunFailedIssue?.job.name ??
+			$data?.OpenSearchIssue?.openSearch.name ??
+			($data?.SqlInstanceStateIssue ?? $data?.SqlInstanceVersionIssue)?.sqlInstance.name ??
+			$data?.ValkeyIssue?.valkey.name ??
+			$data?.UnleashReleaseChannelIssue?.unleash.name ??
+			raw?.['application']?.name ??
+			raw?.['job']?.name ??
+			raw?.['openSearch']?.name ??
+			raw?.['sqlInstance']?.name ??
+			raw?.['valkey']?.name ??
+			raw?.['unleash']?.name ??
 			workload?.name ??
 			'Unknown'
 	);
 
 	const ResourceIcon = $derived.by(() => {
-		if ($data.OpenSearchIssue) return OpenSearchIcon;
-		if ($data.SqlInstanceStateIssue || $data.SqlInstanceVersionIssue) return DatabaseIcon;
-		if ($data.ValkeyIssue) return ValkeyIcon;
-		if ($data.LastRunFailedIssue || workload?.__typename === 'NaisJob') return BriefcaseClockIcon;
+		if ($data?.OpenSearchIssue || activeTypeName === 'OpenSearchIssue') return OpenSearchIcon;
+		if (
+			$data?.SqlInstanceStateIssue ||
+			$data?.SqlInstanceVersionIssue ||
+			activeTypeName === 'SqlInstanceStateIssue' ||
+			activeTypeName === 'SqlInstanceVersionIssue'
+		)
+			return DatabaseIcon;
+		if ($data?.ValkeyIssue || activeTypeName === 'ValkeyIssue') return ValkeyIcon;
+		if (
+			$data?.LastRunFailedIssue ||
+			activeTypeName === 'LastRunFailedIssue' ||
+			workload?.__typename === 'NaisJob'
+		)
+			return BriefcaseClockIcon;
 		return PackageIcon;
 	});
 
@@ -197,58 +204,60 @@
 	});
 </script>
 
-<details class="item">
-	<summary class="head">
-		<div class="chev">
-			<ChevronRightIcon />
-		</div>
-		<div class="severity-dot">
-			{#if $data.severity === 'CRITICAL'}
-				<CriticalIndicator />
-			{:else}
-				<CircleFillIcon
-					style="color: light-dark({{
-						TODO: 'var(--ax-bg-info-strong), var(--ax-bg-info-strong)',
-						WARNING: 'var(--ax-bg-warning-moderate-pressed), var(--ax-bg-warning-strong-pressed)'
-					}[$data.severity] ??
-						'var(--ax-bg-info-strong), var(--ax-bg-info-strong)'}); font-size: 0.7rem"
-				/>
+{#if $data}
+	<details class="item">
+		<summary class="head">
+			<div class="chev">
+				<ChevronRightIcon />
+			</div>
+			<div class="severity-dot">
+				{#if $data.severity === 'CRITICAL'}
+					<CriticalIndicator />
+				{:else}
+					<CircleFillIcon
+						style="color: light-dark({{
+							TODO: 'var(--ax-bg-info-strong), var(--ax-bg-info-strong)',
+							WARNING: 'var(--ax-bg-warning-moderate-pressed), var(--ax-bg-warning-strong-pressed)'
+						}[$data.severity] ??
+							'var(--ax-bg-info-strong), var(--ax-bg-info-strong)'}); font-size: 0.7rem"
+					/>
+				{/if}
+			</div>
+			<div class="resource-icon">
+				<ResourceIcon />
+			</div>
+			<div class="resource-group">
+				<span class="resource-name" title={resourceName}>{resourceName}</span>
+				<Tag size="xsmall" variant={envTagVariant($data.teamEnvironment.environment.name)}
+					>{$data.teamEnvironment.environment.name}</Tag
+				>
+			</div>
+			<span class="issue-title">{issueTitle}</span>
+		</summary>
+
+		<div class="detail">
+			<p class="message">{$data.message}</p>
+			{#if activeTypeName === 'DeprecatedIngressIssue' && $data.DeprecatedIngressIssue}
+				<div class="extra">
+					<strong>
+						{$data.DeprecatedIngressIssue.ingresses.length === 1
+							? 'Deprecated ingress:'
+							: 'Deprecated ingresses:'}
+					</strong>
+					{#each $data.DeprecatedIngressIssue.ingresses as ingress (ingress)}
+						<span class="ingress">{ingress}</span>
+					{/each}
+				</div>
+			{/if}
+			{#if activeTypeName === 'ExternalIngressCriticalVulnerabilityIssue' && $data.ExternalIngressCriticalVulnerabilityIssue}
+				<div class="extra">
+					<strong>CVSS Score:</strong>
+					{$data.ExternalIngressCriticalVulnerabilityIssue.cvssScore}
+				</div>
 			{/if}
 		</div>
-		<div class="resource-icon">
-			<ResourceIcon />
-		</div>
-		<div class="resource-group">
-			<span class="resource-name" title={resourceName}>{resourceName}</span>
-			<Tag size="xsmall" variant={envTagVariant($data.teamEnvironment.environment.name)}
-				>{$data.teamEnvironment.environment.name}</Tag
-			>
-		</div>
-		<span class="issue-title">{issueTitle}</span>
-	</summary>
-
-	<div class="detail">
-		<p class="message">{$data.message}</p>
-		{#if $data.DeprecatedIngressIssue}
-			<div class="extra">
-				<strong>
-					{$data.DeprecatedIngressIssue.ingresses.length === 1
-						? 'Deprecated ingress:'
-						: 'Deprecated ingresses:'}
-				</strong>
-				{#each $data.DeprecatedIngressIssue.ingresses as ingress (ingress)}
-					<span class="ingress">{ingress}</span>
-				{/each}
-			</div>
-		{/if}
-		{#if $data.ExternalIngressCriticalVulnerabilityIssue}
-			<div class="extra">
-				<strong>CVSS Score:</strong>
-				{$data.ExternalIngressCriticalVulnerabilityIssue.cvssScore}
-			</div>
-		{/if}
-	</div>
-</details>
+	</details>
+{/if}
 
 <style>
 	details > summary {
