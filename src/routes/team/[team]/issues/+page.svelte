@@ -23,20 +23,20 @@
 	let after: string = $derived($TeamIssues.variables?.after ?? '');
 	let before: string = $derived($TeamIssues.variables?.before ?? '');
 
-	const totalCount = $derived($TeamIssuesMetadata.data?.team.total.pageInfo.totalCount ?? 0);
+	const totalCount = $derived($TeamIssuesMetadata?.data?.team.total.pageInfo.totalCount ?? 0);
 
-	const allEnvironments = $derived($TeamIssuesMetadata.data?.team.environments ?? []);
+	const allEnvironments = $derived($TeamIssuesMetadata?.data?.team.environments ?? []);
 
 	const severityFacets = $derived([
 		{
 			severity: 'CRITICAL',
-			count: $TeamIssuesMetadata.data?.team.critical.pageInfo.totalCount ?? 0
+			count: $TeamIssuesMetadata?.data?.team.critical.pageInfo.totalCount ?? 0
 		},
 		{
 			severity: 'WARNING',
-			count: $TeamIssuesMetadata.data?.team.warnings.pageInfo.totalCount ?? 0
+			count: $TeamIssuesMetadata?.data?.team.warnings.pageInfo.totalCount ?? 0
 		},
-		{ severity: 'TODO', count: $TeamIssuesMetadata.data?.team.todos.pageInfo.totalCount ?? 0 }
+		{ severity: 'TODO', count: $TeamIssuesMetadata?.data?.team.todos.pageInfo.totalCount ?? 0 }
 	]);
 
 	const issueTypes = Object.values(IssueType) as string[];

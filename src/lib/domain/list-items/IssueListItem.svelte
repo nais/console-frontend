@@ -26,6 +26,7 @@
 			item,
 			graphql(`
 				fragment IssueFragment on Issue {
+					id
 					__typename
 					teamEnvironment {
 						environment {

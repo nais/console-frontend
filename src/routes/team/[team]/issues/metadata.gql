@@ -1,4 +1,4 @@
-query TeamIssuesMetadata($team: Slug!) @cache(policy: NetworkOnly) {
+query TeamIssuesMetadata($team: Slug!) @cache(policy: NoCache) {
 	team(slug: $team) {
 		environments {
 			id
