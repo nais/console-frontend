@@ -133,7 +133,6 @@
 							__typename
 							name
 						}
-						problemType
 					}
 					... on UnleashReleaseChannelIssue {
 						unleash {
@@ -164,8 +163,7 @@
 		if ('valkey' in d && d.valkey) return ValkeyIcon;
 		if ('unleash' in d && d.unleash) return UnleashIcon;
 		if ('job' in d && d.job) return BriefcaseClockIcon;
-		if ('workload' in d && d.workload && d.workload.__typename === 'NaisJob')
-			return BriefcaseClockIcon;
+		if ('workload' in d && d.workload && d.workload.__typename === 'Job') return BriefcaseClockIcon;
 		return PackageIcon;
 	});
 

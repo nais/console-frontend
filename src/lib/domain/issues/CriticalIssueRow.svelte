@@ -115,7 +115,6 @@
 							__typename
 							name
 						}
-						problemType
 					}
 					... on UnleashReleaseChannelIssue {
 						unleash {
@@ -168,7 +167,7 @@
 		}
 		if ('unleash' in d && d.unleash) {
 			const u = d.unleash as { name: string };
-			return { name: u.name, type: 'other', href: `/team/${team}/${env}/unleash/${u.name}` };
+			return { name: u.name, type: 'other', href: `/team/${team}/unleash` };
 		}
 		return { name: 'Unknown', type: 'other', href: null };
 	}
