@@ -8,9 +8,6 @@ export async function load(event) {
 	const before = event.url.searchParams.get('before') || '';
 	const activityTypes =
 		event.url.searchParams.get('activityTypes')?.split(',').filter(Boolean) || [];
-	const resourceTypes =
-		event.url.searchParams.get('resourceTypes')?.split(',').filter(Boolean) || [];
-	const environments = event.url.searchParams.get('environments')?.split(',').filter(Boolean) || [];
 
 	return {
 		...(await addPageMeta(event, {
@@ -24,9 +21,7 @@ export async function load(event) {
 				job: event.params.job,
 				...(before ? { before, last: rows } : { after: after || undefined, first: rows }),
 				filter: {
-					activityTypes,
-					resourceTypes,
-					environments
+					activityTypes
 				} as ActivityLogFilter
 			}
 		}))
