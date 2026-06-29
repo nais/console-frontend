@@ -19,23 +19,23 @@
 
 	interface Props {
 		activityTypes: ActivityTypeFacet[];
-		resourceTypes: ResourceTypeFacet[];
-		environments: EnvironmentFacet[];
+		resourceTypes?: ResourceTypeFacet[];
+		environments?: EnvironmentFacet[];
 		selectedActivityTypes: ActivityLogActivityType$options[];
-		selectedResourceTypes: string[];
-		selectedEnvironments: string[];
+		selectedResourceTypes?: string[];
+		selectedEnvironments?: string[];
 		onActivityTypesChange: (selected: ActivityLogActivityType$options[]) => void;
-		onResourceTypesChange: (selected: string[]) => void;
-		onEnvironmentsChange: (selected: string[]) => void;
+		onResourceTypesChange?: (selected: string[]) => void;
+		onEnvironmentsChange?: (selected: string[]) => void;
 	}
 
 	let {
 		activityTypes,
-		resourceTypes,
-		environments,
+		resourceTypes = [],
+		environments = [],
 		selectedActivityTypes,
-		selectedResourceTypes,
-		selectedEnvironments,
+		selectedResourceTypes = [],
+		selectedEnvironments = [],
 		onActivityTypesChange,
 		onResourceTypesChange,
 		onEnvironmentsChange
@@ -61,6 +61,7 @@
 	}
 
 	function toggleResourceType(type: string) {
+		if (!onResourceTypesChange) return;
 		const isSelected = selectedResourceTypes.includes(type);
 		const next = isSelected
 			? selectedResourceTypes.filter((t) => t !== type && availableResourceTypes.has(t))
@@ -69,6 +70,7 @@
 	}
 
 	function toggleEnvironment(env: string) {
+		if (!onEnvironmentsChange) return;
 		const isSelected = selectedEnvironments.includes(env);
 		const next = isSelected
 			? selectedEnvironments.filter((e) => e !== env && availableEnvironments.has(e))

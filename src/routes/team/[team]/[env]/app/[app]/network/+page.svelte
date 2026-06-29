@@ -67,7 +67,7 @@
 	}
 
 	function ingressTypeLabel(type: string): string {
-		return type === 'UNKNOWN' ? 'Unknown' : `${type[0]}${type.slice(1).toLowerCase()}`;
+		return type === 'UNKNOWN' ? 'Unknown' : `${type.at(0)}${type.slice(1).toLowerCase()}`;
 	}
 </script>
 
