@@ -2,6 +2,7 @@
 	import { fragment, graphql, type IssueFragment } from '$houdini';
 	import { envTagVariant } from '$lib/envTagVariant';
 	import OpenSearchIcon from '$lib/icons/OpenSearchIcon.svelte';
+	import UnleashIcon from '$lib/icons/UnleashIcon.svelte';
 	import ValkeyIcon from '$lib/icons/ValkeyIcon.svelte';
 	import CriticalIndicator from '$lib/ui/CriticalIndicator.svelte';
 	import { issueTypeLabel } from '$lib/utils/issueTypeLabel';
@@ -127,6 +128,17 @@
 							name
 						}
 					}
+					... on WorkloadProblemIssue {
+						workload {
+							__typename
+							name
+						}
+					}
+					... on UnleashReleaseChannelIssue {
+						unleash {
+							name
+						}
+					}
 				}
 			`)
 		)
@@ -139,6 +151,7 @@
 		if ('openSearch' in d && d.openSearch) return d.openSearch.name;
 		if ('sqlInstance' in d && d.sqlInstance) return d.sqlInstance.name;
 		if ('valkey' in d && d.valkey) return d.valkey.name;
+		if ('unleash' in d && d.unleash) return d.unleash.name;
 		if ('workload' in d && d.workload) return d.workload.name;
 		return 'Unknown';
 	});
@@ -148,9 +161,9 @@
 		if ('openSearch' in d && d.openSearch) return OpenSearchIcon;
 		if ('sqlInstance' in d && d.sqlInstance) return DatabaseIcon;
 		if ('valkey' in d && d.valkey) return ValkeyIcon;
+		if ('unleash' in d && d.unleash) return UnleashIcon;
 		if ('job' in d && d.job) return BriefcaseClockIcon;
-		if ('workload' in d && d.workload && d.workload.__typename === 'NaisJob')
-			return BriefcaseClockIcon;
+		if ('workload' in d && d.workload && d.workload.__typename === 'Job') return BriefcaseClockIcon;
 		return PackageIcon;
 	});
 

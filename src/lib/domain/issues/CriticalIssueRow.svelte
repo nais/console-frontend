@@ -110,6 +110,17 @@
 							name
 						}
 					}
+					... on WorkloadProblemIssue {
+						workload {
+							__typename
+							name
+						}
+					}
+					... on UnleashReleaseChannelIssue {
+						unleash {
+							name
+						}
+					}
 				}
 			`)
 		)
@@ -154,6 +165,10 @@
 			const v = d.valkey as { name: string };
 			return { name: v.name, type: 'other', href: `/team/${team}/${env}/valkey/${v.name}` };
 		}
+		if ('unleash' in d && d.unleash) {
+			const u = d.unleash as { name: string };
+			return { name: u.name, type: 'other', href: `/team/${team}/unleash` };
+		}
 		return { name: 'Unknown', type: 'other', href: null };
 	}
 
@@ -172,7 +187,9 @@
 			OpenSearchIssue: 'OpenSearch issue',
 			SqlInstanceStateIssue: 'Database unhealthy',
 			SqlInstanceVersionIssue: 'Outdated database version',
-			ValkeyIssue: 'Valkey issue'
+			ValkeyIssue: 'Valkey issue',
+			WorkloadProblemIssue: 'Workload problem',
+			UnleashReleaseChannelIssue: 'Unleash release channel'
 		};
 		return map[typename] ?? typename;
 	}
