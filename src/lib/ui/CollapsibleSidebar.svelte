@@ -30,15 +30,17 @@
 	});
 </script>
 
-<div class="layout-sidebar desktop-only">
-	{@render children()}
-</div>
-
-{#if extras}
-	<div class="sidebar-extras">
-		{@render extras()}
+<div class="sidebar-column">
+	<div class="layout-sidebar desktop-only">
+		{@render children()}
 	</div>
-{/if}
+
+	{#if extras}
+		<div class="sidebar-extras">
+			{@render extras()}
+		</div>
+	{/if}
+</div>
 
 {#if open}
 	<Modal bind:open header={{ heading: label, size: 'small' }} class="filter-drawer">
@@ -49,25 +51,22 @@
 {/if}
 
 <style>
+	.sidebar-column {
+		display: flex;
+		flex-direction: column;
+		gap: var(--ax-space-16);
+		align-self: start;
+	}
+
 	.desktop-only {
 		display: grid;
 		gap: var(--ax-space-16);
 		align-content: start;
 	}
 
-	.sidebar-extras {
-		grid-column: 2;
-		margin-top: calc(var(--ax-space-16) - var(--spacing-layout));
-	}
-
 	@media (max-width: 1024px) {
 		.desktop-only {
 			display: none;
-		}
-
-		.sidebar-extras {
-			grid-column: 1;
-			margin-top: 0;
 		}
 	}
 
