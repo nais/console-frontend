@@ -10,6 +10,7 @@ query RunsWithPodNames($job: String!, $team: Slug!, $env: String!) {
 				logDestinations {
 					... on LogDestinationGeneric {
 						__typename
+						id
 						name
 					}
 					... on LogDestinationLoki {

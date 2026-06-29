@@ -23,7 +23,7 @@
 				</Tr>
 			</Thead>
 			<Tbody>
-				{#each exhaustive(($UserSyncLogs.data.userSyncLog.edges || []).map((e) => e.node)) as entry, i (i)}
+				{#each exhaustive(($UserSyncLogs.data.userSyncLog.edges || []).map((e) => e.node)) as entry (entry.id)}
 					<Tr>
 						<Td>
 							{#if entry.__typename === 'RoleAssignedUserSyncLogEntry'}
