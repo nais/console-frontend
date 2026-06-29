@@ -16,7 +16,9 @@ const config = {
 	},
 	defaultCachePolicy: 'CacheAndNetwork',
 	plugins: {
-		'houdini-svelte': {}
+		'houdini-svelte': {
+			forceRunesMode: true
+		}
 	},
 	scalars: {
 		Slug: { type: 'string' },

@@ -291,11 +291,9 @@
 	const TextComponent = $derived(activityTextComponent($data.__typename));
 
 	const textData = $derived.by(() => {
-		const key = Object.keys($data).find(
-			(k) => k.endsWith('ActivityLogEntry') && $data[k as keyof typeof $data] != null
-		);
-		if (key) {
-			return { ...$data, ...($data[key as keyof typeof $data] as object) };
+		const payload = $data[$data.__typename as keyof typeof $data];
+		if (payload && typeof payload === 'object') {
+			return { ...$data, ...(payload as object) };
 		}
 		return $data;
 	}) as unknown as typeof $data;
