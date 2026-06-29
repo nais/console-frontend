@@ -13,9 +13,14 @@ query Instances($app: String!, $team: Slug!, $env: String!) {
 					}
 				}
 				logDestinations {
-					id
-					__typename
+					... on LogDestinationGeneric {
+						id
+						__typename
+						name
+					}
 					... on LogDestinationLoki {
+						id
+						__typename
 						grafanaURL
 					}
 				}

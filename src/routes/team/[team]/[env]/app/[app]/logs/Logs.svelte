@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { page } from '$app/state';
 	import { graphql, type Instances$result } from '$houdini';
+	import { exhaustive } from '$lib/utils/houdini';
 	import { apmURL } from '$lib/doc';
 	import ExternalLink from '$lib/ui/ExternalLink.svelte';
 	import {
@@ -262,7 +263,7 @@
 				{/if}
 			</div>
 			<div style="padding-top: var(--ax-space-8);">
-				{#each team.environment.application.logDestinations as logDestination, i (i)}
+				{#each exhaustive(team.environment.application.logDestinations) as logDestination (logDestination.id)}
 					{#if logDestination.__typename === 'LogDestinationLoki'}
 						<ExternalLink href={logDestination.grafanaURL}>View logs in Grafana</ExternalLink>
 					{/if}

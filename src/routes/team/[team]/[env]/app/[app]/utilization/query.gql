@@ -30,6 +30,7 @@ query ResourceUtilizationForApp(
 				activityLog(first: 100, filter: { activityTypes: [APPLICATION_SCALED, DEPLOYMENT] }) {
 					nodes {
 						... on ApplicationScaledActivityLogEntry {
+							__typename
 							id
 							createdAt
 							data {
@@ -38,6 +39,7 @@ query ResourceUtilizationForApp(
 							}
 						}
 						... on DeploymentActivityLogEntry {
+							__typename
 							id
 							createdAt
 						}
