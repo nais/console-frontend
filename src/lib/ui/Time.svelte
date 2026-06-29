@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { Tooltip } from '@nais/ds-svelte-community';
 	import { differenceInDays, format, formatDistanceStrict, isSameYear } from 'date-fns';
 	import { enGB } from 'date-fns/locale';
 	import { onDestroy } from 'svelte';
@@ -99,14 +98,6 @@
 	const datetime = $derived(isValidDate ? normalizedTime.toISOString() : undefined);
 </script>
 
-{#if tooltipContent}
-	<Tooltip content={tooltipContent}>
-		<time {datetime}>
-			{text}
-		</time>
-	</Tooltip>
-{:else}
-	<time {datetime}>
-		{text}
-	</time>
-{/if}
+<time {datetime} title={tooltipContent || undefined}>
+	{text}
+</time>

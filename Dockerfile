@@ -1,6 +1,6 @@
 ARG NODE_VERSION="24"
 FROM node:${NODE_VERSION}-alpine AS node-with-deps
-RUN corepack enable && corepack prepare pnpm@11.8.0 --activate
+RUN corepack enable && corepack prepare pnpm@11.9.0 --activate
 WORKDIR /usr/app
 
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml svelte.config.js .npmrc ./
@@ -14,7 +14,7 @@ ENV VITE_GRAPHQL_ENDPOINT=http://nais-api/graphql
 RUN pnpm run build
 
 FROM node:${NODE_VERSION}-alpine AS prod-deps
-RUN corepack enable && corepack prepare pnpm@11.8.0 --activate
+RUN corepack enable && corepack prepare pnpm@11.9.0 --activate
 WORKDIR /usr/app
 
 COPY --from=node-with-deps /usr/app/package.json /usr/app/pnpm-lock.yaml /usr/app/pnpm-workspace.yaml /usr/app/.npmrc ./
