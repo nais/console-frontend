@@ -368,10 +368,22 @@ input ActivityLogFilter {
   environments: [String!]
 
   """
+  Only include entries created at or after this timestamp.
+  When combined with other fields in this input, entries must match this filter as well as the other selected filters.
+  """
+  from: Time
+
+  """
   Only include entries for resources whose type matches one of these values.
   When combined with other fields in this input, entries must match this filter as well as the other selected filters.
   """
   resourceTypes: [ActivityLogEntryResourceType!]
+
+  """
+  Only include entries created before this timestamp.
+  When combined with other fields in this input, entries must match this filter as well as the other selected filters.
+  """
+  to: Time
 }
 
 """A single facet item for resource types."""
@@ -5681,6 +5693,28 @@ type PrometheusAlert implements Alert & Node {
 
 """The query root for the Nais GraphQL API."""
 type Query {
+  """Activity log across all teams in the tenant."""
+  activityLog(
+    """Get items after this cursor."""
+    after: Cursor
+
+    """Get items before this cursor."""
+    before: Cursor
+
+    """Filter items."""
+    filter: ActivityLogFilter
+
+    """
+    Get the first n items in the connection. This can be used in combination with the after parameter.
+    """
+    first: Int
+
+    """
+    Get the last n items in the connection. This can be used in combination with the before parameter.
+    """
+    last: Int
+  ): ActivityLogEntryConnection!
+
   """Get the monthly cost summary for a tenant."""
   costMonthlySummary(
     """Start month of the period, inclusive."""
@@ -7547,11 +7581,6 @@ type ServiceAccountUpdatedActivityLogEntryDataUpdatedField {
 """
 A binding between a Nais service account and a Nais workload (application or job). When the workload presents its
 Workload Token to the API, the API will authenticate the request as the bound service account.
-
-The binding is identified at authentication time by the workload's environment, team and name, plus the Workload
-UID once it has been observed (trust on first use). If the UID changes (for instance because the workload has
-been recreated), the binding is considered broken and authentication will fail until the binding is removed and
-re-added.
 """
 type ServiceAccountWorkloadBinding implements Node {
   """When the binding was created."""
@@ -7564,8 +7593,7 @@ type ServiceAccountWorkloadBinding implements Node {
   id: ID!
 
   """
-  True if the binding is broken — either the workload no longer exists, or the Workload UID
-  does not match the value pinned to the binding.
+  True if the binding is broken, i.e. when the workload no longer exists.
   """
   isBroken: Boolean!
 
