@@ -22,8 +22,12 @@
 	let { IngressMetrics } = $derived(data);
 	let { interval } = $derived(data);
 
-	const team = $derived(page.params.team!);
-	const app = $derived(page.params.app!);
+	function sanitizeLabel(value: string): string {
+		return value.replace(/[^a-zA-Z0-9_-]/g, '');
+	}
+
+	const team = $derived(sanitizeLabel(page.params.team!));
+	const app = $derived(sanitizeLabel(page.params.app!));
 	const environmentName = $derived(page.params.env!);
 
 	const trafficQuery = $derived(
