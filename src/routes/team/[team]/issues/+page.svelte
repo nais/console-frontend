@@ -15,7 +15,7 @@
 	import type { PageProps } from './$types';
 
 	let { data }: PageProps = $props();
-	let { TeamIssues, TeamIssuesMetadata } = $derived(data);
+	let { TeamIssues } = $derived(data);
 
 	let filtersOpen = $state(false);
 	let issues = $derived($TeamIssues.data?.team.issues);
@@ -23,20 +23,20 @@
 	let after: string = $derived($TeamIssues.variables?.after ?? '');
 	let before: string = $derived($TeamIssues.variables?.before ?? '');
 
-	const totalCount = $derived($TeamIssuesMetadata?.data?.team.total.pageInfo.totalCount ?? 0);
+	const totalCount = $derived($TeamIssues.data?.team.total.pageInfo.totalCount ?? 0);
 
-	const allEnvironments = $derived($TeamIssuesMetadata?.data?.team.environments ?? []);
+	const allEnvironments = $derived($TeamIssues?.data?.team.environments ?? []);
 
 	const severityFacets = $derived([
 		{
 			severity: 'CRITICAL',
-			count: $TeamIssuesMetadata?.data?.team.critical.pageInfo.totalCount ?? 0
+			count: $TeamIssues?.data?.team.critical.pageInfo.totalCount ?? 0
 		},
 		{
 			severity: 'WARNING',
-			count: $TeamIssuesMetadata?.data?.team.warnings.pageInfo.totalCount ?? 0
+			count: $TeamIssues?.data?.team.warnings.pageInfo.totalCount ?? 0
 		},
-		{ severity: 'TODO', count: $TeamIssuesMetadata?.data?.team.todos.pageInfo.totalCount ?? 0 }
+		{ severity: 'TODO', count: $TeamIssues?.data?.team.todos.pageInfo.totalCount ?? 0 }
 	]);
 
 	const issueTypes = Object.values(IssueType) as string[];

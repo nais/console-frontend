@@ -187,6 +187,8 @@
 		)
 			return DatabaseIcon;
 		if ($data?.ValkeyIssue || activeTypeName === 'ValkeyIssue') return ValkeyIcon;
+		if ($data?.UnleashReleaseChannelIssue || activeTypeName === 'UnleashReleaseChannelIssue')
+			return UnleashIcon;
 		if (
 			$data?.LastRunFailedIssue ||
 			activeTypeName === 'LastRunFailedIssue' ||

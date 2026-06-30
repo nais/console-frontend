@@ -1,9 +1,4 @@
-import {
-	IssueOrderField,
-	load_TeamIssues,
-	load_TeamIssuesMetadata,
-	OrderDirection
-} from '$houdini';
+import { IssueOrderField, load_TeamIssues, OrderDirection } from '$houdini';
 import type { IssueFilter } from '$houdini/graphql/inputs';
 import { urlToOrderDirection, urlToOrderField } from '$lib/ui/OrderByMenu.svelte';
 import { addPageMeta } from '$lib/utils/pageMeta';
@@ -32,12 +27,6 @@ export async function load(event) {
 					direction: urlToOrderDirection(event.url, OrderDirection.DESC)
 				},
 				...(before ? { before, last: rows } : { after, first: rows })
-			}
-		})),
-		...(await load_TeamIssuesMetadata({
-			event,
-			variables: {
-				team: event.params.team
 			}
 		}))
 	};
