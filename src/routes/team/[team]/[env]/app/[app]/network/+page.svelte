@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { page } from '$app/state';
-	import LegendWrapper, { legendSnippet } from '$lib/chart/LegendWrapper.svelte';
+	import PrometheusChart from '$lib/chart/PrometheusChart.svelte';
+	import { PrometheusChartQueryInterval } from '$lib/chart/util';
 	import NetworkPolicy from '$lib/domain/resources/NetworkPolicy.svelte';
 	import WarningIcon from '$lib/icons/WarningIcon.svelte';
 	import DocsLink from '$lib/ui/DocsLink.svelte';
@@ -8,63 +9,35 @@
 	import TooltipAlignHack from '$lib/ui/TooltipAlignHack.svelte';
 	import { changeParams } from '$lib/utils/searchparams';
 	import {
-		Accordion,
-		AccordionItem,
 		CopyButton,
 		Detail,
 		Heading,
-		Loader,
 		ToggleGroup,
 		ToggleGroupItem
 	} from '@nais/ds-svelte-community';
 	import { GlobeIcon, HouseIcon, PadlockLockedIcon } from '@nais/ds-svelte-community/icons';
-	import { LineChart } from 'layerchart';
 	import type { PageProps } from './$types';
 
 	let { data }: PageProps = $props();
 	let { IngressMetrics } = $derived(data);
+	let { interval } = $derived(data);
 
-	const interval = $derived(page.url.searchParams.get('interval') ?? '7d');
-
-	let openIngresses: Record<string, boolean> = $state({});
-
-	// Keep previous data visible during refetch (Houdini nulls .data on new variables)
-	let lastData = $state<typeof $IngressMetrics.data>(null);
-	$effect(() => {
-		if ($IngressMetrics.data) {
-			lastData = $IngressMetrics.data;
-		}
-	});
-	let displayData = $derived($IngressMetrics.data ?? lastData);
-
-	interface Metric {
-		timestamp: Date;
-		value: number;
+	function sanitizeLabel(value: string): string {
+		const sanitized = value.replace(/[^a-zA-Z0-9_-]/g, '');
+		return sanitized || 'invalid';
 	}
 
-	type Series = {
-		metrics: {
-			rps: Metric[];
-			eps: Metric[];
-		};
-	};
+	const team = $derived(sanitizeLabel(page.params.team!));
+	const app = $derived(sanitizeLabel(page.params.app!));
+	const environmentName = $derived(page.params.env!);
 
-	function options(input: Series) {
-		return {
-			series: [
-				{
-					key: 'req/s',
-					color: '#236B7D',
-					data: input.metrics.rps
-				},
-				{
-					key: 'err/s',
-					color: '#F25C5C',
-					data: input.metrics.eps
-				}
-			]
-		};
-	}
+	const trafficQuery = $derived(
+		`label_replace(sum(rate(haproxy_backend_http_requests_total{proxy=~"${team}_svc_${app}_.*"}[$__rate_interval])), "metric", "req/s", "__name__", ".*")` +
+			` or ` +
+			`label_replace(sum(rate(haproxy_backend_http_responses_total{proxy=~"${team}_svc_${app}_.*", code="5xx"}[$__rate_interval])), "metric", "5xx/s", "__name__", ".*")` +
+			` or ` +
+			`label_replace(sum(rate(haproxy_backend_http_responses_total{proxy=~"${team}_svc_${app}_.*", code="4xx"}[$__rate_interval])), "metric", "4xx/s", "__name__", ".*")`
+	);
 
 	function ingressTypeLabel(type: string): string {
 		return type === 'UNKNOWN' ? 'Unknown' : `${type.at(0)}${type.slice(1).toLowerCase()}`;
@@ -76,109 +49,89 @@
 <Heading as="h2" class="aksel-sr-only">Network</Heading>
 
 <div class="wrapper">
-	{#if displayData}
-		{@const app = displayData.team.environment.application}
-		{@const ingresses = app.ingresses}
+	{#if $IngressMetrics.data}
+		{@const appData = $IngressMetrics.data.team.environment.application}
+		{@const ingresses = appData.ingresses}
 
-		<div class="section-heading">
-			<div class="heading-wrapper">
-				<Heading as="h2" size="medium" spacing>Ingresses</Heading>
+		<section>
+			<div class="heading-row">
+				<div class="heading-wrapper">
+					<Heading as="h2" size="medium" spacing>Ingresses</Heading>
+				</div>
+				<div class="actions">
+					<DocsLink path="/workloads/application/reference/ingress/" />
+				</div>
 			</div>
-			<div class="actions">
-				<DocsLink path="/workloads/application/reference/ingress/" />
-			</div>
-		</div>
 
-		{#if ingresses.length > 0}
-			<Accordion size="small" indent={false}>
-				{#each ingresses as ingress (ingress.url)}
-					<AccordionItem
-						open={openIngresses[ingress.url] ?? false}
-						onOpenChange={(isOpen) => {
-							openIngresses[ingress.url] = isOpen;
-						}}
-					>
-						{#snippet heading()}
-							<span class="ingress-heading">
-								<span class="ingress-icon">
-									<TooltipAlignHack content="{ingressTypeLabel(ingress.type)} ingress">
-										{#if ingress.type === 'EXTERNAL'}
-											<GlobeIcon />
-										{:else if ingress.type === 'INTERNAL'}
-											<HouseIcon />
-										{:else if ingress.type === 'AUTHENTICATED'}
-											<PadlockLockedIcon />
-										{:else}
-											<WarningIcon />
-										{/if}
-									</TooltipAlignHack>
-								</span>
-								<span class="ingress-url">{ingress.url}</span>
-								<span class="ingress-metrics">
-									<span>{ingress.metrics.requestsPerSecond.toFixed(2)} req/s</span>
-									<span>{ingress.metrics.errorsPerSecond.toFixed(2)} err/s</span>
-								</span>
+			{#if ingresses.length > 0}
+				<ul class="ingress-list">
+					{#each ingresses as ingress (ingress.url)}
+						<li class="ingress-item">
+							<span class="ingress-icon">
+								<TooltipAlignHack content="{ingressTypeLabel(ingress.type)} ingress">
+									{#if ingress.type === 'EXTERNAL'}
+										<GlobeIcon />
+									{:else if ingress.type === 'INTERNAL'}
+										<HouseIcon />
+									{:else if ingress.type === 'AUTHENTICATED'}
+										<PadlockLockedIcon />
+									{:else}
+										<WarningIcon />
+									{/if}
+								</TooltipAlignHack>
 							</span>
-						{/snippet}
-						<div class="chart-content">
-							<div class="ingress-copy">
-								<code class="ingress-url-text">{ingress.url}</code><CopyButton
-									copyText={ingress.url}
-									size="xsmall"
-									variant="action"
-								/>
-							</div>
-							<div class="chart-controls">
-								<ToggleGroup
-									value={interval}
-									size="small"
-									onchange={(interval) => changeParams({ interval }, { noScroll: true })}
-								>
-									{#each ['1h', '6h', '1d', '7d', '30d'] as interval (interval)}
-										<ToggleGroupItem value={interval}>{interval}</ToggleGroupItem>
-									{/each}
-								</ToggleGroup>
-							</div>
-							{#if $IngressMetrics.fetching}
-								<div class="chart-loading">
-									<Loader size="xlarge" />
-								</div>
-							{:else}
-								<div class="chart-wrapper">
-									<LegendWrapper height="250px">
-										<LineChart
-											{...options(ingress)}
-											padding={{ left: 40 }}
-											brush={true}
-											x="timestamp"
-											y="value"
-											legend={legendSnippet}
-											props={{
-												spline: {
-													class: 'stroke-2'
-												},
-												tooltip: {
-													hideTotal: true
-												},
-												xAxis: {
-													format: 'day'
-												}
-											}}
-										/>
-									</LegendWrapper>
-								</div>
-							{/if}
-						</div>
-					</AccordionItem>
-				{/each}
-			</Accordion>
-		{:else}
-			<div class="empty-state">
-				<Detail>No ingresses configured.</Detail>
-			</div>
-		{/if}
+							<code class="ingress-url">{ingress.url}</code>
+							<CopyButton copyText={ingress.url} size="xsmall" variant="action" />
+						</li>
+					{/each}
+				</ul>
+			{:else}
+				<div class="empty-state">
+					<Detail>No ingresses configured.</Detail>
+				</div>
+			{/if}
+		</section>
 
-		<NetworkPolicy workload={app} />
+		<section>
+			<div class="heading-row">
+				<div class="heading-wrapper">
+					<Heading as="h2" size="medium" spacing>Traffic</Heading>
+				</div>
+				<div class="actions">
+					<ToggleGroup
+						value={interval}
+						size="small"
+						onchange={(v) => changeParams({ interval: v }, { noScroll: true })}
+					>
+						{#each Object.values(PrometheusChartQueryInterval) as intervalOption (intervalOption)}
+							<ToggleGroupItem value={intervalOption}>{intervalOption}</ToggleGroupItem>
+						{/each}
+					</ToggleGroup>
+				</div>
+			</div>
+
+			<PrometheusChart
+				{environmentName}
+				title="Ingress traffic"
+				description="Request rate, server errors (5xx), and client errors (4xx)."
+				query={trafficQuery}
+				{interval}
+				labelFormatter={(labels) => {
+					const metric = labels.find((l) => l.name === 'metric')?.value;
+					if (metric === '4xx/s') return '4xx/s (client errors)';
+					if (metric === '5xx/s') return '5xx/s (server errors)';
+					return metric ?? 'unknown';
+				}}
+				formatYValue={(value) => `${value.toFixed(2)}/s`}
+				colorizer={(label) => {
+					if (label.startsWith('5xx')) return '#d62728';
+					if (label.startsWith('4xx')) return '#ff7f0e';
+					return '#1f77b4';
+				}}
+			/>
+		</section>
+
+		<NetworkPolicy workload={appData} />
 	{/if}
 </div>
 
@@ -186,74 +139,10 @@
 	.wrapper {
 		display: flex;
 		flex-direction: column;
-		gap: var(--ax-space-24);
+		gap: var(--ax-space-32);
 	}
 
-	.ingress-heading {
-		display: flex;
-		align-items: center;
-		gap: var(--ax-space-4);
-		color: var(--ax-text-neutral);
-		width: 100%;
-		font-size: 1rem;
-	}
-
-	:global(.aksel-accordion__header > .aksel-heading) {
-		flex: 1;
-		font-size: 1rem;
-	}
-
-	.ingress-icon {
-		display: flex;
-		align-items: center;
-	}
-
-	.ingress-metrics {
-		margin-left: auto;
-		display: flex;
-		gap: var(--ax-space-8);
-		color: var(--ax-text-neutral-subtle);
-	}
-
-	.ingress-copy {
-		word-break: break-all;
-	}
-
-	.ingress-copy :global(button) {
-		vertical-align: middle;
-	}
-
-	.ingress-url-text {
-		font-family: monospace;
-		font-size: var(--ax-font-size-small);
-		color: var(--ax-text-neutral);
-	}
-
-	.chart-loading {
-		display: flex;
-		justify-content: center;
-		align-items: center;
-		min-height: 250px;
-	}
-
-	.chart-content {
-		display: flex;
-		flex-direction: column;
-		gap: var(--ax-space-8);
-	}
-
-	.chart-controls {
-		display: flex;
-		justify-content: flex-end;
-	}
-
-	.chart-wrapper {
-		width: 100%;
-		min-width: 0;
-		padding-block: var(--ax-space-4) var(--ax-space-16);
-	}
-
-	.section-heading {
+	.heading-row {
 		display: flex;
 		align-items: center;
 		justify-content: space-between;
@@ -274,10 +163,31 @@
 		flex-shrink: 0;
 	}
 
-	@media (max-width: 767px), (max-height: 500px) {
-		.ingress-metrics {
-			display: none;
-		}
+	.ingress-list {
+		list-style: none;
+		padding: 0;
+		margin: 0;
+		display: flex;
+		flex-direction: column;
+		gap: var(--ax-space-4);
+	}
+
+	.ingress-item {
+		display: flex;
+		align-items: center;
+		gap: var(--ax-space-4);
+	}
+
+	.ingress-icon {
+		display: flex;
+		align-items: center;
+	}
+
+	.ingress-url {
+		font-family: monospace;
+		font-size: var(--ax-font-size-small);
+		color: var(--ax-text-neutral);
+		word-break: break-all;
 	}
 
 	.empty-state {

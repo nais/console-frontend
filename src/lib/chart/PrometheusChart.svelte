@@ -1,3 +1,11 @@
+<script lang="ts" module>
+	export type PrometheusChartSeries = {
+		key: string;
+		data: { timestamp: Date; value: number }[];
+		color: string;
+	};
+</script>
+
 <script lang="ts">
 	import { browser } from '$app/environment';
 	import { graphql } from '$houdini';
@@ -73,6 +81,7 @@
 	let allowLoading = $state(false);
 	let firstTimeLoad = $state(false);
 	let showQueryModal = $state(false);
+	let legendCtx = $state<{ hiddenKeys: Set<string> } | undefined>(undefined);
 
 	// Intersection observer callback
 	const handleIntersection = (isVisible: boolean) => {
@@ -113,6 +122,12 @@
 		return [];
 	});
 
+	// Determine which series are visible based on legend toggle state
+	const visibleSeries = $derived.by(() => {
+		if (!legendCtx || legendCtx.hiddenKeys.size === 0) return series;
+		return series.filter((s) => !legendCtx!.hiddenKeys.has(s.key));
+	});
+
 	// Compute chart data from series
 	const chartData = $derived.by(() => {
 		// Always return chart data, even if empty
@@ -128,11 +143,12 @@
 			};
 		}
 
-		// Calculate max value and min timestamp in one pass
+		// Calculate max value and min timestamp from VISIBLE series only
 		let maxValue = -Infinity;
 		let minTimestamp: Date | null = null;
 
-		for (const s of series) {
+		const seriesToMeasure = visibleSeries.length > 0 ? visibleSeries : series;
+		for (const s of seriesToMeasure) {
 			if (s.data.length > 0) {
 				// Check first timestamp for min
 				const firstTimestamp = s.data[0].timestamp;
@@ -292,7 +308,7 @@
 		<InformationIcon />
 	</button>
 
-	<LegendWrapper {height} bind:ref={htmlRef}>
+	<LegendWrapper {height} bind:ref={htmlRef} onContextReady={(ctx) => (legendCtx = ctx)}>
 		<LineChart
 			series={chartData.series}
 			x="timestamp"
