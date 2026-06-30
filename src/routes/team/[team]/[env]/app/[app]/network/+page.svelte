@@ -23,7 +23,8 @@
 	let { interval } = $derived(data);
 
 	function sanitizeLabel(value: string): string {
-		return value.replace(/[^a-zA-Z0-9_-]/g, '');
+		const sanitized = value.replace(/[^a-zA-Z0-9_-]/g, '');
+		return sanitized || 'invalid';
 	}
 
 	const team = $derived(sanitizeLabel(page.params.team!));
@@ -31,11 +32,11 @@
 	const environmentName = $derived(page.params.env!);
 
 	const trafficQuery = $derived(
-		`label_replace(sum(rate(haproxy_backend_http_requests_total{proxy=~"${team}_svc_${app}_.*"}[$__rate_interval])), "metric", "req/s", "", "")` +
+		`label_replace(sum(rate(haproxy_backend_http_requests_total{proxy=~"${team}_svc_${app}_.*"}[$__rate_interval])), "metric", "req/s", "__name__", ".*")` +
 			` or ` +
-			`label_replace(sum(rate(haproxy_backend_http_responses_total{proxy=~"${team}_svc_${app}_.*", code="5xx"}[$__rate_interval])), "metric", "5xx/s", "", "")` +
+			`label_replace(sum(rate(haproxy_backend_http_responses_total{proxy=~"${team}_svc_${app}_.*", code="5xx"}[$__rate_interval])), "metric", "5xx/s", "__name__", ".*")` +
 			` or ` +
-			`label_replace(sum(rate(haproxy_backend_http_responses_total{proxy=~"${team}_svc_${app}_.*", code="4xx"}[$__rate_interval])), "metric", "4xx/s", "", "")`
+			`label_replace(sum(rate(haproxy_backend_http_responses_total{proxy=~"${team}_svc_${app}_.*", code="4xx"}[$__rate_interval])), "metric", "4xx/s", "__name__", ".*")`
 	);
 
 	function ingressTypeLabel(type: string): string {
