@@ -23,8 +23,12 @@
 	} = $props();
 
 	const ctx = createLegendContext();
+	let contextReported = false;
 	$effect.pre(() => {
-		onContextReady?.(ctx);
+		if (!contextReported && onContextReady) {
+			contextReported = true;
+			onContextReady(ctx);
+		}
 	});
 </script>
 

@@ -98,9 +98,9 @@
 				</div>
 				<div class="actions">
 					<ToggleGroup
-						bind:value={interval}
+						value={interval}
 						size="small"
-						onchange={() => changeParams({ interval }, { noScroll: true })}
+						onchange={(v) => changeParams({ interval: v }, { noScroll: true })}
 					>
 						{#each Object.values(PrometheusChartQueryInterval) as intervalOption (intervalOption)}
 							<ToggleGroupItem value={intervalOption}>{intervalOption}</ToggleGroupItem>
