@@ -13,10 +13,19 @@
 	let {
 		children,
 		height,
-		ref = $bindable()
-	}: { children: Snippet; height: `${number}px`; ref?: HTMLDivElement | null } = $props();
+		ref = $bindable(),
+		onContextReady
+	}: {
+		children: Snippet;
+		height: `${number}px`;
+		ref?: HTMLDivElement | null;
+		onContextReady?: (ctx: ReturnType<typeof createLegendContext>) => void;
+	} = $props();
 
 	const ctx = createLegendContext();
+	$effect.pre(() => {
+		onContextReady?.(ctx);
+	});
 </script>
 
 {#snippet legendSnippet({ context }: { context: LegendSnippetProps })}
@@ -34,7 +43,17 @@
 						class:deselected={ctx.selection &&
 							!ctx.selection.isEmpty() &&
 							!ctx.selection.isSelected(item.key)}
-						onclick={() => ctx.selection?.toggle(item.key)}
+						onclick={() => {
+							ctx.selection?.toggle(item.key);
+							ctx.hiddenKeys.clear();
+							if (ctx.selection && !ctx.selection.isEmpty()) {
+								for (const legendItem of ctx.items) {
+									if (!ctx.selection.isSelected(legendItem.key)) {
+										ctx.hiddenKeys.add(legendItem.key);
+									}
+								}
+							}
+						}}
 					>
 						<span class="legend-swatch" style="background-color: {item.color};"></span>
 						<span class="legend-label">{item.label}</span>

@@ -1,5 +1,6 @@
 <script lang="ts" module>
 	import { getContext, setContext } from 'svelte';
+	import { SvelteSet } from 'svelte/reactivity';
 
 	export type LegendSnippetProps =
 		| {
@@ -28,7 +29,10 @@
 		hasLegend = $state(false);
 		items: LegendItem[] = $state([]);
 		selection: SelectionApi | null = $state(null);
+		hiddenKeys: SvelteSet<string> = new SvelteSet();
 	}
+
+	export type LegendContext = Context;
 
 	function getLegendContext() {
 		return getContext<Context>(contextKey);
