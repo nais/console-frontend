@@ -5,6 +5,12 @@ query TenantDeployments(
 	$after: Cursor
 	$filter: DeploymentFilter
 ) {
+	environments {
+		nodes {
+			id
+			name
+		}
+	}
 	deployments(first: $first, last: $last, before: $before, after: $after, filter: $filter)
 		@paginate(mode: SinglePage) {
 		pageInfo {
