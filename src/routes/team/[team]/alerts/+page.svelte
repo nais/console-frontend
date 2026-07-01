@@ -20,30 +20,20 @@
 	import PrometheusAlarmDetail from './PrometheusAlarmDetail.svelte';
 
 	let { data }: PageProps = $props();
-	let { Alerts, AlertsMetadata } = $derived(data);
+	let { Alerts } = $derived(data);
 
 	let filtersOpen = $state(false);
 
 	let alerts = $derived($Alerts.data?.team.alerts);
+	let facets = $derived(alerts?.facets);
 	let filter = $state($Alerts.variables?.filter?.name ?? '');
 
 	let after: string = $derived($Alerts.variables?.after ?? '');
 	let before: string = $derived($Alerts.variables?.before ?? '');
 
-	const totalAlerts = $derived($AlertsMetadata.data?.team.totalAlerts.pageInfo.totalCount ?? 0);
+	const totalAlerts = $derived(alerts?.pageInfo.totalCount ?? 0);
 
-	const allEnvironments = $derived($AlertsMetadata.data?.team.environments ?? []);
-
-	const stateFacets = $derived([
-		{
-			state: 'FIRING',
-			count: $AlertsMetadata.data?.team.firingAlerts.pageInfo.totalCount ?? 0
-		},
-		{
-			state: 'INACTIVE',
-			count: $AlertsMetadata.data?.team.inactiveAlerts.pageInfo.totalCount ?? 0
-		}
-	]);
+	const stateFacets = $derived(facets?.states ?? []);
 
 	let selectedEnvironments: string[] = $derived(
 		page.url.searchParams.get('environments')?.split(',').filter(Boolean) ?? []
@@ -264,7 +254,7 @@
 				onSort={(field) => setSort(field as AlertOrderFieldOptions)}
 			>
 				<AlertsFacets
-					environments={allEnvironments}
+					environments={facets?.environments ?? []}
 					states={stateFacets}
 					{selectedStates}
 					{selectedEnvironments}
