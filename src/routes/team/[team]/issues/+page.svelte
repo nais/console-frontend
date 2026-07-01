@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { page } from '$app/state';
-	import { IssueOrderField, IssueType, OrderDirection } from '$houdini';
+	import { IssueOrderField, OrderDirection } from '$houdini';
 	import IssuesFacets from '$lib/domain/issues/IssuesFacets.svelte';
 	import IssueListItem from '$lib/domain/list-items/IssueListItem.svelte';
 	import CollapsibleSidebar from '$lib/ui/CollapsibleSidebar.svelte';
@@ -20,26 +20,14 @@
 	let filtersOpen = $state(false);
 	let issues = $derived($TeamIssues.data?.team.issues);
 
+	let facets = $derived(issues?.facets);
+
 	let after: string = $derived($TeamIssues.variables?.after ?? '');
 	let before: string = $derived($TeamIssues.variables?.before ?? '');
 
-	const totalCount = $derived($TeamIssues.data?.team.total.pageInfo.totalCount ?? 0);
+	const totalCount = $derived(issues?.pageInfo.totalCount ?? 0);
 
-	const allEnvironments = $derived($TeamIssues?.data?.team.environments ?? []);
-
-	const severityFacets = $derived([
-		{
-			severity: 'CRITICAL',
-			count: $TeamIssues?.data?.team.critical.pageInfo.totalCount ?? 0
-		},
-		{
-			severity: 'WARNING',
-			count: $TeamIssues?.data?.team.warnings.pageInfo.totalCount ?? 0
-		},
-		{ severity: 'TODO', count: $TeamIssues?.data?.team.todos.pageInfo.totalCount ?? 0 }
-	]);
-
-	const issueTypes = Object.values(IssueType) as string[];
+	const severityFacets = $derived(facets?.severities ?? []);
 
 	let selectedEnvironments: string[] = $derived(
 		page.url.searchParams.get('environments')?.split(',').filter(Boolean) ?? []
@@ -165,8 +153,8 @@
 			>
 				<IssuesFacets
 					severities={severityFacets}
-					{issueTypes}
-					environments={allEnvironments}
+					issueTypes={facets?.issueTypes ?? []}
+					environments={facets?.environments ?? []}
 					{selectedSeverity}
 					{selectedIssueType}
 					{selectedEnvironments}

@@ -26,7 +26,6 @@
 			item,
 			graphql(`
 				fragment IssueFragment on Issue {
-					id
 					__typename
 					teamEnvironment {
 						environment {
@@ -140,60 +139,48 @@
 		)
 	);
 
+	interface RawIssueData {
+		__typename: string;
+		teamEnvironment: { environment: { name: string }; team: { slug: string } };
+		message: string;
+		severity: string;
+		application?: { name: string };
+		workload?: { __typename: string; name: string; image?: { name: string } };
+		job?: { name: string };
+		openSearch?: { name: string };
+		sqlInstance?: { name: string };
+		valkey?: { name: string };
+		unleash?: { name: string };
+		ingresses?: string[];
+		cvssScore?: number;
+		event?: string;
+		state?: string;
+	}
+
 	const activeTypeName = $derived(($data?.__typename as string) ?? 'Unknown');
 
-	// Houdini 2.0 type-keyed properties may not resolve at runtime — access fields directly as fallback
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	const raw = $derived($data as Record<string, any> | null);
+	const d = $derived($data as unknown as RawIssueData | null);
 
-	const workload = $derived(
-		$data?.DeprecatedRegistryIssue?.workload ??
-			$data?.ExternalIngressCriticalVulnerabilityIssue?.workload ??
-			$data?.FailedSynchronizationIssue?.workload ??
-			$data?.InvalidSpecIssue?.workload ??
-			$data?.MissingSbomIssue?.workload ??
-			$data?.NoRunningInstancesIssue?.workload ??
-			$data?.ApplicationRestartLoopIssue?.workload ??
-			$data?.VulnerableImageIssue?.workload ??
-			$data?.WorkloadProblemIssue?.workload ??
-			raw?.['workload'] ??
-			null
-	);
+	const workload = $derived(d?.workload ?? null);
 
 	const resourceName = $derived(
-		$data?.DeprecatedIngressIssue?.application.name ??
-			$data?.LastRunFailedIssue?.job.name ??
-			$data?.OpenSearchIssue?.openSearch.name ??
-			($data?.SqlInstanceStateIssue ?? $data?.SqlInstanceVersionIssue)?.sqlInstance.name ??
-			$data?.ValkeyIssue?.valkey.name ??
-			$data?.UnleashReleaseChannelIssue?.unleash.name ??
-			raw?.['application']?.name ??
-			raw?.['job']?.name ??
-			raw?.['openSearch']?.name ??
-			raw?.['sqlInstance']?.name ??
-			raw?.['valkey']?.name ??
-			raw?.['unleash']?.name ??
+		d?.application?.name ??
+			d?.job?.name ??
+			d?.openSearch?.name ??
+			d?.sqlInstance?.name ??
+			d?.valkey?.name ??
+			d?.unleash?.name ??
 			workload?.name ??
 			'Unknown'
 	);
 
 	const ResourceIcon = $derived.by(() => {
-		if ($data?.OpenSearchIssue || activeTypeName === 'OpenSearchIssue') return OpenSearchIcon;
-		if (
-			$data?.SqlInstanceStateIssue ||
-			$data?.SqlInstanceVersionIssue ||
-			activeTypeName === 'SqlInstanceStateIssue' ||
-			activeTypeName === 'SqlInstanceVersionIssue'
-		)
+		if (activeTypeName === 'OpenSearchIssue') return OpenSearchIcon;
+		if (activeTypeName === 'SqlInstanceStateIssue' || activeTypeName === 'SqlInstanceVersionIssue')
 			return DatabaseIcon;
-		if ($data?.ValkeyIssue || activeTypeName === 'ValkeyIssue') return ValkeyIcon;
-		if ($data?.UnleashReleaseChannelIssue || activeTypeName === 'UnleashReleaseChannelIssue')
-			return UnleashIcon;
-		if (
-			$data?.LastRunFailedIssue ||
-			activeTypeName === 'LastRunFailedIssue' ||
-			workload?.__typename === 'NaisJob'
-		)
+		if (activeTypeName === 'ValkeyIssue') return ValkeyIcon;
+		if (activeTypeName === 'UnleashReleaseChannelIssue') return UnleashIcon;
+		if (activeTypeName === 'LastRunFailedIssue' || workload?.__typename === 'NaisJob')
 			return BriefcaseClockIcon;
 		return PackageIcon;
 	});
@@ -242,22 +229,20 @@
 
 		<div class="detail">
 			<p class="message">{$data.message}</p>
-			{#if activeTypeName === 'DeprecatedIngressIssue' && $data.DeprecatedIngressIssue}
+			{#if activeTypeName === 'DeprecatedIngressIssue' && d?.ingresses}
 				<div class="extra">
 					<strong>
-						{$data.DeprecatedIngressIssue.ingresses.length === 1
-							? 'Deprecated ingress:'
-							: 'Deprecated ingresses:'}
+						{d.ingresses.length === 1 ? 'Deprecated ingress:' : 'Deprecated ingresses:'}
 					</strong>
-					{#each $data.DeprecatedIngressIssue.ingresses as ingress (ingress)}
+					{#each d.ingresses as ingress (ingress)}
 						<span class="ingress">{ingress}</span>
 					{/each}
 				</div>
 			{/if}
-			{#if activeTypeName === 'ExternalIngressCriticalVulnerabilityIssue' && $data.ExternalIngressCriticalVulnerabilityIssue}
+			{#if activeTypeName === 'ExternalIngressCriticalVulnerabilityIssue' && d?.cvssScore}
 				<div class="extra">
 					<strong>CVSS Score:</strong>
-					{$data.ExternalIngressCriticalVulnerabilityIssue.cvssScore}
+					{d.cvssScore}
 				</div>
 			{/if}
 		</div>
