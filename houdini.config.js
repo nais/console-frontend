@@ -8,7 +8,7 @@ const config = {
 	schemaPath: './schema.graphql',
 	url: '/graphql',
 	watchSchema: {
-		interval: 0,
+		interval: 2000,
 		url: 'env:VITE_SCHEMA_ENDPOINT',
 		headers: {
 			'x-user-email': 'dev.usersen@example.com'

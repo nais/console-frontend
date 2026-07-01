@@ -5,6 +5,7 @@ import { defineConfig, loadEnv } from 'vite';
 
 export default defineConfig((mode) => {
 	const env = loadEnv(mode.mode, process.cwd());
+	process.env.VITE_SCHEMA_ENDPOINT ??= env.VITE_SCHEMA_ENDPOINT;
 
 	const headers = (): { [header: string]: string } => {
 		const email = env?.VITE_API_USER_EMAIL;
