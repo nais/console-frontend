@@ -139,7 +139,7 @@
 		)
 	);
 
-	interface RawIssueData {
+	interface RawIssue {
 		__typename: string;
 		teamEnvironment: { environment: { name: string }; team: { slug: string } };
 		message: string;
@@ -157,9 +157,13 @@
 		state?: string;
 	}
 
-	const activeTypeName = $derived(($data?.__typename as string) ?? 'Unknown');
-
-	const d = $derived($data as unknown as RawIssueData | null);
+	const d = $derived.by(() => {
+		const payload = $data[$data.__typename as keyof typeof $data];
+		if (payload && typeof payload === 'object') {
+			return { ...$data, ...(payload as object) } as unknown as RawIssue;
+		}
+		return $data as unknown as RawIssue;
+	});
 
 	const workload = $derived(d?.workload ?? null);
 
@@ -175,18 +179,19 @@
 	);
 
 	const ResourceIcon = $derived.by(() => {
-		if (activeTypeName === 'OpenSearchIssue') return OpenSearchIcon;
-		if (activeTypeName === 'SqlInstanceStateIssue' || activeTypeName === 'SqlInstanceVersionIssue')
+		if (d?.__typename === 'OpenSearchIssue') return OpenSearchIcon;
+		if (d?.__typename === 'SqlInstanceStateIssue' || d?.__typename === 'SqlInstanceVersionIssue')
 			return DatabaseIcon;
-		if (activeTypeName === 'ValkeyIssue') return ValkeyIcon;
-		if (activeTypeName === 'UnleashReleaseChannelIssue') return UnleashIcon;
-		if (activeTypeName === 'LastRunFailedIssue' || workload?.__typename === 'NaisJob')
+		if (d?.__typename === 'ValkeyIssue') return ValkeyIcon;
+		if (d?.__typename === 'UnleashReleaseChannelIssue') return UnleashIcon;
+		if (d?.__typename === 'LastRunFailedIssue' || workload?.__typename === 'NaisJob')
 			return BriefcaseClockIcon;
 		return PackageIcon;
 	});
 
 	const issueTitle = $derived.by(() => {
-		const enumLike = activeTypeName
+		const typeName = d?.__typename ?? 'Unknown';
+		const enumLike = typeName
 			.replace(/Issue$/, '')
 			.replace('OpenSearch', 'Opensearch')
 			.replace('SqlInstance', 'Sqlinstance')
@@ -203,14 +208,14 @@
 				<ChevronRightIcon />
 			</div>
 			<div class="severity-dot">
-				{#if $data.severity === 'CRITICAL'}
+				{#if d.severity === 'CRITICAL'}
 					<CriticalIndicator />
 				{:else}
 					<CircleFillIcon
 						style="color: light-dark({{
 							TODO: 'var(--ax-bg-info-strong), var(--ax-bg-info-strong)',
 							WARNING: 'var(--ax-bg-warning-moderate-pressed), var(--ax-bg-warning-strong-pressed)'
-						}[$data.severity] ??
+						}[d.severity] ??
 							'var(--ax-bg-info-strong), var(--ax-bg-info-strong)'}); font-size: 0.7rem"
 					/>
 				{/if}
@@ -220,16 +225,16 @@
 			</div>
 			<div class="resource-group">
 				<span class="resource-name" title={resourceName}>{resourceName}</span>
-				<Tag size="xsmall" variant={envTagVariant($data.teamEnvironment.environment.name)}
-					>{$data.teamEnvironment.environment.name}</Tag
+				<Tag size="xsmall" variant={envTagVariant(d.teamEnvironment.environment.name)}
+					>{d.teamEnvironment.environment.name}</Tag
 				>
 			</div>
 			<span class="issue-title">{issueTitle}</span>
 		</summary>
 
 		<div class="detail">
-			<p class="message">{$data.message}</p>
-			{#if activeTypeName === 'DeprecatedIngressIssue' && d?.ingresses}
+			<p class="message">{d.message}</p>
+			{#if d.__typename === 'DeprecatedIngressIssue' && d.ingresses}
 				<div class="extra">
 					<strong>
 						{d.ingresses.length === 1 ? 'Deprecated ingress:' : 'Deprecated ingresses:'}
@@ -239,7 +244,7 @@
 					{/each}
 				</div>
 			{/if}
-			{#if activeTypeName === 'ExternalIngressCriticalVulnerabilityIssue' && d?.cvssScore}
+			{#if d.__typename === 'ExternalIngressCriticalVulnerabilityIssue' && d.cvssScore}
 				<div class="extra">
 					<strong>CVSS Score:</strong>
 					{d.cvssScore}
