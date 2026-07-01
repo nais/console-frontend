@@ -255,10 +255,10 @@ When a `fragment()` is defined on an **interface** type, Houdini generates a **f
 
 #### Rules for interface fragments:
 
-1. **No `__typename`** — use the type-keyed nullable properties as discriminators:
+1. **No `__typename` by default** — the flat fragment type does not include `__typename` unless explicitly selected in the query. Use the type-keyed nullable properties as discriminators:
 
    ```typescript
-   // Wrong — __typename doesn't exist on the flat fragment type
+   // Wrong — __typename doesn't exist unless explicitly selected
    if ($data.__typename === 'DeprecatedIngressIssue') { ... }
 
    // Correct — check the nullable type-keyed property

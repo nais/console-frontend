@@ -201,6 +201,8 @@
 	const issueTitle = $derived.by(() => {
 		const enumLike = activeTypeName
 			.replace(/Issue$/, '')
+			.replace('OpenSearch', 'Opensearch')
+			.replace('SqlInstance', 'Sqlinstance')
 			.replace(/([a-z])([A-Z])/g, '$1_$2')
 			.toUpperCase();
 		return issueTypeLabel(enumLike);
