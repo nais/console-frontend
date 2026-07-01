@@ -19,7 +19,7 @@
 	import type { PageProps } from './$types';
 
 	let { data }: PageProps = $props();
-	let { Applications, ApplicationsListMetadata } = $derived(data);
+	let { Applications } = $derived(data);
 
 	let filtersOpen = $state(false);
 
@@ -29,7 +29,7 @@
 	let before: string = $derived($Applications.variables?.before ?? '');
 
 	const totalApplications = $derived(
-		$ApplicationsListMetadata.data?.team.totalApplications.pageInfo.totalCount ?? 0
+		$Applications.data?.team.applications.pageInfo.totalCount ?? 0
 	);
 
 	let selectedEnvironments: string[] = $derived(
