@@ -19,7 +19,7 @@
 	import type { PageProps } from './$types';
 
 	let { data }: PageProps = $props();
-	let { Jobs, JobsListMetadata } = $derived(data);
+	let { Jobs } = $derived(data);
 
 	let filtersOpen = $state(false);
 
@@ -28,7 +28,7 @@
 	let after: string = $derived($Jobs.variables?.after ?? '');
 	let before: string = $derived($Jobs.variables?.before ?? '');
 
-	const totalJobs = $derived($JobsListMetadata.data?.team.totalJobs.pageInfo.totalCount ?? 0);
+	const totalJobs = $derived($Jobs.data?.team.jobs.pageInfo.totalCount ?? 0);
 
 	let selectedEnvironments: string[] = $derived(
 		page.url.searchParams.get('environments')?.split(',').filter(Boolean) ?? []
