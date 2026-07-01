@@ -229,19 +229,32 @@
 </script>
 
 {#if $data}
-	<a class="issue-row surface-interactive" href={resource.href}>
-		<div class="surface-icon">
-			<ExclamationmarkTriangleFillIcon />
+	{@const content = {
+		icon: ExclamationmarkTriangleFillIcon,
+		heading: `${title} for ${resource.name} in ${$data.teamEnvironment.environment.name}`,
+		message: $data.message
+	}}
+	{#if resource.href}
+		<a class="issue-row surface-interactive" href={resource.href}>
+			<div class="surface-icon">
+				<content.icon />
+			</div>
+			<VStack gap="space-1">
+				<Heading size="xsmall" level="2">{content.heading}</Heading>
+				<BodyLong size="small">{content.message}</BodyLong>
+			</VStack>
+		</a>
+	{:else}
+		<div class="issue-row surface-interactive">
+			<div class="surface-icon">
+				<content.icon />
+			</div>
+			<VStack gap="space-1">
+				<Heading size="xsmall" level="2">{content.heading}</Heading>
+				<BodyLong size="small">{content.message}</BodyLong>
+			</VStack>
 		</div>
-		<VStack gap="space-1">
-			<Heading size="xsmall" level="2">
-				{title} for {resource.name} in {$data.teamEnvironment.environment.name}
-			</Heading>
-			<BodyLong size="small">
-				{$data.message}
-			</BodyLong>
-		</VStack>
-	</a>
+	{/if}
 {/if}
 
 <style>
