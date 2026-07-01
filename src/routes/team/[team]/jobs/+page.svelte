@@ -43,7 +43,7 @@
 	);
 
 	const hasActiveFilters = $derived(
-		!!filter ||
+		!!page.url.searchParams.get('filter') ||
 			selectedEnvironments.length > 0 ||
 			selectedStates.length > 0 ||
 			selectedLabels.length > 0
