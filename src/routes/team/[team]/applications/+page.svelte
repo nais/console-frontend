@@ -44,6 +44,13 @@
 		page.url.searchParams.get('labels')?.split(',').filter(Boolean) ?? []
 	);
 
+	const hasActiveFilters = $derived(
+		!!filter ||
+			selectedEnvironments.length > 0 ||
+			selectedStates.length > 0 ||
+			selectedLabels.length > 0
+	);
+
 	const sortFields: { value: ApplicationOrderField$options; label: string }[] = [
 		{ value: ApplicationOrderField.ISSUES, label: 'Issues' },
 		{ value: ApplicationOrderField.NAME, label: 'Name' },
@@ -161,7 +168,15 @@
 				}}
 			/>
 		{:else}
-			<BodyLong><strong>No applications found.</strong></BodyLong>
+			<BodyLong>
+				<strong>
+					{#if hasActiveFilters}
+						No applications match your filters.
+					{:else}
+						No applications found.
+					{/if}
+				</strong>
+			</BodyLong>
 		{/if}
 	</div>
 	<CollapsibleSidebar bind:open={filtersOpen}>

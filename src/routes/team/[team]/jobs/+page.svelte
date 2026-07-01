@@ -42,6 +42,13 @@
 		page.url.searchParams.get('labels')?.split(',').filter(Boolean) ?? []
 	);
 
+	const hasActiveFilters = $derived(
+		!!filter ||
+			selectedEnvironments.length > 0 ||
+			selectedStates.length > 0 ||
+			selectedLabels.length > 0
+	);
+
 	const sortFields: { value: JobOrderField$options; label: string }[] = [
 		{ value: JobOrderField.ISSUES, label: 'Issues' },
 		{ value: JobOrderField.NAME, label: 'Name' },
@@ -162,7 +169,15 @@
 				}}
 			/>
 		{:else}
-			<BodyLong><strong>No jobs found.</strong></BodyLong>
+			<BodyLong>
+				<strong>
+					{#if hasActiveFilters}
+						No jobs match your filters.
+					{:else}
+						No jobs found.
+					{/if}
+				</strong>
+			</BodyLong>
 		{/if}
 	</div>
 	<CollapsibleSidebar bind:open={filtersOpen}>
