@@ -40,8 +40,7 @@
 		{:else}
 			<textarea
 				class="aksel-text-field__input aksel-body-short aksel-body-short--medium"
-				bind:value={newText}
-			></textarea>
+				bind:value={newText}></textarea>
 		{/if}
 		<Button onclick={save} size="xsmall" disabled={!isMember}>Save</Button>
 		<Button onclick={reset} size="xsmall" variant="secondary-neutral">Cancel</Button>
