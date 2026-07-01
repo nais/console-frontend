@@ -1,4 +1,4 @@
-import { load_DeploymentsMetadata, load_TenantDeployments, type DeploymentFilter } from '$houdini';
+import { load_TenantDeployments, type DeploymentFilter } from '$houdini';
 import { addPageMeta } from '$lib/utils/pageMeta';
 import { subDays, subMonths } from 'date-fns';
 
@@ -47,9 +47,6 @@ export async function load(event) {
 				...(before ? { before, last: rows } : after ? { after, first: rows } : { first: rows }),
 				...(Object.keys(filter).length > 0 ? { filter } : {})
 			}
-		})),
-		...(await load_DeploymentsMetadata({
-			event
 		}))
 	};
 }

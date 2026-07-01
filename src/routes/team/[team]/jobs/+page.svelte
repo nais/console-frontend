@@ -19,7 +19,7 @@
 	import type { PageProps } from './$types';
 
 	let { data }: PageProps = $props();
-	let { Jobs, JobsListMetadata } = $derived(data);
+	let { Jobs } = $derived(data);
 
 	let filtersOpen = $state(false);
 
@@ -28,7 +28,7 @@
 	let after: string = $derived($Jobs.variables?.after ?? '');
 	let before: string = $derived($Jobs.variables?.before ?? '');
 
-	const totalJobs = $derived($JobsListMetadata.data?.team.totalJobs.pageInfo.totalCount ?? 0);
+	const totalJobs = $derived($Jobs.data?.team.jobs.pageInfo.totalCount ?? 0);
 
 	let selectedEnvironments: string[] = $derived(
 		page.url.searchParams.get('environments')?.split(',').filter(Boolean) ?? []
@@ -40,6 +40,13 @@
 
 	let selectedLabels: string[] = $derived(
 		page.url.searchParams.get('labels')?.split(',').filter(Boolean) ?? []
+	);
+
+	const hasActiveFilters = $derived(
+		!!page.url.searchParams.get('filter') ||
+			selectedEnvironments.length > 0 ||
+			selectedStates.length > 0 ||
+			selectedLabels.length > 0
 	);
 
 	const sortFields: { value: JobOrderField$options; label: string }[] = [
@@ -162,7 +169,15 @@
 				}}
 			/>
 		{:else}
-			<BodyLong><strong>No jobs found.</strong></BodyLong>
+			<BodyLong>
+				<strong>
+					{#if hasActiveFilters}
+						No jobs match your filters.
+					{:else}
+						No jobs found.
+					{/if}
+				</strong>
+			</BodyLong>
 		{/if}
 	</div>
 	<CollapsibleSidebar bind:open={filtersOpen}>

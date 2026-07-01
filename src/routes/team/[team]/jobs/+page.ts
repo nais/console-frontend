@@ -1,10 +1,4 @@
-import {
-	JobOrderField,
-	load_Jobs,
-	load_JobsListMetadata,
-	OrderDirection,
-	type TeamJobsFilter
-} from '$houdini';
+import { JobOrderField, load_Jobs, OrderDirection, type TeamJobsFilter } from '$houdini';
 import { parseLabelsParam } from '$lib/domain/labels/labels';
 import { urlToOrderDirection, urlToOrderField } from '$lib/ui/OrderByMenu.svelte';
 import { addPageMeta } from '$lib/utils/pageMeta';
@@ -41,12 +35,6 @@ export async function load(event) {
 					direction: urlToOrderDirection(event.url, OrderDirection.DESC)
 				},
 				...(before ? { before, last: rows } : { after, first: rows })
-			}
-		})),
-		...(await load_JobsListMetadata({
-			event,
-			variables: {
-				team: event.params.team
 			}
 		}))
 	};
