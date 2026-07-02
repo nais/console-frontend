@@ -43,7 +43,7 @@
 				<dd><code>{imageName}</code></dd>
 			</div>
 			<div>
-				<dt>Tag</dt>
+				<dt>Tag / digest</dt>
 				<dd><code class="tag">{tag || digest || '-'}</code></dd>
 			</div>
 		</dl>
@@ -62,7 +62,7 @@
 				<dd><code>{name}</code></dd>
 			</div>
 			<div>
-				<dt>Tag</dt>
+				<dt>Tag / digest</dt>
 				<dd><code class="tag">{tag || digest || '-'}</code></dd>
 			</div>
 		</dl>

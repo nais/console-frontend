@@ -37,8 +37,12 @@
 	let closeButtonEl: HTMLButtonElement | undefined = $state();
 
 	function imageVersionLabelFor(image: string): string {
-		const parsed = parseImage(image);
-		return parsed.tag ?? parsed.digest ?? image;
+		try {
+			const parsed = parseImage(image);
+			return parsed.tag ?? parsed.digest ?? image;
+		} catch {
+			return image;
+		}
 	}
 
 	const close = async () => {
