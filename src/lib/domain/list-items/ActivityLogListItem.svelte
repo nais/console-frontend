@@ -289,14 +289,6 @@
 	const Icon = $derived(icons[$data.__typename] || QuestionmarkIcon);
 
 	const TextComponent = $derived(activityTextComponent($data.__typename));
-
-	const textData = $derived.by(() => {
-		const payload = $data[$data.__typename as keyof typeof $data];
-		if (payload && typeof payload === 'object') {
-			return { ...$data, ...(payload as object) };
-		}
-		return $data;
-	}) as unknown as typeof $data;
 </script>
 
 {#if mode === 'full'}
@@ -309,7 +301,7 @@
 			</Tooltip>
 
 			<div class="activity-text">
-				<TextComponent data={textData} {mode} />
+				<TextComponent data={$data} {mode} />
 			</div>
 		</div>
 	</ListItem>
@@ -321,10 +313,10 @@
 		<div class="content">
 			{#if mode === 'sidebar'}
 				<BodyLong size="small">
-					<TextComponent data={textData} {mode} />
+					<TextComponent data={$data} {mode} />
 				</BodyLong>
 			{:else}
-				<TextComponent data={textData} {mode} />
+				<TextComponent data={$data} {mode} />
 			{/if}
 		</div>
 	</div>

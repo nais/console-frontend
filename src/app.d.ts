@@ -42,10 +42,6 @@ declare global {
 			modalHref?: string;
 			showMessage?: { id: string; type: 'success' | 'error'; text: string; target?: string }[];
 		}
-
-		interface GraphQLErrorExtensions {
-			code?: string;
-		}
 	}
 }
 

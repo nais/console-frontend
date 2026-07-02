@@ -1,5 +1,4 @@
-import { load_TenantDeployments } from '$houdini';
-import type { DeploymentFilter } from '$houdini/graphql/inputs';
+import { load_TenantDeployments, type DeploymentFilter } from '$houdini';
 import { addPageMeta } from '$lib/utils/pageMeta';
 import { subDays, subMonths } from 'date-fns';
 

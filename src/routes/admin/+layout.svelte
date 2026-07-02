@@ -4,7 +4,7 @@
 	import PageHeader from '$lib/ui/PageHeader.svelte';
 	import Tab from '$lib/ui/Tab.svelte';
 	import Tabs from '$lib/ui/Tabs.svelte';
-	import type { LayoutProps } from './$types';
+	import type { LayoutProps } from './$houdini';
 
 	let { children }: LayoutProps = $props();
 

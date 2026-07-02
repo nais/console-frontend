@@ -1,8 +1,7 @@
 <script lang="ts">
-	import type { AlertState } from '$houdini';
+	import type { AlertState, ValueOf } from '$houdini';
 	import Time from '$lib/ui/Time.svelte';
 	import { Heading, Tag } from '@nais/ds-svelte-community';
-	import type { ValueOf } from 'houdini/runtime';
 
 	const {
 		alarm,

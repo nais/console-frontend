@@ -1,6 +1,5 @@
 query UserInfo {
 	me {
-		__typename
 		... on User {
 			id
 			name

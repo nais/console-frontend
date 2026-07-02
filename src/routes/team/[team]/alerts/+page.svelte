@@ -20,20 +20,30 @@
 	import PrometheusAlarmDetail from './PrometheusAlarmDetail.svelte';
 
 	let { data }: PageProps = $props();
-	let { Alerts } = $derived(data);
+	let { Alerts, AlertsMetadata } = $derived(data);
 
 	let filtersOpen = $state(false);
 
 	let alerts = $derived($Alerts.data?.team.alerts);
-	let facets = $derived(alerts?.facets);
 	let filter = $state($Alerts.variables?.filter?.name ?? '');
 
 	let after: string = $derived($Alerts.variables?.after ?? '');
 	let before: string = $derived($Alerts.variables?.before ?? '');
 
-	const totalAlerts = $derived(alerts?.pageInfo.totalCount ?? 0);
+	const totalAlerts = $derived($AlertsMetadata.data?.team.totalAlerts.pageInfo.totalCount ?? 0);
 
-	const stateFacets = $derived(facets?.states ?? []);
+	const allEnvironments = $derived($AlertsMetadata.data?.team.environments ?? []);
+
+	const stateFacets = $derived([
+		{
+			state: 'FIRING',
+			count: $AlertsMetadata.data?.team.firingAlerts.pageInfo.totalCount ?? 0
+		},
+		{
+			state: 'INACTIVE',
+			count: $AlertsMetadata.data?.team.inactiveAlerts.pageInfo.totalCount ?? 0
+		}
+	]);
 
 	let selectedEnvironments: string[] = $derived(
 		page.url.searchParams.get('environments')?.split(',').filter(Boolean) ?? []
@@ -174,39 +184,41 @@
 							</div>
 						</summary>
 
-						<div class="rule">
-							{#if alert.alarms.length > 0}
-								<div class="alarms">
-									{#each alert.alarms as alarm, i (alarm)}
-										<PrometheusAlarmDetail {alarm} {i} />
-									{/each}
-								</div>
-							{:else}
-								<div class="muted">No alerts firing</div>
-							{/if}
+						{#if alert.__typename === 'PrometheusAlert'}
+							<div class="rule">
+								{#if alert.alarms.length > 0}
+									<div class="alarms">
+										{#each alert.alarms as alarm, i (alarm)}
+											<PrometheusAlarmDetail {alarm} {i} />
+										{/each}
+									</div>
+								{:else}
+									<div class="muted">No alerts firing</div>
+								{/if}
 
-							<div class="query-heading">
-								<Heading as="h2" size="xsmall">Query</Heading>
-								<div class="query-actions">
-									<ExternalLink href={makeGrafanaExploreUrl(alert.query)}>
-										<span style="font-size: 16px;">Run in Grafana</span>
-									</ExternalLink>
-									<CopyButton
-										text="Copy query"
-										activeText="Query copied"
-										variant="action"
-										copyText={alert.query}
-										size="xsmall"
-									/>
+								<div class="query-heading">
+									<Heading as="h2" size="xsmall">Query</Heading>
+									<div class="query-actions">
+										<ExternalLink href={makeGrafanaExploreUrl(alert.query)}>
+											<span style="font-size: 16px;">Run in Grafana</span>
+										</ExternalLink>
+										<CopyButton
+											text="Copy query"
+											activeText="Query copied"
+											variant="action"
+											copyText={alert.query}
+											size="xsmall"
+										/>
+									</div>
+								</div>
+								<div style="display: flex; flex-direction: column; gap: 8px; flex-wrap: wrap;">
+									<CodeBlockPromQl code={alert.query} />
+									<div class="muted small for">
+										<ClockDashedIcon />&nbsp;for: {formatSeconds(alert.duration)}
+									</div>
 								</div>
 							</div>
-							<div style="display: flex; flex-direction: column; gap: 8px; flex-wrap: wrap;">
-								<CodeBlockPromQl code={alert.query} />
-								<div class="muted small for">
-									<ClockDashedIcon />&nbsp;for: {formatSeconds(alert.duration)}
-								</div>
-							</div>
-						</div>
+						{/if}
 					</details>
 				{/each}
 			{:else if totalAlerts === 0}
@@ -252,7 +264,7 @@
 				onSort={(field) => setSort(field as AlertOrderFieldOptions)}
 			>
 				<AlertsFacets
-					environments={facets?.environments ?? []}
+					environments={allEnvironments}
 					states={stateFacets}
 					{selectedStates}
 					{selectedEnvironments}

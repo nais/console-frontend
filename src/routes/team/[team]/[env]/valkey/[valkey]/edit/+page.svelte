@@ -21,7 +21,7 @@
 		Select,
 		TextField
 	} from '@nais/ds-svelte-community';
-	import type { PageProps } from './$types';
+	import type { PageProps } from './$houdini';
 
 	let { form, data }: PageProps = $props();
 
