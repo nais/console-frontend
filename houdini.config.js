@@ -15,7 +15,6 @@ const config = {
 		}
 	},
 	defaultCachePolicy: 'CacheAndNetwork',
-	defaultFragmentMasking: 'disable',
 	plugins: {
 		'houdini-svelte': {
 			forceRunesMode: true
