@@ -1,4 +1,10 @@
-import { formatImageRef, getImageDisplayName, parseImage } from './image';
+import {
+	formatImageRef,
+	formatImageVersion,
+	getImageDisplayName,
+	imageRefMatches,
+	parseImage
+} from './image';
 
 describe('parseImage', () => {
 	test.each([
@@ -99,6 +105,70 @@ describe('formatImageRef', () => {
 		}
 	])('formatImageRef: $name', ({ image, expected }) => {
 		expect(formatImageRef(image)).toBe(expected);
+	});
+});
+
+describe('formatImageVersion', () => {
+	test.each([
+		{
+			name: 'formats tag and digest together',
+			image: { tag: 'latest', digest: 'sha256:deadbeef' },
+			expected: 'latest@sha256:deadbeef'
+		},
+		{
+			name: 'formats digest-only version',
+			image: { tag: '', digest: 'sha256:cafebabe' },
+			expected: 'sha256:cafebabe'
+		},
+		{
+			name: 'formats tag-only version',
+			image: { tag: 'latest', digest: null },
+			expected: 'latest'
+		},
+		{
+			name: 'falls back to placeholder when version is missing',
+			image: { tag: undefined, digest: undefined },
+			expected: '-'
+		}
+	])('formatImageVersion: $name', ({ image, expected }) => {
+		expect(formatImageVersion(image)).toBe(expected);
+	});
+});
+
+describe('imageRefMatches', () => {
+	test.each([
+		{
+			name: 'matches tag-only history against current tag and digest',
+			imageRef: 'ghcr.io/navikt/my-app:latest',
+			image: { name: 'ghcr.io/navikt/my-app', tag: 'latest', digest: 'sha256:deadbeef' },
+			expected: true
+		},
+		{
+			name: 'matches full tag and digest refs exactly',
+			imageRef: 'ghcr.io/navikt/my-app:latest@sha256:deadbeef',
+			image: { name: 'ghcr.io/navikt/my-app', tag: 'latest', digest: 'sha256:deadbeef' },
+			expected: true
+		},
+		{
+			name: 'rejects different digests when the history ref includes one',
+			imageRef: 'ghcr.io/navikt/my-app:latest@sha256:cafebabe',
+			image: { name: 'ghcr.io/navikt/my-app', tag: 'latest', digest: 'sha256:deadbeef' },
+			expected: false
+		},
+		{
+			name: 'rejects different tags',
+			imageRef: 'ghcr.io/navikt/my-app:canary',
+			image: { name: 'ghcr.io/navikt/my-app', tag: 'latest', digest: 'sha256:deadbeef' },
+			expected: false
+		},
+		{
+			name: 'rejects different image names',
+			imageRef: 'ghcr.io/navikt/other-app:latest',
+			image: { name: 'ghcr.io/navikt/my-app', tag: 'latest', digest: 'sha256:deadbeef' },
+			expected: false
+		}
+	])('imageRefMatches: $name', ({ imageRef, image, expected }) => {
+		expect(imageRefMatches(imageRef, image)).toBe(expected);
 	});
 });
 

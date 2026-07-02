@@ -69,6 +69,48 @@ export const formatImageRef = (image: {
 	return ref;
 };
 
+export const formatImageVersion = (image: { tag?: string | null; digest?: string | null }) => {
+	if (image.tag && image.digest) {
+		return `${image.tag}@${image.digest}`;
+	}
+
+	return image.tag || image.digest || '-';
+};
+
+export const imageRefMatches = (
+	imageRef: string,
+	image: {
+		name: string;
+		tag?: string | null;
+		digest?: string | null;
+	}
+) => {
+	if (imageRef === formatImageRef(image)) {
+		return true;
+	}
+
+	try {
+		const parsed = parseImage(imageRef);
+		const parsedName = [parsed.registry, parsed.repository, parsed.name].filter(Boolean).join('/');
+
+		if (parsedName !== image.name) {
+			return false;
+		}
+
+		if (parsed.digest && parsed.digest !== image.digest) {
+			return false;
+		}
+
+		if (parsed.tag && parsed.tag !== image.tag) {
+			return false;
+		}
+
+		return Boolean(parsed.tag || parsed.digest) || (!image.tag && !image.digest);
+	} catch {
+		return false;
+	}
+};
+
 export const getImageDisplayName = (name: string): string => {
 	return name.split('/').slice(2).join('/');
 };

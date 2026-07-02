@@ -1,6 +1,6 @@
 <script lang="ts">
 	import SurfaceCard from '$lib/ui/SurfaceCard.svelte';
-	import { formatImageRef, parseImage } from '$lib/utils/image';
+	import { formatImageRef, formatImageVersion, parseImage } from '$lib/utils/image';
 	import { CopyButton } from '@nais/ds-svelte-community';
 	import type { Snippet } from 'svelte';
 
@@ -26,6 +26,7 @@
 
 	const { registry, repository, name } = $derived(parseImage(imageName));
 	const imageRef = $derived(imageName ? formatImageRef({ name: imageName, tag, digest }) : '');
+	const versionLabel = $derived(formatImageVersion({ tag, digest }));
 </script>
 
 <SurfaceCard {title} {level} {bordered}>
@@ -42,8 +43,8 @@
 				<dd><code>{imageName}</code></dd>
 			</div>
 			<div>
-				<dt>{digest ? 'Digest' : 'Tag'}</dt>
-				<dd><code class="tag">{tag || digest || '-'}</code></dd>
+				<dt>Version</dt>
+				<dd><code class="tag">{versionLabel}</code></dd>
 			</div>
 		</dl>
 	{:else}
@@ -61,8 +62,8 @@
 				<dd><code>{name}</code></dd>
 			</div>
 			<div>
-				<dt>{digest ? 'Digest' : 'Tag'}</dt>
-				<dd><code class="tag">{tag || digest || '-'}</code></dd>
+				<dt>Version</dt>
+				<dd><code class="tag">{versionLabel}</code></dd>
 			</div>
 		</dl>
 	{/if}
