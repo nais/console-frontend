@@ -3,6 +3,7 @@ import { logger } from '$lib/logger';
 import type { Handle, HandleFetch } from '@sveltejs/kit';
 
 export const handleFetch: HandleFetch = async ({ event, request, fetch }) => {
+	console.log('---');
 	const targetGraphqlEndpoint = import.meta.env.VITE_GRAPHQL_ENDPOINT;
 	const targetGraphqlUrl = targetGraphqlEndpoint ? new URL(targetGraphqlEndpoint) : undefined;
 	const requestUrl = new URL(request.url);
@@ -30,6 +31,7 @@ export const handleFetch: HandleFetch = async ({ event, request, fetch }) => {
 		}
 	}
 
+	console.log('Sending request to', request.url);
 	return fetch(request);
 };
 
