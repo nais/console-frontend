@@ -24,7 +24,23 @@
 		children
 	}: Props = $props();
 
-	const { registry, repository, name } = $derived(parseImage(imageName));
+	const imageDetails = $derived.by(() => {
+		try {
+			const parsed = parseImage(imageName);
+
+			return {
+				registry: parsed.registry ?? '',
+				repository: parsed.repository ?? '',
+				name: parsed.name ?? ''
+			};
+		} catch {
+			return {
+				registry: '',
+				repository: '',
+				name: ''
+			};
+		}
+	});
 	const imageRef = $derived(imageName ? formatImageRef({ name: imageName, tag, digest }) : '');
 	const versionLabel = $derived(formatImageVersion({ tag, digest }));
 </script>
@@ -36,7 +52,7 @@
 		{/if}
 	{/snippet}
 
-	{#if registry === '' || repository === '' || name === ''}
+	{#if imageDetails.registry === '' || imageDetails.repository === '' || imageDetails.name === ''}
 		<dl class="kv">
 			<div>
 				<dt>Name</dt>
@@ -51,15 +67,15 @@
 		<dl class="kv">
 			<div>
 				<dt>Registry</dt>
-				<dd><code>{registry}</code></dd>
+				<dd><code>{imageDetails.registry}</code></dd>
 			</div>
 			<div>
 				<dt>Repository</dt>
-				<dd><code>{repository}</code></dd>
+				<dd><code>{imageDetails.repository}</code></dd>
 			</div>
 			<div>
 				<dt>Name</dt>
-				<dd><code>{name}</code></dd>
+				<dd><code>{imageDetails.name}</code></dd>
 			</div>
 			<div>
 				<dt>Version</dt>
