@@ -73,6 +73,7 @@
 								image {
 									name
 									tag
+									digest
 								}
 							}
 							vulnerability {
