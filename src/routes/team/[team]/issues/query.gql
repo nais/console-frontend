@@ -6,9 +6,15 @@ query TeamIssues(
 	$last: Int
 	$before: Cursor
 	$after: Cursor
-) @cache(policy: CacheAndNetwork) {
+) @cache(policy: NetworkOnly) {
 	team(slug: $team) {
 		slug
+		environments {
+			id
+			environment {
+				name
+			}
+		}
 		issues(
 			first: $first
 			last: $last
@@ -29,22 +35,35 @@ query TeamIssues(
 			edges {
 				node {
 					id
-					...IssueFragment @mask_disable
+					__typename
+
+					teamEnvironment {
+						environment {
+							name
+						}
+					}
+					...IssueFragment
 				}
 			}
-			facets {
-				environments {
-					value
-					count
-				}
-				severities {
-					severity
-					count
-				}
-				issueTypes {
-					issueType
-					count
-				}
+		}
+		todos: issues(filter: { severity: TODO }) {
+			pageInfo {
+				totalCount
+			}
+		}
+		warnings: issues(filter: { severity: WARNING }) {
+			pageInfo {
+				totalCount
+			}
+		}
+		critical: issues(filter: { severity: CRITICAL }) {
+			pageInfo {
+				totalCount
+			}
+		}
+		total: issues {
+			pageInfo {
+				totalCount
 			}
 		}
 	}

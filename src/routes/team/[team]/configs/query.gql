@@ -6,7 +6,7 @@ query Configs(
 	$last: Int
 	$before: Cursor
 	$after: Cursor
-) @cache(policy: CacheAndNetwork) {
+) @cache(policy: NoCache) {
 	me {
 		... on User {
 			isAdmin

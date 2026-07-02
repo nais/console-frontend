@@ -6,7 +6,7 @@ query OpenSearch(
 	$last: Int
 	$before: Cursor
 	$after: Cursor
-) @cache(policy: CacheAndNetwork) {
+) @cache(policy: NoCache) {
 	team(slug: $team) {
 		slug
 

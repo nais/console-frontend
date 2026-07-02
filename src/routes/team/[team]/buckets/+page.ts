@@ -1,5 +1,4 @@
-import { BucketOrderField, load_Buckets } from '$houdini';
-import type { BucketFilter } from '$houdini/graphql/inputs';
+import { BucketOrderField, load_Buckets, type BucketFilter } from '$houdini';
 import { parseLabelsParam } from '$lib/domain/labels/labels';
 import { urlToOrderDirection, urlToOrderField } from '$lib/ui/OrderByMenu.svelte';
 import { addPageMeta } from '$lib/utils/pageMeta';

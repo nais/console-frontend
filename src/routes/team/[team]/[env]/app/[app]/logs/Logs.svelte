@@ -1,7 +1,6 @@
 <script lang="ts">
 	import { page } from '$app/state';
-	import { graphql, type Instances$result } from '$houdini';
-	import { exhaustive } from '$lib/utils/houdini';
+	import { graphql } from '$houdini';
 	import { apmURL } from '$lib/doc';
 	import ExternalLink from '$lib/ui/ExternalLink.svelte';
 	import {
@@ -14,7 +13,38 @@
 	import { onDestroy, onMount } from 'svelte';
 	import { SvelteSet } from 'svelte/reactivity';
 
-	const { team }: Instances$result = $props();
+	const {
+		team
+	}: {
+		team: {
+			slug: string;
+			environment: {
+				environment: {
+					name: string;
+				};
+				application: {
+					name: string;
+					instances: {
+						nodes: {
+							name: string;
+						}[];
+					};
+					logDestinations: ({
+						id: string;
+						__typename: string | null;
+					} & (
+						| {
+								grafanaURL: string;
+								__typename: 'LogDestinationLoki';
+						  }
+						| {
+								__typename: "non-exhaustive; don't match this";
+						  }
+					))[];
+				};
+			};
+		};
+	} = $props();
 
 	const MAX_LOG_LINES = 200;
 	const MAX_PENDING_LOG_LINES = 5000;
@@ -263,7 +293,7 @@
 				{/if}
 			</div>
 			<div style="padding-top: var(--ax-space-8);">
-				{#each exhaustive(team.environment.application.logDestinations) as logDestination (logDestination.id)}
+				{#each team.environment.application.logDestinations as logDestination (logDestination.id)}
 					{#if logDestination.__typename === 'LogDestinationLoki'}
 						<ExternalLink href={logDestination.grafanaURL}>View logs in Grafana</ExternalLink>
 					{/if}

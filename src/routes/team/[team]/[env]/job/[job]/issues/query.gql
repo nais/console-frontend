@@ -43,7 +43,7 @@ query JobIssues(
 									name
 								}
 							}
-							...IssueFragment @mask_disable
+							...IssueFragment
 						}
 					}
 				}

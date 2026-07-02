@@ -1,6 +1,5 @@
 <script lang="ts">
-	import { graphql } from '$houdini';
-	import type { AddTeamMemberInput } from '$houdini/graphql/inputs';
+	import { graphql, type AddTeamMemberInput } from '$houdini';
 	import {
 		Alert,
 		Button,

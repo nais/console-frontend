@@ -1,14 +1,13 @@
 <script lang="ts">
-	import type { ActivityLogEntryFragment$data } from '$houdini';
 	import Meta from '../../Meta.svelte';
 
-	import type { TimelineModes } from './types';
+	import type { ActivityLogEntry, TimelineModes } from './types';
 
 	let {
 		data,
 		mode
 	}: {
-		data: ActivityLogEntryFragment$data;
+		data: ActivityLogEntry<string>;
 		mode?: TimelineModes;
 	} = $props();
 </script>

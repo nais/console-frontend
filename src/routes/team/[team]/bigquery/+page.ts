@@ -1,5 +1,4 @@
-import { BigQueryDatasetOrderField, load_BigQuery } from '$houdini';
-import type { BigQueryDatasetFilter } from '$houdini/graphql/inputs';
+import { BigQueryDatasetOrderField, load_BigQuery, type BigQueryDatasetFilter } from '$houdini';
 import { parseLabelsParam } from '$lib/domain/labels/labels';
 import { urlToOrderDirection, urlToOrderField } from '$lib/ui/OrderByMenu.svelte';
 import { addPageMeta } from '$lib/utils/pageMeta';

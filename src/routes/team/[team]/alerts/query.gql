@@ -6,7 +6,7 @@ query Alerts(
 	$last: Int
 	$before: Cursor
 	$after: Cursor
-) @cache(policy: CacheAndNetwork) {
+) @cache(policy: NetworkOnly) {
 	team(slug: $team) {
 		slug
 		alerts(
@@ -34,9 +34,6 @@ query Alerts(
 					query
 					duration
 					... on PrometheusAlert {
-						name
-						duration
-						query
 						alarms {
 							action
 							consequence
@@ -46,11 +43,6 @@ query Alerts(
 							value
 						}
 						ruleGroup
-						teamEnvironment {
-							environment {
-								name
-							}
-						}
 					}
 					team {
 						slug
@@ -62,15 +54,11 @@ query Alerts(
 					}
 				}
 			}
-			facets {
-				environments {
-					value
-					count
-				}
-				states {
-					state
-					count
-				}
+		}
+		environments {
+			id
+			environment {
+				name
 			}
 		}
 	}

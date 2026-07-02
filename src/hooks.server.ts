@@ -3,30 +3,13 @@ import { logger } from '$lib/logger';
 import type { Handle, HandleFetch } from '@sveltejs/kit';
 
 export const handleFetch: HandleFetch = async ({ event, request, fetch }) => {
-	const targetGraphqlEndpoint = import.meta.env.VITE_GRAPHQL_ENDPOINT;
-	const targetGraphqlUrl = targetGraphqlEndpoint ? new URL(targetGraphqlEndpoint) : undefined;
-	const requestUrl = new URL(request.url);
-
-	if (
-		targetGraphqlUrl &&
-		requestUrl.pathname === targetGraphqlUrl.pathname &&
-		requestUrl.origin !== targetGraphqlUrl.origin
-	) {
-		requestUrl.protocol = targetGraphqlUrl.protocol;
-		requestUrl.hostname = targetGraphqlUrl.hostname;
-		requestUrl.port = targetGraphqlUrl.port;
-		request = new Request(requestUrl, request);
-	}
-
 	const cookies = event.request.headers.get('cookie');
-	if (cookies && targetGraphqlUrl) {
-		const outgoingUrl = new URL(request.url);
-		if (
-			outgoingUrl.origin === targetGraphqlUrl.origin &&
-			outgoingUrl.pathname === targetGraphqlUrl.pathname
-		) {
-			request.headers.set('cookie', cookies);
-		}
+	if (
+		(request.url.startsWith('http://nais-api/') ||
+			request.url == import.meta.env.VITE_GRAPHQL_ENDPOINT) &&
+		cookies
+	) {
+		request.headers.set('cookie', cookies);
 	}
 
 	return fetch(request);

@@ -5,7 +5,8 @@
 		ActivityLogActivityType,
 		graphql,
 		type GetTeamDeleteKey$input,
-		type GetTeamDeleteKey$result
+		type GetTeamDeleteKey$result,
+		type QueryResult
 	} from '$houdini';
 	import { docURL } from '$lib/doc';
 	import TeamActivityCard from '$lib/domain/activity/TeamActivityCard.svelte';
@@ -31,7 +32,6 @@
 		TokenIcon,
 		TrashIcon
 	} from '@nais/ds-svelte-community/icons';
-	import type { QueryResult } from 'houdini/runtime';
 	import type { PageProps } from './$types';
 	import EditText from './EditText.svelte';
 

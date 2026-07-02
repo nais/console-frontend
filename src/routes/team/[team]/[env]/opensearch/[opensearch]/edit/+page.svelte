@@ -8,8 +8,6 @@
 		OpenSearchTier,
 		type OpenSearchTier$options
 	} from '$houdini';
-	import { docURL } from '$lib/doc';
-	import ExternalLink from '$lib/ui/ExternalLink.svelte';
 	import { openSearchPlanCosts, storageRequirements } from '$lib/utils/aivencost';
 	import {
 		Alert,
@@ -22,7 +20,9 @@
 		Select,
 		TextField
 	} from '@nais/ds-svelte-community';
-	import type { PageProps } from './$types';
+	import type { PageProps } from './$houdini';
+	import { docURL } from '$lib/doc';
+	import ExternalLink from '$lib/ui/ExternalLink.svelte';
 
 	let { form, data }: PageProps = $props();
 

@@ -8,19 +8,10 @@ query RunsWithPodNames($job: String!, $team: Slug!, $env: String!) {
 			job(name: $job) {
 				name
 				logDestinations {
-					... on LogDestinationGeneric {
-						__typename
-						id
-						name
-					}
+					id
+					__typename
 					... on LogDestinationLoki {
-						__typename
-						id
 						grafanaURL
-					}
-					... on LogDestinationSecureLogs {
-						__typename
-						id
 					}
 				}
 				runs {
