@@ -1,9 +1,5 @@
-import {
-	IssueOrderField,
-	load_ApplicationIssues,
-	OrderDirection,
-	type IssueFilter
-} from '$houdini';
+import { IssueOrderField, load_ApplicationIssues, OrderDirection } from '$houdini';
+import type { IssueFilter } from '$houdini/graphql/inputs';
 import { urlToOrderDirection, urlToOrderField } from '$lib/ui/OrderByMenu.svelte';
 import { addPageMeta } from '$lib/utils/pageMeta.js';
 

@@ -1,4 +1,5 @@
-import { load_Secrets, OrderDirection, SecretOrderField, type SecretFilter } from '$houdini';
+import { load_Secrets, OrderDirection, SecretOrderField } from '$houdini';
+import type { SecretFilter } from '$houdini/graphql/inputs';
 import { parseLabelsParam } from '$lib/domain/labels/labels';
 import { urlToOrderDirection, urlToOrderField } from '$lib/ui/OrderByMenu.svelte';
 import { addPageMeta } from '$lib/utils/pageMeta';

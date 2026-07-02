@@ -43,7 +43,7 @@ query ApplicationIssues(
 									name
 								}
 							}
-							...IssueFragment
+							...IssueFragment @mask_disable
 						}
 					}
 				}

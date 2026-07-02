@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { type IssueFragment } from '$houdini';
+	import type { IssueDisplayData } from '$lib/domain/issues/issueResource';
 	import IssueListItem from '$lib/domain/list-items/IssueListItem.svelte';
 	import List from '$lib/ui/List.svelte';
 	import SurfaceCard from '$lib/ui/SurfaceCard.svelte';
@@ -7,7 +7,7 @@
 	interface Props {
 		title: string;
 		viewAllHref: string;
-		issues: { node: IssueFragment }[];
+		issues: { node: IssueDisplayData }[];
 	}
 
 	let { title, viewAllHref, issues }: Props = $props();

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { DeploymentStatusState, ValueOf } from '$houdini';
+	import type { DeploymentStatusState } from '$houdini';
 	import { envTagVariant } from '$lib/envTagVariant';
 	import DeploymentStatus from '$lib/ui/DeploymentStatus.svelte';
 	import ExternalLink from '$lib/ui/ExternalLink.svelte';
@@ -9,6 +9,7 @@
 	import { isValidSha } from '$lib/utils/isValidSha';
 	import { BodyLong, Tag } from '@nais/ds-svelte-community';
 	import { PersonGroupIcon } from '@nais/ds-svelte-community/icons';
+	import type { ValueOf } from 'houdini/runtime';
 
 	const {
 		deployment

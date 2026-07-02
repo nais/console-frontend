@@ -1,15 +1,13 @@
 <script lang="ts">
 	import { capitalizeFirstLetter } from '$lib/utils/formatters';
 
-	interface EnvironmentEntry {
-		id: string;
-		environment: {
-			name: string;
-		};
+	interface EnvironmentFacet {
+		value: string;
+		count: number;
 	}
 
 	interface Props {
-		environments: EnvironmentEntry[];
+		environments: EnvironmentFacet[];
 		states: { state: string; count: number }[];
 		selectedStates: string[];
 		selectedEnvironments: string[];
@@ -71,14 +69,15 @@
 		<details class="facet-section" open>
 			<summary class="facet-heading">Environments</summary>
 			<div class="facet-list">
-				{#each environments as entry (entry.id)}
+				{#each environments as facet (facet.value)}
 					<label class="facet-item">
 						<input
 							type="checkbox"
-							checked={selectedEnvironments.includes(entry.environment.name)}
-							onchange={() => toggleEnvironment(entry.environment.name)}
+							checked={selectedEnvironments.includes(facet.value)}
+							onchange={() => toggleEnvironment(facet.value)}
 						/>
-						<span class="facet-label">{entry.environment.name}</span>
+						<span class="facet-label">{facet.value}</span>
+						<span class="facet-count">{facet.count}</span>
 					</label>
 				{/each}
 			</div>

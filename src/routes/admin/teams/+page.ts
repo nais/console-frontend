@@ -1,5 +1,6 @@
-import type { OrderDirection$options, TeamFilter, TeamOrderField$options } from '$houdini';
+import type { OrderDirection$options, TeamOrderField$options } from '$houdini';
 import { load_Teams, TeamOrderField } from '$houdini';
+import type { TeamFilter } from '$houdini/graphql/inputs';
 import { addPageMeta } from '$lib/utils/pageMeta';
 
 const rows = 25;
