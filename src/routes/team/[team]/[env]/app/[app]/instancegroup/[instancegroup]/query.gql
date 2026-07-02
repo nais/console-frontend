@@ -56,6 +56,7 @@ query InstanceGroupDetail($app: String!, $team: Slug!, $env: String!) @cache(pol
 					image {
 						name
 						tag
+						digest
 					}
 					created
 					readyInstances
