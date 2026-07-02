@@ -36,7 +36,7 @@
 	let success = $state(false);
 	let closeButtonEl: HTMLButtonElement | undefined = $state();
 
-	function tagFor(image: string): string {
+	function imageVersionLabelFor(image: string): string {
 		const parsed = parseImage(image);
 		return parsed.tag ?? parsed.digest ?? image;
 	}
@@ -52,8 +52,8 @@
 {#if success}
 	<div class="wrapper" role="status" aria-live="polite" aria-atomic="true">
 		<Alert variant="success" size="small">
-			Successfully set image version to <code>{tagFor(selected)}</code>. Restarting application to
-			apply the change.
+			Successfully set image version to <code>{imageVersionLabelFor(selected)}</code>. Restarting
+			application to apply the change.
 		</Alert>
 		<Button variant="tertiary" size="small" onclick={close} bind:ref={closeButtonEl}>Close</Button>
 	</div>
@@ -91,7 +91,7 @@
 					{@const isCurrent = release.image === currentImage}
 					<Radio value={release.image}>
 						<span class="release-label">
-							<code class="release-tag">{tagFor(release.image)}</code>
+							<code class="release-tag">{imageVersionLabelFor(release.image)}</code>
 							{#if isCurrent}<span class="release-current">(current)</span>{/if}
 							<span class="release-time">
 								deployed <Time time={release.deployedAt} distance />

@@ -3,19 +3,51 @@ export const parseImage = (image?: string) => {
 		return {};
 	}
 
-	const withoutDigest = image.split('@')[0] ?? image;
+	const normalizedImage = image.trim();
+
+	if (normalizedImage === '') {
+		return {};
+	}
+
+	if (/\s/.test(normalizedImage)) {
+		throw new Error('Could not parse image reference');
+	}
+
+	const digestParts = normalizedImage.split('@');
+
+	if (digestParts.length > 2) {
+		throw new Error('Could not parse image reference');
+	}
+
+	const withoutDigest = digestParts[0] ?? normalizedImage;
+	const digest = digestParts[1];
+
+	if (digest !== undefined) {
+		const [algorithm, value, ...rest] = digest.split(':');
+
+		if (!algorithm || !value || rest.length > 0) {
+			throw new Error('Could not parse image digest');
+		}
+	}
+
 	const lastColonIndex = withoutDigest.lastIndexOf(':');
 	const lastSlashIndex = withoutDigest.lastIndexOf('/');
 	const hasTag = lastColonIndex > lastSlashIndex;
 	const imagePath = hasTag ? withoutDigest.slice(0, lastColonIndex) : withoutDigest;
 	const tag = hasTag ? withoutDigest.slice(lastColonIndex + 1) : undefined;
-	const digest = image.includes('@') ? image.split('@')[1] : undefined;
+
+	if (hasTag && tag === '') {
+		throw new Error('Could not parse image tag');
+	}
+
 	const name = imagePath.split('/').pop();
 	const registry = imagePath.split('/')[0] ?? '';
 	const repository = imagePath.split('/').slice(1, -1).join('/');
-	if (name === undefined) {
+
+	if (name === undefined || name === '') {
 		throw new Error('Could not parse image name');
 	}
+
 	return { registry, repository, name, tag, digest };
 };
 

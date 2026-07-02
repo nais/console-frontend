@@ -26,11 +26,14 @@
 
 	const { registry, repository, name } = $derived(parseImage(imageName));
 	const imageRef = $derived(imageName ? formatImageRef({ name: imageName, tag, digest }) : '');
+	const copyableImageRef = $derived(imageRef.trim());
 </script>
 
 <SurfaceCard {title} {level} {bordered}>
 	{#snippet headerAside()}
-		<CopyButton copyText={imageRef} size="xsmall" variant="action" />
+		{#if copyableImageRef.length > 0}
+			<CopyButton copyText={copyableImageRef} size="xsmall" variant="action" />
+		{/if}
 	{/snippet}
 
 	{#if registry === '' || repository === '' || name === ''}
