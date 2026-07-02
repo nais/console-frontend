@@ -184,7 +184,7 @@
 			return DatabaseIcon;
 		if (d?.__typename === 'ValkeyIssue') return ValkeyIcon;
 		if (d?.__typename === 'UnleashReleaseChannelIssue') return UnleashIcon;
-		if (d?.__typename === 'LastRunFailedIssue' || workload?.__typename === 'NaisJob')
+		if (d?.__typename === 'LastRunFailedIssue' || workload?.__typename === 'Job')
 			return BriefcaseClockIcon;
 		return PackageIcon;
 	});
