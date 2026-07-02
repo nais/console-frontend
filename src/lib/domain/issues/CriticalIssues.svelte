@@ -25,7 +25,7 @@
 						node {
 							id
 							severity
-							...CriticalIssueRow
+							...IssueFragment @mask_disable
 						}
 					}
 				}
@@ -54,7 +54,7 @@
 		{/snippet}
 		<div class="issues-list">
 			{#each $teamHealth.data?.team?.issues?.edges ?? [] as issue (issue.node.id)}
-				<CriticalIssueRow issue={issue.node} />
+				<CriticalIssueRow issue={issue.node} {teamSlug} />
 			{/each}
 		</div>
 

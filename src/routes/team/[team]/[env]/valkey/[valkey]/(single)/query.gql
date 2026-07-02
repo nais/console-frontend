@@ -29,7 +29,7 @@ query Valkey($environment: String!, $team: Slug!, $name: String!, $orderBy: Valk
 					edges {
 						node {
 							id
-							...IssueFragment
+							...IssueFragment @mask_disable
 						}
 					}
 				}

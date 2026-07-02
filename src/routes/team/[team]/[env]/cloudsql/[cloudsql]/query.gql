@@ -41,7 +41,7 @@ query SqlInstance($env: String!, $team: Slug!, $name: String!) {
 					edges {
 						node {
 							id
-							...IssueFragment
+							...IssueFragment @mask_disable
 						}
 					}
 				}

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { fragment, graphql, type IssueFragment } from '$houdini';
+	import { getIssueResource, type IssueDisplayData } from '$lib/domain/issues/issueResource';
 	import { envTagVariant } from '$lib/envTagVariant';
 	import OpenSearchIcon from '$lib/icons/OpenSearchIcon.svelte';
 	import UnleashIcon from '$lib/icons/UnleashIcon.svelte';
@@ -16,163 +16,39 @@
 	} from '@nais/ds-svelte-community/icons';
 
 	interface Props {
-		item: IssueFragment;
+		item: IssueDisplayData;
 	}
 
 	let { item }: Props = $props();
 
-	let data = $derived(
-		fragment(
-			item,
-			graphql(`
-				fragment IssueFragment on Issue {
-					teamEnvironment {
-						environment {
-							name
-						}
-						team {
-							slug
-						}
-					}
-					message
-					severity
-					... on DeprecatedIngressIssue {
-						application {
-							name
-						}
-						ingresses
-					}
-					... on DeprecatedRegistryIssue {
-						workload {
-							__typename
-							name
-							image {
-								name
-							}
-						}
-					}
-					... on ExternalIngressCriticalVulnerabilityIssue {
-						cvssScore
-						ingresses
-						workload {
-							__typename
-							name
-						}
-					}
-					... on LastRunFailedIssue {
-						job {
-							name
-						}
-					}
-					... on FailedSynchronizationIssue {
-						workload {
-							__typename
-							name
-						}
-					}
-					... on InvalidSpecIssue {
-						workload {
-							__typename
-							name
-						}
-					}
-					... on MissingSbomIssue {
-						workload {
-							__typename
-							name
-						}
-					}
-					... on FailedSynchronizationIssue {
-						workload {
-							__typename
-							name
-						}
-					}
-					... on NoRunningInstancesIssue {
-						workload {
-							__typename
-							name
-						}
-					}
-					... on ApplicationRestartLoopIssue {
-						workload {
-							__typename
-							name
-						}
-					}
-					... on OpenSearchIssue {
-						event
-						openSearch {
-							name
-						}
-					}
-					... on SqlInstanceStateIssue {
-						sqlInstance {
-							name
-						}
-						state
-					}
-					... on SqlInstanceVersionIssue {
-						sqlInstance {
-							name
-						}
-					}
-					... on ValkeyIssue {
-						valkey {
-							name
-						}
-					}
-					... on VulnerableImageIssue {
-						workload {
-							__typename
-							name
-						}
-					}
-					... on WorkloadProblemIssue {
-						workload {
-							__typename
-							name
-						}
-					}
-					... on UnleashReleaseChannelIssue {
-						unleash {
-							name
-						}
-					}
-				}
-			`)
-		)
-	);
-
-	const resourceName = $derived.by(() => {
-		const d = $data;
-		if ('application' in d && d.application) return d.application.name;
-		if ('job' in d && d.job) return d.job.name;
-		if ('openSearch' in d && d.openSearch) return d.openSearch.name;
-		if ('sqlInstance' in d && d.sqlInstance) return d.sqlInstance.name;
-		if ('valkey' in d && d.valkey) return d.valkey.name;
-		if ('unleash' in d && d.unleash) return d.unleash.name;
-		if ('workload' in d && d.workload) return d.workload.name;
-		return 'Unknown';
-	});
+	const resource = $derived.by(() => getIssueResource(item));
 
 	const ResourceIcon = $derived.by(() => {
-		const d = $data;
-		if ('openSearch' in d && d.openSearch) return OpenSearchIcon;
-		if ('sqlInstance' in d && d.sqlInstance) return DatabaseIcon;
-		if ('valkey' in d && d.valkey) return ValkeyIcon;
-		if ('unleash' in d && d.unleash) return UnleashIcon;
-		if ('job' in d && d.job) return BriefcaseClockIcon;
-		if ('workload' in d && d.workload && d.workload.__typename === 'Job') return BriefcaseClockIcon;
-		return PackageIcon;
+		switch (resource.kind) {
+			case 'opensearch':
+				return OpenSearchIcon;
+			case 'database':
+				return DatabaseIcon;
+			case 'valkey':
+				return ValkeyIcon;
+			case 'unleash':
+				return UnleashIcon;
+			case 'job':
+				return BriefcaseClockIcon;
+			default:
+				return PackageIcon;
+		}
 	});
 
 	const issueTitle = $derived.by(() => {
-		const typeName = $data.__typename
+		const typeName = item.__typename || 'Unknown';
+		const enumLike = typeName
 			.replace(/Issue$/, '')
+			.replace('OpenSearch', 'Opensearch')
+			.replace('SqlInstance', 'Sqlinstance')
 			.replace(/([a-z])([A-Z])/g, '$1_$2')
 			.toUpperCase();
-		return issueTypeLabel(typeName);
+		return issueTypeLabel(enumLike);
 	});
 </script>
 
@@ -182,14 +58,14 @@
 			<ChevronRightIcon />
 		</div>
 		<div class="severity-dot">
-			{#if $data.severity === 'CRITICAL'}
+			{#if item.severity === 'CRITICAL'}
 				<CriticalIndicator />
 			{:else}
 				<CircleFillIcon
 					style="color: light-dark({{
 						TODO: 'var(--ax-bg-info-strong), var(--ax-bg-info-strong)',
 						WARNING: 'var(--ax-bg-warning-moderate-pressed), var(--ax-bg-warning-strong-pressed)'
-					}[$data.severity] ??
+					}[item.severity] ??
 						'var(--ax-bg-info-strong), var(--ax-bg-info-strong)'}); font-size: 0.7rem"
 				/>
 			{/if}
@@ -198,30 +74,30 @@
 			<ResourceIcon />
 		</div>
 		<div class="resource-group">
-			<span class="resource-name" title={resourceName}>{resourceName}</span>
-			<Tag size="xsmall" variant={envTagVariant($data.teamEnvironment.environment.name)}
-				>{$data.teamEnvironment.environment.name}</Tag
+			<span class="resource-name" title={resource.name}>{resource.name}</span>
+			<Tag size="xsmall" variant={envTagVariant(item.teamEnvironment.environment.name)}
+				>{item.teamEnvironment.environment.name}</Tag
 			>
 		</div>
 		<span class="issue-title">{issueTitle}</span>
 	</summary>
 
 	<div class="detail">
-		<p class="message">{$data.message}</p>
-		{#if $data.__typename === 'DeprecatedIngressIssue' && 'ingresses' in $data}
+		<p class="message">{item.message}</p>
+		{#if item.__typename === 'DeprecatedIngressIssue' && item.application && item.ingresses}
 			<div class="extra">
 				<strong>
-					{$data.ingresses.length === 1 ? 'Deprecated ingress:' : 'Deprecated ingresses:'}
+					{item.ingresses.length === 1 ? 'Deprecated ingress:' : 'Deprecated ingresses:'}
 				</strong>
-				{#each $data.ingresses as ingress (ingress)}
+				{#each item.ingresses as ingress (ingress)}
 					<span class="ingress">{ingress}</span>
 				{/each}
 			</div>
 		{/if}
-		{#if $data.__typename === 'ExternalIngressCriticalVulnerabilityIssue' && 'cvssScore' in $data}
+		{#if item.__typename === 'ExternalIngressCriticalVulnerabilityIssue' && item.cvssScore !== undefined}
 			<div class="extra">
 				<strong>CVSS Score:</strong>
-				{$data.cvssScore}
+				{item.cvssScore}
 			</div>
 		{/if}
 	</div>

@@ -1,11 +1,12 @@
 <script lang="ts">
-	import type { DeploymentStatusState, ValueOf } from '$houdini';
+	import type { DeploymentStatusState } from '$houdini';
 	import DeploymentStatus from '$lib/ui/DeploymentStatus.svelte';
 	import ExternalLink from '$lib/ui/ExternalLink.svelte';
 	import ListItem from '$lib/ui/ListItem.svelte';
 	import Time from '$lib/ui/Time.svelte';
 	import { isValidSha } from '$lib/utils/isValidSha';
 	import { BodyShort } from '@nais/ds-svelte-community';
+	import type { ValueOf } from 'houdini/runtime';
 
 	const {
 		deployment,

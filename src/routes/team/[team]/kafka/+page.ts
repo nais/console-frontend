@@ -1,4 +1,5 @@
-import { KafkaTopicOrderField, load_KafkaTopics, type KafkaTopicFilter } from '$houdini';
+import { KafkaTopicOrderField, load_KafkaTopics } from '$houdini';
+import type { KafkaTopicFilter } from '$houdini/graphql/inputs';
 import { parseLabelsParam } from '$lib/domain/labels/labels';
 import { urlToOrderDirection, urlToOrderField } from '$lib/ui/OrderByMenu.svelte';
 import { addPageMeta } from '$lib/utils/pageMeta';

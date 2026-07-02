@@ -1,5 +1,5 @@
 ARG NODE_VERSION="24"
-FROM node:${NODE_VERSION}-alpine AS node-with-deps
+FROM node:${NODE_VERSION} AS node-with-deps
 RUN corepack enable && corepack prepare pnpm@11.9.0 --activate
 WORKDIR /usr/app
 
