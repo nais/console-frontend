@@ -5,6 +5,7 @@
 	import RunningIndicator from '$lib/ui/RunningIndicator.svelte';
 	import SurfaceCard from '$lib/ui/SurfaceCard.svelte';
 	import Time from '$lib/ui/Time.svelte';
+	import { formatImageVersion } from '$lib/utils/image';
 	import { Tag } from '@nais/ds-svelte-community';
 	import { CloudSlashIcon } from '@nais/ds-svelte-community/icons';
 	import { slide } from 'svelte/transition';
@@ -63,7 +64,7 @@
 					>{group.readyInstances}/{group.desiredInstances} running</span
 				>
 				<span class="instance-group-meta">
-					{group.image.tag} &middot; Updated <Time time={group.created} distance />
+					{formatImageVersion(group.image)} &middot; Updated <Time time={group.created} distance />
 				</span>
 			</div>
 			<div class="instance-group-tags">
