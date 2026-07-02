@@ -174,41 +174,39 @@
 							</div>
 						</summary>
 
-						{#if alert.__typename === 'PrometheusAlert'}
-							<div class="rule">
-								{#if alert.alarms.length > 0}
-									<div class="alarms">
-										{#each alert.alarms as alarm, i (alarm)}
-											<PrometheusAlarmDetail {alarm} {i} />
-										{/each}
-									</div>
-								{:else}
-									<div class="muted">No alerts firing</div>
-								{/if}
-
-								<div class="query-heading">
-									<Heading as="h2" size="xsmall">Query</Heading>
-									<div class="query-actions">
-										<ExternalLink href={makeGrafanaExploreUrl(alert.query)}>
-											<span style="font-size: 16px;">Run in Grafana</span>
-										</ExternalLink>
-										<CopyButton
-											text="Copy query"
-											activeText="Query copied"
-											variant="action"
-											copyText={alert.query}
-											size="xsmall"
-										/>
-									</div>
+						<div class="rule">
+							{#if alert.alarms.length > 0}
+								<div class="alarms">
+									{#each alert.alarms as alarm, i (alarm)}
+										<PrometheusAlarmDetail {alarm} {i} />
+									{/each}
 								</div>
-								<div style="display: flex; flex-direction: column; gap: 8px; flex-wrap: wrap;">
-									<CodeBlockPromQl code={alert.query} />
-									<div class="muted small for">
-										<ClockDashedIcon />&nbsp;for: {formatSeconds(alert.duration)}
-									</div>
+							{:else}
+								<div class="muted">No alerts firing</div>
+							{/if}
+
+							<div class="query-heading">
+								<Heading as="h2" size="xsmall">Query</Heading>
+								<div class="query-actions">
+									<ExternalLink href={makeGrafanaExploreUrl(alert.query)}>
+										<span style="font-size: 16px;">Run in Grafana</span>
+									</ExternalLink>
+									<CopyButton
+										text="Copy query"
+										activeText="Query copied"
+										variant="action"
+										copyText={alert.query}
+										size="xsmall"
+									/>
 								</div>
 							</div>
-						{/if}
+							<div style="display: flex; flex-direction: column; gap: 8px; flex-wrap: wrap;">
+								<CodeBlockPromQl code={alert.query} />
+								<div class="muted small for">
+									<ClockDashedIcon />&nbsp;for: {formatSeconds(alert.duration)}
+								</div>
+							</div>
+						</div>
 					</details>
 				{/each}
 			{:else if totalAlerts === 0}
