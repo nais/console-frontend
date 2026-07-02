@@ -5,7 +5,7 @@
 	import type { Snippet } from 'svelte';
 
 	interface Props {
-		imageName?: string;
+		imageName: string;
 		tag?: string;
 		digest?: string | null;
 		title?: string;
