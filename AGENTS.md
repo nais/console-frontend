@@ -233,7 +233,7 @@ Additionally, the **masked `$result` type** only includes fields explicitly list
    {#each items as item, i (i)}
    ```
 
-4. **Avoid aliases in inline fragments on interfaces** — Houdini 2.0 has a bug where `alias: field` generates the original field name in TypeScript types instead of the alias. Use the field name directly.
+4. **Avoid aliases in inline fragments on interfaces unless you have verified the generated type** — Houdini 2.0 can generate the original field name in TypeScript types instead of the alias. Prefer the field name directly.
 
 5. **Don't use manual type annotations to work around generated types** — import the `$result` type from `$houdini` instead of writing inline type annotations that duplicate and diverge from the generated types.
 
@@ -255,14 +255,16 @@ When a `fragment()` is defined on an **interface** type, Houdini generates a **f
 
 #### Rules for interface fragments:
 
-1. **No `__typename` by default** — the flat fragment type does not include `__typename` unless explicitly selected in the query. Use the type-keyed nullable properties as discriminators:
+1. **`__typename` is only available when explicitly selected** — interface fragment data is not a `__typename`-discriminated union by default. If the fragment does not select `__typename`, use the type-keyed nullable properties as discriminators. If it does select `__typename`, you may read it directly, but the type-keyed properties are still the structural source of type-specific fields:
 
    ```typescript
    // Wrong — __typename doesn't exist unless explicitly selected
    if ($data.__typename === 'DeprecatedIngressIssue') { ... }
 
-   // Correct — check the nullable type-keyed property
-   if ($data.DeprecatedIngressIssue) { ... }
+   // Correct — guard on the nullable type-keyed property, then read fields through it
+   if ($data.DeprecatedIngressIssue) {
+     return $data.DeprecatedIngressIssue.application.name;
+   }
    ```
 
 2. **Access type-specific fields via the type key**, not directly:
@@ -292,7 +294,7 @@ When a `fragment()` is defined on an **interface** type, Houdini generates a **f
    );
    ```
 
-4. **Derive `__typename` from the non-null key** when needed (e.g., for label lookups):
+4. **Derive `__typename` from the non-null key when the fragment does not select it** — this is useful for generic helpers or label lookups on masked interface fragments. If the fragment already selects `__typename`, prefer reading the selected field directly:
 
    ```typescript
    const issueTypeKeys = ['DeprecatedIngressIssue', 'OpenSearchIssue', ...] as const;
@@ -300,6 +302,12 @@ When a `fragment()` is defined on an **interface** type, Houdini generates a **f
      issueTypeKeys.find((k) => $data[k] !== null && $data[k] !== undefined) ?? ''
    );
    ```
+
+5. **Shared `Issue` presenters may use unmasked query nodes intentionally** — for reusable UI like issue list rows and critical issue cards, it is acceptable to consume the top-level issue node shape from the parent query instead of calling `fragment()` in the child, when the query spreads a shared issue fragment with `@mask_disable`.
+
+6. **Keep the `Issue` selection in one shared fragment** — if you use the unmasked presenter pattern above, the fields must come from a single shared `.gql` fragment (for example `IssueFragment.gql`) so the display contract stays aligned with the GraphQL selection.
+
+7. **Centralize issue-shape narrowing in one helper** — if multiple presenters need the same resource-name or resource-kind derivation, keep that logic in one small helper module instead of repeating per-component checks or using `any` casts/raw object fallbacks.
 
 ### Example (.gql file for routes):
 
