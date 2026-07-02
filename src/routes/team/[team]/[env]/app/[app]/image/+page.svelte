@@ -4,7 +4,7 @@
 	import { page } from '$app/state';
 	import { isPossiblyInModal } from '$lib/ui/PageModal.svelte';
 	import Time from '$lib/ui/Time.svelte';
-	import { parseImage } from '$lib/utils/image';
+	import { formatImageRef, parseImage } from '$lib/utils/image';
 	import {
 		Alert,
 		BodyLong,
@@ -21,9 +21,7 @@
 	const { SetImageVersionData } = $derived(data);
 	const application = $derived($SetImageVersionData.data?.team?.environment?.application ?? null);
 
-	const currentImage = $derived(
-		application?.image ? `${application.image.name}:${application.image.tag}` : null
-	);
+	const currentImage = $derived(application?.image ? formatImageRef(application.image) : null);
 
 	const releases = $derived(
 		[...(application?.history ?? [])].sort(
@@ -39,7 +37,8 @@
 	let closeButtonEl: HTMLButtonElement | undefined = $state();
 
 	function tagFor(image: string): string {
-		return parseImage(image).tag ?? image;
+		const parsed = parseImage(image);
+		return parsed.tag ?? parsed.digest ?? image;
 	}
 
 	const close = async () => {

@@ -1,12 +1,13 @@
 <script lang="ts">
 	import SurfaceCard from '$lib/ui/SurfaceCard.svelte';
-	import { parseImage } from '$lib/utils/image';
+	import { formatImageRef, parseImage } from '$lib/utils/image';
 	import { CopyButton } from '@nais/ds-svelte-community';
 	import type { Snippet } from 'svelte';
 
 	interface Props {
 		imageName?: string;
 		tag?: string;
+		digest?: string | null;
 		title?: string;
 		bordered?: boolean;
 		level?: 'h2' | 'h3' | 'h4';
@@ -16,6 +17,7 @@
 	let {
 		imageName,
 		tag,
+		digest,
 		title = 'Image',
 		bordered = true,
 		level = 'h3',
@@ -23,11 +25,12 @@
 	}: Props = $props();
 
 	const { registry, repository, name } = $derived(parseImage(imageName));
+	const imageRef = $derived(imageName ? formatImageRef({ name: imageName, tag, digest }) : '');
 </script>
 
 <SurfaceCard {title} {level} {bordered}>
 	{#snippet headerAside()}
-		<CopyButton copyText={`${imageName ?? ''}:${tag ?? ''}`} size="xsmall" variant="action" />
+		<CopyButton copyText={imageRef} size="xsmall" variant="action" />
 	{/snippet}
 
 	{#if registry === '' || repository === '' || name === ''}
@@ -38,7 +41,7 @@
 			</div>
 			<div>
 				<dt>Tag</dt>
-				<dd><code class="tag">{tag}</code></dd>
+				<dd><code class="tag">{tag || digest || '-'}</code></dd>
 			</div>
 		</dl>
 	{:else}
@@ -57,7 +60,7 @@
 			</div>
 			<div>
 				<dt>Tag</dt>
-				<dd><code class="tag">{tag}</code></dd>
+				<dd><code class="tag">{tag || digest || '-'}</code></dd>
 			</div>
 		</dl>
 	{/if}

@@ -6,6 +6,7 @@
 	import List from '$lib/ui/List.svelte';
 	import ListItem from '$lib/ui/ListItem.svelte';
 	import Pagination from '$lib/ui/Pagination.svelte';
+	import { formatImageRef } from '$lib/utils/image';
 	import { changeParams } from '$lib/utils/searchparams';
 	import { suppressionStateLabels } from '$lib/utils/vulnerabilities';
 	import {
@@ -151,7 +152,7 @@
 												<Detail as="dt">Image</Detail>
 												{#if workload.image}
 													<BodyShort as="dd">
-														<code>{workload.image.name}:{workload.image.tag}</code>
+														<code>{formatImageRef(workload.image)}</code>
 													</BodyShort>
 												{:else}
 													<BodyShort as="dd">-</BodyShort>

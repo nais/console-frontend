@@ -8,6 +8,7 @@
 	import List from '$lib/ui/List.svelte';
 	import SurfaceCard from '$lib/ui/SurfaceCard.svelte';
 	import Time from '$lib/ui/Time.svelte';
+	import { formatImageRef } from '$lib/utils/image';
 	import {
 		Alert,
 		CopyButton,
@@ -386,12 +387,8 @@
 					<div class="image-line">
 						<Heading as="h3" size="xsmall">Image</Heading>
 						<div class="image-url">
-							<code>{group.image.name}:{group.image.tag}</code>
-							<CopyButton
-								copyText={`${group.image.name}:${group.image.tag}`}
-								size="xsmall"
-								variant="action"
-							/>
+							<code>{formatImageRef(group.image)}</code>
+							<CopyButton copyText={formatImageRef(group.image)} size="xsmall" variant="action" />
 						</div>
 					</div>
 				</section>

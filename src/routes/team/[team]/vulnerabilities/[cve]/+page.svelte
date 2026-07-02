@@ -7,6 +7,7 @@
 	import WorkloadLink from '$lib/domain/workload/WorkloadLink.svelte';
 	import ExternalLink from '$lib/ui/ExternalLink.svelte';
 	import GraphErrors from '$lib/ui/GraphErrors.svelte';
+	import { formatImageRef } from '$lib/utils/image';
 
 	import { suppressionStateLabels } from '$lib/utils/vulnerabilities';
 	import {
@@ -388,10 +389,7 @@
 												<div>
 													<Detail as="dt">Image</Detail>
 													<Detail as="dd"
-														><code
-															>{group.nodes[0].workload.image.name}:{group.nodes[0].workload.image
-																.tag}</code
-														></Detail
+														><code>{formatImageRef(group.nodes[0].workload.image)}</code></Detail
 													>
 												</div>
 											{/if}

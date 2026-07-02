@@ -63,7 +63,10 @@
 					>{group.readyInstances}/{group.desiredInstances} running</span
 				>
 				<span class="instance-group-meta">
-					{group.image.tag} &middot; Updated <Time time={group.created} distance />
+					{group.image.tag || group.image.digest || '-'} &middot; Updated <Time
+						time={group.created}
+						distance
+					/>
 				</span>
 			</div>
 			<div class="instance-group-tags">
