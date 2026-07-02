@@ -13,7 +13,7 @@ export const handleFetch: HandleFetch = async ({ event, request, fetch }) => {
 		requestUrl.origin !== targetGraphqlUrl.origin
 	) {
 		requestUrl.protocol = targetGraphqlUrl.protocol;
-		requestUrl.host = targetGraphqlUrl.host;
+		requestUrl.hostname = targetGraphqlUrl.hostname;
 		requestUrl.port = targetGraphqlUrl.port;
 		request = new Request(requestUrl, request);
 	}
