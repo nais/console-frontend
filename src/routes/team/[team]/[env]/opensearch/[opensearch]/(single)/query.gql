@@ -33,7 +33,7 @@ query OpenSearchInstance(
 					edges {
 						node {
 							id
-							...IssueFragment
+							...IssueFragment @mask_disable
 						}
 					}
 				}
