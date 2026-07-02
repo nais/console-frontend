@@ -23,6 +23,10 @@ query Instances($app: String!, $team: Slug!, $env: String!) {
 						__typename
 						grafanaURL
 					}
+					... on LogDestinationSecureLogs {
+						id
+						__typename
+					}
 				}
 			}
 		}
