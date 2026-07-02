@@ -62,7 +62,7 @@
 				<dd><code>{name}</code></dd>
 			</div>
 			<div>
-				<dt>Tag / digest</dt>
+				<dt>{digest ? 'Digest' : 'Tag'}</dt>
 				<dd><code class="tag">{tag || digest || '-'}</code></dd>
 			</div>
 		</dl>
