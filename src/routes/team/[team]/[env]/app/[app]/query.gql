@@ -19,7 +19,7 @@ query App($app: String!, $team: Slug!, $env: String!) {
 							__typename
 							severity
 							message
-							...IssueFragment
+							...IssueFragment @mask_disable
 						}
 					}
 				}

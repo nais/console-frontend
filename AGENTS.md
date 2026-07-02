@@ -176,6 +176,139 @@ This project uses **Houdini** for GraphQL, not Apollo or other clients.
 - If you need an overview of all items (e.g., all applications for a team), the backend in [nais/api](https://github.com/nais/api) should expose a dedicated field or resolver that returns the full list without requiring pagination hacks.
 - Do not work around missing backend capabilities by over-fetching on the frontend. Instead, flag it as a missing API feature that needs a backend change.
 
+### Non-Exhaustive Types (Houdini 2.0)
+
+Houdini 2.0 adds a `{ __typename: "non-exhaustive; don't match this" }` catch-all variant to every interface/union result type. This variant has **no fields** — accessing `id`, `createdAt`, etc. on it causes type errors.
+
+Additionally, the **masked `$result` type** only includes fields explicitly listed in each `... on Type { }` inline fragment. Fields selected at the interface level (outside inline fragments) are NOT propagated to each variant's type.
+
+#### Rules for interface/union queries:
+
+1. **Include shared fields in each inline fragment** — don't rely on interface-level field selection:
+
+   ```graphql
+   # Wrong — createdAt won't appear on ApplicationScaledActivityLogEntry in TypeScript
+   activityLog {
+     nodes {
+       id
+       createdAt
+       ... on ApplicationScaledActivityLogEntry {
+         id
+         data { newSize direction }
+       }
+     }
+   }
+
+   # Correct — include createdAt in every inline fragment
+   activityLog {
+     nodes {
+       ... on ApplicationScaledActivityLogEntry {
+         id
+         createdAt
+         data { newSize direction }
+       }
+       ... on DeploymentActivityLogEntry {
+         id
+         createdAt
+       }
+     }
+   }
+   ```
+
+2. **Use `exhaustive()` from `$lib/utils/houdini`** to filter the non-exhaustive catch-all from arrays:
+
+   ```typescript
+   import { exhaustive, type Exhaustive } from '$lib/utils/houdini';
+
+   // Filter out non-exhaustive variants before iterating
+   const realNodes = exhaustive(activityLog.nodes);
+
+   // Use the Exhaustive<T> type for type aliases
+   type LogNode = Exhaustive<(typeof activityLog.nodes)[number]>;
+   ```
+
+3. **For `{#each}` keys on interface arrays** — use index `(i)` instead of `(item.id)` when `id` isn't guaranteed on the non-exhaustive variant:
+
+   ```svelte
+   {#each items as item, i (i)}
+   ```
+
+4. **Avoid aliases in inline fragments on interfaces unless you have verified the generated type** — Houdini 2.0 can generate the original field name in TypeScript types instead of the alias. Prefer the field name directly.
+
+5. **Don't use manual type annotations to work around generated types** — import the `$result` type from `$houdini` instead of writing inline type annotations that duplicate and diverge from the generated types.
+
+### Fragment Types on Interfaces (Houdini 2.0)
+
+When a `fragment()` is defined on an **interface** type, Houdini generates a **flat object** with nullable type-keyed properties — NOT a `__typename`-discriminated union. This is structural and unrelated to the `defaultFragmentMasking` config.
+
+```typescript
+// Generated IssueFragment$data — flat structure, NOT a union
+{
+  teamEnvironment: { ... };     // shared interface fields (always present)
+  message: string;
+  severity: string;
+  DeprecatedIngressIssue: { application: { name: string }; ingresses: string[] } | null;
+  OpenSearchIssue: { openSearch: { name: string } } | null;
+  // ... one nullable property per concrete type
+}
+```
+
+#### Rules for interface fragments:
+
+1. **`__typename` is only available when explicitly selected** — interface fragment data is not a `__typename`-discriminated union by default. If the fragment does not select `__typename`, use the type-keyed nullable properties as discriminators. If it does select `__typename`, you may read it directly, but the type-keyed properties are still the structural source of type-specific fields:
+
+   ```typescript
+   // Wrong — __typename doesn't exist unless explicitly selected
+   if ($data.__typename === 'DeprecatedIngressIssue') { ... }
+
+   // Correct — guard on the nullable type-keyed property, then read fields through it
+   if ($data.DeprecatedIngressIssue) {
+     return $data.DeprecatedIngressIssue.application.name;
+   }
+   ```
+
+2. **Access type-specific fields via the type key**, not directly:
+
+   ```typescript
+   // Wrong — 'application' is not a top-level property
+   if ('application' in d) return d.application.name;
+
+   // Correct
+   if ($data.DeprecatedIngressIssue) return $data.DeprecatedIngressIssue.application.name;
+   ```
+
+3. **Extract shared patterns** into derived values to reduce verbosity. Group types that share the same resource shape:
+
+   ```typescript
+   const workload = $derived(
+   	$data.DeprecatedRegistryIssue?.workload ??
+   		$data.FailedSynchronizationIssue?.workload ??
+   		$data.VulnerableImageIssue?.workload
+   );
+
+   const resourceName = $derived(
+   	$data.DeprecatedIngressIssue?.application.name ??
+   		$data.OpenSearchIssue?.openSearch.name ??
+   		workload?.name ??
+   		'Unknown'
+   );
+   ```
+
+4. **Derive `__typename` from the non-null key when the fragment does not select it** — this is useful for generic helpers or label lookups on masked interface fragments. If the fragment already selects `__typename`, prefer reading the selected field directly:
+
+   ```typescript
+   const issueTypeKeys = ['DeprecatedIngressIssue', 'OpenSearchIssue', ...] as const;
+   const activeTypeName = $derived(
+     issueTypeKeys.find((k) => $data[k] !== null && $data[k] !== undefined) ?? ''
+   );
+   ```
+
+5. **Shared `Issue` presenters may use unmasked query nodes intentionally** — for reusable UI like issue list rows and critical issue cards, it is acceptable to consume the top-level issue node shape from the parent query instead of calling `fragment()` in the child, when the query spreads a shared issue fragment with `@mask_disable`.
+
+6. **Keep the `Issue` selection in one shared fragment** — if you use the unmasked presenter pattern above, the fields must come from a single shared `.gql` fragment (for example `IssueFragment.gql`) so the display contract stays aligned with the GraphQL selection.
+
+7. **Centralize issue-shape narrowing in one helper** — if multiple presenters need the same resource-name or resource-kind derivation, keep that logic in one small helper module instead of repeating per-component checks or using `any` casts/raw object fallbacks.
+
 ### Example (.gql file for routes):
 
 ```graphql

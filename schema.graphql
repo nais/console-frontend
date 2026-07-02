@@ -4554,7 +4554,7 @@ input LogSubscriptionFilter {
   """
   Specify an initial batch of log lines to be sent when the subscription starts.
   """
-  initialBatch: LogSubscriptionInitialBatch = {limit: 100}
+  initialBatch: LogSubscriptionInitialBatch = {  }
 
   """Filter log lines by specifying a query."""
   query: String!

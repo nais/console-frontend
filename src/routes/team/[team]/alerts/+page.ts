@@ -2,11 +2,10 @@ import {
 	AlertOrderField,
 	AlertState,
 	load_Alerts,
-	load_AlertsMetadata,
 	OrderDirection,
-	type AlertState$options,
-	type TeamAlertsFilter
+	type AlertState$options
 } from '$houdini';
+import type { TeamAlertsFilter } from '$houdini/graphql/inputs';
 import { urlToOrderDirection, urlToOrderField } from '$lib/ui/OrderByMenu.svelte';
 import { addPageMeta } from '$lib/utils/pageMeta';
 
@@ -45,12 +44,6 @@ export async function load(event) {
 					direction: urlToOrderDirection(event.url, OrderDirection.ASC)
 				},
 				...(before ? { before, last: rows } : { after, first: rows })
-			}
-		})),
-		...(await load_AlertsMetadata({
-			event,
-			variables: {
-				team: event.params.team
 			}
 		}))
 	};

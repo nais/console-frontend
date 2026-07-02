@@ -4,6 +4,8 @@ overrides:
 
 allowBuilds:
   esbuild: true
+  houdini-core: true
+  houdini-svelte: true
 
 minimumReleaseAge: 20160
 savePrefix: ""
@@ -13,3 +15,4 @@ minimumReleaseAgeExclude:
   - "@esbuild/*"
   - "@slack/web-api@7.17.0"
   - form-data@4.0.6
+  - "houdini*"

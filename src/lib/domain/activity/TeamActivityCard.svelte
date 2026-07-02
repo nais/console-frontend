@@ -1,8 +1,9 @@
 <script lang="ts">
-	import { type ActivityLogFilter, graphql } from '$houdini';
+	import { graphql } from '$houdini';
 	import SurfaceCard from '$lib/ui/SurfaceCard.svelte';
 	import { Loader } from '@nais/ds-svelte-community';
 
+	import type { ActivityLogFilter } from '$houdini/graphql/inputs';
 	import { SvelteURLSearchParams } from 'svelte/reactivity';
 	import ActivityTimeline from './ActivityTimeline.svelte';
 
