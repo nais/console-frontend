@@ -209,9 +209,16 @@
 			}
 		}
 	}
-</script>
 
-<svelte:document onkeydown={onSearchKeydown} />
+	$effect(() => {
+		if (!suggestions && !toggleFavorites) {
+			return;
+		}
+
+		document.addEventListener('keydown', onSearchKeydown);
+		return () => document.removeEventListener('keydown', onSearchKeydown);
+	});
+</script>
 
 <div class="search">
 	<div class="header">

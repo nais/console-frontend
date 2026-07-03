@@ -200,6 +200,10 @@
 	let teamFilter = $state<string | undefined>();
 	let favoriteMode = $state(false);
 	const favoriteResults = $derived.by(() => {
+		if (!favoriteMode) {
+			return [];
+		}
+
 		const searchValue = query.trim().toLowerCase();
 		return favorites
 			.getFavorites()
