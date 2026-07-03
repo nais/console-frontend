@@ -230,7 +230,7 @@
 
 	function searchVariables(value: string): SearchQuery$input {
 		const separator = value.indexOf(':');
-		const prefix = separator >= 0 ? value.slice(0, separator) : value;
+		const prefix = separator >= 0 ? value.slice(0, separator) : undefined;
 		const q = separator >= 0 ? value.slice(separator + 1) : undefined;
 		const category = Object.values(categories).find((c) => c.prefix === prefix);
 		const type = category?.type;
@@ -264,6 +264,8 @@
 				return 'Application';
 			case 'job':
 				return 'Job';
+			case 'cloudsql':
+				return 'Cloud SQL';
 			case 'postgres':
 				return 'Postgres';
 			case 'bucket':
