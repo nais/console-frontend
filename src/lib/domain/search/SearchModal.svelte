@@ -248,6 +248,7 @@
 					label: result.slug,
 					description: result.purpose,
 					badge: resultBadge(href, result.slug),
+					teamSlug: result.slug,
 					href,
 					type: 'link'
 				};

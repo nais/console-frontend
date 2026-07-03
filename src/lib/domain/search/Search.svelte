@@ -19,6 +19,7 @@
 		description: string;
 		tag?: TagType;
 		badge?: string;
+		teamSlug?: string;
 	};
 
 	let {
@@ -113,6 +114,18 @@
 		void tick().then(() => queryInput?.focus());
 	}
 
+	function completeTeamFilter() {
+		const teamSuggestion = results?.[0]?.teamSlug;
+		if (!teamSuggestion || !/^team:[^\s]+$/.test(query.trim())) {
+			return false;
+		}
+
+		teamFilter = teamSuggestion;
+		query = '';
+		selected = 0;
+		return true;
+	}
+
 	function onQueryInput() {
 		selected = 0;
 		if (!parseTeamFilterOnInput) {
@@ -132,6 +145,11 @@
 	}
 
 	function onQueryKeydown(e: KeyboardEvent) {
+		if (e.key === 'Tab' && !e.shiftKey && completeTeamFilter()) {
+			e.preventDefault();
+			return;
+		}
+
 		if (e.key === 'Backspace' && teamFilter && !query) {
 			removeTeamFilter();
 			e.preventDefault();
