@@ -270,7 +270,7 @@
 		{:else if results}
 			{#each results as result, i (result)}
 				{#if result.type === 'link'}
-					<a href={result.href} class={['result', { selected: i === selected }]} onclick={close}>
+					<a href={result.href} class="result" class:selected={i === selected} onclick={close}>
 						<IconLabel icon={result.icon}>
 							{#snippet label()}
 								<span class="label">{result.label}</span>
@@ -291,7 +291,7 @@
 						{/if}
 					</a>
 				{:else}
-					<div class={['result', { selected: i === selected }]}>
+					<div class="result" class:selected={i === selected}>
 						<IconLabel icon={result.icon}>
 							{#snippet label()}
 								<span class="label">{result.label}</span>
