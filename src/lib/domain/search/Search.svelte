@@ -220,7 +220,6 @@
 <div class="search">
 	<div class="header">
 		<div class="search-field">
-			<label class="query-label" for="search-query">Search</label>
 			<div class="query-input">
 				{#if teamFilter}
 					<button
@@ -234,7 +233,7 @@
 					</button>
 				{/if}
 				<input
-					id="search-query"
+					aria-label="Search"
 					bind:this={queryInput}
 					bind:value={query}
 					oninput={onQueryInput}
@@ -448,17 +447,6 @@
 	.search-field {
 		display: grid;
 		gap: var(--ax-space-8);
-	}
-	.query-label {
-		position: absolute;
-		width: 1px;
-		height: 1px;
-		padding: 0;
-		margin: -1px;
-		overflow: hidden;
-		clip: rect(0, 0, 0, 0);
-		white-space: nowrap;
-		border: 0;
 	}
 	.query-input {
 		display: flex;
