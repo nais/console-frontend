@@ -70,6 +70,9 @@
 	let res: HTMLDivElement | undefined = $state();
 	let queryInput: HTMLInputElement | undefined = $state();
 	let parseTeamFilterOnInput = false;
+	const canCompleteTeamFilter = $derived(
+		Boolean(results?.[0]?.teamSlug && /^team:[^\s]+$/.test(query.trim()))
+	);
 
 	const scrollSelectedIntoView = () => {
 		const selectedElement = res?.querySelector('.result.selected');
@@ -116,7 +119,7 @@
 
 	function completeTeamFilter() {
 		const teamSuggestion = results?.[0]?.teamSlug;
-		if (!teamSuggestion || !/^team:[^\s]+$/.test(query.trim())) {
+		if (!teamSuggestion || !canCompleteTeamFilter) {
 			return false;
 		}
 
@@ -298,6 +301,12 @@
 				<kbd class="enter"><ArrowDownRightIcon /></kbd>
 				<span>Select</span>
 			</div>
+			{#if canCompleteTeamFilter}
+				<div>
+					<kbd class="tab">tab</kbd>
+					<span>Use team</span>
+				</div>
+			{/if}
 			<div>
 				<kbd class="escape"><span>esc</span></kbd>
 				<span>Close</span>
