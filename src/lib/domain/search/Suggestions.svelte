@@ -15,8 +15,8 @@
 		{ prefix: 'app', label: 'Application' },
 		{ prefix: 'team', label: 'Team' },
 		{ prefix: 'job', label: 'Job' },
-		{ prefix: 'kafka', label: 'Kafka topic' },
-		{ prefix: 'bq', label: 'BigQuery dataset' },
+		{ prefix: 'kafka', label: 'Kafka' },
+		{ prefix: 'bq', label: 'BigQuery' },
 		{ prefix: 'bucket', label: 'Bucket' },
 		{ prefix: 'os', label: 'OpenSearch' },
 		{ prefix: 'postgres', label: 'Postgres' },
@@ -26,7 +26,7 @@
 </script>
 
 <div class="suggestions-panel">
-	<div>
+	<div class="intro">
 		<strong>Filter by type</strong>
 		<p>Start your search with a prefix.</p>
 	</div>
@@ -39,8 +39,8 @@
 		{/each}
 	</div>
 	{#if currentTeam && !teamFilter}
-		<div>
-			<strong>Narrow scope</strong>
+		<div class="scope">
+			<span>Scope</span>
 			<button type="button" class="prefix team-prefix" onclick={selectTeam}>
 				<code>team:{currentTeam}</code>
 				<span>Current team</span>
@@ -53,35 +53,51 @@
 	.suggestions-panel {
 		display: grid;
 		gap: var(--ax-space-12);
-		padding: var(--ax-space-16);
+		padding: var(--ax-space-12);
 		border: 1px solid var(--ax-border-neutral-subtleA);
 		border-radius: var(--ax-radius-4);
-		background-color: var(--ax-neutral-100);
+		background-color: var(--ax-neutral-000);
+	}
+
+	.intro {
+		display: flex;
+		align-items: baseline;
+		gap: var(--ax-space-8);
+		flex-wrap: wrap;
 	}
 
 	p {
-		margin: var(--ax-space-2) 0 0;
+		margin: 0;
 		color: var(--ax-text-neutral);
 	}
 
 	.prefixes {
-		display: grid;
-		grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr));
-		gap: var(--ax-space-8);
+		display: flex;
+		flex-wrap: wrap;
+		gap: var(--ax-space-6);
 	}
 
-	.team-prefix {
-		margin-top: var(--ax-space-8);
-	}
-
-	.prefix {
+	.scope {
 		display: flex;
 		align-items: center;
 		gap: var(--ax-space-8);
-		padding: var(--ax-space-8) var(--ax-space-12);
+		padding-top: var(--ax-space-8);
+		border-top: 1px solid var(--ax-border-neutral-subtleA);
+		color: var(--ax-text-neutral);
+	}
+
+	.scope > span {
+		font-weight: var(--ax-font-weight-bold);
+	}
+
+	.prefix {
+		display: inline-flex;
+		align-items: center;
+		gap: var(--ax-space-6);
+		padding: var(--ax-space-4) var(--ax-space-8);
 		border: 1px solid var(--ax-border-neutral-subtleA);
 		border-radius: var(--ax-radius-4);
-		background-color: var(--ax-neutral-000);
+		background-color: transparent;
 		color: var(--ax-text-neutral);
 		font: inherit;
 		text-align: left;
@@ -90,6 +106,7 @@
 
 	.prefix:hover {
 		border-color: var(--surface-accent-color);
+		background-color: var(--ax-neutral-100);
 	}
 
 	.prefix:focus-visible {
