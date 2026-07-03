@@ -20,8 +20,6 @@
 		};
 	} = $props();
 
-	const currentTeam = $derived(page.params.team);
-
 	const items = $derived(
 		menuItems({
 			path: page.url.pathname,
@@ -43,9 +41,6 @@
 </script>
 
 <nav class="team-menu" aria-label="Team menu">
-	<div class="team-label" aria-label={`Current team: ${currentTeam}`}>
-		<span class="team-name">{currentTeam}</span>
-	</div>
 	<div class="desktop-menu">
 		<Menu {items} />
 	</div>
@@ -76,23 +71,6 @@
 </nav>
 
 <style>
-	.team-label {
-		display: flex;
-		align-items: center;
-		width: 100%;
-		padding: var(--ax-space-8) var(--ax-space-12);
-		margin-bottom: var(--ax-space-12);
-		border: 1px solid var(--ax-border-neutral-subtleA);
-		border-radius: var(--ax-radius-8);
-		background: transparent;
-		color: inherit;
-	}
-
-	.team-name {
-		font-size: var(--ax-font-size-medium);
-		font-weight: var(--ax-font-weight-bold);
-	}
-
 	.desktop-menu {
 		display: block;
 	}
