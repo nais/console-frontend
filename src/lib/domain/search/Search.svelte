@@ -31,6 +31,11 @@
 		helpers = true,
 		teamFilter = $bindable(),
 		currentTeam,
+		favoriteMode = false,
+		showFavorites,
+		toggleFavorites,
+		exitFavorites,
+		noResultsText,
 		placeholder = 'Search for teams, workloads, or services'
 	}: {
 		placeholder?: string;
@@ -38,6 +43,11 @@
 		helpers?: boolean;
 		teamFilter?: string;
 		currentTeam?: string;
+		favoriteMode?: boolean;
+		showFavorites?: () => void;
+		toggleFavorites?: () => void;
+		exitFavorites?: () => void;
+		noResultsText?: string;
 		query: string;
 		loading?: boolean;
 		results?:
@@ -91,6 +101,15 @@
 	}
 
 	function onSearchKeydown(e: KeyboardEvent) {
+		if (toggleFavorites && e.altKey && !e.ctrlKey && !e.metaKey && e.code === 'KeyF') {
+			toggleFavorites();
+			showHelp = false;
+			selected = 0;
+			void tick().then(() => queryInput?.focus());
+			e.preventDefault();
+			return;
+		}
+
 		if (suggestions && e.key === '?' && !e.altKey && !e.ctrlKey && !e.metaKey) {
 			void toggleHelp();
 			e.preventDefault();
@@ -98,6 +117,7 @@
 	}
 
 	function selectPrefix(prefix: string) {
+		exitFavorites?.();
 		query = `${prefix}:`;
 		selected = 0;
 		showHelp = false;
@@ -105,6 +125,7 @@
 	}
 
 	function selectCurrentTeam() {
+		exitFavorites?.();
 		teamFilter = currentTeam;
 		selected = 0;
 		showHelp = false;
@@ -114,6 +135,13 @@
 	function removeTeamFilter() {
 		teamFilter = undefined;
 		selected = 0;
+		void tick().then(() => queryInput?.focus());
+	}
+
+	function selectFavorites() {
+		showFavorites?.();
+		selected = 0;
+		showHelp = false;
 		void tick().then(() => queryInput?.focus());
 	}
 
@@ -220,7 +248,14 @@
 	<div class="results" bind:this={res}>
 		{#if showHelp && suggestions}
 			<div class="suggestions">
-				<Suggestions {selectPrefix} {currentTeam} {teamFilter} selectTeam={selectCurrentTeam} />
+				<Suggestions
+					{selectPrefix}
+					{currentTeam}
+					{teamFilter}
+					{favoriteMode}
+					selectTeam={selectCurrentTeam}
+					selectFavorites={showFavorites ? selectFavorites : undefined}
+				/>
 			</div>
 		{/if}
 		{#if loading}
@@ -279,7 +314,7 @@
 				{/if}
 			{:else}
 				<div class="no-results">
-					<div>No results matching "{query}"</div>
+					<div>{noResultsText ?? `No results matching "${query}"`}</div>
 				</div>
 			{/each}
 		{/if}
@@ -305,6 +340,12 @@
 				<div>
 					<kbd class="tab">tab</kbd>
 					<span>Use team</span>
+				</div>
+			{/if}
+			{#if toggleFavorites}
+				<div>
+					<kbd class="shortcut">alt f</kbd>
+					<span>{favoriteMode ? 'Search' : 'Favorites'}</span>
 				</div>
 			{/if}
 			<div>
@@ -375,6 +416,12 @@
 		font-size: 0.6rem;
 		width: 26px;
 		padding-inline: 0;
+		line-height: 1rem;
+	}
+	.shortcut,
+	.tab {
+		font-size: 0.6rem;
+		padding-inline: var(--ax-space-4);
 		line-height: 1rem;
 	}
 	.question {

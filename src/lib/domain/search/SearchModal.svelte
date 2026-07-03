@@ -6,13 +6,15 @@
 	import KafkaIcon from '$lib/icons/KafkaIcon.svelte';
 	import OpenSearchIcon from '$lib/icons/OpenSearchIcon.svelte';
 	import ValkeyIcon from '$lib/icons/ValkeyIcon.svelte';
+	import { favorites } from '$lib/stores/favorites.svelte';
 	import { Modal } from '@nais/ds-svelte-community';
 	import {
 		BriefcaseClockIcon,
 		BucketIcon,
 		DatabaseIcon,
 		PackageIcon,
-		PersonGroupIcon
+		PersonGroupIcon,
+		StarFillIcon
 	} from '@nais/ds-svelte-community/icons';
 	import Search from './Search.svelte';
 
@@ -196,7 +198,32 @@
 
 	let query = $state('');
 	let teamFilter = $state<string | undefined>();
+	let favoriteMode = $state(false);
 	const currentTeam = $derived(page.params.team);
+	const favoriteResults = $derived.by(() => {
+		const searchValue = query.trim().toLowerCase();
+		return favorites
+			.getFavorites()
+			.filter(Boolean)
+			.filter((path) => {
+				if (!searchValue) {
+					return true;
+				}
+
+				return (
+					favoriteLabel(path).toLowerCase().includes(searchValue) ||
+					path.toLowerCase().includes(searchValue)
+				);
+			})
+			.map((path) => ({
+				icon: StarFillIcon,
+				label: favoriteLabel(path),
+				description: path,
+				badge: resultBadge(path, teamSlugFromPath(path)),
+				href: path,
+				type: 'link' as const
+			}));
+	});
 
 	function searchVariables(value: string): SearchQuery$input {
 		const [prefix, q] = value.split(':');
@@ -218,7 +245,87 @@
 		}
 	}
 
+	function capitalize(value: string) {
+		return value ? value.at(0)!.toUpperCase() + value.slice(1) : '';
+	}
+
+	function favoritePageName(type: string) {
+		switch (type) {
+			case 'app':
+				return 'Application';
+			case 'job':
+				return 'Job';
+			case 'postgres':
+				return 'Postgres';
+			case 'bucket':
+				return 'Bucket';
+			case 'valkey':
+				return 'Valkey';
+			case 'opensearch':
+				return 'OpenSearch';
+			case 'kafka':
+				return 'Kafka';
+			case 'bigquery':
+				return 'BigQuery';
+			case 'deploy':
+			case 'deploys':
+				return 'Deployments';
+			case 'activity-log':
+				return 'Activity Log';
+			case 'vulnerabilities':
+				return 'Vulnerabilities';
+			default:
+				return capitalize(type);
+		}
+	}
+
+	function teamSlugFromPath(path: string) {
+		const parts = path.split('/').filter(Boolean);
+		return parts[0] === 'team' ? parts[1] : undefined;
+	}
+
+	function favoriteLabel(path: string) {
+		const parts = path.split('/').filter(Boolean);
+		if (parts[0] !== 'team') {
+			return path;
+		}
+
+		const team = parts[1];
+		if (parts.length === 2) {
+			return team;
+		}
+
+		if (parts.length === 3) {
+			return `${team} · ${capitalize(parts[2])}`;
+		}
+
+		const env = parts[2];
+		const type = favoritePageName(parts[3]);
+		const resource = parts[4];
+		const subpage = parts[5] ? favoritePageName(parts[5]) : undefined;
+		return [team, env, type, resource, subpage].filter(Boolean).join(' · ');
+	}
+
+	function showFavorites() {
+		favoriteMode = true;
+		query = '';
+		teamFilter = undefined;
+	}
+
+	function toggleFavorites() {
+		if (favoriteMode) {
+			favoriteMode = false;
+			return;
+		}
+
+		showFavorites();
+	}
+
 	$effect(() => {
+		if (favoriteMode) {
+			return;
+		}
+
 		if (!query) {
 			store.fetch({ variables: searchVariables(query) });
 			return;
@@ -238,34 +345,46 @@
 		bind:query
 		bind:teamFilter
 		{currentTeam}
-		loading={$store.fetching}
-		results={$store.data?.search.nodes.map((result) => {
-			const { icon, urlName } = categories[result.__typename];
-			if (result.__typename === 'Team') {
-				const href = `/team/${result.slug}`;
-				return {
-					icon,
-					label: result.slug,
-					description: result.purpose,
-					badge: resultBadge(href, result.slug),
-					teamSlug: result.slug,
-					href,
-					type: 'link'
-				};
-			}
-			const href = `/team/${result.team.slug}/${result.teamEnvironment.environment.name}/${urlName}/${result.name}`;
-			return {
-				icon,
-				label: result.name,
-				description: result.team.slug,
-				tag: {
-					label: result.teamEnvironment.environment.name,
-					variant: envTagVariant(result.teamEnvironment.environment.name)
-				},
-				badge: resultBadge(href),
-				href,
-				type: 'link'
-			};
-		})}
+		{favoriteMode}
+		{showFavorites}
+		{toggleFavorites}
+		exitFavorites={() => (favoriteMode = false)}
+		placeholder={favoriteMode ? 'Search favorites' : undefined}
+		noResultsText={favoriteMode
+			? query
+				? `No favorites matching "${query}"`
+				: 'No favorites yet'
+			: undefined}
+		loading={!favoriteMode && $store.fetching}
+		results={favoriteMode
+			? favoriteResults
+			: $store.data?.search.nodes.map((result) => {
+					const { icon, urlName } = categories[result.__typename];
+					if (result.__typename === 'Team') {
+						const href = `/team/${result.slug}`;
+						return {
+							icon,
+							label: result.slug,
+							description: result.purpose,
+							badge: resultBadge(href, result.slug),
+							teamSlug: result.slug,
+							href,
+							type: 'link'
+						};
+					}
+					const href = `/team/${result.team.slug}/${result.teamEnvironment.environment.name}/${urlName}/${result.name}`;
+					return {
+						icon,
+						label: result.name,
+						description: result.team.slug,
+						tag: {
+							label: result.teamEnvironment.environment.name,
+							variant: envTagVariant(result.teamEnvironment.environment.name)
+						},
+						badge: resultBadge(href),
+						href,
+						type: 'link'
+					};
+				})}
 	/>
 </Modal>

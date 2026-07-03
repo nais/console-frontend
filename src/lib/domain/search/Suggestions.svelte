@@ -2,13 +2,17 @@
 	let {
 		selectPrefix,
 		selectTeam,
+		selectFavorites,
 		currentTeam,
-		teamFilter
+		teamFilter,
+		favoriteMode
 	}: {
 		selectPrefix: (prefix: string) => void;
 		selectTeam: () => void;
+		selectFavorites?: () => void;
 		currentTeam?: string;
 		teamFilter?: string;
+		favoriteMode?: boolean;
 	} = $props();
 
 	const prefixes = [
@@ -44,6 +48,15 @@
 			<button type="button" class="prefix team-prefix" onclick={selectTeam}>
 				<code>team:{currentTeam}</code>
 				<span>Current team</span>
+			</button>
+		</div>
+	{/if}
+	{#if selectFavorites}
+		<div class="scope">
+			<span>Show</span>
+			<button type="button" class="prefix" aria-pressed={favoriteMode} onclick={selectFavorites}>
+				<code>favorites</code>
+				<span>Alt F</span>
 			</button>
 		</div>
 	{/if}
