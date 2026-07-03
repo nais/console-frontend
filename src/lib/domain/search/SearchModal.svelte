@@ -199,7 +199,6 @@
 	let query = $state('');
 	let teamFilter = $state<string | undefined>();
 	let favoriteMode = $state(false);
-	const currentTeam = $derived(page.params.team);
 	const favoriteResults = $derived.by(() => {
 		const searchValue = query.trim().toLowerCase();
 		return favorites
@@ -239,6 +238,9 @@
 	function resultBadge(href: string, teamSlug?: string) {
 		if (href === page.url.pathname) {
 			return 'CURRENT PAGE';
+		}
+		if (teamFilter) {
+			return;
 		}
 		if (teamSlug && teamSlug === page.params.team) {
 			return 'CURRENT TEAM';
@@ -339,7 +341,6 @@
 		close={() => (open = false)}
 		bind:query
 		bind:teamFilter
-		{currentTeam}
 		{favoriteMode}
 		{showFavorites}
 		{toggleFavorites}

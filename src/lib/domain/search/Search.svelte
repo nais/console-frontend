@@ -30,7 +30,6 @@
 		suggestions = true,
 		helpers = true,
 		teamFilter = $bindable(),
-		currentTeam,
 		favoriteMode = false,
 		showFavorites,
 		toggleFavorites,
@@ -42,7 +41,6 @@
 		suggestions?: boolean;
 		helpers?: boolean;
 		teamFilter?: string;
-		currentTeam?: string;
 		favoriteMode?: boolean;
 		showFavorites?: () => void;
 		toggleFavorites?: () => void;
@@ -134,14 +132,6 @@
 	function selectPrefix(prefix: string) {
 		exitFavorites?.();
 		query = `${prefix}:`;
-		selected = 0;
-		showHelp = false;
-		void tick().then(() => queryInput?.focus());
-	}
-
-	function selectCurrentTeam() {
-		exitFavorites?.();
-		teamFilter = currentTeam;
 		selected = 0;
 		showHelp = false;
 		void tick().then(() => queryInput?.focus());
@@ -265,10 +255,8 @@
 			<div class="suggestions">
 				<Suggestions
 					{selectPrefix}
-					{currentTeam}
 					{teamFilter}
 					{favoriteMode}
-					selectTeam={selectCurrentTeam}
 					selectFavorites={showFavorites ? selectFavorites : undefined}
 				/>
 			</div>

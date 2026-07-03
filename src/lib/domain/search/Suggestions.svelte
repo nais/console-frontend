@@ -1,16 +1,12 @@
 <script lang="ts">
 	let {
 		selectPrefix,
-		selectTeam,
 		selectFavorites,
-		currentTeam,
 		teamFilter,
 		favoriteMode
 	}: {
 		selectPrefix: (prefix: string) => void;
-		selectTeam: () => void;
 		selectFavorites?: () => void;
-		currentTeam?: string;
 		teamFilter?: string;
 		favoriteMode?: boolean;
 	} = $props();
@@ -42,13 +38,13 @@
 			</button>
 		{/each}
 	</div>
-	{#if currentTeam && !teamFilter}
+	{#if !teamFilter}
 		<div class="scope">
-			<span>Search within</span>
-			<button type="button" class="prefix team-prefix" onclick={selectTeam}>
-				<code>team:{currentTeam}</code>
-				<span>Current team</span>
-			</button>
+			<span>Within a team</span>
+			<div class="hint">
+				<code>team:&lt;slug&gt;</code>
+				<span>then Space</span>
+			</div>
 		</div>
 	{/if}
 	{#if selectFavorites}
@@ -125,6 +121,16 @@
 	.prefix:focus-visible {
 		outline: 2px solid var(--surface-accent-color);
 		outline-offset: 2px;
+	}
+
+	.hint {
+		display: inline-flex;
+		align-items: center;
+		gap: var(--ax-space-6);
+		padding: var(--ax-space-4) var(--ax-space-8);
+		border: 1px solid var(--ax-border-neutral-subtleA);
+		border-radius: var(--ax-radius-4);
+		color: var(--ax-text-neutral);
 	}
 
 	code {
