@@ -40,7 +40,7 @@
 	</div>
 	{#if currentTeam && !teamFilter}
 		<div class="scope">
-			<span>Scope</span>
+			<span>Search within</span>
 			<button type="button" class="prefix team-prefix" onclick={selectTeam}>
 				<code>team:{currentTeam}</code>
 				<span>Current team</span>
