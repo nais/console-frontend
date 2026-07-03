@@ -6,6 +6,7 @@
 	import { ArrowDownIcon, ArrowDownRightIcon, ArrowUpIcon } from '@nais/ds-svelte-community/icons';
 	import { tick, type Component } from 'svelte';
 	import ResultSkeleton from './ResultSkeleton.svelte';
+	import SearchDocumentShortcuts from './SearchDocumentShortcuts.svelte';
 	import Suggestions from './Suggestions.svelte';
 
 	type TagType = {
@@ -77,6 +78,7 @@
 
 	let res: HTMLDivElement | undefined = $state();
 	let queryInput: HTMLInputElement | undefined = $state();
+	const shortcutsEnabled = $derived(suggestions || Boolean(toggleFavorites));
 	const canCompleteTeamFilter = $derived(
 		Boolean(results?.[0]?.teamSlug && /^team:[^\s]+$/.test(query.trim()))
 	);
@@ -215,7 +217,9 @@
 	}
 </script>
 
-<svelte:document onkeydown={onSearchKeydown} />
+{#if shortcutsEnabled}
+	<SearchDocumentShortcuts onkeydown={onSearchKeydown} />
+{/if}
 
 <div class="search">
 	<div class="header">
