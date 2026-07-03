@@ -77,7 +77,6 @@
 
 	let res: HTMLDivElement | undefined = $state();
 	let queryInput: HTMLInputElement | undefined = $state();
-	let parseTeamFilterOnInput = false;
 	const canCompleteTeamFilter = $derived(
 		Boolean(results?.[0]?.teamSlug && /^team:[^\s]+$/.test(query.trim()))
 	);
@@ -168,10 +167,6 @@
 
 	function onQueryInput() {
 		selected = 0;
-		if (!parseTeamFilterOnInput) {
-			return;
-		}
-		parseTeamFilterOnInput = false;
 
 		const match = /(^|\s)team:([a-z][a-z0-9-]{1,28}[a-z0-9])\s+/.exec(query);
 		if (!match) {
@@ -194,10 +189,6 @@
 			removeTeamFilter();
 			e.preventDefault();
 			return;
-		}
-
-		if (e.key === ' ') {
-			parseTeamFilterOnInput = true;
 		}
 
 		if (results?.length) {

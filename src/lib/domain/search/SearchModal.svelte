@@ -224,7 +224,9 @@
 	});
 
 	function searchVariables(value: string): SearchQuery$input {
-		const [prefix, q] = value.split(':');
+		const separator = value.indexOf(':');
+		const prefix = separator >= 0 ? value.slice(0, separator) : value;
+		const q = separator >= 0 ? value.slice(separator + 1) : undefined;
 		const category = Object.values(categories).find((c) => c.prefix === prefix);
 		const type = category?.type;
 		const searchQuery = type ? q?.trim() || '' : value;
