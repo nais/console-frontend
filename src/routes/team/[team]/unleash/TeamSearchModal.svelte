@@ -70,6 +70,7 @@
 	header={{ heading: 'Team access', icon: PersonGroupIcon }}
 >
 	<Search
+		autofocus={open}
 		close={() => (open = false)}
 		placeholder="Search for teams to add"
 		bind:query

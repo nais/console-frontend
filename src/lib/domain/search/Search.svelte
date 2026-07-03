@@ -36,9 +36,11 @@
 		toggleFavorites,
 		exitFavorites,
 		noResultsText,
+		autofocus = false,
 		placeholder = 'Search for teams, workloads, or services'
 	}: {
 		placeholder?: string;
+		autofocus?: boolean;
 		suggestions?: boolean;
 		helpers?: boolean;
 		teamFilter?: string;
@@ -82,6 +84,20 @@
 	const canCompleteTeamFilter = $derived(
 		Boolean(results?.[0]?.teamSlug && /^team:[^\s]+$/.test(query.trim()))
 	);
+
+	function focusWhenEnabled(node: HTMLInputElement, enabled: boolean) {
+		if (enabled) {
+			setTimeout(() => node.focus());
+		}
+
+		return {
+			update(enabled: boolean) {
+				if (enabled) {
+					setTimeout(() => node.focus());
+				}
+			}
+		};
+	}
 
 	const scrollSelectedIntoView = () => {
 		const selectedElement = res?.querySelector('.result.selected');
@@ -239,6 +255,7 @@
 				<input
 					aria-label="Search"
 					bind:this={queryInput}
+					use:focusWhenEnabled={autofocus}
 					bind:value={query}
 					oninput={onQueryInput}
 					placeholder={teamFilter ? 'Search within team' : placeholder}

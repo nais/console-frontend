@@ -352,6 +352,7 @@
 	header={{ heading: 'Search', icon: MagnifyingGlassIcon }}
 >
 	<Search
+		autofocus
 		close={() => (open = false)}
 		bind:query
 		bind:teamFilter
