@@ -291,7 +291,7 @@
 						{/if}
 					</a>
 				{:else}
-					<div class="result">
+					<div class={['result', { selected: i === selected }]}>
 						<IconLabel icon={result.icon}>
 							{#snippet label()}
 								<span class="label">{result.label}</span>
