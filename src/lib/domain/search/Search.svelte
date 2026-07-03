@@ -71,9 +71,18 @@
 		}
 	};
 
+	async function toggleHelp() {
+		showHelp = !showHelp;
+
+		if (showHelp) {
+			await tick();
+			res?.scrollTo({ top: 0, behavior: 'smooth' });
+		}
+	}
+
 	function onSearchKeydown(e: KeyboardEvent) {
 		if (suggestions && e.key === '?' && !e.altKey && !e.ctrlKey && !e.metaKey) {
-			showHelp = !showHelp;
+			void toggleHelp();
 			e.preventDefault();
 		}
 	}
@@ -110,12 +119,7 @@
 			}}
 		/>
 		{#if suggestions}
-			<Button
-				variant="tertiary"
-				size="small"
-				aria-expanded={showHelp}
-				onclick={() => (showHelp = !showHelp)}
-			>
+			<Button variant="tertiary" size="small" aria-expanded={showHelp} onclick={toggleHelp}>
 				Help
 			</Button>
 		{/if}
