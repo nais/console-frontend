@@ -106,6 +106,10 @@
 	}
 
 	function onSearchKeydown(e: KeyboardEvent) {
+		if (!suggestions && !toggleFavorites) {
+			return;
+		}
+
 		if (toggleFavorites && e.altKey && !e.ctrlKey && !e.metaKey && e.code === 'KeyF') {
 			toggleFavorites();
 			showHelp = false;
@@ -209,16 +213,9 @@
 			}
 		}
 	}
-
-	$effect(() => {
-		if (!suggestions && !toggleFavorites) {
-			return;
-		}
-
-		document.addEventListener('keydown', onSearchKeydown);
-		return () => document.removeEventListener('keydown', onSearchKeydown);
-	});
 </script>
+
+<svelte:document onkeydown={onSearchKeydown} />
 
 <div class="search">
 	<div class="header">
