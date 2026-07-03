@@ -144,7 +144,11 @@
 	}
 
 	function selectFavorites() {
-		showFavorites?.();
+		if (favoriteMode) {
+			toggleFavorites?.();
+		} else {
+			showFavorites?.();
+		}
 		selected = 0;
 		showHelp = false;
 		void tick().then(() => queryInput?.focus());

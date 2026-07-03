@@ -51,7 +51,7 @@
 		<div class="scope">
 			<span>Show</span>
 			<button type="button" class="prefix" aria-pressed={favoriteMode} onclick={selectFavorites}>
-				<code>favorites</code>
+				<code>{favoriteMode ? 'search' : 'favorites'}</code>
 				<span>Alt F</span>
 			</button>
 		</div>
