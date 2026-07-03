@@ -19,8 +19,8 @@
 	let { open = $bindable() }: { open: boolean } = $props();
 
 	const store = graphql(`
-		query SearchQuery($query: String!, $types: [SearchType!]) {
-			search(first: 20, filter: { query: $query, types: $types }) {
+		query SearchQuery($query: String!, $types: [SearchType!], $teams: [Slug!]) {
+			search(first: 20, filter: { query: $query, types: $types, teams: $teams }) {
 				nodes {
 					__typename
 					... on Team {
@@ -195,6 +195,8 @@
 	} as const;
 
 	let query = $state('');
+	let teamFilter = $state<string | undefined>();
+	const currentTeam = $derived(page.params.team);
 
 	function searchVariables(value: string): SearchQuery$input {
 		const [prefix, q] = value.split(':');
@@ -202,8 +204,9 @@
 		const type = category?.type;
 		const searchQuery = type ? q?.trim() || '' : value;
 		const types: SearchQuery$input['types'] = type ? [type] : undefined;
+		const teams: SearchQuery$input['teams'] = teamFilter ? [teamFilter] : undefined;
 
-		return { query: searchQuery, types };
+		return { query: searchQuery, types, teams };
 	}
 
 	function resultBadge(href: string, teamSlug?: string) {
@@ -233,6 +236,8 @@
 	<Search
 		close={() => (open = false)}
 		bind:query
+		bind:teamFilter
+		{currentTeam}
 		loading={$store.fetching}
 		results={$store.data?.search.nodes.map((result) => {
 			const { icon, urlName } = categories[result.__typename];

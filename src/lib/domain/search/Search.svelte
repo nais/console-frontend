@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import IconLabel from '$lib/ui/IconLabel.svelte';
-	import { Button, Tag, TextField } from '@nais/ds-svelte-community';
+	import { Button, Tag } from '@nais/ds-svelte-community';
 	import type { TagProps } from '@nais/ds-svelte-community/components/Tag/type.js';
 	import { ArrowDownIcon, ArrowDownRightIcon, ArrowUpIcon } from '@nais/ds-svelte-community/icons';
 	import { tick, type Component } from 'svelte';
@@ -28,11 +28,15 @@
 		close,
 		suggestions = true,
 		helpers = true,
+		teamFilter = $bindable(),
+		currentTeam,
 		placeholder = 'Search for teams, workloads, or services'
 	}: {
 		placeholder?: string;
 		suggestions?: boolean;
 		helpers?: boolean;
+		teamFilter?: string;
+		currentTeam?: string;
 		query: string;
 		loading?: boolean;
 		results?:
@@ -63,6 +67,8 @@
 	let showHelp = $state(false);
 
 	let res: HTMLDivElement | undefined = $state();
+	let queryInput: HTMLInputElement | undefined = $state();
+	let parseTeamFilterOnInput = false;
 
 	const scrollSelectedIntoView = () => {
 		const selectedElement = res?.querySelector('.result.selected');
@@ -86,38 +92,98 @@
 			e.preventDefault();
 		}
 	}
+
+	function selectPrefix(prefix: string) {
+		query = `${prefix}:`;
+		selected = 0;
+		showHelp = false;
+		void tick().then(() => queryInput?.focus());
+	}
+
+	function selectCurrentTeam() {
+		teamFilter = currentTeam;
+		selected = 0;
+		showHelp = false;
+		void tick().then(() => queryInput?.focus());
+	}
+
+	function removeTeamFilter() {
+		teamFilter = undefined;
+		selected = 0;
+		void tick().then(() => queryInput?.focus());
+	}
+
+	function onQueryInput() {
+		selected = 0;
+		if (!parseTeamFilterOnInput) {
+			return;
+		}
+		parseTeamFilterOnInput = false;
+
+		const match = /(^|\s)team:([a-z][a-z0-9-]{1,28}[a-z0-9])\s+/.exec(query);
+		if (!match) {
+			return;
+		}
+
+		const tokenStart = match.index + match[1].length;
+		const tokenEnd = tokenStart + `team:${match[2]}`.length;
+		teamFilter = match[2];
+		query = `${query.slice(0, tokenStart)}${query.slice(tokenEnd)}`.replace(/\s+/g, ' ').trim();
+	}
+
+	function onQueryKeydown(e: KeyboardEvent) {
+		if (e.key === ' ') {
+			parseTeamFilterOnInput = true;
+		}
+
+		if (results?.length) {
+			if (e.key === 'ArrowDown') {
+				selected = Math.min(results.length - 1, selected + 1);
+				tick().then(scrollSelectedIntoView);
+				e.preventDefault();
+			} else if (e.key === 'ArrowUp') {
+				selected = Math.max(0, selected - 1);
+				tick().then(scrollSelectedIntoView);
+				e.preventDefault();
+			} else if (e.key === 'Enter') {
+				const s = results[selected];
+				if (s.type === 'link') {
+					goto(s.href);
+					close();
+				}
+			}
+		}
+	}
 </script>
 
 <svelte:document onkeydown={onSearchKeydown} />
 
 <div class="search">
 	<div class="header">
-		<TextField
-			bind:value={query}
-			oninput={() => (selected = 0)}
-			label="Search"
-			hideLabel
-			{placeholder}
-			onkeydown={(e) => {
-				if (results?.length) {
-					if (e.key === 'ArrowDown') {
-						selected = Math.min(results.length - 1, selected + 1);
-						tick().then(scrollSelectedIntoView);
-						e.preventDefault();
-					} else if (e.key === 'ArrowUp') {
-						selected = Math.max(0, selected - 1);
-						tick().then(scrollSelectedIntoView);
-						e.preventDefault();
-					} else if (e.key === 'Enter') {
-						const s = results[selected];
-						if (s.type === 'link') {
-							goto(s.href);
-							close();
-						}
-					}
-				}
-			}}
-		/>
+		<div class="search-field">
+			<label class="query-label" for="search-query">Search</label>
+			<div class="query-input">
+				{#if teamFilter}
+					<button
+						type="button"
+						class="query-token"
+						aria-label={`Remove team filter ${teamFilter}`}
+						onclick={removeTeamFilter}
+					>
+						<span>team:{teamFilter}</span>
+						<span aria-hidden="true">x</span>
+					</button>
+				{/if}
+				<input
+					id="search-query"
+					bind:this={queryInput}
+					bind:value={query}
+					oninput={onQueryInput}
+					placeholder={teamFilter ? 'Search within team' : placeholder}
+					onkeydown={onQueryKeydown}
+				/>
+			</div>
+		</div>
 		{#if suggestions}
 			<Button variant="tertiary" size="small" aria-expanded={showHelp} onclick={toggleHelp}>
 				Help
@@ -127,7 +193,7 @@
 	<div class="results" bind:this={res}>
 		{#if showHelp && suggestions}
 			<div class="suggestions">
-				<Suggestions />
+				<Suggestions {selectPrefix} {currentTeam} {teamFilter} selectTeam={selectCurrentTeam} />
 			</div>
 		{/if}
 		{#if loading}
@@ -296,6 +362,67 @@
 		gap: var(--ax-space-8);
 		padding: var(--ax-space-24);
 		padding-bottom: var(--ax-space-16);
+	}
+	.search-field {
+		display: grid;
+		gap: var(--ax-space-8);
+	}
+	.query-label {
+		position: absolute;
+		width: 1px;
+		height: 1px;
+		padding: 0;
+		margin: -1px;
+		overflow: hidden;
+		clip: rect(0, 0, 0, 0);
+		white-space: nowrap;
+		border: 0;
+	}
+	.query-input {
+		display: flex;
+		align-items: center;
+		gap: var(--ax-space-6);
+		min-height: 3rem;
+		padding: var(--ax-space-4) var(--ax-space-8);
+		border: 1px solid var(--ax-border-neutral-subtleA);
+		border-radius: var(--ax-radius-4);
+		background-color: var(--ax-neutral-000);
+	}
+	.query-input:focus-within {
+		outline: 2px solid var(--surface-accent-color);
+		outline-offset: 2px;
+	}
+	.query-input input {
+		min-width: 8rem;
+		flex: 1;
+		border: 0;
+		outline: 0;
+		background: transparent;
+		color: var(--ax-text-neutral);
+		font: inherit;
+	}
+	.query-token {
+		display: inline-flex;
+		align-items: center;
+		gap: var(--ax-space-6);
+		padding: var(--ax-space-4) var(--ax-space-8);
+		border: 1px solid var(--ax-border-neutral-subtleA);
+		border-radius: var(--ax-radius-4);
+		background-color: var(--ax-neutral-000);
+		color: var(--ax-text-neutral);
+		font: inherit;
+		cursor: pointer;
+	}
+	.query-token {
+		flex: none;
+		border-color: var(--surface-accent-color);
+		color: var(--surface-accent-color);
+		font-family: monospace;
+		font-weight: var(--ax-font-weight-bold);
+	}
+	.query-token:focus-visible {
+		outline: 2px solid var(--surface-accent-color);
+		outline-offset: 2px;
 	}
 	.results {
 		display: flex;
