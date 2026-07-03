@@ -500,20 +500,18 @@
 		display: inline-flex;
 		align-items: center;
 		gap: var(--ax-space-6);
+		flex: none;
 		padding: var(--ax-space-4) var(--ax-space-8);
 		border: 1px solid var(--ax-border-neutral-subtleA);
+		border-color: var(--surface-accent-color);
 		border-radius: var(--ax-radius-4);
 		background-color: var(--ax-neutral-000);
 		color: var(--ax-text-neutral);
-		font: inherit;
-		cursor: pointer;
-	}
-	.query-token {
-		flex: none;
-		border-color: var(--surface-accent-color);
 		color: var(--surface-accent-color);
+		font: inherit;
 		font-family: monospace;
 		font-weight: var(--ax-font-weight-bold);
+		cursor: pointer;
 	}
 	.query-token:focus-visible {
 		outline: 2px solid var(--surface-accent-color);
