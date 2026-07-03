@@ -13,6 +13,14 @@
 		variant: TagProps['variant'];
 	};
 
+	type ResultBase = {
+		icon: Component;
+		label: string;
+		description: string;
+		tag?: TagType;
+		badge?: string;
+	};
+
 	let {
 		query = $bindable(),
 		loading = false,
@@ -28,11 +36,7 @@
 		query: string;
 		loading?: boolean;
 		results?:
-			| {
-					icon: Component;
-					label: string;
-					description: string;
-					tag?: TagType;
+			| (ResultBase & {
 					type: 'button';
 					button: {
 						onclick: () => void;
@@ -47,15 +51,11 @@
 							| 'danger';
 						loading?: boolean;
 					};
-			  }[]
-			| {
-					icon: Component;
-					label: string;
-					description: string;
-					tag?: TagType;
+			  })[]
+			| (ResultBase & {
 					type: 'link';
 					href: string;
-			  }[];
+			  })[];
 		close: () => void;
 	} = $props();
 
@@ -70,7 +70,16 @@
 			selectedElement.scrollIntoView({ block: 'nearest' });
 		}
 	};
+
+	function onSearchKeydown(e: KeyboardEvent) {
+		if (suggestions && e.key === '?' && !e.altKey && !e.ctrlKey && !e.metaKey) {
+			showHelp = !showHelp;
+			e.preventDefault();
+		}
+	}
 </script>
+
+<svelte:document onkeydown={onSearchKeydown} />
 
 <div class="search">
 	<div class="header">
@@ -81,12 +90,6 @@
 			hideLabel
 			{placeholder}
 			onkeydown={(e) => {
-				if (suggestions && e.key === '?' && !e.altKey && !e.ctrlKey && !e.metaKey) {
-					showHelp = !showHelp;
-					e.preventDefault();
-					return;
-				}
-
 				if (results?.length) {
 					if (e.key === 'ArrowDown') {
 						selected = Math.min(results.length - 1, selected + 1);
@@ -146,6 +149,9 @@
 								{/if}
 							{/snippet}
 						</IconLabel>
+						{#if result.badge}
+							<span class="result-badge">{result.badge}</span>
+						{/if}
 					</a>
 				{:else}
 					<div class="result">
@@ -164,9 +170,14 @@
 								{/if}
 							{/snippet}
 						</IconLabel>
-						{#if result.type === 'button'}
-							<Button {...result.button} size="small">{result.button.label}</Button>
-						{/if}
+						<div class="result-actions">
+							{#if result.badge}
+								<span class="result-badge">{result.badge}</span>
+							{/if}
+							{#if result.type === 'button'}
+								<Button {...result.button} size="small">{result.button.label}</Button>
+							{/if}
+						</div>
 					</div>
 				{/if}
 			{:else}
@@ -207,11 +218,24 @@
 		gap: var(--ax-space-6);
 		align-items: center;
 	}
+	.result-actions {
+		display: flex;
+		align-items: center;
+		gap: var(--ax-space-8);
+	}
+	.result-badge {
+		font-size: var(--ax-font-size-small);
+		font-weight: var(--ax-font-weight-bold);
+		color: var(--surface-accent-color);
+		text-transform: uppercase;
+		white-space: nowrap;
+	}
 	.helpers {
 		display: flex;
 		flex-wrap: wrap;
 		gap: var(--ax-space-16);
 		padding: var(--ax-space-12) var(--ax-space-24);
+		border-top: 1px solid var(--ax-border-neutral-subtleA);
 		background-color: var(--ax-bg-default);
 
 		> div {

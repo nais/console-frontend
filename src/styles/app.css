@@ -419,7 +419,7 @@ html {
 	height: 90%;
 	max-height: 52rem;
 
-	> .aksel-modal__header {
+	> .aksel-modal__header > :not(.aksel-modal__close) {
 		display: none;
 	}
 

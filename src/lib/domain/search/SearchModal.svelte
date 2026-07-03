@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { page } from '$app/state';
 	import { graphql, type SearchQuery$input } from '$houdini';
 	import { envTagVariant } from '$lib/envTagVariant';
 	import BigQueryIcon from '$lib/icons/BigQueryIcon.svelte';
@@ -205,6 +206,15 @@
 		return { query: searchQuery, types };
 	}
 
+	function resultBadge(href: string, teamSlug?: string) {
+		if (href === page.url.pathname) {
+			return 'CURRENT PAGE';
+		}
+		if (teamSlug && teamSlug === page.params.team) {
+			return 'CURRENT TEAM';
+		}
+	}
+
 	$effect(() => {
 		if (!query) {
 			store.fetch({ variables: searchVariables(query) });
@@ -219,7 +229,7 @@
 	});
 </script>
 
-<Modal width="medium" bind:open class="search-modal">
+<Modal width="medium" bind:open class="search-modal" closeButton>
 	<Search
 		close={() => (open = false)}
 		bind:query
@@ -227,14 +237,17 @@
 		results={$store.data?.search.nodes.map((result) => {
 			const { icon, urlName } = categories[result.__typename];
 			if (result.__typename === 'Team') {
+				const href = `/team/${result.slug}`;
 				return {
 					icon,
 					label: result.slug,
 					description: result.purpose,
-					href: `/team/${result.slug}`,
+					badge: resultBadge(href, result.slug),
+					href,
 					type: 'link'
 				};
 			}
+			const href = `/team/${result.team.slug}/${result.teamEnvironment.environment.name}/${urlName}/${result.name}`;
 			return {
 				icon,
 				label: result.name,
@@ -243,7 +256,8 @@
 					label: result.teamEnvironment.environment.name,
 					variant: envTagVariant(result.teamEnvironment.environment.name)
 				},
-				href: `/team/${result.team.slug}/${result.teamEnvironment.environment.name}/${urlName}/${result.name}`,
+				badge: resultBadge(href),
+				href,
 				type: 'link'
 			};
 		})}
