@@ -120,7 +120,7 @@
 
 		if (
 			suggestions &&
-			!isTypingTarget(e.target) &&
+			(!isTypingTarget(e.target) || !query) &&
 			e.key === '?' &&
 			!e.altKey &&
 			!e.ctrlKey &&
@@ -506,7 +506,6 @@
 		border-color: var(--surface-accent-color);
 		border-radius: var(--ax-radius-4);
 		background-color: var(--ax-neutral-000);
-		color: var(--ax-text-neutral);
 		color: var(--surface-accent-color);
 		font: inherit;
 		font-family: monospace;

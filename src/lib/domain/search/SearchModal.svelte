@@ -219,7 +219,6 @@
 				icon: StarFillIcon,
 				label: favoriteLabel(path),
 				description: path,
-				badge: resultBadge(path, teamSlugFromPath(path)),
 				href: path,
 				type: 'link' as const
 			}));
@@ -278,11 +277,6 @@
 			default:
 				return capitalize(type);
 		}
-	}
-
-	function teamSlugFromPath(path: string) {
-		const parts = path.split('/').filter(Boolean);
-		return parts[0] === 'team' ? parts[1] : undefined;
 	}
 
 	function favoriteLabel(path: string) {
