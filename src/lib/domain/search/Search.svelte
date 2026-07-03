@@ -60,6 +60,7 @@
 	} = $props();
 
 	let selected = $state(0);
+	let showHelp = $state(false);
 
 	let res: HTMLDivElement | undefined = $state();
 
@@ -80,7 +81,13 @@
 			hideLabel
 			{placeholder}
 			onkeydown={(e) => {
-				if (results) {
+				if (suggestions && e.key === '?' && !e.altKey && !e.ctrlKey && !e.metaKey) {
+					showHelp = !showHelp;
+					e.preventDefault();
+					return;
+				}
+
+				if (results?.length) {
 					if (e.key === 'ArrowDown') {
 						selected = Math.min(results.length - 1, selected + 1);
 						tick().then(scrollSelectedIntoView);
@@ -99,8 +106,23 @@
 				}
 			}}
 		/>
+		{#if suggestions}
+			<Button
+				variant="tertiary"
+				size="small"
+				aria-expanded={showHelp}
+				onclick={() => (showHelp = !showHelp)}
+			>
+				Help
+			</Button>
+		{/if}
 	</div>
 	<div class="results" bind:this={res}>
+		{#if showHelp && suggestions}
+			<div class="suggestions">
+				<Suggestions />
+			</div>
+		{/if}
 		{#if loading}
 			{#each [0, 1, 2, 3, 4] as i (i)}
 				<ResultSkeleton />
@@ -150,17 +172,18 @@
 			{:else}
 				<div class="no-results">
 					<div>No results matching "{query}"</div>
-					{#if query.includes(':') && suggestions}
-						<Suggestions />
-					{/if}
 				</div>
 			{/each}
-		{:else if suggestions}
-			<Suggestions />
 		{/if}
 	</div>
 	{#if helpers}
 		<div class="helpers">
+			{#if suggestions}
+				<div>
+					<kbd class="question">?</kbd>
+					<span>Help</span>
+				</div>
+			{/if}
 			<div>
 				<kbd><ArrowDownIcon /></kbd>
 				<kbd><ArrowUpIcon /></kbd>
@@ -186,6 +209,7 @@
 	}
 	.helpers {
 		display: flex;
+		flex-wrap: wrap;
 		gap: var(--ax-space-16);
 		padding: var(--ax-space-12) var(--ax-space-24);
 		background-color: var(--ax-bg-default);
@@ -199,6 +223,9 @@
 				margin-left: auto;
 			}
 		}
+	}
+	.suggestions {
+		padding-bottom: var(--ax-space-12);
 	}
 
 	.enter > :global(svg) {
@@ -219,6 +246,11 @@
 	}
 	.escape {
 		font-size: 0.6rem;
+		width: 26px;
+		padding-inline: 0;
+		line-height: 1rem;
+	}
+	.question {
 		width: 26px;
 		padding-inline: 0;
 		line-height: 1rem;

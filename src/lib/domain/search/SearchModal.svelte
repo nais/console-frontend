@@ -195,32 +195,27 @@
 
 	let query = $state('');
 
+	function searchVariables(value: string): SearchQuery$input {
+		const [prefix, q] = value.split(':');
+		const category = Object.values(categories).find((c) => c.prefix === prefix);
+		const type = category?.type;
+		const searchQuery = type ? q?.trim() || '' : value;
+		const types: SearchQuery$input['types'] = type ? [type] : undefined;
+
+		return { query: searchQuery, types };
+	}
+
 	$effect(() => {
-		if (query) {
-			const timeout = setTimeout(() => {
-				const [prefix, q] = query.split(':');
-				const category = Object.values(categories).find((c) => c.prefix === prefix);
-				const type = category?.type;
-				let searchQuery;
-				if (type) {
-					if (q && q.trim()) {
-						searchQuery = q.trim();
-					} else {
-						searchQuery = '';
-					}
-				} else {
-					searchQuery = query;
-				}
-
-				let types: SearchQuery$input['types'] = undefined;
-				if (type) {
-					types = [type];
-				}
-				store.fetch({ variables: { query: searchQuery, types } });
-			}, 300);
-
-			return () => clearTimeout(timeout);
+		if (!query) {
+			store.fetch({ variables: searchVariables(query) });
+			return;
 		}
+
+		const timeout = setTimeout(() => {
+			store.fetch({ variables: searchVariables(query) });
+		}, 300);
+
+		return () => clearTimeout(timeout);
 	});
 </script>
 
@@ -229,30 +224,28 @@
 		close={() => (open = false)}
 		bind:query
 		loading={$store.fetching}
-		results={query
-			? $store.data?.search.nodes.map((result) => {
-					const { icon, urlName } = categories[result.__typename];
-					if (result.__typename === 'Team') {
-						return {
-							icon,
-							label: result.slug,
-							description: result.purpose,
-							href: `/team/${result.slug}`,
-							type: 'link'
-						};
-					}
-					return {
-						icon,
-						label: result.name,
-						description: result.team.slug,
-						tag: {
-							label: result.teamEnvironment.environment.name,
-							variant: envTagVariant(result.teamEnvironment.environment.name)
-						},
-						href: `/team/${result.team.slug}/${result.teamEnvironment.environment.name}/${urlName}/${result.name}`,
-						type: 'link'
-					};
-				})
-			: undefined}
+		results={$store.data?.search.nodes.map((result) => {
+			const { icon, urlName } = categories[result.__typename];
+			if (result.__typename === 'Team') {
+				return {
+					icon,
+					label: result.slug,
+					description: result.purpose,
+					href: `/team/${result.slug}`,
+					type: 'link'
+				};
+			}
+			return {
+				icon,
+				label: result.name,
+				description: result.team.slug,
+				tag: {
+					label: result.teamEnvironment.environment.name,
+					variant: envTagVariant(result.teamEnvironment.environment.name)
+				},
+				href: `/team/${result.team.slug}/${result.teamEnvironment.environment.name}/${urlName}/${result.name}`,
+				type: 'link'
+			};
+		})}
 	/>
 </Modal>
