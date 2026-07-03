@@ -132,6 +132,12 @@
 	}
 
 	function onQueryKeydown(e: KeyboardEvent) {
+		if (e.key === 'Backspace' && teamFilter && !query) {
+			removeTeamFilter();
+			e.preventDefault();
+			return;
+		}
+
 		if (e.key === ' ') {
 			parseTeamFilterOnInput = true;
 		}
