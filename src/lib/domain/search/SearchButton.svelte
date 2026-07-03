@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { browser } from '$app/environment';
 	import { themeSwitch } from '$lib/stores/theme.svelte';
 	import { Theme } from '@nais/ds-svelte-community';
 	import { InternalHeaderButton } from '@nais/ds-svelte-community/experimental';
@@ -7,10 +8,27 @@
 
 	let open = $state(false);
 
-	const isMac = navigator.platform === 'MacIntel';
+	const isMac = browser && navigator.platform === 'MacIntel';
+
+	function isTypingTarget(target: EventTarget | null) {
+		if (!(target instanceof HTMLElement)) {
+			return false;
+		}
+
+		return target.isContentEditable || ['INPUT', 'TEXTAREA', 'SELECT'].includes(target.tagName);
+	}
 
 	const onkeydown = (e: KeyboardEvent) => {
 		if (e.key === 'k' && ((isMac && e.metaKey) || (!isMac && e.ctrlKey))) {
+			e.preventDefault();
+			open = true;
+		} else if (
+			!isTypingTarget(e.target) &&
+			e.key === '/' &&
+			!e.metaKey &&
+			!e.ctrlKey &&
+			!e.altKey
+		) {
 			e.preventDefault();
 			open = true;
 		}

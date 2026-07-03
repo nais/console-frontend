@@ -6,7 +6,6 @@
 	import Menu from '$lib/ui/Menu.svelte';
 	import MobileSideDrawer from '$lib/ui/MobileSideDrawer.svelte';
 	import { getTeamContext } from './teamContext.svelte';
-	import TeamSwitcher from './TeamSwitcher.svelte';
 
 	const {
 		features
@@ -20,25 +19,6 @@
 			openSearch: { enabled: boolean };
 		};
 	} = $props();
-
-	const currentTeam = $derived(page.params.team);
-
-	let switcherOpen = $state(false);
-
-	function onKeydown(e: KeyboardEvent) {
-		const target = e.target as HTMLElement;
-		if (
-			target.tagName === 'INPUT' ||
-			target.tagName === 'TEXTAREA' ||
-			target.tagName === 'SELECT'
-		) {
-			return;
-		}
-		if (e.key === '/' && !e.metaKey && !e.ctrlKey && !e.altKey) {
-			e.preventDefault();
-			switcherOpen = true;
-		}
-	}
 
 	const items = $derived(
 		menuItems({
@@ -60,15 +40,7 @@
 	});
 </script>
 
-<svelte:document onkeydown={onKeydown} />
-
-<TeamSwitcher bind:open={switcherOpen} />
-
 <nav class="team-menu" aria-label="Team menu">
-	<button class="team-picker" onclick={() => (switcherOpen = true)}>
-		<span class="team-name">{currentTeam}</span>
-		<kbd class="shortcut">/</kbd>
-	</button>
 	<div class="desktop-menu">
 		<Menu {items} />
 	</div>
@@ -99,45 +71,6 @@
 </nav>
 
 <style>
-	.team-picker {
-		display: flex;
-		align-items: center;
-		justify-content: space-between;
-		width: 100%;
-		padding: var(--ax-space-8) var(--ax-space-12);
-		margin-bottom: var(--ax-space-12);
-		border: 1px solid var(--ax-border-neutral-subtleA);
-		border-radius: var(--ax-radius-8);
-		background: transparent;
-		cursor: pointer;
-		color: inherit;
-		transition: border-color 100ms;
-
-		&:hover {
-			border-color: var(--ax-text-neutral-subtle);
-		}
-
-		&:focus-visible {
-			outline: 2px solid var(--surface-accent-color);
-			outline-offset: 1px;
-		}
-	}
-
-	.team-name {
-		font-size: var(--ax-font-size-medium);
-		font-weight: var(--ax-font-weight-bold);
-	}
-
-	.shortcut {
-		font-size: var(--ax-font-size-small);
-		color: var(--ax-text-neutral-subtle);
-		border: 1px solid var(--ax-border-neutral-subtleA);
-		border-radius: var(--ax-radius-4);
-		padding: var(--ax-space-1) var(--ax-space-4);
-		font-family: inherit;
-		line-height: 1;
-	}
-
 	.desktop-menu {
 		display: block;
 	}
