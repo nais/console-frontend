@@ -12,6 +12,7 @@
 		BriefcaseClockIcon,
 		BucketIcon,
 		DatabaseIcon,
+		MagnifyingGlassIcon,
 		PackageIcon,
 		PersonGroupIcon,
 		StarFillIcon
@@ -342,7 +343,12 @@
 	});
 </script>
 
-<Modal width="medium" bind:open class="search-modal" closeButton>
+<Modal
+	width="medium"
+	bind:open
+	class="search-modal"
+	header={{ heading: 'Search', icon: MagnifyingGlassIcon }}
+>
 	<Search
 		close={() => (open = false)}
 		bind:query
