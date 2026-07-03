@@ -100,6 +100,14 @@
 		}
 	}
 
+	function isTypingTarget(target: EventTarget | null) {
+		if (!(target instanceof HTMLElement)) {
+			return false;
+		}
+
+		return target.isContentEditable || ['INPUT', 'TEXTAREA', 'SELECT'].includes(target.tagName);
+	}
+
 	function onSearchKeydown(e: KeyboardEvent) {
 		if (toggleFavorites && e.altKey && !e.ctrlKey && !e.metaKey && e.code === 'KeyF') {
 			toggleFavorites();
@@ -110,7 +118,14 @@
 			return;
 		}
 
-		if (suggestions && e.key === '?' && !e.altKey && !e.ctrlKey && !e.metaKey) {
+		if (
+			suggestions &&
+			!isTypingTarget(e.target) &&
+			e.key === '?' &&
+			!e.altKey &&
+			!e.ctrlKey &&
+			!e.metaKey
+		) {
 			void toggleHelp();
 			e.preventDefault();
 		}

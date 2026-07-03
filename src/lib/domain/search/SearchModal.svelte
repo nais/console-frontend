@@ -231,7 +231,8 @@
 		const type = category?.type;
 		const searchQuery = type ? q?.trim() || '' : value;
 		const types: SearchQuery$input['types'] = type ? [type] : undefined;
-		const teams: SearchQuery$input['teams'] = teamFilter ? [teamFilter] : undefined;
+		const teams: SearchQuery$input['teams'] =
+			teamFilter && type !== 'TEAM' ? [teamFilter] : undefined;
 
 		return { query: searchQuery, types, teams };
 	}
@@ -381,7 +382,7 @@
 							label: result.teamEnvironment.environment.name,
 							variant: envTagVariant(result.teamEnvironment.environment.name)
 						},
-						badge: resultBadge(href),
+						badge: resultBadge(href, result.team.slug),
 						href,
 						type: 'link'
 					};
