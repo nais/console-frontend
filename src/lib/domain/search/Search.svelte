@@ -168,7 +168,7 @@
 	function onQueryInput() {
 		selected = 0;
 
-		const match = /(^|\s)team:([a-z][a-z0-9-]{1,28}[a-z0-9])\s+/.exec(query);
+		const match = /(^|\s)team:((?![a-z0-9-]*--)[a-z][a-z0-9-]{1,28}[a-z0-9])\s+/.exec(query);
 		if (!match) {
 			return;
 		}
