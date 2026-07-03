@@ -10,7 +10,14 @@
 	const isMac = navigator.platform === 'MacIntel';
 
 	const onkeydown = (e: KeyboardEvent) => {
+		const target = e.target as HTMLElement;
+		const isTypingTarget =
+			target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.tagName === 'SELECT';
+
 		if (e.key === 'k' && ((isMac && e.metaKey) || (!isMac && e.ctrlKey))) {
+			e.preventDefault();
+			open = true;
+		} else if (!isTypingTarget && e.key === '/' && !e.metaKey && !e.ctrlKey && !e.altKey) {
 			e.preventDefault();
 			open = true;
 		}
