@@ -95,6 +95,7 @@
 		grid-template-columns: auto 1fr;
 		gap: var(--ax-space-4) var(--ax-space-12);
 		align-items: baseline;
+		min-width: 0;
 	}
 
 	.kv > div {
@@ -110,11 +111,14 @@
 	.kv dd {
 		margin: 0;
 		color: var(--ax-text-neutral);
+		min-width: 0;
 	}
 
 	code {
 		font-size: var(--ax-font-size-small);
 		font-family: monospace;
+		overflow-wrap: anywhere;
+		word-break: break-word;
 	}
 
 	.tag {
