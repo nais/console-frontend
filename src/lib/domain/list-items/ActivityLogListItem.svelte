@@ -224,6 +224,7 @@
 					}
 					... on ServiceAccountTokenUpdatedActivityLogEntry {
 						serviceAccountTokenUpdated: data {
+							tokenName
 							updatedFields {
 								field
 								newValue

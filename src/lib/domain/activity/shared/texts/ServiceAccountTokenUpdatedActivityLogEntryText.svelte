@@ -13,7 +13,11 @@
 </script>
 
 <div>
-	API token updated on service account <span class="name">{data.resourceName}</span>.
+	API token
+	{#if data.serviceAccountTokenUpdated.tokenName}
+		<span class="name">{data.serviceAccountTokenUpdated.tokenName}</span>
+	{/if}
+	updated on service account <span class="name">{data.resourceName}</span>.
 	{#if mode === 'full' && data.serviceAccountTokenUpdated?.updatedFields.length}
 		{#each data.serviceAccountTokenUpdated.updatedFields as field (field.field)}
 			{field.field}. Changed from <i>{field.oldValue}</i> to <i>{field.newValue}</i>.
