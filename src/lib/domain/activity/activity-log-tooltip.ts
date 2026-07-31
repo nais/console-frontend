@@ -70,6 +70,17 @@ export function activityTooltip(typename: string): string {
 			return 'Kubernetes audit';
 		case 'CredentialsActivityLogEntry':
 			return 'Credentials';
+		case 'ServiceAccountCreatedActivityLogEntry':
+		case 'ServiceAccountDeletedActivityLogEntry':
+		case 'ServiceAccountUpdatedActivityLogEntry':
+		case 'ServiceAccountTokenCreatedActivityLogEntry':
+		case 'ServiceAccountTokenDeletedActivityLogEntry':
+		case 'ServiceAccountTokenUpdatedActivityLogEntry':
+		case 'ServiceAccountWorkloadBindingAddedActivityLogEntry':
+		case 'ServiceAccountWorkloadBindingRemovedActivityLogEntry':
+		case 'RoleAssignedToServiceAccountActivityLogEntry':
+		case 'RoleRevokedFromServiceAccountActivityLogEntry':
+			return 'Service account';
 		case 'ReconcilerConfiguredActivityLogEntry':
 		case 'ReconcilerEnabledActivityLogEntry':
 		case 'ReconcilerDisabledActivityLogEntry':

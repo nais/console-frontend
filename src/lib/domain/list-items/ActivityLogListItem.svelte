@@ -152,6 +152,16 @@
 					... on RepositoryRemovedActivityLogEntry {
 						__typename
 					}
+					... on RoleAssignedToServiceAccountActivityLogEntry {
+						roleAssignedToServiceAccount: data {
+							roleName
+						}
+					}
+					... on RoleRevokedFromServiceAccountActivityLogEntry {
+						roleRevokedFromServiceAccount: data {
+							roleName
+						}
+					}
 					... on SecretUpdatedActivityLogEntry {
 						secretUpdated: data {
 							updatedFields {
@@ -185,6 +195,52 @@
 					... on SecretValuesViewedActivityLogEntry {
 						secretValuesViewed: data {
 							reason
+						}
+					}
+					... on ServiceAccountCreatedActivityLogEntry {
+						__typename
+					}
+					... on ServiceAccountDeletedActivityLogEntry {
+						__typename
+					}
+					... on ServiceAccountUpdatedActivityLogEntry {
+						serviceAccountUpdated: data {
+							updatedFields {
+								field
+								newValue
+								oldValue
+							}
+						}
+					}
+					... on ServiceAccountTokenCreatedActivityLogEntry {
+						serviceAccountTokenCreated: data {
+							tokenName
+						}
+					}
+					... on ServiceAccountTokenDeletedActivityLogEntry {
+						serviceAccountTokenDeleted: data {
+							tokenName
+						}
+					}
+					... on ServiceAccountTokenUpdatedActivityLogEntry {
+						serviceAccountTokenUpdated: data {
+							updatedFields {
+								field
+								newValue
+								oldValue
+							}
+						}
+					}
+					... on ServiceAccountWorkloadBindingAddedActivityLogEntry {
+						serviceAccountWorkloadBindingAdded: data {
+							teamSlug
+							workloadName
+						}
+					}
+					... on ServiceAccountWorkloadBindingRemovedActivityLogEntry {
+						serviceAccountWorkloadBindingRemoved: data {
+							teamSlug
+							workloadName
 						}
 					}
 					... on ServiceMaintenanceActivityLogEntry {
