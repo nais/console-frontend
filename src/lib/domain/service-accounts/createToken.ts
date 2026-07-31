@@ -1,56 +1,6 @@
 import { graphql } from '$houdini';
 import { fail, type RequestEvent } from '@sveltejs/kit';
-
-export const EXPIRY_OPTIONS = [
-	{ value: '3m', text: '3 months' },
-	{ value: '6m', text: '6 months' },
-	{ value: '1y', text: '1 year' },
-	{ value: '2y', text: '2 years' },
-	{ value: 'never', text: 'Never' },
-	{ value: 'custom', text: 'Custom date' }
-] as const;
-
-export const DEFAULT_EXPIRY = '1y';
-
-const PRESET_MONTHS: Record<string, number> = {
-	'3m': 3,
-	'6m': 6,
-	'1y': 12,
-	'2y': 24
-};
-
-/**
- * Resolves the submitted expiry choice into a concrete date. Computed server-side so the
- * expiry does not depend on the client's clock.
- */
-export function resolveExpiry(
-	expiresIn: string | null,
-	expiresAt: string | null
-): { date?: Date; error?: string } {
-	if (expiresIn === 'never') {
-		return {};
-	}
-
-	if (expiresIn === 'custom') {
-		if (!expiresAt) {
-			return { error: 'Choose an expiry date' };
-		}
-		const date = new Date(expiresAt);
-		if (isNaN(date.getTime())) {
-			return { error: 'Expires at must be a valid date' };
-		}
-		return { date };
-	}
-
-	const months = PRESET_MONTHS[expiresIn ?? ''];
-	if (months === undefined) {
-		return { error: 'Invalid expiry option' };
-	}
-
-	const date = new Date();
-	date.setMonth(date.getMonth() + months);
-	return { date };
-}
+import { resolveExpiry } from './tokenExpiry';
 
 const createTokenMutation = graphql(`
 	mutation CreateServiceAccountTokenShared($input: CreateServiceAccountTokenInput!) {

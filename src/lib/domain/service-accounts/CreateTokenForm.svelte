@@ -10,7 +10,7 @@
 		Select,
 		TextField
 	} from '@nais/ds-svelte-community';
-	import { DEFAULT_EXPIRY, EXPIRY_OPTIONS } from './createToken';
+	import { DEFAULT_EXPIRY, EXPIRY_OPTIONS } from './tokenExpiry';
 
 	const {
 		backHref,
