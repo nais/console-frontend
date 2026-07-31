@@ -8,6 +8,7 @@ query ServiceAccountDetail($id: ID!) @cache(policy: CacheAndNetwork) {
 		lastUsedAt
 		...ServiceAccountRolesFragment
 		...ServiceAccountAuthenticationFragment @mask_disable
+		...ResourceActivityCardServiceAccountFragment
 	}
 	roles(first: 100, filter: { excludeGlobalRoles: true }) {
 		edges {
