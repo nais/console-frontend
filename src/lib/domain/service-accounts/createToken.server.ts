@@ -21,15 +21,13 @@ export async function createServiceAccountToken(event: RequestEvent) {
 	const expiresIn = data.get('expiresIn') as string | null;
 	const expiresAt = data.get('expiresAt') as string | null;
 
-	const formValues = { name, description, expiresIn, expiresAt };
-
 	if (!name || !description) {
-		return fail(400, { error: 'Name and description are required', ...formValues });
+		return fail(400, { error: 'Name and description are required' });
 	}
 
 	const expiry = resolveExpiry(expiresIn, expiresAt);
 	if (expiry.error) {
-		return fail(400, { error: expiry.error, ...formValues });
+		return fail(400, { error: expiry.error });
 	}
 
 	const res = await createTokenMutation.mutate(
@@ -45,11 +43,11 @@ export async function createServiceAccountToken(event: RequestEvent) {
 	);
 
 	if ((res.errors?.length ?? 0) > 0) {
-		return fail(400, { error: res.errors![0].message, ...formValues });
+		return fail(400, { error: res.errors![0].message });
 	}
 
 	if (!res.data?.createServiceAccountToken) {
-		return fail(500, { error: 'Failed to create token', ...formValues });
+		return fail(500, { error: 'Failed to create token' });
 	}
 
 	return {
