@@ -236,12 +236,36 @@
 						serviceAccountWorkloadBindingAdded: data {
 							teamSlug
 							workloadName
+							workload {
+								__typename
+								name
+								team {
+									slug
+								}
+								teamEnvironment {
+									environment {
+										name
+									}
+								}
+							}
 						}
 					}
 					... on ServiceAccountWorkloadBindingRemovedActivityLogEntry {
 						serviceAccountWorkloadBindingRemoved: data {
 							teamSlug
 							workloadName
+							workload {
+								__typename
+								name
+								team {
+									slug
+								}
+								teamEnvironment {
+									environment {
+										name
+									}
+								}
+							}
 						}
 					}
 					... on ServiceMaintenanceActivityLogEntry {
