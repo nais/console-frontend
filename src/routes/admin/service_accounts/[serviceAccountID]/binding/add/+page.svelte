@@ -22,10 +22,12 @@
 
 	const serviceAccount = $derived($AdminServiceAccountDetail.data?.serviceAccount);
 
+	// Admin search spans every team, so bindings are keyed by team to avoid matching a
+	// same-named workload in another team.
 	const existingBindings = $derived(
 		new Set(
 			serviceAccount?.workloadBindings.edges.map(
-				({ node }) => `${node.workloadName}:${node.environment}`
+				({ node }) => `${node.teamSlug}:${node.workloadName}:${node.environment}`
 			) ?? []
 		)
 	);
@@ -104,13 +106,16 @@
 	function isAlreadyBound(node: {
 		id: string;
 		name: string;
+		team: { slug: string };
 		teamEnvironment: { environment: { name: string } };
 		serviceAccount: { id: string } | null;
 	}) {
 		return (
 			addedIds.has(node.id) ||
 			(!!node.serviceAccount && node.serviceAccount.id === serviceAccount?.id) ||
-			existingBindings.has(`${node.name}:${node.teamEnvironment.environment.name}`)
+			existingBindings.has(
+				`${node.team.slug}:${node.name}:${node.teamEnvironment.environment.name}`
+			)
 		);
 	}
 
