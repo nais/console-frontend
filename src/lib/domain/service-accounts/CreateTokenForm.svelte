@@ -7,8 +7,10 @@
 		Button,
 		CopyButton,
 		ErrorMessage,
+		Select,
 		TextField
 	} from '@nais/ds-svelte-community';
+	import { DEFAULT_EXPIRY, EXPIRY_OPTIONS } from './tokenExpiry';
 
 	const {
 		backHref,
@@ -20,6 +22,7 @@
 
 	let createdSecret: string | null = $state(null);
 	let errorMessage: string | undefined = $state();
+	let expiresIn: string = $state(DEFAULT_EXPIRY);
 </script>
 
 {#if createdSecret}
@@ -69,7 +72,16 @@
 
 		<TextField size="small" label="Token name" name="name" required autocomplete="off" />
 		<TextField size="small" label="Description" name="description" required autocomplete="off" />
-		<TextField size="small" label="Expires at (optional)" name="expiresAt" type="date" />
+
+		<Select size="small" label="Expires" name="expiresIn" bind:value={expiresIn}>
+			{#each EXPIRY_OPTIONS as option (option.value)}
+				<option value={option.value}>{option.text}</option>
+			{/each}
+		</Select>
+
+		{#if expiresIn === 'custom'}
+			<TextField size="small" label="Expiry date" name="expiresAt" type="date" required />
+		{/if}
 
 		<div class="actions">
 			<Button type="submit" size="small">Create token</Button>

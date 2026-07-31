@@ -11329,6 +11329,12 @@ interface Workload implements ActivityLogger & Node {
   ): SecretConnection!
 
   """
+  The Nais service account this workload is bound to, if any. Authenticating using the workload's
+  Workload Token will then act as this Nais service account.
+  """
+  serviceAccount: ServiceAccount
+
+  """
   SQL instances referenced by the workload. This does not currently support pagination, but will return all available SQL instances.
   """
   sqlInstances(

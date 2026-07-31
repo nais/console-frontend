@@ -38,6 +38,8 @@ export function resourceTypeToText(type: string) {
 			return 'Valkey';
 		case 'OPENSEARCH':
 			return 'OpenSearch';
+		case 'SERVICE_ACCOUNT':
+			return 'Service account';
 		default:
 			return 'Resource';
 	}
