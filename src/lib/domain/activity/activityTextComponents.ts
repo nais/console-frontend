@@ -25,6 +25,8 @@ import PostgresDeletedActivityLogEntryText from './shared/texts/PostgresDeletedA
 import PostgresGrantAccessActivityLogEntryText from './shared/texts/PostgresGrantAccessActivityLogEntryText.svelte';
 import RepositoryAddedActivityLogEntryText from './shared/texts/RepositoryAddedActivityLogEntryText.svelte';
 import RepositoryRemovedActivityLogEntryText from './shared/texts/RepositoryRemovedActivityLogEntryText.svelte';
+import RoleAssignedToServiceAccountActivityLogEntryText from './shared/texts/RoleAssignedToServiceAccountActivityLogEntryText.svelte';
+import RoleRevokedFromServiceAccountActivityLogEntryText from './shared/texts/RoleRevokedFromServiceAccountActivityLogEntryText.svelte';
 import SecretCreatedActivityLogEntryText from './shared/texts/SecretCreatedActivityLogEntryText.svelte';
 import SecretDeletedActivityLogEntryText from './shared/texts/SecretDeletedActivityLogEntryText.svelte';
 import SecretUpdatedActivityLogEntryText from './shared/texts/SecretUpdatedActivityLogEntryText.svelte';
@@ -32,6 +34,14 @@ import SecretValueAddedActivityLogEntryText from './shared/texts/SecretValueAdde
 import SecretValueRemovedActivityLogEntryText from './shared/texts/SecretValueRemovedActivityLogEntryText.svelte';
 import SecretValueUpdatedActivityLogEntryText from './shared/texts/SecretValueUpdatedActivityLogEntryText.svelte';
 import SecretValuesViewedActivityLogEntryText from './shared/texts/SecretValuesViewedActivityLogEntryText.svelte';
+import ServiceAccountCreatedActivityLogEntryText from './shared/texts/ServiceAccountCreatedActivityLogEntryText.svelte';
+import ServiceAccountDeletedActivityLogEntryText from './shared/texts/ServiceAccountDeletedActivityLogEntryText.svelte';
+import ServiceAccountTokenCreatedActivityLogEntryText from './shared/texts/ServiceAccountTokenCreatedActivityLogEntryText.svelte';
+import ServiceAccountTokenDeletedActivityLogEntryText from './shared/texts/ServiceAccountTokenDeletedActivityLogEntryText.svelte';
+import ServiceAccountTokenUpdatedActivityLogEntryText from './shared/texts/ServiceAccountTokenUpdatedActivityLogEntryText.svelte';
+import ServiceAccountUpdatedActivityLogEntryText from './shared/texts/ServiceAccountUpdatedActivityLogEntryText.svelte';
+import ServiceAccountWorkloadBindingAddedActivityLogEntryText from './shared/texts/ServiceAccountWorkloadBindingAddedActivityLogEntryText.svelte';
+import ServiceAccountWorkloadBindingRemovedActivityLogEntryText from './shared/texts/ServiceAccountWorkloadBindingRemovedActivityLogEntryText.svelte';
 import ServiceMaintenanceActivityLogEntryText from './shared/texts/ServiceMaintenanceActivityLogEntryText.svelte';
 import TeamConfirmDeleteKeyActivityLogEntryText from './shared/texts/TeamConfirmDeleteKeyActivityLogEntryText.svelte';
 import TeamCreateDeleteKeyActivityLogEntryText from './shared/texts/TeamCreateDeleteKeyActivityLogEntryText.svelte';
@@ -120,6 +130,26 @@ export function activityTextComponent(typename: string | null): Component<textCo
 			return SecretValueUpdatedActivityLogEntryText as Component<textComponentProps>;
 		case 'SecretValuesViewedActivityLogEntry':
 			return SecretValuesViewedActivityLogEntryText as Component<textComponentProps>;
+		case 'ServiceAccountCreatedActivityLogEntry':
+			return ServiceAccountCreatedActivityLogEntryText as Component<textComponentProps>;
+		case 'ServiceAccountDeletedActivityLogEntry':
+			return ServiceAccountDeletedActivityLogEntryText as Component<textComponentProps>;
+		case 'ServiceAccountUpdatedActivityLogEntry':
+			return ServiceAccountUpdatedActivityLogEntryText as Component<textComponentProps>;
+		case 'ServiceAccountTokenCreatedActivityLogEntry':
+			return ServiceAccountTokenCreatedActivityLogEntryText as Component<textComponentProps>;
+		case 'ServiceAccountTokenDeletedActivityLogEntry':
+			return ServiceAccountTokenDeletedActivityLogEntryText as Component<textComponentProps>;
+		case 'ServiceAccountTokenUpdatedActivityLogEntry':
+			return ServiceAccountTokenUpdatedActivityLogEntryText as Component<textComponentProps>;
+		case 'ServiceAccountWorkloadBindingAddedActivityLogEntry':
+			return ServiceAccountWorkloadBindingAddedActivityLogEntryText as Component<textComponentProps>;
+		case 'ServiceAccountWorkloadBindingRemovedActivityLogEntry':
+			return ServiceAccountWorkloadBindingRemovedActivityLogEntryText as Component<textComponentProps>;
+		case 'RoleAssignedToServiceAccountActivityLogEntry':
+			return RoleAssignedToServiceAccountActivityLogEntryText as Component<textComponentProps>;
+		case 'RoleRevokedFromServiceAccountActivityLogEntry':
+			return RoleRevokedFromServiceAccountActivityLogEntryText as Component<textComponentProps>;
 		case 'ServiceMaintenanceActivityLogEntry':
 			return ServiceMaintenanceActivityLogEntryText as Component<textComponentProps>;
 		case 'TeamConfirmDeleteKeyActivityLogEntry':
