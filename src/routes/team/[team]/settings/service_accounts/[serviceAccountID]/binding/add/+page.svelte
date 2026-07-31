@@ -48,6 +48,18 @@
 									}
 								}
 							}
+							... on Application {
+								serviceAccount {
+									id
+									name
+								}
+							}
+							... on Job {
+								serviceAccount {
+									id
+									name
+								}
+							}
 						}
 					}
 				}
@@ -81,6 +93,7 @@
 							id: string;
 							name: string;
 							teamEnvironment: { environment: { name: string } };
+							serviceAccount: { id: string; name: string } | null;
 						} =>
 							(n.__typename === 'Application' || n.__typename === 'Job') &&
 							!n.teamEnvironment.environment.name.endsWith('-fss')
@@ -97,6 +110,12 @@
 			addedIds.has(node.id) ||
 			existingBindings.has(`${node.name}:${node.teamEnvironment.environment.name}`)
 		);
+	}
+
+	function boundToOtherAccount(node: { serviceAccount: { id: string; name: string } | null }) {
+		return node.serviceAccount && node.serviceAccount.id !== serviceAccount?.id
+			? node.serviceAccount
+			: null;
 	}
 </script>
 
@@ -123,7 +142,8 @@
 		{/if}
 
 		<BodyLong>
-			Workload bindings allow Nais Workloads to authenticate as this service account.
+			Workload bindings allow Nais Workloads to authenticate as this service account. A workload can
+			only be bound to one service account at a time.
 		</BodyLong>
 
 		<TextField
@@ -160,6 +180,15 @@
 							<Button size="small" variant="tertiary" disabled>
 								{#snippet icon()}<CheckmarkIcon />{/snippet}
 								Added
+							</Button>
+						{:else if boundToOtherAccount(node)}
+							<Button
+								size="small"
+								variant="tertiary"
+								disabled
+								title="A workload can only be bound to one service account."
+							>
+								Bound to {boundToOtherAccount(node)?.name}
 							</Button>
 						{:else}
 							<form
