@@ -101,13 +101,17 @@
 			: []
 	);
 
+	// The bindings list is paginated, so a workload bound to this account beyond the first page
+	// is only detectable through the workload's own service account.
 	function isAlreadyBound(node: {
 		id: string;
 		name: string;
 		teamEnvironment: { environment: { name: string } };
+		serviceAccount: { id: string } | null;
 	}) {
 		return (
 			addedIds.has(node.id) ||
+			(!!node.serviceAccount && node.serviceAccount.id === serviceAccount?.id) ||
 			existingBindings.has(`${node.name}:${node.teamEnvironment.environment.name}`)
 		);
 	}
