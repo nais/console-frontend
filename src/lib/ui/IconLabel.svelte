@@ -96,7 +96,7 @@
 		{/if}
 		{#if tags.length || description}
 			<div class="desc">
-				{#each tags as t (t.label)}
+				{#each tags as t, i (i)}
 					<Tag size={tagSize} variant={t.variant}>{t.label}</Tag>
 				{/each}
 				{#if description}
