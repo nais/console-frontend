@@ -104,6 +104,13 @@
 	// Tenant-wide accounts have no team, so the workload's team is always shown for those.
 	const accountTeam = $derived($data.team?.slug ?? null);
 
+	function bindingHref(binding: Binding) {
+		const workload = binding.workload;
+		if (!workload) return undefined;
+		const kind = workload.__typename === 'Job' ? 'job' : 'app';
+		return `/team/${workload.team.slug}/${workload.teamEnvironment.environment.name}/${kind}/${workload.name}`;
+	}
+
 	function bindingDescription(binding: Binding) {
 		const team = binding.workload?.team?.slug ?? binding.teamSlug;
 		const parts = ['Workload binding'];
@@ -139,6 +146,7 @@
 							: [])
 					]}
 					description={bindingDescription(binding)}
+					href={bindingHref(binding)}
 				/>
 
 				<div class="right">

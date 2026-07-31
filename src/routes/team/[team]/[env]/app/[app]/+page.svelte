@@ -7,6 +7,7 @@
 	import Persistence from '$lib/domain/persistence/Persistence.svelte';
 	import Configs from '$lib/domain/resources/Configs.svelte';
 	import Secrets from '$lib/domain/resources/Secrets.svelte';
+	import ServiceAccountBinding from '$lib/domain/resources/ServiceAccountBinding.svelte';
 	import WorkloadDeploy from '$lib/domain/workload/WorkloadDeploy.svelte';
 	import WorkloadHealth from '$lib/domain/workload/WorkloadHealth.svelte';
 	import GraphErrors from '$lib/ui/GraphErrors.svelte';
@@ -103,6 +104,7 @@
 				{#if environment}
 					<Configs {environment} workload={app?.name ?? ''} {teamSlug} />
 					<Secrets workload={app?.name ?? ''} {environment} {teamSlug} />
+					<ServiceAccountBinding workload={app?.name ?? ''} {environment} {teamSlug} />
 				{/if}
 				<Labels labels={app.labels ?? []} />
 				{#if environment && application}
