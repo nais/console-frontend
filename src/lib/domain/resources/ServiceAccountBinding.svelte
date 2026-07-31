@@ -11,23 +11,11 @@
 			team(slug: $team) {
 				environment(name: $env) {
 					workload(name: $name) {
-						__typename
-						... on Application {
-							serviceAccount {
-								id
-								name
-								team {
-									slug
-								}
-							}
-						}
-						... on Job {
-							serviceAccount {
-								id
-								name
-								team {
-									slug
-								}
+						serviceAccount {
+							id
+							name
+							team {
+								slug
 							}
 						}
 					}
@@ -54,10 +42,7 @@
 		});
 	});
 
-	const resolved = $derived($binding.data?.team.environment.workload);
-	const serviceAccount = $derived(
-		resolved && 'serviceAccount' in resolved ? resolved.serviceAccount : null
-	);
+	const serviceAccount = $derived($binding.data?.team.environment.workload.serviceAccount);
 </script>
 
 <GraphErrors errors={$binding.errors} />
