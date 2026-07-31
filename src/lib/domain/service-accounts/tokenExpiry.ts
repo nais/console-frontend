@@ -1,19 +1,19 @@
 export const EXPIRY_OPTIONS = [
-	{ value: '3m', text: '3 months' },
-	{ value: '6m', text: '6 months' },
-	{ value: '1y', text: '1 year' },
-	{ value: '2y', text: '2 years' },
+	{ value: '30d', text: '30 days' },
+	{ value: '90d', text: '90 days' },
+	{ value: '180d', text: '180 days' },
+	{ value: '365d', text: '365 days' },
 	{ value: 'never', text: 'Never' },
 	{ value: 'custom', text: 'Custom date' }
 ] as const;
 
-export const DEFAULT_EXPIRY = '1y';
+export const DEFAULT_EXPIRY = '365d';
 
-const PRESET_MONTHS: Record<string, number> = {
-	'3m': 3,
-	'6m': 6,
-	'1y': 12,
-	'2y': 24
+const PRESET_DAYS: Record<string, number> = {
+	'30d': 30,
+	'90d': 90,
+	'180d': 180,
+	'365d': 365
 };
 
 /**
@@ -44,12 +44,12 @@ export function resolveExpiry(
 		return { date };
 	}
 
-	const months = PRESET_MONTHS[choice];
-	if (months === undefined) {
+	const days = PRESET_DAYS[choice];
+	if (days === undefined) {
 		return { error: 'Invalid expiry option' };
 	}
 
 	const date = new Date();
-	date.setMonth(date.getMonth() + months);
+	date.setDate(date.getDate() + days);
 	return { date };
 }
