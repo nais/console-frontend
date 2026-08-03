@@ -96,7 +96,6 @@
 		)
 	);
 
-	// The activityLog field is already scoped to this account, so no type filter is needed.
 	const serviceAccountData = $derived(
 		paginatedFragment(
 			resourceType === 'serviceAccount'
