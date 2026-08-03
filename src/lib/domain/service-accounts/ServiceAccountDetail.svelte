@@ -178,8 +178,10 @@
 								<Button
 									size="xsmall"
 									variant="secondary-neutral"
-									onclick={() => (editingDescription = false)}>Cancel</Button
+									onclick={() => (editingDescription = false)}
 								>
+									Cancel
+								</Button>
 							</div>
 						</div>
 					{:else}
