@@ -11,8 +11,7 @@
 		url: URL
 	): ValueOf<T> =>
 		(Object.values(orderField).find((field) => url.searchParams.get('sort')?.startsWith(field)) as
-			| ValueOf<T>
-			| undefined) ?? defaultValue;
+			ValueOf<T> | undefined) ?? defaultValue;
 
 	export const urlToOrderDirection = (
 		url: URL,

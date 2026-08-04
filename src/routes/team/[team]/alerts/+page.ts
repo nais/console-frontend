@@ -22,8 +22,7 @@ export async function load(event) {
 			.get('states')
 			?.split(',')
 			.filter((s) => Object.values(AlertState).includes(s as AlertState$options)) as
-			| AlertState$options[]
-			| undefined) || undefined;
+			AlertState$options[] | undefined) || undefined;
 
 	const after = event.url.searchParams.get('after') || '';
 	const before = event.url.searchParams.get('before') || '';
