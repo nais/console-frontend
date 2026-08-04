@@ -3,12 +3,10 @@
 </script>
 
 <script lang="ts">
+	import type { ChartState } from 'layerchart';
 	import type { Snippet } from 'svelte';
 
-	import LegendWrapperData, {
-		createLegendContext,
-		type LegendSnippetProps
-	} from './LegendWrapperData.svelte';
+	import LegendWrapperData, { createLegendContext } from './LegendWrapperData.svelte';
 
 	let {
 		children,
@@ -22,6 +20,8 @@
 		onContextReady?: (ctx: ReturnType<typeof createLegendContext>) => void;
 	} = $props();
 
+	type LegendSnippetContext = { context: ChartState };
+
 	const ctx = createLegendContext();
 	let contextReported = false;
 	$effect.pre(() => {
@@ -32,7 +32,7 @@
 	});
 </script>
 
-{#snippet legendSnippet({ context }: { context: LegendSnippetProps })}
+{#snippet legendSnippet({ context }: LegendSnippetContext)}
 	<LegendWrapperData {context} />
 {/snippet}
 

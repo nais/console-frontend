@@ -30,12 +30,10 @@
 
 	const currentOrderDirection = $derived(urlToOrderDirection(page.url, OrderDirection.DESC));
 
-	const tableSortState = $derived.by(
-		(): TableSortState => ({
-			orderBy: currentOrderField,
-			direction: currentOrderDirection === OrderDirection.ASC ? 'ascending' : 'descending'
-		})
-	);
+	const tableSortState = $derived.by((): TableSortState => ({
+		orderBy: currentOrderField,
+		direction: currentOrderDirection === OrderDirection.ASC ? 'ascending' : 'descending'
+	}));
 
 	const handleSortChange = (key: string) => {
 		const nextDirection =

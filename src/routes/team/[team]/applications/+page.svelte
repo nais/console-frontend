@@ -67,8 +67,7 @@
 
 	const currentSortDirection: OrderDirection$options = $derived(
 		(Object.values(OrderDirection).find((d) => page.url.searchParams.get('sort')?.endsWith(d)) as
-			| OrderDirection$options
-			| undefined) ?? OrderDirection.DESC
+			OrderDirection$options | undefined) ?? OrderDirection.DESC
 	);
 
 	function setSort(field: ApplicationOrderField$options) {

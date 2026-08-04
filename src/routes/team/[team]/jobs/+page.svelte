@@ -60,14 +60,12 @@
 
 	const currentSortField: JobOrderField$options = $derived(
 		(Object.values(JobOrderField).find((f) => page.url.searchParams.get('sort')?.startsWith(f)) as
-			| JobOrderField$options
-			| undefined) ?? JobOrderField.ISSUES
+			JobOrderField$options | undefined) ?? JobOrderField.ISSUES
 	);
 
 	const currentSortDirection: OrderDirection$options = $derived(
 		(Object.values(OrderDirection).find((d) => page.url.searchParams.get('sort')?.endsWith(d)) as
-			| OrderDirection$options
-			| undefined) ?? OrderDirection.DESC
+			OrderDirection$options | undefined) ?? OrderDirection.DESC
 	);
 
 	function setSort(field: JobOrderField$options) {
