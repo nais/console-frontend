@@ -65,7 +65,7 @@
 	.content {
 		display: flex;
 		flex-direction: column;
-		gap: var(--ax-space-32);
+		gap: var(--ax-space-64);
 	}
 
 	.section-header {
