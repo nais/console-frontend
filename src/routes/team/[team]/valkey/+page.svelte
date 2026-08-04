@@ -45,8 +45,7 @@
 
 	const currentSortDirection: OrderDirectionOptions = $derived(
 		(Object.values(OrderDirection).find((d) => page.url.searchParams.get('sort')?.endsWith(d)) as
-			| OrderDirectionOptions
-			| undefined) ?? OrderDirection.DESC
+			OrderDirectionOptions | undefined) ?? OrderDirection.DESC
 	);
 
 	function setSort(field: ValkeyOrderFieldOptions) {
