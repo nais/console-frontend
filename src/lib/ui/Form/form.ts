@@ -86,11 +86,7 @@ export type HiddenFieldData = BaseFieldData & {
 
 /** The field types that can make up one row of a repeated group. Rows cannot nest. */
 export type RowField =
-	| TextFieldData
-	| TextAreaData
-	| SelectFieldData
-	| CheckboxFieldData
-	| HiddenFieldData;
+	TextFieldData | TextAreaData | SelectFieldData | CheckboxFieldData | HiddenFieldData;
 
 /**
  * A set of fields the user can repeat, e.g. a list of environment variables. Validates as an array
@@ -427,15 +423,19 @@ export type ModeFields<T extends Field, M extends FormMode> = M extends 'edit'
 	: Exclude<T, { editOnly: true }>;
 
 export type RequiredOptionsOverrides<T extends Field, M extends FormMode> = {
-	[K in Extract<ModeFields<T, M>, { type: 'select' | 'radio' }> as NeedsOptions<K> extends true
-		? K['name']
-		: never]: readonly Option[];
+	[
+		K in Extract<ModeFields<T, M>, { type: 'select' | 'radio' }> as NeedsOptions<K> extends true
+			? K['name']
+			: never
+	]: readonly Option[];
 };
 
 export type OptionalOptionsOverrides<T extends Field> = {
-	[K in Extract<T, { type: 'select' | 'radio' }> as NeedsOptions<K> extends true
-		? never
-		: K['name']]?: readonly Option[];
+	[
+		K in Extract<T, { type: 'select' | 'radio' }> as NeedsOptions<K> extends true
+			? never
+			: K['name']
+	]?: readonly Option[];
 };
 
 export type OptionsOverrides<T extends Field, M extends FormMode> = RequiredOptionsOverrides<T, M> &

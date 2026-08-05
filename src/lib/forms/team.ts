@@ -12,7 +12,7 @@ const reservedSlugs = [
 	'default'
 ];
 
-const slugPattern = /^[a-z](-?[a-z0-9]+)+$/;
+const slugPattern = /^[a-z](?:[a-z0-9]|-(?=[a-z0-9]))*$/;
 const slackChannelPattern = /^#[a-zæåø0-9_-]{1,80}$/;
 
 export const createTeamForm = [

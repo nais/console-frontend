@@ -129,10 +129,7 @@
 
 	function handleValueChange(event: Event) {
 		const target = event.target as
-			| HTMLInputElement
-			| HTMLSelectElement
-			| HTMLTextAreaElement
-			| null;
+			HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement | null;
 		if (!target?.name) return;
 
 		const next: Record<string, string> = { ...values };
