@@ -10,11 +10,23 @@
 		data: ActivityLogEntry<'ServiceAccountWorkloadBindingRemovedActivityLogEntry'>;
 		mode?: TimelineModes;
 	} = $props();
+
+	const binding = $derived(data.serviceAccountWorkloadBindingRemoved);
+	const href = $derived(
+		binding.workloadType && data.environmentName
+			? `/team/${binding.teamSlug}/${data.environmentName}/${binding.workloadType === 'JOB' ? 'job' : 'app'}/${binding.workloadName}`
+			: null
+	);
 </script>
 
 <div>
-	Workload <span class="name">{data.serviceAccountWorkloadBindingRemoved.workloadName}</span>
-	{#if data.serviceAccountWorkloadBindingRemoved.teamSlug !== data.teamSlug}
+	Workload
+	{#if href}
+		<a {href}>{data.serviceAccountWorkloadBindingRemoved.workloadName}</a>
+	{:else}
+		<span class="name">{data.serviceAccountWorkloadBindingRemoved.workloadName}</span>
+	{/if}
+	{#if data.serviceAccountWorkloadBindingRemoved.teamSlug && data.serviceAccountWorkloadBindingRemoved.teamSlug !== data.teamSlug}
 		in team <span class="name">{data.serviceAccountWorkloadBindingRemoved.teamSlug}</span>
 	{/if}
 	removed from service account <span class="name">{data.resourceName}</span>

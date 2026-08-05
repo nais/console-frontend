@@ -1,6 +1,10 @@
 import { addPageMeta } from '$lib/utils/pageMeta';
+import { get } from 'svelte/store';
 
 export async function load(event) {
+	const { AdminServiceAccountDetail } = await event.parent();
+	const name = get(AdminServiceAccountDetail)?.data?.serviceAccount?.name ?? 'Service Account';
+
 	return {
 		...(await addPageMeta(event, {
 			title: 'Add Workload Binding',
@@ -10,7 +14,7 @@ export async function load(event) {
 					href: '/admin/service_accounts'
 				},
 				{
-					label: event.params.serviceAccountID,
+					label: name,
 					href: '/admin/service_accounts/[serviceAccountID]'
 				}
 			]
