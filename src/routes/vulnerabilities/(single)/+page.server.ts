@@ -1,16 +1,16 @@
+import { cveSearchForm } from '$lib/forms/vulnerability';
+import { validateForm } from '$lib/server/form';
 import { redirect } from '@sveltejs/kit';
 import type { Actions } from './$types';
 
 export const actions: Actions = {
-	search: async ({ request }) => {
-		const data = await request.formData();
-		const cve = data.get('cve') as string | null;
+	search: async (event) => {
+		const result = await validateForm({ event, fields: cveSearchForm });
 
-		if (cve) {
-			const normalizedCve = cve.trim();
-			redirect(303, `/vulnerabilities/${encodeURIComponent(normalizedCve)}`);
+		if (!result.success) {
+			return result.errorResponse;
 		}
 
-		return { success: false, error: 'Please enter a CVE ID' };
+		redirect(303, `/vulnerabilities/${encodeURIComponent(result.data.cve)}`);
 	}
 };

@@ -41,3 +41,12 @@ export const serviceAccountTokenForm = [
 			})
 	}
 ] as const satisfies Fields;
+
+/** Deleting a token, confirmed in a dialog, so only the id of the acted-on row is submitted. */
+export const deleteTokenForm = [
+	{
+		type: 'hidden',
+		name: 'tokenId',
+		validation: z.string().min(1, { message: 'Token ID is required' })
+	}
+] as const satisfies Fields;

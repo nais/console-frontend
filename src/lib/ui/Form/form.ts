@@ -6,7 +6,7 @@ export type FormMode = 'create' | 'edit';
 
 export type Option = { readonly value: string; readonly label?: string };
 
-export type FieldInputProps = {
+type FieldInputProps = {
 	readonly required?: boolean;
 	readonly disabled?: boolean;
 	readonly readonly?: boolean;
@@ -21,7 +21,7 @@ export type FieldInputProps = {
 export type FormValues<T extends Field = Field> = { [K in T['name']]: string };
 
 /** Field properties that depend on the values of other fields. Merged over the static ones. */
-export type DynamicFieldProps = {
+type DynamicFieldProps = {
 	readonly description?: string | Snippet;
 	readonly options?: readonly Option[];
 	readonly inputProps?: FieldInputProps;
@@ -55,31 +55,31 @@ type VisibleFieldData = BaseFieldData & {
 	readonly validation: ZodValidation;
 };
 
-export type TextFieldData = VisibleFieldData & {
+type TextFieldData = VisibleFieldData & {
 	readonly type: 'text' | 'number' | 'email' | 'password' | 'date' | 'url' | 'tel' | 'search';
 };
 
-export type TextAreaData = VisibleFieldData & {
+type TextAreaData = VisibleFieldData & {
 	readonly type: 'textarea';
 	readonly rows?: number;
 };
 
-export type SelectFieldData = VisibleFieldData & {
+type SelectFieldData = VisibleFieldData & {
 	readonly type: 'select';
 	readonly options?: readonly Option[];
 };
 
-export type CheckboxFieldData = VisibleFieldData & {
+type CheckboxFieldData = VisibleFieldData & {
 	readonly type: 'checkbox';
 };
 
-export type RadioFieldData = VisibleFieldData & {
+type RadioFieldData = VisibleFieldData & {
 	readonly type: 'radio';
 	readonly options?: readonly Option[];
 };
 
 /** Submitted with the form but never shown, e.g. a value carried through from the server. */
-export type HiddenFieldData = BaseFieldData & {
+type HiddenFieldData = BaseFieldData & {
 	readonly type: 'hidden';
 	readonly validation: ZodValidation;
 };
@@ -430,7 +430,7 @@ export type RequiredOptionsOverrides<T extends Field, M extends FormMode> = {
 	]: readonly Option[];
 };
 
-export type OptionalOptionsOverrides<T extends Field> = {
+type OptionalOptionsOverrides<T extends Field> = {
 	[
 		K in Extract<T, { type: 'select' | 'radio' }> as NeedsOptions<K> extends true
 			? never
@@ -447,6 +447,16 @@ export type FormProps<T extends Field = Field> = {
 	readonly error?: string;
 	readonly errors?: z.core.$ZodIssue[];
 	readonly values?: { [K in T['name']]?: FormValue };
+};
+
+/**
+ * The message a failed submit carries, for callers that show a single line rather than a whole
+ * form, e.g. a hidden confirm form. A form-level message wins; otherwise the first field issue
+ * stands in, since a payload may carry only issues.
+ */
+export const failureMessage = (data: unknown, fallback = 'Unknown error'): string => {
+	const form = data as FormProps | null | undefined;
+	return form?.error ?? form?.errors?.[0]?.message ?? fallback;
 };
 
 export const getValue = <T extends Field, K extends T['name']>(

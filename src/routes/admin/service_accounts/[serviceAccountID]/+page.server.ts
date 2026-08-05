@@ -1,5 +1,7 @@
 import { graphql } from '$houdini';
-import { fail } from '@sveltejs/kit';
+import { removeBindingForm } from '$lib/forms/serviceaccounts';
+import { deleteTokenForm } from '$lib/forms/service-account-token';
+import { formAction } from '$lib/server/form';
 
 const deleteTokenMutation = graphql(`
 	mutation AdminDeleteServiceAccountToken($input: DeleteServiceAccountTokenInput!) {
@@ -18,40 +20,20 @@ const removeBindingMutation = graphql(`
 `);
 
 export const actions = {
-	deleteToken: async (event) => {
-		const data = await event.request.formData();
-		const tokenId = data.get('tokenId') as string | null;
+	deleteToken: formAction({
+		fields: deleteTokenForm,
+		mutation: deleteTokenMutation,
+		variables: ({ data }) => ({ input: { serviceAccountTokenID: data.tokenId } }),
+		message: 'Failed to delete token',
+		// The API reports a no-op deletion in the payload rather than as an error.
+		succeeded: (result) => result.deleteServiceAccountToken.serviceAccountTokenDeleted === true
+	}),
 
-		if (!tokenId) {
-			return fail(400, { error: 'Token ID is required' });
-		}
-
-		const res = await deleteTokenMutation.mutate(
-			{ input: { serviceAccountTokenID: tokenId } },
-			{ event }
-		);
-
-		if ((res.errors?.length ?? 0) > 0) {
-			return fail(400, { error: res.errors![0].message });
-		}
-
-		return { success: true };
-	},
-
-	removeBinding: async (event) => {
-		const data = await event.request.formData();
-		const bindingId = data.get('bindingId') as string | null;
-
-		if (!bindingId) {
-			return fail(400, { error: 'Binding ID is required' });
-		}
-
-		const res = await removeBindingMutation.mutate({ input: { bindingID: bindingId } }, { event });
-
-		if ((res.errors?.length ?? 0) > 0) {
-			return fail(400, { error: res.errors![0].message });
-		}
-
-		return { success: true };
-	}
+	removeBinding: formAction({
+		fields: removeBindingForm,
+		mutation: removeBindingMutation,
+		variables: ({ data }) => ({ input: { bindingID: data.bindingId } }),
+		message: 'Failed to remove binding',
+		succeeded: (result) => result.removeWorkloadFromServiceAccount.bindingDeleted === true
+	})
 };

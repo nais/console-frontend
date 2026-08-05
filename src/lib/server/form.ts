@@ -33,8 +33,8 @@ type SuccessResponse<T> = {
 	success: true;
 	data: T;
 	/**
-	 * The raw submission, exactly as the controls sent it. Hand this to `formError` so a later
-	 * failure re-renders what the user typed rather than the parsed and coerced values.
+	 * The raw submission, exactly as the controls sent it. Fail with these values so a later
+	 * failure re-renders what the user typed rather than the parsed and coerced ones.
 	 */
 	values: Record<string, FormValue>;
 };
@@ -46,7 +46,7 @@ type ActiveData<T extends Fields, M extends FormMode> = {
 };
 
 /** Fails a form action with a message that isn't tied to a single field, e.g. an API error. */
-export function formError(
+function formError(
 	message: string,
 	values: Record<string, FormValue>,
 	status = 400

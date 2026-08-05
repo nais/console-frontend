@@ -12,7 +12,7 @@ import { z } from 'zod';
 const isAvailable = (tier: OpenSearchTier$options, memory: OpenSearchMemory$options) =>
 	Number.isFinite(openSearchPlanCosts[tier]?.[memory]);
 
-export const availableMemories = (tier: OpenSearchTier$options): OpenSearchMemory$options[] =>
+const availableMemories = (tier: OpenSearchTier$options): OpenSearchMemory$options[] =>
 	Object.values(OpenSearchMemory).filter((memory) => isAvailable(tier, memory));
 
 const memoryLabel = (memory: OpenSearchMemory$options) => memory.split('_').reverse().join(' ');
