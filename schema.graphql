@@ -7696,7 +7696,9 @@ type ServiceAccountWorkloadBindingAddedActivityLogEntry implements ActivityLogEn
   """Data associated with the entry."""
   data: ServiceAccountWorkloadBindingAddedActivityLogEntryData!
 
-  """The environment name that the entry belongs to."""
+  """
+  The environment the bound workload was deployed in at the time of the binding.
+  """
   environmentName: String
 
   """ID of the entry."""
@@ -7719,13 +7721,13 @@ type ServiceAccountWorkloadBindingAddedActivityLogEntryData {
   """The team slug of the workload."""
   teamSlug: Slug!
 
-  """
-  The workload the binding refers to. Null if the workload no longer exists, or has not been deployed yet.
-  """
-  workload: Workload
-
   """The name of the workload."""
   workloadName: String!
+
+  """
+  The type of the workload at the time of the binding. Null if the workload type could not be determined (e.g. workload was not yet deployed).
+  """
+  workloadType: WorkloadType
 }
 
 type ServiceAccountWorkloadBindingConnection {
@@ -7759,7 +7761,9 @@ type ServiceAccountWorkloadBindingRemovedActivityLogEntry implements ActivityLog
   """Data associated with the entry."""
   data: ServiceAccountWorkloadBindingRemovedActivityLogEntryData!
 
-  """The environment name that the entry belongs to."""
+  """
+  The environment the bound workload was deployed in at the time of removal.
+  """
   environmentName: String
 
   """ID of the entry."""
@@ -7782,13 +7786,13 @@ type ServiceAccountWorkloadBindingRemovedActivityLogEntryData {
   """The team slug of the workload."""
   teamSlug: Slug!
 
-  """
-  The workload the binding refers to. Null if the workload no longer exists, or has not been deployed yet.
-  """
-  workload: Workload
-
   """The name of the workload."""
   workloadName: String!
+
+  """
+  The type of the workload at the time of removal. Null if the workload type could not be determined (e.g. workload was not yet deployed).
+  """
+  workloadType: WorkloadType
 }
 
 type ServiceCostSample {
@@ -11597,6 +11601,15 @@ interface WorkloadResources {
 
   """Resources requested by the workload."""
   requests: WorkloadResourceQuantity!
+}
+
+"""The type of a workload."""
+enum WorkloadType {
+  """The workload is an application."""
+  APPLICATION
+
+  """The workload is a job."""
+  JOB
 }
 
 type WorkloadUtilization {

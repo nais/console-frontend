@@ -11,10 +11,10 @@
 		mode?: TimelineModes;
 	} = $props();
 
-	const workload = $derived(data.serviceAccountWorkloadBindingRemoved.workload);
+	const binding = $derived(data.serviceAccountWorkloadBindingRemoved);
 	const href = $derived(
-		workload
-			? `/team/${workload.team.slug}/${workload.teamEnvironment.environment.name}/${workload.__typename === 'Job' ? 'job' : 'app'}/${workload.name}`
+		binding.workloadType && data.environmentName
+			? `/team/${binding.teamSlug}/${data.environmentName}/${binding.workloadType === 'JOB' ? 'job' : 'app'}/${binding.workloadName}`
 			: null
 	);
 </script>
@@ -22,7 +22,7 @@
 <div>
 	Workload
 	{#if href}
-		<a {href} class="name">{data.serviceAccountWorkloadBindingRemoved.workloadName}</a>
+		<a {href}>{data.serviceAccountWorkloadBindingRemoved.workloadName}</a>
 	{:else}
 		<span class="name">{data.serviceAccountWorkloadBindingRemoved.workloadName}</span>
 	{/if}
