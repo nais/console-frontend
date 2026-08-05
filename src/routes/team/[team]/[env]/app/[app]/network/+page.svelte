@@ -5,16 +5,11 @@
 	import NetworkPolicy from '$lib/domain/resources/NetworkPolicy.svelte';
 	import WarningIcon from '$lib/icons/WarningIcon.svelte';
 	import DocsLink from '$lib/ui/DocsLink.svelte';
+	import ExternalLink from '$lib/ui/ExternalLink.svelte';
 	import GraphErrors from '$lib/ui/GraphErrors.svelte';
 	import TooltipAlignHack from '$lib/ui/TooltipAlignHack.svelte';
 	import { changeParams } from '$lib/utils/searchparams';
-	import {
-		CopyButton,
-		Detail,
-		Heading,
-		ToggleGroup,
-		ToggleGroupItem
-	} from '@nais/ds-svelte-community';
+	import { Detail, Heading, ToggleGroup, ToggleGroupItem } from '@nais/ds-svelte-community';
 	import { GlobeIcon, HouseIcon, PadlockLockedIcon } from '@nais/ds-svelte-community/icons';
 	import type { PageProps } from './$types';
 
@@ -80,8 +75,9 @@
 									{/if}
 								</TooltipAlignHack>
 							</span>
-							<code class="ingress-url">{ingress.url}</code>
-							<CopyButton copyText={ingress.url} size="xsmall" variant="action" />
+							<ExternalLink href={ingress.url}>
+								{ingress.url}
+							</ExternalLink>
 						</li>
 					{/each}
 				</ul>
@@ -181,13 +177,6 @@
 	.ingress-icon {
 		display: flex;
 		align-items: center;
-	}
-
-	.ingress-url {
-		font-family: monospace;
-		font-size: var(--ax-font-size-small);
-		color: var(--ax-text-neutral);
-		word-break: break-all;
 	}
 
 	.empty-state {
