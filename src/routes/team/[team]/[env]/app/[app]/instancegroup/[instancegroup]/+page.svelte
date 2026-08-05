@@ -629,7 +629,7 @@
 	}
 
 	.instances-list {
-		--instancegroup-list-columns: 22rem 7.5rem 1fr 14rem;
+		--instancegroup-list-columns: minmax(0, 3fr) auto minmax(0, 2fr) minmax(0, 2fr);
 		font-size: var(--ax-font-size-small);
 		color: var(--ax-text-neutral-subtle);
 	}
@@ -639,11 +639,13 @@
 	}
 
 	.meta-text {
-		white-space: nowrap;
+		overflow-wrap: anywhere;
+		word-break: break-word;
 	}
 
 	.exit-info {
 		overflow-wrap: anywhere;
+		word-break: break-word;
 	}
 
 	.instance-link {
