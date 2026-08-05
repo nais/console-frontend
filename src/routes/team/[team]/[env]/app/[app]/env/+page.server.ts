@@ -1,5 +1,6 @@
 import { graphql } from '$houdini';
-import { fail, redirect } from '@sveltejs/kit';
+import { uniqueVariableNames, workloadEnvForm } from '$lib/forms/workload-env';
+import { formAction } from '$lib/server/form';
 
 const mutation = graphql(`
 	mutation UpdateAppEnv($input: UpdateApplicationInput!) {
@@ -12,48 +13,21 @@ const mutation = graphql(`
 `);
 
 export const actions = {
-	default: async (event) => {
-		const { request, params } = event;
-		const data = await request.formData();
-
-		const names = data.getAll('env_name') as string[];
-		const values = data.getAll('env_value') as string[];
-
-		const environmentVariables = names
-			.map((name, i) => ({ name: name.trim(), value: values[i] ?? '' }))
-			.filter((entry) => entry.name.length > 0);
-
-		if (environmentVariables.length === 0) {
-			return fail(400, {
-				success: false,
-				error: 'At least one environment variable is required'
-			});
-		}
-
-		const res = await mutation.mutate(
-			{
-				input: {
-					teamSlug: params.team,
-					environmentName: params.env,
-					name: params.app,
-					environmentVariables
-				}
-			},
-			{ event }
-		);
-
-		if ((res.errors?.length ?? 0) > 0) {
-			return fail(400, {
-				success: false,
-				error: res.errors![0].message
-			});
-		} else if (!res.data) {
-			return fail(500, {
-				success: false,
-				error: 'Failed to update environment variables'
-			});
-		}
-
-		return redirect(303, `/team/${params.team}/${params.env}/app/${params.app}`);
-	}
+	default: formAction({
+		fields: workloadEnvForm,
+		refine: uniqueVariableNames,
+		mutation,
+		variables: ({ data, params }) => ({
+			input: {
+				teamSlug: params.team,
+				environmentName: params.env,
+				name: params.app,
+				environmentVariables: data.variables
+			}
+		}),
+		message: 'Failed to update environment variables',
+		// The API names the input `environmentVariables`; the form field it came from is `variables`.
+		rename: { environmentVariables: 'variables' },
+		redirectTo: ({ params }) => `/team/${params.team}/${params.env}/app/${params.app}`
+	})
 };

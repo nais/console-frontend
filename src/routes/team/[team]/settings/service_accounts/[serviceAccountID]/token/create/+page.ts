@@ -14,9 +14,10 @@ export async function load(event) {
 	return {
 		...(await addPageMeta(event, {
 			title: 'Create API Token',
+			docPath: '/operate/console/api/#method-2-api-tokens',
 			breadcrumbs: [
 				{
-					label: 'Settings',
+					label: 'Team Settings',
 					href: '/team/[team]/settings'
 				},
 				{

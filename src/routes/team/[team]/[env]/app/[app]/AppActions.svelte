@@ -4,11 +4,7 @@
 	import Manifest from '$lib/domain/resources/Manifest.svelte';
 	import ActionConfirm from '$lib/ui/ActionConfirm.svelte';
 	import HeaderActions from '$lib/ui/HeaderActions.svelte';
-	import PageModal, { pageModalClick } from '$lib/ui/PageModal.svelte';
 	import { Button, Heading, Modal } from '@nais/ds-svelte-community';
-	import EnvPage from './env/+page.svelte';
-	import ImagePage from './image/+page.svelte';
-	import ResizePage from './resize/+page.svelte';
 	import {
 		ActionMenu,
 		ActionMenuDivider,
@@ -136,25 +132,13 @@
 					Stop
 				</ActionMenuItem>
 			</button>
-			<a
-				class="action-menu-button"
-				href="/team/{teamSlug}/{environment}/app/{application}/resize"
-				onclick={pageModalClick}
-			>
+			<a class="action-menu-button" href="/team/{teamSlug}/{environment}/app/{application}/resize">
 				<ActionMenuItem icon={ArrowsUpDownIcon}>Resize</ActionMenuItem>
 			</a>
-			<a
-				class="action-menu-button"
-				href="/team/{teamSlug}/{environment}/app/{application}/env"
-				onclick={pageModalClick}
-			>
+			<a class="action-menu-button" href="/team/{teamSlug}/{environment}/app/{application}/env">
 				<ActionMenuItem icon={PencilWritingIcon}>Set environment variables</ActionMenuItem>
 			</a>
-			<a
-				class="action-menu-button"
-				href="/team/{teamSlug}/{environment}/app/{application}/image"
-				onclick={pageModalClick}
-			>
+			<a class="action-menu-button" href="/team/{teamSlug}/{environment}/app/{application}/image">
 				<ActionMenuItem icon={PackageIcon}>Set image version</ActionMenuItem>
 			</a>
 		{/if}
@@ -202,14 +186,6 @@
 		<Manifest workload={app} />
 	{/if}
 </Modal>
-
-{#if page.state.modalHref?.includes('/resize')}
-	<PageModal content={ResizePage} header="Resize app" />
-{:else if page.state.modalHref?.includes('/env')}
-	<PageModal content={EnvPage} header="Set environment variables" />
-{:else if page.state.modalHref?.includes('/image')}
-	<PageModal content={ImagePage} header="Set image version" />
-{/if}
 
 <style>
 	.action-menu-button {

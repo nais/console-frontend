@@ -1,10 +1,10 @@
 export const EXPIRY_OPTIONS = [
-	{ value: '30d', text: '30 days' },
-	{ value: '90d', text: '90 days' },
-	{ value: '180d', text: '180 days' },
-	{ value: '365d', text: '365 days' },
-	{ value: 'never', text: 'Never' },
-	{ value: 'custom', text: 'Custom date' }
+	{ value: '30d', label: '30 days' },
+	{ value: '90d', label: '90 days' },
+	{ value: '180d', label: '180 days' },
+	{ value: '365d', label: '365 days' },
+	{ value: 'never', label: 'Never' },
+	{ value: 'custom', label: 'Custom date' }
 ] as const;
 
 export const DEFAULT_EXPIRY = '365d';

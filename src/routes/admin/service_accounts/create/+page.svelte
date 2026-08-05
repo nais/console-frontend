@@ -1,8 +1,8 @@
 <script lang="ts">
-	import { page } from '$app/state';
 	import CreateServiceAccountForm from '$lib/domain/service-accounts/CreateServiceAccountForm.svelte';
+	import type { PageProps } from './$types';
 
-	const form = $derived(page.form);
+	let { form }: PageProps = $props();
 </script>
 
 <CreateServiceAccountForm formData={form} />

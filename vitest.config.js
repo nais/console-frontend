@@ -11,7 +11,8 @@ export default defineConfig({
 	resolve: {
 		alias: {
 			$lib: path.resolve('./src/lib'),
-			$houdini: path.resolve('./.houdini')
+			$houdini: path.resolve('./.houdini'),
+			'$app/forms': path.resolve('./src/lib/test/app-forms.ts')
 		}
 	}
 });

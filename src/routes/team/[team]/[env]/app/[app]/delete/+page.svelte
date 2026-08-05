@@ -1,46 +1,18 @@
 <script lang="ts">
-	import { goto } from '$app/navigation';
-	import { type DeleteAppPage$result, graphql } from '$houdini';
+	import { type DeleteAppPage$result } from '$houdini';
 	import PersistenceItem from '$lib/domain/persistence/PersistenceItem.svelte';
+	import { deleteConfirmationForm } from '$lib/forms/delete-confirmation';
 	import WarningIcon from '$lib/icons/WarningIcon.svelte';
-	import GraphErrors from '$lib/ui/GraphErrors.svelte';
+	import Form from '$lib/ui/Form/Form.svelte';
 	import Time from '$lib/ui/Time.svelte';
-	import { BodyShort, Button, Heading, TextField } from '@nais/ds-svelte-community';
-	import { get } from 'svelte/store';
+	import { BodyShort, Button, Heading } from '@nais/ds-svelte-community';
 	import type { PageProps } from './$types';
 
-	let { data }: PageProps = $props();
+	let { data, form }: PageProps = $props();
 
 	let { DeleteAppPage } = $derived(data);
 
 	let result = $derived($DeleteAppPage.data);
-
-	const deleteApp = graphql(`
-		mutation DeleteApp($team: Slug!, $env: String!, $app: String!) {
-			deleteApplication(input: { teamSlug: $team, environmentName: $env, name: $app }) {
-				success
-			}
-		}
-	`);
-
-	let confirmation = $state('');
-
-	const submit = async () => {
-		const app = get(DeleteAppPage).data?.team.environment.application;
-		if (!app) {
-			return;
-		}
-
-		const resp = await deleteApp.mutate({
-			app: app.name,
-			env: app.teamEnvironment.environment.name,
-			team: app.team.slug
-		});
-
-		if (resp.data?.deleteApplication.success) {
-			goto(`/team/${app.team.slug}?deleted=app/${app.name}`);
-		}
-	};
 
 	function hasResourcesToDelete(app: DeleteAppPage$result['team']['environment']['application']) {
 		return (
@@ -136,31 +108,11 @@
 			{/if}
 			{@const expected = app.teamEnvironment.environment.name + '/' + app.name}
 			<div class="confirmation-wrapper">
-				<BodyShort spacing>
-					Confirm deletion by writing <strong>{expected}</strong> in the box below and click
-					<em>Delete</em>.
-				</BodyShort>
-				{#if $deleteApp.errors}
-					<GraphErrors errors={$deleteApp.errors} />
-				{/if}
-
-				<form
-					onsubmit={(e: SubmitEvent) => {
-						e.preventDefault();
-						submit();
-					}}
-				>
-					<div class="field-wrapper">
-						<TextField label="" hideLabel bind:value={confirmation} style="width: 100%;" />
-					</div>
-					<Button
-						disabled={confirmation !== expected}
-						variant="danger"
-						loading={$DeleteAppPage.fetching}
-					>
-						Delete
-					</Button>
-				</form>
+				<Form fields={deleteConfirmationForm(expected)} {form}>
+					{#snippet button({ submitting })}
+						<Button type="submit" variant="danger" loading={submitting}>Delete</Button>
+					{/snippet}
+				</Form>
 			</div>
 		{/if}
 	{/if}
@@ -169,16 +121,6 @@
 <style>
 	code {
 		font-size: 1rem;
-	}
-
-	form {
-		display: flex;
-		gap: var(--ax-space-16);
-	}
-
-	.field-wrapper {
-		width: 100%;
-		max-width: 300px;
 	}
 
 	.heading-wrapper {
@@ -197,20 +139,5 @@
 		padding: var(--ax-space-16);
 		border-radius: var(--ax-radius-8);
 		border: 1px solid var(--ax-border-danger);
-	}
-
-	@media (max-width: 767px), (max-height: 500px) {
-		form {
-			flex-direction: column;
-			align-items: stretch;
-		}
-
-		.field-wrapper {
-			max-width: none;
-		}
-
-		form :global(button) {
-			width: 100%;
-		}
 	}
 </style>

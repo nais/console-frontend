@@ -1,216 +1,36 @@
 <script lang="ts">
-	import { enhance } from '$app/forms';
-	import WarningIcon from '$lib/icons/WarningIcon.svelte';
-	import { isPossiblyInModal } from '$lib/ui/PageModal.svelte';
-	import { Button, ErrorSummary, Heading, TextField } from '@nais/ds-svelte-community';
+	import { createTeamForm } from '$lib/forms/team';
+	import Form from '$lib/ui/Form/Form.svelte';
+	import { BodyLong, Heading } from '@nais/ds-svelte-community';
 	import { FloppydiskIcon } from '@nais/ds-svelte-community/icons';
+	import { Button } from '@nais/ds-svelte-community';
 	import type { PageProps } from './$types';
 
 	let { form }: PageProps = $props();
-	let saving = $state(false);
-	let slackChannelError = $state('');
-
-	let teamSlugError = $state('');
-
-	let purposeError = $state('');
-
-	let disabled = $derived(
-		slackChannelError !== 'no_error' || teamSlugError !== 'no_error' || purposeError !== 'no_error'
-	);
-
-	const reservedSlugs = [
-		'nais-system',
-		'kube-system',
-		'kube-node-lease',
-		'kube-public',
-		'kyverno',
-		'cnrm-system',
-		'configconnector-operator-system',
-		'default'
-	];
-	const slugPattern = /^[a-z](-?[a-z0-9]+)+$/;
-	const slackChannelPattern = /^[a-zæåø0-9_-]{1,80}$/;
-
-	function handleTeamSlugInput(event: Event) {
-		const input = event.target as HTMLInputElement | null;
-		if (!input) return;
-
-		const slug = input.value;
-
-		if (reservedSlugs.includes(slug)) {
-			teamSlugError = 'This slug is reserved.';
-			return;
-		}
-
-		if (slug.startsWith('nais')) {
-			teamSlugError =
-				"The name prefix 'nais' is reserved. Try again with a different name, perhaps just removing the prefix?";
-			return;
-		}
-
-		if (slug.startsWith('team')) {
-			teamSlugError =
-				"The name prefix 'team' is redundant. When you create a team, it is by definition a team. Try again with a different name, perhaps just removing the prefix?";
-			return;
-		}
-
-		if (slug.length < 3) {
-			teamSlugError = 'A team slug must be at least 3 characters long.';
-			return;
-		}
-
-		if (slug.length > 30) {
-			teamSlugError = 'A team slug must be at most 30 characters long.';
-			return;
-		}
-
-		if (!slugPattern.test(slug)) {
-			teamSlugError =
-				'A team slug must begin with a lowercase letter and may include lowercase letters, numbers, and hyphens. However, it cannot start or end with a hyphen, nor can it contain consecutive hyphens.';
-			return;
-		}
-
-		teamSlugError = 'no_error';
-	}
-
-	function handleSlackChannelInput(event: Event) {
-		const input = event.target as HTMLInputElement | null;
-		if (!input) return;
-
-		let cursorPosition = input.selectionStart ?? 0;
-		let value = input.value;
-
-		if (!value.startsWith('#')) {
-			value = '#' + value.replace(/#+/, '');
-			cursorPosition++;
-		} else {
-			value = '#' + value.slice(1).replace(/#+/, '');
-		}
-
-		input.value = value;
-
-		if (cursorPosition <= 1) {
-			input.setSelectionRange(1, 1);
-		} else {
-			input.setSelectionRange(cursorPosition, cursorPosition);
-		}
-
-		const slackChannelName = input.value.slice(1);
-		const isValid = slackChannelPattern.test(slackChannelName);
-
-		if (!isValid) {
-			slackChannelError =
-				'Invalid Slack channel name. It must contain only lowercase letters, numbers, hyphens, and underscores, and be between 1 and 80 characters long.';
-		} else {
-			slackChannelError = 'no_error';
-		}
-
-		if (form) {
-			form.input.slackChannel = input.value;
-		}
-	}
-
-	function handlePurposeInput(event: Event) {
-		const input = event.target as HTMLInputElement | null;
-		if (!input) return;
-
-		if (input.value.length < 3) {
-			purposeError = 'The purpose must be at least 3 characters long.';
-		} else {
-			purposeError = 'no_error';
-		}
-	}
 </script>
 
 <svelte:head>
 	<title>Create a New Team - Nais Console</title>
 </svelte:head>
 
-<div class="container" class:partOfModal={isPossiblyInModal()}>
-	{#if !isPossiblyInModal()}
-		<Heading as="h1" size="large" spacing>Create a New Team</Heading>
-	{/if}
-	{#if form?.errors && form.errors.length > 0}
-		<ErrorSummary heading="Error creating team">
-			{#each form.errors as error (error)}
-				<li style="color:inherit!important">{error.message}</li>
-			{/each}
-		</ErrorSummary>
-	{/if}
-	<p>
+<div class="container">
+	<Heading as="h1" size="large" spacing>Create a New Team</Heading>
+
+	<BodyLong spacing>
 		Creating a team in Nais will grant access to certain Nais features, such as Google Cloud
 		projects, Kubernetes namespaces, or your own GitHub team. After the team is created, you will
 		become the administrator of that team, granting privileges to add and remove team members. The
 		identifier is the primary key, and will be used across systems so that they are easily
 		recognizable.
-	</p>
-	<form
-		method="POST"
-		use:enhance={() => {
-			saving = true;
-			return async ({ update }) => {
-				saving = false;
-				update({ reset: false });
-			};
-		}}
-	>
-		<TextField
-			name="name"
-			value={form?.input.slug}
-			oninput={handleTeamSlugInput}
-			aria-describedby="team-slug-error"
-		>
-			{#snippet label()}
-				Identifier / Name
-			{/snippet}
-			{#snippet description()}
-				Example: my-team-name<br />
-				<WarningIcon class="text-aligned-icon" /> It is not possible to change the identifier after creation,
-				so choose wisely.
-			{/snippet}
-		</TextField>
-		{#if teamSlugError !== 'no_error' && teamSlugError !== ''}
-			<p id="team-slug-error" style:color="var(--ax-text-danger)" role="alert">{teamSlugError}</p>
-		{/if}
-		<br />
-		<TextField
-			name="description"
-			value={form?.input.purpose}
-			oninput={handlePurposeInput}
-			aria-describedby="purpose-error"
-		>
-			{#snippet label()}
-				Purpose of the team
-			{/snippet}
-			{#snippet description()}
-				Example: Making sure users have a good experience
-			{/snippet}
-		</TextField>
-		{#if purposeError !== 'no_error' && purposeError !== ''}
-			<p id="purpose-error" style:color="var(--ax-text-danger)" role="alert">{purposeError}</p>
-		{/if}
-		<br />
-		<TextField
-			name="slackChannel"
-			value={form?.input.slackChannel}
-			oninput={handleSlackChannelInput}
-			aria-describedby="slack-channel-error"
-		>
-			{#snippet label()}
-				Slack channel
-			{/snippet}
-			{#snippet description()}
-				Example: #my-team-slack
-			{/snippet}
-		</TextField>
-		{#if slackChannelError !== 'no_error' && slackChannelError !== ''}
-			<p id="slack-channel-error" style:color="var(--ax-text-danger)" role="alert">
-				{slackChannelError}
-			</p>
-		{/if}
-		<br />
-		<Button loading={saving} {disabled} icon={FloppydiskIcon}>Create team</Button>
-	</form>
+	</BodyLong>
+
+	<Form fields={createTeamForm} {form}>
+		{#snippet button({ submitting })}
+			<Button type="submit" size="small" icon={FloppydiskIcon} loading={submitting}>
+				Create team
+			</Button>
+		{/snippet}
+	</Form>
 </div>
 
 <style>
@@ -218,9 +38,5 @@
 		padding-top: 4rem;
 		margin-inline: auto;
 		max-width: 620px;
-
-		&.partOfModal {
-			padding-top: 0;
-		}
 	}
 </style>

@@ -3,7 +3,7 @@
 	import { Alert } from '@nais/ds-svelte-community';
 	import type { PageProps } from './$houdini';
 
-	let { data }: PageProps = $props();
+	let { data, form }: PageProps = $props();
 
 	const { AdminServiceAccountDetail } = $derived(data);
 
@@ -16,7 +16,7 @@
 	{#if !serviceAccount}
 		<Alert variant="warning">Service account not found.</Alert>
 	{:else}
-		<CreateTokenForm backHref={basePath} bindingAddHref="{basePath}/binding/add" />
+		<CreateTokenForm {form} backHref={basePath} bindingAddHref="{basePath}/binding/add" />
 	{/if}
 </div>
 

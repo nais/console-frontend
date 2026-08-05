@@ -10,7 +10,6 @@
 	import GraphErrors from '$lib/ui/GraphErrors.svelte';
 	import List from '$lib/ui/List.svelte';
 	import ListItem from '$lib/ui/ListItem.svelte';
-	import PageModal, { pageModalClick } from '$lib/ui/PageModal.svelte';
 	import Pagination from '$lib/ui/Pagination.svelte';
 	import RunningIndicator from '$lib/ui/RunningIndicator.svelte';
 	import SurfaceCard from '$lib/ui/SurfaceCard.svelte';
@@ -111,14 +110,7 @@
 			<List title="Valkey" count={$Valkeys.data.team.valkeys.pageInfo.totalCount}>
 				{#snippet actions()}
 					{#if create && create.viewerIsMember}
-						<Button
-							variant="secondary"
-							size="small"
-							as="a"
-							href={create.url}
-							icon={PlusIcon}
-							onclick={pageModalClick}
-						>
+						<Button variant="secondary" size="small" as="a" href={create.url} icon={PlusIcon}>
 							{create.buttonText}
 						</Button>
 					{/if}
@@ -255,10 +247,6 @@
 			</SurfaceCard>
 		</CollapsibleSidebar>
 	</div>
-
-	{#if create}
-		<PageModal content={create.page} header={create.header} />
-	{/if}
 
 	<style>
 		.right {

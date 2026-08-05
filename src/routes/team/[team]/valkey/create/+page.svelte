@@ -1,159 +1,62 @@
 <script lang="ts">
-	import { enhance } from '$app/forms';
-	import { page } from '$app/state';
-	import {
-		ValkeyMaxMemoryPolicy,
-		type ValkeyMaxMemoryPolicy$options,
-		ValkeyMemory,
-		type ValkeyMemory$options,
-		ValkeyTier,
-		type ValkeyTier$options
-	} from '$houdini';
-	import ExternalLink from '$lib/ui/ExternalLink.svelte';
+	import { ValkeyMaxMemoryPolicy, ValkeyMemory, ValkeyTier } from '$houdini';
+	import { valkeyForm, valkeyGroups } from '$lib/forms/valkey';
+	import Form from '$lib/ui/Form/Form.svelte';
 	import { valkeyPlanCosts } from '$lib/utils/aivencost';
-	import {
-		Alert,
-		BodyLong,
-		BodyShort,
-		Button,
-		ErrorMessage,
-		ReadMore,
-		Select,
-		TextField
-	} from '@nais/ds-svelte-community';
+	import { Alert, BodyLong, BodyShort } from '@nais/ds-svelte-community';
 	import type { PageProps } from './$houdini';
 
-	let { data }: PageProps = $props();
+	let { data, form }: PageProps = $props();
 
 	const { CreateValkeyEnvironments } = $derived(data);
 
 	const environments = $derived(
 		($CreateValkeyEnvironments.data?.team.environments ?? []).filter((env) => !!env.gcpProjectID)
 	);
-
-	const form = $derived(page.form);
-
-	let tier = $derived((form?.tier as ValkeyTier$options) ?? ValkeyTier.HIGH_AVAILABILITY);
-	let memory = $derived((form?.size as ValkeyMemory$options) ?? ValkeyMemory.GB_1);
-	let maxMemoryPolicy = $derived(
-		(form?.max_memory_policy as ValkeyMaxMemoryPolicy$options) ?? ValkeyMaxMemoryPolicy.NO_EVICTION
-	);
 </script>
 
-<form method="POST" use:enhance>
-	<BodyLong style="margin-bottom: 1rem;"
-		>This will create a new Valkey instance for <span style="font-weight: bold;"
-			>{data.teamSlug}</span
-		>.</BodyLong
-	>
+<BodyLong style="margin-bottom: 1rem;">
+	This will create a new Valkey instance for
+	<span style="font-weight: bold;">{data.teamSlug}</span>.
+</BodyLong>
 
-	<TextField size="small" label="Instance name" name="name" required value={form?.name ?? ''} />
-
-	<Select
-		size="small"
-		label="Environment"
-		name="environment"
-		required
-		value={form?.environment ?? environments.at(0)?.environment.name}
-	>
-		{#each environments ?? [] as env (env.environment.name)}
-			<option value={env.environment.name}>{env.environment.name}</option>
-		{/each}
-	</Select>
-
-	<Select size="small" label="Tier" name="tier" required bind:value={tier}>
-		{#each Object.values(ValkeyTier) as opt (opt)}
-			<option value={opt}>{opt}</option>
-		{/each}
-	</Select>
-
-	<Select size="small" label="Memory" name="memory" required bind:value={memory}>
-		{#each Object.values(ValkeyMemory) as opt (opt)}
-			<option value={opt}>{opt}</option>
-		{/each}
-	</Select>
-
-	<Select
-		size="small"
-		label="Max memory policy"
-		name="max_memory_policy"
-		bind:value={maxMemoryPolicy}
-	>
-		{#snippet description()}
-			Automatically evict old data as you add new data, see the <ExternalLink
-				href="https://valkey.io/topics/lru-cache/">Valkey documentation</ExternalLink
-			> for details.
-		{/snippet}
-		{#each Object.values(ValkeyMaxMemoryPolicy) as opt (opt)}
-			<option value={opt}>{opt}</option>
-		{/each}
-	</Select>
-
-	<ReadMore header="Advanced options" size="small">
-		<TextField
-			size="small"
-			label="Notify keyspace events"
-			name="notify_keyspace_events"
-			value={form?.notify_keyspace_events ?? ''}
-		>
-			{#snippet description()}
-				See the
-				<ExternalLink href="https://valkey.io/topics/notifications">
-					Valkey documentation</ExternalLink
-				> for details.
-			{/snippet}
-		</TextField>
-		<TextField
-			size="small"
-			label="Number of databases"
-			name="databases"
-			type="number"
-			min={1}
-			max={128}
-			step={1}
-			value={form?.databases ?? '16'}
-		>
-			{#snippet description()}
-				Default is 16. Minimum 1, maximum 128. Changing this will cause a restart of the Valkey
-				service.
-			{/snippet}
-		</TextField>
-	</ReadMore>
-
-	<BodyShort>
-		Estimated cost: <strong
-			>{valkeyPlanCosts[tier][memory].toLocaleString('no-NO', {
-				style: 'currency',
-				currency: 'EUR'
-			})}</strong
-		> per month
-	</BodyShort>
-
-	{#if form?.error}
-		<ErrorMessage>{form.error}</ErrorMessage>
-	{/if}
-
-	{#if tier === ValkeyTier.SINGLE_NODE && memory === ValkeyMemory.GB_1}
-		<Alert variant="warning" size="small" style="margin-bottom: 1rem;">
-			This combination of tier and memory is not recommended for production workloads.<br />
-			Limitations include no guarantees for uptime and availability, no detailed metrics, and limited
-			backups.
-		</Alert>
-	{/if}
-
-	<Button type="submit">Create Valkey instance</Button>
-</form>
-
-<style>
-	form {
-		width: 600px;
-	}
-
-	form :global(.aksel-form-field) {
-		max-width: 400px;
-	}
-
-	form :global(> *) {
-		margin-bottom: 1rem;
-	}
-</style>
+<Form
+	fields={valkeyForm}
+	groups={valkeyGroups}
+	optionsOverrides={{
+		environmentName: environments.map((env) => ({
+			value: env.environment.name,
+			label: env.environment.name
+		}))
+	}}
+	defaultValues={{
+		databases: 16,
+		memory: ValkeyMemory.GB_1,
+		tier: ValkeyTier.HIGH_AVAILABILITY,
+		maxMemoryPolicy: ValkeyMaxMemoryPolicy.NO_EVICTION,
+		environmentName: environments.at(0)?.environment.name ?? ''
+	}}
+	{form}
+>
+	{#snippet children(values)}
+		{@const tier = values.tier as keyof typeof valkeyPlanCosts}
+		{@const memory = values.memory as keyof (typeof valkeyPlanCosts)[typeof tier]}
+		{#if tier && memory && valkeyPlanCosts[tier]?.[memory] !== undefined}
+			<BodyShort>
+				Estimated cost: <strong
+					>{valkeyPlanCosts[tier][memory].toLocaleString('no-NO', {
+						style: 'currency',
+						currency: 'EUR'
+					})}</strong
+				> per month
+			</BodyShort>
+			{#if tier === ValkeyTier.SINGLE_NODE && memory === ValkeyMemory.GB_1}
+				<Alert variant="warning" size="small" style="margin-bottom: 1rem;">
+					This combination of tier and memory is not recommended for production workloads.<br />
+					Limitations include no guarantees for uptime and availability, no detailed metrics, and limited
+					backups.
+				</Alert>
+			{/if}
+		{/if}
+	{/snippet}
+</Form>

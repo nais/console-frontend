@@ -1,5 +1,6 @@
-import { graphql, OpenSearchMajorVersion, OpenSearchMemory, OpenSearchTier } from '$houdini';
-import { fail, redirect } from '@sveltejs/kit';
+import { graphql } from '$houdini';
+import { openSearchForm } from '$lib/forms/opensearch.js';
+import { formAction } from '$lib/server/form.js';
 
 const mutation = graphql(`
 	mutation CreateOpenSearch($input: CreateOpenSearchInput!) {
@@ -17,75 +18,12 @@ const mutation = graphql(`
 `);
 
 export const actions = {
-	default: async (event) => {
-		const { request, params } = event;
-		const data = await request.formData();
-
-		const name = data.get('name') as string | null;
-		const environment = data.get('environment') as string | null;
-		const tier = data.get('tier') as string | null;
-		const memory = data.get('memory') as string | null;
-		const version = data.get('version') as string | null;
-		const storage = data.get('storageGB') as string | null;
-
-		const allProps = {
-			name,
-			environment,
-			tier,
-			memory,
-			version,
-			storage
-		};
-
-		if (!name || !environment || !tier || !memory || !version || !storage) {
-			return fail(400, {
-				...allProps,
-				success: false,
-				error: 'All fields are required'
-			});
-		}
-
-		const storageGB = parseInt(storage, 10);
-		if (isNaN(storageGB)) {
-			return fail(400, {
-				...allProps,
-				success: false,
-				error: 'Storage must be a number in GB'
-			});
-		}
-
-		const res = await mutation.mutate(
-			{
-				input: {
-					name: name,
-					environmentName: environment,
-					teamSlug: params.team,
-					tier: OpenSearchTier[tier as keyof typeof OpenSearchTier],
-					memory: OpenSearchMemory[memory as keyof typeof OpenSearchMemory],
-					version: OpenSearchMajorVersion[version as keyof typeof OpenSearchMajorVersion],
-					storageGB: storageGB
-				}
-			},
-			{ event }
-		);
-
-		if (res.errors?.length ?? 0 > 0) {
-			return fail(400, {
-				...allProps,
-				success: false,
-				error: res.errors![0].message
-			});
-		} else if (!res.data) {
-			return fail(500, {
-				...allProps,
-				success: false,
-				error: 'Failed to create OpenSearch'
-			});
-		}
-
-		return redirect(
-			303,
-			`/team/${params.team}/${res.data.createOpenSearch.openSearch.teamEnvironment.environment.name}/opensearch/${res.data.createOpenSearch.openSearch.name}`
-		);
-	}
+	default: formAction({
+		fields: openSearchForm,
+		mutation,
+		variables: ({ data, params }) => ({ input: { teamSlug: params.team, ...data } }),
+		message: 'Failed to create OpenSearch',
+		redirectTo: ({ result, params }) =>
+			`/team/${params.team}/${result.createOpenSearch.openSearch.teamEnvironment.environment.name}/opensearch/${result.createOpenSearch.openSearch.name}`
+	})
 };

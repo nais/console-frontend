@@ -4,6 +4,7 @@ overrides:
 
 allowBuilds:
   esbuild: true
+  houdini-svelte: true
 
 minimumReleaseAge: 20160
 savePrefix: ""

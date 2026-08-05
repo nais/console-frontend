@@ -1,22 +1,13 @@
 <script lang="ts">
-	import { applyAction, enhance } from '$app/forms';
-	import { goto } from '$app/navigation';
 	import { page } from '$app/state';
-	import { isPossiblyInModal } from '$lib/ui/PageModal.svelte';
-	import Time from '$lib/ui/Time.svelte';
+	import { setImageVersionForm } from '$lib/forms/workload';
+	import Form from '$lib/ui/Form/Form.svelte';
 	import { formatImageVersion, imageRefMatches, parseImage } from '$lib/utils/image';
-	import {
-		Alert,
-		BodyLong,
-		Button,
-		ErrorMessage,
-		Radio,
-		RadioGroup
-	} from '@nais/ds-svelte-community';
-	import { tick } from 'svelte';
+	import { Alert, BodyLong, Button } from '@nais/ds-svelte-community';
+	import { formatDistanceStrict } from 'date-fns';
 	import type { PageProps } from './$houdini';
 
-	let { data }: PageProps = $props();
+	let { data, form }: PageProps = $props();
 
 	const { SetImageVersionData } = $derived(data);
 	const application = $derived($SetImageVersionData.data?.team?.environment?.application ?? null);
@@ -27,150 +18,65 @@
 		)
 	);
 
-	const currentReleaseKey = $derived.by(() => {
-		if (!application?.image) {
-			return null;
-		}
-
-		const currentRelease = releases.find((release) =>
-			imageRefMatches(release.image, application.image)
-		);
-
-		return currentRelease
-			? `${currentRelease.image}|${currentRelease.deployedAt.toISOString()}`
-			: null;
-	});
-
-	const form = $derived(page.form);
-
-	let selected = $state('');
-
-	let success = $state(false);
-	let closeButtonEl: HTMLButtonElement | undefined = $state();
-
 	function imageVersionLabelFor(image: string): string {
 		try {
-			const parsed = parseImage(image);
-			return formatImageVersion(parsed);
+			return formatImageVersion(parseImage(image));
 		} catch {
 			return image;
 		}
 	}
 
-	const close = async () => {
-		await goto(`/team/${page.params.team}/${page.params.env}/app/${page.params.app}`, {
-			replaceState: isPossiblyInModal(),
-			invalidateAll: true
-		});
-	};
+	// Radio labels are plain text, so when each release was deployed has to be spelled out rather
+	// than rendered with <Time>.
+	const options = $derived(
+		releases.map((release) => {
+			const current = !!application?.image && imageRefMatches(release.image, application.image);
+			const deployed = formatDistanceStrict(release.deployedAt, Date.now(), { addSuffix: true });
+			return {
+				value: release.image,
+				label: `${imageVersionLabelFor(release.image)}${current ? ' (current)' : ''} — deployed ${deployed}`
+			};
+		})
+	);
+
+	const backHref = $derived(`/team/${page.params.team}/${page.params.env}/app/${page.params.app}`);
 </script>
 
-{#if success}
-	<div class="wrapper" role="status" aria-live="polite" aria-atomic="true">
-		<Alert variant="success" size="small">
-			Successfully set image version to <code>{imageVersionLabelFor(selected)}</code>. Restarting
-			application to apply the change.
-		</Alert>
-		<Button variant="tertiary" size="small" onclick={close} bind:ref={closeButtonEl}>Close</Button>
-	</div>
-{:else}
-	<form
-		method="POST"
-		action="/team/{page.params.team}/{page.params.env}/app/{page.params.app}/image"
-		use:enhance={() => {
-			return async ({ result }) => {
-				if (result.type === 'redirect') {
-					success = true;
-					await tick();
-					closeButtonEl?.focus();
-				} else if (result.type === 'failure') {
-					await applyAction(result);
-				}
-			};
-		}}
-	>
-		<BodyLong>
-			Roll <strong>{page.params.app}</strong> in <strong>{page.params.env}</strong> back to a previous
-			image version.
-		</BodyLong>
+<div class="page">
+	<BodyLong>
+		Roll <strong>{page.params.app}</strong> in <strong>{page.params.env}</strong> back to a previous image
+		version.
+	</BodyLong>
 
-		<Alert variant="warning" size="small">
-			This only changes the container image. Other changes made to the environment, such as
-			environment variables, secrets or configuration, are not affected.
-		</Alert>
+	<Alert variant="warning" size="small">
+		This only changes the container image. Other changes made to the environment, such as
+		environment variables, secrets or configuration, are not affected.
+	</Alert>
 
-		{#if releases.length === 0}
-			<BodyLong>No releases were found for this application.</BodyLong>
-		{:else}
-			<RadioGroup legend="Releases" size="small" name="image" bind:value={selected}>
-				{#each releases as release (release.image + release.deployedAt.toISOString())}
-					{@const releaseKey = `${release.image}|${release.deployedAt.toISOString()}`}
-					{@const isCurrent = releaseKey === currentReleaseKey}
-					<Radio value={release.image}>
-						<span class="release-label">
-							<code class="release-tag">{imageVersionLabelFor(release.image)}</code>
-							{#if isCurrent}<span class="release-current">(current)</span>{/if}
-							<span class="release-time">
-								deployed <Time time={release.deployedAt} distance />
-							</span>
-						</span>
-					</Radio>
-				{/each}
-			</RadioGroup>
-		{/if}
-
-		{#if form?.error}
-			<ErrorMessage>{form.error}</ErrorMessage>
-		{/if}
-
-		<div class="button-row">
-			<Button type="submit" size="small" disabled={!selected}>Set image version</Button>
-			<Button variant="tertiary" size="small" type="button" onclick={close}>Cancel</Button>
+	{#if releases.length === 0}
+		<BodyLong>No releases were found for this application.</BodyLong>
+		<div>
+			<Button as="a" size="small" variant="secondary" href={backHref}>Back to application</Button>
 		</div>
-	</form>
-{/if}
+	{:else}
+		<Form
+			fields={setImageVersionForm}
+			{form}
+			optionsOverrides={{ image: options }}
+			button="Set image version"
+		>
+			{#snippet actions()}
+				<Button as="a" size="small" variant="tertiary" href={backHref}>Cancel</Button>
+			{/snippet}
+		</Form>
+	{/if}
+</div>
 
 <style>
-	.wrapper {
-		display: flex;
-		flex-direction: column;
-		gap: var(--ax-space-8);
-		max-width: 500px;
-		width: 100%;
-		align-items: flex-start;
-	}
-
-	form {
-		max-width: 600px;
-		width: 100%;
+	.page {
 		display: flex;
 		flex-direction: column;
 		gap: var(--ax-space-16);
-	}
-
-	.release-label {
-		display: inline-flex;
-		flex-wrap: wrap;
-		align-items: baseline;
-		gap: var(--ax-space-8);
-	}
-
-	.release-tag {
-		font-family: monospace;
-	}
-
-	.release-current {
-		color: var(--ax-text-neutral);
-	}
-
-	.release-time {
-		color: var(--ax-text-subtle);
-		font-size: var(--ax-font-size-small);
-	}
-
-	.button-row {
-		display: flex;
-		gap: var(--ax-space-8);
-		align-items: center;
+		max-width: 600px;
 	}
 </style>
