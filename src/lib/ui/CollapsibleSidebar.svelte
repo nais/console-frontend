@@ -8,7 +8,7 @@
 		open = $bindable(false),
 		label = 'Filters'
 	}: {
-		children: Snippet;
+		children?: Snippet;
 		extras?: Snippet;
 		open?: boolean;
 		label?: string;
@@ -31,9 +31,11 @@
 </script>
 
 <div class="sidebar-column">
-	<div class="layout-sidebar desktop-only">
-		{@render children()}
-	</div>
+	{#if children}
+		<div class="layout-sidebar desktop-only">
+			{@render children()}
+		</div>
+	{/if}
 
 	{#if extras}
 		<div class="sidebar-extras">
@@ -42,7 +44,7 @@
 	{/if}
 </div>
 
-{#if open}
+{#if open && children}
 	<Modal bind:open header={{ heading: label, size: 'small' }} class="filter-drawer">
 		<div class="drawer-content">
 			{@render children()}

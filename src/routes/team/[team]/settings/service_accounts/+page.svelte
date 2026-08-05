@@ -2,6 +2,7 @@
 	import { ActivityLogEntryResourceType } from '$houdini';
 	import TeamActivityCard from '$lib/domain/activity/TeamActivityCard.svelte';
 	import ServiceAccountListItem from '$lib/domain/list-items/ServiceAccountListItem.svelte';
+	import CollapsibleSidebar from '$lib/ui/CollapsibleSidebar.svelte';
 	import GraphErrors from '$lib/ui/GraphErrors.svelte';
 	import List from '$lib/ui/List.svelte';
 	import PageModal, { pageModalClick } from '$lib/ui/PageModal.svelte';
@@ -90,13 +91,15 @@
 		{/if}
 	</div>
 
-	<div class="layout-sidebar">
-		<TeamActivityCard
-			{teamSlug}
-			viewAllHref="/team/{teamSlug}/activity-log"
-			filter={{ resourceTypes: [ActivityLogEntryResourceType.SERVICE_ACCOUNT] }}
-		/>
-	</div>
+	<CollapsibleSidebar>
+		{#snippet extras()}
+			<TeamActivityCard
+				{teamSlug}
+				viewAllHref="/team/{teamSlug}/activity-log"
+				filter={{ resourceTypes: [ActivityLogEntryResourceType.SERVICE_ACCOUNT] }}
+			/>
+		{/snippet}
+	</CollapsibleSidebar>
 </div>
 
 {#if viewerIsOwner || isAdmin}
