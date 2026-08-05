@@ -2,9 +2,11 @@
 	import { goto } from '$app/navigation';
 	import {
 		graphql,
+		type ResourceActivityCardServiceAccountFragment,
 		type ServiceAccountAuthenticationFragment,
 		type ServiceAccountRolesFragment
 	} from '$houdini';
+	import ResourceActivityCard from '$lib/domain/activity/ResourceActivityCard.svelte';
 	import Confirm from '$lib/ui/Confirm.svelte';
 	import GraphErrors from '$lib/ui/GraphErrors.svelte';
 	import { pageModalClick } from '$lib/ui/PageModal.svelte';
@@ -39,7 +41,8 @@
 		updatedAt: Date;
 		lastUsedAt: Date | null;
 	} & ServiceAccountRolesFragment &
-		ServiceAccountAuthenticationFragment;
+		ServiceAccountAuthenticationFragment &
+		ResourceActivityCardServiceAccountFragment;
 
 	const {
 		serviceAccount,
@@ -116,93 +119,101 @@
 
 <GraphErrors {errors} dismissable />
 
-<div class="detail-page">
-	<section aria-labelledby="sa-heading">
-		<div class="section-header">
-			<Heading size="medium" as="h2" id="sa-heading">{serviceAccount.name}</Heading>
-			{#if canManage}
-				<ActionMenu>
-					{#snippet trigger(props)}
-						<Button
-							variant="secondary"
-							size="small"
-							icon={MenuElipsisVerticalIcon}
-							iconPosition="right"
-							{...props}
-						>
-							Actions
-						</Button>
-					{/snippet}
-					<button class="action-menu-button" onclick={startEditDescription}>
-						<ActionMenuItem icon={PencilIcon}>Edit description</ActionMenuItem>
-					</button>
-					<button class="action-menu-button" onclick={() => (editRolesOpen = true)}>
-						<ActionMenuItem icon={ShieldLockIcon}>Edit roles</ActionMenuItem>
-					</button>
-					<a
-						class="action-menu-button"
-						href="{basePath}/{serviceAccount.id}/token/create"
-						onclick={pageModalClick}
-					>
-						<ActionMenuItem icon={TokenIcon}>Create API token</ActionMenuItem>
-					</a>
-					<a
-						class="action-menu-button"
-						href="{basePath}/{serviceAccount.id}/binding/add"
-						onclick={pageModalClick}
-					>
-						<ActionMenuItem icon={LinkIcon}>Add workload binding</ActionMenuItem>
-					</a>
-					<ActionMenuDivider />
-					<button class="action-menu-button" onclick={() => (deleteServiceAccountOpen = true)}>
-						<ActionMenuItem icon={TrashIcon} variant="danger">
-							Delete service account
-						</ActionMenuItem>
-					</button>
-				</ActionMenu>
-			{/if}
-		</div>
-
-		<dl class="settings-list">
-			<dt>Description</dt>
-			<dd>
-				{#if editingDescription}
-					<div class="edit-description">
-						<Textarea size="small" label="Description" hideLabel bind:value={newDescription} />
-						<div class="edit-actions">
-							<Button size="xsmall" onclick={saveDescription}>Save</Button>
+<div class="layout-two-column">
+	<div class="detail-page">
+		<section aria-labelledby="sa-heading">
+			<div class="section-header">
+				<Heading size="medium" as="h2" id="sa-heading">{serviceAccount.name}</Heading>
+				{#if canManage}
+					<ActionMenu>
+						{#snippet trigger(props)}
 							<Button
-								size="xsmall"
-								variant="secondary-neutral"
-								onclick={() => (editingDescription = false)}>Cancel</Button
+								variant="secondary"
+								size="small"
+								icon={MenuElipsisVerticalIcon}
+								iconPosition="right"
+								{...props}
 							>
-						</div>
-					</div>
-				{:else}
-					{serviceAccount.description}
+								Actions
+							</Button>
+						{/snippet}
+						<button class="action-menu-button" onclick={startEditDescription}>
+							<ActionMenuItem icon={PencilIcon}>Edit description</ActionMenuItem>
+						</button>
+						<button class="action-menu-button" onclick={() => (editRolesOpen = true)}>
+							<ActionMenuItem icon={ShieldLockIcon}>Edit roles</ActionMenuItem>
+						</button>
+						<a
+							class="action-menu-button"
+							href="{basePath}/{serviceAccount.id}/token/create"
+							onclick={pageModalClick}
+						>
+							<ActionMenuItem icon={TokenIcon}>Create API token</ActionMenuItem>
+						</a>
+						<a
+							class="action-menu-button"
+							href="{basePath}/{serviceAccount.id}/binding/add"
+							onclick={pageModalClick}
+						>
+							<ActionMenuItem icon={LinkIcon}>Add workload binding</ActionMenuItem>
+						</a>
+						<ActionMenuDivider />
+						<button class="action-menu-button" onclick={() => (deleteServiceAccountOpen = true)}>
+							<ActionMenuItem icon={TrashIcon} variant="danger">
+								Delete service account
+							</ActionMenuItem>
+						</button>
+					</ActionMenu>
 				{/if}
-			</dd>
-			<dt>Created</dt>
-			<dd>
-				<Time time={serviceAccount.createdAt} distance={true} />
-			</dd>
-			<dt>Last updated</dt>
-			<dd>
-				<Time time={serviceAccount.updatedAt} distance={true} />
-			</dd>
-			<dt>Last used</dt>
-			<dd>
-				{#if serviceAccount.lastUsedAt}
-					<Time time={serviceAccount.lastUsedAt} distance={true} />
-				{:else}
-					Never
-				{/if}
-			</dd>
-		</dl>
-	</section>
+			</div>
 
-	<ServiceAccountRoles serviceAccountRoles={serviceAccount} {availableRoles} />
-	<ServiceAccountAuthentications {serviceAccount} {canManage} />
+			<dl class="settings-list">
+				<dt>Description</dt>
+				<dd>
+					{#if editingDescription}
+						<div class="edit-description">
+							<Textarea size="small" label="Description" hideLabel bind:value={newDescription} />
+							<div class="edit-actions">
+								<Button size="xsmall" onclick={saveDescription}>Save</Button>
+								<Button
+									size="xsmall"
+									variant="secondary-neutral"
+									onclick={() => (editingDescription = false)}
+								>
+									Cancel
+								</Button>
+							</div>
+						</div>
+					{:else}
+						{serviceAccount.description}
+					{/if}
+				</dd>
+				<dt>Created</dt>
+				<dd>
+					<Time time={serviceAccount.createdAt} distance={true} />
+				</dd>
+				<dt>Last updated</dt>
+				<dd>
+					<Time time={serviceAccount.updatedAt} distance={true} />
+				</dd>
+				<dt>Last used</dt>
+				<dd>
+					{#if serviceAccount.lastUsedAt}
+						<Time time={serviceAccount.lastUsedAt} distance={true} />
+					{:else}
+						Never
+					{/if}
+				</dd>
+			</dl>
+		</section>
+
+		<ServiceAccountRoles serviceAccountRoles={serviceAccount} {availableRoles} />
+		<ServiceAccountAuthentications {serviceAccount} {canManage} />
+	</div>
+
+	<div class="layout-sidebar">
+		<ResourceActivityCard resourceType="serviceAccount" resource={serviceAccount} />
+	</div>
 </div>
 
 <Confirm

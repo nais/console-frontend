@@ -3,7 +3,8 @@
 		graphql,
 		paginatedFragment,
 		type ResourceActivityCardConfigFragment,
-		type ResourceActivityCardSecretFragment
+		type ResourceActivityCardSecretFragment,
+		type ResourceActivityCardServiceAccountFragment
 	} from '$houdini';
 	import SurfaceCard from '$lib/ui/SurfaceCard.svelte';
 	import ActivityTimeline from './ActivityTimeline.svelte';
@@ -18,7 +19,12 @@
 		resource: ResourceActivityCardConfigFragment;
 	}
 
-	type Props = SecretProps | ConfigProps;
+	interface ServiceAccountProps {
+		resourceType: 'serviceAccount';
+		resource: ResourceActivityCardServiceAccountFragment;
+	}
+
+	type Props = SecretProps | ConfigProps | ServiceAccountProps;
 
 	let { resourceType, resource }: Props = $props();
 
@@ -90,14 +96,44 @@
 		)
 	);
 
+	const serviceAccountData = $derived(
+		paginatedFragment(
+			resourceType === 'serviceAccount'
+				? (resource as ResourceActivityCardServiceAccountFragment)
+				: null,
+			graphql(`
+				fragment ResourceActivityCardServiceAccountFragment on ServiceAccount {
+					activityLog(first: 5) @paginate(mode: Infinite) {
+						edges {
+							node {
+								id
+								actor
+								message
+								createdAt
+								resourceName
+								resourceType
+								environmentName
+								teamSlug
+								__typename
+								...ActivityLogEntryFragment
+							}
+						}
+					}
+				}
+			`)
+		)
+	);
+
 	let loadingMore = $state(false);
 
 	async function loadMore() {
 		loadingMore = true;
 		if (resourceType === 'secret') {
 			await secretData.loadNextPage();
-		} else {
+		} else if (resourceType === 'config') {
 			await configData.loadNextPage();
+		} else {
+			await serviceAccountData.loadNextPage();
 		}
 		loadingMore = false;
 	}
@@ -106,14 +142,20 @@
 		if (resourceType === 'secret') {
 			return ($secretData?.data?.activityLog.edges ?? []).map((e) => e.node);
 		}
-		return ($configData?.data?.activityLog.edges ?? []).map((e) => e.node);
+		if (resourceType === 'config') {
+			return ($configData?.data?.activityLog.edges ?? []).map((e) => e.node);
+		}
+		return ($serviceAccountData?.data?.activityLog.edges ?? []).map((e) => e.node);
 	});
 
 	const hasNextPage = $derived.by(() => {
 		if (resourceType === 'secret') {
 			return $secretData?.pageInfo.hasNextPage ?? false;
 		}
-		return $configData?.pageInfo.hasNextPage ?? false;
+		if (resourceType === 'config') {
+			return $configData?.pageInfo.hasNextPage ?? false;
+		}
+		return $serviceAccountData?.pageInfo.hasNextPage ?? false;
 	});
 </script>
 

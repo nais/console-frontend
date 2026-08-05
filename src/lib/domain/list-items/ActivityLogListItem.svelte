@@ -224,6 +224,7 @@
 					}
 					... on ServiceAccountTokenUpdatedActivityLogEntry {
 						serviceAccountTokenUpdated: data {
+							tokenName
 							updatedFields {
 								field
 								newValue
@@ -235,12 +236,14 @@
 						serviceAccountWorkloadBindingAdded: data {
 							teamSlug
 							workloadName
+							workloadType
 						}
 					}
 					... on ServiceAccountWorkloadBindingRemovedActivityLogEntry {
 						serviceAccountWorkloadBindingRemoved: data {
 							teamSlug
 							workloadName
+							workloadType
 						}
 					}
 					... on ServiceMaintenanceActivityLogEntry {
