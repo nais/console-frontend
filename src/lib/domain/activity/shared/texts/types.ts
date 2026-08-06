@@ -1,9 +1,9 @@
 import type { ActivityLogEntryFragment$data } from '$houdini';
 
 type TypeKeyedProps = {
-	[K in keyof ActivityLogEntryFragment$data as K extends `${string}ActivityLogEntry`
-		? K
-		: never]: ActivityLogEntryFragment$data[K];
+	[
+		K in keyof ActivityLogEntryFragment$data as K extends `${string}ActivityLogEntry` ? K : never
+	]: ActivityLogEntryFragment$data[K];
 };
 
 type TypeKeys = keyof TypeKeyedProps;
