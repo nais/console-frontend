@@ -379,7 +379,7 @@
 		</div>
 		<div class="content">
 			{#if mode === 'sidebar'}
-				<BodyLong size="small">
+				<BodyLong size="small" as="div">
 					<TextComponent data={textData} {mode} />
 				</BodyLong>
 			{:else}
