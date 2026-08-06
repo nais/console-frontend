@@ -25,7 +25,6 @@
 					id
 					createdAt
 					actor
-					createdAt
 					environmentName
 					message
 					resourceName
@@ -339,6 +338,21 @@
 								state
 							}
 						}
+					}
+					... on ReconcilerConfiguredActivityLogEntry {
+						__typename
+					}
+					... on ReconcilerDisabledActivityLogEntry {
+						__typename
+					}
+					... on ReconcilerEnabledActivityLogEntry {
+						__typename
+					}
+					... on TunnelCreatedActivityLogEntry {
+						__typename
+					}
+					... on TunnelDeletedActivityLogEntry {
+						__typename
 					}
 				}
 			`)

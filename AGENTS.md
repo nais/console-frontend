@@ -227,13 +227,32 @@ Additionally, the **masked `$result` type** only includes fields explicitly list
    type LogNode = Exhaustive<(typeof activityLog.nodes)[number]>;
    ```
 
-3. **For `{#each}` keys on interface arrays** — use index `(i)` instead of `(item.id)` when `id` isn't guaranteed on the non-exhaustive variant:
+3. **Ensure ALL schema implementors have inline fragments** — when selecting interface-level fields, Houdini's codegen pushes them into each inline fragment. Types without an inline fragment won't have those fields in the wire query or `abstractFields`, causing `undefined` at runtime due to cache normalization conflicts. If a new type is added to the schema, add a `... on NewType { __typename }` entry to the fragment.
+
+4. **Don't duplicate fragment-owned fields in parent selections** — when a parent query/fragment selects the same field (e.g., `id`) that a child fragment also selects on an interface node, Houdini's masking assigns ownership to the child. The parent's `abstractFields` entries lose `"visible": true"` for that field, making it `undefined` at runtime. Instead, only spread the child fragment without re-selecting its fields:
+
+   ```graphql
+   # Wrong — id will be undefined at parent level due to masking conflict
+   edges {
+     node {
+       id
+       ...ActivityLogEntryFragment
+     }
+   }
+
+   # Correct — let the child fragment own all its fields
+   edges {
+     node {
+       ...ActivityLogEntryFragment
+     }
+   }
+   ```
+
+   Use index-based `{#each}` keys when `id` is only available inside the masked fragment:
 
    ```svelte
    {#each items as item, i (i)}
    ```
-
-4. **Avoid aliases in inline fragments on interfaces unless you have verified the generated type** — Houdini 2.0 can generate the original field name in TypeScript types instead of the alias. Prefer the field name directly.
 
 5. **Don't use manual type annotations to work around generated types** — import the `$result` type from `$houdini` instead of writing inline type annotations that duplicate and diverge from the generated types.
 

@@ -43,15 +43,6 @@
 					}
 					edges {
 						node {
-							id
-							actor
-							message
-							createdAt
-							resourceName
-							resourceType
-							environmentName
-							teamSlug
-							__typename
 							...ActivityLogEntryFragment
 						}
 					}
