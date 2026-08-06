@@ -176,7 +176,7 @@
 						<div class="rule">
 							{#if alert.alarms.length > 0}
 								<div class="alarms">
-									{#each alert.alarms as alarm, i (alarm)}
+									{#each alert.alarms as alarm, i (i)}
 										<PrometheusAlarmDetail {alarm} {i} />
 									{/each}
 								</div>

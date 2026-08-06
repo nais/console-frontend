@@ -34,9 +34,6 @@ query Alerts(
 					query
 					duration
 					... on PrometheusAlert {
-						name
-						duration
-						query
 						alarms {
 							action
 							consequence
