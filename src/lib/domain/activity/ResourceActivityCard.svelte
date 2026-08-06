@@ -58,7 +58,7 @@
 								environmentName
 								teamSlug
 								__typename
-								...ActivityLogEntryFragment @mask_disable
+								...ActivityLogEntryFragment
 							}
 						}
 					}
@@ -87,7 +87,7 @@
 								environmentName
 								teamSlug
 								__typename
-								...ActivityLogEntryFragment @mask_disable
+								...ActivityLogEntryFragment
 							}
 						}
 					}
@@ -115,7 +115,7 @@
 								environmentName
 								teamSlug
 								__typename
-								...ActivityLogEntryFragment @mask_disable
+								...ActivityLogEntryFragment
 							}
 						}
 					}

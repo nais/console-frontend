@@ -29,7 +29,7 @@ query TeamIssues(
 			edges {
 				node {
 					id
-					...IssueFragment @mask_disable
+					...IssueFragment
 				}
 			}
 			facets {

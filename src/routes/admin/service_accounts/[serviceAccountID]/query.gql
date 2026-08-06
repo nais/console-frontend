@@ -6,8 +6,17 @@ query AdminServiceAccountDetail($id: ID!) @cache(policy: CacheAndNetwork) {
 		createdAt
 		updatedAt
 		lastUsedAt
+		workloadBindings {
+			edges {
+				node {
+					teamSlug
+					workloadName
+					environment
+				}
+			}
+		}
 		...ServiceAccountRolesFragment
-		...ServiceAccountAuthenticationFragment @mask_disable
+		...ServiceAccountAuthenticationFragment
 		...ResourceActivityCardServiceAccountFragment
 	}
 	roles(first: 100, filter: { excludeGlobalRoles: false }) {

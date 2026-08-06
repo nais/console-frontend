@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { getIssueResource, type IssueDisplayData } from '$lib/domain/issues/issueResource';
+	import { fragment, graphql, type IssueFragment } from '$houdini';
 	import { envTagVariant } from '$lib/envTagVariant';
 	import OpenSearchIcon from '$lib/icons/OpenSearchIcon.svelte';
 	import UnleashIcon from '$lib/icons/UnleashIcon.svelte';
@@ -16,39 +16,198 @@
 	} from '@nais/ds-svelte-community/icons';
 
 	interface Props {
-		item: IssueDisplayData;
+		item: IssueFragment;
 	}
 
 	let { item }: Props = $props();
 
-	const resource = $derived.by(() => getIssueResource(item));
+	let data = $derived(
+		fragment(
+			item,
+			graphql(`
+				fragment IssueFragment on Issue {
+					__typename
+					teamEnvironment {
+						environment {
+							name
+						}
+						team {
+							slug
+						}
+					}
+					message
+					severity
+					... on DeprecatedIngressIssue {
+						application {
+							name
+						}
+						ingresses
+					}
+					... on DeprecatedRegistryIssue {
+						workload {
+							__typename
+							name
+							image {
+								name
+							}
+						}
+					}
+					... on ExternalIngressCriticalVulnerabilityIssue {
+						cvssScore
+						ingresses
+						workload {
+							__typename
+							name
+						}
+					}
+					... on LastRunFailedIssue {
+						job {
+							name
+						}
+					}
+					... on FailedSynchronizationIssue {
+						workload {
+							__typename
+							name
+						}
+					}
+					... on InvalidSpecIssue {
+						workload {
+							__typename
+							name
+						}
+					}
+					... on MissingSbomIssue {
+						workload {
+							__typename
+							name
+						}
+					}
+					... on NoRunningInstancesIssue {
+						workload {
+							__typename
+							name
+						}
+					}
+					... on ApplicationRestartLoopIssue {
+						workload {
+							__typename
+							name
+						}
+					}
+					... on OpenSearchIssue {
+						event
+						openSearch {
+							name
+						}
+					}
+					... on SqlInstanceStateIssue {
+						sqlInstance {
+							name
+						}
+						state
+					}
+					... on SqlInstanceVersionIssue {
+						sqlInstance {
+							name
+						}
+					}
+					... on ValkeyIssue {
+						valkey {
+							name
+						}
+					}
+					... on VulnerableImageIssue {
+						workload {
+							__typename
+							name
+						}
+					}
+					... on WorkloadProblemIssue {
+						workload {
+							__typename
+							name
+						}
+					}
+					... on UnleashReleaseChannelIssue {
+						unleash {
+							name
+						}
+					}
+				}
+			`)
+		)
+	);
+
+	const resourceName = $derived.by(() => {
+		const d = $data;
+		if (d.ApplicationRestartLoopIssue?.workload) return d.ApplicationRestartLoopIssue.workload.name;
+		if (d.DeprecatedIngressIssue?.application) return d.DeprecatedIngressIssue.application.name;
+		if (d.DeprecatedRegistryIssue?.workload) return d.DeprecatedRegistryIssue.workload.name;
+		if (d.ExternalIngressCriticalVulnerabilityIssue?.workload)
+			return d.ExternalIngressCriticalVulnerabilityIssue.workload.name;
+		if (d.FailedSynchronizationIssue?.workload) return d.FailedSynchronizationIssue.workload.name;
+		if (d.InvalidSpecIssue?.workload) return d.InvalidSpecIssue.workload.name;
+		if (d.MissingSbomIssue?.workload) return d.MissingSbomIssue.workload.name;
+		if (d.NoRunningInstancesIssue?.workload) return d.NoRunningInstancesIssue.workload.name;
+		if (d.VulnerableImageIssue?.workload) return d.VulnerableImageIssue.workload.name;
+		if (d.WorkloadProblemIssue?.workload) return d.WorkloadProblemIssue.workload.name;
+		if (d.LastRunFailedIssue?.job) return d.LastRunFailedIssue.job.name;
+		if (d.OpenSearchIssue?.openSearch) return d.OpenSearchIssue.openSearch.name;
+		if (d.SqlInstanceStateIssue?.sqlInstance) return d.SqlInstanceStateIssue.sqlInstance.name;
+		if (d.SqlInstanceVersionIssue?.sqlInstance) return d.SqlInstanceVersionIssue.sqlInstance.name;
+		if (d.UnleashReleaseChannelIssue?.unleash) return d.UnleashReleaseChannelIssue.unleash.name;
+		if (d.ValkeyIssue?.valkey) return d.ValkeyIssue.valkey.name;
+		return 'Unknown';
+	});
 
 	const ResourceIcon = $derived.by(() => {
-		switch (resource.kind) {
-			case 'opensearch':
-				return OpenSearchIcon;
-			case 'database':
-				return DatabaseIcon;
-			case 'valkey':
-				return ValkeyIcon;
-			case 'unleash':
-				return UnleashIcon;
-			case 'job':
-				return BriefcaseClockIcon;
-			default:
-				return PackageIcon;
+		const d = $data;
+		if (d.ApplicationRestartLoopIssue) return PackageIcon;
+		if (d.DeprecatedIngressIssue) return PackageIcon;
+		if (d.DeprecatedRegistryIssue) {
+			if (d.DeprecatedRegistryIssue.workload?.__typename === 'Job') return BriefcaseClockIcon;
+			return PackageIcon;
 		}
+		if (d.ExternalIngressCriticalVulnerabilityIssue) return PackageIcon;
+		if (d.FailedSynchronizationIssue) {
+			if (d.FailedSynchronizationIssue.workload?.__typename === 'Job') return BriefcaseClockIcon;
+			return PackageIcon;
+		}
+		if (d.InvalidSpecIssue) {
+			if (d.InvalidSpecIssue.workload?.__typename === 'Job') return BriefcaseClockIcon;
+			return PackageIcon;
+		}
+		if (d.LastRunFailedIssue) return BriefcaseClockIcon;
+		if (d.MissingSbomIssue) {
+			if (d.MissingSbomIssue.workload?.__typename === 'Job') return BriefcaseClockIcon;
+			return PackageIcon;
+		}
+		if (d.NoRunningInstancesIssue) return PackageIcon;
+		if (d.OpenSearchIssue) return OpenSearchIcon;
+		if (d.SqlInstanceStateIssue) return DatabaseIcon;
+		if (d.SqlInstanceVersionIssue) return DatabaseIcon;
+		if (d.UnleashReleaseChannelIssue) return UnleashIcon;
+		if (d.ValkeyIssue) return ValkeyIcon;
+		if (d.VulnerableImageIssue) return PackageIcon;
+		if (d.WorkloadProblemIssue) {
+			if (d.WorkloadProblemIssue.workload?.__typename === 'Job') return BriefcaseClockIcon;
+			return PackageIcon;
+		}
+		if ('openSearch' in d && d.openSearch) return OpenSearchIcon;
+		if ('sqlInstance' in d && d.sqlInstance) return DatabaseIcon;
+		if ('valkey' in d && d.valkey) return ValkeyIcon;
+		if ('unleash' in d && d.unleash) return UnleashIcon;
+		if ('job' in d && d.job) return BriefcaseClockIcon;
+		return PackageIcon;
 	});
 
 	const issueTitle = $derived.by(() => {
-		const typeName = item.__typename || 'Unknown';
-		const enumLike = typeName
+		const typeName = $data.__typename
 			.replace(/Issue$/, '')
-			.replace('OpenSearch', 'Opensearch')
-			.replace('SqlInstance', 'Sqlinstance')
 			.replace(/([a-z])([A-Z])/g, '$1_$2')
 			.toUpperCase();
-		return issueTypeLabel(enumLike);
+		return issueTypeLabel(typeName);
 	});
 </script>
 
@@ -58,14 +217,14 @@
 			<ChevronRightIcon />
 		</div>
 		<div class="severity-dot">
-			{#if item.severity === 'CRITICAL'}
+			{#if $data.severity === 'CRITICAL'}
 				<CriticalIndicator />
 			{:else}
 				<CircleFillIcon
 					style="color: light-dark({{
 						TODO: 'var(--ax-bg-info-strong), var(--ax-bg-info-strong)',
 						WARNING: 'var(--ax-bg-warning-moderate-pressed), var(--ax-bg-warning-strong-pressed)'
-					}[item.severity] ??
+					}[$data.severity] ??
 						'var(--ax-bg-info-strong), var(--ax-bg-info-strong)'}); font-size: 0.7rem"
 				/>
 			{/if}
@@ -74,30 +233,32 @@
 			<ResourceIcon />
 		</div>
 		<div class="resource-group">
-			<span class="resource-name" title={resource.name}>{resource.name}</span>
-			<Tag size="xsmall" variant={envTagVariant(item.teamEnvironment.environment.name)}
-				>{item.teamEnvironment.environment.name}</Tag
+			<span class="resource-name" title={resourceName}>{resourceName}</span>
+			<Tag size="xsmall" variant={envTagVariant($data.teamEnvironment.environment.name)}
+				>{$data.teamEnvironment.environment.name}</Tag
 			>
 		</div>
 		<span class="issue-title">{issueTitle}</span>
 	</summary>
 
 	<div class="detail">
-		<p class="message">{item.message}</p>
-		{#if item.__typename === 'DeprecatedIngressIssue' && item.application && item.ingresses}
+		<p class="message">{$data.message}</p>
+		{#if $data.DeprecatedIngressIssue && 'ingresses' in $data.DeprecatedIngressIssue}
 			<div class="extra">
 				<strong>
-					{item.ingresses.length === 1 ? 'Deprecated ingress:' : 'Deprecated ingresses:'}
+					{$data.DeprecatedIngressIssue.ingresses.length === 1
+						? 'Deprecated ingress:'
+						: 'Deprecated ingresses:'}
 				</strong>
-				{#each item.ingresses as ingress (ingress)}
+				{#each $data.DeprecatedIngressIssue.ingresses as ingress (ingress)}
 					<span class="ingress">{ingress}</span>
 				{/each}
 			</div>
 		{/if}
-		{#if item.__typename === 'ExternalIngressCriticalVulnerabilityIssue' && item.cvssScore !== undefined}
+		{#if $data.__typename === 'ExternalIngressCriticalVulnerabilityIssue' && 'cvssScore' in $data}
 			<div class="extra">
 				<strong>CVSS Score:</strong>
-				{item.cvssScore}
+				{$data.cvssScore}
 			</div>
 		{/if}
 	</div>
