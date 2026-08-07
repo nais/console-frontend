@@ -64,7 +64,7 @@
 			repository,
 			team
 		});
-		Repositories.fetch();
+		Repositories.fetch({ variables: { ...$Repositories.variables! } });
 		repositoryAdded = true;
 		repoOperatedOn = repository;
 		setTimeout(() => {
@@ -84,7 +84,7 @@
 			repository,
 			team
 		});
-		Repositories.fetch();
+		Repositories.fetch({ variables: { ...$Repositories.variables! } });
 		repositoryRemoved = true;
 		repoOperatedOn = repository;
 		setTimeout(() => {
