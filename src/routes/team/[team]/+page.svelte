@@ -9,7 +9,7 @@
 	import type { PageProps } from './$types';
 
 	let { data }: PageProps = $props();
-	let { TeamOverview, TeamSummaryVulnerabilities, TeamSummaryCost, teamSlug, purpose } =
+	let { TeamHealth, TeamOverview, TeamSummaryVulnerabilities, TeamSummaryCost, teamSlug, purpose } =
 		$derived(data);
 </script>
 
@@ -21,17 +21,19 @@
 
 {#if page.url.searchParams.has('deleted')}
 	{@const msgParts = (page.url.searchParams.get('deleted') || '').split('/')}
-	<Alert variant="success" size="small">
-		Successfully deleted {msgParts[0]}
-		{msgParts[1]}.
-	</Alert>
+	<div style="margin-bottom: var(--spacing-layout)">
+		<Alert variant="success" size="small">
+			Successfully deleted {msgParts[0]}
+			{msgParts[1]}.
+		</Alert>
+	</div>
 {/if}
 
 <GraphErrors errors={$TeamOverview.errors} />
 
 <div class="wrapper">
 	<div class="main-content">
-		<CriticalIssues {teamSlug} />
+		<CriticalIssues {teamSlug} store={TeamHealth} />
 		<TeamSummary
 			{teamSlug}
 			criticalIssues={$TeamOverview.data?.team.criticalIssues.pageInfo.totalCount ?? 0}

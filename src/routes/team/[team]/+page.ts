@@ -1,4 +1,9 @@
-import { load_TeamOverview, load_TeamSummaryCost, load_TeamSummaryVulnerabilities } from '$houdini';
+import {
+	load_TeamHealth,
+	load_TeamOverview,
+	load_TeamSummaryCost,
+	load_TeamSummaryVulnerabilities
+} from '$houdini';
 import { addPageMeta } from '$lib/utils/pageMeta';
 
 export async function load(event) {
@@ -9,6 +14,13 @@ export async function load(event) {
 
 	return {
 		...(await addPageMeta(event, { title: event.params.team })),
+		...(await load_TeamHealth({
+			event,
+			variables: {
+				teamSlug: event.params.team,
+				first: 5
+			}
+		})),
 		...(await load_TeamOverview({
 			event,
 			variables: {
