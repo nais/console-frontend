@@ -1,4 +1,4 @@
-query Config($config: String!, $team: Slug!, $env: String!) @cache(policy: CacheAndNetwork) {
+query Config($config: String!, $team: Slug!, $env: String!) {
 	me {
 		... on User {
 			isAdmin

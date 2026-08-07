@@ -1,5 +1,4 @@
-query Valkey($environment: String!, $team: Slug!, $name: String!, $orderBy: ValkeyAccessOrder!)
-@cache(policy: CacheAndNetwork) {
+query Valkey($environment: String!, $team: Slug!, $name: String!, $orderBy: ValkeyAccessOrder!) {
 	team(slug: $team) {
 		slug
 		environment(name: $environment) {

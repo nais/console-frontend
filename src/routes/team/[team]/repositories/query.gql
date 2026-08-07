@@ -6,7 +6,7 @@ query Repositories(
 	$after: Cursor
 	$orderBy: RepositoryOrder
 	$filter: TeamRepositoryFilter
-) @cache(policy: CacheAndNetwork) {
+) {
 	team(slug: $team) {
 		viewerIsMember
 		viewerIsOwner

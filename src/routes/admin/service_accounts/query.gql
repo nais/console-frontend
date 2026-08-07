@@ -1,5 +1,4 @@
-query AdminServiceAccounts($first: Int, $last: Int, $before: Cursor, $after: Cursor)
-@cache(policy: CacheAndNetwork) {
+query AdminServiceAccounts($first: Int, $last: Int, $before: Cursor, $after: Cursor) {
 	serviceAccounts(first: $first, last: $last, before: $before, after: $after)
 		@paginate(mode: SinglePage) {
 		pageInfo {

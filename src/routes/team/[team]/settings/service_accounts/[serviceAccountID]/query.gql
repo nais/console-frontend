@@ -1,4 +1,4 @@
-query ServiceAccountDetail($id: ID!) @cache(policy: CacheAndNetwork) {
+query ServiceAccountDetail($id: ID!) {
 	serviceAccount(id: $id) {
 		id
 		name

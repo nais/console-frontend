@@ -21,8 +21,7 @@
 	});
 
 	const runsQuery = graphql(`
-		query JobRunsList($team: Slug!, $env: String!, $job: String!, $first: Int!)
-		@cache(policy: CacheAndNetwork) {
+		query JobRunsList($team: Slug!, $env: String!, $job: String!, $first: Int!) {
 			team(slug: $team) {
 				environment(name: $env) {
 					job(name: $job) {

@@ -11,7 +11,7 @@
 	let { teamSlug }: Props = $props();
 
 	const inventoryQuery = graphql(`
-		query TeamInventoryOverview($team: Slug!) @cache(policy: CacheAndNetwork) {
+		query TeamInventoryOverview($team: Slug!) {
 			team(slug: $team) {
 				inventoryCounts {
 					applications {
