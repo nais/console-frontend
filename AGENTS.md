@@ -161,6 +161,10 @@ This project uses **Svelte 5 with runes mode** (enforced via `forceRunesMode: tr
 
 This project uses **Houdini** for GraphQL, not Apollo or other clients.
 
+### Cache Policy
+
+The default cache policy is `CacheAndNetwork` (set in `houdini.config.js`). Do not add `@cache(policy: CacheAndNetwork)` to queries — it is redundant. Only use an explicit `@cache` directive when you need a different policy (e.g., `NetworkOnly`).
+
 ### Patterns:
 
 - **Separate .gql files**: For page/layout queries, use `.gql` files and `load_QueryName` functions
@@ -169,6 +173,8 @@ This project uses **Houdini** for GraphQL, not Apollo or other clients.
 - Mutations pass variables directly: `await myMutation.mutate({ id, name })`
 - Check for errors: `if ($myQuery.errors) { ... }`
 - Use `$myQuery.fetching` for loading states
+- **Never use `$effect()` to fetch queries** — use `.gql` files with `load_QueryName` in `+page.ts` instead. The `$effect` pattern causes missing data on first navigation and an unnecessary client-side re-fetch cycle. Pass the store to child components as a prop.
+- **Don't `.fetch()` after mutations** when the mutation response includes fields with `id` — Houdini's normalized cache updates the store automatically. Only re-fetch when the mutation doesn't return enough data for cache normalization (e.g., the response lacks `id` or the query uses a paginated connection that can't be updated incrementally).
 
 ### Query Design Rules:
 
