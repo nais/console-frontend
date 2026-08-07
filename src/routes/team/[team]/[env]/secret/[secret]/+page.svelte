@@ -127,7 +127,6 @@
 		await updateSecretLabels.mutate({ name: secretName, team: teamSlug, env: env, labels });
 		if ($updateSecretLabels.errors) return;
 		labelsModalOpen = false;
-		Secret.fetch();
 	};
 
 	const updateSecretValue = graphql(`
@@ -176,7 +175,6 @@
 
 		editValueOpen = false;
 		keyToEdit = '';
-		Secret.fetch();
 	};
 
 	const removeSecretValue = graphql(`
@@ -218,7 +216,6 @@
 		}
 
 		deleteValueOpen = false;
-		Secret.fetch();
 		keyToDelete = '';
 	};
 
@@ -504,9 +501,6 @@
 						{teamSlug}
 						{env}
 						{secretName}
-						onSuccess={() => {
-							Secret.fetch();
-						}}
 					/>
 				{/if}
 			</section>
