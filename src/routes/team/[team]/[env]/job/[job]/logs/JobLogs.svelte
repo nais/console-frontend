@@ -3,6 +3,7 @@
 	import { graphql, JobRunState, type RunsWithPodNames$result } from '$houdini';
 	import { apmURL } from '$lib/doc';
 	import ExternalLink from '$lib/ui/ExternalLink.svelte';
+	import { exhaustive } from '$lib/utils/houdini';
 	import {
 		createBufferedLogAppender,
 		getLogLevel,
@@ -286,7 +287,7 @@
 				{/if}
 			</div>
 			<div style="padding-top: var(--ax-space-8);">
-				{#each team.environment.job.logDestinations as logDestination (logDestination.id)}
+				{#each exhaustive(team.environment.job.logDestinations) as logDestination (logDestination.id)}
 					{#if logDestination.__typename === 'LogDestinationLoki'}
 						<ExternalLink href={logDestination.grafanaURL}>View logs in Grafana</ExternalLink>
 					{/if}

@@ -1,9 +1,9 @@
 <script lang="ts">
 	import { page } from '$app/state';
 	import { graphql, type Instances$result } from '$houdini';
-	import { exhaustive } from '$lib/utils/houdini';
 	import { apmURL } from '$lib/doc';
 	import ExternalLink from '$lib/ui/ExternalLink.svelte';
+	import { exhaustive } from '$lib/utils/houdini';
 	import {
 		createBufferedLogAppender,
 		getLogLevel,
