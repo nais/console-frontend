@@ -9,7 +9,6 @@ query ServiceAccountDetail($id: ID!) @cache(policy: CacheAndNetwork) {
 		workloadBindings {
 			edges {
 				node {
-					teamSlug
 					workloadName
 					environment
 				}
