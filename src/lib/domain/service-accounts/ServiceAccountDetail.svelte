@@ -9,7 +9,6 @@
 	import ResourceActivityCard from '$lib/domain/activity/ResourceActivityCard.svelte';
 	import Confirm from '$lib/ui/Confirm.svelte';
 	import GraphErrors from '$lib/ui/GraphErrors.svelte';
-	import { pageModalClick } from '$lib/ui/PageModal.svelte';
 	import Time from '$lib/ui/Time.svelte';
 	import { Button, Heading, Modal, Textarea } from '@nais/ds-svelte-community';
 	import {
@@ -146,14 +145,12 @@
 						<a
 							class="action-menu-button"
 							href="{basePath}/{serviceAccount.id}/token/create"
-							onclick={pageModalClick}
 						>
 							<ActionMenuItem icon={TokenIcon}>Create API token</ActionMenuItem>
 						</a>
 						<a
 							class="action-menu-button"
 							href="{basePath}/{serviceAccount.id}/binding/add"
-							onclick={pageModalClick}
 						>
 							<ActionMenuItem icon={LinkIcon}>Add workload binding</ActionMenuItem>
 						</a>

@@ -7,6 +7,7 @@
 	import IconLabel from '$lib/ui/IconLabel.svelte';
 	import List from '$lib/ui/List.svelte';
 	import ListItem from '$lib/ui/ListItem.svelte';
+	import { failureMessage } from '$lib/ui/Form/form';
 	import Time from '$lib/ui/Time.svelte';
 	import { Button, Detail, Heading } from '@nais/ds-svelte-community';
 	import { LinkIcon, TokenIcon, TrashIcon } from '@nais/ds-svelte-community/icons';
@@ -276,7 +277,7 @@
 		removeErrors = undefined;
 		return async ({ result, update }) => {
 			if (result.type === 'failure') {
-				removeErrors = [{ message: (result.data as { error?: string })?.error ?? 'Unknown error' }];
+				removeErrors = [{ message: failureMessage(result.data) }];
 			} else {
 				tokenToDelete = null;
 			}
@@ -296,7 +297,7 @@
 		removeErrors = undefined;
 		return async ({ result, update }) => {
 			if (result.type === 'failure') {
-				removeErrors = [{ message: (result.data as { error?: string })?.error ?? 'Unknown error' }];
+				removeErrors = [{ message: failureMessage(result.data) }];
 			} else {
 				bindingToRemove = null;
 			}

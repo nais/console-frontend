@@ -1,5 +1,22 @@
 import { graphql } from '$houdini';
-import { fail, redirect } from '@sveltejs/kit';
+import { setImageVersionForm } from '$lib/forms/workload';
+import { formAction } from '$lib/server/form';
+
+// The offered versions come from the deploy history, so the server has to load it too. Without it
+// the action would accept any image reference the client cared to submit.
+const releases = graphql(`
+	query SetImageVersionReleases($team: Slug!, $env: String!, $app: String!) {
+		team(slug: $team) {
+			environment(name: $env) {
+				application(name: $app) {
+					history {
+						image
+					}
+				}
+			}
+		}
+	}
+`);
 
 const mutation = graphql(`
 	mutation SetImageVersion($input: UpdateApplicationInput!) {
@@ -12,43 +29,32 @@ const mutation = graphql(`
 `);
 
 export const actions = {
-	default: async (event) => {
-		const { request, params } = event;
-		const data = await request.formData();
-
-		const image = data.get('image') as string | null;
-
-		if (!image) {
-			return fail(400, {
-				success: false,
-				error: 'You must select an image version'
+	default: formAction({
+		fields: setImageVersionForm,
+		optionsOverrides: async (event) => {
+			const { params } = event;
+			const history = await releases.fetch({
+				event,
+				variables: { team: params.team!, env: params.env!, app: params.app! }
 			});
-		}
 
-		const res = await mutation.mutate(
-			{
-				input: {
-					teamSlug: params.team,
-					environmentName: params.env,
-					name: params.app,
-					image
-				}
-			},
-			{ event }
-		);
-
-		if ((res.errors?.length ?? 0) > 0) {
-			return fail(400, {
-				success: false,
-				error: res.errors![0].message
-			});
-		} else if (!res.data) {
-			return fail(500, {
-				success: false,
-				error: 'Failed to set image version'
-			});
-		}
-
-		return redirect(303, `/team/${params.team}/${params.env}/app/${params.app}`);
-	}
+			return {
+				image: (history.data?.team.environment.application.history ?? []).map((release) => ({
+					value: release.image,
+					label: release.image
+				}))
+			};
+		},
+		mutation,
+		variables: ({ data, params }) => ({
+			input: {
+				teamSlug: params.team,
+				environmentName: params.env,
+				name: params.app,
+				image: data.image
+			}
+		}),
+		message: 'Failed to set image version',
+		redirectTo: ({ params }) => `/team/${params.team}/${params.env}/app/${params.app}`
+	})
 };

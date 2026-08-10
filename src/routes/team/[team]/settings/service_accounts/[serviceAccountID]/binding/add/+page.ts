@@ -14,6 +14,7 @@ export async function load(event) {
 	return {
 		...(await addPageMeta(event, {
 			title: 'Add Workload Binding',
+			docPath: '/operate/console/api/#method-1-workload-binding',
 			breadcrumbs: [
 				{
 					label: 'Settings',

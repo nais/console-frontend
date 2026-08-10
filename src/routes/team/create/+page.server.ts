@@ -1,36 +1,25 @@
 import { graphql } from '$houdini';
-import { redirect } from '@sveltejs/kit';
+import { createTeamForm } from '$lib/forms/team';
+import { formAction } from '$lib/server/form';
 import type { Actions } from './$types';
 
-export const actions = {
-	default: async (event) => {
-		const query = graphql(`
-			mutation CreateTeam($input: CreateTeamInput!) {
-				createTeam(input: $input) {
-					team {
-						slug
-					}
-				}
+const mutation = graphql(`
+	mutation CreateTeam($input: CreateTeamInput!) {
+		createTeam(input: $input) {
+			team {
+				slug
 			}
-		`);
-		const data = await event.request.formData();
-		const input = {
-			slug: (data.get('name') as string) || '',
-			purpose: (data.get('description') as string) || '',
-			slackChannel: (data.get('slackChannel') as string) || ''
-		};
-
-		const resp = await query.mutate(
-			{
-				input
-			},
-			{ event }
-		);
-		if (resp.errors) {
-			return { input, errors: resp.errors };
-		}
-		if (resp.data?.createTeam.team?.slug) {
-			redirect(303, `/team/${resp.data.createTeam.team.slug}`);
 		}
 	}
+`);
+
+export const actions = {
+	default: formAction({
+		fields: createTeamForm,
+		mutation,
+		variables: ({ data }) => ({ input: data }),
+		message: 'Failed to create team',
+		succeeded: (result) => !!result.createTeam.team?.slug,
+		redirectTo: ({ result }) => `/team/${result.createTeam.team!.slug}`
+	})
 } satisfies Actions;

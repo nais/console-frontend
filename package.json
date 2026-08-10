@@ -76,7 +76,8 @@
 		"pretty-bytes": "7.1.1",
 		"sortablejs": "1.15.7",
 		"svelte-highlight": "7.16.0",
-		"yaml": "2.9.0"
+		"yaml": "2.9.0",
+		"zod": "4.4.3"
 	},
 	"lint-staged": {
 		"*.{js,ts,svelte,gql,css,md,json}": "prettier --write",

@@ -1,46 +1,18 @@
 <script lang="ts">
-	import { goto } from '$app/navigation';
-	import { type DeleteJobPage$result, graphql } from '$houdini';
+	import { type DeleteJobPage$result } from '$houdini';
 	import PersistenceItem from '$lib/domain/persistence/PersistenceItem.svelte';
+	import { deleteConfirmationForm } from '$lib/forms/delete-confirmation';
 	import WarningIcon from '$lib/icons/WarningIcon.svelte';
-	import GraphErrors from '$lib/ui/GraphErrors.svelte';
+	import Form from '$lib/ui/Form/Form.svelte';
 	import Time from '$lib/ui/Time.svelte';
-	import { BodyShort, Button, Heading, TextField } from '@nais/ds-svelte-community';
-	import { get } from 'svelte/store';
+	import { BodyShort, Button, Heading } from '@nais/ds-svelte-community';
 	import type { PageProps } from './$types';
 
-	let { data }: PageProps = $props();
+	let { data, form }: PageProps = $props();
 
 	let { DeleteJobPage } = $derived(data);
 
 	let result = $derived($DeleteJobPage.data);
-
-	const deleteJob = graphql(`
-		mutation DeleteJob($team: Slug!, $env: String!, $job: String!) {
-			deleteJob(input: { teamSlug: $team, environmentName: $env, name: $job }) {
-				success
-			}
-		}
-	`);
-
-	let confirmation = $state('');
-
-	const submit = async () => {
-		const job = get(DeleteJobPage).data?.team.environment.job;
-		if (!job) {
-			return;
-		}
-
-		const resp = await deleteJob.mutate({
-			job: job.name,
-			env: job.teamEnvironment.environment.name,
-			team: job.team.slug
-		});
-
-		if (resp.data?.deleteJob.success) {
-			goto(`/team/${job.team.slug}?deleted=job/${job.name}`);
-		}
-	};
 
 	function hasResourcesToDelete(job: DeleteJobPage$result['team']['environment']['job']) {
 		return (
@@ -134,31 +106,11 @@
 			{/if}
 			{@const expected = job.teamEnvironment.environment.name + '/' + job.name}
 			<div class="confirmation-wrapper">
-				<BodyShort spacing>
-					Confirm deletion by writing <strong>{expected}</strong> in the box below and click
-					<em>Delete</em>.
-				</BodyShort>
-				{#if $deleteJob.errors}
-					<GraphErrors errors={$deleteJob.errors} />
-				{/if}
-
-				<form
-					onsubmit={(e: SubmitEvent) => {
-						e.preventDefault();
-						submit();
-					}}
-				>
-					<div class="field-wrapper">
-						<TextField label="" hideLabel bind:value={confirmation} style="width: 100%;" />
-					</div>
-					<Button
-						disabled={confirmation !== expected}
-						variant="danger"
-						loading={$DeleteJobPage.fetching}
-					>
-						Delete
-					</Button>
-				</form>
+				<Form fields={deleteConfirmationForm(expected)} {form}>
+					{#snippet button({ submitting })}
+						<Button type="submit" variant="danger" loading={submitting}>Delete</Button>
+					{/snippet}
+				</Form>
 			</div>
 		{/if}
 	{/if}
@@ -167,16 +119,6 @@
 <style>
 	code {
 		font-size: 1rem;
-	}
-
-	form {
-		display: flex;
-		gap: var(--ax-space-16);
-	}
-
-	.field-wrapper {
-		width: 100%;
-		max-width: 300px;
 	}
 
 	.heading-wrapper {
@@ -195,20 +137,5 @@
 		padding: var(--ax-space-16);
 		border-radius: var(--ax-radius-8);
 		border: 1px solid var(--ax-border-danger);
-	}
-
-	@media (max-width: 767px), (max-height: 500px) {
-		form {
-			flex-direction: column;
-			align-items: stretch;
-		}
-
-		.field-wrapper {
-			max-width: none;
-		}
-
-		form :global(button) {
-			width: 100%;
-		}
 	}
 </style>

@@ -10,7 +10,8 @@ export async function load(event) {
 
 	return {
 		...(await addPageMeta(event, {
-			title: 'Create',
+			title: 'Create service account',
+			docPath: '/operate/console/api/#create-a-service-account',
 			breadcrumbs: [
 				{
 					label: 'Settings',

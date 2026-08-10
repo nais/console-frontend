@@ -2,6 +2,7 @@
 	import { enhance } from '$app/forms';
 	import { graphql } from '$houdini';
 	import { envTagVariant } from '$lib/envTagVariant';
+	import { failureMessage } from '$lib/ui/Form/form';
 	import GraphErrors from '$lib/ui/GraphErrors.svelte';
 	import { isPossiblyInModal } from '$lib/ui/PageModal.svelte';
 	import {
@@ -204,7 +205,7 @@
 									errorMessage = undefined;
 									return async ({ result }) => {
 										if (result.type === 'failure') {
-											errorMessage = (result.data as { error?: string })?.error ?? 'Unknown error';
+											errorMessage = failureMessage(result.data);
 										} else if (result.type === 'success') {
 											addedIds = new Set([...addedIds, node.id]);
 										}

@@ -1,5 +1,6 @@
 import { graphql } from '$houdini';
-import { fail, redirect } from '@sveltejs/kit';
+import { deleteConfirmationForm } from '$lib/forms/delete-confirmation';
+import { formAction } from '$lib/server/form';
 
 const mutation = graphql(`
 	mutation DeleteOpenSearch($input: DeleteOpenSearchInput!) {
@@ -10,48 +11,14 @@ const mutation = graphql(`
 `);
 
 export const actions = {
-	default: async (event) => {
-		const { params, request } = event;
-		const data = await request.formData();
-		const name = data.get('name') as string | null;
-		if (!name) {
-			return fail(400, {
-				success: false,
-				error: 'Name is required',
-				name
-			});
-		}
-		if (name !== params.env + '/' + params.opensearch) {
-			return fail(400, {
-				success: false,
-				error: 'Name must be exactly ' + params.env + '/' + params.opensearch + '.',
-				name
-			});
-		}
-
-		const res = await mutation.mutate(
-			{
-				input: {
-					name: params.opensearch,
-					environmentName: params.env,
-					teamSlug: params.team
-				}
-			},
-			{ event }
-		);
-
-		if (res.errors?.length ?? 0 > 0) {
-			return fail(400, {
-				success: false,
-				error: res.errors![0].message
-			});
-		} else if (!res.data) {
-			return fail(500, {
-				success: false,
-				error: 'Failed to delete OpenSearch'
-			});
-		}
-
-		return redirect(303, `/team/${params.team}/opensearch`);
-	}
+	default: formAction({
+		fields: ({ params }) => deleteConfirmationForm(`${params.env}/${params.opensearch}`),
+		mutation,
+		variables: ({ params }) => ({
+			input: { name: params.opensearch, environmentName: params.env, teamSlug: params.team }
+		}),
+		message: 'Failed to delete OpenSearch',
+		succeeded: (result) => result.deleteOpenSearch?.openSearchDeleted === true,
+		redirectTo: ({ params }) => `/team/${params.team}/opensearch`
+	})
 };

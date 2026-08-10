@@ -1,5 +1,6 @@
 import { graphql } from '$houdini';
-import { fail, redirect } from '@sveltejs/kit';
+import { serviceAccountForm } from '$lib/forms/serviceaccounts.js';
+import { formAction } from '$lib/server/form.js';
 
 const mutation = graphql(`
 	mutation CreateAdminServiceAccount($input: CreateServiceAccountInput!) {
@@ -13,51 +14,13 @@ const mutation = graphql(`
 `);
 
 export const actions = {
-	default: async (event) => {
-		const { request } = event;
-		const data = await request.formData();
-
-		const name = data.get('name') as string | null;
-		const description = data.get('description') as string | null;
-
-		if (!name || !description) {
-			return fail(400, {
-				success: false,
-				error: 'Name and description are required',
-				name,
-				description
-			});
-		}
-
-		const res = await mutation.mutate(
-			{
-				input: {
-					name,
-					description
-				}
-			},
-			{ event }
-		);
-
-		if (res.errors?.length) {
-			return fail(400, {
-				success: false,
-				error: res.errors![0].message,
-				name,
-				description
-			});
-		} else if (!res.data) {
-			return fail(500, {
-				success: false,
-				error: 'Failed to create service account',
-				name,
-				description
-			});
-		}
-
-		return redirect(
-			303,
-			`/admin/service_accounts/${res.data.createServiceAccount.serviceAccount!.id}`
-		);
-	}
+	default: formAction({
+		fields: serviceAccountForm,
+		mutation,
+		variables: ({ data }) => ({ input: data }),
+		message: 'Failed to create service account',
+		succeeded: (result) => !!result.createServiceAccount.serviceAccount,
+		redirectTo: ({ result }) =>
+			`/admin/service_accounts/${result.createServiceAccount.serviceAccount!.id}`
+	})
 };

@@ -480,3 +480,10 @@ a.severity-badge {
 		opacity: 0.8;
 	}
 }
+
+/* fix option background color in dark mode */
+@media (prefers-color-scheme: dark) {
+	option {
+		background-color: var(--ax-bg-raised);
+	}
+}

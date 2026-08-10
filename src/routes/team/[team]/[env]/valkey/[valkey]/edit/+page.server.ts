@@ -1,14 +1,6 @@
-import {
-	graphql,
-	type ResourceLabelInput,
-	ValkeyMaxMemoryPolicy,
-	type ValkeyMaxMemoryPolicy$options,
-	ValkeyMemory,
-	type ValkeyMemory$options,
-	ValkeyTier,
-	type ValkeyTier$options
-} from '$houdini';
-import { fail, redirect } from '@sveltejs/kit';
+import { graphql } from '$houdini';
+import { valkeyForm } from '$lib/forms/valkey.js';
+import { formAction } from '$lib/server/form';
 
 const mutation = graphql(`
 	mutation UpdateValkey($input: UpdateValkeyInput!) {
@@ -21,104 +13,19 @@ const mutation = graphql(`
 `);
 
 export const actions = {
-	default: async (event) => {
-		const { request, params } = event;
-		const data = await request.formData();
-
-		const tier = data.get('tier') as ValkeyTier$options | null;
-		const memory = data.get('memory') as ValkeyMemory$options | null;
-		const max_memory_policy = data.get('max_memory_policy') as ValkeyMaxMemoryPolicy$options | null;
-		const notify_keyspace_events = data.get('notify_keyspace_events') as string | null;
-		const databases = data.get('databases') as string | null;
-		const labelsJson = data.get('labels') as string | null;
-
-		const allProps = {
-			tier,
-			memory,
-			max_memory_policy,
-			notify_keyspace_events,
-			databases,
-			labels: labelsJson
-		};
-
-		if (!tier || !memory) {
-			return fail(400, {
-				...allProps,
-				success: false,
-				error: 'Missing required fields'
-			});
-		}
-
-		let labels: ResourceLabelInput[] | undefined = undefined;
-		if (labelsJson) {
-			try {
-				labels = JSON.parse(labelsJson) as ResourceLabelInput[];
-				if (!Array.isArray(labels)) {
-					return fail(400, {
-						...allProps,
-						success: false,
-						error: 'Labels must be an array'
-					});
-				}
-				for (const label of labels) {
-					if (typeof label.key !== 'string' || typeof label.value !== 'string') {
-						return fail(400, {
-							...allProps,
-							success: false,
-							error: 'Each label must have a string key and value'
-						});
-					}
-				}
-			} catch {
-				return fail(400, {
-					...allProps,
-					success: false,
-					error: 'Invalid labels payload'
-				});
+	default: formAction({
+		fields: valkeyForm,
+		mode: 'edit',
+		mutation,
+		variables: ({ data, params }) => ({
+			input: {
+				teamSlug: params.team,
+				name: params.valkey,
+				environmentName: params.env,
+				...data
 			}
-		}
-
-		const res = await mutation.mutate(
-			{
-				input: {
-					name: params.valkey,
-					environmentName: params.env,
-					teamSlug: params.team,
-					tier: ValkeyTier[tier as keyof typeof ValkeyTier],
-					memory: ValkeyMemory[memory as keyof typeof ValkeyMemory],
-					maxMemoryPolicy: !max_memory_policy
-						? null
-						: ValkeyMaxMemoryPolicy[max_memory_policy as keyof typeof ValkeyMaxMemoryPolicy],
-					notifyKeyspaceEvents: notify_keyspace_events, // empty strings are always passed along to clear any previously set value
-					databases: databases ? parseInt(databases, 10) : null,
-					labels
-				}
-			},
-			{ event }
-		);
-
-		if (res.errors?.length ?? 0 > 0) {
-			return fail(400, {
-				success: false,
-				error: res.errors![0].message,
-				tier,
-				memory,
-				max_memory_policy,
-				notify_keyspace_events,
-				databases
-			});
-		} else if (!res.data) {
-			return fail(500, {
-				success: false,
-				error: 'Failed to update Valkey',
-				tier,
-				memory,
-				max_memory_policy,
-				notify_keyspace_events,
-				databases
-			});
-		}
-
-		return redirect(303, `/team/${params.team}/${params.env}/valkey/${params.valkey}`);
-	}
+		}),
+		message: 'Failed to update Valkey',
+		redirectTo: ({ params }) => `/team/${params.team}/${params.env}/valkey/${params.valkey}`
+	})
 };
