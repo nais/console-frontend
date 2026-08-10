@@ -194,11 +194,6 @@
 			if (d.WorkloadProblemIssue.workload?.__typename === 'Job') return BriefcaseClockIcon;
 			return PackageIcon;
 		}
-		if ('openSearch' in d && d.openSearch) return OpenSearchIcon;
-		if ('sqlInstance' in d && d.sqlInstance) return DatabaseIcon;
-		if ('valkey' in d && d.valkey) return ValkeyIcon;
-		if ('unleash' in d && d.unleash) return UnleashIcon;
-		if ('job' in d && d.job) return BriefcaseClockIcon;
 		return PackageIcon;
 	});
 
