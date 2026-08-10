@@ -181,12 +181,15 @@
 		margin-top: var(--ax-space-24);
 	}
 
+	.env-section:last-child {
+		padding-bottom: var(--ax-space-32);
+	}
+
 	.env-section + .env-section {
 		margin-top: var(--ax-space-64);
 	}
 
 	.chart {
-		height: 400px;
 		min-width: 0;
 		padding-inline: var(--spacing-layout);
 	}
