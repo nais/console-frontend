@@ -38,7 +38,7 @@
 	const rows = 25;
 
 	const teamRoles = graphql(`
-		query TeamCVEPageTeamRoles($team: Slug!) @cache(policy: CacheAndNetwork) {
+		query TeamCVEPageTeamRoles($team: Slug!) {
 			team(slug: $team) {
 				viewerIsMember
 			}

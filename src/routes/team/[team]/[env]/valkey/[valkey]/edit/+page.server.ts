@@ -1,6 +1,5 @@
 import {
 	graphql,
-	type ResourceLabelInput,
 	ValkeyMaxMemoryPolicy,
 	type ValkeyMaxMemoryPolicy$options,
 	ValkeyMemory,
@@ -8,6 +7,7 @@ import {
 	ValkeyTier,
 	type ValkeyTier$options
 } from '$houdini';
+import type { ResourceLabelInput } from '$houdini/graphql/inputs';
 import { fail, redirect } from '@sveltejs/kit';
 
 const mutation = graphql(`

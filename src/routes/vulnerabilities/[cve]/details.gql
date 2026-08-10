@@ -1,4 +1,4 @@
-query CVEDetails($identifier: String!) @cache(policy: CacheAndNetwork) {
+query CVEDetails($identifier: String!) {
 	cve(identifier: $identifier) {
 		id
 		identifier

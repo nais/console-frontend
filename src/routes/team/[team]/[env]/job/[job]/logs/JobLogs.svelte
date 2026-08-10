@@ -1,8 +1,9 @@
 <script lang="ts">
 	import { page } from '$app/state';
-	import { graphql, JobRunState, type JobRunState$options } from '$houdini';
+	import { graphql, JobRunState, type RunsWithPodNames$result } from '$houdini';
 	import { apmURL } from '$lib/doc';
 	import ExternalLink from '$lib/ui/ExternalLink.svelte';
+	import { exhaustive } from '$lib/utils/houdini';
 	import {
 		createBufferedLogAppender,
 		getLogLevel,
@@ -13,48 +14,7 @@
 	import { onDestroy, onMount } from 'svelte';
 	import { SvelteSet } from 'svelte/reactivity';
 
-	const {
-		team
-	}: {
-		team: {
-			slug: string;
-			environment: {
-				environment: {
-					name: string;
-				};
-				job: {
-					name: string;
-					runs: {
-						nodes: {
-							id: string;
-							name: string;
-							status: {
-								state: JobRunState$options;
-							};
-							instances: {
-								nodes: {
-									id: string;
-									name: string;
-								}[];
-							};
-						}[];
-					};
-					logDestinations: ({
-						id: string;
-						__typename: string | null;
-					} & (
-						| {
-								grafanaURL: string;
-								__typename: 'LogDestinationLoki';
-						  }
-						| {
-								__typename: "non-exhaustive; don't match this";
-						  }
-					))[];
-				};
-			};
-		};
-	} = $props();
+	const { team }: RunsWithPodNames$result = $props();
 
 	const MAX_LOG_LINES = 200;
 	const MAX_PENDING_LOG_LINES = 5000;
@@ -327,7 +287,7 @@
 				{/if}
 			</div>
 			<div style="padding-top: var(--ax-space-8);">
-				{#each team.environment.job.logDestinations as logDestination (logDestination.id)}
+				{#each exhaustive(team.environment.job.logDestinations) as logDestination (logDestination.id)}
 					{#if logDestination.__typename === 'LogDestinationLoki'}
 						<ExternalLink href={logDestination.grafanaURL}>View logs in Grafana</ExternalLink>
 					{/if}

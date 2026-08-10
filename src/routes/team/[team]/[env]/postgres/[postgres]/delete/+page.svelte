@@ -6,7 +6,7 @@
 	import { docURL } from '$lib/doc';
 	import ExternalLink from '$lib/ui/ExternalLink.svelte';
 	import { Alert, BodyLong, Button, ErrorMessage, TextField } from '@nais/ds-svelte-community';
-	import type { PageProps } from './$houdini';
+	import type { PageProps } from './$types';
 
 	let { form, data }: PageProps = $props();
 	let name = $state('');

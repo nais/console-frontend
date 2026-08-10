@@ -1,4 +1,5 @@
-import { ConfigOrderField, load_Configs, OrderDirection, type ConfigFilter } from '$houdini';
+import { ConfigOrderField, load_Configs, OrderDirection } from '$houdini';
+import type { ConfigFilter } from '$houdini/graphql/inputs';
 import { parseLabelsParam } from '$lib/domain/labels/labels';
 import { urlToOrderDirection, urlToOrderField } from '$lib/ui/OrderByMenu.svelte';
 import { addPageMeta } from '$lib/utils/pageMeta';

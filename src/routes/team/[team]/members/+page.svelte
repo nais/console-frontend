@@ -34,7 +34,8 @@
 
 	const refetch = () => {
 		Members.fetch({
-			policy: 'CacheAndNetwork'
+			policy: 'CacheAndNetwork',
+			variables: { ...$Members.variables! }
 		});
 	};
 

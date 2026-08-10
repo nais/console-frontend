@@ -14,6 +14,7 @@
 			issue,
 			graphql(`
 				fragment CriticalIssueRow on Issue {
+					__typename
 					teamEnvironment {
 						environment {
 							name

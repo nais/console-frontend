@@ -1,4 +1,4 @@
-query TeamSummaryCost($team: Slug!, $from: Date!, $to: Date!) @cache(policy: CacheAndNetwork) {
+query TeamSummaryCost($team: Slug!, $from: Date!, $to: Date!) {
 	team(slug: $team) {
 		cost {
 			daily(from: $from, to: $to) {

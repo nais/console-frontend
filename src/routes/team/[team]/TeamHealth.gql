@@ -1,0 +1,17 @@
+query TeamHealth($teamSlug: Slug!, $first: Int!) {
+	team(slug: $teamSlug) {
+		issues(first: $first, filter: { severity: CRITICAL }) @paginate(mode: Infinite) {
+			pageInfo {
+				endCursor
+				hasNextPage
+				totalCount
+			}
+			edges {
+				node {
+					id
+					...CriticalIssueRow
+				}
+			}
+		}
+	}
+}

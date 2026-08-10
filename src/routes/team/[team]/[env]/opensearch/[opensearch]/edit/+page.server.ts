@@ -5,9 +5,9 @@ import {
 	OpenSearchMemory,
 	type OpenSearchMemory$options,
 	OpenSearchTier,
-	type OpenSearchTier$options,
-	type ResourceLabelInput
+	type OpenSearchTier$options
 } from '$houdini';
+import type { ResourceLabelInput } from '$houdini/graphql/inputs';
 import { fail, redirect } from '@sveltejs/kit';
 
 const mutation = graphql(`

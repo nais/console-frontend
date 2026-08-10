@@ -1,10 +1,5 @@
-import {
-	load_OpenSearch,
-	OpenSearchOrderField,
-	OpenSearchTier,
-	OrderDirection,
-	type OpenSearchFilter
-} from '$houdini';
+import { load_OpenSearch, OpenSearchOrderField, OpenSearchTier, OrderDirection } from '$houdini';
+import type { OpenSearchFilter } from '$houdini/graphql/inputs';
 import { parseLabelsParam } from '$lib/domain/labels/labels';
 import { urlToOrderDirection, urlToOrderField } from '$lib/ui/OrderByMenu.svelte';
 import { addPageMeta } from '$lib/utils/pageMeta';

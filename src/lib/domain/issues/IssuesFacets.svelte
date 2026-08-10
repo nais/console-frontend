@@ -7,17 +7,20 @@
 		count: number;
 	}
 
-	interface EnvironmentEntry {
-		id: string;
-		environment: {
-			name: string;
-		};
+	interface IssueTypeFacet {
+		issueType: string;
+		count: number;
+	}
+
+	interface EnvironmentFacet {
+		value: string;
+		count: number;
 	}
 
 	interface Props {
 		severities: SeverityFacet[];
-		issueTypes: string[];
-		environments: EnvironmentEntry[];
+		issueTypes: IssueTypeFacet[];
+		environments: EnvironmentFacet[];
 		selectedSeverity: string;
 		selectedIssueType: string;
 		selectedEnvironments: string[];
@@ -94,15 +97,16 @@
 					/>
 					<span class="facet-label">All</span>
 				</label>
-				{#each issueTypes as type (type)}
+				{#each issueTypes as facet (facet.issueType)}
 					<label class="facet-item">
 						<input
 							type="radio"
 							name="issueType"
-							checked={selectedIssueType === type}
-							onchange={() => onIssueTypeChange(type)}
+							checked={selectedIssueType === facet.issueType}
+							onchange={() => onIssueTypeChange(facet.issueType)}
 						/>
-						<span class="facet-label">{issueTypeLabel(type)}</span>
+						<span class="facet-label">{issueTypeLabel(facet.issueType)}</span>
+						<span class="facet-count">{facet.count}</span>
 					</label>
 				{/each}
 			</div>
@@ -113,14 +117,15 @@
 		<details class="facet-section" open>
 			<summary class="facet-heading">Environments</summary>
 			<div class="facet-list">
-				{#each environments as entry (entry.id)}
+				{#each environments as facet (facet.value)}
 					<label class="facet-item">
 						<input
 							type="checkbox"
-							checked={selectedEnvironments.includes(entry.environment.name)}
-							onchange={() => toggleEnvironment(entry.environment.name)}
+							checked={selectedEnvironments.includes(facet.value)}
+							onchange={() => toggleEnvironment(facet.value)}
 						/>
-						<span class="facet-label">{entry.environment.name}</span>
+						<span class="facet-label">{facet.value}</span>
+						<span class="facet-count">{facet.count}</span>
 					</label>
 				{/each}
 			</div>

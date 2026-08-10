@@ -81,7 +81,6 @@
 		await updateConfigLabels.mutate({ name: configName, team: teamSlug, env: env, labels });
 		if ($updateConfigLabels.errors) return;
 		labelsModalOpen = false;
-		Config.fetch();
 	};
 
 	const updateConfigValue = graphql(`
@@ -131,7 +130,6 @@
 
 		editValueOpen = false;
 		keyToEdit = '';
-		Config.fetch();
 	};
 
 	const removeConfigValue = graphql(`
@@ -182,7 +180,6 @@
 		}
 
 		deleteValueOpen = false;
-		Config.fetch();
 		keyToDelete = '';
 	};
 
@@ -423,9 +420,6 @@
 						{teamSlug}
 						{env}
 						{configName}
-						onSuccess={() => {
-							Config.fetch();
-						}}
 					/>
 				{/if}
 			</section>

@@ -25,7 +25,6 @@
 					id
 					createdAt
 					actor
-					createdAt
 					environmentName
 					message
 					resourceName
@@ -340,6 +339,21 @@
 							}
 						}
 					}
+					... on ReconcilerConfiguredActivityLogEntry {
+						__typename
+					}
+					... on ReconcilerDisabledActivityLogEntry {
+						__typename
+					}
+					... on ReconcilerEnabledActivityLogEntry {
+						__typename
+					}
+					... on TunnelCreatedActivityLogEntry {
+						__typename
+					}
+					... on TunnelDeletedActivityLogEntry {
+						__typename
+					}
 				}
 			`)
 		)
@@ -348,6 +362,14 @@
 	const Icon = $derived(icons[$data.__typename] || QuestionmarkIcon);
 
 	const TextComponent = $derived(activityTextComponent($data.__typename));
+
+	const textData = $derived.by(() => {
+		const payload = $data[$data.__typename as keyof typeof $data];
+		if (payload && typeof payload === 'object') {
+			return { ...$data, ...(payload as object) };
+		}
+		return $data;
+	}) as unknown as typeof $data;
 </script>
 
 {#if mode === 'full'}
@@ -360,7 +382,7 @@
 			</Tooltip>
 
 			<div class="activity-text">
-				<TextComponent data={$data} {mode} />
+				<TextComponent data={textData} {mode} />
 			</div>
 		</div>
 	</ListItem>
@@ -371,11 +393,11 @@
 		</div>
 		<div class="content">
 			{#if mode === 'sidebar'}
-				<BodyLong size="small">
-					<TextComponent data={$data} {mode} />
+				<BodyLong size="small" as="div">
+					<TextComponent data={textData} {mode} />
 				</BodyLong>
 			{:else}
-				<TextComponent data={$data} {mode} />
+				<TextComponent data={textData} {mode} />
 			{/if}
 		</div>
 	</div>

@@ -26,6 +26,7 @@
 			item,
 			graphql(`
 				fragment IssueFragment on Issue {
+					__typename
 					teamEnvironment {
 						environment {
 							name
@@ -77,12 +78,6 @@
 						}
 					}
 					... on MissingSbomIssue {
-						workload {
-							__typename
-							name
-						}
-					}
-					... on FailedSynchronizationIssue {
 						workload {
 							__typename
 							name
@@ -146,24 +141,59 @@
 
 	const resourceName = $derived.by(() => {
 		const d = $data;
-		if ('application' in d && d.application) return d.application.name;
-		if ('job' in d && d.job) return d.job.name;
-		if ('openSearch' in d && d.openSearch) return d.openSearch.name;
-		if ('sqlInstance' in d && d.sqlInstance) return d.sqlInstance.name;
-		if ('valkey' in d && d.valkey) return d.valkey.name;
-		if ('unleash' in d && d.unleash) return d.unleash.name;
-		if ('workload' in d && d.workload) return d.workload.name;
+		if (d.ApplicationRestartLoopIssue?.workload) return d.ApplicationRestartLoopIssue.workload.name;
+		if (d.DeprecatedIngressIssue?.application) return d.DeprecatedIngressIssue.application.name;
+		if (d.DeprecatedRegistryIssue?.workload) return d.DeprecatedRegistryIssue.workload.name;
+		if (d.ExternalIngressCriticalVulnerabilityIssue?.workload)
+			return d.ExternalIngressCriticalVulnerabilityIssue.workload.name;
+		if (d.FailedSynchronizationIssue?.workload) return d.FailedSynchronizationIssue.workload.name;
+		if (d.InvalidSpecIssue?.workload) return d.InvalidSpecIssue.workload.name;
+		if (d.MissingSbomIssue?.workload) return d.MissingSbomIssue.workload.name;
+		if (d.NoRunningInstancesIssue?.workload) return d.NoRunningInstancesIssue.workload.name;
+		if (d.VulnerableImageIssue?.workload) return d.VulnerableImageIssue.workload.name;
+		if (d.WorkloadProblemIssue?.workload) return d.WorkloadProblemIssue.workload.name;
+		if (d.LastRunFailedIssue?.job) return d.LastRunFailedIssue.job.name;
+		if (d.OpenSearchIssue?.openSearch) return d.OpenSearchIssue.openSearch.name;
+		if (d.SqlInstanceStateIssue?.sqlInstance) return d.SqlInstanceStateIssue.sqlInstance.name;
+		if (d.SqlInstanceVersionIssue?.sqlInstance) return d.SqlInstanceVersionIssue.sqlInstance.name;
+		if (d.UnleashReleaseChannelIssue?.unleash) return d.UnleashReleaseChannelIssue.unleash.name;
+		if (d.ValkeyIssue?.valkey) return d.ValkeyIssue.valkey.name;
 		return 'Unknown';
 	});
 
 	const ResourceIcon = $derived.by(() => {
 		const d = $data;
-		if ('openSearch' in d && d.openSearch) return OpenSearchIcon;
-		if ('sqlInstance' in d && d.sqlInstance) return DatabaseIcon;
-		if ('valkey' in d && d.valkey) return ValkeyIcon;
-		if ('unleash' in d && d.unleash) return UnleashIcon;
-		if ('job' in d && d.job) return BriefcaseClockIcon;
-		if ('workload' in d && d.workload && d.workload.__typename === 'Job') return BriefcaseClockIcon;
+		if (d.ApplicationRestartLoopIssue) return PackageIcon;
+		if (d.DeprecatedIngressIssue) return PackageIcon;
+		if (d.DeprecatedRegistryIssue) {
+			if (d.DeprecatedRegistryIssue.workload?.__typename === 'Job') return BriefcaseClockIcon;
+			return PackageIcon;
+		}
+		if (d.ExternalIngressCriticalVulnerabilityIssue) return PackageIcon;
+		if (d.FailedSynchronizationIssue) {
+			if (d.FailedSynchronizationIssue.workload?.__typename === 'Job') return BriefcaseClockIcon;
+			return PackageIcon;
+		}
+		if (d.InvalidSpecIssue) {
+			if (d.InvalidSpecIssue.workload?.__typename === 'Job') return BriefcaseClockIcon;
+			return PackageIcon;
+		}
+		if (d.LastRunFailedIssue) return BriefcaseClockIcon;
+		if (d.MissingSbomIssue) {
+			if (d.MissingSbomIssue.workload?.__typename === 'Job') return BriefcaseClockIcon;
+			return PackageIcon;
+		}
+		if (d.NoRunningInstancesIssue) return PackageIcon;
+		if (d.OpenSearchIssue) return OpenSearchIcon;
+		if (d.SqlInstanceStateIssue) return DatabaseIcon;
+		if (d.SqlInstanceVersionIssue) return DatabaseIcon;
+		if (d.UnleashReleaseChannelIssue) return UnleashIcon;
+		if (d.ValkeyIssue) return ValkeyIcon;
+		if (d.VulnerableImageIssue) return PackageIcon;
+		if (d.WorkloadProblemIssue) {
+			if (d.WorkloadProblemIssue.workload?.__typename === 'Job') return BriefcaseClockIcon;
+			return PackageIcon;
+		}
 		return PackageIcon;
 	});
 
@@ -208,12 +238,14 @@
 
 	<div class="detail">
 		<p class="message">{$data.message}</p>
-		{#if $data.__typename === 'DeprecatedIngressIssue' && 'ingresses' in $data}
+		{#if $data.DeprecatedIngressIssue && 'ingresses' in $data.DeprecatedIngressIssue}
 			<div class="extra">
 				<strong>
-					{$data.ingresses.length === 1 ? 'Deprecated ingress:' : 'Deprecated ingresses:'}
+					{$data.DeprecatedIngressIssue.ingresses.length === 1
+						? 'Deprecated ingress:'
+						: 'Deprecated ingresses:'}
 				</strong>
-				{#each $data.ingresses as ingress (ingress)}
+				{#each $data.DeprecatedIngressIssue.ingresses as ingress (ingress)}
 					<span class="ingress">{ingress}</span>
 				{/each}
 			</div>

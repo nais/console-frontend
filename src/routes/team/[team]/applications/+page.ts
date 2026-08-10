@@ -1,9 +1,5 @@
-import {
-	ApplicationOrderField,
-	load_Applications,
-	OrderDirection,
-	type TeamApplicationsFilter
-} from '$houdini';
+import { ApplicationOrderField, load_Applications, OrderDirection } from '$houdini';
+import type { TeamApplicationsFilter } from '$houdini/graphql/inputs';
 import { parseLabelsParam } from '$lib/domain/labels/labels';
 import { urlToOrderDirection, urlToOrderField } from '$lib/ui/OrderByMenu.svelte';
 import { addPageMeta } from '$lib/utils/pageMeta';
