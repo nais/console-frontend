@@ -40,6 +40,7 @@ export async function load(event) {
 		})),
 		...(await load_PostgresInstances({
 			event,
+			blocking: true,
 			variables: {
 				team: event.params.team,
 				filter: {

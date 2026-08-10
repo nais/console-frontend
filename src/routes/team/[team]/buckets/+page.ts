@@ -21,6 +21,7 @@ export async function load(event) {
 		})),
 		...(await load_Buckets({
 			event,
+			blocking: true,
 			variables: {
 				team: event.params.team,
 				filter: { environments, labels } as BucketFilter,

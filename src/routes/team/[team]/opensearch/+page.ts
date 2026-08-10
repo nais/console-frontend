@@ -46,6 +46,7 @@ export async function load(event) {
 		})),
 		...(await load_OpenSearch({
 			event,
+			blocking: true,
 			variables: {
 				team: event.params.team,
 				filter: { environments, tiers, labels } as OpenSearchFilter,

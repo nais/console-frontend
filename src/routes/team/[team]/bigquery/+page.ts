@@ -21,6 +21,7 @@ export async function load(event) {
 		})),
 		...(await load_BigQuery({
 			event,
+			blocking: true,
 			variables: {
 				team: event.params.team,
 				filter: { environments, labels } as BigQueryDatasetFilter,
