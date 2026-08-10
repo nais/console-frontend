@@ -9,7 +9,6 @@ query TeamHealth($teamSlug: Slug!, $first: Int!) {
 			edges {
 				node {
 					id
-					severity
 					...CriticalIssueRow
 				}
 			}
