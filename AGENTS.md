@@ -70,7 +70,7 @@ Fetches full documentation for specific sections. Analyze `use_cases` from list-
 
 ### svelte-autofixer
 
-Analyzes Svelte code and returns issues and suggestions. **ALWAYS use this before sending Svelte code to the user.**
+Analyzes Svelte code and returns issues and suggestions. **ALWAYS use this before sending Svelte code to the user.** If `svelte-autofixer` reports issues, fix all reported errors before sending code to the user. For warnings, apply fixes unless they conflict with project patterns documented in this file, in which case note the conflict to the user.
 
 ### playground-link
 
@@ -135,7 +135,7 @@ This project uses **Svelte 5 with runes mode** (enforced via `forceRunesMode: tr
 
 - Use `$state()` for reactive state (not `let` with reactivity)
 - Use `$derived()` for computed values (not `$:`)
-- Treat `$effect()` as an escape hatch for browser-side effects such as DOM integration, subscriptions, or external I/O
+- Treat `$effect()` as an escape hatch for browser-side effects such as DOM integration, subscriptions, timers, or external I/O
 - Prefer `$derived()`/`$derived.by()` for derived state and explicit event handlers for input-driven flows like debounced search
 - Do not use `$effect()` to synchronize one piece of state with another unless there is no clearer alternative
 - Use `$props()` for component props with TypeScript types
@@ -174,7 +174,11 @@ The default cache policy is `CacheAndNetwork` (set in `houdini.config.js`). Do n
 - Check for errors: `if ($myQuery.errors) { ... }`
 - Use `$myQuery.fetching` for loading states
 - **Never use `$effect()` to fetch queries** — use `.gql` files with `load_QueryName` in `+page.ts` instead. The `$effect` pattern causes missing data on first navigation and an unnecessary client-side re-fetch cycle. Pass the store to child components as a prop.
-- **Don't `.fetch()` after mutations** when the mutation response includes fields with `id` — Houdini's normalized cache updates the store automatically. Only re-fetch when the mutation doesn't return enough data for cache normalization (e.g., the response lacks `id` or the query uses a paginated connection that can't be updated incrementally).
+  - Exception: `$effect` is acceptable for component-level queries that are intentionally deferred — i.e., queries whose data is supplementary (not required for initial page render) and are triggered by user interaction or mounted after the primary load function completes.
+- **Don't `.fetch()` after mutations** — use this decision tree:
+  1. If the mutation response includes `id` for all affected nodes AND the query is not a paginated connection → skip re-fetch (Houdini's normalized cache updates automatically).
+  2. If the mutation response lacks `id` → re-fetch.
+  3. If the query uses a paginated connection that cannot be updated incrementally → re-fetch.
 
 ### Query Design Rules:
 
@@ -186,85 +190,69 @@ The default cache policy is `CacheAndNetwork` (set in `houdini.config.js`). Do n
 
 Houdini 2.0 adds a `{ __typename: "non-exhaustive; don't match this" }` catch-all variant to every interface/union result type. This variant has **no fields** — accessing `id`, `createdAt`, etc. on it causes type errors.
 
-Additionally, the **masked `$result` type** only includes fields explicitly listed in each `... on Type { }` inline fragment. Fields selected at the interface level (outside inline fragments) are NOT propagated to each variant's type.
+Use `exhaustive()` from `$lib/utils/houdini` to filter the non-exhaustive catch-all from arrays:
 
-#### Rules for interface/union queries:
+```typescript
+import { exhaustive, type Exhaustive } from '$lib/utils/houdini';
 
-1. **Include shared fields in each inline fragment** — don't rely on interface-level field selection:
+// Filter out non-exhaustive variants before iterating
+const realNodes = exhaustive(activityLog.nodes);
 
-   ```graphql
-   # Wrong — createdAt won't appear on ApplicationScaledActivityLogEntry in TypeScript
-   activityLog {
-     nodes {
-       id
-       createdAt
-       ... on ApplicationScaledActivityLogEntry {
-         id
-         data { newSize direction }
-       }
-     }
-   }
+// Use the Exhaustive<T> type for type aliases
+type LogNode = Exhaustive<(typeof activityLog.nodes)[number]>;
+```
 
-   # Correct — include createdAt in every inline fragment
-   activityLog {
-     nodes {
-       ... on ApplicationScaledActivityLogEntry {
-         id
-         createdAt
-         data { newSize direction }
-       }
-       ... on DeploymentActivityLogEntry {
-         id
-         createdAt
-       }
-     }
-   }
-   ```
+### Interfaces and Unions in Queries (Houdini 2.0 bug)
 
-2. **Use `exhaustive()` from `$lib/utils/houdini`** to filter the non-exhaustive catch-all from arrays:
+Houdini has a known bug where fields selected at the interface level are **not available at runtime** for types that lack an explicit inline fragment. Until this is fixed, follow these rules:
 
-   ```typescript
-   import { exhaustive, type Exhaustive } from '$lib/utils/houdini';
-
-   // Filter out non-exhaustive variants before iterating
-   const realNodes = exhaustive(activityLog.nodes);
-
-   // Use the Exhaustive<T> type for type aliases
-   type LogNode = Exhaustive<(typeof activityLog.nodes)[number]>;
-   ```
-
-3. **Ensure ALL schema implementors have inline fragments** — when selecting interface-level fields, Houdini's codegen pushes them into each inline fragment. Types without an inline fragment won't have those fields in the wire query or `abstractFields`, causing `undefined` at runtime due to cache normalization conflicts. If a new type is added to the schema, add a `... on NewType { __typename }` entry to the fragment.
-
-4. **Don't duplicate fragment-owned fields in parent selections** — when a parent query/fragment selects the same field (e.g., `id`) that a child fragment also selects on an interface node, Houdini's masking assigns ownership to the child. The parent's `abstractFields` entries lose `"visible": true"` for that field, making it `undefined` at runtime. Instead, only spread the child fragment without re-selecting its fields:
+1. **Every implementor must have an inline fragment** — if even one concrete type is missing, its nodes will have `undefined` for all fields (including `id`), causing key errors and broken rendering:
 
    ```graphql
-   # Wrong — id will be undefined at parent level due to masking conflict
-   edges {
-     node {
-       id
-       ...ActivityLogEntryFragment
+   # Wrong — UserCreatedEntry has no fragment, so id/message are undefined at runtime
+   userSyncLog {
+     edges {
+       node {
+         id
+         message
+         ... on UserUpdatedEntry { id message oldName }
+       }
      }
    }
 
-   # Correct — let the child fragment own all its fields
-   edges {
-     node {
-       ...ActivityLogEntryFragment
+   # Correct — every type gets its own fragment with the fields it needs
+   userSyncLog {
+     edges {
+       node {
+         ... on UserCreatedEntry { id message userName }
+         ... on UserUpdatedEntry { id message oldName }
+         ... on UserDeletedEntry { id message userName }
+       }
      }
    }
    ```
 
-   Use index-based `{#each}` keys when `id` is only available inside the masked fragment:
+2. **Repeat shared fields in each inline fragment** — don't select them at the interface level and expect them to propagate. Each `... on Type { }` block must include `id`, `createdAt`, and any other fields you use.
 
-   ```svelte
-   {#each items as item, i (i)}
+3. **Don't select a field both at the interface level AND in a child fragment spread** — Houdini's masking assigns ownership to the child, making the field `undefined` at the parent level:
+
+   ```graphql
+   # Wrong — id will be undefined in the parent due to masking conflict
+   edges { node { id ...MyFragment } }
+
+   # Correct — let the fragment own all its fields
+   edges { node { ...MyFragment } }
    ```
 
-5. **Don't use manual type annotations to work around generated types** — import the `$result` type from `$houdini` instead of writing inline type annotations that duplicate and diverge from the generated types.
+### Issue Interface Conventions
+
+- **Shared `Issue` presenters may use unmasked query nodes intentionally** — for reusable UI like issue list rows and critical issue cards, it is acceptable to consume the top-level issue node shape from the parent query instead of calling `fragment()` in the child, when the query spreads a shared issue fragment with `@mask_disable`.
+- **Keep the `Issue` selection in one shared fragment** — if you use the unmasked presenter pattern above, the fields must come from a single shared `.gql` fragment (for example `IssueFragment.gql`) so the display contract stays aligned with the GraphQL selection.
+- **Centralize issue-shape narrowing in one helper** — if multiple presenters need the same resource-name or resource-kind derivation, keep that logic in one small helper module instead of repeating per-component checks or using `any` casts/raw object fallbacks.
 
 ### Fragment Types on Interfaces (Houdini 2.0)
 
-When a `fragment()` is defined on an **interface** type, Houdini generates a **flat object** with nullable type-keyed properties — NOT a `__typename`-discriminated union. This is structural and unrelated to the `defaultFragmentMasking` config.
+When a `fragment()` is defined on an **interface** type, Houdini generates a **flat object** with nullable type-keyed properties — NOT a `__typename`-discriminated union:
 
 ```typescript
 // Generated IssueFragment$data — flat structure, NOT a union
@@ -280,13 +268,13 @@ When a `fragment()` is defined on an **interface** type, Houdini generates a **f
 
 #### Rules for interface fragments:
 
-1. **`__typename` is only available when explicitly selected** — interface fragment data is not a `__typename`-discriminated union by default. If the fragment does not select `__typename`, use the type-keyed nullable properties as discriminators. If it does select `__typename`, you may read it directly, but the type-keyed properties are still the structural source of type-specific fields:
+1. **Use nullable type-keyed properties as discriminators**, not `__typename` (which is only present if explicitly selected in the fragment):
 
    ```typescript
    // Wrong — __typename doesn't exist unless explicitly selected
    if ($data.__typename === 'DeprecatedIngressIssue') { ... }
 
-   // Correct — guard on the nullable type-keyed property, then read fields through it
+   // Correct — guard on the nullable type-keyed property
    if ($data.DeprecatedIngressIssue) {
      return $data.DeprecatedIngressIssue.application.name;
    }
@@ -302,7 +290,7 @@ When a `fragment()` is defined on an **interface** type, Houdini generates a **f
    if ($data.DeprecatedIngressIssue) return $data.DeprecatedIngressIssue.application.name;
    ```
 
-3. **Extract shared patterns** into derived values to reduce verbosity. Group types that share the same resource shape:
+3. **Extract shared patterns** into derived values to reduce verbosity:
 
    ```typescript
    const workload = $derived(
@@ -310,16 +298,9 @@ When a `fragment()` is defined on an **interface** type, Houdini generates a **f
    		$data.FailedSynchronizationIssue?.workload ??
    		$data.VulnerableImageIssue?.workload
    );
-
-   const resourceName = $derived(
-   	$data.DeprecatedIngressIssue?.application.name ??
-   		$data.OpenSearchIssue?.openSearch.name ??
-   		workload?.name ??
-   		'Unknown'
-   );
    ```
 
-4. **Derive `__typename` from the non-null key when the fragment does not select it** — this is useful for generic helpers or label lookups on masked interface fragments. If the fragment already selects `__typename`, prefer reading the selected field directly:
+4. **Derive `__typename` from the non-null key when the fragment does not select it**:
 
    ```typescript
    const issueTypeKeys = ['DeprecatedIngressIssue', 'OpenSearchIssue', ...] as const;
@@ -327,12 +308,6 @@ When a `fragment()` is defined on an **interface** type, Houdini generates a **f
      issueTypeKeys.find((k) => $data[k] !== null && $data[k] !== undefined) ?? ''
    );
    ```
-
-5. **Shared `Issue` presenters may use unmasked query nodes intentionally** — for reusable UI like issue list rows and critical issue cards, it is acceptable to consume the top-level issue node shape from the parent query instead of calling `fragment()` in the child, when the query spreads a shared issue fragment with `@mask_disable`.
-
-6. **Keep the `Issue` selection in one shared fragment** — if you use the unmasked presenter pattern above, the fields must come from a single shared `.gql` fragment (for example `IssueFragment.gql`) so the display contract stays aligned with the GraphQL selection.
-
-7. **Centralize issue-shape narrowing in one helper** — if multiple presenters need the same resource-name or resource-kind derivation, keep that logic in one small helper module instead of repeating per-component checks or using `any` casts/raw object fallbacks.
 
 ### Example (.gql file for routes):
 
@@ -655,5 +630,5 @@ This project has **elevation patterns** for accessing sensitive resources (e.g.,
 
 - Check `viewerCanElevate` before showing elevation UI
 - Use elevation modals with justification
-- Handle expiration timers with `$effect()`
+- Handle expiration timers with `$effect()` (timers are browser-side effects, consistent with the runes guidance above)
 - Always validate RBAC even if elevation metadata is stale
