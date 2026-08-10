@@ -45,6 +45,7 @@ export async function load(event) {
 		})),
 		...(await load_Valkeys({
 			event,
+			blocking: true,
 			variables: {
 				team: event.params.team,
 				filter: { environments, tiers, labels } as ValkeyFilter,

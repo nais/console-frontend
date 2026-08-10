@@ -23,6 +23,7 @@ export async function load(event) {
 		})),
 		...(await load_KafkaTopics({
 			event,
+			blocking: true,
 			variables: {
 				team: event.params.team,
 				filter: { environments, pools, labels } as KafkaTopicFilter,
