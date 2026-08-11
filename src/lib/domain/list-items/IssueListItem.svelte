@@ -345,6 +345,40 @@
 	});
 
 	// TODO(houdini): same flat-data workaround as resourceName above.
+	const resourceHref = $derived.by(() => {
+		const d = $data as Record<string, unknown>;
+		if (!d) return '';
+		const env = $data?.teamEnvironment?.environment?.name;
+		const team = $data?.teamEnvironment?.team?.slug;
+		if (!env || !team) return '';
+
+		if ('workload' in d && d.workload) {
+			const w = d.workload as { __typename: string; name: string };
+			const type = w.__typename === 'Application' ? 'app' : 'job';
+			return `/team/${team}/${env}/${type}/${w.name}`;
+		}
+		if ('application' in d && d.application) {
+			return `/team/${team}/${env}/app/${(d.application as { name: string }).name}`;
+		}
+		if ('job' in d && d.job) {
+			return `/team/${team}/${env}/job/${(d.job as { name: string }).name}`;
+		}
+		if ('openSearch' in d && d.openSearch) {
+			return `/team/${team}/${env}/opensearch/${(d.openSearch as { name: string }).name}`;
+		}
+		if ('sqlInstance' in d && d.sqlInstance) {
+			return `/team/${team}/${env}/cloudsql/${(d.sqlInstance as { name: string }).name}`;
+		}
+		if ('unleash' in d && d.unleash) {
+			return `/team/${team}/unleash`;
+		}
+		if ('valkey' in d && d.valkey) {
+			return `/team/${team}/${env}/valkey/${(d.valkey as { name: string }).name}`;
+		}
+		return '';
+	});
+
+	// TODO(houdini): same flat-data workaround as resourceName above.
 	const ResourceIcon = $derived.by(() => {
 		const d = $data as Record<string, unknown>;
 		if (!d) return PackageIcon;
@@ -393,7 +427,16 @@
 			<ResourceIcon />
 		</div>
 		<div class="resource-group">
-			<span class="resource-name" title={resourceName}>{resourceName}</span>
+			{#if resourceHref}
+				<a
+					class="resource-name"
+					href={resourceHref}
+					title={resourceName}
+					onclick={(e) => e.stopPropagation()}>{resourceName}</a
+				>
+			{:else}
+				<span class="resource-name" title={resourceName}>{resourceName}</span>
+			{/if}
 			{#if $data?.teamEnvironment?.environment?.name}
 				<Tag size="xsmall" variant={envTagVariant($data.teamEnvironment.environment.name)}
 					>{$data.teamEnvironment.environment.name}</Tag
@@ -487,6 +530,15 @@
 		overflow: hidden;
 		text-overflow: ellipsis;
 		min-width: 0;
+	}
+
+	a.resource-name {
+		text-decoration: none;
+	}
+
+	a.resource-name:hover,
+	a.resource-name:focus-visible {
+		text-decoration: underline;
 	}
 
 	.resource-group :global(.aksel-tag) {
