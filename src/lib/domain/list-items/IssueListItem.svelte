@@ -392,9 +392,11 @@
 		</div>
 		<div class="resource-group">
 			<span class="resource-name" title={resourceName}>{resourceName}</span>
-			<Tag size="xsmall" variant={envTagVariant($data?.teamEnvironment?.environment?.name ?? '')}
-				>{$data?.teamEnvironment?.environment?.name ?? ''}</Tag
-			>
+			{#if $data?.teamEnvironment?.environment?.name}
+				<Tag size="xsmall" variant={envTagVariant($data.teamEnvironment.environment.name)}
+					>{$data.teamEnvironment.environment.name}</Tag
+				>
+			{/if}
 		</div>
 		<span class="issue-title">{issueTitle}</span>
 	</summary>
