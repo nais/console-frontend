@@ -21,6 +21,7 @@
 
 	let { item }: Props = $props();
 
+	// Houdini 2.0 bug: shared fields must be repeated in each inline fragment
 	let data = $derived(
 		fragment(
 			item,
@@ -38,12 +39,34 @@
 					message
 					severity
 					... on DeprecatedIngressIssue {
+						__typename
+						severity
+						message
+						teamEnvironment {
+							environment {
+								name
+							}
+							team {
+								slug
+							}
+						}
 						application {
 							name
 						}
 						ingresses
 					}
 					... on DeprecatedRegistryIssue {
+						__typename
+						severity
+						message
+						teamEnvironment {
+							environment {
+								name
+							}
+							team {
+								slug
+							}
+						}
 						workload {
 							__typename
 							name
@@ -53,6 +76,17 @@
 						}
 					}
 					... on ExternalIngressCriticalVulnerabilityIssue {
+						__typename
+						severity
+						message
+						teamEnvironment {
+							environment {
+								name
+							}
+							team {
+								slug
+							}
+						}
 						cvssScore
 						ingresses
 						workload {
@@ -61,75 +95,218 @@
 						}
 					}
 					... on LastRunFailedIssue {
+						__typename
+						severity
+						message
+						teamEnvironment {
+							environment {
+								name
+							}
+							team {
+								slug
+							}
+						}
 						job {
 							name
 						}
 					}
 					... on FailedSynchronizationIssue {
+						__typename
+						severity
+						message
+						teamEnvironment {
+							environment {
+								name
+							}
+							team {
+								slug
+							}
+						}
 						workload {
 							__typename
 							name
 						}
 					}
 					... on InvalidSpecIssue {
+						__typename
+						severity
+						message
+						teamEnvironment {
+							environment {
+								name
+							}
+							team {
+								slug
+							}
+						}
 						workload {
 							__typename
 							name
 						}
 					}
 					... on MissingSbomIssue {
+						__typename
+						severity
+						message
+						teamEnvironment {
+							environment {
+								name
+							}
+							team {
+								slug
+							}
+						}
 						workload {
 							__typename
 							name
 						}
 					}
 					... on NoRunningInstancesIssue {
+						__typename
+						severity
+						message
+						teamEnvironment {
+							environment {
+								name
+							}
+							team {
+								slug
+							}
+						}
 						workload {
 							__typename
 							name
 						}
 					}
 					... on ApplicationRestartLoopIssue {
+						__typename
+						severity
+						message
+						teamEnvironment {
+							environment {
+								name
+							}
+							team {
+								slug
+							}
+						}
 						workload {
 							__typename
 							name
 						}
 					}
 					... on OpenSearchIssue {
+						__typename
+						severity
+						message
+						teamEnvironment {
+							environment {
+								name
+							}
+							team {
+								slug
+							}
+						}
 						event
 						openSearch {
 							name
 						}
 					}
 					... on SqlInstanceStateIssue {
+						__typename
+						severity
+						message
+						teamEnvironment {
+							environment {
+								name
+							}
+							team {
+								slug
+							}
+						}
 						sqlInstance {
 							name
 						}
 						state
 					}
 					... on SqlInstanceVersionIssue {
+						__typename
+						severity
+						message
+						teamEnvironment {
+							environment {
+								name
+							}
+							team {
+								slug
+							}
+						}
 						sqlInstance {
 							name
 						}
 					}
 					... on ValkeyIssue {
+						__typename
+						severity
+						message
+						teamEnvironment {
+							environment {
+								name
+							}
+							team {
+								slug
+							}
+						}
 						valkey {
 							name
 						}
 					}
 					... on VulnerableImageIssue {
+						__typename
+						severity
+						message
+						teamEnvironment {
+							environment {
+								name
+							}
+							team {
+								slug
+							}
+						}
 						workload {
 							__typename
 							name
 						}
 					}
 					... on WorkloadProblemIssue {
+						__typename
+						severity
+						message
+						teamEnvironment {
+							environment {
+								name
+							}
+							team {
+								slug
+							}
+						}
 						workload {
 							__typename
 							name
 						}
 					}
 					... on UnleashReleaseChannelIssue {
+						__typename
+						severity
+						message
+						teamEnvironment {
+							environment {
+								name
+							}
+							team {
+								slug
+							}
+						}
 						unleash {
 							name
 						}
@@ -141,6 +318,7 @@
 
 	const resourceName = $derived.by(() => {
 		const d = $data;
+		if (!d) return '';
 		if (d.ApplicationRestartLoopIssue?.workload) return d.ApplicationRestartLoopIssue.workload.name;
 		if (d.DeprecatedIngressIssue?.application) return d.DeprecatedIngressIssue.application.name;
 		if (d.DeprecatedRegistryIssue?.workload) return d.DeprecatedRegistryIssue.workload.name;
@@ -163,6 +341,7 @@
 
 	const ResourceIcon = $derived.by(() => {
 		const d = $data;
+		if (!d) return PackageIcon;
 		if (d.ApplicationRestartLoopIssue) return PackageIcon;
 		if (d.DeprecatedIngressIssue) return PackageIcon;
 		if (d.DeprecatedRegistryIssue) {
@@ -198,6 +377,7 @@
 	});
 
 	const issueTitle = $derived.by(() => {
+		if (!$data) return '';
 		const typeName = $data.__typename
 			.replace(/Issue$/, '')
 			.replace(/([a-z])([A-Z])/g, '$1_$2')
@@ -212,15 +392,15 @@
 			<ChevronRightIcon />
 		</div>
 		<div class="severity-dot">
-			{#if $data.severity === 'CRITICAL'}
+			{#if $data?.severity === 'CRITICAL'}
 				<CriticalIndicator />
 			{:else}
 				<CircleFillIcon
-					style="color: light-dark({{
+					style="color: light-dark({{{
 						TODO: 'var(--ax-bg-info-strong), var(--ax-bg-info-strong)',
 						WARNING: 'var(--ax-bg-warning-moderate-pressed), var(--ax-bg-warning-strong-pressed)'
-					}[$data.severity] ??
-						'var(--ax-bg-info-strong), var(--ax-bg-info-strong)'}); font-size: 0.7rem"
+					}[$data?.severity] ??
+						'var(--ax-bg-info-strong), var(--ax-bg-info-strong)'}}); font-size: 0.7rem"
 				/>
 			{/if}
 		</div>
@@ -229,16 +409,16 @@
 		</div>
 		<div class="resource-group">
 			<span class="resource-name" title={resourceName}>{resourceName}</span>
-			<Tag size="xsmall" variant={envTagVariant($data.teamEnvironment.environment.name)}
-				>{$data.teamEnvironment.environment.name}</Tag
+			<Tag size="xsmall" variant={envTagVariant($data?.teamEnvironment?.environment?.name ?? '')}
+				>{$data?.teamEnvironment?.environment?.name ?? ''}</Tag
 			>
 		</div>
 		<span class="issue-title">{issueTitle}</span>
 	</summary>
 
 	<div class="detail">
-		<p class="message">{$data.message}</p>
-		{#if $data.DeprecatedIngressIssue && 'ingresses' in $data.DeprecatedIngressIssue}
+		<p class="message">{$data?.message}</p>
+		{#if $data?.DeprecatedIngressIssue && 'ingresses' in $data.DeprecatedIngressIssue}
 			<div class="extra">
 				<strong>
 					{$data.DeprecatedIngressIssue.ingresses.length === 1
@@ -250,7 +430,7 @@
 				{/each}
 			</div>
 		{/if}
-		{#if $data.__typename === 'ExternalIngressCriticalVulnerabilityIssue' && 'cvssScore' in $data}
+		{#if $data?.__typename === 'ExternalIngressCriticalVulnerabilityIssue' && 'cvssScore' in $data}
 			<div class="extra">
 				<strong>CVSS Score:</strong>
 				{$data.cvssScore}
