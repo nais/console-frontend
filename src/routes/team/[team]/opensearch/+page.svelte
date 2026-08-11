@@ -173,8 +173,12 @@
 							>
 						</div>
 						{#if (instance.issues?.pageInfo.totalCount ?? 0) > 0}
-							{const criticalCount = $derived(countIssuesBySeverity(instance.issues?.edges, 'CRITICAL'))}
-							{const warningCount = $derived(countIssuesBySeverity(instance.issues?.edges, 'WARNING'))}
+							{const criticalCount = $derived(
+								countIssuesBySeverity(instance.issues?.edges, 'CRITICAL')
+							)}
+							{const warningCount = $derived(
+								countIssuesBySeverity(instance.issues?.edges, 'WARNING')
+							)}
 							{const todoCount = $derived(countIssuesBySeverity(instance.issues?.edges, 'TODO'))}
 
 							<div class="right">

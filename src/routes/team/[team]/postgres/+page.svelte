@@ -242,7 +242,9 @@
 							<summary class="section-heading">High availability</summary>
 							<div class="facet-list">
 								{#each [true, false] as haValue (String(haValue))}
-									{const count = $derived(highAvailabilityFacets.find((f) => f.value === haValue)?.count ?? 0)}
+									{const count = $derived(
+										highAvailabilityFacets.find((f) => f.value === haValue)?.count ?? 0
+									)}
 									<label class="facet-item">
 										<input
 											type="checkbox"

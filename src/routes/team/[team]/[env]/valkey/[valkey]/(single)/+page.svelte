@@ -145,12 +145,12 @@
 {/if}
 {#if $Valkey.data}
 	{const instance = $derived($Valkey.data.team.environment.valkey)}
-	{const mandatoryServiceMaintenanceUpdates = $derived(instance.maintenance.updates.nodes.filter(
-		(x) => !!x?.deadline
-	))}
-	{const nonMandatoryServiceMaintenanceUpdates = $derived(instance.maintenance.updates.nodes.filter(
-		(x) => !x?.deadline
-	))}
+	{const mandatoryServiceMaintenanceUpdates = $derived(
+		instance.maintenance.updates.nodes.filter((x) => !!x?.deadline)
+	)}
+	{const nonMandatoryServiceMaintenanceUpdates = $derived(
+		instance.maintenance.updates.nodes.filter((x) => !x?.deadline)
+	)}
 	<div class="layout-two-column">
 		<div class="content">
 			{#if !isManagedByConsole}

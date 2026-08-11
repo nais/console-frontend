@@ -155,11 +155,12 @@
 						data.
 					</p>
 					{#if resourceUtilization.cpuUtil.length > 0}
-						{const cpuRequested = $derived(resourceUtilization.cpuUtil.reduce(
-							(acc, { requested }) => acc + requested,
-							0
-						))}
-						{const cpuUsage = $derived(resourceUtilization.cpuUtil.reduce((acc, { used }) => acc + used, 0))}
+						{const cpuRequested = $derived(
+							resourceUtilization.cpuUtil.reduce((acc, { requested }) => acc + requested, 0)
+						)}
+						{const cpuUsage = $derived(
+							resourceUtilization.cpuUtil.reduce((acc, { used }) => acc + used, 0)
+						)}
 						<div class="cost-wrapper">
 							<div class="cost-amount">
 								{euroValueFormatter(
@@ -184,14 +185,12 @@
 						utilization data.
 					</p>
 					{#if resourceUtilization.memUtil.length > 0}
-						{const memoryRequested = $derived(resourceUtilization.memUtil.reduce(
-							(acc, { requested }) => acc + requested,
-							0
-						))}
-						{const memoryUsage = $derived(resourceUtilization.memUtil.reduce(
-							(acc, { used }) => acc + used,
-							0
-						))}
+						{const memoryRequested = $derived(
+							resourceUtilization.memUtil.reduce((acc, { requested }) => acc + requested, 0)
+						)}
+						{const memoryUsage = $derived(
+							resourceUtilization.memUtil.reduce((acc, { used }) => acc + used, 0)
+						)}
 						<div class="cost-wrapper">
 							<div class="cost-amount">
 								{euroValueFormatter(

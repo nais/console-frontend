@@ -287,7 +287,9 @@
 							<summary class="section-heading">Usage</summary>
 							<div class="facet-list">
 								{#each ['true', 'false'] as value (value)}
-									{const count = $derived(inUseFacets.find((f) => String(f.value) === value)?.count ?? 0)}
+									{const count = $derived(
+										inUseFacets.find((f) => String(f.value) === value)?.count ?? 0
+									)}
 									<label class="facet-item">
 										<input
 											type="checkbox"

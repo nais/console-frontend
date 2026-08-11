@@ -132,7 +132,9 @@
 							</Td>
 							{#each severityColumns as column (column.sortKey)}
 								<Td class="severity-cell">
-									{const count = $derived(team.vulnerabilitySummary[column.summaryKey as SeverityKey])}
+									{const count = $derived(
+										team.vulnerabilitySummary[column.summaryKey as SeverityKey]
+									)}
 									{#if count > 0}
 										<a
 											href="/team/{team.slug}/vulnerabilities"
