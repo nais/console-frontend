@@ -62,11 +62,14 @@
 	<Chart>
 		<Svg center>
 			<Group y={16}>
-				{@const segmentAngle =
-					((segmentRangeEnd - segmentRangeStart) * Math.PI) / 180 / segmentCount}
+				{const segmentAngle = $derived(
+					((segmentRangeEnd - segmentRangeStart) * Math.PI) / 180 / segmentCount
+				)}
 				{#each segmentIndices as segmentIndex (segmentIndex)}
-					{@const startAngle = (segmentRangeStart * Math.PI) / 180 + segmentIndex * segmentAngle}
-					{@const endAngle = startAngle + segmentAngle}
+					{const startAngle = $derived(
+						(segmentRangeStart * Math.PI) / 180 + segmentIndex * segmentAngle
+					)}
+					{const endAngle = $derived(startAngle + segmentAngle)}
 					<Arc
 						{startAngle}
 						{endAngle}

@@ -164,7 +164,7 @@
 	<div class="layout-two-column">
 		<div>
 			{#if $Repositories.data.team}
-				{@const team = $Repositories.data.team}
+				{const team = $derived($Repositories.data.team)}
 
 				<List title="Repositories" count={team.repositories.pageInfo.totalCount}>
 					{#snippet actions()}

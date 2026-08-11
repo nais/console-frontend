@@ -60,7 +60,7 @@
 			<summary class="section-heading">Sort By</summary>
 			<div class="sort-options">
 				{#each sortFields as { value, label } (value)}
-					{@const isActive = currentSortField === value}
+					{const isActive = $derived(currentSortField === value)}
 					<button
 						type="button"
 						class="sort-option"

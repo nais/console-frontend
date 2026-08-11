@@ -158,7 +158,7 @@
 {#if $Secrets.errors}
 	<GraphErrors errors={$Secrets.errors} />
 {:else if $Secrets.data}
-	{@const secrets = $Secrets.data.team.secrets}
+	{const secrets = $derived($Secrets.data.team.secrets)}
 	<div class="layout-two-column">
 		<div>
 			<List title="Secrets" count={secrets.pageInfo.totalCount}>
@@ -291,7 +291,9 @@
 							<summary class="section-heading">Usage</summary>
 							<div class="facet-list">
 								{#each ['true', 'false'] as value (value)}
-									{@const count = inUseFacets.find((f) => String(f.value) === value)?.count ?? 0}
+									{const count = $derived(
+										inUseFacets.find((f) => String(f.value) === value)?.count ?? 0
+									)}
 									<label class="facet-item">
 										<input
 											type="checkbox"

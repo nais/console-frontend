@@ -134,7 +134,7 @@
 			{/each}
 		</CheckboxGroup>
 	{:else}
-		{@const assignedRoles = list.filter((r) => r.hasRole)}
+		{const assignedRoles = $derived(list.filter((r) => r.hasRole))}
 		{#if assignedRoles.length > 0}
 			<dl class="role-list">
 				{#each assignedRoles as role (role.name)}

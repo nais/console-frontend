@@ -108,19 +108,19 @@
 		{#snippet tooltip({ context })}
 			<Tooltip.Root>
 				{#snippet children({ data })}
-					{@const series = context.series.series}
+					{const series = $derived(context.series.series)}
 					<Tooltip.Header>{format(context.x(data), 'dd/MM/yyyy')}</Tooltip.Header>
 					<Tooltip.List>
 						{#each severitiesForChart as severityKey (severityKey)}
-							{@const seriesItem = series.find((s) => s.key === severityKey)}
-							{@const valueAccessor = accessor(severityKey)}
+							{const seriesItem = $derived(series.find((s) => s.key === severityKey))}
+							{const valueAccessor = $derived(accessor(severityKey))}
 							<Tooltip.Item label={severityKey} color={seriesItem?.color}>
 								{formatDays(valueAccessor(data))} days
 							</Tooltip.Item>
 							<Tooltip.Item label="Fixed count">
 								{data[`fixedCount_${severityKey}`] ?? 0}
 							</Tooltip.Item>
-							{@const lastFixedAt = data[`lastFixedAt_${severityKey}`]}
+							{const lastFixedAt = $derived(data[`lastFixedAt_${severityKey}`])}
 							<Tooltip.Item label="Last fixed at">
 								{formatLastFixedAt(lastFixedAt)}
 							</Tooltip.Item>

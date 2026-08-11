@@ -45,8 +45,8 @@
 
 <div class="wrapper">
 	{#if $IngressMetrics.data}
-		{@const appData = $IngressMetrics.data.team.environment.application}
-		{@const ingresses = appData.ingresses}
+		{const appData = $derived($IngressMetrics.data.team.environment.application)}
+		{const ingresses = $derived(appData.ingresses)}
 
 		<section>
 			<div class="heading-row">

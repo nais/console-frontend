@@ -56,7 +56,7 @@
 			{@render children()}
 		</span>
 		{#if icon}
-			{@const Icon = icon}
+			{const Icon = $derived(icon)}
 			<div aria-hidden="true" class="aksel-action-menu__marker aksel-action-menu__marker--left">
 				<Icon />
 			</div>
@@ -80,7 +80,7 @@
 			{@render children()}
 		</span>
 		{#if icon}
-			{@const Icon = icon}
+			{const Icon = $derived(icon)}
 			<div aria-hidden="true" class="aksel-action-menu__marker aksel-action-menu__marker--left">
 				<Icon />
 			</div>

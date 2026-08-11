@@ -104,8 +104,8 @@
 		{:else}
 			<RadioGroup legend="Releases" size="small" name="image" bind:value={selected}>
 				{#each releases as release (release.image + release.deployedAt.toISOString())}
-					{@const releaseKey = `${release.image}|${release.deployedAt.toISOString()}`}
-					{@const isCurrent = releaseKey === currentReleaseKey}
+					{const releaseKey = $derived(`${release.image}|${release.deployedAt.toISOString()}`)}
+					{const isCurrent = $derived(releaseKey === currentReleaseKey)}
 					<Radio value={release.image}>
 						<span class="release-label">
 							<code class="release-tag">{imageVersionLabelFor(release.image)}</code>

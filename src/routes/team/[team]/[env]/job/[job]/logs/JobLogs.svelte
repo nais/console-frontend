@@ -220,7 +220,7 @@
 			<div class="chips">
 				{#each team.environment.job.runs.nodes as run (run.id)}
 					{#each run.instances.nodes as instance (instance.id)}
-						{@const color = colorForInstance(instance.name)}
+						{const color = $derived(colorForInstance(instance.name))}
 						<ToggleChip
 							data-color={color}
 							value={renderInstanceName(instance.name)}
@@ -352,7 +352,7 @@
 				<BodyShort size="small">Waiting for logs...</BodyShort>
 			{:else}
 				{#each displayedLogs as log (log.id)}
-					{@const color = colorForInstance(log.instance)}
+					{const color = $derived(colorForInstance(log.instance))}
 					<div class="log-line">
 						{#if selectedViewOptions.has('Time')}
 							<div class="date">{log.timestamp}</div>

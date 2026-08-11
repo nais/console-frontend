@@ -260,7 +260,7 @@
 			Vulnerability not found. The ID you entered doesn't exist in our database.
 		</Alert>
 	{:else if $TeamCVEPage.data}
-		{@const cve = $TeamCVEPage.data.cve}
+		{const cve = $derived($TeamCVEPage.data.cve)}
 		<div class="wrapper">
 			{#if cve.title}
 				<BodyShort>{cve.title}</BodyShort>
@@ -335,7 +335,7 @@
 					<Loader size="3xlarge" />
 				</div>
 			{:else if $workloadsQuery.data}
-				{@const workloads = $workloadsQuery.data.cve.workloads}
+				{const workloads = $derived($workloadsQuery.data.cve.workloads)}
 				{#if workloads.edges.length > 0}
 					{#if viewerIsMember}
 						<div class="select-all-row">
@@ -403,7 +403,7 @@
 								</div>
 								<ul class="vuln-group-workloads">
 									{#each group.nodes as node (node.id)}
-										{@const workload = node.workload}
+										{const workload = $derived(node.workload)}
 										<li>
 											<WorkloadLink {workload} />
 										</li>

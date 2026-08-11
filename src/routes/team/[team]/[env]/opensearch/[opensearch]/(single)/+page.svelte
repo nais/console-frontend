@@ -153,12 +153,12 @@
 {#if $OpenSearchInstance.errors}
 	<GraphErrors errors={$OpenSearchInstance.errors} />
 {:else if $OpenSearchInstance.data}
-	{@const instance = $OpenSearchInstance.data.team.environment.openSearch}
-	{@const mandatoryServiceMaintenanceUpdates = instance.maintenance.updates.nodes.filter(
-		(x) => !!x?.deadline
+	{const instance = $derived($OpenSearchInstance.data.team.environment.openSearch)}
+	{const mandatoryServiceMaintenanceUpdates = $derived(
+		instance.maintenance.updates.nodes.filter((x) => !!x?.deadline)
 	)}
-	{@const nonMandatoryServiceMaintenanceUpdates = instance.maintenance.updates.nodes.filter(
-		(x) => !x?.deadline
+	{const nonMandatoryServiceMaintenanceUpdates = $derived(
+		instance.maintenance.updates.nodes.filter((x) => !x?.deadline)
 	)}
 
 	<div class="layout-two-column">
@@ -247,7 +247,7 @@
 							</Thead>
 							<Tbody>
 								{#each instance.access.edges as edge (edge)}
-									{@const access = edge.node}
+									{const access = $derived(edge.node)}
 									<Tr>
 										<Td>
 											<WorkloadLink workload={access.workload} />

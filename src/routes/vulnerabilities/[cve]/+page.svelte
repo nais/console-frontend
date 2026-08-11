@@ -75,7 +75,7 @@
 				Vulnerability not found. The ID you entered doesn't exist in our database.
 			</Alert>
 		{:else if $CVEDetails.data}
-			{@const cve = $CVEDetails.data.cve}
+			{const cve = $derived($CVEDetails.data.cve)}
 			<div class="wrapper">
 				<div class="header">
 					<div class="title-row">
@@ -134,12 +134,12 @@
 						<Loader size="3xlarge" />
 					</div>
 				{:else if $CVEWorkloads.data}
-					{@const workloads = $CVEWorkloads.data.cve.workloads}
+					{const workloads = $derived($CVEWorkloads.data.cve.workloads)}
 					{#if workloads.nodes.length > 0}
 						<List>
 							{#each workloads.nodes as node ([node.workload.name, node.workload.team.slug, node.workload.teamEnvironment.environment.name, node.vulnerability.package].join('|'))}
-								{@const workload = node.workload}
-								{@const vuln = node.vulnerability}
+								{const workload = $derived(node.workload)}
+								{const vuln = $derived(node.vulnerability)}
 								<ListItem>
 									<div class="workload-container">
 										<WorkloadLink {workload} />

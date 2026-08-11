@@ -19,7 +19,7 @@
 {/if}
 
 {#if $JobNetworkPolicy.data}
-	{@const job = $JobNetworkPolicy.data.team.environment.job}
+	{const job = $derived($JobNetworkPolicy.data.team.environment.job)}
 	<NetworkPolicy workload={job} />
 {/if}
 

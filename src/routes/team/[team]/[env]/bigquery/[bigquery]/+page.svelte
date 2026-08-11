@@ -28,7 +28,7 @@
 
 <GraphErrors errors={$BigQueryDatasetInstance.errors} />
 {#if $BigQueryDatasetInstance.data}
-	{@const bq = $BigQueryDatasetInstance.data.team.environment.bigQueryDataset}
+	{const bq = $derived($BigQueryDatasetInstance.data.team.environment.bigQueryDataset)}
 
 	<div class="layout-two-column">
 		<div class="content">
