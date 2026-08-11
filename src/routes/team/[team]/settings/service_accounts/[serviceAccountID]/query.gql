@@ -6,7 +6,7 @@ query ServiceAccountDetail($id: ID!) {
 		createdAt
 		updatedAt
 		lastUsedAt
-		workloadBindings {
+		workloadBindings(first: 20) {
 			edges {
 				node {
 					workloadName
