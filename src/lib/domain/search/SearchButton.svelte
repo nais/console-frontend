@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { browser } from '$app/environment';
+	import { browser } from '$app/env';
 	import { themeSwitch } from '$lib/stores/theme.svelte';
 	import { Theme } from '@nais/ds-svelte-community';
 	import { InternalHeaderButton } from '@nais/ds-svelte-community/experimental';

@@ -1,4 +1,4 @@
-import { dev } from '$app/environment';
+import { dev } from '$app/env';
 import { HoudiniClient } from '$houdini';
 import { subscription, type SubscriptionClient } from '$houdini/plugins';
 import { handleMissingLogin } from '$lib/authentication';
