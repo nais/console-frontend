@@ -1,12 +1,12 @@
-import { env } from '$env/dynamic/private';
+import { SLACK_API_TOKEN, SLACK_FEEDBACK_CHANNEL_ID, TENANT_NAME } from '$app/env/private';
 import { ServerGetUserStore } from '$houdini';
 import { createFeedbackMessage } from './message';
 import { WebClient } from '@slack/web-api';
 import { json } from '@sveltejs/kit';
 
-const client = new WebClient(env.SLACK_API_TOKEN);
-const channel = env.SLACK_FEEDBACK_CHANNEL_ID || '';
-const tenant = env.TENANT_NAME || '';
+const client = new WebClient(SLACK_API_TOKEN);
+const channel = SLACK_FEEDBACK_CHANNEL_ID || '';
+const tenant = TENANT_NAME || '';
 
 export async function POST(event) {
 	const { request } = event;

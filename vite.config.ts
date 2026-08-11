@@ -1,3 +1,4 @@
+import adapter from '@sveltejs/adapter-node';
 import { sveltekit } from '@sveltejs/kit/vite';
 import tailwindcss from '@tailwindcss/vite';
 import houdini from 'houdini/vite';
@@ -25,7 +26,19 @@ export default defineConfig((mode) => {
 	const targetProxy = env.VITE_PROXY_ENDPOINT ?? 'http://127.0.0.1:3000';
 
 	return {
-		plugins: [tailwindcss(), houdini(), sveltekit()],
+		plugins: [
+			tailwindcss(),
+			houdini(),
+			sveltekit({
+				adapter: adapter(),
+				alias: {
+					$houdini: '.houdini/'
+				},
+				experimental: {
+					explicitEnvironmentVariables: true
+				}
+			})
+		],
 		server: {
 			host: '0.0.0.0',
 			proxy: {

@@ -1,9 +1,9 @@
-import { env } from '$env/dynamic/private';
+import { GITHUB_ORGANIZATION, GRAPHQL_ENDPOINT, TENANT_NAME } from '$app/env/private';
 import { logger } from '$lib/logger';
 import type { Handle, HandleFetch } from '@sveltejs/kit';
 
 export const handleFetch: HandleFetch = async ({ event, request, fetch }) => {
-	const targetGraphqlEndpoint = import.meta.env.VITE_GRAPHQL_ENDPOINT;
+	const targetGraphqlEndpoint = GRAPHQL_ENDPOINT;
 	const targetGraphqlUrl = targetGraphqlEndpoint ? new URL(targetGraphqlEndpoint) : undefined;
 	const requestUrl = new URL(request.url);
 
@@ -35,8 +35,8 @@ export const handleFetch: HandleFetch = async ({ event, request, fetch }) => {
 export const handle: Handle = async ({ event, resolve }) => {
 	const startTime = Date.now();
 
-	event.locals.tenantName = env.TENANT_NAME || '';
-	event.locals.githubOrganization = env.GITHUB_ORGANIZATION || '';
+	event.locals.tenantName = TENANT_NAME || '';
+	event.locals.githubOrganization = GITHUB_ORGANIZATION || '';
 
 	const response = await resolve(event, {
 		filterSerializedResponseHeaders: () => true
