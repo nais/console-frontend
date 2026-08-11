@@ -3,13 +3,11 @@ FROM node:${NODE_VERSION} AS node-with-deps
 RUN corepack enable && corepack prepare pnpm@11.21.0 --activate
 WORKDIR /usr/app
 
-COPY package.json pnpm-lock.yaml pnpm-workspace.yaml svelte.config.js .npmrc ./
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml .npmrc ./
 
 RUN pnpm install --frozen-lockfile
 
 COPY . ./
-
-ENV VITE_GRAPHQL_ENDPOINT=http://nais-api/graphql
 
 RUN pnpm run build
 
@@ -26,6 +24,7 @@ RUN apk upgrade --no-cache && \
 WORKDIR /usr/app
 
 ENV NODE_ENV=production
+ENV GRAPHQL_ENDPOINT=http://nais-api/graphql
 
 COPY --from=prod-deps /usr/app/node_modules ./node_modules
 COPY --from=node-with-deps /usr/app/build ./
