@@ -93,7 +93,7 @@
 
 <div>
 	{#if $ActivityLog.data}
-		{@const ae = $ActivityLog.data.team.activityLog}
+		{const ae = $derived($ActivityLog.data.team.activityLog)}
 		<div class="layout-two-column">
 			<div bind:this={wrapperEl}>
 				<List title="Activity Log" count={ae.pageInfo.totalCount}>

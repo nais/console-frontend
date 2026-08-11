@@ -43,7 +43,7 @@
 
 <GraphErrors errors={$KafkaTopic.errors} />
 {#if $KafkaTopic.data}
-	{@const topic = $KafkaTopic.data.team.environment.kafkaTopic}
+	{const topic = $derived($KafkaTopic.data.team.environment.kafkaTopic)}
 
 	<div class="content">
 		<Labels labels={topic.labels ?? []} />

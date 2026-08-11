@@ -74,7 +74,7 @@
 			{:else if isSnippet(icon)}
 				{@render icon()}
 			{:else}
-				{@const Icon = icon}
+				{const Icon = $derived(icon)}
 				<Icon />
 			{/if}
 		</TooltipAlignHack>
@@ -83,7 +83,7 @@
 	{:else if isSnippet(icon)}
 		{@render icon()}
 	{:else}
-		{@const Icon = icon}
+		{const Icon = $derived(icon)}
 		<Icon />
 	{/if}
 	<div class="content">

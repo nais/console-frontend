@@ -16,7 +16,7 @@
 
 <GraphErrors errors={$Bucket.errors} />
 {#if $Bucket.data}
-	{@const bucket = $Bucket.data.team.environment.bucket}
+	{const bucket = $derived($Bucket.data.team.environment.bucket)}
 
 	<div class="layout-two-column">
 		<div class="content">

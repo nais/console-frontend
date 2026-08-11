@@ -76,9 +76,9 @@
 
 		<div class="issues-cell">
 			{#if job.issues?.pageInfo.totalCount > 0}
-				{@const criticalCount = countIssuesBySeverity(job.issues.edges, 'CRITICAL')}
-				{@const warningCount = countIssuesBySeverity(job.issues.edges, 'WARNING')}
-				{@const todoCount = countIssuesBySeverity(job.issues.edges, 'TODO')}
+				{const criticalCount = $derived(countIssuesBySeverity(job.issues.edges, 'CRITICAL'))}
+				{const warningCount = $derived(countIssuesBySeverity(job.issues.edges, 'WARNING'))}
+				{const todoCount = $derived(countIssuesBySeverity(job.issues.edges, 'TODO'))}
 				<IssuePills critical={criticalCount} warning={warningCount} todo={todoCount} />
 			{/if}
 		</div>
@@ -107,7 +107,7 @@
 				</span>
 			{/if}
 			{#if job.deployments.nodes.length > 0}
-				{@const timestamp = job.deployments.nodes[0].createdAt}
+				{const timestamp = $derived(job.deployments.nodes[0].createdAt)}
 				<span class="meta-item">
 					<RocketIcon style="font-size: 14px" aria-hidden="true" />
 					<span class="aksel-sr-only">Last deploy</span>

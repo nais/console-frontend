@@ -20,7 +20,7 @@
 </div>
 
 {#if page.url.searchParams.has('deleted')}
-	{@const msgParts = (page.url.searchParams.get('deleted') || '').split('/')}
+	{const msgParts = $derived((page.url.searchParams.get('deleted') || '').split('/'))}
 	<div style="margin-bottom: var(--spacing-layout)">
 		<Alert variant="success" size="small">
 			Successfully deleted {msgParts[0]}

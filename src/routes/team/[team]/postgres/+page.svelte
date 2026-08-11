@@ -129,7 +129,7 @@
 		<Loader size="3xlarge" />
 	</div>
 {:else if $PostgresInstances.data}
-	{@const si = $PostgresInstances.data.team.postgresInstances}
+	{const si = $derived($PostgresInstances.data.team.postgresInstances)}
 
 	<div class="layout-two-column">
 		<div>
@@ -242,8 +242,7 @@
 							<summary class="section-heading">High availability</summary>
 							<div class="facet-list">
 								{#each [true, false] as haValue (String(haValue))}
-									{@const count =
-										highAvailabilityFacets.find((f) => f.value === haValue)?.count ?? 0}
+									{const count = $derived(highAvailabilityFacets.find((f) => f.value === haValue)?.count ?? 0)}
 									<label class="facet-item">
 										<input
 											type="checkbox"

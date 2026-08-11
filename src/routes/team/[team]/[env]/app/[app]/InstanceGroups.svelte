@@ -40,9 +40,9 @@
 
 <SurfaceCard title="Instance groups" eyebrow={false}>
 	{#each instanceGroups as group (group.id)}
-		{@const role = groupRole(group)}
-		{@const hasFailing = group.instances.some((instance) => instance.status.state === 'FAILING')}
-		{@const isUnhealthy = hasFailing || group.readyInstances < group.desiredInstances}
+		{const role = $derived(groupRole(group))}
+		{const hasFailing = $derived(group.instances.some((instance) => instance.status.state === 'FAILING'))}
+		{const isUnhealthy = $derived(hasFailing || group.readyInstances < group.desiredInstances)}
 
 		<a
 			href="/team/{teamSlug}/{environmentName}/app/{appName}/instancegroup/{group.name}"

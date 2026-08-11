@@ -234,8 +234,8 @@
 			/>
 		{/if}
 		{#if deleteUser && deleteUserOpen}
-			{@const teamSlug = team.slug}
-			{@const userId = deleteUser.email}
+			{const teamSlug = $derived(team.slug)}
+			{const userId = $derived(deleteUser.email)}
 			<Confirm
 				bind:open={deleteUserOpen}
 				confirmText="Delete"

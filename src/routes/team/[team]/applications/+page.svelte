@@ -137,7 +137,7 @@
 <div class="layout-two-column">
 	<div>
 		{#if totalApplications > 0}
-			{@const apps = $Applications.data?.team.applications}
+			{const apps = $derived($Applications.data?.team.applications)}
 
 			<List title="Apps" count={apps?.pageInfo.totalCount ?? 0}>
 				{#snippet actions()}

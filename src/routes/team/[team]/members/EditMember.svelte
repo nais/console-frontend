@@ -69,7 +69,7 @@
 	{/snippet}
 
 	{#if $store.data}
-		{@const member = $store.data.team.member}
+		{const member = $derived($store.data.team.member)}
 
 		{#each errors as error (error)}
 			<Alert variant="error">{error}</Alert>

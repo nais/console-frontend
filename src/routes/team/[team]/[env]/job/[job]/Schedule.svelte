@@ -18,7 +18,7 @@
 	<Heading as="h3" size="small">Run Configuration</Heading>
 	<div>
 		{#if schedule}
-			{@const runConfig = getLocalizedCronDescription({ ...schedule, context: scheduleContext })}
+			{const runConfig = $derived(getLocalizedCronDescription({ ...schedule, context: scheduleContext }))}
 			{#if runConfig.error}
 				<Alert variant="warning" size="small">
 					Unable to parse schedule: {runConfig.error}

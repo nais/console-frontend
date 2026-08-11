@@ -293,7 +293,7 @@
 			}}
 		>
 			{#each allGroups as g (g.id)}
-				{@const role = groupRole(g)}
+				{const role = $derived(groupRole(g))}
 				<ToggleGroupItem value={g.name}>
 					<span class="toggle-label">
 						<span class="toggle-role-name"
@@ -428,7 +428,7 @@
 						</div>
 
 						{#if application.resources.scaling}
-							{@const scaling = application.resources.scaling}
+							{const scaling = $derived(application.resources.scaling)}
 							{#if scaling.minInstances !== scaling.maxInstances}
 								<SurfaceCard level="h4">
 									<div class="scaling-stats">

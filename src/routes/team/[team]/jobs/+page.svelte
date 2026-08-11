@@ -137,7 +137,7 @@
 <div class="layout-two-column">
 	<div>
 		{#if totalJobs > 0}
-			{@const jobs = $Jobs.data?.team.jobs}
+			{const jobs = $derived($Jobs.data?.team.jobs)}
 
 			<List title="Jobs" count={jobs?.pageInfo.totalCount ?? 0}>
 				{#snippet actions()}

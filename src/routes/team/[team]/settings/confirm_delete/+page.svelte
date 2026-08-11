@@ -33,7 +33,7 @@
 <GraphErrors errors={$TeamDeleteKey.errors} />
 
 {#if $TeamDeleteKey.data}
-	{@const key = $TeamDeleteKey.data.team.deleteKey}
+	{const key = $derived($TeamDeleteKey.data.team.deleteKey)}
 	{#if $UserInfo.data?.me.__typename == 'User' && $UserInfo.data.me.id == key.createdBy.id}
 		<Alert variant="error">You can not confirm your own delete request.</Alert>
 	{:else if Date.now() - +key.expires > 0}

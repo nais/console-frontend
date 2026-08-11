@@ -77,7 +77,7 @@
 		<Loader size="3xlarge" />
 	</div>
 {:else if $SqlInstances.data}
-	{@const si = $SqlInstances.data.team.sqlInstances}
+	{const si = $derived($SqlInstances.data.team.sqlInstances)}
 
 	<div class="layout-two-column">
 		<div>
@@ -140,9 +140,9 @@
 
 							<div>Version: <code>{instance.version}</code></div>
 							{#if (instance.issues?.pageInfo.totalCount ?? 0) > 0}
-								{@const criticalCount = countIssuesBySeverity(instance.issues?.edges, 'CRITICAL')}
-								{@const warningCount = countIssuesBySeverity(instance.issues?.edges, 'WARNING')}
-								{@const todoCount = countIssuesBySeverity(instance.issues?.edges, 'TODO')}
+								{const criticalCount = $derived(countIssuesBySeverity(instance.issues?.edges, 'CRITICAL'))}
+								{const warningCount = $derived(countIssuesBySeverity(instance.issues?.edges, 'WARNING'))}
+								{const todoCount = $derived(countIssuesBySeverity(instance.issues?.edges, 'TODO'))}
 
 								<IssueSeverityTags
 									critical={criticalCount}
