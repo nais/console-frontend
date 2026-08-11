@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { browser } from '$app/environment';
+	import { browser } from '$app/env';
 	import { graphql } from '$houdini';
 	import { intersect } from '$lib/utils/intersectionObserver';
 	import { Loader } from '@nais/ds-svelte-community';
