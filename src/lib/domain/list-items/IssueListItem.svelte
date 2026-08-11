@@ -536,7 +536,8 @@
 		text-decoration: none;
 	}
 
-	a.resource-name:hover {
+	a.resource-name:hover,
+	a.resource-name:focus-visible {
 		text-decoration: underline;
 	}
 
