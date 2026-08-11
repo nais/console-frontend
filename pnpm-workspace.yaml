@@ -1,6 +1,10 @@
 overrides:
   "@sveltejs/kit>cookie": "^0.7.0"
-  form-data: "^4.0.6"
+  "@sveltejs/kit": ">=2.70.2"
+  postcss: 8.5.24
+  brace-expansion: 5.0.9
+  nanoid: 3.3.17
+  esbuild: 0.28.1
 
 allowBuilds:
   esbuild: true
@@ -10,7 +14,9 @@ allowBuilds:
 minimumReleaseAge: 20160
 savePrefix: ""
 minimumReleaseAgeExclude:
-  - form-data@4.0.6
   - "houdini*"
   - "svelte"
   - "@sveltejs/*"
+  - brace-expansion@5.0.9
+  - nanoid@3.3.17
+  - postcss@8.5.24
