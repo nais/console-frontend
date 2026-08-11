@@ -6,7 +6,7 @@ query AdminServiceAccountDetail($id: ID!) {
 		createdAt
 		updatedAt
 		lastUsedAt
-		workloadBindings {
+		workloadBindings(first: 20) {
 			edges {
 				node {
 					teamSlug
