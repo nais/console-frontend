@@ -21,6 +21,7 @@
 
 	let { item }: Props = $props();
 
+	// Houdini 2.0 bug: shared fields must be repeated in each inline fragment
 	let data = $derived(
 		fragment(
 			item,
@@ -38,12 +39,34 @@
 					message
 					severity
 					... on DeprecatedIngressIssue {
+						__typename
+						severity
+						message
+						teamEnvironment {
+							environment {
+								name
+							}
+							team {
+								slug
+							}
+						}
 						application {
 							name
 						}
 						ingresses
 					}
 					... on DeprecatedRegistryIssue {
+						__typename
+						severity
+						message
+						teamEnvironment {
+							environment {
+								name
+							}
+							team {
+								slug
+							}
+						}
 						workload {
 							__typename
 							name
@@ -53,6 +76,17 @@
 						}
 					}
 					... on ExternalIngressCriticalVulnerabilityIssue {
+						__typename
+						severity
+						message
+						teamEnvironment {
+							environment {
+								name
+							}
+							team {
+								slug
+							}
+						}
 						cvssScore
 						ingresses
 						workload {
@@ -61,75 +95,218 @@
 						}
 					}
 					... on LastRunFailedIssue {
+						__typename
+						severity
+						message
+						teamEnvironment {
+							environment {
+								name
+							}
+							team {
+								slug
+							}
+						}
 						job {
 							name
 						}
 					}
 					... on FailedSynchronizationIssue {
+						__typename
+						severity
+						message
+						teamEnvironment {
+							environment {
+								name
+							}
+							team {
+								slug
+							}
+						}
 						workload {
 							__typename
 							name
 						}
 					}
 					... on InvalidSpecIssue {
+						__typename
+						severity
+						message
+						teamEnvironment {
+							environment {
+								name
+							}
+							team {
+								slug
+							}
+						}
 						workload {
 							__typename
 							name
 						}
 					}
 					... on MissingSbomIssue {
+						__typename
+						severity
+						message
+						teamEnvironment {
+							environment {
+								name
+							}
+							team {
+								slug
+							}
+						}
 						workload {
 							__typename
 							name
 						}
 					}
 					... on NoRunningInstancesIssue {
+						__typename
+						severity
+						message
+						teamEnvironment {
+							environment {
+								name
+							}
+							team {
+								slug
+							}
+						}
 						workload {
 							__typename
 							name
 						}
 					}
 					... on ApplicationRestartLoopIssue {
+						__typename
+						severity
+						message
+						teamEnvironment {
+							environment {
+								name
+							}
+							team {
+								slug
+							}
+						}
 						workload {
 							__typename
 							name
 						}
 					}
 					... on OpenSearchIssue {
+						__typename
+						severity
+						message
+						teamEnvironment {
+							environment {
+								name
+							}
+							team {
+								slug
+							}
+						}
 						event
 						openSearch {
 							name
 						}
 					}
 					... on SqlInstanceStateIssue {
+						__typename
+						severity
+						message
+						teamEnvironment {
+							environment {
+								name
+							}
+							team {
+								slug
+							}
+						}
 						sqlInstance {
 							name
 						}
 						state
 					}
 					... on SqlInstanceVersionIssue {
+						__typename
+						severity
+						message
+						teamEnvironment {
+							environment {
+								name
+							}
+							team {
+								slug
+							}
+						}
 						sqlInstance {
 							name
 						}
 					}
 					... on ValkeyIssue {
+						__typename
+						severity
+						message
+						teamEnvironment {
+							environment {
+								name
+							}
+							team {
+								slug
+							}
+						}
 						valkey {
 							name
 						}
 					}
 					... on VulnerableImageIssue {
+						__typename
+						severity
+						message
+						teamEnvironment {
+							environment {
+								name
+							}
+							team {
+								slug
+							}
+						}
 						workload {
 							__typename
 							name
 						}
 					}
 					... on WorkloadProblemIssue {
+						__typename
+						severity
+						message
+						teamEnvironment {
+							environment {
+								name
+							}
+							team {
+								slug
+							}
+						}
 						workload {
 							__typename
 							name
 						}
 					}
 					... on UnleashReleaseChannelIssue {
+						__typename
+						severity
+						message
+						teamEnvironment {
+							environment {
+								name
+							}
+							team {
+								slug
+							}
+						}
 						unleash {
 							name
 						}
@@ -139,65 +316,53 @@
 		)
 	);
 
+	// TODO(houdini): TS types claim type-keyed properties ($data.VulnerableImageIssue etc.) but runtime data is flat. Recheck after upgrading past 2.0.9.
 	const resourceName = $derived.by(() => {
-		const d = $data;
-		if (d.ApplicationRestartLoopIssue?.workload) return d.ApplicationRestartLoopIssue.workload.name;
-		if (d.DeprecatedIngressIssue?.application) return d.DeprecatedIngressIssue.application.name;
-		if (d.DeprecatedRegistryIssue?.workload) return d.DeprecatedRegistryIssue.workload.name;
-		if (d.ExternalIngressCriticalVulnerabilityIssue?.workload)
-			return d.ExternalIngressCriticalVulnerabilityIssue.workload.name;
-		if (d.FailedSynchronizationIssue?.workload) return d.FailedSynchronizationIssue.workload.name;
-		if (d.InvalidSpecIssue?.workload) return d.InvalidSpecIssue.workload.name;
-		if (d.MissingSbomIssue?.workload) return d.MissingSbomIssue.workload.name;
-		if (d.NoRunningInstancesIssue?.workload) return d.NoRunningInstancesIssue.workload.name;
-		if (d.VulnerableImageIssue?.workload) return d.VulnerableImageIssue.workload.name;
-		if (d.WorkloadProblemIssue?.workload) return d.WorkloadProblemIssue.workload.name;
-		if (d.LastRunFailedIssue?.job) return d.LastRunFailedIssue.job.name;
-		if (d.OpenSearchIssue?.openSearch) return d.OpenSearchIssue.openSearch.name;
-		if (d.SqlInstanceStateIssue?.sqlInstance) return d.SqlInstanceStateIssue.sqlInstance.name;
-		if (d.SqlInstanceVersionIssue?.sqlInstance) return d.SqlInstanceVersionIssue.sqlInstance.name;
-		if (d.UnleashReleaseChannelIssue?.unleash) return d.UnleashReleaseChannelIssue.unleash.name;
-		if (d.ValkeyIssue?.valkey) return d.ValkeyIssue.valkey.name;
+		const d = $data as Record<string, unknown>;
+		if (!d) return '';
+		if ('workload' in d && d.workload) {
+			return (d.workload as { name: string }).name;
+		}
+		if ('application' in d && d.application) {
+			return (d.application as { name: string }).name;
+		}
+		if ('job' in d && d.job) {
+			return (d.job as { name: string }).name;
+		}
+		if ('openSearch' in d && d.openSearch) {
+			return (d.openSearch as { name: string }).name;
+		}
+		if ('sqlInstance' in d && d.sqlInstance) {
+			return (d.sqlInstance as { name: string }).name;
+		}
+		if ('unleash' in d && d.unleash) {
+			return (d.unleash as { name: string }).name;
+		}
+		if ('valkey' in d && d.valkey) {
+			return (d.valkey as { name: string }).name;
+		}
 		return 'Unknown';
 	});
 
+	// TODO(houdini): same flat-data workaround as resourceName above.
 	const ResourceIcon = $derived.by(() => {
-		const d = $data;
-		if (d.ApplicationRestartLoopIssue) return PackageIcon;
-		if (d.DeprecatedIngressIssue) return PackageIcon;
-		if (d.DeprecatedRegistryIssue) {
-			if (d.DeprecatedRegistryIssue.workload?.__typename === 'Job') return BriefcaseClockIcon;
-			return PackageIcon;
-		}
-		if (d.ExternalIngressCriticalVulnerabilityIssue) return PackageIcon;
-		if (d.FailedSynchronizationIssue) {
-			if (d.FailedSynchronizationIssue.workload?.__typename === 'Job') return BriefcaseClockIcon;
-			return PackageIcon;
-		}
-		if (d.InvalidSpecIssue) {
-			if (d.InvalidSpecIssue.workload?.__typename === 'Job') return BriefcaseClockIcon;
-			return PackageIcon;
-		}
-		if (d.LastRunFailedIssue) return BriefcaseClockIcon;
-		if (d.MissingSbomIssue) {
-			if (d.MissingSbomIssue.workload?.__typename === 'Job') return BriefcaseClockIcon;
-			return PackageIcon;
-		}
-		if (d.NoRunningInstancesIssue) return PackageIcon;
-		if (d.OpenSearchIssue) return OpenSearchIcon;
-		if (d.SqlInstanceStateIssue) return DatabaseIcon;
-		if (d.SqlInstanceVersionIssue) return DatabaseIcon;
-		if (d.UnleashReleaseChannelIssue) return UnleashIcon;
-		if (d.ValkeyIssue) return ValkeyIcon;
-		if (d.VulnerableImageIssue) return PackageIcon;
-		if (d.WorkloadProblemIssue) {
-			if (d.WorkloadProblemIssue.workload?.__typename === 'Job') return BriefcaseClockIcon;
-			return PackageIcon;
+		const d = $data as Record<string, unknown>;
+		if (!d) return PackageIcon;
+		const typename = $data?.__typename;
+		if (typename === 'LastRunFailedIssue') return BriefcaseClockIcon;
+		if (typename === 'OpenSearchIssue') return OpenSearchIcon;
+		if (typename === 'SqlInstanceStateIssue' || typename === 'SqlInstanceVersionIssue')
+			return DatabaseIcon;
+		if (typename === 'UnleashReleaseChannelIssue') return UnleashIcon;
+		if (typename === 'ValkeyIssue') return ValkeyIcon;
+		if ('workload' in d && d.workload) {
+			if ((d.workload as { __typename: string }).__typename === 'Job') return BriefcaseClockIcon;
 		}
 		return PackageIcon;
 	});
 
 	const issueTitle = $derived.by(() => {
+		if (!$data) return '';
 		const typeName = $data.__typename
 			.replace(/Issue$/, '')
 			.replace(/([a-z])([A-Z])/g, '$1_$2')
@@ -212,14 +377,14 @@
 			<ChevronRightIcon />
 		</div>
 		<div class="severity-dot">
-			{#if $data.severity === 'CRITICAL'}
+			{#if $data?.severity === 'CRITICAL'}
 				<CriticalIndicator />
 			{:else}
 				<CircleFillIcon
 					style="color: light-dark({{
 						TODO: 'var(--ax-bg-info-strong), var(--ax-bg-info-strong)',
 						WARNING: 'var(--ax-bg-warning-moderate-pressed), var(--ax-bg-warning-strong-pressed)'
-					}[$data.severity] ??
+					}[$data?.severity] ??
 						'var(--ax-bg-info-strong), var(--ax-bg-info-strong)'}); font-size: 0.7rem"
 				/>
 			{/if}
@@ -229,31 +394,32 @@
 		</div>
 		<div class="resource-group">
 			<span class="resource-name" title={resourceName}>{resourceName}</span>
-			<Tag size="xsmall" variant={envTagVariant($data.teamEnvironment.environment.name)}
-				>{$data.teamEnvironment.environment.name}</Tag
-			>
+			{#if $data?.teamEnvironment?.environment?.name}
+				<Tag size="xsmall" variant={envTagVariant($data.teamEnvironment.environment.name)}
+					>{$data.teamEnvironment.environment.name}</Tag
+				>
+			{/if}
 		</div>
 		<span class="issue-title">{issueTitle}</span>
 	</summary>
 
 	<div class="detail">
-		<p class="message">{$data.message}</p>
-		{#if $data.DeprecatedIngressIssue && 'ingresses' in $data.DeprecatedIngressIssue}
+		<p class="message">{$data?.message}</p>
+		{#if $data?.__typename === 'DeprecatedIngressIssue' && 'ingresses' in ($data as Record<string, unknown>)}
+			{@const ingresses = ($data as unknown as { ingresses: string[] }).ingresses}
 			<div class="extra">
 				<strong>
-					{$data.DeprecatedIngressIssue.ingresses.length === 1
-						? 'Deprecated ingress:'
-						: 'Deprecated ingresses:'}
+					{ingresses.length === 1 ? 'Deprecated ingress:' : 'Deprecated ingresses:'}
 				</strong>
-				{#each $data.DeprecatedIngressIssue.ingresses as ingress (ingress)}
+				{#each ingresses as ingress (ingress)}
 					<span class="ingress">{ingress}</span>
 				{/each}
 			</div>
 		{/if}
-		{#if $data.__typename === 'ExternalIngressCriticalVulnerabilityIssue' && 'cvssScore' in $data}
+		{#if $data?.__typename === 'ExternalIngressCriticalVulnerabilityIssue' && 'cvssScore' in ($data as Record<string, unknown>)}
 			<div class="extra">
 				<strong>CVSS Score:</strong>
-				{$data.cvssScore}
+				{($data as unknown as { cvssScore: number }).cvssScore}
 			</div>
 		{/if}
 	</div>
