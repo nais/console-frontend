@@ -82,11 +82,11 @@
 	);
 
 	function handleEnvironmentsChange(selected: string[]) {
-		changeParams({ environments: selected.join(','), after: '', before: '' }, { noScroll: true });
+		changeParams({ environments: selected.join(','), after: '', before: '' }, { reset: false });
 	}
 
 	function handleLabelsChange(selected: string[]) {
-		changeParams({ labels: selected.join(','), after: '', before: '' }, { noScroll: true });
+		changeParams({ labels: selected.join(','), after: '', before: '' }, { reset: false });
 	}
 
 	const tierFacets = $derived($OpenSearch.data?.team.openSearches.facets?.tiers ?? []);
@@ -100,7 +100,7 @@
 	function toggleTier(tier: string) {
 		const isSelected = selectedTiers.includes(tier);
 		const next = isSelected ? selectedTiers.filter((t) => t !== tier) : [...selectedTiers, tier];
-		changeParams({ tiers: next.join(','), after: '', before: '' }, { noScroll: true });
+		changeParams({ tiers: next.join(','), after: '', before: '' }, { reset: false });
 	}
 </script>
 
@@ -211,12 +211,12 @@
 								after: '',
 								before: $OpenSearch.data?.team.openSearches.pageInfo.startCursor ?? ''
 							},
-							{ noScroll: true }
+							{ reset: false }
 						),
 					loadNextPage: () =>
 						changeParams(
 							{ before: '', after: $OpenSearch.data?.team.openSearches.pageInfo.endCursor ?? '' },
-							{ noScroll: true }
+							{ reset: false }
 						)
 				}}
 			/>

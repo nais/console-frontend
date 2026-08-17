@@ -173,9 +173,9 @@
 				page={si.pageInfo}
 				loaders={{
 					loadPreviousPage: () =>
-						changeParams({ after: '', before: si.pageInfo.startCursor ?? '' }, { noScroll: true }),
+						changeParams({ after: '', before: si.pageInfo.startCursor ?? '' }, { reset: false }),
 					loadNextPage: () =>
-						changeParams({ before: '', after: si.pageInfo.endCursor ?? '' }, { noScroll: true })
+						changeParams({ before: '', after: si.pageInfo.endCursor ?? '' }, { reset: false })
 				}}
 			/>
 		</div>

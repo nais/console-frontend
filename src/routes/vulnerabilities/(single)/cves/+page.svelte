@@ -51,7 +51,7 @@
 				after: '',
 				before: ''
 			},
-			{ noScroll: true }
+			{ reset: false }
 		);
 	};
 </script>
@@ -128,7 +128,7 @@
 						before: $CVES.data?.cves.pageInfo.startCursor ?? '',
 						after: ''
 					},
-					{ noScroll: true }
+					{ reset: false }
 				),
 			loadNextPage: () =>
 				changeParams(
@@ -136,7 +136,7 @@
 						after: $CVES.data?.cves.pageInfo.endCursor ?? '',
 						before: ''
 					},
-					{ noScroll: true }
+					{ reset: false }
 				)
 		}}
 	/>

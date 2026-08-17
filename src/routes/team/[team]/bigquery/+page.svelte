@@ -61,11 +61,11 @@
 	);
 
 	function handleEnvironmentsChange(selected: string[]) {
-		changeParams({ environments: selected.join(','), after: '', before: '' }, { noScroll: true });
+		changeParams({ environments: selected.join(','), after: '', before: '' }, { reset: false });
 	}
 
 	function handleLabelsChange(selected: string[]) {
-		changeParams({ labels: selected.join(','), after: '', before: '' }, { noScroll: true });
+		changeParams({ labels: selected.join(','), after: '', before: '' }, { reset: false });
 	}
 </script>
 
@@ -126,7 +126,7 @@
 								after: '',
 								before: $BigQuery.data?.team.bigQueryDatasets.pageInfo.startCursor ?? ''
 							},
-							{ noScroll: true }
+							{ reset: false }
 						),
 					loadNextPage: () =>
 						changeParams(
@@ -134,7 +134,7 @@
 								before: '',
 								after: $BigQuery.data?.team.bigQueryDatasets.pageInfo.endCursor ?? ''
 							},
-							{ noScroll: true }
+							{ reset: false }
 						)
 				}}
 			/>

@@ -183,7 +183,7 @@
 											after: '',
 											before: workloads.pageInfo.startCursor ?? ''
 										},
-										{ noScroll: true }
+										{ reset: false }
 									),
 								loadNextPage: () =>
 									changeParams(
@@ -191,7 +191,7 @@
 											after: workloads.pageInfo.endCursor ?? '',
 											before: ''
 										},
-										{ noScroll: true }
+										{ reset: false }
 									)
 							}}
 						/>

@@ -35,7 +35,7 @@
 				field: tableSort.orderBy || KafkaTopicAclOrderField.TEAM_SLUG
 			},
 			{
-				noScroll: true
+				reset: false
 			}
 		);
 	};

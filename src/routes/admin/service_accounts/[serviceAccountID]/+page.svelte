@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { invalidateAll } from '$app/navigation';
+	import { refreshAll } from '$app/navigation';
 	import { page } from '$app/state';
 	import ServiceAccountDetail from '#lib/domain/service-accounts/ServiceAccountDetail.svelte';
 	import GraphErrors from '#lib/ui/GraphErrors.svelte';
@@ -20,7 +20,7 @@
 	$effect(() => {
 		const isOpen = !!page.state.modalHref;
 		if (modalWasOpen && !isOpen) {
-			invalidateAll();
+			refreshAll();
 		}
 		modalWasOpen = isOpen;
 	});

@@ -51,7 +51,7 @@
 				after: '',
 				before: ''
 			},
-			{ noScroll: true }
+			{ reset: false }
 		);
 	};
 
@@ -183,7 +183,7 @@
 						after: '',
 						before: $TenantVulnerabilites.data?.teams.pageInfo.startCursor ?? ''
 					},
-					{ noScroll: true }
+					{ reset: false }
 				),
 			loadNextPage: () =>
 				changeParams(
@@ -191,7 +191,7 @@
 						after: $TenantVulnerabilites.data?.teams.pageInfo.endCursor ?? '',
 						before: ''
 					},
-					{ noScroll: true }
+					{ reset: false }
 				)
 		}}
 	/>

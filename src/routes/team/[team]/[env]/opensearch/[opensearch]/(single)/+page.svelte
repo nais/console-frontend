@@ -138,7 +138,7 @@
 				field: tableSort.orderBy || OpenSearchAccessOrderField.WORKLOAD
 			},
 			{
-				noScroll: true
+				reset: false
 			}
 		);
 	};

@@ -33,8 +33,8 @@ Create a mutable copy with `new URL(page.url.href)`, mutate that copy, and use i
 
 #### Files to review
 
-- [ ] `src/lib/domain/vulnerability/WorkloadVulnerabilitySummary.svelte`
-- [ ] `src/routes/PageHeader.svelte`
+- [x] `src/lib/domain/vulnerability/WorkloadVulnerabilitySummary.svelte`
+- [x] `src/routes/PageHeader.svelte`
 
 ### Review `goto` destinations
 
@@ -50,31 +50,31 @@ Confirm each destination is an internal route. Use `window.location.href` for ex
 
 #### Files to review
 
-- [ ] `src/lib/domain/search/Search.svelte`
-- [ ] `src/lib/domain/service-accounts/ServiceAccountDetail.svelte`
-- [ ] `src/lib/domain/vulnerability/SuppressFinding.svelte`
-- [ ] `src/lib/domain/vulnerability/TeamCveSearch.svelte`
-- [ ] `src/lib/ui/PageModal.svelte`
-- [ ] `src/lib/utils/searchparams.ts`
-- [ ] `src/routes/Naisdevice.svelte`
-- [ ] `src/routes/team/[team]/[env]/app/[app]/delete/+page.svelte`
-- [ ] `src/routes/team/[team]/[env]/app/[app]/env/+page.svelte`
-- [ ] `src/routes/team/[team]/[env]/app/[app]/image/+page.svelte`
-- [ ] `src/routes/team/[team]/[env]/app/[app]/instancegroup/[instancegroup]/+page.svelte`
-- [ ] `src/routes/team/[team]/[env]/app/[app]/resize/+page.svelte`
-- [ ] `src/routes/team/[team]/[env]/config/[config]/+page.svelte`
-- [ ] `src/routes/team/[team]/[env]/job/[job]/delete/+page.svelte`
-- [ ] `src/routes/team/[team]/[env]/job/[job]/env/+page.svelte`
-- [ ] `src/routes/team/[team]/[env]/secret/[secret]/+page.svelte`
-- [ ] `src/routes/team/[team]/configs/CreateConfig.svelte`
-- [ ] `src/routes/team/[team]/secrets/CreateSecret.svelte`
-- [ ] `src/routes/team/[team]/settings/confirm_delete/+page.svelte`
-- [ ] `src/routes/team/[team]/unleash/+page.svelte`
-- [ ] `src/routes/team/[team]/utilization/+page.svelte`
-- [ ] `src/routes/team/[team]/vulnerabilities/[cve]/+page.svelte`
-- [ ] `src/routes/utilization/+page.svelte`
-- [ ] `src/routes/vulnerabilities/VulnerabilityLeaderBoard.svelte`
-- [ ] `src/routes/vulnerabilities/[cve]/+page.svelte`
+- [x] `src/lib/domain/search/Search.svelte`
+- [x] `src/lib/domain/service-accounts/ServiceAccountDetail.svelte`
+- [x] `src/lib/domain/vulnerability/SuppressFinding.svelte`
+- [x] `src/lib/domain/vulnerability/TeamCveSearch.svelte`
+- [x] `src/lib/ui/PageModal.svelte`
+- [x] `src/lib/utils/searchparams.ts`
+- [x] `src/routes/Naisdevice.svelte`
+- [x] `src/routes/team/[team]/[env]/app/[app]/delete/+page.svelte`
+- [x] `src/routes/team/[team]/[env]/app/[app]/env/+page.svelte`
+- [x] `src/routes/team/[team]/[env]/app/[app]/image/+page.svelte`
+- [x] `src/routes/team/[team]/[env]/app/[app]/instancegroup/[instancegroup]/+page.svelte`
+- [x] `src/routes/team/[team]/[env]/app/[app]/resize/+page.svelte`
+- [x] `src/routes/team/[team]/[env]/config/[config]/+page.svelte`
+- [x] `src/routes/team/[team]/[env]/job/[job]/delete/+page.svelte`
+- [x] `src/routes/team/[team]/[env]/job/[job]/env/+page.svelte`
+- [x] `src/routes/team/[team]/[env]/secret/[secret]/+page.svelte`
+- [x] `src/routes/team/[team]/configs/CreateConfig.svelte`
+- [x] `src/routes/team/[team]/secrets/CreateSecret.svelte`
+- [x] `src/routes/team/[team]/settings/confirm_delete/+page.svelte`
+- [x] `src/routes/team/[team]/unleash/+page.svelte`
+- [x] `src/routes/team/[team]/utilization/+page.svelte`
+- [x] `src/routes/team/[team]/vulnerabilities/[cve]/+page.svelte`
+- [x] `src/routes/utilization/+page.svelte`
+- [x] `src/routes/vulnerabilities/VulnerabilityLeaderBoard.svelte`
+- [x] `src/routes/vulnerabilities/[cve]/+page.svelte`
 
 ### Adjust noScroll/keepFocus usage
 
@@ -90,7 +90,7 @@ replace the `noScroll` and `keepFocus` options of `goto` with a single `reset` o
 
 #### Files to review
 
-- [ ] `src/routes/vulnerabilities/[cve]/+page.svelte`
+- [x] `src/routes/vulnerabilities/[cve]/+page.svelte`
 
 ### Replace `invalidateAll` with `refreshAll`
 
@@ -106,31 +106,31 @@ Replace `invalidateAll()` with `refreshAll()`. Note that `refreshAll()` will kee
 
 #### Files to review
 
-- [ ] `src/lib/domain/search/Search.svelte`
-- [ ] `src/lib/domain/service-accounts/ServiceAccountDetail.svelte`
-- [ ] `src/lib/domain/vulnerability/SuppressFinding.svelte`
-- [ ] `src/lib/domain/vulnerability/TeamCveSearch.svelte`
-- [ ] `src/lib/ui/PageModal.svelte`
-- [ ] `src/lib/utils/searchparams.ts`
-- [ ] `src/routes/Naisdevice.svelte`
-- [ ] `src/routes/team/[team]/[env]/app/[app]/delete/+page.svelte`
-- [ ] `src/routes/team/[team]/[env]/app/[app]/env/+page.svelte`
-- [ ] `src/routes/team/[team]/[env]/app/[app]/image/+page.svelte`
-- [ ] `src/routes/team/[team]/[env]/app/[app]/instancegroup/[instancegroup]/+page.svelte`
-- [ ] `src/routes/team/[team]/[env]/app/[app]/resize/+page.svelte`
-- [ ] `src/routes/team/[team]/[env]/config/[config]/+page.svelte`
-- [ ] `src/routes/team/[team]/[env]/job/[job]/delete/+page.svelte`
-- [ ] `src/routes/team/[team]/[env]/job/[job]/env/+page.svelte`
-- [ ] `src/routes/team/[team]/[env]/secret/[secret]/+page.svelte`
-- [ ] `src/routes/team/[team]/configs/CreateConfig.svelte`
-- [ ] `src/routes/team/[team]/secrets/CreateSecret.svelte`
-- [ ] `src/routes/team/[team]/settings/confirm_delete/+page.svelte`
-- [ ] `src/routes/team/[team]/unleash/+page.svelte`
-- [ ] `src/routes/team/[team]/utilization/+page.svelte`
-- [ ] `src/routes/team/[team]/vulnerabilities/[cve]/+page.svelte`
-- [ ] `src/routes/utilization/+page.svelte`
-- [ ] `src/routes/vulnerabilities/VulnerabilityLeaderBoard.svelte`
-- [ ] `src/routes/vulnerabilities/[cve]/+page.svelte`
+- [x] `src/lib/domain/search/Search.svelte`
+- [x] `src/lib/domain/service-accounts/ServiceAccountDetail.svelte`
+- [x] `src/lib/domain/vulnerability/SuppressFinding.svelte`
+- [x] `src/lib/domain/vulnerability/TeamCveSearch.svelte`
+- [x] `src/lib/ui/PageModal.svelte`
+- [x] `src/lib/utils/searchparams.ts`
+- [x] `src/routes/Naisdevice.svelte`
+- [x] `src/routes/team/[team]/[env]/app/[app]/delete/+page.svelte`
+- [x] `src/routes/team/[team]/[env]/app/[app]/env/+page.svelte`
+- [x] `src/routes/team/[team]/[env]/app/[app]/image/+page.svelte`
+- [x] `src/routes/team/[team]/[env]/app/[app]/instancegroup/[instancegroup]/+page.svelte`
+- [x] `src/routes/team/[team]/[env]/app/[app]/resize/+page.svelte`
+- [x] `src/routes/team/[team]/[env]/config/[config]/+page.svelte`
+- [x] `src/routes/team/[team]/[env]/job/[job]/delete/+page.svelte`
+- [x] `src/routes/team/[team]/[env]/job/[job]/env/+page.svelte`
+- [x] `src/routes/team/[team]/[env]/secret/[secret]/+page.svelte`
+- [x] `src/routes/team/[team]/configs/CreateConfig.svelte`
+- [x] `src/routes/team/[team]/secrets/CreateSecret.svelte`
+- [x] `src/routes/team/[team]/settings/confirm_delete/+page.svelte`
+- [x] `src/routes/team/[team]/unleash/+page.svelte`
+- [x] `src/routes/team/[team]/utilization/+page.svelte`
+- [x] `src/routes/team/[team]/vulnerabilities/[cve]/+page.svelte`
+- [x] `src/routes/utilization/+page.svelte`
+- [x] `src/routes/vulnerabilities/VulnerabilityLeaderBoard.svelte`
+- [x] `src/routes/vulnerabilities/[cve]/+page.svelte`
 
 ### Handle `preloadData` errors
 
@@ -146,7 +146,7 @@ Inspect the complete result flow and add handling for `{ type: "error", status, 
 
 #### Files to review
 
-- [ ] `src/lib/ui/PageModal.svelte`
+- [x] `src/lib/ui/PageModal.svelte`
 
 ### Review enhanced forms with explicit actions
 
@@ -162,12 +162,12 @@ Determine whether each action resolves to another page and confirm navigation is
 
 #### Files to review
 
-- [ ] `src/lib/domain/service-accounts/ServiceAccountAuthentications.svelte`
-- [ ] `src/lib/domain/vulnerability/CveSearch.svelte`
-- [ ] `src/routes/team/[team]/[env]/app/[app]/env/+page.svelte`
-- [ ] `src/routes/team/[team]/[env]/app/[app]/image/+page.svelte`
-- [ ] `src/routes/team/[team]/[env]/app/[app]/resize/+page.svelte`
-- [ ] `src/routes/team/[team]/[env]/job/[job]/env/+page.svelte`
+- [x] `src/lib/domain/service-accounts/ServiceAccountAuthentications.svelte`
+- [x] `src/lib/domain/vulnerability/CveSearch.svelte`
+- [x] `src/routes/team/[team]/[env]/app/[app]/env/+page.svelte`
+- [x] `src/routes/team/[team]/[env]/app/[app]/image/+page.svelte`
+- [x] `src/routes/team/[team]/[env]/app/[app]/resize/+page.svelte`
+- [x] `src/routes/team/[team]/[env]/job/[job]/env/+page.svelte`
 
 ### CORS for static assets in development is handled by Vite
 
@@ -195,14 +195,14 @@ Use `Response.json(...)` and `new Response(text)` instead.
 
 #### Files to review
 
-- [ ] `src/routes/api/send-feedback/+server.js`
-- [ ] `src/routes/isAlive/+server.ts`
-- [ ] `src/routes/isReady/+server.ts`
+- [x] `src/routes/api/send-feedback/+server.js`
+- [x] `src/routes/isAlive/+server.ts`
+- [x] `src/routes/isReady/+server.ts`
 
 ## Final verification
 
-- [ ] Review every migration task and ignore any irrelevant findings.
-- [ ] Resolve remaining `@migration-task` comments.
+- [x] Review every migration task and ignore any irrelevant findings.
+- [x] Resolve remaining `@migration-task` comments.
 - [ ] Run the project's type checker and tests.
 - [ ] Build the project successfully.
 - [ ] Delete this file when all migration work is complete.

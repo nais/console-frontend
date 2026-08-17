@@ -39,7 +39,7 @@
 				field: tableSort.orderBy || TeamOrderField.SLUG
 			},
 			{
-				noScroll: true
+				reset: false
 			}
 		);
 	};

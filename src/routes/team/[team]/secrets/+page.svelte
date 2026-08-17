@@ -57,7 +57,7 @@
 
 	function toggleInUse(value: string) {
 		const next = inUseFilter === value ? '' : value;
-		changeParams({ inUse: next, after: '', before: '' }, { noScroll: true });
+		changeParams({ inUse: next, after: '', before: '' }, { reset: false });
 	}
 
 	function toggleEnvironment(env: string) {
@@ -65,7 +65,7 @@
 		const next = isSelected
 			? selectedEnvironments.filter((e) => e !== env)
 			: [...selectedEnvironments, env];
-		changeParams({ environments: next.join(','), after: '', before: '' }, { noScroll: true });
+		changeParams({ environments: next.join(','), after: '', before: '' }, { reset: false });
 	}
 
 	function handleLabelsChange(selected: string[]) {

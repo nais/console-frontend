@@ -22,11 +22,8 @@
 {#if usesCount > 0}
 	<Alert variant="warning"
 		>This Valkey instance is currently <a
-			href={resolve('/team/[team]/[env]/valkey/[valkey]', {
-				team: data.teamSlug,
-				env: page.params.env ?? '',
-				valkey: page.params.valkey ?? ''
-			})}>used by {usesCount} workload{usesCount > 1 ? 's' : ''}</a
+			href={resolve('/team/[team]/[env]/valkey/[valkey]/(single)', page.params as never)}
+			>used by {usesCount} workload{usesCount > 1 ? 's' : ''}</a
 		>.</Alert
 	>
 {/if}

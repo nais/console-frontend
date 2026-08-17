@@ -81,7 +81,7 @@
 					? OrderDirection.DESC
 					: OrderDirection.ASC
 				: defaultDirection;
-		changeParams({ sort: `${field}-${direction}`, after: '', before: '' }, { noScroll: true });
+		changeParams({ sort: `${field}-${direction}`, after: '', before: '' }, { reset: false });
 	}
 
 	const changeQuery = (
@@ -103,7 +103,7 @@
 				states: params.states ?? (selectedStates.join(',') || ''),
 				labels: params.labels ?? (selectedLabels.join(',') || '')
 			},
-			{ noScroll: true }
+			{ reset: false }
 		);
 	};
 

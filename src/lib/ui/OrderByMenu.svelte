@@ -8,13 +8,13 @@
 	export const urlToOrderField = <T extends OrderField>(
 		orderField: T,
 		defaultValue: ValueOf<T>,
-		url: URL
+		url: { searchParams: { get(name: string): string | null } }
 	): ValueOf<T> =>
 		(Object.values(orderField).find((field) => url.searchParams.get('sort')?.startsWith(field)) as
 			ValueOf<T> | undefined) ?? defaultValue;
 
 	export const urlToOrderDirection = (
-		url: URL,
+		url: { searchParams: { get(name: string): string | null } },
 		defaultDirection: OrderDirection$options = OrderDirection.ASC
 	) =>
 		Object.values(OrderDirection).find((dir) => url.searchParams.get('sort')?.endsWith(dir)) ??
@@ -181,7 +181,7 @@
 					onselect={(value) =>
 						changeParams(
 							{ sort: `${value}-${orderDirection}`, after: '', before: '' },
-							{ noScroll: true }
+							{ reset: false }
 						)}
 				>
 					{fieldLabel(field)}
@@ -198,7 +198,7 @@
 					onselect={(value) =>
 						changeParams(
 							{ sort: `${currentOrderField}-${value}`, after: '', before: '' },
-							{ noScroll: true }
+							{ reset: false }
 						)}
 				>
 					{#if direction === OrderDirection.ASC}

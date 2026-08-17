@@ -1,4 +1,5 @@
 <script lang="ts" module>
+	import { pushState } from '$app/navigation';
 	import { page } from '$app/state';
 
 	export async function pageModalClick(

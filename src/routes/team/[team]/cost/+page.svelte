@@ -26,7 +26,7 @@
 			<ToggleGroup
 				size="small"
 				value={interval}
-				onchange={(interval) => changeParams({ interval }, { noScroll: true })}
+				onchange={(interval) => changeParams({ interval }, { reset: false })}
 			>
 				{#each ['30d', '90d', '6m', '1y'] as interval (interval)}
 					<ToggleGroupItem value={interval}>{interval}</ToggleGroupItem>

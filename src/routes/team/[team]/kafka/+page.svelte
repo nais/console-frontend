@@ -62,11 +62,11 @@
 	);
 
 	function handleEnvironmentsChange(selected: string[]) {
-		changeParams({ environments: selected.join(','), after: '', before: '' }, { noScroll: true });
+		changeParams({ environments: selected.join(','), after: '', before: '' }, { reset: false });
 	}
 
 	function handleLabelsChange(selected: string[]) {
-		changeParams({ labels: selected.join(','), after: '', before: '' }, { noScroll: true });
+		changeParams({ labels: selected.join(','), after: '', before: '' }, { reset: false });
 	}
 
 	const poolFacets = $derived($KafkaTopics.data?.team.kafkaTopics.facets?.pools ?? []);
@@ -80,7 +80,7 @@
 	function togglePool(pool: string) {
 		const isSelected = selectedPools.includes(pool);
 		const next = isSelected ? selectedPools.filter((p) => p !== pool) : [...selectedPools, pool];
-		changeParams({ pools: next.join(','), after: '', before: '' }, { noScroll: true });
+		changeParams({ pools: next.join(','), after: '', before: '' }, { reset: false });
 	}
 </script>
 
@@ -136,12 +136,12 @@
 								after: '',
 								before: $KafkaTopics.data?.team.kafkaTopics.pageInfo.startCursor ?? ''
 							},
-							{ noScroll: true }
+							{ reset: false }
 						),
 					loadNextPage: () =>
 						changeParams(
 							{ before: '', after: $KafkaTopics.data?.team.kafkaTopics.pageInfo.endCursor ?? '' },
-							{ noScroll: true }
+							{ reset: false }
 						)
 				}}
 			/>

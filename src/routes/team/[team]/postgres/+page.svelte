@@ -75,14 +75,14 @@
 	);
 
 	function handleEnvironmentsChange(selected: string[]) {
-		changeParams({ environments: selected.join(','), after: '', before: '' }, { noScroll: true });
+		changeParams({ environments: selected.join(','), after: '', before: '' }, { reset: false });
 	}
 	function handleStatesChange(selected: string[]) {
-		changeParams({ states: selected.join(','), after: '', before: '' }, { noScroll: true });
+		changeParams({ states: selected.join(','), after: '', before: '' }, { reset: false });
 	}
 
 	function handleLabelsChange(selected: string[]) {
-		changeParams({ labels: selected.join(','), after: '', before: '' }, { noScroll: true });
+		changeParams({ labels: selected.join(','), after: '', before: '' }, { reset: false });
 	}
 
 	const majorVersionFacets = $derived(
@@ -100,7 +100,7 @@
 		const next = isSelected
 			? selectedMajorVersions.filter((v) => v !== version)
 			: [...selectedMajorVersions, version];
-		changeParams({ majorVersions: next.join(','), after: '', before: '' }, { noScroll: true });
+		changeParams({ majorVersions: next.join(','), after: '', before: '' }, { reset: false });
 	}
 
 	const highAvailabilityFacets = $derived(
@@ -109,7 +109,7 @@
 
 	function toggleHighAvailability(value: string) {
 		const next = selectedHighAvailability === value ? '' : value;
-		changeParams({ highAvailability: next, after: '', before: '' }, { noScroll: true });
+		changeParams({ highAvailability: next, after: '', before: '' }, { reset: false });
 	}
 </script>
 
@@ -196,9 +196,9 @@
 				page={si.pageInfo}
 				loaders={{
 					loadPreviousPage: () =>
-						changeParams({ after: '', before: si.pageInfo.startCursor ?? '' }, { noScroll: true }),
+						changeParams({ after: '', before: si.pageInfo.startCursor ?? '' }, { reset: false }),
 					loadNextPage: () =>
-						changeParams({ before: '', after: si.pageInfo.endCursor ?? '' }, { noScroll: true })
+						changeParams({ before: '', after: si.pageInfo.endCursor ?? '' }, { reset: false })
 				}}
 			/>
 		</div>

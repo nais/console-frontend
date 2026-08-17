@@ -59,11 +59,11 @@
 	);
 
 	function handleEnvironmentsChange(selected: string[]) {
-		changeParams({ environments: selected.join(','), after: '', before: '' }, { noScroll: true });
+		changeParams({ environments: selected.join(','), after: '', before: '' }, { reset: false });
 	}
 
 	function handleLabelsChange(selected: string[]) {
-		changeParams({ labels: selected.join(','), after: '', before: '' }, { noScroll: true });
+		changeParams({ labels: selected.join(','), after: '', before: '' }, { reset: false });
 	}
 </script>
 
@@ -124,12 +124,12 @@
 								after: '',
 								before: $Buckets.data?.team.buckets.pageInfo.startCursor ?? ''
 							},
-							{ noScroll: true }
+							{ reset: false }
 						),
 					loadNextPage: () =>
 						changeParams(
 							{ before: '', after: $Buckets.data?.team.buckets.pageInfo.endCursor ?? '' },
-							{ noScroll: true }
+							{ reset: false }
 						)
 				}}
 			/>

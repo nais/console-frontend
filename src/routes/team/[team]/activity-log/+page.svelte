@@ -37,7 +37,7 @@
 				after: '',
 				before: ''
 			},
-			{ noScroll: true }
+			{ reset: false }
 		);
 	}
 
@@ -48,7 +48,7 @@
 				after: '',
 				before: ''
 			},
-			{ noScroll: true }
+			{ reset: false }
 		);
 	}
 
@@ -59,7 +59,7 @@
 				after: '',
 				before: ''
 			},
-			{ noScroll: true }
+			{ reset: false }
 		);
 	}
 
@@ -124,7 +124,7 @@
 										after: '',
 										before: ae.pageInfo.startCursor ?? ''
 									},
-									{ noScroll: true }
+									{ reset: false }
 								);
 							},
 							loadNextPage: () => {
@@ -133,7 +133,7 @@
 										before: '',
 										after: ae.pageInfo.endCursor ?? ''
 									},
-									{ noScroll: true }
+									{ reset: false }
 								);
 							}
 						}}

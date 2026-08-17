@@ -74,7 +74,7 @@
 					? OrderDirection.DESC
 					: OrderDirection.ASC
 				: defaultDirection;
-		changeParams({ sort: `${field}-${direction}`, after: '', before: '' }, { noScroll: true });
+		changeParams({ sort: `${field}-${direction}`, after: '', before: '' }, { reset: false });
 	}
 
 	function makeGrafanaExploreUrl(query: string): string {
@@ -118,7 +118,7 @@
 				environments: params.environments ?? (selectedEnvironments.join(',') || ''),
 				states: params.states ?? (selectedStates.join(',') || '')
 			},
-			{ noScroll: true }
+			{ reset: false }
 		);
 	};
 

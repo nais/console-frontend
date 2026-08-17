@@ -447,7 +447,7 @@
 				<Heading as="h3" size="medium" spacing>CPU Usage</Heading>
 				<ToggleGroup
 					value={interval}
-					onchange={(interval) => changeParams({ interval }, { noScroll: true })}
+					onchange={(interval) => changeParams({ interval }, { reset: false })}
 				>
 					{#each ['1h', '6h', '1d', '7d', '30d'] as interval (interval)}
 						<ToggleGroupItem value={interval}>{interval}</ToggleGroupItem>
@@ -609,7 +609,7 @@
 				<Heading as="h3" size="medium" spacing>Memory Usage</Heading>
 				<ToggleGroup
 					value={interval}
-					onchange={(interval) => changeParams({ interval }, { noScroll: true })}
+					onchange={(interval) => changeParams({ interval }, { reset: false })}
 				>
 					{#each ['1h', '6h', '1d', '7d', '30d'] as interval (interval)}
 						<ToggleGroupItem value={interval}>{interval}</ToggleGroupItem>

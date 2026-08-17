@@ -97,7 +97,7 @@
 					<ToggleGroup
 						value={interval}
 						size="small"
-						onchange={(v) => changeParams({ interval: v }, { noScroll: true })}
+						onchange={(v) => changeParams({ interval: v }, { reset: false })}
 					>
 						{#each Object.values(PrometheusChartQueryInterval) as intervalOption (intervalOption)}
 							<ToggleGroupItem value={intervalOption}>{intervalOption}</ToggleGroupItem>

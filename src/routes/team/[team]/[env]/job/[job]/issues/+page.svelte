@@ -48,7 +48,7 @@
 					? OrderDirection.DESC
 					: OrderDirection.ASC
 				: OrderDirection.ASC;
-		changeParams({ sort: `${field}-${direction}`, after: '', before: '' }, { noScroll: true });
+		changeParams({ sort: `${field}-${direction}`, after: '', before: '' }, { reset: false });
 	}
 
 	const changeQuery = (
@@ -66,7 +66,7 @@
 				before: params.before ?? before,
 				after: params.after ?? after
 			},
-			{ noScroll: true }
+			{ reset: false }
 		);
 	};
 

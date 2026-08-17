@@ -63,7 +63,7 @@
 
 	function onIntervalChange(value: string) {
 		interval = value as CostInterval;
-		changeParams({ interval: value }, { noScroll: true });
+		changeParams({ interval: value }, { reset: false });
 	}
 
 	let workloadData = $derived($costQuery?.data?.team?.environment?.workload);

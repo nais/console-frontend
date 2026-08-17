@@ -130,7 +130,7 @@
 				field: tableSort.orderBy || ValkeyAccessOrderField.WORKLOAD
 			},
 			{
-				noScroll: true
+				reset: false
 			}
 		);
 	};

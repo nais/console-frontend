@@ -41,7 +41,7 @@
 	const close = async () => {
 		await goto(`/team/${page.params.team}/${page.params.env}/job/${page.params.job}`, {
 			replaceState: isPossiblyInModal(),
-			invalidateAll: true
+			refreshAll: true
 		});
 	};
 </script>

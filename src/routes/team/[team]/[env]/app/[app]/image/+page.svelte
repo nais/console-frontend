@@ -60,7 +60,7 @@
 	const close = async () => {
 		await goto(`/team/${page.params.team}/${page.params.env}/app/${page.params.app}`, {
 			replaceState: isPossiblyInModal(),
-			invalidateAll: true
+			refreshAll: true
 		});
 	};
 </script>

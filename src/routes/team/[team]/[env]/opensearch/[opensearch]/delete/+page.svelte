@@ -22,11 +22,8 @@
 {#if usesCount > 0}
 	<Alert variant="warning"
 		>This OpenSearch instance is currently <a
-			href={resolve('/team/[team]/[env]/opensearch/[opensearch]', {
-				team: data.teamSlug,
-				env: page.params.env ?? '',
-				opensearch: page.params.opensearch ?? ''
-			})}>used by {usesCount} workload{usesCount > 1 ? 's' : ''}</a
+			href={resolve('/team/[team]/[env]/opensearch/[opensearch]/(single)', page.params as never)}
+			>used by {usesCount} workload{usesCount > 1 ? 's' : ''}</a
 		>.</Alert
 	>
 {/if}

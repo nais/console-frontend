@@ -59,7 +59,7 @@
 				after: '',
 				before: ''
 			},
-			{ noScroll: true }
+			{ reset: false }
 		);
 	};
 
@@ -139,7 +139,7 @@
 					</div>
 					<ToggleGroup
 						value={interval}
-						onchange={(interval) => changeParams({ interval }, { noScroll: true })}
+						onchange={(interval) => changeParams({ interval }, { reset: false })}
 					>
 						{#each ['5y', '3y', '1y', '6m'] as interval (interval)}
 							<ToggleGroupItem value={interval}>{interval}</ToggleGroupItem>
@@ -273,7 +273,7 @@
 									after: '',
 									before: $TenantCost.data?.teams.pageInfo.startCursor ?? ''
 								},
-								{ noScroll: true }
+								{ reset: false }
 							),
 						loadNextPage: () =>
 							changeParams(
@@ -281,7 +281,7 @@
 									after: $TenantCost.data?.teams.pageInfo.endCursor ?? '',
 									before: ''
 								},
-								{ noScroll: true }
+								{ reset: false }
 							)
 					}}
 				/>
