@@ -1,15 +1,15 @@
 <script lang="ts">
 	import { page } from '$app/state';
 	import { IssueOrderField, OrderDirection } from '$houdini';
-	import WorkloadIssuesFacets from '$lib/domain/issues/WorkloadIssuesFacets.svelte';
-	import IssueListItem from '$lib/domain/list-items/IssueListItem.svelte';
-	import GraphErrors from '$lib/ui/GraphErrors.svelte';
-	import List from '$lib/ui/List.svelte';
-	import ListFilters from '$lib/ui/ListFilters.svelte';
-	import ListItem from '$lib/ui/ListItem.svelte';
-	import Pagination from '$lib/ui/Pagination.svelte';
-	import SurfaceCard from '$lib/ui/SurfaceCard.svelte';
-	import { changeParams } from '$lib/utils/searchparams';
+	import WorkloadIssuesFacets from '#lib/domain/issues/WorkloadIssuesFacets.svelte';
+	import IssueListItem from '#lib/domain/list-items/IssueListItem.svelte';
+	import GraphErrors from '#lib/ui/GraphErrors.svelte';
+	import List from '#lib/ui/List.svelte';
+	import ListFilters from '#lib/ui/ListFilters.svelte';
+	import ListItem from '#lib/ui/ListItem.svelte';
+	import Pagination from '#lib/ui/Pagination.svelte';
+	import SurfaceCard from '#lib/ui/SurfaceCard.svelte';
+	import { changeParams } from '#lib/utils/searchparams.js';
 	import type { PageProps } from './$types';
 
 	let { data }: PageProps = $props();

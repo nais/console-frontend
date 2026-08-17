@@ -2,7 +2,7 @@
 	import { applyAction, enhance } from '$app/forms';
 	import { goto } from '$app/navigation';
 	import { page } from '$app/state';
-	import { isPossiblyInModal } from '$lib/ui/PageModal.svelte';
+	import { isPossiblyInModal } from '#lib/ui/PageModal.svelte';
 	import { Alert, BodyLong, Button, ErrorMessage, TextField } from '@nais/ds-svelte-community';
 	import { tick } from 'svelte';
 	import type { PageProps } from './$types';

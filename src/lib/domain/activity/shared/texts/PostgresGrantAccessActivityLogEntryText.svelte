@@ -1,5 +1,5 @@
 <script lang="ts">
-	import Time from '$lib/ui/Time.svelte';
+	import Time from '#lib/ui/Time.svelte';
 	import Meta from '../../Meta.svelte';
 
 	import type { ActivityLogEntry, TimelineModes } from './types';

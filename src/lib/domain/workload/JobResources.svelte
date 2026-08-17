@@ -1,5 +1,5 @@
 <script lang="ts">
-	import Resource from '$lib/domain/resources/Resource.svelte';
+	import Resource from '#lib/domain/resources/Resource.svelte';
 	import { Heading } from '@nais/ds-svelte-community';
 	import prettyBytes from 'pretty-bytes';
 

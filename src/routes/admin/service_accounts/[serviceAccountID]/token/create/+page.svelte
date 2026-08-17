@@ -1,5 +1,5 @@
 <script lang="ts">
-	import CreateTokenForm from '$lib/domain/service-accounts/CreateTokenForm.svelte';
+	import CreateTokenForm from '#lib/domain/service-accounts/CreateTokenForm.svelte';
 	import { Alert } from '@nais/ds-svelte-community';
 	import type { PageProps } from './$types';
 

@@ -1,5 +1,5 @@
 import { load_Config } from '$houdini';
-import { addPageMeta } from '$lib/utils/pageMeta';
+import { addPageMeta } from '#lib/utils/pageMeta.js';
 import { get } from 'svelte/store';
 
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));

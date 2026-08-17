@@ -1,9 +1,9 @@
 <script lang="ts">
 	import { invalidateAll } from '$app/navigation';
 	import { page } from '$app/state';
-	import ServiceAccountDetail from '$lib/domain/service-accounts/ServiceAccountDetail.svelte';
-	import GraphErrors from '$lib/ui/GraphErrors.svelte';
-	import PageModal from '$lib/ui/PageModal.svelte';
+	import ServiceAccountDetail from '#lib/domain/service-accounts/ServiceAccountDetail.svelte';
+	import GraphErrors from '#lib/ui/GraphErrors.svelte';
+	import PageModal from '#lib/ui/PageModal.svelte';
 	import type { PageProps } from './$types';
 	import AddBindingPage from './binding/add/+page.svelte';
 	import CreateTokenPage from './token/create/+page.svelte';

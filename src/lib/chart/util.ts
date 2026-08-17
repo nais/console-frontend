@@ -1,4 +1,4 @@
-import { euroValueFormatter } from '$lib/utils/formatters';
+import { euroValueFormatter } from '#lib/utils/formatters.js';
 import { createLocaleSettings, DateToken, DayOfWeek, defaultLocale } from '@layerstack/utils';
 
 export function truncateString(str: string, num: number) {

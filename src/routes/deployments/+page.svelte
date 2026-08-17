@@ -1,10 +1,10 @@
 <script lang="ts">
 	import { page } from '$app/state';
-	import DeploymentWithTeamListItem from '$lib/domain/list-items/DeploymentWithTeamListItem.svelte';
-	import GraphErrors from '$lib/ui/GraphErrors.svelte';
-	import List from '$lib/ui/List.svelte';
-	import Pagination from '$lib/ui/Pagination.svelte';
-	import { changeParams } from '$lib/utils/searchparams';
+	import DeploymentWithTeamListItem from '#lib/domain/list-items/DeploymentWithTeamListItem.svelte';
+	import GraphErrors from '#lib/ui/GraphErrors.svelte';
+	import List from '#lib/ui/List.svelte';
+	import Pagination from '#lib/ui/Pagination.svelte';
+	import { changeParams } from '#lib/utils/searchparams.js';
 	import { Button, Heading, Loader, ToggleGroup, ToggleGroupItem } from '@nais/ds-svelte-community';
 	import { ActionMenu, ActionMenuCheckboxItem } from '@nais/ds-svelte-community/experimental';
 	import { ChevronDownIcon } from '@nais/ds-svelte-community/icons';

@@ -6,11 +6,11 @@
 		type ServiceAccountAuthenticationFragment,
 		type ServiceAccountRolesFragment
 	} from '$houdini';
-	import ResourceActivityCard from '$lib/domain/activity/ResourceActivityCard.svelte';
-	import Confirm from '$lib/ui/Confirm.svelte';
-	import GraphErrors from '$lib/ui/GraphErrors.svelte';
-	import { pageModalClick } from '$lib/ui/PageModal.svelte';
-	import Time from '$lib/ui/Time.svelte';
+	import ResourceActivityCard from '#lib/domain/activity/ResourceActivityCard.svelte';
+	import Confirm from '#lib/ui/Confirm.svelte';
+	import GraphErrors from '#lib/ui/GraphErrors.svelte';
+	import { pageModalClick } from '#lib/ui/PageModal.svelte';
+	import Time from '#lib/ui/Time.svelte';
 	import { Button, Heading, Modal, Textarea } from '@nais/ds-svelte-community';
 	import {
 		ActionMenu,

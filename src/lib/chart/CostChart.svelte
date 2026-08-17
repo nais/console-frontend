@@ -10,7 +10,7 @@
 </script>
 
 <script lang="ts" generics="T">
-	import { euroValueFormatter } from '$lib/utils/formatters';
+	import { euroValueFormatter } from '#lib/utils/formatters.js';
 
 	import { LineChart, Tooltip } from 'layerchart';
 	import { SvelteDate } from 'svelte/reactivity';

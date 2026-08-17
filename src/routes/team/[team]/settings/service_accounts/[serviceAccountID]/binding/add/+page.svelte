@@ -3,9 +3,9 @@
 	import { resolve } from '$app/paths';
 	import { page } from '$app/state';
 	import { graphql } from '$houdini';
-	import { envTagVariant } from '$lib/envTagVariant';
-	import GraphErrors from '$lib/ui/GraphErrors.svelte';
-	import { isPossiblyInModal } from '$lib/ui/PageModal.svelte';
+	import { envTagVariant } from '#lib/envTagVariant.js';
+	import GraphErrors from '#lib/ui/GraphErrors.svelte';
+	import { isPossiblyInModal } from '#lib/ui/PageModal.svelte';
 	import {
 		Alert,
 		BodyLong,

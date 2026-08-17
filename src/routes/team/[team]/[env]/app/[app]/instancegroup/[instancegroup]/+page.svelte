@@ -3,12 +3,12 @@
 	import { page } from '$app/state';
 	import type { InstanceGroupDetail$result, ValueEncoding$options } from '$houdini';
 	import { ValueEncoding } from '$houdini';
-	import Resource from '$lib/domain/resources/Resource.svelte';
-	import GraphErrors from '$lib/ui/GraphErrors.svelte';
-	import List from '$lib/ui/List.svelte';
-	import SurfaceCard from '$lib/ui/SurfaceCard.svelte';
-	import Time from '$lib/ui/Time.svelte';
-	import { formatImageRef } from '$lib/utils/image';
+	import Resource from '#lib/domain/resources/Resource.svelte';
+	import GraphErrors from '#lib/ui/GraphErrors.svelte';
+	import List from '#lib/ui/List.svelte';
+	import SurfaceCard from '#lib/ui/SurfaceCard.svelte';
+	import Time from '#lib/ui/Time.svelte';
+	import { formatImageRef } from '#lib/utils/image.js';
 	import {
 		Alert,
 		CopyButton,

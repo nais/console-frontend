@@ -1,6 +1,6 @@
 import { load_Members, OrderDirection, TeamMemberOrderField } from '$houdini';
-import { urlToOrderDirection, urlToOrderField } from '$lib/ui/OrderByMenu.svelte';
-import { addPageMeta } from '$lib/utils/pageMeta';
+import { urlToOrderDirection, urlToOrderField } from '#lib/ui/OrderByMenu.svelte';
+import { addPageMeta } from '#lib/utils/pageMeta.js';
 
 const rows = 25;
 

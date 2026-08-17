@@ -3,7 +3,7 @@
 </script>
 
 <script lang="ts">
-	import SearchField from '$lib/ui/SearchField.svelte';
+	import SearchField from '#lib/ui/SearchField.svelte';
 	import { SortDownIcon, SortUpIcon } from '@nais/ds-svelte-community/icons';
 	import type { Snippet } from 'svelte';
 

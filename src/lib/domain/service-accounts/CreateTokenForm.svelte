@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
-	import { isPossiblyInModal } from '$lib/ui/PageModal.svelte';
+	import { isPossiblyInModal } from '#lib/ui/PageModal.svelte';
 	import {
 		Alert,
 		BodyLong,

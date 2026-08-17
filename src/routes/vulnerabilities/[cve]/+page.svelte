@@ -1,14 +1,14 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
-	import WorkloadLink from '$lib/domain/workload/WorkloadLink.svelte';
-	import ExternalLink from '$lib/ui/ExternalLink.svelte';
-	import GraphErrors from '$lib/ui/GraphErrors.svelte';
-	import List from '$lib/ui/List.svelte';
-	import ListItem from '$lib/ui/ListItem.svelte';
-	import Pagination from '$lib/ui/Pagination.svelte';
-	import { formatImageRef } from '$lib/utils/image';
-	import { changeParams } from '$lib/utils/searchparams';
-	import { suppressionStateLabels } from '$lib/utils/vulnerabilities';
+	import WorkloadLink from '#lib/domain/workload/WorkloadLink.svelte';
+	import ExternalLink from '#lib/ui/ExternalLink.svelte';
+	import GraphErrors from '#lib/ui/GraphErrors.svelte';
+	import List from '#lib/ui/List.svelte';
+	import ListItem from '#lib/ui/ListItem.svelte';
+	import Pagination from '#lib/ui/Pagination.svelte';
+	import { formatImageRef } from '#lib/utils/image.js';
+	import { changeParams } from '#lib/utils/searchparams.js';
+	import { suppressionStateLabels } from '#lib/utils/vulnerabilities.js';
 	import {
 		Alert,
 		BodyShort,

@@ -1,8 +1,8 @@
 <script lang="ts">
 	import { graphql } from '$houdini';
-	import JobRunListItem from '$lib/domain/list-items/JobRunListItem.svelte';
-	import List from '$lib/ui/List.svelte';
-	import ListItem from '$lib/ui/ListItem.svelte';
+	import JobRunListItem from '#lib/domain/list-items/JobRunListItem.svelte';
+	import List from '#lib/ui/List.svelte';
+	import ListItem from '#lib/ui/ListItem.svelte';
 	import { Button } from '@nais/ds-svelte-community';
 	import { onMount } from 'svelte';
 

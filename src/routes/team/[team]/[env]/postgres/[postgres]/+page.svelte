@@ -1,12 +1,12 @@
 <script lang="ts">
 	import { page } from '$app/state';
-	import PrometheusUtilizationDonut from '$lib/chart/PrometheusUtilizationDonut.svelte';
-	import Labels from '$lib/domain/labels/Labels.svelte';
-	import WorkloadLink from '$lib/domain/workload/WorkloadLink.svelte';
-	import ExternalLink from '$lib/ui/ExternalLink.svelte';
-	import ManifestCard from '$lib/ui/ManifestCard.svelte';
-	import SurfaceCard from '$lib/ui/SurfaceCard.svelte';
-	import { sanitizePromLabel } from '$lib/utils/formatters';
+	import PrometheusUtilizationDonut from '#lib/chart/PrometheusUtilizationDonut.svelte';
+	import Labels from '#lib/domain/labels/Labels.svelte';
+	import WorkloadLink from '#lib/domain/workload/WorkloadLink.svelte';
+	import ExternalLink from '#lib/ui/ExternalLink.svelte';
+	import ManifestCard from '#lib/ui/ManifestCard.svelte';
+	import SurfaceCard from '#lib/ui/SurfaceCard.svelte';
+	import { sanitizePromLabel } from '#lib/utils/formatters.js';
 	import { Alert, BodyShort, Button, Heading } from '@nais/ds-svelte-community';
 	import { CheckmarkIcon, TrashIcon, XMarkIcon } from '@nais/ds-svelte-community/icons';
 	import type { PageProps } from './$types';

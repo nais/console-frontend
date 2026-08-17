@@ -1,6 +1,6 @@
+import type { Handle, HandleFetch } from '@sveltejs/kit/hooks';
 import { GITHUB_ORGANIZATION, GRAPHQL_ENDPOINT, TENANT_NAME } from '$app/env/private';
-import { logger } from '$lib/logger';
-import type { Handle, HandleFetch } from '@sveltejs/kit';
+import { logger } from '#lib/logger.js';
 
 export const handleFetch: HandleFetch = async ({ event, request, fetch }) => {
 	const targetGraphqlEndpoint = GRAPHQL_ENDPOINT;

@@ -1,6 +1,6 @@
 <script lang="ts">
-	import NetworkPolicy from '$lib/domain/resources/NetworkPolicy.svelte';
-	import GraphErrors from '$lib/ui/GraphErrors.svelte';
+	import NetworkPolicy from '#lib/domain/resources/NetworkPolicy.svelte';
+	import GraphErrors from '#lib/ui/GraphErrors.svelte';
 	import { Heading, Loader } from '@nais/ds-svelte-community';
 	import type { PageProps } from './$types';
 

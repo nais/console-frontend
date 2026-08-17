@@ -1,5 +1,5 @@
 import { building } from '$app/env';
-import { logger } from '$lib/logger';
+import { logger } from '#lib/logger.js';
 import { json } from '@sveltejs/kit';
 import { GRAPHQL_ENDPOINT } from '$app/env/private';
 

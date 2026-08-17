@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { IssueType, Severity } from '$houdini';
-	import { issueTypeLabel } from '$lib/utils/issueTypeLabel';
+	import { issueTypeLabel } from '#lib/utils/issueTypeLabel.js';
 
 	interface Props {
 		selectedSeverity: string;

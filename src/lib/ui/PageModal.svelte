@@ -10,8 +10,9 @@
 			innerWidth < 640 || // bail if the screen is too small
 			e.shiftKey || // or the link is opened in a new window
 			e.metaKey ||
-			e.ctrlKey // or a new tab (mac: metaKey, win/linux: ctrlKey)
-		) {
+			e.ctrlKey
+		) // or a new tab (mac: metaKey, win/linux: ctrlKey)
+		{
 			return;
 		}
 
@@ -33,7 +34,7 @@
 </script>
 
 <script lang="ts">
-	import { goto, preloadData, pushState } from '$app/navigation';
+	import { goto, preloadData } from '$app/navigation';
 	import { Loader, Modal } from '@nais/ds-svelte-community';
 	import type { ModalProps } from '@nais/ds-svelte-community/components/Modal/type.js';
 	import type { Component, Snippet } from 'svelte';
@@ -42,8 +43,9 @@
 		content: Page,
 		header,
 		loading
-	}: {
+
 		// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	}: {
 		content: Component<any, any, string>;
 		header?: ModalProps['header'];
 		loading?: Snippet;

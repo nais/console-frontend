@@ -1,9 +1,9 @@
 <script lang="ts">
-	import BigQueryIcon from '$lib/icons/BigQueryIcon.svelte';
-	import KafkaIcon from '$lib/icons/KafkaIcon.svelte';
-	import OpenSearchIcon from '$lib/icons/OpenSearchIcon.svelte';
-	import UnleashIcon from '$lib/icons/UnleashIcon.svelte';
-	import ValkeyIcon from '$lib/icons/ValkeyIcon.svelte';
+	import BigQueryIcon from '#lib/icons/BigQueryIcon.svelte';
+	import KafkaIcon from '#lib/icons/KafkaIcon.svelte';
+	import OpenSearchIcon from '#lib/icons/OpenSearchIcon.svelte';
+	import UnleashIcon from '#lib/icons/UnleashIcon.svelte';
+	import ValkeyIcon from '#lib/icons/ValkeyIcon.svelte';
 	import {
 		BellIcon,
 		BranchingIcon,

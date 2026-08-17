@@ -3,7 +3,7 @@
 		ActivityLogActivityType$options,
 		ActivityLogEntryResourceType$options
 	} from '$houdini';
-	import Time from '$lib/ui/Time.svelte';
+	import Time from '#lib/ui/Time.svelte';
 	import type { TimelineModes } from './shared/texts/types';
 
 	interface Props {

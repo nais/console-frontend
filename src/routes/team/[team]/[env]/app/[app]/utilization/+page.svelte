@@ -1,20 +1,20 @@
 <script lang="ts">
 	import { page } from '$app/state';
-	import GraphErrors from '$lib/ui/GraphErrors.svelte';
+	import GraphErrors from '#lib/ui/GraphErrors.svelte';
 
 	import { UtilizationResourceType, type ResourceUtilizationForApp$result } from '$houdini';
-	import AnnotationSeries from '$lib/chart/AnnotationSeries.svelte';
-	import { docURL } from '$lib/doc';
-	import SurfaceCard from '$lib/ui/SurfaceCard.svelte';
+	import AnnotationSeries from '#lib/chart/AnnotationSeries.svelte';
+	import { docURL } from '#lib/doc.js';
+	import SurfaceCard from '#lib/ui/SurfaceCard.svelte';
 	import {
 		euroValueFormatter,
 		formatKubernetesCPU,
 		formatKubernetesMemory
-	} from '$lib/utils/formatters';
-	import { exhaustive, type Exhaustive } from '$lib/utils/houdini';
-	import { round, yearlyOverageCost } from '$lib/utils/resources';
-	import { changeParams } from '$lib/utils/searchparams';
-	import { visualizationColors } from '$lib/visualizationColors';
+	} from '#lib/utils/formatters.js';
+	import { exhaustive, type Exhaustive } from '#lib/utils/houdini.js';
+	import { round, yearlyOverageCost } from '#lib/utils/resources.js';
+	import { changeParams } from '#lib/utils/searchparams.js';
+	import { visualizationColors } from '#lib/visualizationColors.js';
 	import {
 		BodyLong,
 		BodyShort,

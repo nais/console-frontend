@@ -1,5 +1,5 @@
 import { load_TeamCVEPage } from '$houdini';
-import { addPageMeta } from '$lib/utils/pageMeta';
+import { addPageMeta } from '#lib/utils/pageMeta.js';
 
 export async function load(event) {
 	const team = event.params.team;

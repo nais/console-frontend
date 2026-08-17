@@ -9,9 +9,9 @@
 <script lang="ts">
 	import { browser } from '$app/env';
 	import { graphql } from '$houdini';
-	import LegendWrapper, { legendSnippet } from '$lib/chart/LegendWrapper.svelte';
-	import CodeBlockPromQL from '$lib/domain/monitoring/CodeBlockPromQL.svelte';
-	import { intersect } from '$lib/utils/intersectionObserver';
+	import LegendWrapper, { legendSnippet } from '#lib/chart/LegendWrapper.svelte';
+	import CodeBlockPromQL from '#lib/domain/monitoring/CodeBlockPromQL.svelte';
+	import { intersect } from '#lib/utils/intersectionObserver.js';
 	import { BodyShort, CopyButton, Heading, Loader, Modal } from '@nais/ds-svelte-community';
 	import { InformationIcon } from '@nais/ds-svelte-community/icons';
 	import * as d3 from 'd3-time';

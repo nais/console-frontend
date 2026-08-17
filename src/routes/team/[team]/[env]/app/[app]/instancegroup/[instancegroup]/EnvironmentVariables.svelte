@@ -1,6 +1,6 @@
 <script lang="ts">
 	import type { InstanceGroupDetail$result } from '$houdini';
-	import List from '$lib/ui/List.svelte';
+	import List from '#lib/ui/List.svelte';
 	import { Button, CopyButton } from '@nais/ds-svelte-community';
 	import { EyeIcon, EyeSlashIcon } from '@nais/ds-svelte-community/icons';
 	import { SvelteMap } from 'svelte/reactivity';

@@ -1,8 +1,8 @@
 import { dev } from '$app/env';
 import { HoudiniClient } from '$houdini';
 import { subscription, type SubscriptionClient } from '$houdini/plugins';
-import { handleMissingLogin } from '$lib/authentication';
-import { updatesConnectionClosed } from '$lib/stores/update_complete';
+import { handleMissingLogin } from '#lib/authentication.js';
+import { updatesConnectionClosed } from '#lib/stores/update_complete.js';
 import { createClient } from 'graphql-sse';
 
 export default new HoudiniClient({

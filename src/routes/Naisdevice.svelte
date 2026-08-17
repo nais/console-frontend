@@ -11,7 +11,7 @@
 
 <script lang="ts">
 	import { goto } from '$app/navigation';
-	import { isAuthenticated } from '$lib/authentication';
+	import { isAuthenticated } from '#lib/authentication.js';
 
 	import { CheckmarkCircleIcon, XMarkIcon } from '@nais/ds-svelte-community/icons';
 	import { fade } from 'svelte/transition';

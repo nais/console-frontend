@@ -24,8 +24,8 @@
 		"@eslint/js": "10.0.1",
 		"@layerstack/utils": "2.0.0-next.18",
 		"@nais/ds-svelte-community": "2.0.0-next.8",
-		"@sveltejs/adapter-node": "5.5.7",
-		"@sveltejs/kit": "2.70.2",
+		"@sveltejs/adapter-node": "next",
+		"@sveltejs/kit": "next",
 		"@sveltejs/vite-plugin-svelte": "7.3.0",
 		"@tailwindcss/vite": "4.3.3",
 		"@types/d3-array": "3.2.2",
@@ -47,7 +47,7 @@
 		"prettier-plugin-svelte": "4.1.1",
 		"prettier-plugin-tailwindcss": "0.8.1",
 		"svelte": "5.56.9",
-		"svelte-check": "4.7.4",
+		"svelte-check": "^4.7.5",
 		"tailwindcss": "4.3.3",
 		"typescript": "6.0.3",
 		"typescript-eslint": "8.65.0",
@@ -86,5 +86,9 @@
 	"graphql": {
 		"schema": "https://localhost:3000/graphql",
 		"documents": "**/*.{graphql,js,ts,jsx,tsx,svelte}"
+	},
+	"imports": {
+		"#lib": "./src/lib/index.js",
+		"#lib/*": "./src/lib/*"
 	}
 }

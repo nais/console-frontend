@@ -1,6 +1,6 @@
 <script lang="ts">
 	import type { ActivityLogEntryFragment } from '$houdini';
-	import ActivityLogListItem from '$lib/domain/list-items/ActivityLogListItem.svelte';
+	import ActivityLogListItem from '#lib/domain/list-items/ActivityLogListItem.svelte';
 	import { Button } from '@nais/ds-svelte-community';
 	import type { TimelineModes } from './shared/texts/types';
 

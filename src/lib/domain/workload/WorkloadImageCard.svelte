@@ -1,6 +1,6 @@
 <script lang="ts">
-	import SurfaceCard from '$lib/ui/SurfaceCard.svelte';
-	import { formatImageRef, formatImageVersion, parseImage } from '$lib/utils/image';
+	import SurfaceCard from '#lib/ui/SurfaceCard.svelte';
+	import { formatImageRef, formatImageVersion, parseImage } from '#lib/utils/image.js';
 	import { CopyButton } from '@nais/ds-svelte-community';
 	import type { Snippet } from 'svelte';
 

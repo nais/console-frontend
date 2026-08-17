@@ -1,6 +1,6 @@
 import { load_TenantDeployments } from '$houdini';
 import type { DeploymentFilter } from '$houdini/graphql/inputs';
-import { addPageMeta } from '$lib/utils/pageMeta';
+import { addPageMeta } from '#lib/utils/pageMeta.js';
 import { subDays, subMonths } from 'date-fns';
 
 const rows = 25;

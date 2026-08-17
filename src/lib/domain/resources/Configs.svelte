@@ -1,8 +1,8 @@
 <script lang="ts">
 	import { graphql } from '$houdini';
-	import GraphErrors from '$lib/ui/GraphErrors.svelte';
-	import IconLabel from '$lib/ui/IconLabel.svelte';
-	import SurfaceCard from '$lib/ui/SurfaceCard.svelte';
+	import GraphErrors from '#lib/ui/GraphErrors.svelte';
+	import IconLabel from '#lib/ui/IconLabel.svelte';
+	import SurfaceCard from '#lib/ui/SurfaceCard.svelte';
 	import { Loader } from '@nais/ds-svelte-community';
 	import { FileTextIcon } from '@nais/ds-svelte-community/icons';
 

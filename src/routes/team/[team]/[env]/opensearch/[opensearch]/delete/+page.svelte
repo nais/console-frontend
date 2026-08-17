@@ -3,8 +3,8 @@
 	import { enhance } from '$app/forms';
 	import { resolve } from '$app/paths';
 	import { page } from '$app/state';
-	import { docURL } from '$lib/doc';
-	import ExternalLink from '$lib/ui/ExternalLink.svelte';
+	import { docURL } from '#lib/doc.js';
+	import ExternalLink from '#lib/ui/ExternalLink.svelte';
 	import { Alert, BodyLong, Button, ErrorMessage, TextField } from '@nais/ds-svelte-community';
 	import type { PageProps } from './$types';
 

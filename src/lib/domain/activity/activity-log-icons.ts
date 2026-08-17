@@ -17,9 +17,9 @@ import {
 	VirusIcon
 } from '@nais/ds-svelte-community/icons';
 
-import OpenSearchIcon from '$lib/icons/OpenSearchIcon.svelte';
-import UnleashIcon from '$lib/icons/UnleashIcon.svelte';
-import ValkeyIcon from '$lib/icons/ValkeyIcon.svelte';
+import OpenSearchIcon from '#lib/icons/OpenSearchIcon.svelte';
+import UnleashIcon from '#lib/icons/UnleashIcon.svelte';
+import ValkeyIcon from '#lib/icons/ValkeyIcon.svelte';
 
 /**
  * ICON SHAPES (what is operated on)

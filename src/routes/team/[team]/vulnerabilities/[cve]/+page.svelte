@@ -3,13 +3,13 @@
 	import { graphql } from '$houdini';
 	import BulkSuppressCVE, {
 		type BulkSuppressWorkload
-	} from '$lib/domain/vulnerability/BulkSuppressCVE.svelte';
-	import WorkloadLink from '$lib/domain/workload/WorkloadLink.svelte';
-	import ExternalLink from '$lib/ui/ExternalLink.svelte';
-	import GraphErrors from '$lib/ui/GraphErrors.svelte';
-	import { formatImageRef } from '$lib/utils/image';
+	} from '#lib/domain/vulnerability/BulkSuppressCVE.svelte';
+	import WorkloadLink from '#lib/domain/workload/WorkloadLink.svelte';
+	import ExternalLink from '#lib/ui/ExternalLink.svelte';
+	import GraphErrors from '#lib/ui/GraphErrors.svelte';
+	import { formatImageRef } from '#lib/utils/image.js';
 
-	import { suppressionStateLabels } from '$lib/utils/vulnerabilities';
+	import { suppressionStateLabels } from '#lib/utils/vulnerabilities.js';
 	import {
 		Alert,
 		BodyShort,
