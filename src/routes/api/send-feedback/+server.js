@@ -29,7 +29,10 @@ export async function POST(event) {
 	try {
 		blocks = createFeedbackMessage(anonymous, email, feedback, path, tenant, type);
 	} catch (error) {
-		return Response.json({ error: 'Failed to create feedback message - ' + error }, { status: 500 });
+		return Response.json(
+			{ error: 'Failed to create feedback message - ' + error },
+			{ status: 500 }
+		);
 	}
 
 	try {
