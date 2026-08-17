@@ -11,7 +11,7 @@ allowBuilds:
   houdini-core: true
   houdini-svelte: true
 
-minimumReleaseAge: 15840 # 11 days in hours
+minimumReleaseAge: 14400 # 10 days in hours
 savePrefix: ""
 minimumReleaseAgeExclude:
   - "houdini*"
