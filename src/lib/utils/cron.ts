@@ -1,6 +1,5 @@
 import { CronExpressionParser } from 'cron-parser';
 import cronstrue from 'cronstrue';
-import { DateTime } from 'luxon';
 
 export type CronContext = {
 	team?: string;
@@ -9,6 +8,25 @@ export type CronContext = {
 };
 
 export type ScheduleContext = CronContext;
+
+function formatInTimeZone(date: Date, timeZone: string): string {
+	const formatter = new Intl.DateTimeFormat('en-US', {
+		weekday: 'long',
+		day: '2-digit',
+		month: 'short',
+		year: 'numeric',
+		hour: '2-digit',
+		minute: '2-digit',
+		hour12: false,
+		hourCycle: 'h23',
+		timeZone
+	});
+
+	const parts = formatter.formatToParts(date);
+	const get = (type: Intl.DateTimeFormatPartTypes) => parts.find((p) => p.type === type)?.value;
+
+	return `${get('weekday')}, ${get('day')} ${get('month')} ${get('year')} ${get('hour')}:${get('minute')}`;
+}
 
 function getNextRunTime(
 	expression: string,
@@ -24,14 +42,8 @@ function getNextRunTime(
 
 		const nextDate = interval.next().toDate();
 
-		const nextRunInLocalTZ = DateTime.fromJSDate(nextDate).setZone(localTimeZone);
-
-		if (!nextRunInLocalTZ.isValid) {
-			throw new Error(`Invalid DateTime for time zone: ${localTimeZone}`);
-		}
-
 		return {
-			formatted: nextRunInLocalTZ.toFormat('cccc, dd LLL yyyy HH:mm'),
+			formatted: formatInTimeZone(nextDate, localTimeZone),
 			date: nextDate
 		};
 	} catch (error) {
