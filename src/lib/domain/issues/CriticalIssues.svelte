@@ -1,6 +1,6 @@
 <script lang="ts">
 	import type { TeamHealthStore } from '$houdini';
-	import SurfaceCard from '$lib/ui/SurfaceCard.svelte';
+	import SurfaceCard from '#lib/ui/SurfaceCard.svelte';
 	import { Button } from '@nais/ds-svelte-community';
 	import CriticalIssueRow from './CriticalIssueRow.svelte';
 

@@ -1,10 +1,10 @@
 <script lang="ts">
 	import { afterNavigate } from '$app/navigation';
 	import { page } from '$app/state';
-	import { menuItems } from '$lib/menuItems';
-	import Icon from '$lib/ui/Icon.svelte';
-	import Menu from '$lib/ui/Menu.svelte';
-	import MobileSideDrawer from '$lib/ui/MobileSideDrawer.svelte';
+	import { menuItems } from '#lib/menuItems.js';
+	import Icon from '#lib/ui/Icon.svelte';
+	import Menu from '#lib/ui/Menu.svelte';
+	import MobileSideDrawer from '#lib/ui/MobileSideDrawer.svelte';
 	import { getTeamContext } from './teamContext.svelte';
 
 	const {
@@ -34,16 +34,16 @@
 	const activeLabel = $derived(
 		items.flat().find((item) => item.active)?.label ?? 'Team navigation'
 	);
+	afterNavigate(({ shallow }) => {
+		if (shallow) return;
 
-	afterNavigate(() => {
 		teamContext.closeMobileMenu();
 	});
 </script>
 
 <nav class="team-menu" aria-label="Team menu">
-	<div class="desktop-menu">
-		<Menu {items} />
-	</div>
+	<div class="desktop-menu"><Menu {items} /></div>
+
 	{#if overviewItem}
 		<MobileSideDrawer bind:open={teamContext.mobileMenuOpen} id="team-menu-items">
 			{#snippet headerContent()}

@@ -1,6 +1,6 @@
 <script lang="ts">
-	import PageHeader from '$lib/ui/PageHeader.svelte';
-	import { createHeaderActionsContext } from '$lib/ui/headerActionsContext.svelte';
+	import PageHeader from '#lib/ui/PageHeader.svelte';
+	import { createHeaderActionsContext } from '#lib/ui/headerActionsContext.svelte.js';
 	import { Alert } from '@nais/ds-svelte-community';
 	import type { LayoutProps } from './$types';
 	import Menu from './Menu.svelte';

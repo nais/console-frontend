@@ -1,6 +1,6 @@
 import { load_TeamCost } from '$houdini';
-import { getFromForCost, type CostInterval } from '$lib/domain/cost/dateUtils';
-import { addPageMeta } from '$lib/utils/pageMeta';
+import { getFromForCost, type CostInterval } from '#lib/domain/cost/dateUtils.js';
+import { addPageMeta } from '#lib/utils/pageMeta.js';
 import { subDays } from 'date-fns';
 
 export async function load(event) {

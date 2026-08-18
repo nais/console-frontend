@@ -1,5 +1,5 @@
 <script lang="ts">
-	import SurfaceCard from '$lib/ui/SurfaceCard.svelte';
+	import SurfaceCard from '#lib/ui/SurfaceCard.svelte';
 
 	interface Props {
 		title: string;

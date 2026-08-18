@@ -1,12 +1,12 @@
 <script lang="ts">
 	import type { DeploymentStatusState } from '$houdini';
-	import { envTagVariant } from '$lib/envTagVariant';
-	import DeploymentStatus from '$lib/ui/DeploymentStatus.svelte';
-	import ExternalLink from '$lib/ui/ExternalLink.svelte';
-	import IconLabel from '$lib/ui/IconLabel.svelte';
-	import ListItem from '$lib/ui/ListItem.svelte';
-	import Time from '$lib/ui/Time.svelte';
-	import { isValidSha } from '$lib/utils/isValidSha';
+	import { envTagVariant } from '#lib/envTagVariant.js';
+	import DeploymentStatus from '#lib/ui/DeploymentStatus.svelte';
+	import ExternalLink from '#lib/ui/ExternalLink.svelte';
+	import IconLabel from '#lib/ui/IconLabel.svelte';
+	import ListItem from '#lib/ui/ListItem.svelte';
+	import Time from '#lib/ui/Time.svelte';
+	import { isValidSha } from '#lib/utils/isValidSha.js';
 	import { BodyLong, Tag } from '@nais/ds-svelte-community';
 	import { PersonGroupIcon } from '@nais/ds-svelte-community/icons';
 	import type { ValueOf } from 'houdini/runtime';

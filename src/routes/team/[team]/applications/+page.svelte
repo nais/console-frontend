@@ -6,14 +6,14 @@
 		type ApplicationOrderField$options,
 		type OrderDirection$options
 	} from '$houdini';
-	import AppListItem from '$lib/domain/list-items/AppListItem.svelte';
-	import WorkloadListFilters from '$lib/domain/workload/WorkloadListFilters.svelte';
-	import CollapsibleSidebar from '$lib/ui/CollapsibleSidebar.svelte';
-	import GraphErrors from '$lib/ui/GraphErrors.svelte';
-	import List from '$lib/ui/List.svelte';
-	import Pagination from '$lib/ui/Pagination.svelte';
-	import SurfaceCard from '$lib/ui/SurfaceCard.svelte';
-	import { changeParams } from '$lib/utils/searchparams';
+	import AppListItem from '#lib/domain/list-items/AppListItem.svelte';
+	import WorkloadListFilters from '#lib/domain/workload/WorkloadListFilters.svelte';
+	import CollapsibleSidebar from '#lib/ui/CollapsibleSidebar.svelte';
+	import GraphErrors from '#lib/ui/GraphErrors.svelte';
+	import List from '#lib/ui/List.svelte';
+	import Pagination from '#lib/ui/Pagination.svelte';
+	import SurfaceCard from '#lib/ui/SurfaceCard.svelte';
+	import { changeParams } from '#lib/utils/searchparams.js';
 	import { BodyLong } from '@nais/ds-svelte-community';
 	import { FunnelIcon } from '@nais/ds-svelte-community/icons';
 	import type { PageProps } from './$types';
@@ -81,7 +81,7 @@
 					? OrderDirection.DESC
 					: OrderDirection.ASC
 				: defaultDirection;
-		changeParams({ sort: `${field}-${direction}`, after: '', before: '' }, { noScroll: true });
+		changeParams({ sort: `${field}-${direction}`, after: '', before: '' }, { reset: false });
 	}
 
 	const changeQuery = (
@@ -103,7 +103,7 @@
 				states: params.states ?? (selectedStates.join(',') || ''),
 				labels: params.labels ?? (selectedLabels.join(',') || '')
 			},
-			{ noScroll: true }
+			{ reset: false }
 		);
 	};
 

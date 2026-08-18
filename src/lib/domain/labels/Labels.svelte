@@ -1,5 +1,5 @@
 <script lang="ts">
-	import SurfaceCard from '$lib/ui/SurfaceCard.svelte';
+	import SurfaceCard from '#lib/ui/SurfaceCard.svelte';
 	import { Button } from '@nais/ds-svelte-community';
 	import { NotePencilIcon } from '@nais/ds-svelte-community/icons';
 

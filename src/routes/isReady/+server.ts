@@ -1,6 +1,5 @@
+import { logger } from '#lib/logger.js';
 import { building } from '$app/env';
-import { logger } from '$lib/logger';
-import { json } from '@sveltejs/kit';
 import { GRAPHQL_ENDPOINT } from '$app/env/private';
 
 const GRAPHQL_API_URL = GRAPHQL_ENDPOINT || 'http://localhost:3000/graphql';
@@ -34,7 +33,7 @@ if (!building) {
 }
 
 export async function GET() {
-	return json(
+	return Response.json(
 		{ status: isAppReady ? 'ready' : 'waiting-for-api' },
 		{ status: isAppReady ? 200 : 503 }
 	);

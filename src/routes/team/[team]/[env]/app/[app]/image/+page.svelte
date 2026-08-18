@@ -2,9 +2,9 @@
 	import { applyAction, enhance } from '$app/forms';
 	import { goto } from '$app/navigation';
 	import { page } from '$app/state';
-	import { isPossiblyInModal } from '$lib/ui/PageModal.svelte';
-	import Time from '$lib/ui/Time.svelte';
-	import { formatImageVersion, imageRefMatches, parseImage } from '$lib/utils/image';
+	import { isPossiblyInModal } from '#lib/ui/PageModal.svelte';
+	import Time from '#lib/ui/Time.svelte';
+	import { formatImageVersion, imageRefMatches, parseImage } from '#lib/utils/image.js';
 	import {
 		Alert,
 		BodyLong,
@@ -60,7 +60,7 @@
 	const close = async () => {
 		await goto(`/team/${page.params.team}/${page.params.env}/app/${page.params.app}`, {
 			replaceState: isPossiblyInModal(),
-			invalidateAll: true
+			refreshAll: true
 		});
 	};
 </script>

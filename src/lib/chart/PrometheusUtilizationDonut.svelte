@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { browser } from '$app/env';
 	import { graphql } from '$houdini';
-	import { intersect } from '$lib/utils/intersectionObserver';
+	import { intersect } from '#lib/utils/intersectionObserver.js';
 	import { Loader } from '@nais/ds-svelte-community';
 	import { Arc, Chart, Group, Svg, Text } from 'layerchart';
 	import { untrack } from 'svelte';

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { themeSwitch } from '$lib/stores/theme.svelte';
+	import { themeSwitch } from '#lib/stores/theme.svelte.js';
 	import { onMount } from 'svelte';
 
 	import { defaultHighlightStyle, syntaxHighlighting } from '@codemirror/language';

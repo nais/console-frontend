@@ -1,11 +1,11 @@
 <script lang="ts">
+	import GraphErrors from '#lib/ui/GraphErrors.svelte';
+	import IconLabel from '#lib/ui/IconLabel.svelte';
+	import { urlToOrderDirection, urlToOrderField } from '#lib/ui/OrderByMenu.svelte';
+	import Pagination from '#lib/ui/Pagination.svelte';
+	import { changeParams } from '#lib/utils/searchparams.js';
 	import { page } from '$app/state';
 	import { OrderDirection, TeamOrderField } from '$houdini';
-	import GraphErrors from '$lib/ui/GraphErrors.svelte';
-	import IconLabel from '$lib/ui/IconLabel.svelte';
-	import { urlToOrderDirection, urlToOrderField } from '$lib/ui/OrderByMenu.svelte';
-	import Pagination from '$lib/ui/Pagination.svelte';
-	import { changeParams } from '$lib/utils/searchparams';
 	import {
 		BodyLong,
 		Heading,
@@ -51,7 +51,7 @@
 				after: '',
 				before: ''
 			},
-			{ noScroll: true }
+			{ reset: false }
 		);
 	};
 
@@ -183,7 +183,7 @@
 						after: '',
 						before: $TenantVulnerabilites.data?.teams.pageInfo.startCursor ?? ''
 					},
-					{ noScroll: true }
+					{ reset: false }
 				),
 			loadNextPage: () =>
 				changeParams(
@@ -191,7 +191,7 @@
 						after: $TenantVulnerabilites.data?.teams.pageInfo.endCursor ?? '',
 						before: ''
 					},
-					{ noScroll: true }
+					{ reset: false }
 				)
 		}}
 	/>

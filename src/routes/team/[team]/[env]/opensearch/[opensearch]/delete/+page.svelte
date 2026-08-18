@@ -3,8 +3,8 @@
 	import { enhance } from '$app/forms';
 	import { resolve } from '$app/paths';
 	import { page } from '$app/state';
-	import { docURL } from '$lib/doc';
-	import ExternalLink from '$lib/ui/ExternalLink.svelte';
+	import { docURL } from '#lib/doc.js';
+	import ExternalLink from '#lib/ui/ExternalLink.svelte';
 	import { Alert, BodyLong, Button, ErrorMessage, TextField } from '@nais/ds-svelte-community';
 	import type { PageProps } from './$types';
 
@@ -22,11 +22,8 @@
 {#if usesCount > 0}
 	<Alert variant="warning"
 		>This OpenSearch instance is currently <a
-			href={resolve('/team/[team]/[env]/opensearch/[opensearch]', {
-				team: data.teamSlug,
-				env: page.params.env ?? '',
-				opensearch: page.params.opensearch ?? ''
-			})}>used by {usesCount} workload{usesCount > 1 ? 's' : ''}</a
+			href={resolve('/team/[team]/[env]/opensearch/[opensearch]/(single)', page.params as never)}
+			>used by {usesCount} workload{usesCount > 1 ? 's' : ''}</a
 		>.</Alert
 	>
 {/if}

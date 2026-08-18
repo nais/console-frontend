@@ -1,8 +1,8 @@
 <script lang="ts">
 	import { graphql } from '$houdini';
-	import TeamListItem from '$lib/domain/list-items/TeamListItem.svelte';
-	import List from '$lib/ui/List.svelte';
-	import Pagination from '$lib/ui/Pagination.svelte';
+	import TeamListItem from '#lib/domain/list-items/TeamListItem.svelte';
+	import List from '#lib/ui/List.svelte';
+	import Pagination from '#lib/ui/Pagination.svelte';
 	import { BodyShort, Button, Heading, Loader, Search } from '@nais/ds-svelte-community';
 	import { PlusIcon } from '@nais/ds-svelte-community/icons';
 

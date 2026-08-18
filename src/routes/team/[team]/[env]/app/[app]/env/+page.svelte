@@ -2,7 +2,7 @@
 	import { applyAction, enhance } from '$app/forms';
 	import { goto } from '$app/navigation';
 	import { page } from '$app/state';
-	import { isPossiblyInModal } from '$lib/ui/PageModal.svelte';
+	import { isPossiblyInModal } from '#lib/ui/PageModal.svelte';
 	import { Alert, BodyLong, Button, ErrorMessage, TextField } from '@nais/ds-svelte-community';
 	import { PlusIcon, TrashIcon } from '@nais/ds-svelte-community/icons';
 	import { tick } from 'svelte';
@@ -41,7 +41,7 @@
 	const close = async () => {
 		await goto(`/team/${page.params.team}/${page.params.env}/app/${page.params.app}`, {
 			replaceState: isPossiblyInModal(),
-			invalidateAll: true
+			refreshAll: true
 		});
 	};
 </script>

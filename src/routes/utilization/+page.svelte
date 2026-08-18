@@ -1,18 +1,18 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import { UtilizationResourceType, type TenantUtilization$result } from '$houdini';
-	import UtilizationChart from '$lib/chart/UtilizationChart.svelte';
-	import GraphErrors from '$lib/ui/GraphErrors.svelte';
-	import IconLabel from '$lib/ui/IconLabel.svelte';
-	import Pagination from '$lib/ui/Pagination.svelte';
-	import SurfaceCard from '$lib/ui/SurfaceCard.svelte';
-	import { euroValueFormatter } from '$lib/utils/formatters';
+	import UtilizationChart from '#lib/chart/UtilizationChart.svelte';
+	import GraphErrors from '#lib/ui/GraphErrors.svelte';
+	import IconLabel from '#lib/ui/IconLabel.svelte';
+	import Pagination from '#lib/ui/Pagination.svelte';
+	import SurfaceCard from '#lib/ui/SurfaceCard.svelte';
+	import { euroValueFormatter } from '#lib/utils/formatters.js';
 	import {
 		getTeamsOverageData,
 		round,
 		yearlyOverageCost,
 		type TeamsOverageData
-	} from '$lib/utils/resources';
+	} from '#lib/utils/resources.js';
 	import {
 		BodyLong,
 		Heading,

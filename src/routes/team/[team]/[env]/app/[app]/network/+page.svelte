@@ -1,14 +1,14 @@
 <script lang="ts">
 	import { page } from '$app/state';
-	import PrometheusChart from '$lib/chart/PrometheusChart.svelte';
-	import { PrometheusChartQueryInterval } from '$lib/chart/util';
-	import NetworkPolicy from '$lib/domain/resources/NetworkPolicy.svelte';
-	import WarningIcon from '$lib/icons/WarningIcon.svelte';
-	import DocsLink from '$lib/ui/DocsLink.svelte';
-	import ExternalLink from '$lib/ui/ExternalLink.svelte';
-	import GraphErrors from '$lib/ui/GraphErrors.svelte';
-	import TooltipAlignHack from '$lib/ui/TooltipAlignHack.svelte';
-	import { changeParams } from '$lib/utils/searchparams';
+	import PrometheusChart from '#lib/chart/PrometheusChart.svelte';
+	import { PrometheusChartQueryInterval } from '#lib/chart/util.js';
+	import NetworkPolicy from '#lib/domain/resources/NetworkPolicy.svelte';
+	import WarningIcon from '#lib/icons/WarningIcon.svelte';
+	import DocsLink from '#lib/ui/DocsLink.svelte';
+	import ExternalLink from '#lib/ui/ExternalLink.svelte';
+	import GraphErrors from '#lib/ui/GraphErrors.svelte';
+	import TooltipAlignHack from '#lib/ui/TooltipAlignHack.svelte';
+	import { changeParams } from '#lib/utils/searchparams.js';
 	import { Detail, Heading, ToggleGroup, ToggleGroupItem } from '@nais/ds-svelte-community';
 	import { GlobeIcon, HouseIcon, PadlockLockedIcon } from '@nais/ds-svelte-community/icons';
 	import type { PageProps } from './$types';
@@ -97,7 +97,7 @@
 					<ToggleGroup
 						value={interval}
 						size="small"
-						onchange={(v) => changeParams({ interval: v }, { noScroll: true })}
+						onchange={(v) => changeParams({ interval: v }, { reset: false })}
 					>
 						{#each Object.values(PrometheusChartQueryInterval) as intervalOption (intervalOption)}
 							<ToggleGroupItem value={intervalOption}>{intervalOption}</ToggleGroupItem>

@@ -1,20 +1,20 @@
 <script lang="ts">
 	import { page } from '$app/state';
 	import { graphql, ValkeyAccessOrderField } from '$houdini';
-	import { docURL } from '$lib/doc';
-	import PersistenceActivityCard from '$lib/domain/activity/PersistenceActivityCard.svelte';
-	import Labels from '$lib/domain/labels/Labels.svelte';
-	import LabelsEditorModal from '$lib/domain/labels/LabelsEditorModal.svelte';
-	import type { Label } from '$lib/domain/labels/labels';
-	import IssueListItem from '$lib/domain/list-items/IssueListItem.svelte';
-	import ServiceMaintenanceListItem from '$lib/domain/list-items/ServiceMaintenanceListItem.svelte';
-	import WorkloadLink from '$lib/domain/workload/WorkloadLink.svelte';
-	import ExternalLink from '$lib/ui/ExternalLink.svelte';
-	import GraphErrors from '$lib/ui/GraphErrors.svelte';
-	import List from '$lib/ui/List.svelte';
-	import ManifestCard from '$lib/ui/ManifestCard.svelte';
-	import Pagination from '$lib/ui/Pagination.svelte';
-	import { changeParams } from '$lib/utils/searchparams';
+	import { docURL } from '#lib/doc.js';
+	import PersistenceActivityCard from '#lib/domain/activity/PersistenceActivityCard.svelte';
+	import Labels from '#lib/domain/labels/Labels.svelte';
+	import LabelsEditorModal from '#lib/domain/labels/LabelsEditorModal.svelte';
+	import type { Label } from '#lib/domain/labels/labels.js';
+	import IssueListItem from '#lib/domain/list-items/IssueListItem.svelte';
+	import ServiceMaintenanceListItem from '#lib/domain/list-items/ServiceMaintenanceListItem.svelte';
+	import WorkloadLink from '#lib/domain/workload/WorkloadLink.svelte';
+	import ExternalLink from '#lib/ui/ExternalLink.svelte';
+	import GraphErrors from '#lib/ui/GraphErrors.svelte';
+	import List from '#lib/ui/List.svelte';
+	import ManifestCard from '#lib/ui/ManifestCard.svelte';
+	import Pagination from '#lib/ui/Pagination.svelte';
+	import { changeParams } from '#lib/utils/searchparams.js';
 	import {
 		Alert,
 		Button,
@@ -130,7 +130,7 @@
 				field: tableSort.orderBy || ValkeyAccessOrderField.WORKLOAD
 			},
 			{
-				noScroll: true
+				reset: false
 			}
 		);
 	};

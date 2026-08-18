@@ -1,5 +1,5 @@
 import { load_ResourceUtilizationForApp } from '$houdini';
-import { addPageMeta } from '$lib/utils/pageMeta';
+import { addPageMeta } from '#lib/utils/pageMeta.js';
 
 function getStart(interval: string | null) {
 	switch (interval) {

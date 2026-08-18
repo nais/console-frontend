@@ -1,10 +1,10 @@
 <script lang="ts">
 	import { page } from '$app/state';
-	import TeamActivityCard from '$lib/domain/activity/TeamActivityCard.svelte';
-	import CriticalIssues from '$lib/domain/issues/CriticalIssues.svelte';
-	import TeamInventory from '$lib/domain/team/TeamInventory.svelte';
-	import TeamSummary from '$lib/domain/team/TeamSummary.svelte';
-	import GraphErrors from '$lib/ui/GraphErrors.svelte';
+	import TeamActivityCard from '#lib/domain/activity/TeamActivityCard.svelte';
+	import CriticalIssues from '#lib/domain/issues/CriticalIssues.svelte';
+	import TeamInventory from '#lib/domain/team/TeamInventory.svelte';
+	import TeamSummary from '#lib/domain/team/TeamSummary.svelte';
+	import GraphErrors from '#lib/ui/GraphErrors.svelte';
 	import { Alert, BodyShort } from '@nais/ds-svelte-community';
 	import type { PageProps } from './$types';
 

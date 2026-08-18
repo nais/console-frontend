@@ -1,4 +1,4 @@
-import type { FeedbackType } from '$lib/feedback/types';
+import type { FeedbackType } from '#lib/feedback/types.js';
 import type { Block, DividerBlock, HeaderBlock, SectionBlock } from '@slack/types';
 
 export function createFeedbackMessage(

@@ -1,13 +1,13 @@
 <script lang="ts">
 	import { afterNavigate } from '$app/navigation';
 	import { page } from '$app/state';
-	import { apmServicesURL, docURL, tenantURL } from '$lib/doc';
-	import SearchButton from '$lib/domain/search/SearchButton.svelte';
-	import Feedback from '$lib/feedback/Feedback.svelte';
-	import GrafanaIcon from '$lib/icons/GrafanaIcon.svelte';
-	import { themeSwitch } from '$lib/stores/theme.svelte';
-	import HeaderActionMenuItem from '$lib/ui/HeaderActionMenuItem.svelte';
-	import MobileSideDrawer from '$lib/ui/MobileSideDrawer.svelte';
+	import { apmServicesURL, docURL, tenantURL } from '#lib/doc.js';
+	import SearchButton from '#lib/domain/search/SearchButton.svelte';
+	import Feedback from '#lib/feedback/Feedback.svelte';
+	import GrafanaIcon from '#lib/icons/GrafanaIcon.svelte';
+	import { themeSwitch } from '#lib/stores/theme.svelte.js';
+	import HeaderActionMenuItem from '#lib/ui/HeaderActionMenuItem.svelte';
+	import MobileSideDrawer from '#lib/ui/MobileSideDrawer.svelte';
 	import { Button } from '@nais/ds-svelte-community';
 	import {
 		ActionMenu,
@@ -32,12 +32,7 @@
 	import Logo from '../Logo.svelte';
 
 	interface Props {
-		user:
-			| {
-					readonly name: string;
-					readonly isAdmin: boolean;
-			  }
-			| undefined;
+		user: { readonly name: string; readonly isAdmin: boolean } | undefined;
 	}
 
 	let { user }: Props = $props();
@@ -63,7 +58,9 @@
 		popover?.hidePopover?.();
 	}
 
-	afterNavigate(() => {
+	afterNavigate(({ shallow }) => {
+		if (shallow) return;
+
 		mobileNavOpen = false;
 	});
 </script>
@@ -91,10 +88,9 @@
 		aria-controls="mobile-navigation-drawer"
 		onclick={() => {
 			mobileNavOpen = true;
-		}}
+		}}><MenuHamburgerIcon title="Navigation" /></InternalHeaderButton
 	>
-		<MenuHamburgerIcon title="Navigation" />
-	</InternalHeaderButton>
+
 	<MobileSideDrawer bind:open={mobileNavOpen} id="mobile-navigation-drawer" title="Navigation">
 		<nav class="mobile-drawer-nav" aria-label="Navigation">
 			<div class="mobile-drawer-section">

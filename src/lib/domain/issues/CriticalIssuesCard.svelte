@@ -1,8 +1,8 @@
 <script lang="ts">
 	import { type IssueFragment } from '$houdini';
-	import IssueListItem from '$lib/domain/list-items/IssueListItem.svelte';
-	import List from '$lib/ui/List.svelte';
-	import SurfaceCard from '$lib/ui/SurfaceCard.svelte';
+	import IssueListItem from '#lib/domain/list-items/IssueListItem.svelte';
+	import List from '#lib/ui/List.svelte';
+	import SurfaceCard from '#lib/ui/SurfaceCard.svelte';
 
 	interface Props {
 		title: string;

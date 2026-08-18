@@ -11,7 +11,7 @@
 
 <script lang="ts">
 	import { goto } from '$app/navigation';
-	import { isAuthenticated } from '$lib/authentication';
+	import { isAuthenticated } from '#lib/authentication.js';
 
 	import { CheckmarkCircleIcon, XMarkIcon } from '@nais/ds-svelte-community/icons';
 	import { fade } from 'svelte/transition';
@@ -26,9 +26,9 @@
 				type="button"
 				class="close-button"
 				onclick={() => {
-					const url = page.url;
+					const url = new URL(page.url.href);
 					url.searchParams.delete('naisdevice');
-					goto(url.toString(), { replaceState: true });
+					goto(url.pathname + url.search, { replaceState: true });
 				}}
 				aria-label="Close"
 			>

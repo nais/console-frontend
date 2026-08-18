@@ -5,7 +5,7 @@
 		type PersistenceActivityCardOpenSearchFragment,
 		type PersistenceActivityCardValkeyFragment
 	} from '$houdini';
-	import SurfaceCard from '$lib/ui/SurfaceCard.svelte';
+	import SurfaceCard from '#lib/ui/SurfaceCard.svelte';
 	import ActivityTimeline from './ActivityTimeline.svelte';
 
 	interface ValkeyProps {

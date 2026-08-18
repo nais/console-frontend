@@ -1,5 +1,5 @@
 import { load_JobLayout } from '$houdini';
-import { addPageMeta } from '$lib/utils/pageMeta';
+import { addPageMeta } from '#lib/utils/pageMeta.js';
 
 export async function load(event) {
 	const jobLayout = await load_JobLayout({

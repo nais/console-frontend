@@ -9,8 +9,8 @@
 		ValkeyTier,
 		type ValkeyTier$options
 	} from '$houdini';
-	import ExternalLink from '$lib/ui/ExternalLink.svelte';
-	import { valkeyPlanCosts } from '$lib/utils/aivencost';
+	import ExternalLink from '#lib/ui/ExternalLink.svelte';
+	import { valkeyPlanCosts } from '#lib/utils/aivencost.js';
 	import {
 		Alert,
 		BodyLong,

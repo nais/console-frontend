@@ -1,11 +1,11 @@
 <script lang="ts">
 	import { type AppInstanceGroups$result } from '$houdini';
-	import CriticalIndicator from '$lib/ui/CriticalIndicator.svelte';
-	import IncomingIndicator from '$lib/ui/IncomingIndicator.svelte';
-	import RunningIndicator from '$lib/ui/RunningIndicator.svelte';
-	import SurfaceCard from '$lib/ui/SurfaceCard.svelte';
-	import Time from '$lib/ui/Time.svelte';
-	import { formatImageVersion } from '$lib/utils/image';
+	import CriticalIndicator from '#lib/ui/CriticalIndicator.svelte';
+	import IncomingIndicator from '#lib/ui/IncomingIndicator.svelte';
+	import RunningIndicator from '#lib/ui/RunningIndicator.svelte';
+	import SurfaceCard from '#lib/ui/SurfaceCard.svelte';
+	import Time from '#lib/ui/Time.svelte';
+	import { formatImageVersion } from '#lib/utils/image.js';
 	import { Tag } from '@nais/ds-svelte-community';
 	import { CloudSlashIcon } from '@nais/ds-svelte-community/icons';
 	import { slide } from 'svelte/transition';

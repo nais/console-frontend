@@ -15,9 +15,9 @@
 </script>
 
 <script lang="ts" generics="T extends MeanTimeToFixHistory">
-	import type { intervalOptionsVulnerabilityHistory } from '$lib/domain/vulnerability/dateUtils';
-	import { isReducedMotion } from '$lib/reducedMotion';
-	import { allSeverities, severityToColor, type Severity } from '$lib/utils/vulnerabilities';
+	import type { intervalOptionsVulnerabilityHistory } from '#lib/domain/vulnerability/dateUtils.js';
+	import { isReducedMotion } from '#lib/reducedMotion.js';
+	import { allSeverities, severityToColor, type Severity } from '#lib/utils/vulnerabilities.js';
 	import { format } from 'date-fns';
 	import { accessor, LineChart, Tooltip } from 'layerchart';
 	import { SvelteDate, SvelteMap } from 'svelte/reactivity';

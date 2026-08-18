@@ -1,13 +1,13 @@
 <script lang="ts">
 	import { page } from '$app/state';
-	import StaticUtilizationDonut from '$lib/chart/StaticUtilizationDonut.svelte';
-	import Labels from '$lib/domain/labels/Labels.svelte';
-	import IssueListItem from '$lib/domain/list-items/IssueListItem.svelte';
-	import WorkloadLink from '$lib/domain/workload/WorkloadLink.svelte';
-	import ExternalLink from '$lib/ui/ExternalLink.svelte';
-	import List from '$lib/ui/List.svelte';
-	import SurfaceCard from '$lib/ui/SurfaceCard.svelte';
-	import { euroValueFormatter } from '$lib/utils/formatters';
+	import StaticUtilizationDonut from '#lib/chart/StaticUtilizationDonut.svelte';
+	import Labels from '#lib/domain/labels/Labels.svelte';
+	import IssueListItem from '#lib/domain/list-items/IssueListItem.svelte';
+	import WorkloadLink from '#lib/domain/workload/WorkloadLink.svelte';
+	import ExternalLink from '#lib/ui/ExternalLink.svelte';
+	import List from '#lib/ui/List.svelte';
+	import SurfaceCard from '#lib/ui/SurfaceCard.svelte';
+	import { euroValueFormatter } from '#lib/utils/formatters.js';
 	import { Alert, BodyShort, Heading, HelpText } from '@nais/ds-svelte-community';
 	import prettyBytes from 'pretty-bytes';
 	import type { PageProps } from './$types';

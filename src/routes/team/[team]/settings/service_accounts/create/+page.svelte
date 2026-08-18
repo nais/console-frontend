@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { page } from '$app/state';
-	import CreateServiceAccountForm from '$lib/domain/service-accounts/CreateServiceAccountForm.svelte';
+	import CreateServiceAccountForm from '#lib/domain/service-accounts/CreateServiceAccountForm.svelte';
 	import type { PageProps } from './$types';
 
 	let { data }: PageProps = $props();

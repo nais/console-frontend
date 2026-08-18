@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { browser } from '$app/env';
-	import { themeSwitch } from '$lib/stores/theme.svelte';
+	import { themeSwitch } from '#lib/stores/theme.svelte.js';
 	import { Theme } from '@nais/ds-svelte-community';
 	import { InternalHeaderButton } from '@nais/ds-svelte-community/experimental';
 	import { MagnifyingGlassIcon } from '@nais/ds-svelte-community/icons';

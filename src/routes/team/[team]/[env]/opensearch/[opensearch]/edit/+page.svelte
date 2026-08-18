@@ -8,9 +8,9 @@
 		OpenSearchTier,
 		type OpenSearchTier$options
 	} from '$houdini';
-	import { docURL } from '$lib/doc';
-	import ExternalLink from '$lib/ui/ExternalLink.svelte';
-	import { openSearchPlanCosts, storageRequirements } from '$lib/utils/aivencost';
+	import { docURL } from '#lib/doc.js';
+	import ExternalLink from '#lib/ui/ExternalLink.svelte';
+	import { openSearchPlanCosts, storageRequirements } from '#lib/utils/aivencost.js';
 	import {
 		Alert,
 		BodyLong,

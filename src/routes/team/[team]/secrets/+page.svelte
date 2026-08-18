@@ -1,21 +1,21 @@
 <script lang="ts">
 	import { page } from '$app/state';
 	import { ActivityLogActivityType, OrderDirection, SecretOrderField } from '$houdini';
-	import { docURL } from '$lib/doc';
-	import TeamActivityCard from '$lib/domain/activity/TeamActivityCard.svelte';
-	import LabelFacets from '$lib/domain/labels/LabelFacets.svelte';
-	import { envTagVariant } from '$lib/envTagVariant';
-	import CollapsibleSidebar from '$lib/ui/CollapsibleSidebar.svelte';
-	import ExternalLink from '$lib/ui/ExternalLink.svelte';
-	import GraphErrors from '$lib/ui/GraphErrors.svelte';
-	import List from '$lib/ui/List.svelte';
-	import ListFilters from '$lib/ui/ListFilters.svelte';
-	import ListItem from '$lib/ui/ListItem.svelte';
-	import Pagination from '$lib/ui/Pagination.svelte';
-	import SurfaceCard from '$lib/ui/SurfaceCard.svelte';
-	import Time from '$lib/ui/Time.svelte';
-	import { changeParams } from '$lib/utils/searchparams';
-	import { getSecretPermissions } from '$lib/utils/secretPermissions';
+	import { docURL } from '#lib/doc.js';
+	import TeamActivityCard from '#lib/domain/activity/TeamActivityCard.svelte';
+	import LabelFacets from '#lib/domain/labels/LabelFacets.svelte';
+	import { envTagVariant } from '#lib/envTagVariant.js';
+	import CollapsibleSidebar from '#lib/ui/CollapsibleSidebar.svelte';
+	import ExternalLink from '#lib/ui/ExternalLink.svelte';
+	import GraphErrors from '#lib/ui/GraphErrors.svelte';
+	import List from '#lib/ui/List.svelte';
+	import ListFilters from '#lib/ui/ListFilters.svelte';
+	import ListItem from '#lib/ui/ListItem.svelte';
+	import Pagination from '#lib/ui/Pagination.svelte';
+	import SurfaceCard from '#lib/ui/SurfaceCard.svelte';
+	import Time from '#lib/ui/Time.svelte';
+	import { changeParams } from '#lib/utils/searchparams.js';
+	import { getSecretPermissions } from '#lib/utils/secretPermissions.js';
 	import { Button, Detail, Tag } from '@nais/ds-svelte-community';
 	import { FunnelIcon, PadlockLockedIcon, PlusIcon } from '@nais/ds-svelte-community/icons';
 	import type { PageProps } from './$types';
@@ -57,7 +57,7 @@
 
 	function toggleInUse(value: string) {
 		const next = inUseFilter === value ? '' : value;
-		changeParams({ inUse: next, after: '', before: '' }, { noScroll: true });
+		changeParams({ inUse: next, after: '', before: '' }, { reset: false });
 	}
 
 	function toggleEnvironment(env: string) {
@@ -65,7 +65,7 @@
 		const next = isSelected
 			? selectedEnvironments.filter((e) => e !== env)
 			: [...selectedEnvironments, env];
-		changeParams({ environments: next.join(','), after: '', before: '' }, { noScroll: true });
+		changeParams({ environments: next.join(','), after: '', before: '' }, { reset: false });
 	}
 
 	function handleLabelsChange(selected: string[]) {

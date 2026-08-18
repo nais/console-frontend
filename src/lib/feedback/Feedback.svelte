@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { page } from '$app/state';
-	import { replacer } from '$lib/replacer';
-	import { themeSwitch } from '$lib/stores/theme.svelte';
+	import { replacer } from '#lib/replacer.js';
+	import { themeSwitch } from '#lib/stores/theme.svelte.js';
 	import { Button, Checkbox, Heading, Modal, Select, Theme } from '@nais/ds-svelte-community';
 	import type { FeedbackType } from './types';
 

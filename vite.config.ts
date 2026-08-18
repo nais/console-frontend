@@ -33,9 +33,6 @@ export default defineConfig((mode) => {
 				adapter: adapter(),
 				alias: {
 					$houdini: '.houdini/'
-				},
-				experimental: {
-					explicitEnvironmentVariables: true
 				}
 			})
 		],

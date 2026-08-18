@@ -1,11 +1,11 @@
 <script lang="ts">
 	import { page } from '$app/state';
 	import { CVEOrderField, OrderDirection } from '$houdini';
-	import GraphErrors from '$lib/ui/GraphErrors.svelte';
-	import { urlToOrderDirection, urlToOrderField } from '$lib/ui/OrderByMenu.svelte';
-	import Pagination from '$lib/ui/Pagination.svelte';
-	import { changeParams } from '$lib/utils/searchparams';
-	import { severityToVariant } from '$lib/utils/vulnerabilities';
+	import GraphErrors from '#lib/ui/GraphErrors.svelte';
+	import { urlToOrderDirection, urlToOrderField } from '#lib/ui/OrderByMenu.svelte';
+	import Pagination from '#lib/ui/Pagination.svelte';
+	import { changeParams } from '#lib/utils/searchparams.js';
+	import { severityToVariant } from '#lib/utils/vulnerabilities.js';
 	import {
 		BodyLong,
 		Heading,
@@ -51,7 +51,7 @@
 				after: '',
 				before: ''
 			},
-			{ noScroll: true }
+			{ reset: false }
 		);
 	};
 </script>
@@ -128,7 +128,7 @@
 						before: $CVES.data?.cves.pageInfo.startCursor ?? '',
 						after: ''
 					},
-					{ noScroll: true }
+					{ reset: false }
 				),
 			loadNextPage: () =>
 				changeParams(
@@ -136,7 +136,7 @@
 						after: $CVES.data?.cves.pageInfo.endCursor ?? '',
 						before: ''
 					},
-					{ noScroll: true }
+					{ reset: false }
 				)
 		}}
 	/>

@@ -1,18 +1,18 @@
 <script lang="ts">
 	import { page } from '$app/state';
 	import { KafkaTopicOrderField, OrderDirection } from '$houdini';
-	import { docURL } from '$lib/doc';
-	import WorkloadListFilters from '$lib/domain/workload/WorkloadListFilters.svelte';
-	import { envTagVariant } from '$lib/envTagVariant';
-	import KafkaIcon from '$lib/icons/KafkaIcon.svelte';
-	import CollapsibleSidebar from '$lib/ui/CollapsibleSidebar.svelte';
-	import ExternalLink from '$lib/ui/ExternalLink.svelte';
-	import GraphErrors from '$lib/ui/GraphErrors.svelte';
-	import List from '$lib/ui/List.svelte';
-	import ListItem from '$lib/ui/ListItem.svelte';
-	import Pagination from '$lib/ui/Pagination.svelte';
-	import SurfaceCard from '$lib/ui/SurfaceCard.svelte';
-	import { changeParams } from '$lib/utils/searchparams';
+	import { docURL } from '#lib/doc.js';
+	import WorkloadListFilters from '#lib/domain/workload/WorkloadListFilters.svelte';
+	import { envTagVariant } from '#lib/envTagVariant.js';
+	import KafkaIcon from '#lib/icons/KafkaIcon.svelte';
+	import CollapsibleSidebar from '#lib/ui/CollapsibleSidebar.svelte';
+	import ExternalLink from '#lib/ui/ExternalLink.svelte';
+	import GraphErrors from '#lib/ui/GraphErrors.svelte';
+	import List from '#lib/ui/List.svelte';
+	import ListItem from '#lib/ui/ListItem.svelte';
+	import Pagination from '#lib/ui/Pagination.svelte';
+	import SurfaceCard from '#lib/ui/SurfaceCard.svelte';
+	import { changeParams } from '#lib/utils/searchparams.js';
 	import { Tag } from '@nais/ds-svelte-community';
 	import { FunnelIcon } from '@nais/ds-svelte-community/icons';
 	import type { PageProps } from './$types';
@@ -62,11 +62,11 @@
 	);
 
 	function handleEnvironmentsChange(selected: string[]) {
-		changeParams({ environments: selected.join(','), after: '', before: '' }, { noScroll: true });
+		changeParams({ environments: selected.join(','), after: '', before: '' }, { reset: false });
 	}
 
 	function handleLabelsChange(selected: string[]) {
-		changeParams({ labels: selected.join(','), after: '', before: '' }, { noScroll: true });
+		changeParams({ labels: selected.join(','), after: '', before: '' }, { reset: false });
 	}
 
 	const poolFacets = $derived($KafkaTopics.data?.team.kafkaTopics.facets?.pools ?? []);
@@ -80,7 +80,7 @@
 	function togglePool(pool: string) {
 		const isSelected = selectedPools.includes(pool);
 		const next = isSelected ? selectedPools.filter((p) => p !== pool) : [...selectedPools, pool];
-		changeParams({ pools: next.join(','), after: '', before: '' }, { noScroll: true });
+		changeParams({ pools: next.join(','), after: '', before: '' }, { reset: false });
 	}
 </script>
 
@@ -136,12 +136,12 @@
 								after: '',
 								before: $KafkaTopics.data?.team.kafkaTopics.pageInfo.startCursor ?? ''
 							},
-							{ noScroll: true }
+							{ reset: false }
 						),
 					loadNextPage: () =>
 						changeParams(
 							{ before: '', after: $KafkaTopics.data?.team.kafkaTopics.pageInfo.endCursor ?? '' },
-							{ noScroll: true }
+							{ reset: false }
 						)
 				}}
 			/>

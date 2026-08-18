@@ -1,14 +1,14 @@
 <script lang="ts">
-	import Labels from '$lib/domain/labels/Labels.svelte';
-	import WorkloadLink from '$lib/domain/workload/WorkloadLink.svelte';
-	import GraphErrors from '$lib/ui/GraphErrors.svelte';
+	import Labels from '#lib/domain/labels/Labels.svelte';
+	import WorkloadLink from '#lib/domain/workload/WorkloadLink.svelte';
+	import GraphErrors from '#lib/ui/GraphErrors.svelte';
 
 	import { KafkaTopicAclOrderField } from '$houdini';
-	import WarningIcon from '$lib/icons/WarningIcon.svelte';
-	import IconLabel from '$lib/ui/IconLabel.svelte';
-	import Pagination from '$lib/ui/Pagination.svelte';
-	import TooltipAlignHack from '$lib/ui/TooltipAlignHack.svelte';
-	import { changeParams } from '$lib/utils/searchparams';
+	import WarningIcon from '#lib/icons/WarningIcon.svelte';
+	import IconLabel from '#lib/ui/IconLabel.svelte';
+	import Pagination from '#lib/ui/Pagination.svelte';
+	import TooltipAlignHack from '#lib/ui/TooltipAlignHack.svelte';
+	import { changeParams } from '#lib/utils/searchparams.js';
 	import { Heading, Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte-community';
 	import type { PageProps } from './$types';
 
@@ -35,7 +35,7 @@
 				field: tableSort.orderBy || KafkaTopicAclOrderField.TEAM_SLUG
 			},
 			{
-				noScroll: true
+				reset: false
 			}
 		);
 	};

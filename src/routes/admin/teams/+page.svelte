@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { TeamOrderField } from '$houdini';
-	import Pagination from '$lib/ui/Pagination.svelte';
-	import { changeParams } from '$lib/utils/searchparams';
+	import Pagination from '#lib/ui/Pagination.svelte';
+	import { changeParams } from '#lib/utils/searchparams.js';
 	import {
 		Loader,
 		Table,
@@ -39,7 +39,7 @@
 				field: tableSort.orderBy || TeamOrderField.SLUG
 			},
 			{
-				noScroll: true
+				reset: false
 			}
 		);
 	};

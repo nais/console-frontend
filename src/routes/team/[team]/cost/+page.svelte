@@ -1,8 +1,8 @@
 <script lang="ts">
 	import { PendingValue } from '$houdini';
-	import CostAreaChart from '$lib/chart/CostAreaChart.svelte';
-	import GraphErrors from '$lib/ui/GraphErrors.svelte';
-	import { changeParams } from '$lib/utils/searchparams';
+	import CostAreaChart from '#lib/chart/CostAreaChart.svelte';
+	import GraphErrors from '#lib/ui/GraphErrors.svelte';
+	import { changeParams } from '#lib/utils/searchparams.js';
 	import {
 		BodyLong,
 		Heading,
@@ -26,7 +26,7 @@
 			<ToggleGroup
 				size="small"
 				value={interval}
-				onchange={(interval) => changeParams({ interval }, { noScroll: true })}
+				onchange={(interval) => changeParams({ interval }, { reset: false })}
 			>
 				{#each ['30d', '90d', '6m', '1y'] as interval (interval)}
 					<ToggleGroupItem value={interval}>{interval}</ToggleGroupItem>

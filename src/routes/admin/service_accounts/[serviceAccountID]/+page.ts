@@ -1,4 +1,4 @@
-import { addPageMeta } from '$lib/utils/pageMeta';
+import { addPageMeta } from '#lib/utils/pageMeta.js';
 import { get } from 'svelte/store';
 import type { PageLoad } from './$types';
 

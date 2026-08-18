@@ -1,4 +1,4 @@
-import { aggregateAndSortCostByDate, prepareMonthlyCostSeries } from '$lib/domain/cost/cost';
+import { aggregateAndSortCostByDate, prepareMonthlyCostSeries } from '#lib/domain/cost/cost.js';
 
 describe('aggregateAndSortCostByDate', () => {
 	test('data older than a year', () => {

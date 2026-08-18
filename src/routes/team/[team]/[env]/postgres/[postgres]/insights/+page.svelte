@@ -1,9 +1,9 @@
 <script lang="ts">
 	import { page } from '$app/state';
-	import PrometheusChart from '$lib/chart/PrometheusChart.svelte';
-	import { PrometheusChartQueryInterval } from '$lib/chart/util';
-	import { sanitizePromLabel } from '$lib/utils/formatters';
-	import { changeParams } from '$lib/utils/searchparams';
+	import PrometheusChart from '#lib/chart/PrometheusChart.svelte';
+	import { PrometheusChartQueryInterval } from '#lib/chart/util.js';
+	import { sanitizePromLabel } from '#lib/utils/formatters.js';
+	import { changeParams } from '#lib/utils/searchparams.js';
 	import { ToggleGroup, ToggleGroupItem } from '@nais/ds-svelte-community';
 	import type { PageProps } from './$types';
 

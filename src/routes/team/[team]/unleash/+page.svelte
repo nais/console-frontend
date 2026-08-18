@@ -2,15 +2,15 @@
 	import { goto } from '$app/navigation';
 	import { page } from '$app/state';
 	import { graphql } from '$houdini';
-	import { docURL } from '$lib/doc';
-	import CpuIcon from '$lib/icons/CpuIcon.svelte';
-	import MemoryIcon from '$lib/icons/MemoryIcon.svelte';
-	import Confirm from '$lib/ui/Confirm.svelte';
-	import ExternalLink from '$lib/ui/ExternalLink.svelte';
-	import IconLabel from '$lib/ui/IconLabel.svelte';
-	import SurfaceCard from '$lib/ui/SurfaceCard.svelte';
-	import Time from '$lib/ui/Time.svelte';
-	import TooltipAlignHack from '$lib/ui/TooltipAlignHack.svelte';
+	import { docURL } from '#lib/doc.js';
+	import CpuIcon from '#lib/icons/CpuIcon.svelte';
+	import MemoryIcon from '#lib/icons/MemoryIcon.svelte';
+	import Confirm from '#lib/ui/Confirm.svelte';
+	import ExternalLink from '#lib/ui/ExternalLink.svelte';
+	import IconLabel from '#lib/ui/IconLabel.svelte';
+	import SurfaceCard from '#lib/ui/SurfaceCard.svelte';
+	import Time from '#lib/ui/Time.svelte';
+	import TooltipAlignHack from '#lib/ui/TooltipAlignHack.svelte';
 	import {
 		Alert,
 		BodyLong,

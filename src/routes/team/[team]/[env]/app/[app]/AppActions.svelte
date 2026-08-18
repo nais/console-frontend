@@ -1,10 +1,10 @@
 <script lang="ts">
 	import { page } from '$app/state';
 	import { graphql, type Manifest as ManifestFragment } from '$houdini';
-	import Manifest from '$lib/domain/resources/Manifest.svelte';
-	import ActionConfirm from '$lib/ui/ActionConfirm.svelte';
-	import HeaderActions from '$lib/ui/HeaderActions.svelte';
-	import PageModal, { pageModalClick } from '$lib/ui/PageModal.svelte';
+	import Manifest from '#lib/domain/resources/Manifest.svelte';
+	import ActionConfirm from '#lib/ui/ActionConfirm.svelte';
+	import HeaderActions from '#lib/ui/HeaderActions.svelte';
+	import PageModal, { pageModalClick } from '#lib/ui/PageModal.svelte';
 	import { Button, Heading, Modal } from '@nais/ds-svelte-community';
 	import EnvPage from './env/+page.svelte';
 	import ImagePage from './image/+page.svelte';

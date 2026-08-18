@@ -5,7 +5,7 @@
 	import Logo from '../Logo.svelte';
 	import { isNaisdevice } from './Naisdevice.svelte';
 
-	const redirectPath = (url: URL) => {
+	const redirectPath = (url: { pathname: string; search: string; hash: string }) => {
 		return encodeURIComponent(url.pathname + url.search + url.hash);
 	};
 

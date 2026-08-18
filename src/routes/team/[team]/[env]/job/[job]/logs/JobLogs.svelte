@@ -1,15 +1,15 @@
 <script lang="ts">
 	import { page } from '$app/state';
 	import { graphql, JobRunState, type RunsWithPodNames$result } from '$houdini';
-	import { apmURL } from '$lib/doc';
-	import ExternalLink from '$lib/ui/ExternalLink.svelte';
-	import { exhaustive } from '$lib/utils/houdini';
+	import { apmURL } from '#lib/doc.js';
+	import ExternalLink from '#lib/ui/ExternalLink.svelte';
+	import { exhaustive } from '#lib/utils/houdini.js';
 	import {
 		createBufferedLogAppender,
 		getLogLevel,
 		parseLogMessage,
 		type LogLine
-	} from '$lib/utils/logViewer';
+	} from '#lib/utils/logViewer.js';
 	import { BodyShort, Button, Chips, ToggleChip } from '@nais/ds-svelte-community';
 	import { onDestroy, onMount } from 'svelte';
 	import { SvelteSet } from 'svelte/reactivity';

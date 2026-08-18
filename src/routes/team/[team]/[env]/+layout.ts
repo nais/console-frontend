@@ -1,5 +1,5 @@
-import { envTagVariant } from '$lib/envTagVariant';
-import { addPageMeta } from '$lib/utils/pageMeta';
+import { envTagVariant } from '#lib/envTagVariant.js';
+import { addPageMeta } from '#lib/utils/pageMeta.js';
 
 export async function load(event) {
 	return {

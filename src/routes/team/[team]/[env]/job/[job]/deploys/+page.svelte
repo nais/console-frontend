@@ -1,14 +1,14 @@
 <script lang="ts">
 	import { page } from '$app/state';
-	import { docURL } from '$lib/doc';
-	import DeploymentListItem from '$lib/domain/list-items/DeploymentListItem.svelte';
-	import DocsLink from '$lib/ui/DocsLink.svelte';
-	import ExternalLink from '$lib/ui/ExternalLink.svelte';
-	import GraphErrors from '$lib/ui/GraphErrors.svelte';
-	import List from '$lib/ui/List.svelte';
-	import Pagination from '$lib/ui/Pagination.svelte';
-	import { extractIdFromUrl } from '$lib/utils/extractIdFromUrl';
-	import { changeParams } from '$lib/utils/searchparams';
+	import { docURL } from '#lib/doc.js';
+	import DeploymentListItem from '#lib/domain/list-items/DeploymentListItem.svelte';
+	import DocsLink from '#lib/ui/DocsLink.svelte';
+	import ExternalLink from '#lib/ui/ExternalLink.svelte';
+	import GraphErrors from '#lib/ui/GraphErrors.svelte';
+	import List from '#lib/ui/List.svelte';
+	import Pagination from '#lib/ui/Pagination.svelte';
+	import { extractIdFromUrl } from '#lib/utils/extractIdFromUrl.js';
+	import { changeParams } from '#lib/utils/searchparams.js';
 	import { BodyLong } from '@nais/ds-svelte-community';
 	import { tick } from 'svelte';
 	import type { PageProps } from './$types';

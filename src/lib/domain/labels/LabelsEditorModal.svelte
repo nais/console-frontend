@@ -1,5 +1,5 @@
 <script lang="ts">
-	import GraphErrors from '$lib/ui/GraphErrors.svelte';
+	import GraphErrors from '#lib/ui/GraphErrors.svelte';
 	import { BodyShort, Button, Heading, Modal } from '@nais/ds-svelte-community';
 	import { untrack } from 'svelte';
 	import LabelRows from './LabelRows.svelte';

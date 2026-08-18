@@ -4,7 +4,7 @@ import {
 	load_TeamSummaryCost,
 	load_TeamSummaryVulnerabilities
 } from '$houdini';
-import { addPageMeta } from '$lib/utils/pageMeta';
+import { addPageMeta } from '#lib/utils/pageMeta.js';
 
 export async function load(event) {
 	const to = new Date();

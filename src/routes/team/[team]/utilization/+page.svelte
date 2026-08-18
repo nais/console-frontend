@@ -1,17 +1,17 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import { UtilizationResourceType } from '$houdini';
-	import UtilizationChart from '$lib/chart/UtilizationChart.svelte';
-	import WorkloadLink from '$lib/domain/workload/WorkloadLink.svelte';
-	import GraphErrors from '$lib/ui/GraphErrors.svelte';
-	import SurfaceCard from '$lib/ui/SurfaceCard.svelte';
-	import { euroValueFormatter } from '$lib/utils/formatters';
+	import UtilizationChart from '#lib/chart/UtilizationChart.svelte';
+	import WorkloadLink from '#lib/domain/workload/WorkloadLink.svelte';
+	import GraphErrors from '#lib/ui/GraphErrors.svelte';
+	import SurfaceCard from '#lib/ui/SurfaceCard.svelte';
+	import { euroValueFormatter } from '#lib/utils/formatters.js';
 	import {
 		getTeamOverageData,
 		round,
 		yearlyOverageCost,
 		type TeamOverageData
-	} from '$lib/utils/resources';
+	} from '#lib/utils/resources.js';
 	import {
 		Heading,
 		Table,

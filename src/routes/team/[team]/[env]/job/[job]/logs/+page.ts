@@ -1,5 +1,5 @@
 import { load_RunsWithPodNames } from '$houdini';
-import { addPageMeta } from '$lib/utils/pageMeta';
+import { addPageMeta } from '#lib/utils/pageMeta.js';
 
 export const ssr = false;
 

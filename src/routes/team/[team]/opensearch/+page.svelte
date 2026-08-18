@@ -1,23 +1,23 @@
 <script lang="ts">
 	import { page } from '$app/state';
 	import { OpenSearchOrderField, OrderDirection } from '$houdini';
-	import { docURL } from '$lib/doc';
-	import IssueSeverityTags from '$lib/domain/issues/IssueSeverityTags.svelte';
-	import WorkloadListFilters from '$lib/domain/workload/WorkloadListFilters.svelte';
-	import { envTagVariant } from '$lib/envTagVariant';
-	import CollapsibleSidebar from '$lib/ui/CollapsibleSidebar.svelte';
-	import ExternalLink from '$lib/ui/ExternalLink.svelte';
-	import GraphErrors from '$lib/ui/GraphErrors.svelte';
-	import List from '$lib/ui/List.svelte';
-	import ListItem from '$lib/ui/ListItem.svelte';
-	import PageModal, { pageModalClick } from '$lib/ui/PageModal.svelte';
-	import Pagination from '$lib/ui/Pagination.svelte';
-	import RunningIndicator from '$lib/ui/RunningIndicator.svelte';
-	import SurfaceCard from '$lib/ui/SurfaceCard.svelte';
-	import TooltipAlignHack from '$lib/ui/TooltipAlignHack.svelte';
-	import { capitalizeFirstLetter } from '$lib/utils/formatters';
-	import { countIssuesBySeverity } from '$lib/utils/issueCounts';
-	import { changeParams } from '$lib/utils/searchparams';
+	import { docURL } from '#lib/doc.js';
+	import IssueSeverityTags from '#lib/domain/issues/IssueSeverityTags.svelte';
+	import WorkloadListFilters from '#lib/domain/workload/WorkloadListFilters.svelte';
+	import { envTagVariant } from '#lib/envTagVariant.js';
+	import CollapsibleSidebar from '#lib/ui/CollapsibleSidebar.svelte';
+	import ExternalLink from '#lib/ui/ExternalLink.svelte';
+	import GraphErrors from '#lib/ui/GraphErrors.svelte';
+	import List from '#lib/ui/List.svelte';
+	import ListItem from '#lib/ui/ListItem.svelte';
+	import PageModal, { pageModalClick } from '#lib/ui/PageModal.svelte';
+	import Pagination from '#lib/ui/Pagination.svelte';
+	import RunningIndicator from '#lib/ui/RunningIndicator.svelte';
+	import SurfaceCard from '#lib/ui/SurfaceCard.svelte';
+	import TooltipAlignHack from '#lib/ui/TooltipAlignHack.svelte';
+	import { capitalizeFirstLetter } from '#lib/utils/formatters.js';
+	import { countIssuesBySeverity } from '#lib/utils/issueCounts.js';
+	import { changeParams } from '#lib/utils/searchparams.js';
 	import { Button, Tag } from '@nais/ds-svelte-community';
 	import { CircleFillIcon, FunnelIcon, PlusIcon } from '@nais/ds-svelte-community/icons';
 	import CreatePage from '../opensearch/create/+page.svelte';
@@ -82,11 +82,11 @@
 	);
 
 	function handleEnvironmentsChange(selected: string[]) {
-		changeParams({ environments: selected.join(','), after: '', before: '' }, { noScroll: true });
+		changeParams({ environments: selected.join(','), after: '', before: '' }, { reset: false });
 	}
 
 	function handleLabelsChange(selected: string[]) {
-		changeParams({ labels: selected.join(','), after: '', before: '' }, { noScroll: true });
+		changeParams({ labels: selected.join(','), after: '', before: '' }, { reset: false });
 	}
 
 	const tierFacets = $derived($OpenSearch.data?.team.openSearches.facets?.tiers ?? []);
@@ -100,7 +100,7 @@
 	function toggleTier(tier: string) {
 		const isSelected = selectedTiers.includes(tier);
 		const next = isSelected ? selectedTiers.filter((t) => t !== tier) : [...selectedTiers, tier];
-		changeParams({ tiers: next.join(','), after: '', before: '' }, { noScroll: true });
+		changeParams({ tiers: next.join(','), after: '', before: '' }, { reset: false });
 	}
 </script>
 
@@ -211,12 +211,12 @@
 								after: '',
 								before: $OpenSearch.data?.team.openSearches.pageInfo.startCursor ?? ''
 							},
-							{ noScroll: true }
+							{ reset: false }
 						),
 					loadNextPage: () =>
 						changeParams(
 							{ before: '', after: $OpenSearch.data?.team.openSearches.pageInfo.endCursor ?? '' },
-							{ noScroll: true }
+							{ reset: false }
 						)
 				}}
 			/>
