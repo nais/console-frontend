@@ -1,4 +1,11 @@
-import { GITHUB_ORGANIZATION, GRAPHQL_ENDPOINT, TENANT_NAME } from '$app/env/private';
+import {
+	GITHUB_ORGANIZATION,
+	GRAPHQL_ENDPOINT,
+	TENANT_NAME,
+	TRACKING_DEV,
+	TRACKING_ENABLED,
+	TRACKING_WEBSITE_ID
+} from '$app/env/private';
 import { logger } from '$lib/logger';
 import type { Handle, HandleFetch } from '@sveltejs/kit';
 
@@ -37,6 +44,9 @@ export const handle: Handle = async ({ event, resolve }) => {
 
 	event.locals.tenantName = TENANT_NAME || '';
 	event.locals.githubOrganization = GITHUB_ORGANIZATION || '';
+	event.locals.trackingEnabled = TRACKING_ENABLED === 'true';
+	event.locals.trackingWebsiteId = TRACKING_WEBSITE_ID || '';
+	event.locals.trackingDev = TRACKING_DEV === 'true';
 
 	const response = await resolve(event, {
 		filterSerializedResponseHeaders: () => true

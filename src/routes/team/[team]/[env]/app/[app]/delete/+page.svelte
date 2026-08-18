@@ -5,6 +5,7 @@
 	import WarningIcon from '$lib/icons/WarningIcon.svelte';
 	import GraphErrors from '$lib/ui/GraphErrors.svelte';
 	import Time from '$lib/ui/Time.svelte';
+	import { trackEvent } from '$lib/tracking';
 	import { BodyShort, Button, Heading, TextField } from '@nais/ds-svelte-community';
 	import { get } from 'svelte/store';
 	import type { PageProps } from './$types';
@@ -38,6 +39,7 @@
 		});
 
 		if (resp.data?.deleteApplication.success) {
+			trackEvent('delete-app');
 			goto(`/team/${app.team.slug}?deleted=app/${app.name}`);
 		}
 	};

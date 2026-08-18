@@ -24,6 +24,7 @@
 		StopIcon,
 		TrashIcon
 	} from '@nais/ds-svelte-community/icons';
+	import { trackEvent } from '$lib/tracking';
 
 	interface Props {
 		viewerIsMember: boolean;
@@ -85,6 +86,7 @@
 		if (result.errors) {
 			return { ok: false, message: result.errors.map((e) => e.message).join(', ') };
 		}
+		trackEvent('restart-app');
 		return { ok: true, message: 'Successfully restarted application.' };
 	};
 
@@ -96,6 +98,7 @@
 		if (result.errors) {
 			return { ok: false, message: result.errors.map((e) => e.message).join(', ') };
 		}
+		trackEvent('stop-app');
 		return {
 			ok: true,
 			message:

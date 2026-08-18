@@ -20,6 +20,7 @@
 		PlayIcon,
 		TrashIcon
 	} from '@nais/ds-svelte-community/icons';
+	import { trackEvent } from '$lib/tracking';
 
 	interface Props {
 		viewerIsMember: boolean;
@@ -94,6 +95,7 @@
 		if (result.errors) {
 			return { ok: false, message: result.errors.map((e) => e.message).join(', ') };
 		}
+		trackEvent('trigger-job');
 		return { ok: true, message: `Successfully triggered run "${runName}".` };
 	};
 </script>
