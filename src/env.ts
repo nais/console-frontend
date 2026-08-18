@@ -15,5 +15,8 @@ export const variables = defineEnvVars({
 	TENANT_NAME: { schema: optional },
 	GITHUB_ORGANIZATION: { schema: optional },
 	SLACK_API_TOKEN: { schema: optional },
-	SLACK_FEEDBACK_CHANNEL_ID: { schema: optional }
+	SLACK_FEEDBACK_CHANNEL_ID: { schema: optional },
+	TRACKING_ENABLED: { schema: optional },
+	TRACKING_WEBSITE_ID: { schema: optional },
+	TRACKING_DEV: { schema: optional }
 });
