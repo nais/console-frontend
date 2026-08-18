@@ -200,11 +200,19 @@
 		stopPolling();
 	});
 
+	// Both mutations return the resulting allowed-team list so the response can
+	// be checked against what was asked for. A backend that accepts the request
+	// and changes nothing is otherwise indistinguishable from success.
 	const allowTeamAccess = graphql(`
 		mutation AllowTeamAccess($team: Slug!, $allowedTeamSlug: Slug!) {
 			allowTeamAccessToUnleash(input: { teamSlug: $team, allowedTeamSlug: $allowedTeamSlug }) {
 				unleash {
 					name
+					allowedTeams(first: 100) {
+						nodes {
+							slug
+						}
+					}
 				}
 			}
 		}
@@ -214,6 +222,11 @@
 			revokeTeamAccessToUnleash(input: { teamSlug: $team, revokedTeamSlug: $revokedTeamSlug }) {
 				unleash {
 					name
+					allowedTeams(first: 100) {
+						nodes {
+							slug
+						}
+					}
 				}
 			}
 		}
@@ -221,14 +234,31 @@
 
 	let removeTeamName = $state('');
 	let removeTeamConfirmOpen = $state(false);
+	let accessError = $state('');
 
-	const removeTeam = (removeTeamName: string) =>
-		revokeTeamAccess
-			.mutate({
+	const removeTeam = async (removeTeamName: string) => {
+		accessError = '';
+		try {
+			const result = await revokeTeamAccess.mutate({
 				team: teamSlug,
 				revokedTeamSlug: removeTeamName
-			})
-			.then(() => Unleash.fetch({ policy: 'CacheAndNetwork' }));
+			});
+			if (result.errors && result.errors.length > 0) {
+				accessError = extractErrorMessages(result.errors).join(', ');
+				return;
+			}
+			const remaining = result.data?.revokeTeamAccessToUnleash.unleash?.allowedTeams.nodes;
+			if (remaining?.some((t) => t.slug === removeTeamName)) {
+				accessError = `${removeTeamName} still has access after the request was accepted. Nothing was changed — please report this.`;
+				return;
+			}
+		} catch (e) {
+			accessError = e instanceof Error ? e.message : 'An unexpected error occurred.';
+			return;
+		} finally {
+			await Unleash.fetch({ policy: 'CacheAndNetwork' });
+		}
+	};
 
 	const handleRemoveTeamClick = (teamName: string) => {
 		removeTeamName = teamName;
@@ -237,13 +267,29 @@
 
 	let addTeamModalOpen = $state(false);
 
-	const addTeam = (teamName: string) =>
-		allowTeamAccess
-			.mutate({
+	const addTeam = async (teamName: string) => {
+		accessError = '';
+		try {
+			const result = await allowTeamAccess.mutate({
 				team: teamSlug,
 				allowedTeamSlug: teamName
-			})
-			.then(() => Unleash.fetch({ policy: 'CacheAndNetwork' }));
+			});
+			if (result.errors && result.errors.length > 0) {
+				accessError = extractErrorMessages(result.errors).join(', ');
+				return;
+			}
+			const allowed = result.data?.allowTeamAccessToUnleash.unleash?.allowedTeams.nodes;
+			if (allowed && !allowed.some((t) => t.slug === teamName)) {
+				accessError = `${teamName} was not granted access even though the request was accepted. Nothing was changed — please report this.`;
+				return;
+			}
+		} catch (e) {
+			accessError = e instanceof Error ? e.message : 'An unexpected error occurred.';
+			return;
+		} finally {
+			await Unleash.fetch({ policy: 'CacheAndNetwork' });
+		}
+	};
 
 	// Delete Unleash instance
 	const deleteUnleashInstance = graphql(`
@@ -357,6 +403,13 @@
 	<Alert variant="error" size="small" style="margin-bottom: 1rem;">
 		{deleteError}
 		<Button variant="tertiary" size="small" onclick={() => (deleteError = '')}>Dismiss</Button>
+	</Alert>
+{/if}
+
+{#if accessError}
+	<Alert variant="error" size="small" style="margin-bottom: 1rem;">
+		{accessError}
+		<Button variant="tertiary" size="small" onclick={() => (accessError = '')}>Dismiss</Button>
 	</Alert>
 {/if}
 
