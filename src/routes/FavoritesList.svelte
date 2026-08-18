@@ -3,13 +3,16 @@
 	import { favorites } from '$lib/stores/favorites.svelte';
 	import { trackEvent } from '$lib/tracking';
 	import SortableList from '$lib/ui/SortableList.svelte';
-	import { BodyLong, Heading } from '@nais/ds-svelte-community';
+	import { BodyLong, BodyShort, Heading } from '@nais/ds-svelte-community';
 	import { StarIcon } from '@nais/ds-svelte-community/icons';
 </script>
 
 <div class="favorites-list">
 	<div class="header">
-		<Heading as="h2" size="large" spacing>My Favorites</Heading>
+		<div>
+			<Heading as="h2" size="large" spacing>My Favorites</Heading>
+			<BodyShort>Favorites are also available in the search modal.</BodyShort>
+		</div>
 	</div>
 
 	<SortableList

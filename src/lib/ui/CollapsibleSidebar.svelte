@@ -8,7 +8,7 @@
 		open = $bindable(false),
 		label = 'Filters'
 	}: {
-		children: Snippet;
+		children?: Snippet;
 		extras?: Snippet;
 		open?: boolean;
 		label?: string;
@@ -30,17 +30,21 @@
 	});
 </script>
 
-<div class="layout-sidebar desktop-only">
-	{@render children()}
+<div class="sidebar-column">
+	{#if children}
+		<div class="layout-sidebar desktop-only">
+			{@render children()}
+		</div>
+	{/if}
+
+	{#if extras}
+		<div class="sidebar-extras">
+			{@render extras()}
+		</div>
+	{/if}
 </div>
 
-{#if extras}
-	<div class="sidebar-extras">
-		{@render extras()}
-	</div>
-{/if}
-
-{#if open}
+{#if open && children}
 	<Modal bind:open header={{ heading: label, size: 'small' }} class="filter-drawer">
 		<div class="drawer-content">
 			{@render children()}
@@ -49,25 +53,22 @@
 {/if}
 
 <style>
+	.sidebar-column {
+		display: flex;
+		flex-direction: column;
+		gap: var(--ax-space-16);
+		align-self: start;
+	}
+
 	.desktop-only {
 		display: grid;
 		gap: var(--ax-space-16);
 		align-content: start;
 	}
 
-	.sidebar-extras {
-		grid-column: 2;
-		margin-top: calc(var(--ax-space-16) - var(--spacing-layout));
-	}
-
 	@media (max-width: 1024px) {
 		.desktop-only {
 			display: none;
-		}
-
-		.sidebar-extras {
-			grid-column: 1;
-			margin-top: 0;
 		}
 	}
 

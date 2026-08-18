@@ -3,23 +3,36 @@
 </script>
 
 <script lang="ts">
+	import type { ChartState } from 'layerchart';
 	import type { Snippet } from 'svelte';
 
-	import LegendWrapperData, {
-		createLegendContext,
-		type LegendSnippetProps
-	} from './LegendWrapperData.svelte';
+	import LegendWrapperData, { createLegendContext } from './LegendWrapperData.svelte';
 
 	let {
 		children,
 		height,
-		ref = $bindable()
-	}: { children: Snippet; height: `${number}px`; ref?: HTMLDivElement | null } = $props();
+		ref = $bindable(),
+		onContextReady
+	}: {
+		children: Snippet;
+		height: `${number}px`;
+		ref?: HTMLDivElement | null;
+		onContextReady?: (ctx: ReturnType<typeof createLegendContext>) => void;
+	} = $props();
+
+	type LegendSnippetContext = { context: ChartState };
 
 	const ctx = createLegendContext();
+	let contextReported = false;
+	$effect.pre(() => {
+		if (!contextReported && onContextReady) {
+			contextReported = true;
+			onContextReady(ctx);
+		}
+	});
 </script>
 
-{#snippet legendSnippet({ context }: { context: LegendSnippetProps })}
+{#snippet legendSnippet({ context }: LegendSnippetContext)}
 	<LegendWrapperData {context} />
 {/snippet}
 
@@ -34,7 +47,17 @@
 						class:deselected={ctx.selection &&
 							!ctx.selection.isEmpty() &&
 							!ctx.selection.isSelected(item.key)}
-						onclick={() => ctx.selection?.toggle(item.key)}
+						onclick={() => {
+							ctx.selection?.toggle(item.key);
+							ctx.hiddenKeys.clear();
+							if (ctx.selection && !ctx.selection.isEmpty()) {
+								for (const legendItem of ctx.items) {
+									if (!ctx.selection.isSelected(legendItem.key)) {
+										ctx.hiddenKeys.add(legendItem.key);
+									}
+								}
+							}
+						}}
 					>
 						<span class="legend-swatch" style="background-color: {item.color};"></span>
 						<span class="legend-label">{item.label}</span>

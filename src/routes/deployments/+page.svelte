@@ -32,7 +32,7 @@
 	};
 
 	let { data }: PageProps = $props();
-	let { TenantDeployments, DeploymentsMetadata } = $derived(data);
+	let { TenantDeployments } = $derived(data);
 	let after: string = $derived($TenantDeployments.variables?.after ?? '');
 	let before: string = $derived($TenantDeployments.variables?.before ?? '');
 
@@ -42,7 +42,7 @@
 	);
 
 	const allEnvs = $derived(
-		$DeploymentsMetadata.data?.environments.nodes.map((env) => env.name) ?? []
+		$TenantDeployments.data?.environments.nodes.map((env) => env.name) ?? []
 	);
 
 	let filteredEnvs = $derived(page.url.searchParams.get('environments')?.split(',') ?? allEnvs);
@@ -110,7 +110,7 @@
 									</Button>
 								{/snippet}
 								<ActionMenuCheckboxItem
-									checked={$DeploymentsMetadata.data?.environments.nodes.every((env) =>
+									checked={$TenantDeployments.data?.environments.nodes.every((env) =>
 										filteredEnvs.includes(env.name)
 									)
 										? true
@@ -121,7 +121,7 @@
 								>
 									All environments
 								</ActionMenuCheckboxItem>
-								{#each $DeploymentsMetadata.data?.environments.nodes ?? [] as { name, id } (id)}
+								{#each $TenantDeployments.data?.environments.nodes ?? [] as { name, id } (id)}
 									<ActionMenuCheckboxItem
 										checked={filteredEnvs.includes(name)}
 										onchange={(checked) =>

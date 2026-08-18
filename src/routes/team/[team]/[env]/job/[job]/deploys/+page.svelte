@@ -61,7 +61,7 @@
 <GraphErrors errors={$JobDeploys.errors} />
 
 {#if $JobDeploys.data}
-	{@const deploys = $JobDeploys.data.team.environment.job.deployments}
+	{const deploys = $derived($JobDeploys.data.team.environment.job.deployments)}
 	<div class="wrapper">
 		<div>
 			{#if deploys.pageInfo.totalCount === 0}
@@ -82,7 +82,7 @@
 						<DocsLink path="/build/" />
 					{/snippet}
 					{#each deploys.edges as { node: deployment } (deployment.id)}
-						{@const id = extractIdFromUrl(deployment.triggerUrl ?? '')}
+						{const id = $derived(extractIdFromUrl(deployment.triggerUrl ?? ''))}
 						<div {id} class:highlight-in={id !== '' && highlightId !== '' && id === highlightId}>
 							<DeploymentListItem {deployment} />
 						</div>

@@ -19,7 +19,7 @@
 	import type { PageProps } from './$types';
 
 	let { data }: PageProps = $props();
-	let { Applications, ApplicationsListMetadata } = $derived(data);
+	let { Applications } = $derived(data);
 
 	let filtersOpen = $state(false);
 
@@ -29,7 +29,7 @@
 	let before: string = $derived($Applications.variables?.before ?? '');
 
 	const totalApplications = $derived(
-		$ApplicationsListMetadata.data?.team.totalApplications.pageInfo.totalCount ?? 0
+		$Applications.data?.team.applications.pageInfo.totalCount ?? 0
 	);
 
 	let selectedEnvironments: string[] = $derived(
@@ -42,6 +42,13 @@
 
 	let selectedLabels: string[] = $derived(
 		page.url.searchParams.get('labels')?.split(',').filter(Boolean) ?? []
+	);
+
+	const hasActiveFilters = $derived(
+		!!page.url.searchParams.get('filter') ||
+			selectedEnvironments.length > 0 ||
+			selectedStates.length > 0 ||
+			selectedLabels.length > 0
 	);
 
 	const sortFields: { value: ApplicationOrderField$options; label: string }[] = [
@@ -60,8 +67,7 @@
 
 	const currentSortDirection: OrderDirection$options = $derived(
 		(Object.values(OrderDirection).find((d) => page.url.searchParams.get('sort')?.endsWith(d)) as
-			| OrderDirection$options
-			| undefined) ?? OrderDirection.DESC
+			OrderDirection$options | undefined) ?? OrderDirection.DESC
 	);
 
 	function setSort(field: ApplicationOrderField$options) {
@@ -131,7 +137,7 @@
 <div class="layout-two-column">
 	<div>
 		{#if totalApplications > 0}
-			{@const apps = $Applications.data?.team.applications}
+			{const apps = $derived($Applications.data?.team.applications)}
 
 			<List title="Apps" count={apps?.pageInfo.totalCount ?? 0}>
 				{#snippet actions()}
@@ -161,7 +167,15 @@
 				}}
 			/>
 		{:else}
-			<BodyLong><strong>No applications found.</strong></BodyLong>
+			<BodyLong>
+				<strong>
+					{#if hasActiveFilters}
+						No applications match your filters.
+					{:else}
+						No applications found.
+					{/if}
+				</strong>
+			</BodyLong>
 		{/if}
 	</div>
 	<CollapsibleSidebar bind:open={filtersOpen}>

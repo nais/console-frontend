@@ -80,6 +80,7 @@ body {
 html {
 	font-size: 16px;
 	overflow-y: scroll;
+	scrollbar-gutter: stable;
 }
 
 .text-aligned-icon {
@@ -415,16 +416,15 @@ html {
 }
 
 .search-modal {
+	display: flex;
+	flex-direction: column;
 	height: 90%;
 	max-height: 52rem;
 
-	> .aksel-modal__header {
-		display: none;
-	}
-
 	> .aksel-modal__body {
+		flex: 1;
+		min-height: 0;
 		padding: 0;
-		height: 100%;
 	}
 }
 

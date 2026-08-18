@@ -7,7 +7,7 @@
 
 	let { data, children }: LayoutProps = $props();
 	let { JobLayout, viewerIsMember } = $derived(data);
-	let job = $derived($JobLayout.data?.team?.environment?.job ?? null);
+	let job = $derived($JobLayout?.data?.team?.environment?.job ?? null);
 
 	let routeId = $derived(page.route.id ?? '');
 	let tabs = $derived([

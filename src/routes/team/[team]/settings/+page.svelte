@@ -1,12 +1,11 @@
 <script lang="ts">
-	import { browser } from '$app/environment';
+	import { browser } from '$app/env';
 	import { resolve } from '$app/paths';
 	import {
 		ActivityLogActivityType,
 		graphql,
 		type GetTeamDeleteKey$input,
-		type GetTeamDeleteKey$result,
-		type QueryResult
+		type GetTeamDeleteKey$result
 	} from '$houdini';
 	import { docURL } from '$lib/doc';
 	import TeamActivityCard from '$lib/domain/activity/TeamActivityCard.svelte';
@@ -32,6 +31,7 @@
 		TokenIcon,
 		TrashIcon
 	} from '@nais/ds-svelte-community/icons';
+	import type { QueryResult } from 'houdini/runtime';
 	import type { PageProps } from './$types';
 	import EditText from './EditText.svelte';
 
@@ -215,7 +215,7 @@
 					</BodyShort>
 
 					{#if teamSettings.deploymentKey}
-						{@const deployKey = teamSettings.deploymentKey}
+						{const deployKey = $derived(teamSettings.deploymentKey)}
 						<dl>
 							<dt>Created:</dt>
 							<dd><Time time={deployKey.created} distance={true} /></dd>
@@ -317,7 +317,7 @@
 			<SurfaceCard title="Managed Resources">
 				<dl>
 					{#if $TeamSettings.data?.team.externalResources}
-						{@const external = $TeamSettings.data.team.externalResources}
+						{const external = $derived($TeamSettings.data.team.externalResources)}
 						{#if external.googleArtifactRegistry}
 							<Detail as="dt">Google Artifact Registry</Detail>
 							<BodyShort as="dd">
@@ -461,8 +461,9 @@
 		{#if deleteKeyResp?.errors}
 			<GraphErrors errors={deleteKeyResp.errors}></GraphErrors>
 		{:else if deleteKeyResp?.data}
-			{@const key =
-				window.location + '/confirm_delete?key=' + deleteKeyResp.data.requestTeamDeletion.key?.key}
+			{const key = $derived(
+				window.location + '/confirm_delete?key=' + deleteKeyResp.data.requestTeamDeletion.key?.key
+			)}
 			<Alert variant="info">
 				Deletion of <strong>{teamSlug}</strong> has been requested. To finalize the deletion send
 				this link to another team owner and let them confirm the deletion.

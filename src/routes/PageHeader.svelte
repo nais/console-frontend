@@ -58,8 +58,7 @@
 
 	function closeMenu(event: Event) {
 		const popover = (event.currentTarget as HTMLElement | null)?.closest('[popover]') as
-			| (HTMLElement & { hidePopover?: () => void })
-			| null;
+			(HTMLElement & { hidePopover?: () => void }) | null;
 
 		popover?.hidePopover?.();
 	}

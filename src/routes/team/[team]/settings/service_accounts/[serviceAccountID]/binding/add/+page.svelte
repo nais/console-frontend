@@ -16,7 +16,7 @@
 		TextField
 	} from '@nais/ds-svelte-community';
 	import { BriefcaseClockIcon, CheckmarkIcon, PackageIcon } from '@nais/ds-svelte-community/icons';
-	import type { PageProps } from './$houdini';
+	import type { PageProps } from './$types';
 
 	let { data }: PageProps = $props();
 
@@ -46,6 +46,18 @@
 									environment {
 										name
 									}
+								}
+							}
+							... on Application {
+								serviceAccount {
+									id
+									name
+								}
+							}
+							... on Job {
+								serviceAccount {
+									id
+									name
 								}
 							}
 						}
@@ -81,6 +93,7 @@
 							id: string;
 							name: string;
 							teamEnvironment: { environment: { name: string } };
+							serviceAccount: { id: string; name: string } | null;
 						} =>
 							(n.__typename === 'Application' || n.__typename === 'Job') &&
 							!n.teamEnvironment.environment.name.endsWith('-fss')
@@ -88,15 +101,25 @@
 			: []
 	);
 
+	// The bindings list is paginated, so a workload bound to this account beyond the first page
+	// is only detectable through the workload's own service account.
 	function isAlreadyBound(node: {
 		id: string;
 		name: string;
 		teamEnvironment: { environment: { name: string } };
+		serviceAccount: { id: string } | null;
 	}) {
 		return (
 			addedIds.has(node.id) ||
+			(!!node.serviceAccount && node.serviceAccount.id === serviceAccount?.id) ||
 			existingBindings.has(`${node.name}:${node.teamEnvironment.environment.name}`)
 		);
+	}
+
+	function boundToOtherAccount(node: { serviceAccount: { id: string; name: string } | null }) {
+		return node.serviceAccount && node.serviceAccount.id !== serviceAccount?.id
+			? node.serviceAccount
+			: null;
 	}
 </script>
 
@@ -123,7 +146,8 @@
 		{/if}
 
 		<BodyLong>
-			Workload bindings allow Nais Workloads to authenticate as this service account.
+			Workload bindings allow Nais Workloads to authenticate as this service account. A workload can
+			only be bound to one service account at a time.
 		</BodyLong>
 
 		<TextField
@@ -160,6 +184,15 @@
 							<Button size="small" variant="tertiary" disabled>
 								{#snippet icon()}<CheckmarkIcon />{/snippet}
 								Added
+							</Button>
+						{:else if boundToOtherAccount(node)}
+							<Button
+								size="small"
+								variant="tertiary"
+								disabled
+								title="A workload can only be bound to one service account."
+							>
+								Bound to {boundToOtherAccount(node)?.name}
 							</Button>
 						{:else}
 							<form

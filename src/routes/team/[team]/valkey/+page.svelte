@@ -45,8 +45,7 @@
 
 	const currentSortDirection: OrderDirectionOptions = $derived(
 		(Object.values(OrderDirection).find((d) => page.url.searchParams.get('sort')?.endsWith(d)) as
-			| OrderDirectionOptions
-			| undefined) ?? OrderDirection.DESC
+			OrderDirectionOptions | undefined) ?? OrderDirection.DESC
 	);
 
 	function setSort(field: ValkeyOrderFieldOptions) {
@@ -173,9 +172,13 @@
 							>
 						</div>
 						{#if (instance.issues?.pageInfo.totalCount ?? 0) > 0}
-							{@const criticalCount = countIssuesBySeverity(instance.issues?.edges, 'CRITICAL')}
-							{@const warningCount = countIssuesBySeverity(instance.issues?.edges, 'WARNING')}
-							{@const todoCount = countIssuesBySeverity(instance.issues?.edges, 'TODO')}
+							{const criticalCount = $derived(
+								countIssuesBySeverity(instance.issues?.edges, 'CRITICAL')
+							)}
+							{const warningCount = $derived(
+								countIssuesBySeverity(instance.issues?.edges, 'WARNING')
+							)}
+							{const todoCount = $derived(countIssuesBySeverity(instance.issues?.edges, 'TODO'))}
 
 							<div class="right">
 								<IssueSeverityTags

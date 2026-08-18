@@ -5,6 +5,7 @@ query SetImageVersionData($team: Slug!, $env: String!, $app: String!) {
 				image {
 					name
 					tag
+					digest
 				}
 				history {
 					image

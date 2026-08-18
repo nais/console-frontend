@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { browser } from '$app/environment';
+	import { browser } from '$app/env';
 	import { afterNavigate, beforeNavigate } from '$app/navigation';
 	import { page } from '$app/state';
 	import { graphql } from '$houdini';
@@ -12,7 +12,7 @@
 	import { onMount } from 'svelte';
 	import '../styles/app.css';
 	import '../styles/colors.css';
-	import type { LayoutProps } from './$houdini';
+	import type { LayoutProps } from './$types';
 	import Login from './Login.svelte';
 	import Naisdevice from './Naisdevice.svelte';
 	import PageHeader from './PageHeader.svelte';

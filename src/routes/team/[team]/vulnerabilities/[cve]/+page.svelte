@@ -7,6 +7,7 @@
 	import WorkloadLink from '$lib/domain/workload/WorkloadLink.svelte';
 	import ExternalLink from '$lib/ui/ExternalLink.svelte';
 	import GraphErrors from '$lib/ui/GraphErrors.svelte';
+	import { formatImageRef } from '$lib/utils/image';
 
 	import { suppressionStateLabels } from '$lib/utils/vulnerabilities';
 	import {
@@ -37,7 +38,7 @@
 	const rows = 25;
 
 	const teamRoles = graphql(`
-		query TeamCVEPageTeamRoles($team: Slug!) @cache(policy: CacheAndNetwork) {
+		query TeamCVEPageTeamRoles($team: Slug!) {
 			team(slug: $team) {
 				viewerIsMember
 			}
@@ -72,6 +73,7 @@
 								image {
 									name
 									tag
+									digest
 								}
 							}
 							vulnerability {
@@ -258,7 +260,7 @@
 			Vulnerability not found. The ID you entered doesn't exist in our database.
 		</Alert>
 	{:else if $TeamCVEPage.data}
-		{@const cve = $TeamCVEPage.data.cve}
+		{const cve = $derived($TeamCVEPage.data.cve)}
 		<div class="wrapper">
 			{#if cve.title}
 				<BodyShort>{cve.title}</BodyShort>
@@ -333,7 +335,7 @@
 					<Loader size="3xlarge" />
 				</div>
 			{:else if $workloadsQuery.data}
-				{@const workloads = $workloadsQuery.data.cve.workloads}
+				{const workloads = $derived($workloadsQuery.data.cve.workloads)}
 				{#if workloads.edges.length > 0}
 					{#if viewerIsMember}
 						<div class="select-all-row">
@@ -388,10 +390,7 @@
 												<div>
 													<Detail as="dt">Image</Detail>
 													<Detail as="dd"
-														><code
-															>{group.nodes[0].workload.image.name}:{group.nodes[0].workload.image
-																.tag}</code
-														></Detail
+														><code>{formatImageRef(group.nodes[0].workload.image)}</code></Detail
 													>
 												</div>
 											{/if}
@@ -404,7 +403,7 @@
 								</div>
 								<ul class="vuln-group-workloads">
 									{#each group.nodes as node (node.id)}
-										{@const workload = node.workload}
+										{const workload = $derived(node.workload)}
 										<li>
 											<WorkloadLink {workload} />
 										</li>

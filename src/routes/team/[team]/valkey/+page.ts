@@ -1,10 +1,5 @@
-import {
-	load_Valkeys,
-	OrderDirection,
-	ValkeyOrderField,
-	ValkeyTier,
-	type ValkeyFilter
-} from '$houdini';
+import { load_Valkeys, OrderDirection, ValkeyOrderField, ValkeyTier } from '$houdini';
+import type { ValkeyFilter } from '$houdini/graphql/inputs';
 import { parseLabelsParam } from '$lib/domain/labels/labels';
 import { urlToOrderDirection, urlToOrderField } from '$lib/ui/OrderByMenu.svelte';
 import { addPageMeta } from '$lib/utils/pageMeta';
@@ -50,6 +45,7 @@ export async function load(event) {
 		})),
 		...(await load_Valkeys({
 			event,
+			blocking: true,
 			variables: {
 				team: event.params.team,
 				filter: { environments, tiers, labels } as ValkeyFilter,

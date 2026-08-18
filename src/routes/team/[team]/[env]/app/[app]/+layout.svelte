@@ -8,7 +8,7 @@
 	let { data, children }: LayoutProps = $props();
 	let { AppLayout, viewerIsMember } = $derived(data);
 
-	let app = $derived($AppLayout.data?.team?.environment?.application ?? null);
+	let app = $derived($AppLayout?.data?.team?.environment?.application ?? null);
 
 	let routeId = $derived(page.route.id ?? '');
 	let tabs = $derived([

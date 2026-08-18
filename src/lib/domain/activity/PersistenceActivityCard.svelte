@@ -41,15 +41,6 @@
 					) @paginate(mode: Infinite) {
 						edges {
 							node {
-								id
-								actor
-								message
-								createdAt
-								resourceName
-								resourceType
-								environmentName
-								teamSlug
-								__typename
 								...ActivityLogEntryFragment
 							}
 						}
@@ -80,15 +71,6 @@
 					) @paginate(mode: Infinite) {
 						edges {
 							node {
-								id
-								actor
-								message
-								createdAt
-								resourceName
-								resourceType
-								environmentName
-								teamSlug
-								__typename
 								...ActivityLogEntryFragment
 							}
 						}

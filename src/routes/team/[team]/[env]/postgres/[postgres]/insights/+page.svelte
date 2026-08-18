@@ -22,7 +22,7 @@
 	};
 </script>
 
-<div class="flex justify-end sticky top-0 z-100 p-2">
+<div class="sticky top-0 z-100 flex justify-end p-2">
 	<ToggleGroup
 		bind:value={interval}
 		onchange={() => {

@@ -6,6 +6,8 @@
 	import Icon from './Icon.svelte';
 	import TooltipAlignHack from './TooltipAlignHack.svelte';
 
+	type TagInfo = { label: string; variant: TagProps['variant'] };
+
 	const {
 		label,
 		href,
@@ -22,10 +24,7 @@
 		icon: Snippet | Component | string;
 		description?: Snippet | Component | string;
 		tooltip?: string;
-		tag?: {
-			label: string;
-			variant: TagProps['variant'];
-		};
+		tag?: TagInfo | TagInfo[];
 		tagSize?: 'xsmall' | 'small' | 'medium';
 		onclick?: () => void;
 	} & (
@@ -39,6 +38,8 @@
 	) = $props();
 
 	const isSnippet = (value: Component | Snippet): value is Snippet => value.length === 1;
+
+	const tags = $derived(tag ? (Array.isArray(tag) ? tag : [tag]) : []);
 </script>
 
 {#snippet linkOrText()}
@@ -73,7 +74,7 @@
 			{:else if isSnippet(icon)}
 				{@render icon()}
 			{:else}
-				{@const Icon = icon}
+				{const Icon = $derived(icon)}
 				<Icon />
 			{/if}
 		</TooltipAlignHack>
@@ -82,7 +83,7 @@
 	{:else if isSnippet(icon)}
 		{@render icon()}
 	{:else}
-		{@const Icon = icon}
+		{const Icon = $derived(icon)}
 		<Icon />
 	{/if}
 	<div class="content">
@@ -93,11 +94,11 @@
 		{:else}
 			<BodyShort>{@render linkOrText()}</BodyShort>
 		{/if}
-		{#if tag || description}
+		{#if tags.length || description}
 			<div class="desc">
-				{#if tag}
-					<Tag size={tagSize} variant={tag.variant}>{tag.label}</Tag>
-				{/if}
+				{#each tags as t, i (i)}
+					<Tag size={tagSize} variant={t.variant}>{t.label}</Tag>
+				{/each}
 				{#if description}
 					<Detail>{@render componentOrString(description)}</Detail>
 				{/if}

@@ -11,6 +11,7 @@
 		formatKubernetesCPU,
 		formatKubernetesMemory
 	} from '$lib/utils/formatters';
+	import { exhaustive, type Exhaustive } from '$lib/utils/houdini';
 	import { round, yearlyOverageCost } from '$lib/utils/resources';
 	import { changeParams } from '$lib/utils/searchparams';
 	import { visualizationColors } from '$lib/visualizationColors';
@@ -41,7 +42,9 @@
 
 	type groupedLogs = {
 		timestamp: number;
-		logs: ResourceUtilizationForApp$result['team']['environment']['application']['activityLog']['nodes'];
+		logs: Exhaustive<
+			ResourceUtilizationForApp$result['team']['environment']['application']['activityLog']['nodes'][number]
+		>[];
 	};
 
 	let chartWidth: number | undefined = $state(undefined);
@@ -93,7 +96,7 @@
 			intervalSeconds = Math.ceil(totalSeconds / (chartWidth / annotationWidth));
 		}
 
-		return activityLog.nodes.reduceRight((acc, log) => {
+		return exhaustive(activityLog.nodes).reduceRight((acc, log) => {
 			let logTime = Math.floor(log.createdAt.getTime() / 1000);
 			if (acc.length > 0 && logTime - acc.at(-1)!.timestamp < intervalSeconds) {
 				acc.at(-1)!.logs.push(log);
@@ -291,7 +294,9 @@
 
 <div class="wrapper">
 	{#if $ResourceUtilizationForApp.data}
-		{@const utilization = $ResourceUtilizationForApp.data.team.environment.application.utilization}
+		{const utilization = $derived(
+			$ResourceUtilizationForApp.data.team.environment.application.utilization
+		)}
 		<div class="grid">
 			<SurfaceCard title="Cost of Unutilized CPU" level="h3" bordered>
 				<BodyShort spacing
@@ -496,27 +501,29 @@
 						<Tooltip.Root>
 							{#snippet children({ data })}
 								{#if data.annotation}
-									{@const log = data.annotation.details as groupedLogs}
+									{const log = $derived(data.annotation.details as groupedLogs)}
 									{#each log.logs as l (l.id)}
 										<div class="whitespace-nowrap">
 											{format(l.createdAt, 'dd/MM/yyyy HH:mm')} -
 											{#if l.__typename == 'DeploymentActivityLogEntry'}
 												New release
 											{:else if l.__typename == 'ApplicationScaledActivityLogEntry'}
-												Scaled {l.appScaled.direction} to
-												{l.appScaled.newSize}
-											{:else}
-												{l.__typename}
+												Scaled {l.data.direction} to
+												{l.data.newSize}
 											{/if}
 										</div>
 									{/each}
 								{:else}
-									{@const request = utilization.requested_cpu_series.find(
-										(d) => d.timestamp.getTime() === context.x(data).getTime()
-									)?.value}
-									{@const limit = utilization.limit_cpu_series.find(
-										(d) => d.timestamp.getTime() === context.x(data).getTime()
-									)?.value}
+									{const request = $derived(
+										utilization.requested_cpu_series.find(
+											(d) => d.timestamp.getTime() === context.x(data).getTime()
+										)?.value
+									)}
+									{const limit = $derived(
+										utilization.limit_cpu_series.find(
+											(d) => d.timestamp.getTime() === context.x(data).getTime()
+										)?.value
+									)}
 									<Tooltip.Header>{format(context.x(data), 'dd/MM/yyyy HH:mm')}</Tooltip.Header>
 									<Tooltip.List>
 										{#each context.tooltipState.series.filter((p) => p.value && p.value > 0) as p, i (p.key ?? i)}
@@ -657,27 +664,29 @@
 						<Tooltip.Root>
 							{#snippet children({ data })}
 								{#if data.annotation}
-									{@const log = data.annotation.details as groupedLogs}
+									{const log = $derived(data.annotation.details as groupedLogs)}
 									{#each log.logs as l (l.id)}
 										<div class="whitespace-nowrap">
 											{format(l.createdAt, 'dd/MM/yyyy HH:mm')} -
 											{#if l.__typename == 'DeploymentActivityLogEntry'}
 												New release
 											{:else if l.__typename == 'ApplicationScaledActivityLogEntry'}
-												Scaled {l.appScaled.direction} to
-												{l.appScaled.newSize}
-											{:else}
-												{l.__typename}
+												Scaled {l.data.direction} to
+												{l.data.newSize}
 											{/if}
 										</div>
 									{/each}
 								{:else}
-									{@const request = utilization.requested_memory_series.find(
-										(d) => d.timestamp.getTime() === context.x(data).getTime()
-									)?.value}
-									{@const limit = utilization.limit_memory_series.find(
-										(d) => d.timestamp.getTime() === context.x(data).getTime()
-									)?.value}
+									{const request = $derived(
+										utilization.requested_memory_series.find(
+											(d) => d.timestamp.getTime() === context.x(data).getTime()
+										)?.value
+									)}
+									{const limit = $derived(
+										utilization.limit_memory_series.find(
+											(d) => d.timestamp.getTime() === context.x(data).getTime()
+										)?.value
+									)}
 									<Tooltip.Header>{format(context.x(data), 'dd/MM/yyyy HH:mm')}</Tooltip.Header>
 									<Tooltip.List>
 										{#each context.tooltipState.series.filter((p) => p.value && p.value > 0) as p, i (p.key ?? i)}

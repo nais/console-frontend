@@ -22,33 +22,9 @@
 			[]) as ActivityLogActivityType$options[]
 	);
 
-	let selectedResourceTypes: string[] = $derived(
-		page.url.searchParams.get('resourceTypes')?.split(',').filter(Boolean) ?? []
-	);
-
-	let selectedEnvironments: string[] = $derived(
-		page.url.searchParams.get('environments')?.split(',').filter(Boolean) ?? []
-	);
-
 	function handleActivityTypesChange(selected: ActivityLogActivityType$options[]) {
 		changeParams({
 			activityTypes: selected.join(','),
-			after: '',
-			before: ''
-		});
-	}
-
-	function handleResourceTypesChange(selected: string[]) {
-		changeParams({
-			resourceTypes: selected.join(','),
-			after: '',
-			before: ''
-		});
-	}
-
-	function handleEnvironmentsChange(selected: string[]) {
-		changeParams({
-			environments: selected.join(','),
 			after: '',
 			before: ''
 		});
@@ -98,14 +74,8 @@
 					<ListFilters>
 						<ActivityLogFacets
 							activityTypes={activityLog.facets.activityTypes}
-							resourceTypes={activityLog.facets.resourceTypes}
-							environments={activityLog.facets.environments}
 							{selectedActivityTypes}
-							{selectedResourceTypes}
-							{selectedEnvironments}
 							onActivityTypesChange={handleActivityTypesChange}
-							onResourceTypesChange={handleResourceTypesChange}
-							onEnvironmentsChange={handleEnvironmentsChange}
 						/>
 					</ListFilters>
 				</SurfaceCard>

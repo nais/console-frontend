@@ -66,7 +66,7 @@
 <Heading as="h2"><WarningIcon class="heading-aligned-icon" /> Danger Zone</Heading>
 <div class="danger-zone">
 	{#if result?.team.environment.application}
-		{@const app = result.team.environment.application}
+		{const app = $derived(result.team.environment.application)}
 		{#if app.deletionStartedAt}
 			<div class="heading-wrapper">
 				<Heading as="h3" spacing>Deletion in Progress</Heading>
@@ -136,7 +136,7 @@
 					{/each}
 				</div>
 			{/if}
-			{@const expected = app.teamEnvironment.environment.name + '/' + app.name}
+			{const expected = $derived(app.teamEnvironment.environment.name + '/' + app.name)}
 			<div class="confirmation-wrapper">
 				<BodyShort spacing>
 					Confirm deletion by writing <strong>{expected}</strong> in the box below and click

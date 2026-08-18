@@ -34,7 +34,8 @@
 
 	const refetch = () => {
 		Members.fetch({
-			policy: 'CacheAndNetwork'
+			policy: 'CacheAndNetwork',
+			variables: { ...$Members.variables! }
 		});
 	};
 
@@ -67,8 +68,7 @@
 
 	const currentSortDirection: OrderDirectionOptions = $derived(
 		(Object.values(OrderDirection).find((d) => page.url.searchParams.get('sort')?.endsWith(d)) as
-			| OrderDirectionOptions
-			| undefined) ?? OrderDirection.ASC
+			OrderDirectionOptions | undefined) ?? OrderDirection.ASC
 	);
 
 	function setSort(field: TeamMemberOrderFieldOptions) {
@@ -234,8 +234,8 @@
 			/>
 		{/if}
 		{#if deleteUser && deleteUserOpen}
-			{@const teamSlug = team.slug}
-			{@const userId = deleteUser.email}
+			{const teamSlug = $derived(team.slug)}
+			{const userId = $derived(deleteUser.email)}
 			<Confirm
 				bind:open={deleteUserOpen}
 				confirmText="Delete"

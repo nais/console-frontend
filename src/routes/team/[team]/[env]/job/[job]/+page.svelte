@@ -8,6 +8,7 @@
 	import Persistence from '$lib/domain/persistence/Persistence.svelte';
 	import Configs from '$lib/domain/resources/Configs.svelte';
 	import Secrets from '$lib/domain/resources/Secrets.svelte';
+	import ServiceAccountBinding from '$lib/domain/resources/ServiceAccountBinding.svelte';
 	import JobResources from '$lib/domain/workload/JobResources.svelte';
 	import WorkloadDeploy from '$lib/domain/workload/WorkloadDeploy.svelte';
 	import WorkloadHealth from '$lib/domain/workload/WorkloadHealth.svelte';
@@ -163,6 +164,7 @@
 				{#if jobName && environment}
 					<Configs workload={jobName} {environment} {teamSlug} />
 					<Secrets workload={jobName} {environment} {teamSlug} />
+					<ServiceAccountBinding workload={jobName} {environment} {teamSlug} />
 				{/if}
 				<Labels labels={job.labels ?? []} />
 				{#if environment && jobName}

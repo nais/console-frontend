@@ -37,8 +37,7 @@
 
 	const currentSortDirection: OrderDirectionOptions = $derived(
 		(Object.values(OrderDirection).find((d) => page.url.searchParams.get('sort')?.endsWith(d)) as
-			| OrderDirectionOptions
-			| undefined) ?? OrderDirection.ASC
+			OrderDirectionOptions | undefined) ?? OrderDirection.ASC
 	);
 
 	function setSort(field: RepositoryOrderFieldOptions) {
@@ -65,7 +64,7 @@
 			repository,
 			team
 		});
-		Repositories.fetch();
+		Repositories.fetch({ variables: { ...$Repositories.variables! } });
 		repositoryAdded = true;
 		repoOperatedOn = repository;
 		setTimeout(() => {
@@ -85,7 +84,7 @@
 			repository,
 			team
 		});
-		Repositories.fetch();
+		Repositories.fetch({ variables: { ...$Repositories.variables! } });
 		repositoryRemoved = true;
 		repoOperatedOn = repository;
 		setTimeout(() => {
@@ -165,7 +164,7 @@
 	<div class="layout-two-column">
 		<div>
 			{#if $Repositories.data.team}
-				{@const team = $Repositories.data.team}
+				{const team = $derived($Repositories.data.team)}
 
 				<List title="Repositories" count={team.repositories.pageInfo.totalCount}>
 					{#snippet actions()}

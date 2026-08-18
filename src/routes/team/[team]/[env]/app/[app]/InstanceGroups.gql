@@ -8,6 +8,7 @@ query AppInstanceGroups($app: String!, $team: Slug!, $env: String!) {
 					image {
 						name
 						tag
+						digest
 					}
 					created
 					readyInstances

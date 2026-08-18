@@ -1,4 +1,4 @@
-query TeamCVEPage($identifier: String!) @cache(policy: CacheAndNetwork) {
+query TeamCVEPage($identifier: String!) {
 	cve(identifier: $identifier) {
 		id
 		identifier

@@ -37,8 +37,7 @@
 		{rows}
 		{cols}
 		bind:value={text}
-		{readonly}
-	></textarea>
+		{readonly}></textarea>
 </div>
 
 <style>

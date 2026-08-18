@@ -1,64 +1,36 @@
 <script lang="ts">
-	import { graphql } from '$houdini';
+	import type { TeamHealthStore } from '$houdini';
 	import SurfaceCard from '$lib/ui/SurfaceCard.svelte';
 	import { Button } from '@nais/ds-svelte-community';
 	import CriticalIssueRow from './CriticalIssueRow.svelte';
 
 	interface Props {
 		teamSlug: string;
+		store: TeamHealthStore;
 	}
 
-	let { teamSlug }: Props = $props();
+	let { teamSlug, store }: Props = $props();
 
-	const first = 5;
-
-	const teamHealth = graphql(`
-		query TeamHealth($teamSlug: Slug!, $first: Int!) {
-			team(slug: $teamSlug) {
-				issues(first: $first, filter: { severity: CRITICAL }) @paginate(mode: Infinite) {
-					pageInfo {
-						endCursor
-						hasNextPage
-						totalCount
-					}
-					edges {
-						node {
-							id
-							severity
-							...CriticalIssueRow
-						}
-					}
-				}
-			}
-		}
-	`);
-
-	$effect(() => {
-		teamHealth.fetch({ variables: { teamSlug, first } });
-	});
+	const hasCriticalIssues = $derived(($store.data?.team?.issues?.pageInfo?.totalCount ?? 0) > 0);
+	const totalCount = $derived($store.data?.team?.issues?.pageInfo?.totalCount ?? 0);
 
 	async function loadMore() {
-		await teamHealth.loadNextPage({ first: 5 });
+		await store.loadNextPage({ first: 5 });
 	}
-
-	const hasCriticalIssues = $derived(
-		($teamHealth.data?.team?.issues?.pageInfo?.totalCount ?? 0) > 0
-	);
-	const totalCount = $derived($teamHealth.data?.team?.issues?.pageInfo?.totalCount ?? 0);
 </script>
 
-{#if $teamHealth.data && hasCriticalIssues && !$teamHealth.fetching}
+{#if $store.data && hasCriticalIssues}
 	<SurfaceCard title="Critical issues ({totalCount})" bordered>
 		{#snippet headerAside()}
 			<a class="view-all" href="/team/{teamSlug}/issues">View all</a>
 		{/snippet}
 		<div class="issues-list">
-			{#each $teamHealth.data?.team?.issues?.edges ?? [] as issue (issue.node.id)}
+			{#each $store.data?.team?.issues?.edges ?? [] as issue (issue.node.id)}
 				<CriticalIssueRow issue={issue.node} />
 			{/each}
 		</div>
 
-		{#if $teamHealth.data?.team?.issues?.pageInfo?.hasNextPage}
+		{#if $store.data?.team?.issues?.pageInfo?.hasNextPage}
 			<div class="load-more">
 				<Button variant="tertiary" size="small" onclick={loadMore}>Load more</Button>
 			</div>

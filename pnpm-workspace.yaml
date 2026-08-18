@@ -1,15 +1,22 @@
 overrides:
-  "@sveltejs/kit>cookie": "^0.7.0"
-  form-data: "^4.0.6"
+  cookie: "^0.7.0"
+  "@sveltejs/kit": ">=2.70.2"
+  postcss: 8.5.24
+  brace-expansion: 5.0.9
+  nanoid: 3.3.18
+  esbuild: 0.28.1
 
 allowBuilds:
   esbuild: true
+  houdini-core: true
+  houdini-svelte: true
 
 minimumReleaseAge: 20160
 savePrefix: ""
 minimumReleaseAgeExclude:
-  - esbuild@0.28.1
-  - lint-staged@17.0.7
-  - "@esbuild/*"
-  - "@slack/web-api@7.17.0"
-  - form-data@4.0.6
+  - "houdini*"
+  - "svelte"
+  - "@sveltejs/*"
+  - brace-expansion@5.0.9
+  - nanoid@3.3.18
+  - postcss@8.5.24

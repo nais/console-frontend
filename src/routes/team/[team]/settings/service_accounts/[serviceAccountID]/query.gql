@@ -1,4 +1,4 @@
-query ServiceAccountDetail($id: ID!) @cache(policy: CacheAndNetwork) {
+query ServiceAccountDetail($id: ID!) {
 	serviceAccount(id: $id) {
 		id
 		name
@@ -6,8 +6,17 @@ query ServiceAccountDetail($id: ID!) @cache(policy: CacheAndNetwork) {
 		createdAt
 		updatedAt
 		lastUsedAt
+		workloadBindings(first: 20) {
+			edges {
+				node {
+					workloadName
+					environment
+				}
+			}
+		}
 		...ServiceAccountRolesFragment
-		...ServiceAccountAuthenticationFragment @mask_disable
+		...ServiceAccountAuthenticationFragment
+		...ResourceActivityCardServiceAccountFragment
 	}
 	roles(first: 100, filter: { excludeGlobalRoles: true }) {
 		edges {

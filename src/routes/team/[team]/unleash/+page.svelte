@@ -37,16 +37,11 @@
 		TrashIcon,
 		XMarkIcon
 	} from '@nais/ds-svelte-community/icons';
+	import type { GraphQLError } from 'houdini/runtime';
 	import prettyBytes from 'pretty-bytes';
 	import { onDestroy } from 'svelte';
 	import type { PageProps } from './$types';
 	import TeamSearchModal from './TeamSearchModal.svelte';
-
-	type GraphQLError = {
-		message: string;
-		extensions?: Record<string, unknown>;
-		path?: (string | number)[];
-	};
 
 	function extractErrorMessages(errors: GraphQLError[] | null | undefined): string[] {
 		if (!errors || errors.length === 0) {
@@ -77,6 +72,17 @@
 		}
 	);
 	const enabled = $derived(true);
+
+	const disabledReason = (memberAction: string): string =>
+		!viewerIsMember
+			? `Only team members can ${memberAction}.`
+			: unleash?.ready === true
+				? ''
+				: 'Available once the Unleash instance is ready.';
+
+	const editReleaseChannelDisabledReason = $derived(disabledReason('change the release channel'));
+	const addTeamDisabledReason = $derived(disabledReason('add teams'));
+	const revokeTeamDisabledReason = $derived(disabledReason('remove team access'));
 
 	// GraphQL mutations
 	const createUnleashForTeam = graphql(`
@@ -205,11 +211,19 @@
 		stopPolling();
 	});
 
+	// Both mutations return the resulting allowed-team list so the response can
+	// be checked against what was asked for. A backend that accepts the request
+	// and changes nothing is otherwise indistinguishable from success.
 	const allowTeamAccess = graphql(`
 		mutation AllowTeamAccess($team: Slug!, $allowedTeamSlug: Slug!) {
 			allowTeamAccessToUnleash(input: { teamSlug: $team, allowedTeamSlug: $allowedTeamSlug }) {
 				unleash {
 					name
+					allowedTeams(first: 100) {
+						nodes {
+							slug
+						}
+					}
 				}
 			}
 		}
@@ -219,6 +233,11 @@
 			revokeTeamAccessToUnleash(input: { teamSlug: $team, revokedTeamSlug: $revokedTeamSlug }) {
 				unleash {
 					name
+					allowedTeams(first: 100) {
+						nodes {
+							slug
+						}
+					}
 				}
 			}
 		}
@@ -226,14 +245,31 @@
 
 	let removeTeamName = $state('');
 	let removeTeamConfirmOpen = $state(false);
+	let accessError = $state('');
 
-	const removeTeam = (removeTeamName: string) =>
-		revokeTeamAccess
-			.mutate({
+	const removeTeam = async (removeTeamName: string) => {
+		accessError = '';
+		try {
+			const result = await revokeTeamAccess.mutate({
 				team: teamSlug,
 				revokedTeamSlug: removeTeamName
-			})
-			.then(() => Unleash.fetch({ policy: 'CacheAndNetwork' }));
+			});
+			if (result.errors && result.errors.length > 0) {
+				accessError = extractErrorMessages(result.errors).join(', ');
+				return;
+			}
+			const remaining = result.data?.revokeTeamAccessToUnleash.unleash?.allowedTeams.nodes;
+			if (remaining?.some((t) => t.slug === removeTeamName)) {
+				accessError = `${removeTeamName} still has access after the request was accepted. Nothing was changed — please report this.`;
+				return;
+			}
+		} catch (e) {
+			accessError = e instanceof Error ? e.message : 'An unexpected error occurred.';
+			return;
+		} finally {
+			await Unleash.fetch({ policy: 'CacheAndNetwork' });
+		}
+	};
 
 	const handleRemoveTeamClick = (teamName: string) => {
 		removeTeamName = teamName;
@@ -242,13 +278,29 @@
 
 	let addTeamModalOpen = $state(false);
 
-	const addTeam = (teamName: string) =>
-		allowTeamAccess
-			.mutate({
+	const addTeam = async (teamName: string) => {
+		accessError = '';
+		try {
+			const result = await allowTeamAccess.mutate({
 				team: teamSlug,
 				allowedTeamSlug: teamName
-			})
-			.then(() => Unleash.fetch({ policy: 'CacheAndNetwork' }));
+			});
+			if (result.errors && result.errors.length > 0) {
+				accessError = extractErrorMessages(result.errors).join(', ');
+				return;
+			}
+			const allowed = result.data?.allowTeamAccessToUnleash.unleash?.allowedTeams.nodes;
+			if (allowed && !allowed.some((t) => t.slug === teamName)) {
+				accessError = `${teamName} was not granted access even though the request was accepted. Nothing was changed — please report this.`;
+				return;
+			}
+		} catch (e) {
+			accessError = e instanceof Error ? e.message : 'An unexpected error occurred.';
+			return;
+		} finally {
+			await Unleash.fetch({ policy: 'CacheAndNetwork' });
+		}
+	};
 
 	// Delete Unleash instance
 	const deleteUnleashInstance = graphql(`
@@ -362,6 +414,13 @@
 	<Alert variant="error" size="small" style="margin-bottom: 1rem;">
 		{deleteError}
 		<Button variant="tertiary" size="small" onclick={() => (deleteError = '')}>Dismiss</Button>
+	</Alert>
+{/if}
+
+{#if accessError}
+	<Alert variant="error" size="small" style="margin-bottom: 1rem;">
+		{accessError}
+		<Button variant="tertiary" size="small" onclick={() => (accessError = '')}>Dismiss</Button>
 	</Alert>
 {/if}
 
@@ -549,15 +608,16 @@
 										<span style="color: var(--ax-text-neutral-subtle)">Not set</span>
 									{/if}
 								</span>
-								{#if viewerIsMember && unleash.ready}
+								<Tooltip content={editReleaseChannelDisabledReason || 'Change release channel'}>
 									<Button
 										size="xsmall"
 										variant="tertiary-neutral"
-										title="Change release channel"
+										aria-label="Change release channel"
+										disabled={editReleaseChannelDisabledReason !== ''}
 										onclick={() => (editingReleaseChannel = true)}
 										icon={PencilIcon}
 									/>
-								{/if}
+								</Tooltip>
 							{/if}
 						</div>
 					</dd>
@@ -592,18 +652,20 @@
 										<a href="/team/{team.slug}">{team.slug}</a>
 									</Td>
 									<Td align="right">
-										{#if viewerIsMember && team.slug !== teamSlug}
-											<Button
-												size="small"
-												disabled={unleash.ready === false}
-												variant="tertiary-neutral"
-												aria-label="Remove team access"
-												onclick={() => handleRemoveTeamClick(team.slug)}
-											>
-												{#snippet icon()}
-													<TrashIcon style="color:var(--ax-text-danger-decoration)!important" />
-												{/snippet}
-											</Button>
+										{#if team.slug !== teamSlug}
+											<Tooltip content={revokeTeamDisabledReason || 'Remove team access'}>
+												<Button
+													size="small"
+													disabled={revokeTeamDisabledReason !== ''}
+													variant="tertiary-neutral"
+													aria-label="Remove team access"
+													onclick={() => handleRemoveTeamClick(team.slug)}
+												>
+													{#snippet icon()}
+														<TrashIcon style="color:var(--ax-text-danger-decoration)!important" />
+													{/snippet}
+												</Button>
+											</Tooltip>
 										{/if}
 									</Td>
 								</Tr>
@@ -611,20 +673,27 @@
 						</Tbody>
 					</Table>
 				</div>
-				{#if viewerIsMember}
-					<div style="margin-top: var(--ax-space-8);">
-						<Button
-							title="Add team"
-							variant="tertiary"
-							disabled={unleash.ready === false}
-							size="small"
-							onclick={() => (addTeamModalOpen = true)}
-							icon={PlusCircleFillIcon}
-						>
-							Add team
-						</Button>
-					</div>
-				{/if}
+				{#snippet addTeamButton()}
+					<Button
+						title="Add team"
+						variant="tertiary"
+						disabled={addTeamDisabledReason !== ''}
+						size="small"
+						onclick={() => (addTeamModalOpen = true)}
+						icon={PlusCircleFillIcon}
+					>
+						Add team
+					</Button>
+				{/snippet}
+				<div style="margin-top: var(--ax-space-8);">
+					{#if addTeamDisabledReason}
+						<Tooltip content={addTeamDisabledReason}>
+							{@render addTeamButton()}
+						</Tooltip>
+					{:else}
+						{@render addTeamButton()}
+					{/if}
+				</div>
 			</section>
 		</div>
 

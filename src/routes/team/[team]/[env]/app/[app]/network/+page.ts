@@ -1,26 +1,13 @@
 import { load_IngressMetrics } from '$houdini';
+import { PrometheusChartQueryInterval } from '$lib/chart/util';
 import { addPageMeta } from '$lib/utils/pageMeta';
-
-function getStart(interval: string | null) {
-	switch (interval) {
-		case '1h':
-			return new Date(Date.now() - 1000 * 60 * 60);
-		case '6h':
-			return new Date(Date.now() - 6 * 1000 * 60 * 60);
-		case '1d':
-			return new Date(Date.now() - 24 * 1000 * 60 * 60);
-		case '30d':
-			return new Date(Date.now() - 30 * 24 * 1000 * 60 * 60);
-		default:
-			return new Date(Date.now() - 7 * 24 * 1000 * 60 * 60);
-	}
-}
 
 export const ssr = false;
 export async function load(event) {
-	const interval = event.url.searchParams.get('interval');
-	const end = new Date(Date.now());
-	const start = getStart(interval);
+	let interval = (event.url.searchParams.get('interval') || '7d') as PrometheusChartQueryInterval;
+	if (!Object.values(PrometheusChartQueryInterval).includes(interval)) {
+		interval = '7d';
+	}
 
 	return {
 		interval,
@@ -32,9 +19,7 @@ export async function load(event) {
 			variables: {
 				app: event.params.app,
 				env: event.params.env,
-				team: event.params.team,
-				start,
-				end
+				team: event.params.team
 			}
 		}))
 	};

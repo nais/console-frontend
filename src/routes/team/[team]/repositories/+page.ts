@@ -1,4 +1,5 @@
-import { load_Repositories, RepositoryOrderField, type TeamRepositoryFilter } from '$houdini';
+import { load_Repositories, RepositoryOrderField } from '$houdini';
+import type { TeamRepositoryFilter } from '$houdini/graphql/inputs';
 import { urlToOrderDirection, urlToOrderField } from '$lib/ui/OrderByMenu.svelte';
 import { addPageMeta } from '$lib/utils/pageMeta';
 

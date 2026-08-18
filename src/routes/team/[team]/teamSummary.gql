@@ -1,4 +1,4 @@
-query TeamSummaryVulnerabilities($team: Slug!) @cache(policy: CacheAndNetwork) {
+query TeamSummaryVulnerabilities($team: Slug!) {
 	team(slug: $team) {
 		vulnerabilitySummary {
 			critical

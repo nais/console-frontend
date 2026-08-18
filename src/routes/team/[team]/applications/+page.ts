@@ -1,10 +1,5 @@
-import {
-	ApplicationOrderField,
-	load_Applications,
-	load_ApplicationsListMetadata,
-	OrderDirection,
-	type TeamApplicationsFilter
-} from '$houdini';
+import { ApplicationOrderField, load_Applications, OrderDirection } from '$houdini';
+import type { TeamApplicationsFilter } from '$houdini/graphql/inputs';
 import { parseLabelsParam } from '$lib/domain/labels/labels';
 import { urlToOrderDirection, urlToOrderField } from '$lib/ui/OrderByMenu.svelte';
 import { addPageMeta } from '$lib/utils/pageMeta';
@@ -41,12 +36,6 @@ export async function load(event) {
 					direction: urlToOrderDirection(event.url, OrderDirection.DESC)
 				},
 				...(before ? { before, last: rows } : { after, first: rows })
-			}
-		})),
-		...(await load_ApplicationsListMetadata({
-			event,
-			variables: {
-				team: event.params.team
 			}
 		}))
 	};

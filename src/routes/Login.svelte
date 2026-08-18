@@ -40,7 +40,7 @@
 			Nais Console
 		</Heading>
 		{#if page.url.searchParams?.get('error')}
-			{@const error = page.url.searchParams.get('error')}
+			{const error = $derived(page.url.searchParams.get('error'))}
 			<Alert variant="error">
 				{#if error == 'unknown-user'}
 					Error during login: Unknown user.<br />

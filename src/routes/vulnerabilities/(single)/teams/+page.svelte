@@ -30,12 +30,10 @@
 
 	const currentOrderDirection = $derived(urlToOrderDirection(page.url, OrderDirection.DESC));
 
-	const tableSortState = $derived.by(
-		(): TableSortState => ({
-			orderBy: currentOrderField,
-			direction: currentOrderDirection === OrderDirection.ASC ? 'ascending' : 'descending'
-		})
-	);
+	const tableSortState = $derived.by((): TableSortState => ({
+		orderBy: currentOrderField,
+		direction: currentOrderDirection === OrderDirection.ASC ? 'ascending' : 'descending'
+	}));
 
 	const handleSortChange = (key: string) => {
 		const nextDirection =
@@ -134,7 +132,9 @@
 							</Td>
 							{#each severityColumns as column (column.sortKey)}
 								<Td class="severity-cell">
-									{@const count = team.vulnerabilitySummary[column.summaryKey as SeverityKey]}
+									{const count = $derived(
+										team.vulnerabilitySummary[column.summaryKey as SeverityKey]
+									)}
 									{#if count > 0}
 										<a
 											href="/team/{team.slug}/vulnerabilities"

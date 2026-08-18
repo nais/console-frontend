@@ -6,7 +6,7 @@ query Alerts(
 	$last: Int
 	$before: Cursor
 	$after: Cursor
-) @cache(policy: NetworkOnly) {
+) {
 	team(slug: $team) {
 		slug
 		alerts(
@@ -43,6 +43,11 @@ query Alerts(
 							value
 						}
 						ruleGroup
+						teamEnvironment {
+							environment {
+								name
+							}
+						}
 					}
 					team {
 						slug
@@ -54,11 +59,15 @@ query Alerts(
 					}
 				}
 			}
-		}
-		environments {
-			id
-			environment {
-				name
+			facets {
+				environments {
+					value
+					count
+				}
+				states {
+					state
+					count
+				}
 			}
 		}
 	}

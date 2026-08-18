@@ -368,10 +368,22 @@ input ActivityLogFilter {
   environments: [String!]
 
   """
+  Only include entries created at or after this timestamp.
+  When combined with other fields in this input, entries must match this filter as well as the other selected filters.
+  """
+  from: Time
+
+  """
   Only include entries for resources whose type matches one of these values.
   When combined with other fields in this input, entries must match this filter as well as the other selected filters.
   """
   resourceTypes: [ActivityLogEntryResourceType!]
+
+  """
+  Only include entries created before this timestamp.
+  When combined with other fields in this input, entries must match this filter as well as the other selected filters.
+  """
+  to: Time
 }
 
 """A single facet item for resource types."""
@@ -527,6 +539,12 @@ type AlertConnection {
   """List of edges."""
   edges: [AlertEdge!]!
 
+  """
+  Facets for alerts. Provides distribution counts to help narrow down results.
+  Facet counts are computed over the full result set (ignoring pagination) but respect the current filter.
+  """
+  facets: AlertFacets
+
   """List of nodes."""
   nodes: [Alert!]!
 
@@ -541,6 +559,17 @@ type AlertEdge {
 
   """The Alert."""
   node: Alert!
+}
+
+"""
+Facets for alerts, providing distribution counts across different dimensions.
+"""
+type AlertFacets {
+  """Distribution of alerts by environment."""
+  environments: [StringFacetItem!]!
+
+  """Distribution of alerts by state."""
+  states: [AlertStateFacetItem!]!
 }
 
 """Ordering options when fetching alerts."""
@@ -573,6 +602,15 @@ enum AlertState {
 
   """Only return alerts that are pending."""
   PENDING
+}
+
+"""A single facet item for alert states."""
+type AlertStateFacetItem {
+  """Number of matching alerts."""
+  count: Int!
+
+  """The alert state."""
+  state: AlertState!
 }
 
 input AllowTeamAccessToUnleashInput {
@@ -1941,6 +1979,9 @@ type ContainerImage implements ActivityLogger & Node {
     last: Int
   ): ActivityLogEntryConnection!
 
+  """Digest of the container image, if present."""
+  digest: String
+
   """
   Whether the image has a software bill of materials (SBOM) attached to it.
   """
@@ -1955,7 +1996,10 @@ type ContainerImage implements ActivityLogger & Node {
   """SBOM pipeline status and processing information for this image."""
   sbom: ContainerImageSBOM!
 
-  """Tag of the container image."""
+  """
+  Tag of the container image. Empty when the image reference has no explicit tag,
+  for example when it is referenced by digest only.
+  """
   tag: String!
 
   """Get the vulnerabilities of the image."""
@@ -3318,54 +3362,11 @@ type InboundNetworkPolicy {
 }
 
 type Ingress {
-  """Metrics for the ingress."""
-  metrics: IngressMetrics!
-
   """Type of ingress."""
   type: IngressType!
 
   """URL for the ingress."""
   url: String!
-}
-
-"""Ingress metric type."""
-type IngressMetricSample {
-  """Timestamp of the value."""
-  timestamp: Time!
-
-  """Value of the IngressMetricsType at the given timestamp."""
-  value: Float!
-}
-
-type IngressMetrics {
-  """Number of errors in the ingress per second."""
-  errorsPerSecond: Float!
-
-  """Number of requests to the ingress per second."""
-  requestsPerSecond: Float!
-
-  """Ingress metrics between start and end with step size."""
-  series(input: IngressMetricsInput!): [IngressMetricSample!]!
-}
-
-input IngressMetricsInput {
-  """Fetch metrics until this timestamp."""
-  end: Time!
-
-  """Fetch metrics from this timestamp."""
-  start: Time!
-
-  """Type of metric to fetch."""
-  type: IngressMetricsType!
-}
-
-"""Type of ingress metrics to fetch."""
-enum IngressMetricsType {
-  """Number of errors in the ingress per second."""
-  ERRORS_PER_SECOND
-
-  """Number of requests to the ingress per second."""
-  REQUESTS_PER_SECOND
 }
 
 enum IngressType {
@@ -3508,6 +3509,12 @@ type IssueConnection {
   """List of edges."""
   edges: [IssueEdge!]!
 
+  """
+  Facets for the issues. Provides distribution counts to help narrow down results.
+  Facet counts are computed over the full result set (ignoring pagination) but respect the current filter.
+  """
+  facets: IssueFacets
+
   """List of nodes."""
   nodes: [Issue!]!
 
@@ -3521,6 +3528,23 @@ type IssueEdge {
 
   """The Issue."""
   node: Issue!
+}
+
+"""
+Facets for issues, providing distribution counts across different dimensions.
+"""
+type IssueFacets {
+  """Distribution of issues by environment."""
+  environments: [StringFacetItem!]!
+
+  """Distribution of issues by issue type."""
+  issueTypes: [IssueTypeFacetItem!]!
+
+  """Distribution of issues by resource type."""
+  resourceTypes: [IssueResourceTypeFacetItem!]!
+
+  """Distribution of issues by severity."""
+  severities: [IssueSeverityFacetItem!]!
 }
 
 input IssueFilter {
@@ -3565,6 +3589,24 @@ enum IssueOrderField {
   SEVERITY
 }
 
+"""A single facet item for resource types."""
+type IssueResourceTypeFacetItem {
+  """Number of matching issues."""
+  count: Int!
+
+  """The resource type."""
+  resourceType: ResourceType!
+}
+
+"""A single facet item for issue severities."""
+type IssueSeverityFacetItem {
+  """Number of matching issues."""
+  count: Int!
+
+  """The severity."""
+  severity: Severity!
+}
+
 enum IssueType {
   """Raised when an application is stuck in a restart loop."""
   APPLICATION_RESTART_LOOP
@@ -3587,6 +3629,15 @@ enum IssueType {
   Raised when the platform reports a problem in a workload, such as an invalid spec, a failed synchronization or a deprecation.
   """
   WORKLOAD_PROBLEM
+}
+
+"""A single facet item for issue types."""
+type IssueTypeFacetItem {
+  """Number of matching issues."""
+  count: Int!
+
+  """The issue type."""
+  issueType: IssueType!
 }
 
 type Job implements ActivityLogger & Node & Workload {
@@ -4460,7 +4511,7 @@ input LogSubscriptionFilter {
   """
   Specify an initial batch of log lines to be sent when the subscription starts.
   """
-  initialBatch: LogSubscriptionInitialBatch = {limit: 100}
+  initialBatch: LogSubscriptionInitialBatch = {  }
 
   """Filter log lines by specifying a query."""
   query: String!
@@ -5247,6 +5298,9 @@ enum OpenSearchMajorVersion {
 
   """OpenSearch Version 3.3.x"""
   V3_3
+
+  """OpenSearch Version 3.6.x"""
+  V3_6
 }
 
 enum OpenSearchMemory {
@@ -5681,6 +5735,28 @@ type PrometheusAlert implements Alert & Node {
 
 """The query root for the Nais GraphQL API."""
 type Query {
+  """Activity log across all teams in the tenant."""
+  activityLog(
+    """Get items after this cursor."""
+    after: Cursor
+
+    """Get items before this cursor."""
+    before: Cursor
+
+    """Filter items."""
+    filter: ActivityLogFilter
+
+    """
+    Get the first n items in the connection. This can be used in combination with the after parameter.
+    """
+    first: Int
+
+    """
+    Get the last n items in the connection. This can be used in combination with the before parameter.
+    """
+    last: Int
+  ): ActivityLogEntryConnection!
+
   """Get the monthly cost summary for a tenant."""
   costMonthlySummary(
     """Start month of the period, inclusive."""
@@ -7179,7 +7255,29 @@ These types of users can be used to automate certain parts of the API, for insta
 
 Service accounts are created using the `createServiceAccount` mutation, and authenticate using tokens generated by the `createServiceAccountToken` mutation.
 """
-type ServiceAccount implements Node {
+type ServiceAccount implements ActivityLogger & Node {
+  """Activity log associated with the service account."""
+  activityLog(
+    """Get items after this cursor."""
+    after: Cursor
+
+    """Get items before this cursor."""
+    before: Cursor
+
+    """Filter items."""
+    filter: ActivityLogFilter
+
+    """
+    Get the first n items in the connection. This can be used in combination with the after parameter.
+    """
+    first: Int
+
+    """
+    Get the last n items in the connection. This can be used in combination with the before parameter.
+    """
+    last: Int
+  ): ActivityLogEntryConnection!
+
   """Creation time of the service account."""
   createdAt: Time!
 
@@ -7482,6 +7580,11 @@ type ServiceAccountTokenUpdatedActivityLogEntry implements ActivityLogEntry & No
 }
 
 type ServiceAccountTokenUpdatedActivityLogEntryData {
+  """
+  The name of the service account token that was updated. Null if the entry predates this field being recorded.
+  """
+  tokenName: String
+
   """Fields that were updated."""
   updatedFields: [ServiceAccountTokenUpdatedActivityLogEntryDataUpdatedField!]!
 }
@@ -7547,11 +7650,6 @@ type ServiceAccountUpdatedActivityLogEntryDataUpdatedField {
 """
 A binding between a Nais service account and a Nais workload (application or job). When the workload presents its
 Workload Token to the API, the API will authenticate the request as the bound service account.
-
-The binding is identified at authentication time by the workload's environment, team and name, plus the Workload
-UID once it has been observed (trust on first use). If the UID changes (for instance because the workload has
-been recreated), the binding is considered broken and authentication will fail until the binding is removed and
-re-added.
 """
 type ServiceAccountWorkloadBinding implements Node {
   """When the binding was created."""
@@ -7564,8 +7662,7 @@ type ServiceAccountWorkloadBinding implements Node {
   id: ID!
 
   """
-  True if the binding is broken — either the workload no longer exists, or the Workload UID
-  does not match the value pinned to the binding.
+  True if the binding is broken, i.e. when the workload no longer exists.
   """
   isBroken: Boolean!
 
@@ -7602,7 +7699,9 @@ type ServiceAccountWorkloadBindingAddedActivityLogEntry implements ActivityLogEn
   """Data associated with the entry."""
   data: ServiceAccountWorkloadBindingAddedActivityLogEntryData!
 
-  """The environment name that the entry belongs to."""
+  """
+  The environment the bound workload was deployed in at the time of the binding.
+  """
   environmentName: String
 
   """ID of the entry."""
@@ -7627,6 +7726,11 @@ type ServiceAccountWorkloadBindingAddedActivityLogEntryData {
 
   """The name of the workload."""
   workloadName: String!
+
+  """
+  The type of the workload at the time of the binding. Null if the workload type could not be determined (e.g. workload was not yet deployed).
+  """
+  workloadType: WorkloadType
 }
 
 type ServiceAccountWorkloadBindingConnection {
@@ -7660,7 +7764,9 @@ type ServiceAccountWorkloadBindingRemovedActivityLogEntry implements ActivityLog
   """Data associated with the entry."""
   data: ServiceAccountWorkloadBindingRemovedActivityLogEntryData!
 
-  """The environment name that the entry belongs to."""
+  """
+  The environment the bound workload was deployed in at the time of removal.
+  """
   environmentName: String
 
   """ID of the entry."""
@@ -7685,6 +7791,11 @@ type ServiceAccountWorkloadBindingRemovedActivityLogEntryData {
 
   """The name of the workload."""
   workloadName: String!
+
+  """
+  The type of the workload at the time of removal. Null if the workload type could not be determined (e.g. workload was not yet deployed).
+  """
+  workloadType: WorkloadType
 }
 
 type ServiceCostSample {
@@ -11262,6 +11373,12 @@ interface Workload implements ActivityLogger & Node {
   ): SecretConnection!
 
   """
+  The Nais service account this workload is bound to, if any. Authenticating using the workload's
+  Workload Token will then act as this Nais service account.
+  """
+  serviceAccount: ServiceAccount
+
+  """
   SQL instances referenced by the workload. This does not currently support pagination, but will return all available SQL instances.
   """
   sqlInstances(
@@ -11487,6 +11604,15 @@ interface WorkloadResources {
 
   """Resources requested by the workload."""
   requests: WorkloadResourceQuantity!
+}
+
+"""The type of a workload."""
+enum WorkloadType {
+  """The workload is an application."""
+  APPLICATION
+
+  """The workload is a job."""
+  JOB
 }
 
 type WorkloadUtilization {

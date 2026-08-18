@@ -138,7 +138,7 @@
 	{/if}
 {/snippet}
 
-<div class="section-heading">
+<div class="heading-row">
 	<Heading as="h2" size="medium" spacing>Access policy</Heading>
 	<div class="actions">
 		<DocsLink path="/workloads/application/reference/application-spec/#accesspolicy" />
@@ -202,7 +202,7 @@
 </List>
 
 <style>
-	.section-heading {
+	.heading-row {
 		display: flex;
 		align-items: center;
 		justify-content: space-between;

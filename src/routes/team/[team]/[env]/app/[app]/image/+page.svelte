@@ -4,7 +4,7 @@
 	import { page } from '$app/state';
 	import { isPossiblyInModal } from '$lib/ui/PageModal.svelte';
 	import Time from '$lib/ui/Time.svelte';
-	import { parseImage } from '$lib/utils/image';
+	import { formatImageVersion, imageRefMatches, parseImage } from '$lib/utils/image';
 	import {
 		Alert,
 		BodyLong,
@@ -14,22 +14,32 @@
 		RadioGroup
 	} from '@nais/ds-svelte-community';
 	import { tick } from 'svelte';
-	import type { PageProps } from './$houdini';
+	import type { PageProps } from './$types';
 
 	let { data }: PageProps = $props();
 
 	const { SetImageVersionData } = $derived(data);
 	const application = $derived($SetImageVersionData.data?.team?.environment?.application ?? null);
 
-	const currentImage = $derived(
-		application?.image ? `${application.image.name}:${application.image.tag}` : null
-	);
-
 	const releases = $derived(
 		[...(application?.history ?? [])].sort(
 			(a, b) => b.deployedAt.getTime() - a.deployedAt.getTime()
 		)
 	);
+
+	const currentReleaseKey = $derived.by(() => {
+		if (!application?.image) {
+			return null;
+		}
+
+		const currentRelease = releases.find((release) =>
+			imageRefMatches(release.image, application.image)
+		);
+
+		return currentRelease
+			? `${currentRelease.image}|${currentRelease.deployedAt.toISOString()}`
+			: null;
+	});
 
 	const form = $derived(page.form);
 
@@ -38,8 +48,13 @@
 	let success = $state(false);
 	let closeButtonEl: HTMLButtonElement | undefined = $state();
 
-	function tagFor(image: string): string {
-		return parseImage(image).tag ?? image;
+	function imageVersionLabelFor(image: string): string {
+		try {
+			const parsed = parseImage(image);
+			return formatImageVersion(parsed);
+		} catch {
+			return image;
+		}
 	}
 
 	const close = async () => {
@@ -53,8 +68,8 @@
 {#if success}
 	<div class="wrapper" role="status" aria-live="polite" aria-atomic="true">
 		<Alert variant="success" size="small">
-			Successfully set image version to <code>{tagFor(selected)}</code>. Restarting application to
-			apply the change.
+			Successfully set image version to <code>{imageVersionLabelFor(selected)}</code>. Restarting
+			application to apply the change.
 		</Alert>
 		<Button variant="tertiary" size="small" onclick={close} bind:ref={closeButtonEl}>Close</Button>
 	</div>
@@ -89,10 +104,11 @@
 		{:else}
 			<RadioGroup legend="Releases" size="small" name="image" bind:value={selected}>
 				{#each releases as release (release.image + release.deployedAt.toISOString())}
-					{@const isCurrent = release.image === currentImage}
+					{const releaseKey = $derived(`${release.image}|${release.deployedAt.toISOString()}`)}
+					{const isCurrent = $derived(releaseKey === currentReleaseKey)}
 					<Radio value={release.image}>
 						<span class="release-label">
-							<code class="release-tag">{tagFor(release.image)}</code>
+							<code class="release-tag">{imageVersionLabelFor(release.image)}</code>
 							{#if isCurrent}<span class="release-current">(current)</span>{/if}
 							<span class="release-time">
 								deployed <Time time={release.deployedAt} distance />

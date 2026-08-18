@@ -1,4 +1,5 @@
-import { BucketOrderField, load_Buckets, type BucketFilter } from '$houdini';
+import { BucketOrderField, load_Buckets } from '$houdini';
+import type { BucketFilter } from '$houdini/graphql/inputs';
 import { parseLabelsParam } from '$lib/domain/labels/labels';
 import { urlToOrderDirection, urlToOrderField } from '$lib/ui/OrderByMenu.svelte';
 import { addPageMeta } from '$lib/utils/pageMeta';
@@ -20,6 +21,7 @@ export async function load(event) {
 		})),
 		...(await load_Buckets({
 			event,
+			blocking: true,
 			variables: {
 				team: event.params.team,
 				filter: { environments, labels } as BucketFilter,

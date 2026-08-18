@@ -24,7 +24,13 @@
 			graphql(`
 				fragment ServiceAccountAuthenticationFragment on ServiceAccount {
 					id
+					team {
+						slug
+					}
 					workloadBindings(first: 20) {
+						pageInfo {
+							totalCount
+						}
 						edges {
 							node {
 								id
@@ -51,6 +57,9 @@
 					}
 
 					tokens {
+						pageInfo {
+							totalCount
+						}
 						edges {
 							node {
 								id
@@ -86,7 +95,33 @@
 		removeBindingForm?.requestSubmit();
 	}
 
-	const totalMethods = $derived($data.workloadBindings.edges.length + $data.tokens.edges.length);
+	const totalMethods = $derived(
+		$data.workloadBindings.pageInfo.totalCount + $data.tokens.pageInfo.totalCount
+	);
+
+	type Binding = (typeof $data.workloadBindings.edges)[number]['node'];
+
+	// Tenant-wide accounts have no team, so the workload's team is always shown for those.
+	const accountTeam = $derived($data.team?.slug ?? null);
+
+	function bindingHref(binding: Binding) {
+		const workload = binding.workload;
+		if (!workload) return undefined;
+		const kind = workload.__typename === 'Job' ? 'job' : 'app';
+		return `/team/${workload.team.slug}/${workload.teamEnvironment.environment.name}/${kind}/${workload.name}`;
+	}
+
+	function bindingDescription(binding: Binding) {
+		const team = binding.workload?.team?.slug ?? binding.teamSlug;
+		const parts = ['Workload binding'];
+		if (!binding.isBroken) {
+			parts.push(binding.workload?.__typename === 'Job' ? 'Job' : 'Application');
+		}
+		if (team !== accountTeam) {
+			parts.push(team);
+		}
+		return parts.join(' · ');
+	}
 </script>
 
 <section aria-label="Authentication methods">
@@ -99,19 +134,19 @@
 					size="medium"
 					label={binding.workload?.name ?? binding.workloadName}
 					icon={LinkIcon}
-					tag={{
-						label: binding.workload?.teamEnvironment.environment.name ?? binding.environment,
-						variant: envTagVariant(
-							binding.workload?.teamEnvironment.environment.name ?? binding.environment
-						)
-					}}
-					description="Workload binding · {binding.workload?.__typename === 'Application'
-						? 'Application'
-						: binding.workload?.__typename === 'Job'
-							? 'Job'
-							: 'Workload'} · {binding.workload?.team?.slug ?? binding.teamSlug}{binding.isBroken
-						? ' · Broken'
-						: ''}"
+					tag={[
+						{
+							label: binding.workload?.teamEnvironment.environment.name ?? binding.environment,
+							variant: envTagVariant(
+								binding.workload?.teamEnvironment.environment.name ?? binding.environment
+							)
+						},
+						...(binding.isBroken
+							? [{ label: 'Missing workload', variant: 'warning' as const }]
+							: [])
+					]}
+					description={bindingDescription(binding)}
+					href={bindingHref(binding)}
 				/>
 
 				<div class="right">
@@ -131,7 +166,8 @@
 						<Button
 							size="xsmall"
 							variant="tertiary-neutral"
-							aria-label="Remove binding for {binding.workload?.name ?? binding.workloadName}"
+							aria-label="Remove binding for {binding.workload?.name ??
+								binding.workloadName}{binding.isBroken ? ' (workload missing)' : ''}"
 							onclick={() => {
 								bindingToRemove = {
 									id: binding.id,
@@ -176,6 +212,8 @@
 							<Detail>
 								Expires <Time time={token.expiresAt} distance={true} />
 							</Detail>
+						{:else}
+							<Detail>Never expires</Detail>
 						{/if}
 					</div>
 					{#if canManage}

@@ -45,8 +45,7 @@
 	let totalIssues = $derived(criticalIssues + warningIssues + todoIssues);
 
 	const vulnQuery = graphql(`
-		query WorkloadHealthVulnerabilities($team: Slug!, $env: String!, $app: String!)
-		@cache(policy: CacheAndNetwork) {
+		query WorkloadHealthVulnerabilities($team: Slug!, $env: String!, $app: String!) {
 			team(slug: $team) {
 				environment(name: $env) {
 					application(name: $app) {
@@ -65,8 +64,7 @@
 	`);
 
 	const jobVulnQuery = graphql(`
-		query WorkloadHealthJobVulnerabilities($team: Slug!, $env: String!, $job: String!)
-		@cache(policy: CacheAndNetwork) {
+		query WorkloadHealthJobVulnerabilities($team: Slug!, $env: String!, $job: String!) {
 			team(slug: $team) {
 				environment(name: $env) {
 					job(name: $job) {
@@ -85,8 +83,7 @@
 	`);
 
 	const costQuery = graphql(`
-		query WorkloadHealthCost($team: Slug!, $env: String!, $app: String!, $from: Date!, $to: Date!)
-		@cache(policy: CacheAndNetwork) {
+		query WorkloadHealthCost($team: Slug!, $env: String!, $app: String!, $from: Date!, $to: Date!) {
 			team(slug: $team) {
 				environment(name: $env) {
 					application(name: $app) {
@@ -111,7 +108,7 @@
 			$job: String!
 			$from: Date!
 			$to: Date!
-		) @cache(policy: CacheAndNetwork) {
+		) {
 			team(slug: $team) {
 				environment(name: $env) {
 					job(name: $job) {

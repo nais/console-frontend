@@ -1,4 +1,4 @@
-query IngressMetrics($team: Slug!, $app: String!, $env: String!, $start: Time!, $end: Time!) {
+query IngressMetrics($team: Slug!, $app: String!, $env: String!) {
 	team(slug: $team) {
 		environment(name: $env) {
 			application(name: $app) {
@@ -6,18 +6,6 @@ query IngressMetrics($team: Slug!, $app: String!, $env: String!, $start: Time!, 
 				ingresses {
 					url
 					type
-					metrics {
-						requestsPerSecond
-						errorsPerSecond
-						rps: series(input: { end: $end, start: $start, type: REQUESTS_PER_SECOND }) {
-							timestamp
-							value
-						}
-						eps: series(input: { end: $end, start: $start, type: ERRORS_PER_SECOND }) {
-							timestamp
-							value
-						}
-					}
 				}
 			}
 		}

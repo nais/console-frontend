@@ -144,12 +144,12 @@
 	<GraphErrors errors={$Valkey.errors} />
 {/if}
 {#if $Valkey.data}
-	{@const instance = $Valkey.data.team.environment.valkey}
-	{@const mandatoryServiceMaintenanceUpdates = instance.maintenance.updates.nodes.filter(
-		(x) => !!x?.deadline
+	{const instance = $derived($Valkey.data.team.environment.valkey)}
+	{const mandatoryServiceMaintenanceUpdates = $derived(
+		instance.maintenance.updates.nodes.filter((x) => !!x?.deadline)
 	)}
-	{@const nonMandatoryServiceMaintenanceUpdates = instance.maintenance.updates.nodes.filter(
-		(x) => !x?.deadline
+	{const nonMandatoryServiceMaintenanceUpdates = $derived(
+		instance.maintenance.updates.nodes.filter((x) => !x?.deadline)
 	)}
 	<div class="layout-two-column">
 		<div class="content">
@@ -239,7 +239,7 @@
 						</Thead>
 						<Tbody>
 							{#each instance.access.edges as edge (edge)}
-								{@const access = edge.node}
+								{const access = $derived(edge.node)}
 								<Tr>
 									<Td>
 										<WorkloadLink workload={access.workload} />

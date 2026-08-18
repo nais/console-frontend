@@ -1,0 +1,16 @@
+name: Copilot Code Review Setup
+on: workflow_dispatch
+jobs:
+  copilot-setup-steps:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # ratchet:actions/checkout@v7
+      - uses: jdx/mise-action@7e36c90d9ab29c415a2384db3006f3ec8a8cc654 # ratchet:jdx/mise-action@v4
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+      - name: Sync SvelteKit
+        run: pnpm exec svelte-kit sync
+      - name: Generate Houdini
+        run: pnpm exec houdini generate

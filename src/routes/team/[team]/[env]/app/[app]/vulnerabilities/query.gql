@@ -22,6 +22,7 @@ query ApplicationImageDetails($team: Slug!, $env: String!, $app: String!)
 					id
 					name
 					tag
+					digest
 					sbom {
 						status
 						processingStartedAt

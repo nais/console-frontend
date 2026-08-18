@@ -1,4 +1,5 @@
-import { BigQueryDatasetOrderField, load_BigQuery, type BigQueryDatasetFilter } from '$houdini';
+import { BigQueryDatasetOrderField, load_BigQuery } from '$houdini';
+import type { BigQueryDatasetFilter } from '$houdini/graphql/inputs';
 import { parseLabelsParam } from '$lib/domain/labels/labels';
 import { urlToOrderDirection, urlToOrderField } from '$lib/ui/OrderByMenu.svelte';
 import { addPageMeta } from '$lib/utils/pageMeta';
@@ -20,6 +21,7 @@ export async function load(event) {
 		})),
 		...(await load_BigQuery({
 			event,
+			blocking: true,
 			variables: {
 				team: event.params.team,
 				filter: { environments, labels } as BigQueryDatasetFilter,

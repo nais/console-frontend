@@ -19,7 +19,7 @@
 	import type { PageProps } from './$types';
 
 	let { data }: PageProps = $props();
-	let { Jobs, JobsListMetadata } = $derived(data);
+	let { Jobs } = $derived(data);
 
 	let filtersOpen = $state(false);
 
@@ -28,7 +28,7 @@
 	let after: string = $derived($Jobs.variables?.after ?? '');
 	let before: string = $derived($Jobs.variables?.before ?? '');
 
-	const totalJobs = $derived($JobsListMetadata.data?.team.totalJobs.pageInfo.totalCount ?? 0);
+	const totalJobs = $derived($Jobs.data?.team.jobs.pageInfo.totalCount ?? 0);
 
 	let selectedEnvironments: string[] = $derived(
 		page.url.searchParams.get('environments')?.split(',').filter(Boolean) ?? []
@@ -42,6 +42,13 @@
 		page.url.searchParams.get('labels')?.split(',').filter(Boolean) ?? []
 	);
 
+	const hasActiveFilters = $derived(
+		!!page.url.searchParams.get('filter') ||
+			selectedEnvironments.length > 0 ||
+			selectedStates.length > 0 ||
+			selectedLabels.length > 0
+	);
+
 	const sortFields: { value: JobOrderField$options; label: string }[] = [
 		{ value: JobOrderField.ISSUES, label: 'Issues' },
 		{ value: JobOrderField.NAME, label: 'Name' },
@@ -53,14 +60,12 @@
 
 	const currentSortField: JobOrderField$options = $derived(
 		(Object.values(JobOrderField).find((f) => page.url.searchParams.get('sort')?.startsWith(f)) as
-			| JobOrderField$options
-			| undefined) ?? JobOrderField.ISSUES
+			JobOrderField$options | undefined) ?? JobOrderField.ISSUES
 	);
 
 	const currentSortDirection: OrderDirection$options = $derived(
 		(Object.values(OrderDirection).find((d) => page.url.searchParams.get('sort')?.endsWith(d)) as
-			| OrderDirection$options
-			| undefined) ?? OrderDirection.DESC
+			OrderDirection$options | undefined) ?? OrderDirection.DESC
 	);
 
 	function setSort(field: JobOrderField$options) {
@@ -132,7 +137,7 @@
 <div class="layout-two-column">
 	<div>
 		{#if totalJobs > 0}
-			{@const jobs = $Jobs.data?.team.jobs}
+			{const jobs = $derived($Jobs.data?.team.jobs)}
 
 			<List title="Jobs" count={jobs?.pageInfo.totalCount ?? 0}>
 				{#snippet actions()}
@@ -162,7 +167,15 @@
 				}}
 			/>
 		{:else}
-			<BodyLong><strong>No jobs found.</strong></BodyLong>
+			<BodyLong>
+				<strong>
+					{#if hasActiveFilters}
+						No jobs match your filters.
+					{:else}
+						No jobs found.
+					{/if}
+				</strong>
+			</BodyLong>
 		{/if}
 	</div>
 	<CollapsibleSidebar bind:open={filtersOpen}>

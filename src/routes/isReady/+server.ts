@@ -1,8 +1,9 @@
-import { building } from '$app/environment';
+import { building } from '$app/env';
 import { logger } from '$lib/logger';
 import { json } from '@sveltejs/kit';
+import { GRAPHQL_ENDPOINT } from '$app/env/private';
 
-const GRAPHQL_API_URL = import.meta.env.VITE_GRAPHQL_ENDPOINT || 'http://localhost:3000/graphql';
+const GRAPHQL_API_URL = GRAPHQL_ENDPOINT || 'http://localhost:3000/graphql';
 
 async function checkGraphQLAPI() {
 	try {

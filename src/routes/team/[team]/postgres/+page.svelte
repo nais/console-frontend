@@ -41,8 +41,7 @@
 
 	const currentSortDirection: OrderDirectionOptions = $derived(
 		(Object.values(OrderDirection).find((d) => page.url.searchParams.get('sort')?.endsWith(d)) as
-			| OrderDirectionOptions
-			| undefined) ?? OrderDirection.ASC
+			OrderDirectionOptions | undefined) ?? OrderDirection.ASC
 	);
 
 	function setSort(field: PostgresOrderFieldOptions) {
@@ -130,7 +129,7 @@
 		<Loader size="3xlarge" />
 	</div>
 {:else if $PostgresInstances.data}
-	{@const si = $PostgresInstances.data.team.postgresInstances}
+	{const si = $derived($PostgresInstances.data.team.postgresInstances)}
 
 	<div class="layout-two-column">
 		<div>
@@ -243,8 +242,9 @@
 							<summary class="section-heading">High availability</summary>
 							<div class="facet-list">
 								{#each [true, false] as haValue (String(haValue))}
-									{@const count =
-										highAvailabilityFacets.find((f) => f.value === haValue)?.count ?? 0}
+									{const count = $derived(
+										highAvailabilityFacets.find((f) => f.value === haValue)?.count ?? 0
+									)}
 									<label class="facet-item">
 										<input
 											type="checkbox"

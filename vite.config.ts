@@ -1,3 +1,4 @@
+import adapter from '@sveltejs/adapter-node';
 import { sveltekit } from '@sveltejs/kit/vite';
 import tailwindcss from '@tailwindcss/vite';
 import houdini from 'houdini/vite';
@@ -5,6 +6,9 @@ import { defineConfig, loadEnv } from 'vite';
 
 export default defineConfig((mode) => {
 	const env = loadEnv(mode.mode, process.cwd());
+	if (env.VITE_SCHEMA_ENDPOINT) {
+		process.env.VITE_SCHEMA_ENDPOINT ??= env.VITE_SCHEMA_ENDPOINT;
+	}
 
 	const headers = (): { [header: string]: string } => {
 		const email = env?.VITE_API_USER_EMAIL;
@@ -22,7 +26,19 @@ export default defineConfig((mode) => {
 	const targetProxy = env.VITE_PROXY_ENDPOINT ?? 'http://127.0.0.1:3000';
 
 	return {
-		plugins: [tailwindcss(), houdini(), sveltekit()],
+		plugins: [
+			tailwindcss(),
+			houdini(),
+			sveltekit({
+				adapter: adapter(),
+				alias: {
+					$houdini: '.houdini/'
+				},
+				experimental: {
+					explicitEnvironmentVariables: true
+				}
+			})
+		],
 		server: {
 			host: '0.0.0.0',
 			proxy: {

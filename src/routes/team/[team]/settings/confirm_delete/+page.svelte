@@ -3,14 +3,14 @@
 	import {
 		graphql,
 		type ConfirmTeamDeletion$input,
-		type ConfirmTeamDeletion$result,
-		type QueryResult
+		type ConfirmTeamDeletion$result
 	} from '$houdini';
 	import { trackEvent } from '$lib/tracking';
 	import GraphErrors from '$lib/ui/GraphErrors.svelte';
 	import Time from '$lib/ui/Time.svelte';
 	import { Alert, BodyLong, Button, Modal } from '@nais/ds-svelte-community';
 	import { TrashIcon } from '@nais/ds-svelte-community/icons';
+	import type { QueryResult } from 'houdini/runtime';
 	import type { PageProps } from './$types';
 
 	let { data }: PageProps = $props();
@@ -34,7 +34,7 @@
 <GraphErrors errors={$TeamDeleteKey.errors} />
 
 {#if $TeamDeleteKey.data}
-	{@const key = $TeamDeleteKey.data.team.deleteKey}
+	{const key = $derived($TeamDeleteKey.data.team.deleteKey)}
 	{#if $UserInfo.data?.me.__typename == 'User' && $UserInfo.data.me.id == key.createdBy.id}
 		<Alert variant="error">You can not confirm your own delete request.</Alert>
 	{:else if Date.now() - +key.expires > 0}
