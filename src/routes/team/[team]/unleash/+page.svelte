@@ -73,9 +73,6 @@
 	);
 	const enabled = $derived(true);
 
-	// Why a gated control is disabled; empty string when the action is available.
-	// Controls stay visible for non-members so the restriction is discoverable,
-	// with the reason shown as a tooltip instead of hiding the control.
 	const disabledReason = (memberAction: string): string =>
 		!viewerIsMember
 			? `Only team members can ${memberAction}.`
