@@ -73,6 +73,17 @@
 	);
 	const enabled = $derived(true);
 
+	const disabledReason = (memberAction: string): string =>
+		!viewerIsMember
+			? `Only team members can ${memberAction}.`
+			: unleash?.ready === true
+				? ''
+				: 'Available once the Unleash instance is ready.';
+
+	const editReleaseChannelDisabledReason = $derived(disabledReason('change the release channel'));
+	const addTeamDisabledReason = $derived(disabledReason('add teams'));
+	const revokeTeamDisabledReason = $derived(disabledReason('remove team access'));
+
 	// GraphQL mutations
 	const createUnleashForTeam = graphql(`
 		mutation createUnleashForTeam($team: Slug!) {
@@ -597,15 +608,16 @@
 										<span style="color: var(--ax-text-neutral-subtle)">Not set</span>
 									{/if}
 								</span>
-								{#if viewerIsMember && unleash.ready}
+								<Tooltip content={editReleaseChannelDisabledReason || 'Change release channel'}>
 									<Button
 										size="xsmall"
 										variant="tertiary-neutral"
-										title="Change release channel"
+										aria-label="Change release channel"
+										disabled={editReleaseChannelDisabledReason !== ''}
 										onclick={() => (editingReleaseChannel = true)}
 										icon={PencilIcon}
 									/>
-								{/if}
+								</Tooltip>
 							{/if}
 						</div>
 					</dd>
@@ -640,18 +652,20 @@
 										<a href="/team/{team.slug}">{team.slug}</a>
 									</Td>
 									<Td align="right">
-										{#if viewerIsMember && team.slug !== teamSlug}
-											<Button
-												size="small"
-												disabled={unleash.ready === false}
-												variant="tertiary-neutral"
-												aria-label="Remove team access"
-												onclick={() => handleRemoveTeamClick(team.slug)}
-											>
-												{#snippet icon()}
-													<TrashIcon style="color:var(--ax-text-danger-decoration)!important" />
-												{/snippet}
-											</Button>
+										{#if team.slug !== teamSlug}
+											<Tooltip content={revokeTeamDisabledReason || 'Remove team access'}>
+												<Button
+													size="small"
+													disabled={revokeTeamDisabledReason !== ''}
+													variant="tertiary-neutral"
+													aria-label="Remove team access"
+													onclick={() => handleRemoveTeamClick(team.slug)}
+												>
+													{#snippet icon()}
+														<TrashIcon style="color:var(--ax-text-danger-decoration)!important" />
+													{/snippet}
+												</Button>
+											</Tooltip>
 										{/if}
 									</Td>
 								</Tr>
@@ -659,20 +673,27 @@
 						</Tbody>
 					</Table>
 				</div>
-				{#if viewerIsMember}
-					<div style="margin-top: var(--ax-space-8);">
-						<Button
-							title="Add team"
-							variant="tertiary"
-							disabled={unleash.ready === false}
-							size="small"
-							onclick={() => (addTeamModalOpen = true)}
-							icon={PlusCircleFillIcon}
-						>
-							Add team
-						</Button>
-					</div>
-				{/if}
+				{#snippet addTeamButton()}
+					<Button
+						title="Add team"
+						variant="tertiary"
+						disabled={addTeamDisabledReason !== ''}
+						size="small"
+						onclick={() => (addTeamModalOpen = true)}
+						icon={PlusCircleFillIcon}
+					>
+						Add team
+					</Button>
+				{/snippet}
+				<div style="margin-top: var(--ax-space-8);">
+					{#if addTeamDisabledReason}
+						<Tooltip content={addTeamDisabledReason}>
+							{@render addTeamButton()}
+						</Tooltip>
+					{:else}
+						{@render addTeamButton()}
+					{/if}
+				</div>
 			</section>
 		</div>
 
