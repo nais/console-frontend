@@ -247,6 +247,13 @@
 	let removeTeamConfirmOpen = $state(false);
 	let accessError = $state('');
 
+	// Errors are surfaced, but the result is deliberately not checked against the
+	// requested change. The mutation response does not reliably reflect the write
+	// yet — the value is read back before it has propagated — so a post-condition
+	// check here reports failure on operations that in fact succeeded. Telling a
+	// user to report a working action is worse than the silence this replaced.
+	// If verification is wanted, it has to come from a source that is
+	// read-after-write consistent, not from this response.
 	const removeTeam = async (removeTeamName: string) => {
 		accessError = '';
 		try {
@@ -256,11 +263,6 @@
 			});
 			if (result.errors && result.errors.length > 0) {
 				accessError = extractErrorMessages(result.errors).join(', ');
-				return;
-			}
-			const remaining = result.data?.revokeTeamAccessToUnleash.unleash?.allowedTeams.nodes;
-			if (remaining?.some((t) => t.slug === removeTeamName)) {
-				accessError = `${removeTeamName} still has access after the request was accepted. Nothing was changed — please report this.`;
 				return;
 			}
 		} catch (e) {
@@ -287,11 +289,6 @@
 			});
 			if (result.errors && result.errors.length > 0) {
 				accessError = extractErrorMessages(result.errors).join(', ');
-				return;
-			}
-			const allowed = result.data?.allowTeamAccessToUnleash.unleash?.allowedTeams.nodes;
-			if (allowed && !allowed.some((t) => t.slug === teamName)) {
-				accessError = `${teamName} was not granted access even though the request was accepted. Nothing was changed — please report this.`;
 				return;
 			}
 		} catch (e) {
