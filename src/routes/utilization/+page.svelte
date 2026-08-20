@@ -188,7 +188,7 @@
 					Estimate of annual cost of unutilized memory for tenant calculated from current
 					utilization data.
 				</p>
-				{#if $TenantUtilization.fetching}
+				{#if $TenantUtilization.fetching && !$TenantUtilization.data}
 					<div class="loading-centered" role="status" aria-label="Loading">
 						<Loader size="3xlarge" />
 					</div>
@@ -233,7 +233,7 @@
 				underutilization. For a complete overview of all teams, please refer to the table below.
 			</BodyLong>
 
-			{#if $TenantUtilization.fetching}
+			{#if $TenantUtilization.fetching && !$TenantUtilization.data}
 				<div class="loading-centered" role="status" aria-label="Loading">
 					<Loader size="3xlarge" />
 				</div>
