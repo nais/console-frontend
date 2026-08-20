@@ -215,6 +215,8 @@
 							{/snippet}
 						</BarChart>
 					</LegendWrapper>
+				{:else}
+					<BodyLong>No cost data available.</BodyLong>
 				{/if}
 			</section>
 			<section aria-labelledby="team-cost-heading">
