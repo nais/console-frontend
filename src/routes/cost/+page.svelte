@@ -3,6 +3,7 @@
 	import { OrderDirection, TeamOrderField } from '$houdini';
 	import LegendWrapper, { legendSnippet } from '$lib/chart/LegendWrapper.svelte';
 	import { euroAxisFormatter, serviceColor } from '$lib/chart/util';
+	import GraphErrors from '$lib/ui/GraphErrors.svelte';
 	import IconLabel from '$lib/ui/IconLabel.svelte';
 	import { urlToOrderDirection, urlToOrderField } from '$lib/ui/OrderByMenu.svelte';
 	import Pagination from '$lib/ui/Pagination.svelte';
@@ -118,8 +119,6 @@
 	<div class="container">
 		<Heading as="h1" size="large">Tenant Cost</Heading>
 		<div class="wrapper">
-			<!-- <GraphErrors errors={$TenantCost.errors} /> -->
-
 			<section class="graph" aria-labelledby="cost-by-service-heading">
 				<div class="heading">
 					<div class="content">
@@ -214,8 +213,8 @@
 							{/snippet}
 						</BarChart>
 					</LegendWrapper>
-				{:else}
-					<p>No cost data available.</p>
+				{:else if $CostMonthly.errors}
+					<GraphErrors errors={$CostMonthly.errors} />
 				{/if}
 			</section>
 			<section aria-labelledby="team-cost-heading">
