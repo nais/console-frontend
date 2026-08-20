@@ -118,6 +118,8 @@
 <div class="page">
 	<div class="container">
 		<Heading as="h1" size="large">Tenant Cost</Heading>
+		<GraphErrors errors={$TenantCost.errors} />
+		<GraphErrors errors={$CostMonthly.errors} />
 		<div class="wrapper">
 			<section class="graph" aria-labelledby="cost-by-service-heading">
 				<div class="heading">
@@ -213,8 +215,6 @@
 							{/snippet}
 						</BarChart>
 					</LegendWrapper>
-				{:else if $CostMonthly.errors}
-					<GraphErrors errors={$CostMonthly.errors} />
 				{/if}
 			</section>
 			<section aria-labelledby="team-cost-heading">
