@@ -154,34 +154,32 @@
 					Estimate of annual cost of unutilized CPU for tenant calculated from current utilization
 					data.
 				</p>
-				{#if $TenantUtilization.data}
-					{#if resourceUtilization.cpuUtil.length > 0}
-						{const cpuRequested = $derived(
-							resourceUtilization.cpuUtil.reduce((acc, { requested }) => acc + requested, 0)
-						)}
-						{const cpuUsage = $derived(
-							resourceUtilization.cpuUtil.reduce((acc, { used }) => acc + used, 0)
-						)}
-						<div class="cost-wrapper">
-							<div class="cost-amount">
-								{euroValueFormatter(
-									round(
-										yearlyOverageCost(
-											UtilizationResourceType.CPU,
-											cpuRequested - cpuUsage,
-											$TenantUtilization.data?.currentUnitPrices.cpu.value ?? 0,
-											$TenantUtilization.data?.currentUnitPrices.memory.value ?? 0
-										),
-										0
-									),
-									{ maximumFractionDigits: 0 }
-								)}
-							</div>
-						</div>
-					{/if}
-				{:else}
+				{#if $TenantUtilization.fetching}
 					<div class="loading-centered" role="status" aria-label="Loading">
 						<Loader size="3xlarge" />
+					</div>
+				{:else if resourceUtilization.cpuUtil.length > 0}
+					{const cpuRequested = $derived(
+						resourceUtilization.cpuUtil.reduce((acc, { requested }) => acc + requested, 0)
+					)}
+					{const cpuUsage = $derived(
+						resourceUtilization.cpuUtil.reduce((acc, { used }) => acc + used, 0)
+					)}
+					<div class="cost-wrapper">
+						<div class="cost-amount">
+							{euroValueFormatter(
+								round(
+									yearlyOverageCost(
+										UtilizationResourceType.CPU,
+										cpuRequested - cpuUsage,
+										$TenantUtilization.data?.currentUnitPrices.cpu.value ?? 0,
+										$TenantUtilization.data?.currentUnitPrices.memory.value ?? 0
+									),
+									0
+								),
+								{ maximumFractionDigits: 0 }
+							)}
+						</div>
 					</div>
 				{/if}
 			</SurfaceCard>
@@ -190,31 +188,29 @@
 					Estimate of annual cost of unutilized memory for tenant calculated from current
 					utilization data.
 				</p>
-				{#if $TenantUtilization.data}
-					{#if resourceUtilization.memUtil.length > 0}
-						{const memoryRequested = $derived(
-							resourceUtilization.memUtil.reduce((acc, { requested }) => acc + requested, 0)
-						)}
-						{const memoryUsage = $derived(
-							resourceUtilization.memUtil.reduce((acc, { used }) => acc + used, 0)
-						)}
-						<div class="cost-wrapper">
-							<div class="cost-amount">
-								{euroValueFormatter(
-									yearlyOverageCost(
-										UtilizationResourceType.MEMORY,
-										memoryRequested - memoryUsage,
-										$TenantUtilization.data?.currentUnitPrices.cpu.value ?? 0,
-										$TenantUtilization.data?.currentUnitPrices.memory.value ?? 0
-									),
-									{ maximumFractionDigits: 0 }
-								)}
-							</div>
-						</div>
-					{/if}
-				{:else}
+				{#if $TenantUtilization.fetching}
 					<div class="loading-centered" role="status" aria-label="Loading">
 						<Loader size="3xlarge" />
+					</div>
+				{:else if resourceUtilization.memUtil.length > 0}
+					{const memoryRequested = $derived(
+						resourceUtilization.memUtil.reduce((acc, { requested }) => acc + requested, 0)
+					)}
+					{const memoryUsage = $derived(
+						resourceUtilization.memUtil.reduce((acc, { used }) => acc + used, 0)
+					)}
+					<div class="cost-wrapper">
+						<div class="cost-amount">
+							{euroValueFormatter(
+								yearlyOverageCost(
+									UtilizationResourceType.MEMORY,
+									memoryRequested - memoryUsage,
+									$TenantUtilization.data?.currentUnitPrices.cpu.value ?? 0,
+									$TenantUtilization.data?.currentUnitPrices.memory.value ?? 0
+								),
+								{ maximumFractionDigits: 0 }
+							)}
+						</div>
 					</div>
 				{/if}
 			</SurfaceCard>
@@ -237,14 +233,14 @@
 				underutilization. For a complete overview of all teams, please refer to the table below.
 			</BodyLong>
 
-			{#if $TenantUtilization.data}
+			{#if $TenantUtilization.fetching}
+				<div class="loading-centered" role="status" aria-label="Loading">
+					<Loader size="3xlarge" />
+				</div>
+			{:else}
 				<div class="chart-row">
 					<UtilizationChart data={sortedCpuData} format="cpu" onBarClick={handleBarClick} />
 					<UtilizationChart data={sortedMemoryData} format="memory" onBarClick={handleBarClick} />
-				</div>
-			{:else}
-				<div class="loading-centered" role="status" aria-label="Loading">
-					<Loader size="3xlarge" />
 				</div>
 			{/if}
 		</section>

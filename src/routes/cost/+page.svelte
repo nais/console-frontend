@@ -146,7 +146,11 @@
 						{/each}
 					</ToggleGroup>
 				</div>
-				{#if $CostMonthly.data}
+				{#if $CostMonthly.fetching}
+					<div class="loading-centered" role="status" aria-label="Loading">
+						<Loader size="3xlarge" />
+					</div>
+				{:else if $CostMonthly.data}
 					<LegendWrapper height="1000px">
 						<BarChart
 							legend={legendSnippet}
@@ -210,10 +214,6 @@
 							{/snippet}
 						</BarChart>
 					</LegendWrapper>
-				{:else}
-					<div class="loading-centered" role="status" aria-label="Loading">
-						<Loader size="3xlarge" />
-					</div>
 				{/if}
 			</section>
 			<section aria-labelledby="team-cost-heading">
