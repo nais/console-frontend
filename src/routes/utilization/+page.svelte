@@ -202,11 +202,14 @@
 					<div class="cost-wrapper">
 						<div class="cost-amount">
 							{euroValueFormatter(
-								yearlyOverageCost(
-									UtilizationResourceType.MEMORY,
-									memoryRequested - memoryUsage,
-									$TenantUtilization.data?.currentUnitPrices.cpu.value ?? 0,
-									$TenantUtilization.data?.currentUnitPrices.memory.value ?? 0
+								round(
+									yearlyOverageCost(
+										UtilizationResourceType.MEMORY,
+										memoryRequested - memoryUsage,
+										$TenantUtilization.data?.currentUnitPrices.cpu.value ?? 0,
+										$TenantUtilization.data?.currentUnitPrices.memory.value ?? 0
+									),
+									0
 								),
 								{ maximumFractionDigits: 0 }
 							)}
@@ -267,7 +270,7 @@
 						</Tr>
 					</Thead>
 					<Tbody>
-						{#if $TenantUtilization.fetching}
+						{#if $TenantUtilization.fetching && !$TenantUtilization.data}
 							<Tr>
 								<Td colspan={4}>
 									<div class="loading-centered" role="status" aria-label="Loading">
