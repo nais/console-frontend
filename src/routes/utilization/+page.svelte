@@ -154,7 +154,7 @@
 					Estimate of annual cost of unutilized CPU for tenant calculated from current utilization
 					data.
 				</p>
-				{#if $TenantUtilization.fetching}
+				{#if $TenantUtilization.fetching && !$TenantUtilization.data}
 					<div class="loading-centered" role="status" aria-label="Loading">
 						<Loader size="3xlarge" />
 					</div>

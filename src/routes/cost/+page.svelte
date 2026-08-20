@@ -146,7 +146,7 @@
 						{/each}
 					</ToggleGroup>
 				</div>
-				{#if $CostMonthly.fetching}
+				{#if $CostMonthly.fetching && !$CostMonthly.data}
 					<div class="loading-centered" role="status" aria-label="Loading">
 						<Loader size="3xlarge" />
 					</div>
