@@ -3,6 +3,7 @@
 	import { OrderDirection, TeamOrderField } from '$houdini';
 	import LegendWrapper, { legendSnippet } from '$lib/chart/LegendWrapper.svelte';
 	import { euroAxisFormatter, serviceColor } from '$lib/chart/util';
+	import GraphErrors from '$lib/ui/GraphErrors.svelte';
 	import IconLabel from '$lib/ui/IconLabel.svelte';
 	import { urlToOrderDirection, urlToOrderField } from '$lib/ui/OrderByMenu.svelte';
 	import Pagination from '$lib/ui/Pagination.svelte';
@@ -117,9 +118,9 @@
 <div class="page">
 	<div class="container">
 		<Heading as="h1" size="large">Tenant Cost</Heading>
+		<GraphErrors errors={$TenantCost.errors} />
+		<GraphErrors errors={$CostMonthly.errors} />
 		<div class="wrapper">
-			<!-- <GraphErrors errors={$TenantCost.errors} /> -->
-
 			<section class="graph" aria-labelledby="cost-by-service-heading">
 				<div class="heading">
 					<div class="content">
@@ -146,7 +147,11 @@
 						{/each}
 					</ToggleGroup>
 				</div>
-				{#if $CostMonthly.data}
+				{#if $CostMonthly.fetching && !$CostMonthly.data}
+					<div class="loading-centered" role="status" aria-label="Loading chart">
+						<Loader size="3xlarge" />
+					</div>
+				{:else if $CostMonthly.data}
 					<LegendWrapper height="1000px">
 						<BarChart
 							legend={legendSnippet}
@@ -211,9 +216,7 @@
 						</BarChart>
 					</LegendWrapper>
 				{:else}
-					<div class="loading-centered" role="status" aria-label="Loading">
-						<Loader size="3xlarge" />
-					</div>
+					<BodyLong>No cost data available.</BodyLong>
 				{/if}
 			</section>
 			<section aria-labelledby="team-cost-heading">

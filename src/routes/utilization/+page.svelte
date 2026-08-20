@@ -16,6 +16,7 @@
 	import {
 		BodyLong,
 		Heading,
+		Loader,
 		Table,
 		Tbody,
 		Td,
@@ -147,117 +148,138 @@
 	<div class="container">
 		<Heading as="h1" size="large">Tenant Utilization</Heading>
 		<GraphErrors errors={$TenantUtilization.errors} />
-		{#if resourceUtilization}
-			<div class="resource-grid">
-				<SurfaceCard title="Estimated annual CPU waste" level="h2" bordered>
-					<p>
-						Estimate of annual cost of unutilized CPU for tenant calculated from current utilization
-						data.
-					</p>
-					{#if resourceUtilization.cpuUtil.length > 0}
-						{const cpuRequested = $derived(
-							resourceUtilization.cpuUtil.reduce((acc, { requested }) => acc + requested, 0)
-						)}
-						{const cpuUsage = $derived(
-							resourceUtilization.cpuUtil.reduce((acc, { used }) => acc + used, 0)
-						)}
-						<div class="cost-wrapper">
-							<div class="cost-amount">
-								{euroValueFormatter(
-									round(
-										yearlyOverageCost(
-											UtilizationResourceType.CPU,
-											cpuRequested - cpuUsage,
-											$TenantUtilization.data?.currentUnitPrices.cpu.value ?? 0,
-											$TenantUtilization.data?.currentUnitPrices.memory.value ?? 0
-										),
-										0
+		<div class="resource-grid">
+			<SurfaceCard title="Estimated annual CPU waste" level="h2" bordered>
+				<p>
+					Estimate of annual cost of unutilized CPU for tenant calculated from current utilization
+					data.
+				</p>
+				{#if $TenantUtilization.fetching && !$TenantUtilization.data}
+					<div class="loading-centered" role="status" aria-label="Loading CPU waste estimate">
+						<Loader size="3xlarge" />
+					</div>
+				{:else if resourceUtilization.cpuUtil.length > 0}
+					{const cpuRequested = $derived(
+						resourceUtilization.cpuUtil.reduce((acc, { requested }) => acc + requested, 0)
+					)}
+					{const cpuUsage = $derived(
+						resourceUtilization.cpuUtil.reduce((acc, { used }) => acc + used, 0)
+					)}
+					<div class="cost-wrapper">
+						<div class="cost-amount">
+							{euroValueFormatter(
+								round(
+									yearlyOverageCost(
+										UtilizationResourceType.CPU,
+										cpuRequested - cpuUsage,
+										$TenantUtilization.data?.currentUnitPrices.cpu.value ?? 0,
+										$TenantUtilization.data?.currentUnitPrices.memory.value ?? 0
 									),
-									{ maximumFractionDigits: 0 }
-								)}
-							</div>
+									0
+								),
+								{ maximumFractionDigits: 0 }
+							)}
 						</div>
-					{/if}
-				</SurfaceCard>
-				<SurfaceCard title="Estimated annual memory waste" level="h2" bordered>
-					<p>
-						Estimate of annual cost of unutilized memory for tenant calculated from current
-						utilization data.
-					</p>
-					{#if resourceUtilization.memUtil.length > 0}
-						{const memoryRequested = $derived(
-							resourceUtilization.memUtil.reduce((acc, { requested }) => acc + requested, 0)
-						)}
-						{const memoryUsage = $derived(
-							resourceUtilization.memUtil.reduce((acc, { used }) => acc + used, 0)
-						)}
-						<div class="cost-wrapper">
-							<div class="cost-amount">
-								{euroValueFormatter(
+					</div>
+				{/if}
+			</SurfaceCard>
+			<SurfaceCard title="Estimated annual memory waste" level="h2" bordered>
+				<p>
+					Estimate of annual cost of unutilized memory for tenant calculated from current
+					utilization data.
+				</p>
+				{#if $TenantUtilization.fetching && !$TenantUtilization.data}
+					<div class="loading-centered" role="status" aria-label="Loading memory waste estimate">
+						<Loader size="3xlarge" />
+					</div>
+				{:else if resourceUtilization.memUtil.length > 0}
+					{const memoryRequested = $derived(
+						resourceUtilization.memUtil.reduce((acc, { requested }) => acc + requested, 0)
+					)}
+					{const memoryUsage = $derived(
+						resourceUtilization.memUtil.reduce((acc, { used }) => acc + used, 0)
+					)}
+					<div class="cost-wrapper">
+						<div class="cost-amount">
+							{euroValueFormatter(
+								round(
 									yearlyOverageCost(
 										UtilizationResourceType.MEMORY,
 										memoryRequested - memoryUsage,
 										$TenantUtilization.data?.currentUnitPrices.cpu.value ?? 0,
 										$TenantUtilization.data?.currentUnitPrices.memory.value ?? 0
 									),
-									{ maximumFractionDigits: 0 }
-								)}
-							</div>
+									0
+								),
+								{ maximumFractionDigits: 0 }
+							)}
 						</div>
-					{/if}
-				</SurfaceCard>
-			</div>
+					</div>
+				{/if}
+			</SurfaceCard>
+		</div>
 
-			<section aria-labelledby="top-teams-heading">
-				<Heading as="h2" spacing id="top-teams-heading"
-					>Teams with the Highest CPU and Memory Underutilization</Heading
-				>
-				<BodyLong
-					>The chart below shows which teams are using less CPU and memory than they requested.
-					While resources are allocated based on anticipated needs, consistently underutilized
-					resources represent an opportunity for cost optimization. By adjusting resource requests
-					to more accurately reflect actual usage, teams can reduce wasteful spending and improve
-					overall efficiency.
-				</BodyLong>
+		<section aria-labelledby="top-teams-heading">
+			<Heading as="h2" spacing id="top-teams-heading"
+				>Teams with the Highest CPU and Memory Underutilization</Heading
+			>
+			<BodyLong
+				>The chart below shows which teams are using less CPU and memory than they requested. While
+				resources are allocated based on anticipated needs, consistently underutilized resources
+				represent an opportunity for cost optimization. By adjusting resource requests to more
+				accurately reflect actual usage, teams can reduce wasteful spending and improve overall
+				efficiency.
+			</BodyLong>
 
-				<BodyLong>
-					Note: The chart only shows the top 10 teams with the highest CPU and memory
-					underutilization. For a complete overview of all teams, please refer to the table below.
-				</BodyLong>
+			<BodyLong>
+				Note: The chart only shows the top 10 teams with the highest CPU and memory
+				underutilization. For a complete overview of all teams, please refer to the table below.
+			</BodyLong>
 
+			{#if $TenantUtilization.fetching && !$TenantUtilization.data}
+				<div class="loading-centered" role="status" aria-label="Loading charts">
+					<Loader size="3xlarge" />
+				</div>
+			{:else}
 				<div class="chart-row">
 					<UtilizationChart data={sortedCpuData} format="cpu" onBarClick={handleBarClick} />
 					<UtilizationChart data={sortedMemoryData} format="memory" onBarClick={handleBarClick} />
 				</div>
-			</section>
+			{/if}
+		</section>
 
-			<section aria-labelledby="underutilization-heading">
-				<Heading as="h2" spacing id="underutilization-heading"
-					>CPU and Memory Underutilization per Team</Heading
-				>
+		<section aria-labelledby="underutilization-heading">
+			<Heading as="h2" spacing id="underutilization-heading"
+				>CPU and Memory Underutilization per Team</Heading
+			>
 
-				<div
-					class="table-scroll"
-					role="region"
-					aria-label="CPU and memory underutilization per team"
+			<div class="table-scroll" role="region" aria-label="CPU and memory underutilization per team">
+				<Table
+					size="small"
+					sort={sortState}
+					onsortchange={(key) => {
+						sortState = sortTable(key as SortBy, sortState);
+					}}
 				>
-					<Table
-						size="small"
-						sort={sortState}
-						onsortchange={(key) => {
-							sortState = sortTable(key as SortBy, sortState);
-						}}
-					>
-						<Thead>
+					<Thead>
+						<Tr>
+							<Th sortable={true} sortKey="TEAM">Team</Th>
+							<Th sortable={true} sortKey="CPU">Unutilized CPU</Th>
+							<Th sortable={true} sortKey="MEMORY">Unutilized memory</Th>
+							<Th sortable={true} sortKey="COST">Estimated annual overage cost</Th>
+						</Tr>
+					</Thead>
+					<Tbody>
+						{#if $TenantUtilization.fetching && !$TenantUtilization.data}
 							<Tr>
-								<Th sortable={true} sortKey="TEAM">Team</Th>
-								<Th sortable={true} sortKey="CPU">Unutilized CPU</Th>
-								<Th sortable={true} sortKey="MEMORY">Unutilized memory</Th>
-								<Th sortable={true} sortKey="COST">Estimated annual overage cost</Th>
+								<Td colspan={4}>
+									<div class="loading-centered" role="status" aria-label="Loading table">
+										<Loader size="3xlarge" />
+									</div>
+								</Td>
 							</Tr>
-						</Thead>
-						<Tbody>
-							{#each paginatedTable as overage (overage)}
+						{:else}
+							{#each paginatedTable as overage (overage.teamSlug)}
 								<Tr>
 									<Td>
 										<IconLabel
@@ -279,31 +301,32 @@
 								</Tr>
 							{:else}
 								<Tr>
-									<Td colspan={999}>No overage data for tenant.</Td>
+									<Td colspan={4}>No overage data for tenant.</Td>
 								</Tr>
 							{/each}
-						</Tbody>
-					</Table>
-				</div>
-				<Pagination
-					page={{
-						hasNextPage: pageEnd < totalCount,
-						hasPreviousPage: currentPage > 0,
-						pageStart,
-						pageEnd,
-						totalCount
-					}}
-					loaders={{
-						loadNextPage: () => {
-							currentPage += 1;
-						},
-						loadPreviousPage: () => {
-							currentPage -= 1;
-						}
-					}}
-				/>
-			</section>
-		{/if}
+						{/if}
+					</Tbody>
+				</Table>
+			</div>
+			<Pagination
+				page={{
+					hasNextPage: pageEnd < totalCount,
+					hasPreviousPage: currentPage > 0,
+					pageStart,
+					pageEnd,
+					totalCount
+				}}
+				fetching={$TenantUtilization.fetching && !$TenantUtilization.data}
+				loaders={{
+					loadNextPage: () => {
+						currentPage += 1;
+					},
+					loadPreviousPage: () => {
+						currentPage -= 1;
+					}
+				}}
+			/>
+		</section>
 	</div>
 </div>
 
