@@ -147,7 +147,7 @@
 					</ToggleGroup>
 				</div>
 				{#if $CostMonthly.fetching && !$CostMonthly.data}
-					<div class="loading-centered" role="status" aria-label="Loading">
+					<div class="loading-centered" role="status" aria-label="Loading chart">
 						<Loader size="3xlarge" />
 					</div>
 				{:else if $CostMonthly.data}

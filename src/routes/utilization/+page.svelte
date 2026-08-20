@@ -155,7 +155,7 @@
 					data.
 				</p>
 				{#if $TenantUtilization.fetching && !$TenantUtilization.data}
-					<div class="loading-centered" role="status" aria-label="Loading">
+					<div class="loading-centered" role="status" aria-label="Loading CPU waste estimate">
 						<Loader size="3xlarge" />
 					</div>
 				{:else if resourceUtilization.cpuUtil.length > 0}
@@ -189,7 +189,7 @@
 					utilization data.
 				</p>
 				{#if $TenantUtilization.fetching && !$TenantUtilization.data}
-					<div class="loading-centered" role="status" aria-label="Loading">
+					<div class="loading-centered" role="status" aria-label="Loading memory waste estimate">
 						<Loader size="3xlarge" />
 					</div>
 				{:else if resourceUtilization.memUtil.length > 0}
@@ -237,7 +237,7 @@
 			</BodyLong>
 
 			{#if $TenantUtilization.fetching && !$TenantUtilization.data}
-				<div class="loading-centered" role="status" aria-label="Loading">
+				<div class="loading-centered" role="status" aria-label="Loading charts">
 					<Loader size="3xlarge" />
 				</div>
 			{:else}
@@ -273,13 +273,13 @@
 						{#if $TenantUtilization.fetching && !$TenantUtilization.data}
 							<Tr>
 								<Td colspan={4}>
-									<div class="loading-centered" role="status" aria-label="Loading">
+									<div class="loading-centered" role="status" aria-label="Loading table">
 										<Loader size="3xlarge" />
 									</div>
 								</Td>
 							</Tr>
 						{:else}
-							{#each paginatedTable as overage (overage)}
+							{#each paginatedTable as overage (overage.teamSlug)}
 								<Tr>
 									<Td>
 										<IconLabel
@@ -301,7 +301,7 @@
 								</Tr>
 							{:else}
 								<Tr>
-									<Td colspan={999}>No overage data for tenant.</Td>
+									<Td colspan={4}>No overage data for tenant.</Td>
 								</Tr>
 							{/each}
 						{/if}
@@ -316,7 +316,7 @@
 					pageEnd,
 					totalCount
 				}}
-				fetching={$TenantUtilization.fetching}
+				fetching={$TenantUtilization.fetching && !$TenantUtilization.data}
 				loaders={{
 					loadNextPage: () => {
 						currentPage += 1;
