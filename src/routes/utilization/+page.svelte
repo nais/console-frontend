@@ -155,8 +155,8 @@
 					data.
 				</p>
 				{#if $TenantUtilization.fetching && !$TenantUtilization.data}
-					<div class="loading-centered" role="status" aria-label="Loading CPU waste estimate">
-						<Loader size="3xlarge" />
+					<div class="cost-wrapper" role="status" aria-label="Loading CPU waste estimate">
+						<Loader size="xlarge" />
 					</div>
 				{:else if resourceUtilization.cpuUtil.length > 0}
 					{const cpuRequested = $derived(
@@ -189,8 +189,8 @@
 					utilization data.
 				</p>
 				{#if $TenantUtilization.fetching && !$TenantUtilization.data}
-					<div class="loading-centered" role="status" aria-label="Loading memory waste estimate">
-						<Loader size="3xlarge" />
+					<div class="cost-wrapper" role="status" aria-label="Loading memory waste estimate">
+						<Loader size="xlarge" />
 					</div>
 				{:else if resourceUtilization.memUtil.length > 0}
 					{const memoryRequested = $derived(
