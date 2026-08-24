@@ -1,5 +1,6 @@
 overrides:
   cookie: "^0.7.0"
+  esbuild: 0.28.2
 
 allowBuilds:
   esbuild: true
