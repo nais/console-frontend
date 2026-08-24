@@ -1,5 +1,5 @@
 {
 	"ignoreDependencies": ["houdini-svelte", "pino-pretty", "husky"],
-	"ignoreUnresolved": ["\\$app/.+", "\\$env/.+"],
-	"ignore": ["houdini.config.js", "src/client.ts"]
+	"ignoreUnresolved": ["\\$app/.+"],
+	"ignore": ["houdini.config.js", "src/client.ts", "src/env.ts"]
 }
