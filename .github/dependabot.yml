@@ -17,7 +17,7 @@ updates:
           - "*"
     ignore:
       - dependency-name: "typescript"
-        versions: [">=7"]
+        update-types: ["version-update:semver-major"]
 
   - package-ecosystem: github-actions
     directory: "/"
