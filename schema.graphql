@@ -292,6 +292,11 @@ enum ActivityLogEntryResourceType {
   JOB
 
   """
+  All activity log entries related to Kafka topics will use this resource type.
+  """
+  KAFKA_TOPIC
+
+  """
   All activity log entries related to OpenSearches will use this resource type.
   """
   OPENSEARCH
