@@ -9,7 +9,9 @@ import ClusterAuditActivityLogEntryText from './shared/texts/ClusterAuditActivit
 import ConfigCreatedActivityLogEntryText from './shared/texts/ConfigCreatedActivityLogEntryText.svelte';
 import ConfigDeletedActivityLogEntryText from './shared/texts/ConfigDeletedActivityLogEntryText.svelte';
 import ConfigUpdatedActivityLogEntryText from './shared/texts/ConfigUpdatedActivityLogEntryText.svelte';
-import CredentialsActivityLogEntryText from './shared/texts/CredentialsActivityLogEntryText.svelte';
+import KafkaCredentialsCreatedActivityLogEntryText from './shared/texts/KafkaCredentialsCreatedActivityLogEntryText.svelte';
+import OpenSearchCredentialsCreatedActivityLogEntryText from './shared/texts/OpenSearchCredentialsCreatedActivityLogEntryText.svelte';
+import ValkeyCredentialsCreatedActivityLogEntryText from './shared/texts/ValkeyCredentialsCreatedActivityLogEntryText.svelte';
 import DefaultText from './shared/texts/DefaultText.svelte';
 import DeploymentActivityLogEntryText from './shared/texts/DeploymentActivityLogEntryText.svelte';
 import GenericKubernetesResourceActivityLogEntryText from './shared/texts/GenericKubernetesResourceActivityLogEntryText.svelte';
@@ -86,8 +88,12 @@ export function activityTextComponent(typename: string | null): Component<textCo
 			return ConfigDeletedActivityLogEntryText as Component<textComponentProps>;
 		case 'ConfigUpdatedActivityLogEntry':
 			return ConfigUpdatedActivityLogEntryText as Component<textComponentProps>;
-		case 'CredentialsActivityLogEntry':
-			return CredentialsActivityLogEntryText as Component<textComponentProps>;
+		case 'KafkaCredentialsCreatedActivityLogEntry':
+			return KafkaCredentialsCreatedActivityLogEntryText as Component<textComponentProps>;
+		case 'OpenSearchCredentialsCreatedActivityLogEntry':
+			return OpenSearchCredentialsCreatedActivityLogEntryText as Component<textComponentProps>;
+		case 'ValkeyCredentialsCreatedActivityLogEntry':
+			return ValkeyCredentialsCreatedActivityLogEntryText as Component<textComponentProps>;
 		case 'DeploymentActivityLogEntry':
 			return DeploymentActivityLogEntryText as Component<textComponentProps>;
 		case 'GenericKubernetesResourceActivityLogEntry':

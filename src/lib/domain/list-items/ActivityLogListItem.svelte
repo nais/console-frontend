@@ -76,8 +76,13 @@
 							}
 						}
 					}
-					... on CredentialsActivityLogEntry {
-						credentialsData: data {
+					... on KafkaCredentialsCreatedActivityLogEntry {
+						kafkaCredentialsData: data {
+							ttl
+						}
+					}
+					... on OpenSearchCredentialsCreatedActivityLogEntry {
+						opensearchCredentialsData: data {
 							permission
 							ttl
 						}
@@ -313,6 +318,12 @@
 					}
 					... on ValkeyDeletedActivityLogEntry {
 						__typename
+					}
+					... on ValkeyCredentialsCreatedActivityLogEntry {
+						valkeyCredentialsData: data {
+							permission
+							ttl
+						}
 					}
 					... on ValkeyUpdatedActivityLogEntry {
 						valkeyData: data {

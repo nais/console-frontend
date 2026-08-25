@@ -35,7 +35,7 @@
 								VALKEY_UPDATED
 								VALKEY_DELETED
 								VALKEY_MAINTENANCE_STARTED
-								CREDENTIALS_CREATED
+								VALKEY_CREDENTIALS_CREATED
 							]
 						}
 					) @paginate(mode: Infinite) {
@@ -65,7 +65,7 @@
 								OPENSEARCH_UPDATED
 								OPENSEARCH_DELETED
 								OPENSEARCH_MAINTENANCE_STARTED
-								CREDENTIALS_CREATED
+								OPENSEARCH_CREDENTIALS_CREATED
 							]
 						}
 					) @paginate(mode: Infinite) {

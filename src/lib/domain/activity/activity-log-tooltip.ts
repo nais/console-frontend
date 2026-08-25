@@ -68,8 +68,12 @@ export function activityTooltip(typename: string): string {
 			return 'Vulnerability';
 		case 'ClusterAuditActivityLogEntry':
 			return 'Kubernetes audit';
-		case 'CredentialsActivityLogEntry':
-			return 'Credentials';
+		case 'KafkaCredentialsCreatedActivityLogEntry':
+			return 'Kafka credentials';
+		case 'OpenSearchCredentialsCreatedActivityLogEntry':
+			return 'OpenSearch credentials';
+		case 'ValkeyCredentialsCreatedActivityLogEntry':
+			return 'Valkey credentials';
 		case 'ServiceAccountCreatedActivityLogEntry':
 		case 'ServiceAccountDeletedActivityLogEntry':
 		case 'ServiceAccountUpdatedActivityLogEntry':
