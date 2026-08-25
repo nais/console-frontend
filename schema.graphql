@@ -34,9 +34,6 @@ enum ActivityLogActivityType {
   """Config was updated."""
   CONFIG_UPDATED
 
-  """Filter for credential creation events."""
-  CREDENTIALS_CREATED
-
   """Activity log entry for deployment activity."""
   DEPLOYMENT
 
@@ -55,8 +52,14 @@ enum ActivityLogActivityType {
   """Activity log entries related to job updates."""
   JOB_UPDATED
 
+  """Filter for Kafka credential creation events."""
+  KAFKA_CREDENTIALS_CREATED
+
   """OpenSearch was created."""
   OPENSEARCH_CREATED
+
+  """Filter for credential creation events."""
+  OPENSEARCH_CREDENTIALS_CREATED
 
   """OpenSearch was deleted."""
   OPENSEARCH_DELETED
@@ -183,6 +186,9 @@ enum ActivityLogActivityType {
 
   """Valkey was created."""
   VALKEY_CREATED
+
+  """Filter for credential creation events."""
+  VALKEY_CREDENTIALS_CREATED
 
   """Valkey was deleted."""
   VALKEY_DELETED
@@ -2145,7 +2151,7 @@ input CreateOpenSearchCredentialsInput {
   instanceName: String!
 
   """Permission level for the credentials."""
-  permission: CredentialPermission!
+  permission: OpenSearchPermission!
 
   """The team that owns the OpenSearch instance."""
   teamSlug: Slug!
@@ -2334,7 +2340,7 @@ input CreateValkeyCredentialsInput {
   instanceName: String!
 
   """Permission level for the credentials."""
-  permission: CredentialPermission!
+  permission: ValkeyPermission!
 
   """The team that owns the Valkey instance."""
   teamSlug: Slug!
@@ -2381,51 +2387,6 @@ input CreateValkeyInput {
 type CreateValkeyPayload {
   """Valkey instance that was created."""
   valkey: Valkey!
-}
-
-"""Permission level for OpenSearch and Valkey credentials."""
-enum CredentialPermission {
-  ADMIN
-  READ
-  READWRITE
-  WRITE
-}
-
-type CredentialsActivityLogEntry implements ActivityLogEntry & Node {
-  """The identity of the actor who performed the action."""
-  actor: String!
-
-  """Creation time of the entry."""
-  createdAt: Time!
-
-  """Data associated with the credential creation."""
-  data: CredentialsActivityLogEntryData!
-
-  """The environment name that the entry belongs to."""
-  environmentName: String
-
-  """ID of the entry."""
-  id: ID!
-
-  """Message that summarizes the entry."""
-  message: String!
-
-  """Name of the resource that was affected by the action."""
-  resourceName: String!
-
-  """Type of the resource that was affected by the action."""
-  resourceType: ActivityLogEntryResourceType!
-
-  """The team slug that the entry belongs to."""
-  teamSlug: Slug!
-}
-
-type CredentialsActivityLogEntryData {
-  """The permission level, if applicable."""
-  permission: String
-
-  """The TTL that was requested for the credentials."""
-  ttl: String!
 }
 
 """Get current unit prices."""
@@ -4297,6 +4258,40 @@ type KafkaCredentials {
   username: String!
 }
 
+type KafkaCredentialsCreatedActivityLogEntry implements ActivityLogEntry & Node {
+  """The identity of the actor who performed the action."""
+  actor: String!
+
+  """Creation time of the entry."""
+  createdAt: Time!
+
+  """Data associated with the credential creation."""
+  data: KafkaCredentialsCreatedActivityLogEntryData!
+
+  """The environment name that the entry belongs to."""
+  environmentName: String
+
+  """ID of the entry."""
+  id: ID!
+
+  """Message that summarizes the entry."""
+  message: String!
+
+  """Name of the resource that was affected by the action."""
+  resourceName: String!
+
+  """Type of the resource that was affected by the action."""
+  resourceType: ActivityLogEntryResourceType!
+
+  """The team slug that the entry belongs to."""
+  teamSlug: Slug!
+}
+
+type KafkaCredentialsCreatedActivityLogEntryData {
+  """The TTL that was requested for the credentials."""
+  ttl: String!
+}
+
 type KafkaLagScalingStrategy {
   """The consumer group of the topic."""
   consumerGroup: String!
@@ -5153,6 +5148,43 @@ type OpenSearchCredentials {
   username: String!
 }
 
+type OpenSearchCredentialsCreatedActivityLogEntry implements ActivityLogEntry & Node {
+  """The identity of the actor who performed the action."""
+  actor: String!
+
+  """Creation time of the entry."""
+  createdAt: Time!
+
+  """Data associated with the credential creation."""
+  data: OpenSearchCredentialsCreatedActivityLogEntryData!
+
+  """The environment name that the entry belongs to."""
+  environmentName: String
+
+  """ID of the entry."""
+  id: ID!
+
+  """Message that summarizes the entry."""
+  message: String!
+
+  """Name of the resource that was affected by the action."""
+  resourceName: String!
+
+  """Type of the resource that was affected by the action."""
+  resourceType: ActivityLogEntryResourceType!
+
+  """The team slug that the entry belongs to."""
+  teamSlug: Slug!
+}
+
+type OpenSearchCredentialsCreatedActivityLogEntryData {
+  """The permission level, if applicable."""
+  permission: String
+
+  """The TTL that was requested for the credentials."""
+  ttl: String!
+}
+
 type OpenSearchDeletedActivityLogEntry implements ActivityLogEntry & Node {
   """
   The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
@@ -5324,6 +5356,21 @@ enum OpenSearchOrderField {
   ISSUES
   NAME
   STATE
+}
+
+"""Permission level for OpenSearch credentials."""
+enum OpenSearchPermission {
+  """Administrative access."""
+  ADMIN
+
+  """Read-only access."""
+  READ
+
+  """Read and write access."""
+  READWRITE
+
+  """Write-only access."""
+  WRITE
 }
 
 enum OpenSearchState {
@@ -10750,6 +10797,43 @@ type ValkeyCredentials {
   username: String!
 }
 
+type ValkeyCredentialsCreatedActivityLogEntry implements ActivityLogEntry & Node {
+  """The identity of the actor who performed the action."""
+  actor: String!
+
+  """Creation time of the entry."""
+  createdAt: Time!
+
+  """Data associated with the credential creation."""
+  data: ValkeyCredentialsCreatedActivityLogEntryData!
+
+  """The environment name that the entry belongs to."""
+  environmentName: String
+
+  """ID of the entry."""
+  id: ID!
+
+  """Message that summarizes the entry."""
+  message: String!
+
+  """Name of the resource that was affected by the action."""
+  resourceName: String!
+
+  """Type of the resource that was affected by the action."""
+  resourceType: ActivityLogEntryResourceType!
+
+  """The team slug that the entry belongs to."""
+  teamSlug: Slug!
+}
+
+type ValkeyCredentialsCreatedActivityLogEntryData {
+  """The permission level, if applicable."""
+  permission: String
+
+  """The TTL that was requested for the credentials."""
+  ttl: String!
+}
+
 type ValkeyDeletedActivityLogEntry implements ActivityLogEntry & Node {
   """
   The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
@@ -10936,6 +11020,21 @@ enum ValkeyOrderField {
   ISSUES
   NAME
   STATE
+}
+
+"""Permission level for Valkey credentials."""
+enum ValkeyPermission {
+  """Administrative access."""
+  ADMIN
+
+  """Read-only access."""
+  READ
+
+  """Read and write access."""
+  READWRITE
+
+  """Write-only access."""
+  WRITE
 }
 
 enum ValkeyState {

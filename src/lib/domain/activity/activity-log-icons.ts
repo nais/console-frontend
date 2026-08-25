@@ -17,6 +17,7 @@ import {
 	VirusIcon
 } from '@nais/ds-svelte-community/icons';
 
+import KafkaIcon from '$lib/icons/KafkaIcon.svelte';
 import OpenSearchIcon from '$lib/icons/OpenSearchIcon.svelte';
 import UnleashIcon from '$lib/icons/UnleashIcon.svelte';
 import ValkeyIcon from '$lib/icons/ValkeyIcon.svelte';
@@ -52,7 +53,9 @@ export const icons: { [typename: string]: Component } = {
 	JobUpdatedActivityLogEntry: BriefcaseClockIcon,
 
 	/* Credentials */
-	CredentialsActivityLogEntry: PadlockLockedIcon,
+	KafkaCredentialsCreatedActivityLogEntry: KafkaIcon,
+	OpenSearchCredentialsCreatedActivityLogEntry: OpenSearchIcon,
+	ValkeyCredentialsCreatedActivityLogEntry: ValkeyIcon,
 
 	/* Secrets */
 	SecretCreatedActivityLogEntry: PadlockLockedIcon,
