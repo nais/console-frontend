@@ -55,7 +55,6 @@
 						}
 					}
 					... on ClusterAuditActivityLogEntry {
-						id
 						clusterAuditData: data {
 							action
 							resourceKind
