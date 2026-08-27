@@ -21,7 +21,7 @@
 
 	let { item }: Props = $props();
 
-	// Houdini 2.0.10 fixed interface-level field selection (#1742)
+	// Houdini SSR does not support interface-level field selection — repeat shared fields in each fragment
 	let data = $derived(
 		fragment(
 			item,
@@ -39,12 +39,34 @@
 					message
 					severity
 					... on DeprecatedIngressIssue {
+						__typename
+						severity
+						message
+						teamEnvironment {
+							environment {
+								name
+							}
+							team {
+								slug
+							}
+						}
 						application {
 							name
 						}
 						ingresses
 					}
 					... on DeprecatedRegistryIssue {
+						__typename
+						severity
+						message
+						teamEnvironment {
+							environment {
+								name
+							}
+							team {
+								slug
+							}
+						}
 						workload {
 							__typename
 							name
@@ -54,6 +76,17 @@
 						}
 					}
 					... on ExternalIngressCriticalVulnerabilityIssue {
+						__typename
+						severity
+						message
+						teamEnvironment {
+							environment {
+								name
+							}
+							team {
+								slug
+							}
+						}
 						cvssScore
 						ingresses
 						workload {
@@ -62,6 +95,17 @@
 						}
 					}
 					... on ExternalIngressUrgentVulnerabilityIssue {
+						__typename
+						severity
+						message
+						teamEnvironment {
+							environment {
+								name
+							}
+							team {
+								slug
+							}
+						}
 						ingresses
 						priorityUrgent
 						workload {
@@ -70,75 +114,218 @@
 						}
 					}
 					... on LastRunFailedIssue {
+						__typename
+						severity
+						message
+						teamEnvironment {
+							environment {
+								name
+							}
+							team {
+								slug
+							}
+						}
 						job {
 							name
 						}
 					}
 					... on FailedSynchronizationIssue {
+						__typename
+						severity
+						message
+						teamEnvironment {
+							environment {
+								name
+							}
+							team {
+								slug
+							}
+						}
 						workload {
 							__typename
 							name
 						}
 					}
 					... on InvalidSpecIssue {
+						__typename
+						severity
+						message
+						teamEnvironment {
+							environment {
+								name
+							}
+							team {
+								slug
+							}
+						}
 						workload {
 							__typename
 							name
 						}
 					}
 					... on MissingSbomIssue {
+						__typename
+						severity
+						message
+						teamEnvironment {
+							environment {
+								name
+							}
+							team {
+								slug
+							}
+						}
 						workload {
 							__typename
 							name
 						}
 					}
 					... on NoRunningInstancesIssue {
+						__typename
+						severity
+						message
+						teamEnvironment {
+							environment {
+								name
+							}
+							team {
+								slug
+							}
+						}
 						workload {
 							__typename
 							name
 						}
 					}
 					... on ApplicationRestartLoopIssue {
+						__typename
+						severity
+						message
+						teamEnvironment {
+							environment {
+								name
+							}
+							team {
+								slug
+							}
+						}
 						workload {
 							__typename
 							name
 						}
 					}
 					... on OpenSearchIssue {
+						__typename
+						severity
+						message
+						teamEnvironment {
+							environment {
+								name
+							}
+							team {
+								slug
+							}
+						}
 						event
 						openSearch {
 							name
 						}
 					}
 					... on SqlInstanceStateIssue {
+						__typename
+						severity
+						message
+						teamEnvironment {
+							environment {
+								name
+							}
+							team {
+								slug
+							}
+						}
 						sqlInstance {
 							name
 						}
 						state
 					}
 					... on SqlInstanceVersionIssue {
+						__typename
+						severity
+						message
+						teamEnvironment {
+							environment {
+								name
+							}
+							team {
+								slug
+							}
+						}
 						sqlInstance {
 							name
 						}
 					}
 					... on ValkeyIssue {
+						__typename
+						severity
+						message
+						teamEnvironment {
+							environment {
+								name
+							}
+							team {
+								slug
+							}
+						}
 						valkey {
 							name
 						}
 					}
 					... on VulnerableImageIssue {
+						__typename
+						severity
+						message
+						teamEnvironment {
+							environment {
+								name
+							}
+							team {
+								slug
+							}
+						}
 						workload {
 							__typename
 							name
 						}
 					}
 					... on WorkloadProblemIssue {
+						__typename
+						severity
+						message
+						teamEnvironment {
+							environment {
+								name
+							}
+							team {
+								slug
+							}
+						}
 						workload {
 							__typename
 							name
 						}
 					}
 					... on UnleashReleaseChannelIssue {
+						__typename
+						severity
+						message
+						teamEnvironment {
+							environment {
+								name
+							}
+							team {
+								slug
+							}
+						}
 						unleash {
 							name
 						}

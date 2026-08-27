@@ -204,17 +204,27 @@ type LogNode = Exhaustive<(typeof activityLog.nodes)[number]>;
 
 ### Interfaces and Unions in Queries
 
-Select shared fields at the interface level and only put type-specific fields in inline fragments:
+Houdini does not support interface-level field selection on SSR — fields selected at the interface level are `undefined` on full page reload. Every concrete type must have its own inline fragment with all needed fields:
 
 ```graphql
-# Correct — shared fields at interface level, type-specific in fragments
+# Wrong — shared fields at interface level are undefined on SSR
 userSyncLog {
   edges {
     node {
       id
       message
       ... on UserUpdatedEntry { oldName }
-      ... on RoleAssignedEntry { roleName }
+    }
+  }
+}
+
+# Correct — every type gets its own fragment with all fields it needs
+userSyncLog {
+  edges {
+    node {
+      ... on UserCreatedEntry { id message userName }
+      ... on UserUpdatedEntry { id message oldName }
+      ... on UserDeletedEntry { id message userName }
     }
   }
 }

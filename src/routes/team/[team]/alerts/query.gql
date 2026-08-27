@@ -43,6 +43,11 @@ query Alerts(
 							value
 						}
 						ruleGroup
+						teamEnvironment {
+							environment {
+								name
+							}
+						}
 					}
 					team {
 						slug
