@@ -22,7 +22,7 @@
 	"devDependencies": {
 		"@eslint/compat": "2.1.0",
 		"@eslint/js": "10.0.1",
-		"@layerstack/utils": "2.0.0-next.18",
+		"@layerstack/utils": "2.0.0-next.19",
 		"@nais/ds-svelte-community": "2.0.0-next.8",
 		"@sveltejs/adapter-node": "5.5.7",
 		"@sveltejs/kit": "2.70.3",
@@ -35,9 +35,9 @@
 		"esbuild": "0.28.2",
 		"eslint": "10.8.1",
 		"eslint-config-prettier": "10.1.8",
-		"eslint-plugin-svelte": "3.22.0",
+		"eslint-plugin-svelte": "3.23.0",
 		"eslint-plugin-unicorn": "73.0.0",
-		"globals": "17.9.0",
+		"globals": "17.11.0",
 		"houdini": "2.0.9",
 		"houdini-svelte": "3.0.4",
 		"husky": "9.1.7",
@@ -50,7 +50,7 @@
 		"svelte-check": "4.7.5",
 		"tailwindcss": "4.3.3",
 		"typescript": "6.0.3",
-		"typescript-eslint": "8.66.0",
+		"typescript-eslint": "8.67.0",
 		"vite": "8.2.1",
 		"vitest": "4.1.10"
 	},
@@ -69,11 +69,11 @@
 		"d3-time": "3.1.0",
 		"graphql": "17.0.2",
 		"graphql-sse": "2.6.0",
-		"layerchart": "2.1.0",
+		"layerchart": "2.2.0",
 		"pino": "10.3.1",
 		"pretty-bytes": "7.1.1",
 		"sortablejs": "1.15.7",
-		"svelte-highlight": "7.16.2",
+		"svelte-highlight": "7.17.0",
 		"yaml": "2.9.0"
 	},
 	"lint-staged": {
