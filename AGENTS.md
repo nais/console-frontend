@@ -202,47 +202,53 @@ const realNodes = exhaustive(activityLog.nodes);
 type LogNode = Exhaustive<(typeof activityLog.nodes)[number]>;
 ```
 
-### Interfaces and Unions in Queries (Houdini 2.0 bug)
+### Interfaces and Unions in Queries
 
-Houdini has a known bug where fields selected at the interface level are **not available at runtime** for types that lack an explicit inline fragment. Until this is fixed, follow these rules:
+Houdini does not support interface-level field selection on SSR — fields selected at the interface level are `undefined` on full page reload. Every concrete type must have its own inline fragment with all needed fields.
 
-1. **Every implementor must have an inline fragment** — if even one concrete type is missing, its nodes will have `undefined` for all fields (including `id`), causing key errors and broken rendering:
+> **Note:** Houdini 2.0.10 (#1742) fixed this for client-side cache reads but SSR is still broken. Retest on the next Houdini release — if SSR works, the repeated fields can be removed.
 
-   ```graphql
-   # Wrong — UserCreatedEntry has no fragment, so id/message are undefined at runtime
-   userSyncLog {
-     edges {
-       node {
-         id
-         message
-         ... on UserUpdatedEntry { id message oldName }
-       }
-     }
-   }
+```graphql
+# Wrong — shared fields at interface level are undefined on SSR
+userSyncLog {
+  edges {
+    node {
+      id
+      message
+      ... on UserUpdatedEntry { oldName }
+    }
+  }
+}
 
-   # Correct — every type gets its own fragment with the fields it needs
-   userSyncLog {
-     edges {
-       node {
-         ... on UserCreatedEntry { id message userName }
-         ... on UserUpdatedEntry { id message oldName }
-         ... on UserDeletedEntry { id message userName }
-       }
-     }
-   }
-   ```
+# Correct — every type gets its own fragment with all fields it needs
+userSyncLog {
+  edges {
+    node {
+      ... on UserCreatedEntry { id message userName }
+      ... on UserUpdatedEntry { id message oldName }
+      ... on UserDeletedEntry { id message userName }
+    }
+  }
+}
+```
 
-2. **Repeat shared fields in each inline fragment** — don't select them at the interface level and expect them to propagate. Each `... on Type { }` block must include `id`, `createdAt`, and any other fields you use.
+If a concrete type has no type-specific fields but the component discriminates on its `__typename`, add a minimal inline fragment so Houdini includes it in the generated type union:
 
-3. **Don't select a field both at the interface level AND in a child fragment spread** — Houdini's masking assigns ownership to the child, making the field `undefined` at the parent level:
+```graphql
+... on DeploymentActivityLogEntry {
+  __typename
+}
+```
 
-   ```graphql
-   # Wrong — id will be undefined in the parent due to masking conflict
-   edges { node { id ...MyFragment } }
+**Don't select a field both at the interface level AND in a child fragment spread** — Houdini's masking assigns ownership to the child, making the field `undefined` at the parent level:
 
-   # Correct — let the fragment own all its fields
-   edges { node { ...MyFragment } }
-   ```
+```graphql
+# Wrong — id will be undefined in the parent due to masking conflict
+edges { node { id ...MyFragment } }
+
+# Correct — let the fragment own all its fields
+edges { node { ...MyFragment } }
+```
 
 ### Issue Interface Conventions
 
@@ -252,10 +258,10 @@ Houdini has a known bug where fields selected at the interface level are **not a
 
 ### Fragment Types on Interfaces (Houdini 2.0)
 
-When a `fragment()` is defined on an **interface** type, Houdini generates a **flat object** with nullable type-keyed properties — NOT a `__typename`-discriminated union:
+When a `fragment()` is defined on an **interface** type, Houdini generates **type-keyed nullable properties** in TypeScript, but at runtime the data is **flat** — type-specific fields sit directly on `$data`, not nested under a type key. The type-keyed properties are always `null` at runtime. This is by design.
 
 ```typescript
-// Generated IssueFragment$data — flat structure, NOT a union
+// Generated TS type (IssueFragment$data)
 {
   teamEnvironment: { ... };     // shared interface fields (always present)
   message: string;
@@ -264,49 +270,43 @@ When a `fragment()` is defined on an **interface** type, Houdini generates a **f
   OpenSearchIssue: { openSearch: { name: string } } | null;
   // ... one nullable property per concrete type
 }
+
+// Actual runtime shape — fields are flat, NOT nested under type keys
+{
+  __typename: "DeprecatedIngressIssue";
+  teamEnvironment: { ... };
+  message: "...";
+  severity: "WARNING";
+  application: { name: "my-app" };  // directly on object, not under DeprecatedIngressIssue
+  ingresses: ["..."];
+}
 ```
 
 #### Rules for interface fragments:
 
-1. **Use nullable type-keyed properties as discriminators**, not `__typename` (which is only present if explicitly selected in the fragment):
+1. **Cast to `Record<string, unknown>`** to access type-specific fields, since the TS types don't match runtime shape:
 
    ```typescript
-   // Wrong — __typename doesn't exist unless explicitly selected
-   if ($data.__typename === 'DeprecatedIngressIssue') { ... }
-
-   // Correct — guard on the nullable type-keyed property
-   if ($data.DeprecatedIngressIssue) {
-     return $data.DeprecatedIngressIssue.application.name;
+   const d = $data as Record<string, unknown>;
+   if ('workload' in d && d.workload) {
+   	return (d.workload as { name: string }).name;
    }
    ```
 
-2. **Access type-specific fields via the type key**, not directly:
+2. **Use `__typename` for type discrimination** when the fragment selects it (which it should):
 
    ```typescript
-   // Wrong — 'application' is not a top-level property
-   if ('application' in d) return d.application.name;
-
-   // Correct
-   if ($data.DeprecatedIngressIssue) return $data.DeprecatedIngressIssue.application.name;
+   if ($data?.__typename === 'DeprecatedIngressIssue') { ... }
    ```
 
-3. **Extract shared patterns** into derived values to reduce verbosity:
+3. **Do NOT use type-keyed properties** — they are always `null` at runtime:
 
    ```typescript
-   const workload = $derived(
-   	$data.DeprecatedRegistryIssue?.workload ??
-   		$data.FailedSynchronizationIssue?.workload ??
-   		$data.VulnerableImageIssue?.workload
-   );
-   ```
+   // Wrong — always null at runtime
+   if ($data.DeprecatedIngressIssue) { ... }
 
-4. **Derive `__typename` from the non-null key when the fragment does not select it**:
-
-   ```typescript
-   const issueTypeKeys = ['DeprecatedIngressIssue', 'OpenSearchIssue', ...] as const;
-   const activeTypeName = $derived(
-     issueTypeKeys.find((k) => $data[k] !== null && $data[k] !== undefined) ?? ''
-   );
+   // Correct — cast and check flat fields
+   if ('application' in d && d.application) { ... }
    ```
 
 ### Example (.gql file for routes):

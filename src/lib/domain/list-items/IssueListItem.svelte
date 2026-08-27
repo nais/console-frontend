@@ -21,7 +21,7 @@
 
 	let { item }: Props = $props();
 
-	// Houdini 2.0 bug: shared fields must be repeated in each inline fragment
+	// Houdini SSR doesn't resolve interface-level fields, so each inline fragment must repeat them
 	let data = $derived(
 		fragment(
 			item,
@@ -89,6 +89,23 @@
 						}
 						cvssScore
 						ingresses
+						workload {
+							__typename
+							name
+						}
+					}
+					... on ExternalIngressUrgentVulnerabilityIssue {
+						__typename
+						severity
+						message
+						teamEnvironment {
+							environment {
+								name
+							}
+							team {
+								slug
+							}
+						}
 						workload {
 							__typename
 							name
@@ -316,7 +333,7 @@
 		)
 	);
 
-	// TODO(houdini): TS types claim type-keyed properties ($data.VulnerableImageIssue etc.) but runtime data is flat. Recheck after upgrading past 2.0.9.
+	// Houdini interface fragments generate type-keyed TS properties but runtime data is flat
 	const resourceName = $derived.by(() => {
 		const d = $data as Record<string, unknown>;
 		if (!d) return '';
@@ -344,7 +361,6 @@
 		return 'Unknown';
 	});
 
-	// TODO(houdini): same flat-data workaround as resourceName above.
 	const resourceHref = $derived.by(() => {
 		const d = $data as Record<string, unknown>;
 		if (!d) return '';
@@ -378,7 +394,6 @@
 		return '';
 	});
 
-	// TODO(houdini): same flat-data workaround as resourceName above.
 	const ResourceIcon = $derived.by(() => {
 		const d = $data as Record<string, unknown>;
 		if (!d) return PackageIcon;
