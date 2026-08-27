@@ -204,7 +204,9 @@ type LogNode = Exhaustive<(typeof activityLog.nodes)[number]>;
 
 ### Interfaces and Unions in Queries
 
-Houdini does not support interface-level field selection on SSR — fields selected at the interface level are `undefined` on full page reload. Every concrete type must have its own inline fragment with all needed fields:
+Houdini does not support interface-level field selection on SSR — fields selected at the interface level are `undefined` on full page reload. Every concrete type must have its own inline fragment with all needed fields.
+
+> **Note:** Houdini 2.0.10 (#1742) fixed this for client-side cache reads but SSR is still broken. Retest on the next Houdini release — if SSR works, the repeated fields can be removed.
 
 ```graphql
 # Wrong — shared fields at interface level are undefined on SSR
