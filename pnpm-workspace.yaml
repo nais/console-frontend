@@ -9,6 +9,9 @@ allowBuilds:
 
 minimumReleaseAge: 20160
 savePrefix: ""
+update:
+  ignoreDeps:
+    - typescript
 minimumReleaseAgeExclude:
   - "houdini*"
   - "svelte"
