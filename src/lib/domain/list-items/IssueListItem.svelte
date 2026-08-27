@@ -148,7 +148,7 @@
 		)
 	);
 
-	// TODO(houdini): TS types claim type-keyed properties ($data.VulnerableImageIssue etc.) but runtime data is flat. Recheck after upgrading past 2.0.9.
+	// Houdini interface fragments generate type-keyed TS properties but runtime data is flat
 	const resourceName = $derived.by(() => {
 		const d = $data as Record<string, unknown>;
 		if (!d) return '';
@@ -176,7 +176,6 @@
 		return 'Unknown';
 	});
 
-	// TODO(houdini): same flat-data workaround as resourceName above.
 	const resourceHref = $derived.by(() => {
 		const d = $data as Record<string, unknown>;
 		if (!d) return '';
@@ -210,7 +209,6 @@
 		return '';
 	});
 
-	// TODO(houdini): same flat-data workaround as resourceName above.
 	const ResourceIcon = $derived.by(() => {
 		const d = $data as Record<string, unknown>;
 		if (!d) return PackageIcon;
