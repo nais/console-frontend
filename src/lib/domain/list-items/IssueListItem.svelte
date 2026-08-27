@@ -21,7 +21,7 @@
 
 	let { item }: Props = $props();
 
-	// Houdini SSR does not support interface-level field selection — repeat shared fields in each fragment
+	// Houdini SSR doesn't resolve interface-level fields, so each inline fragment must repeat them
 	let data = $derived(
 		fragment(
 			item,
@@ -106,8 +106,6 @@
 								slug
 							}
 						}
-						ingresses
-						priorityUrgent
 						workload {
 							__typename
 							name
