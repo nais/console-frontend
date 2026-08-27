@@ -10,5 +10,5 @@ When performing a code review, enforce these project rules. Report all rule viol
 - `schema.graphql` is auto-generated. Do not suggest changes to it.
 - Use `@nais/ds-svelte-community` components (`Button`, `Modal`, `Alert`, `Table`, `Heading`, etc.) before building custom HTML.
 - Use `--ax-*` design tokens for spacing, colors, and typography. Never hardcode raw CSS values like `0.5rem`, `#333`, or `8px`.
-- Houdini 2.0 has a bug where fields selected at the interface level are not available at runtime for types without an explicit inline fragment. Every concrete type in a union/interface query must have its own inline fragment with all needed fields — do not rely on interface-level field selection.
+- In union/interface queries, select shared fields at the interface level. Only use inline fragments for type-specific fields. If a concrete type has no type-specific fields but the component discriminates on its `__typename`, add a minimal inline fragment (`... on Type { __typename }`) so Houdini includes it in the generated type union.
 - Flag accessibility issues: missing `aria-label` on icon-only buttons, improper heading hierarchy, missing form labels, non-semantic elements used as interactive controls.

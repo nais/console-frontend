@@ -202,47 +202,41 @@ const realNodes = exhaustive(activityLog.nodes);
 type LogNode = Exhaustive<(typeof activityLog.nodes)[number]>;
 ```
 
-### Interfaces and Unions in Queries (Houdini 2.0 bug)
+### Interfaces and Unions in Queries
 
-Houdini has a known bug where fields selected at the interface level are **not available at runtime** for types that lack an explicit inline fragment. Until this is fixed, follow these rules:
+Select shared fields at the interface level and only put type-specific fields in inline fragments:
 
-1. **Every implementor must have an inline fragment** — if even one concrete type is missing, its nodes will have `undefined` for all fields (including `id`), causing key errors and broken rendering:
+```graphql
+# Correct — shared fields at interface level, type-specific in fragments
+userSyncLog {
+  edges {
+    node {
+      id
+      message
+      ... on UserUpdatedEntry { oldName }
+      ... on RoleAssignedEntry { roleName }
+    }
+  }
+}
+```
 
-   ```graphql
-   # Wrong — UserCreatedEntry has no fragment, so id/message are undefined at runtime
-   userSyncLog {
-     edges {
-       node {
-         id
-         message
-         ... on UserUpdatedEntry { id message oldName }
-       }
-     }
-   }
+If a concrete type has no type-specific fields but the component discriminates on its `__typename`, add a minimal inline fragment so Houdini includes it in the generated type union:
 
-   # Correct — every type gets its own fragment with the fields it needs
-   userSyncLog {
-     edges {
-       node {
-         ... on UserCreatedEntry { id message userName }
-         ... on UserUpdatedEntry { id message oldName }
-         ... on UserDeletedEntry { id message userName }
-       }
-     }
-   }
-   ```
+```graphql
+... on DeploymentActivityLogEntry {
+  __typename
+}
+```
 
-2. **Repeat shared fields in each inline fragment** — don't select them at the interface level and expect them to propagate. Each `... on Type { }` block must include `id`, `createdAt`, and any other fields you use.
+**Don't select a field both at the interface level AND in a child fragment spread** — Houdini's masking assigns ownership to the child, making the field `undefined` at the parent level:
 
-3. **Don't select a field both at the interface level AND in a child fragment spread** — Houdini's masking assigns ownership to the child, making the field `undefined` at the parent level:
+```graphql
+# Wrong — id will be undefined in the parent due to masking conflict
+edges { node { id ...MyFragment } }
 
-   ```graphql
-   # Wrong — id will be undefined in the parent due to masking conflict
-   edges { node { id ...MyFragment } }
-
-   # Correct — let the fragment own all its fields
-   edges { node { ...MyFragment } }
-   ```
+# Correct — let the fragment own all its fields
+edges { node { ...MyFragment } }
+```
 
 ### Issue Interface Conventions
 
