@@ -20,8 +20,8 @@
 	let { reconciler }: Props = $props();
 
 	let confirm = $state(false);
-	let errors: string[] = $state([]);
-	let configErrors: string[] = $state([]);
+	let errors: string[] = $state.raw([]);
+	let configErrors: string[] = $state.raw([]);
 	let reconcileLoading = $state(false);
 	let configLoading = $state(false);
 
@@ -89,7 +89,7 @@
 	};
 
 	// We do not submit secrets with no value
-	let config: { key: string; value: string; secret: boolean }[] = $state([]);
+	let config: { key: string; value: string; secret: boolean }[] = $state.raw([]);
 
 	$effect(() => {
 		untrack(() => {

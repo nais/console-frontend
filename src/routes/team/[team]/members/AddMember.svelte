@@ -80,7 +80,7 @@
 	let role: AddTeamMemberInput['role'] = $state('MEMBER');
 	let email: string = $state('');
 
-	let errors: string[] = $state([]);
+	let errors: string[] = $state.raw([]);
 	const submit = async () => {
 		errors = [];
 		const userID = $store.data?.users.nodes.find(

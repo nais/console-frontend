@@ -91,7 +91,7 @@
 
 	let deleteKeyLoading = $state(false);
 	let deleteKeyResp: QueryResult<GetTeamDeleteKey$result, GetTeamDeleteKey$input> | null =
-		$state(null);
+		$state.raw(null);
 
 	let teamSettings = $derived($TeamSettings.data?.team);
 
@@ -100,9 +100,9 @@
 	let showCreateKey = $state(false);
 	let showDeleteTeam = $state(false);
 
-	let descriptionErrors: { message: string }[] | undefined = $state();
-	let defaultSlackChannelErrors: { message: string }[] | undefined = $state();
-	let slackChannelsErrors: { message: string }[] | undefined = $state();
+	let descriptionErrors: { message: string }[] | undefined = $state.raw();
+	let defaultSlackChannelErrors: { message: string }[] | undefined = $state.raw();
+	let slackChannelsErrors: { message: string }[] | undefined = $state.raw();
 
 	const formatGARRepo = (repo: string) => {
 		const [, projectId, , location, , repository] = repo.split('/');
