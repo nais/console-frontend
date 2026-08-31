@@ -26,10 +26,10 @@ jobs:
         run: pnpm install --frozen-lockfile
       - name: Sync SvelteKit
         run: pnpm exec svelte-kit sync
-      - name: Lint
-        run: pnpm run lint
       - name: Type check
         run: pnpm run check
+      - name: Lint
+        run: pnpm run lint
       - name: Run tests
         run: pnpm run test -- --run
       - id: node_version
