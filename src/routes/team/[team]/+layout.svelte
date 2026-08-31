@@ -40,11 +40,12 @@
 				{/snippet}
 			</PageHeader>
 			<div>
-				<svelte:boundary onerror={(e) => console.error('Team page render error:', e)}>
+				<svelte:boundary>
 					{@render children?.()}
 
 					{#snippet failed(error, reset)}
-						<Alert variant="error" data-error={error instanceof Error ? error.message : ''}>
+						{void console.error('Team page render error:', error)}
+						<Alert variant="error">
 							<Heading size="xsmall" as="h2">Something went wrong</Heading>
 							<BodyShort>An unexpected error occurred while rendering the page.</BodyShort>
 							<Button variant="secondary" size="small" onclick={reset}>Try again</Button>
