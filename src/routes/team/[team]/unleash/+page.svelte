@@ -205,7 +205,9 @@
 		if (unleash?.ready && (creatingUnleash || pollingInterval)) {
 			stopPolling();
 		}
+	});
 
+	$effect(() => {
 		return () => stopPolling();
 	});
 

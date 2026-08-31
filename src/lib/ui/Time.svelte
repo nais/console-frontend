@@ -60,12 +60,17 @@
 	$effect(() => {
 		if (!distance || !isValidDate) return;
 
-		const delay = isRecent() ? 1000 : 60_000;
-		const interval = setInterval(() => {
-			tick++;
-		}, delay);
+		let timeout: ReturnType<typeof setTimeout>;
+		const schedule = () => {
+			const delay = isRecent() ? 1000 : 60_000;
+			timeout = setTimeout(() => {
+				tick++;
+				schedule();
+			}, delay);
+		};
+		schedule();
 
-		return () => clearInterval(interval);
+		return () => clearTimeout(timeout);
 	});
 
 	const datetime = $derived(isValidDate ? normalizedTime.toISOString() : undefined);
