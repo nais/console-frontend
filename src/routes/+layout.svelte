@@ -8,7 +8,7 @@
 	import '$lib/font.css';
 	import { themeSwitch } from '$lib/stores/theme.svelte';
 	import ProgressBar from '$lib/ui/ProgressBar.svelte';
-	import { Page, Theme } from '@nais/ds-svelte-community';
+	import { Alert, BodyShort, Button, Heading, Page, Theme } from '@nais/ds-svelte-community';
 	import { onMount } from 'svelte';
 	import '../styles/app.css';
 	import '../styles/colors.css';
@@ -107,7 +107,23 @@
 					<PageHeader {user} />
 				{/if}
 
-				{@render children?.()}
+				<svelte:boundary>
+					{@render children?.()}
+
+					{#snippet failed(error, reset)}
+						<div class="boundary-error">
+							<Alert variant="error">
+								<Heading size="xsmall" as="h2">Something went wrong</Heading>
+								<BodyShort
+									>{error instanceof Error
+										? error.message
+										: 'An unexpected error occurred'}</BodyShort
+								>
+								<Button variant="secondary" size="small" onclick={reset}>Try again</Button>
+							</Alert>
+						</div>
+					{/snippet}
+				</svelte:boundary>
 
 				<Naisdevice />
 			{/if}
@@ -130,5 +146,12 @@
 
 	.full-wrapper {
 		padding-bottom: 1rem;
+	}
+
+	.boundary-error {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		padding: var(--ax-space-24);
 	}
 </style>
