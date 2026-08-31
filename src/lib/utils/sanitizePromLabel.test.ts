@@ -9,6 +9,10 @@ describe('sanitizePromLabel', () => {
 		expect(sanitizePromLabel('my app/v1:latest')).toBe('myappv1latest');
 	});
 
+	test('strips PromQL-unsafe characters', () => {
+		expect(sanitizePromLabel('label{value="test\'s\\n"}')).toBe('labelvaluetestsn');
+	});
+
 	test('strips unicode and emoji', () => {
 		expect(sanitizePromLabel('café☕')).toBe('caf');
 	});
