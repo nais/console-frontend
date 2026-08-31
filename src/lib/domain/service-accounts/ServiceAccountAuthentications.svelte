@@ -77,12 +77,12 @@
 	);
 
 	// Removal state
-	let removeErrors: { message: string }[] | undefined = $state();
+	let removeErrors: { message: string }[] | undefined = $state.raw();
 	let deleteTokenOpen = $state(false);
-	let tokenToDelete: { id: string; name: string } | null = $state(null);
+	let tokenToDelete: { id: string; name: string } | null = $state.raw(null);
 	let removeBindingOpen = $state(false);
 	let bindingToRemove: { id: string; workloadName: string; environment: string } | null =
-		$state(null);
+		$state.raw(null);
 
 	let deleteTokenForm: HTMLFormElement | undefined = $state();
 	let removeBindingForm: HTMLFormElement | undefined = $state();

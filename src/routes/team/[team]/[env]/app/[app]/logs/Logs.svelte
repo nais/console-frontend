@@ -20,7 +20,7 @@
 	const MAX_PENDING_LOG_LINES = 5000;
 	const FLUSH_INTERVAL_MS = 100;
 
-	let logs: LogLine[] = $state([]);
+	let logs: LogLine[] = $state.raw([]);
 	let logAppender = createBufferedLogAppender({
 		maxEntries: MAX_LOG_LINES,
 		maxPendingEntries: MAX_PENDING_LOG_LINES,
@@ -103,7 +103,7 @@
 	}
 
 	let displayedLogs = $derived(logs.toReversed());
-	let selectedInstances: string[] = $state([]);
+	let selectedInstances: string[] = $state.raw([]);
 
 	let isStarted: boolean = $state(false);
 	let isPaused: boolean = $state(true);

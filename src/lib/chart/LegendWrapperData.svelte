@@ -27,7 +27,7 @@
 
 	class Context {
 		hasLegend = $state(false);
-		items: LegendItem[] = $state([]);
+		items: LegendItem[] = $state.raw([]);
 		selection: SelectionApi | null = $state(null);
 		hiddenKeys: SvelteSet<string> = new SvelteSet();
 	}

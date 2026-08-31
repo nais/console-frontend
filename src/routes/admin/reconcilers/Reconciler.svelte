@@ -20,8 +20,8 @@
 	let { reconciler }: Props = $props();
 
 	let confirm = $state(false);
-	let errors: string[] = $state([]);
-	let configErrors: string[] = $state([]);
+	let errors: string[] = $state.raw([]);
+	let configErrors: string[] = $state.raw([]);
 	let reconcileLoading = $state(false);
 	let configLoading = $state(false);
 

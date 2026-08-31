@@ -75,7 +75,7 @@
 		}
 	`);
 
-	let errors: { message: string }[] | undefined = $state();
+	let errors: { message: string }[] | undefined = $state.raw();
 	let deleteServiceAccountOpen = $state(false);
 	let editRolesOpen = $state(false);
 	let editingDescription = $state(false);
