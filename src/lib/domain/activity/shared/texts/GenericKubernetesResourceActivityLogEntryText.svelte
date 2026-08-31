@@ -53,14 +53,14 @@
 	dl {
 		display: grid;
 		grid-template-columns: max-content auto;
-		gap: 0 0.5rem;
-		margin: 0.5rem 0;
+		gap: 0 var(--ax-space-8);
+		margin: var(--ax-space-8) 0;
 	}
 
 	code {
 		font-family: 'Courier New', Courier, monospace;
 		background-color: var(--ax-bg-neutral-soft);
 		padding: 0.1rem 0.3rem;
-		border-radius: 0.3rem;
+		border-radius: var(--ax-radius-4);
 	}
 </style>

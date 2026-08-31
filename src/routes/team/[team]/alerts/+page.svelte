@@ -199,7 +199,9 @@
 									/>
 								</div>
 							</div>
-							<div style="display: flex; flex-direction: column; gap: 8px; flex-wrap: wrap;">
+							<div
+								style="display: flex; flex-direction: column; gap: var(--ax-space-8); flex-wrap: wrap;"
+							>
 								<CodeBlockPromQl code={alert.query} />
 								<div class="muted small for">
 									<ClockDashedIcon />&nbsp;for: {formatSeconds(alert.duration)}
@@ -296,7 +298,7 @@
 		grid-template-columns: 22px 1fr auto;
 		align-items: center;
 		gap: var(--ax-space-12);
-		padding: 10px 14px;
+		padding: var(--ax-space-12) var(--ax-space-16);
 		cursor: pointer;
 		transition: background-color 120ms ease;
 	}
@@ -354,11 +356,12 @@
 	.state {
 		display: flex;
 		align-items: center;
-		gap: 10px;
+		gap: var(--ax-space-12);
 	}
 
 	.rule {
-		padding: 12px 14px 14px calc(14px + 22px);
+		padding: var(--ax-space-12) var(--ax-space-16) var(--ax-space-16)
+			calc(var(--ax-space-16) + 22px);
 		background: var(--ax-bg-default);
 		border-top: 1px dashed var(--ax-border-neutral-subtle);
 	}

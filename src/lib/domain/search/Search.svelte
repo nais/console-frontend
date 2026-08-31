@@ -429,7 +429,7 @@
 			rgba(18, 43, 68, 0.08)
 		);
 		border: solid 1px rgb(35, 38, 42);
-		border-radius: 6px;
+		border-radius: var(--ax-radius-8);
 		padding: var(--ax-space-4);
 		display: inline-flex;
 		justify-content: center;

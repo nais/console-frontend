@@ -151,6 +151,6 @@
 
 <style>
 	.row {
-		margin-bottom: 32px;
+		margin-bottom: var(--ax-space-32);
 	}
 </style>

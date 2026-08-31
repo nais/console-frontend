@@ -501,7 +501,7 @@
 		grid-template-columns: 22px 16px 18px minmax(0, auto) minmax(100px, 1fr);
 		align-items: center;
 		gap: var(--ax-space-8);
-		padding: 10px 14px;
+		padding: var(--ax-space-12) var(--ax-space-16);
 		cursor: pointer;
 		transition: background-color 120ms ease;
 	}

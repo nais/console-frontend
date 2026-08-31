@@ -497,10 +497,10 @@
 	}
 
 	.query-details {
-		padding: 1.5rem;
+		padding: var(--ax-space-24);
 		display: flex;
 		flex-direction: column;
-		gap: 1.5rem;
+		gap: var(--ax-space-24);
 	}
 
 	.query-section {
