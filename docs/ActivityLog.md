@@ -79,9 +79,3 @@ In `activity-log-tooltip.ts`, map your entry type to a user-friendly tooltip/cat
 case 'NewFeatureActivityLogEntry':
 	return 'Feature';
 ```
-
----
-
-### Workload Specifics (Optional)
-
-If the new activity type belongs to a workload (Application/Job) and should be rendered in the workload activity stream, map it in `workload/textComponent.ts` to `ApplicationActivityLogEntryText` or `JobActivityLogEntryText`.

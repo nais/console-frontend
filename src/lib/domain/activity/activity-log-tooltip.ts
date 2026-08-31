@@ -1,5 +1,3 @@
-// src/lib/components/activity/activity-log-tooltip.ts
-
 /**
  * Returns a user-friendly tooltip label for an activity log entry type.
  */

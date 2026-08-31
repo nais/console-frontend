@@ -512,7 +512,7 @@ When rendering type-specific content from GraphQL unions:
 - Create a lookup function that maps `__typename` → Svelte component
 - All variant components share a common props interface (e.g., `{ data: FragmentType }`)
 - Provide a `DefaultText` fallback for unknown or new types
-- See `src/lib/domain/activity/workload/textComponent.ts` for reference
+- See `src/lib/domain/activity/activityTextComponents.ts` for reference
 
 ### Key Rules
 

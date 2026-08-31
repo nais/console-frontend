@@ -1,4 +1,3 @@
-// src/lib/components/activity/activity-log-icons.ts
 import type { Component } from 'svelte';
 
 // Resource icons (same "shapes" you use elsewhere)
