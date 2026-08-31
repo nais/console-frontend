@@ -1,7 +1,7 @@
 <script lang="ts">
 	import PageHeader from '$lib/ui/PageHeader.svelte';
 	import { createHeaderActionsContext } from '$lib/ui/headerActionsContext.svelte';
-	import { Alert, Button, Heading } from '@nais/ds-svelte-community';
+	import { Alert, BodyShort, Button, Heading } from '@nais/ds-svelte-community';
 	import type { LayoutProps } from './$types';
 	import Menu from './Menu.svelte';
 	import MenuTrigger from './MenuTrigger.svelte';
@@ -46,7 +46,7 @@
 					{#snippet failed(error, reset)}
 						<Alert variant="error" data-error={error instanceof Error ? error.message : ''}>
 							<Heading size="xsmall" as="h2">Something went wrong</Heading>
-							<p>An unexpected error occurred while rendering the page.</p>
+							<BodyShort>An unexpected error occurred while rendering the page.</BodyShort>
 							<Button variant="secondary" size="small" onclick={reset}>Try again</Button>
 						</Alert>
 					{/snippet}
