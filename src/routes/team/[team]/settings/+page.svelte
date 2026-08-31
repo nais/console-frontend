@@ -233,6 +233,7 @@
 												showKey = !showKey;
 											}}
 											icon={EyeSlashIcon}
+											aria-label="Hide deploy key"
 										/>
 									{:else}
 										{deployKey.key.replaceAll(/./g, '*')}
@@ -243,6 +244,7 @@
 												showKey = !showKey;
 											}}
 											icon={EyeIcon}
+											aria-label="Show deploy key"
 										/>
 									{/if}
 								</div>

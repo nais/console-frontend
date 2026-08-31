@@ -57,6 +57,7 @@
 									variant="tertiary-neutral"
 									icon={DownloadIcon}
 									title="Download {fileNameFromPath(file.path)}"
+									aria-label="Download {fileNameFromPath(file.path)}"
 									onclick={() => onDownloadConfigMap(file.path, file.content ?? '', file.encoding)}
 								/>
 							{:else if file.source.kind === 'SECRET' && viewerIsMember}
@@ -65,6 +66,7 @@
 									variant="tertiary-neutral"
 									icon={DownloadIcon}
 									title="Download {fileNameFromPath(file.path)}"
+									aria-label="Download {fileNameFromPath(file.path)}"
 									onclick={() => onDownloadSecret(fileNameFromPath(file.path), file.source.name)}
 								/>
 							{:else}
