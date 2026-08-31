@@ -215,7 +215,7 @@
 
 <style>
 	.container {
-		padding-top: 4rem;
+		padding-top: var(--ax-space-64);
 		margin-inline: auto;
 		max-width: 620px;
 

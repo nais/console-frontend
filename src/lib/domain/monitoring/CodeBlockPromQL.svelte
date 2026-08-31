@@ -66,7 +66,7 @@
 
 <style>
 	.cm-host :global(.cm-editor) {
-		border-radius: 6px;
+		border-radius: var(--ax-radius-8);
 		border: 1px solid var(--ax-border-neutral-subtle);
 		background: var(--ax-bg-neutral-moderate);
 		font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
