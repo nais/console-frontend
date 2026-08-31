@@ -11,21 +11,41 @@ query TeamCVEWorkloads($identifier: String!, $first: Int!, $filter: CVEWorkloads
 				node {
 					id
 					workload {
-						__typename
-						id
-						name
-						team {
-							slug
-						}
-						teamEnvironment {
-							environment {
+						... on Application {
+							__typename
+							id
+							name
+							team {
+								slug
+							}
+							teamEnvironment {
+								environment {
+									name
+								}
+							}
+							image {
 								name
+								tag
+								digest
 							}
 						}
-						image {
+						... on Job {
+							__typename
+							id
 							name
-							tag
-							digest
+							team {
+								slug
+							}
+							teamEnvironment {
+								environment {
+									name
+								}
+							}
+							image {
+								name
+								tag
+								digest
+							}
 						}
 					}
 					vulnerability {
