@@ -2,7 +2,7 @@ import { sanitizePromLabel } from './formatters';
 
 describe('sanitizePromLabel', () => {
 	test('passes through valid labels', () => {
-		expect(sanitizePromLabel('my_app.v1-2')).toBe('my_app.v1-2');
+		expect(sanitizePromLabel('my_app-v1-2')).toBe('my_app-v1-2');
 	});
 
 	test('strips special characters', () => {
@@ -11,6 +11,10 @@ describe('sanitizePromLabel', () => {
 
 	test('strips PromQL-unsafe characters', () => {
 		expect(sanitizePromLabel('label{value="test\'s\\n"}')).toBe('labelvaluetestsn');
+	});
+
+	test('strips dots to prevent regex wildcard injection', () => {
+		expect(sanitizePromLabel('my.app.v1')).toBe('myappv1');
 	});
 
 	test('strips unicode and emoji', () => {
