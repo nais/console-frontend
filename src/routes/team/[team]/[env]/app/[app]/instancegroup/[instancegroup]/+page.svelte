@@ -317,6 +317,7 @@
 {:else if !group}
 	<Alert variant="warning">Instance group "{instanceGroupName}" not found.</Alert>
 {:else}
+	<Heading as="h2" class="aksel-sr-only">Instance group</Heading>
 	<div class="page-content">
 		<div class="page">
 			<div class="main-column">

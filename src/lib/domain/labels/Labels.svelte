@@ -25,6 +25,7 @@
 					variant="tertiary-neutral"
 					icon={NotePencilIcon}
 					title="Edit labels"
+					aria-label="Edit labels"
 					type="button"
 					onclick={onEdit}
 				/>

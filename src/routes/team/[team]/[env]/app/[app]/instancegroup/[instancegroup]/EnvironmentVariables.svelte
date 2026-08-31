@@ -61,6 +61,7 @@
 											size="xsmall"
 											variant="tertiary-neutral"
 											icon={EyeIcon}
+											aria-label="Reveal value for {env.name}"
 											onclick={() => onReveal(env.source.name)}
 										/>
 									{/if}
