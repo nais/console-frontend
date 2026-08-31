@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { Modal } from '@nais/ds-svelte-community';
 	import type { Snippet } from 'svelte';
+	import { MediaQuery } from 'svelte/reactivity';
 
 	let {
 		children,
@@ -14,19 +15,12 @@
 		label?: string;
 	} = $props();
 
+	const isDesktop = new MediaQuery('(min-width: 1025px)');
+
 	$effect(() => {
-		if (typeof window === 'undefined') return;
-		const mql = window.matchMedia('(min-width: 1025px)');
-		if (mql.matches) {
+		if (isDesktop.current) {
 			open = false;
 		}
-		const handler = (e: MediaQueryListEvent) => {
-			if (e.matches) {
-				open = false;
-			}
-		};
-		mql.addEventListener('change', handler);
-		return () => mql.removeEventListener('change', handler);
 	});
 </script>
 
