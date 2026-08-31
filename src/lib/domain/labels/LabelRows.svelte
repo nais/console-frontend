@@ -53,7 +53,7 @@
 					variant="tertiary-neutral"
 					icon={TrashIcon}
 					title="Remove label"
-					aria-label="Remove label"
+					aria-label="Remove label{row.key ? ` ${row.key}` : ''}"
 					type="button"
 					onclick={() => removeRow(i)}
 				/>
