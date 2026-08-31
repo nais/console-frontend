@@ -1,5 +1,5 @@
 export function sanitizePromLabel(value: string): string {
-	return value.replace(/[^a-zA-Z0-9_.-]/g, '');
+	return value.replace(/[^a-zA-Z0-9_-]/g, '');
 }
 
 export function percentageFormatter(value: number, maximumFractionDigits: number = 2): string {
