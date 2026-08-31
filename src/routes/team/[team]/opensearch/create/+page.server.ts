@@ -69,11 +69,11 @@ export const actions = {
 			{ event }
 		);
 
-		if (res.errors?.length ?? 0 > 0) {
+		if (res.errors && res.errors.length > 0) {
 			return fail(400, {
 				...allProps,
 				success: false,
-				error: res.errors![0].message
+				error: res.errors[0].message
 			});
 		} else if (!res.data) {
 			return fail(500, {

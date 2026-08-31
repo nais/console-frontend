@@ -34,8 +34,8 @@ export const actions = {
 			{ event }
 		);
 
-		if ((res.errors?.length ?? 0) > 0) {
-			return fail(400, { error: res.errors![0].message });
+		if (res.errors && res.errors.length > 0) {
+			return fail(400, { error: res.errors[0].message });
 		}
 
 		return { success: true, workloadName, environment };
