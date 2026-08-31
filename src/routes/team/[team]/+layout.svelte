@@ -1,7 +1,7 @@
 <script lang="ts">
 	import PageHeader from '$lib/ui/PageHeader.svelte';
 	import { createHeaderActionsContext } from '$lib/ui/headerActionsContext.svelte';
-	import { Alert } from '@nais/ds-svelte-community';
+	import { Alert, BodyShort, Button, Heading } from '@nais/ds-svelte-community';
 	import type { LayoutProps } from './$types';
 	import Menu from './Menu.svelte';
 	import MenuTrigger from './MenuTrigger.svelte';
@@ -39,7 +39,20 @@
 					<MenuTrigger />
 				{/snippet}
 			</PageHeader>
-			<div>{@render children?.()}</div>
+			<div>
+				<svelte:boundary onerror={(e) => console.error('Team page render error:', e)}>
+					{@render children?.()}
+
+					{#snippet failed(error, reset)}
+						{void error}
+						<Alert variant="error">
+							<Heading size="xsmall" as="h2">Something went wrong</Heading>
+							<BodyShort>An unexpected error occurred while rendering the page.</BodyShort>
+							<Button variant="secondary" size="small" onclick={reset}>Try again</Button>
+						</Alert>
+					{/snippet}
+				</svelte:boundary>
+			</div>
 		</div>
 	</main>
 </div>
