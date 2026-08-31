@@ -28,12 +28,12 @@ query Alerts(
 			}
 			edges {
 				node {
-					id
-					name
-					state
-					query
-					duration
 					... on PrometheusAlert {
+						id
+						name
+						state
+						query
+						duration
 						alarms {
 							action
 							consequence
@@ -43,18 +43,13 @@ query Alerts(
 							value
 						}
 						ruleGroup
+						team {
+							slug
+						}
 						teamEnvironment {
 							environment {
 								name
 							}
-						}
-					}
-					team {
-						slug
-					}
-					teamEnvironment {
-						environment {
-							name
 						}
 					}
 				}

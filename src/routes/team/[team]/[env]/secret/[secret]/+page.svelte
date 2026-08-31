@@ -86,7 +86,6 @@
 		for (const v of values) {
 			revealedValues.set(v.name, { value: v.value, encoding: v.encoding });
 		}
-		Secret.fetch();
 	};
 
 	const hideSecrets = () => {

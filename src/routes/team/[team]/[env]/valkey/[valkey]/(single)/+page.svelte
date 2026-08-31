@@ -107,7 +107,6 @@
 		});
 		if ($updateValkeyLabels.errors) return;
 		labelsModalOpen = false;
-		Valkey.fetch();
 	};
 
 	let tableSort = $derived({
