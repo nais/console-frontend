@@ -89,7 +89,7 @@
 	};
 
 	// We do not submit secrets with no value
-	let config: { key: string; value: string; secret: boolean }[] = $state.raw([]);
+	let config: { key: string; value: string; secret: boolean }[] = $state([]);
 
 	$effect(() => {
 		untrack(() => {
