@@ -1,4 +1,4 @@
-query TeamCVEPage($identifier: String!) {
+query TeamCVEPage($identifier: String!, $team: Slug!) {
 	cve(identifier: $identifier) {
 		id
 		identifier
@@ -6,5 +6,8 @@ query TeamCVEPage($identifier: String!) {
 		severity
 		cvssScore
 		detailsLink
+	}
+	team(slug: $team) {
+		viewerIsMember
 	}
 }

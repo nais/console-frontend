@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
-	import { graphql } from '$houdini';
 	import BulkSuppressCVE, {
 		type BulkSuppressWorkload
 	} from '$lib/domain/vulnerability/BulkSuppressCVE.svelte';
@@ -27,7 +26,7 @@
 	import type { PageProps } from './$types';
 
 	let { data }: PageProps = $props();
-	let { TeamCVEPage, teamSlug, cveIdentifier } = $derived(data);
+	let { TeamCVEPage, TeamCVEWorkloads, teamSlug, cveIdentifier, rows } = $derived(data);
 
 	let searchValue = $state('');
 	let selectedIds = new SvelteSet<string>();
@@ -35,71 +34,7 @@
 
 	const rowKey = (node: { id: string }) => node.id;
 
-	const rows = 25;
-
-	const teamRoles = graphql(`
-		query TeamCVEPageTeamRoles($team: Slug!) {
-			team(slug: $team) {
-				viewerIsMember
-			}
-		}
-	`);
-
-	const workloadsQuery = graphql(`
-		query TeamCVEWorkloads($identifier: String!, $first: Int!, $filter: CVEWorkloadsFilter) {
-			cve(identifier: $identifier) {
-				id
-				workloads(first: $first, filter: $filter) @paginate(mode: Infinite) {
-					pageInfo {
-						totalCount
-						hasNextPage
-						endCursor
-					}
-					edges {
-						node {
-							id
-							workload {
-								__typename
-								id
-								name
-								team {
-									slug
-								}
-								teamEnvironment {
-									environment {
-										name
-									}
-								}
-								image {
-									name
-									tag
-									digest
-								}
-							}
-							vulnerability {
-								id
-								identifier
-								severity
-								package
-								suppression {
-									state
-								}
-							}
-						}
-					}
-				}
-			}
-		}
-	`);
-
-	$effect(() => {
-		teamRoles.fetch({ variables: { team: teamSlug } });
-		workloadsQuery.fetch({
-			variables: { identifier: cveIdentifier, first: rows, filter: { teamSlugs: [teamSlug] } }
-		});
-	});
-
-	const viewerIsMember = $derived($teamRoles.data?.team.viewerIsMember ?? false);
+	const viewerIsMember = $derived($TeamCVEPage.data?.team.viewerIsMember ?? false);
 
 	const handleSearch = async (event: SubmitEvent) => {
 		event.preventDefault();
@@ -126,19 +61,19 @@
 
 	let loadingMore = $state(false);
 
-	const hasNextPage = $derived($workloadsQuery.data?.cve.workloads.pageInfo.hasNextPage ?? false);
+	const hasNextPage = $derived($TeamCVEWorkloads.data?.cve.workloads.pageInfo.hasNextPage ?? false);
 
 	async function loadMore() {
 		loadingMore = true;
 		try {
-			await workloadsQuery.loadNextPage({ first: rows });
+			await TeamCVEWorkloads.loadNextPage({ first: rows });
 		} finally {
 			loadingMore = false;
 		}
 	}
 
 	const toggleSelect = (vulnId: string) => {
-		const nodes = ($workloadsQuery.data?.cve.workloads.edges ?? []).map((e) => e.node);
+		const nodes = ($TeamCVEWorkloads.data?.cve.workloads.edges ?? []).map((e) => e.node);
 		const group = nodes.filter((n) => n.vulnerability.id === vulnId);
 		if (group.every((n) => selectedIds.has(n.id))) {
 			group.forEach((n) => selectedIds.delete(n.id));
@@ -148,7 +83,7 @@
 	};
 
 	const selectableNodes = $derived.by(() => {
-		const nodes = ($workloadsQuery.data?.cve.workloads.edges ?? []).map((e) => e.node);
+		const nodes = ($TeamCVEWorkloads.data?.cve.workloads.edges ?? []).map((e) => e.node);
 		const suppressedVulnIds = new Set(
 			nodes.filter((n) => n.vulnerability.suppression).map((n) => n.vulnerability.id)
 		);
@@ -173,7 +108,7 @@
 
 	type WorkloadNode = NonNullable<
 		NonNullable<
-			NonNullable<(typeof $workloadsQuery)['data']>['cve']['workloads']['edges']
+			NonNullable<(typeof $TeamCVEWorkloads)['data']>['cve']['workloads']['edges']
 		>[number]['node']
 	>;
 
@@ -185,7 +120,7 @@
 	};
 
 	const groupedWorkloads = $derived.by((): VulnGroup[] => {
-		const nodes = ($workloadsQuery.data?.cve.workloads.edges ?? []).map((e) => e.node);
+		const nodes = ($TeamCVEWorkloads.data?.cve.workloads.edges ?? []).map((e) => e.node);
 		const map = new SvelteMap<string, VulnGroup>();
 		for (const node of nodes) {
 			const vid = node.vulnerability.id;
@@ -208,7 +143,7 @@
 		group.nodes.some((n) => selectedIds.has(n.id)) && !isGroupSelected(group);
 
 	const bulkWorkloads = $derived.by((): BulkSuppressWorkload[] => {
-		const nodes = ($workloadsQuery.data?.cve.workloads.edges ?? []).map((e) => e.node);
+		const nodes = ($TeamCVEWorkloads.data?.cve.workloads.edges ?? []).map((e) => e.node);
 		return nodes
 			.filter((n) => selectedIds.has(rowKey(n)))
 			.map((n) => ({
@@ -222,9 +157,9 @@
 	});
 
 	const onSuppressed = () => {
-		const loadedCount = ($workloadsQuery.data?.cve.workloads.edges ?? []).length;
+		const loadedCount = ($TeamCVEWorkloads.data?.cve.workloads.edges ?? []).length;
 		selectedIds.clear();
-		workloadsQuery.fetch({
+		TeamCVEWorkloads.fetch({
 			variables: {
 				identifier: cveIdentifier,
 				first: Math.max(rows, loadedCount),
@@ -306,8 +241,8 @@
 			<div class="workloads-header">
 				<Heading as="h2" size="small" spacing>
 					Affected Workloads
-					{#if ($workloadsQuery.data?.cve.workloads.pageInfo.totalCount ?? 0) > 0}
-						<span class="count">({$workloadsQuery.data?.cve.workloads.pageInfo.totalCount})</span>
+					{#if ($TeamCVEWorkloads.data?.cve.workloads.pageInfo.totalCount ?? 0) > 0}
+						<span class="count">({$TeamCVEWorkloads.data?.cve.workloads.pageInfo.totalCount})</span>
 					{/if}
 				</Heading>
 				{#if viewerIsMember && bulkWorkloads.length > 0}
@@ -330,12 +265,12 @@
 				</BodyShort>
 			{/if}
 
-			{#if $workloadsQuery.fetching && !$workloadsQuery.data}
+			{#if $TeamCVEWorkloads.fetching && !$TeamCVEWorkloads.data}
 				<div class="loading" role="status" aria-label="Loading">
 					<Loader size="3xlarge" />
 				</div>
-			{:else if $workloadsQuery.data}
-				{const workloads = $derived($workloadsQuery.data.cve.workloads)}
+			{:else if $TeamCVEWorkloads.data}
+				{const workloads = $derived($TeamCVEWorkloads.data.cve.workloads)}
 				{#if workloads.edges.length > 0}
 					{#if viewerIsMember}
 						<div class="select-all-row">
@@ -415,8 +350,8 @@
 				{:else}
 					<BodyShort>No workloads are currently affected by this vulnerability.</BodyShort>
 				{/if}
-			{:else if $workloadsQuery.errors}
-				<GraphErrors errors={$workloadsQuery.errors} />
+			{:else if $TeamCVEWorkloads.errors}
+				<GraphErrors errors={$TeamCVEWorkloads.errors} />
 			{/if}
 			{#if hasNextPage}
 				<div class="load-more">
