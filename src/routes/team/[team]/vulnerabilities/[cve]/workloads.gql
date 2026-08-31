@@ -1,0 +1,64 @@
+query TeamCVEWorkloads($identifier: String!, $first: Int!, $filter: CVEWorkloadsFilter) {
+	cve(identifier: $identifier) {
+		id
+		workloads(first: $first, filter: $filter) @paginate(mode: Infinite) {
+			pageInfo {
+				totalCount
+				hasNextPage
+				endCursor
+			}
+			edges {
+				node {
+					id
+					workload {
+						... on Application {
+							__typename
+							id
+							name
+							team {
+								slug
+							}
+							teamEnvironment {
+								environment {
+									name
+								}
+							}
+							image {
+								name
+								tag
+								digest
+							}
+						}
+						... on Job {
+							__typename
+							id
+							name
+							team {
+								slug
+							}
+							teamEnvironment {
+								environment {
+									name
+								}
+							}
+							image {
+								name
+								tag
+								digest
+							}
+						}
+					}
+					vulnerability {
+						id
+						identifier
+						severity
+						package
+						suppression {
+							state
+						}
+					}
+				}
+			}
+		}
+	}
+}
