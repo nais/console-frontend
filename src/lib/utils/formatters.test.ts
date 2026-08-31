@@ -104,23 +104,19 @@ describe('formatters', () => {
 
 	describe('numberFormatter', () => {
 		test('formats numbers with Norwegian locale', () => {
-			expect(numberFormatter(1000)).toContain('1');
-			expect(numberFormatter(1000)).toContain('000');
-			expect(numberFormatter(1000000)).toContain('1');
-			expect(numberFormatter(1000000)).toContain('000');
+			expect(numberFormatter(1000)).toBe('1\u00A0000');
+			expect(numberFormatter(1000000)).toBe('1\u00A0000\u00A0000');
 		});
 
 		test('handles decimals with default 2 places', () => {
-			expect(numberFormatter(1234.567)).toContain('1');
-			expect(numberFormatter(1234.567)).toContain('234,57');
+			expect(numberFormatter(1234.567)).toBe('1\u00A0234,57');
 			expect(numberFormatter(0.123)).toBe('0,12');
 		});
 
 		test('respects custom decimal places', () => {
-			expect(numberFormatter(1234.567, 0)).toContain('1');
-			expect(numberFormatter(1234.567, 0)).toContain('235');
-			expect(numberFormatter(1234.567, 1)).toContain('234,6');
-			expect(numberFormatter(1234.567, 3)).toContain('234,567');
+			expect(numberFormatter(1234.567, 0)).toBe('1\u00A0235');
+			expect(numberFormatter(1234.567, 1)).toBe('1\u00A0234,6');
+			expect(numberFormatter(1234.567, 3)).toBe('1\u00A0234,567');
 		});
 
 		test('handles NaN', () => {

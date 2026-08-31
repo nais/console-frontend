@@ -137,8 +137,6 @@ describe('aggregateAndSortCostByDate', () => {
 		dates.push(new Date(date));
 	}
 
-	console.log(dates);
-
 	test('data for one app, a full year', () => {
 		expect(
 			aggregateAndSortCostByDate([
