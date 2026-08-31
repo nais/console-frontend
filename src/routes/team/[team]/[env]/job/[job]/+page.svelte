@@ -17,6 +17,7 @@
 	import SurfaceCard from '$lib/ui/SurfaceCard.svelte';
 	import Time from '$lib/ui/Time.svelte';
 	import { Alert, BodyShort, Heading, Loader } from '@nais/ds-svelte-community';
+	import { onMount } from 'svelte';
 	import type { PageProps } from './$types';
 	import Runs from './Runs.svelte';
 	import Schedule from './Schedule.svelte';
@@ -24,7 +25,7 @@
 	let { data }: PageProps = $props();
 	let { Job, JobDeployment, teamSlug, viewerIsMember } = $derived(data);
 
-	$effect(() => {
+	onMount(() => {
 		const interval = setInterval(() => {
 			JobDeployment.fetch({ policy: 'CacheAndNetwork' });
 		}, 10_000);

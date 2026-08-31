@@ -175,6 +175,7 @@ The default cache policy is `CacheAndNetwork` (set in `houdini.config.js`). Do n
 - Use `$myQuery.fetching` for loading states
 - **Never use `$effect()` to fetch queries** — use `.gql` files with `load_QueryName` in `+page.ts` instead. The `$effect` pattern causes missing data on first navigation and an unnecessary client-side re-fetch cycle. Pass the store to child components as a prop.
   - Exception: `$effect` is acceptable for component-level queries that are intentionally deferred — i.e., queries whose data is supplementary (not required for initial page render) and are triggered by user interaction or mounted after the primary load function completes.
+  - For client-only polling intervals that periodically refresh already-loaded data, use `onMount` with a returned cleanup function — not `$effect`. The interval has no reactive dependencies and should not re-run.
 - **Don't `.fetch()` after mutations** — use this decision tree:
   1. If the mutation response includes `id` for all affected nodes AND the query is not a paginated connection → skip re-fetch (Houdini's normalized cache updates automatically).
   2. If the mutation response lacks `id` → re-fetch.
