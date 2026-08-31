@@ -9,7 +9,6 @@
 	import { themeSwitch } from '$lib/stores/theme.svelte';
 	import ProgressBar from '$lib/ui/ProgressBar.svelte';
 	import { Alert, BodyShort, Button, Heading, Page, Theme } from '@nais/ds-svelte-community';
-	import { onMount } from 'svelte';
 	import '../styles/app.css';
 	import '../styles/colors.css';
 	import type { LayoutProps } from './$types';
@@ -44,10 +43,8 @@
 		}
 	`);
 
-	let refreshCookieInterval: ReturnType<typeof setInterval> | undefined;
-
-	onMount(() => {
-		refreshCookieInterval = setInterval(
+	$effect(() => {
+		const refreshCookieInterval = setInterval(
 			async () => {
 				if (user?.__typename !== 'User') return;
 				refreshCookie.fetch({ policy: 'NoCache' });
@@ -56,9 +53,7 @@
 		);
 
 		return () => {
-			if (refreshCookieInterval !== undefined) {
-				clearInterval(refreshCookieInterval);
-			}
+			clearInterval(refreshCookieInterval);
 		};
 	});
 

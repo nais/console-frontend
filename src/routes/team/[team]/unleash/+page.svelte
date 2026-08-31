@@ -39,7 +39,7 @@
 	} from '@nais/ds-svelte-community/icons';
 	import type { GraphQLError } from 'houdini/runtime';
 	import prettyBytes from 'pretty-bytes';
-	import { onDestroy } from 'svelte';
+
 	import type { PageProps } from './$types';
 	import TeamSearchModal from './TeamSearchModal.svelte';
 
@@ -205,10 +205,8 @@
 		if (unleash?.ready && (creatingUnleash || pollingInterval)) {
 			stopPolling();
 		}
-	});
 
-	onDestroy(() => {
-		stopPolling();
+		return () => stopPolling();
 	});
 
 	// Both mutations return the resulting allowed-team list so the response can

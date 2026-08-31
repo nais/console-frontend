@@ -13,7 +13,6 @@
 	import GraphErrors from '$lib/ui/GraphErrors.svelte';
 	import Time from '$lib/ui/Time.svelte';
 	import { Alert, Heading, Loader } from '@nais/ds-svelte-community';
-	import { onMount } from 'svelte';
 	import type { PageProps } from './$types';
 	import InstanceGroups from './InstanceGroups.svelte';
 
@@ -25,7 +24,7 @@
 		AppDeployment.fetch({ policy: 'CacheAndNetwork' });
 	};
 
-	onMount(() => {
+	$effect(() => {
 		const interval = setInterval(refetchPolled, 10_000);
 		return () => clearInterval(interval);
 	});
