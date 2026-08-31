@@ -17,13 +17,14 @@ query InstanceGroupDetail($app: String!, $team: Slug!, $env: String!) @cache(pol
 						maxInstances
 						minInstances
 						strategies {
-							__typename
 							... on KafkaLagScalingStrategy {
+								__typename
 								consumerGroup
 								threshold
 								topicName
 							}
 							... on CPUScalingStrategy {
+								__typename
 								threshold
 							}
 						}

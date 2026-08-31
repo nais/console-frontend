@@ -114,7 +114,6 @@
 		});
 		if ($updateOpenSearchLabels.errors) return;
 		labelsModalOpen = false;
-		OpenSearchInstance.fetch();
 	};
 
 	let tableSort = $derived({
