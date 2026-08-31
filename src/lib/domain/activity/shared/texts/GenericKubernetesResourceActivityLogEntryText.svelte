@@ -53,8 +53,8 @@
 	dl {
 		display: grid;
 		grid-template-columns: max-content auto;
-		gap: 0 0.5rem;
-		margin: 0.5rem 0;
+		gap: 0 var(--ax-space-8);
+		margin: var(--ax-space-8) 0;
 	}
 
 	code {

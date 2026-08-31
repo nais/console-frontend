@@ -77,6 +77,6 @@
 		outline-offset: -2px;
 	}
 	.cm-host :global(.cm-content) {
-		padding: 10px 12px;
+		padding: var(--ax-space-12);
 	}
 </style>
