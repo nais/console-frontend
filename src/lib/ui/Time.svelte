@@ -1,7 +1,6 @@
 <script lang="ts">
 	import { differenceInDays, format, formatDistanceStrict, isSameYear } from 'date-fns';
 	import { enGB } from 'date-fns/locale';
-	import { onDestroy } from 'svelte';
 
 	const DISTANCE_THRESHOLD_DAYS = 7;
 
@@ -58,41 +57,20 @@
 		return fullTimestamp;
 	});
 
-	let interval: ReturnType<typeof setInterval> | undefined = $state();
-	let intervalDelay: number | undefined = $state();
-
-	onDestroy(() => {
-		if (interval) {
-			clearInterval(interval);
-		}
-	});
-
 	$effect(() => {
-		void tick;
+		if (!distance || !isValidDate) return;
 
-		if (!distance || !isValidDate) {
-			if (interval) {
-				clearInterval(interval);
-				interval = undefined;
-				intervalDelay = undefined;
-			}
-			return;
-		}
+		let timeout: ReturnType<typeof setTimeout>;
+		const schedule = () => {
+			const delay = isRecent() ? 1000 : 60_000;
+			timeout = setTimeout(() => {
+				tick++;
+				schedule();
+			}, delay);
+		};
+		schedule();
 
-		const desiredDelay = isRecent() ? 1000 : 60_000;
-
-		if (interval && intervalDelay === desiredDelay) {
-			return;
-		}
-
-		if (interval) {
-			clearInterval(interval);
-		}
-
-		intervalDelay = desiredDelay;
-		interval = setInterval(() => {
-			tick++;
-		}, desiredDelay);
+		return () => clearTimeout(timeout);
 	});
 
 	const datetime = $derived(isValidDate ? normalizedTime.toISOString() : undefined);

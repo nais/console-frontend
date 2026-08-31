@@ -44,10 +44,8 @@
 		}
 	`);
 
-	let refreshCookieInterval: ReturnType<typeof setInterval> | undefined;
-
 	onMount(() => {
-		refreshCookieInterval = setInterval(
+		const refreshCookieInterval = setInterval(
 			async () => {
 				if (user?.__typename !== 'User') return;
 				refreshCookie.fetch({ policy: 'NoCache' });
@@ -56,9 +54,7 @@
 		);
 
 		return () => {
-			if (refreshCookieInterval !== undefined) {
-				clearInterval(refreshCookieInterval);
-			}
+			clearInterval(refreshCookieInterval);
 		};
 	});
 

@@ -39,7 +39,8 @@
 	} from '@nais/ds-svelte-community/icons';
 	import type { GraphQLError } from 'houdini/runtime';
 	import prettyBytes from 'pretty-bytes';
-	import { onDestroy } from 'svelte';
+	import { onMount } from 'svelte';
+
 	import type { PageProps } from './$types';
 	import TeamSearchModal from './TeamSearchModal.svelte';
 
@@ -207,9 +208,7 @@
 		}
 	});
 
-	onDestroy(() => {
-		stopPolling();
-	});
+	onMount(() => () => stopPolling());
 
 	// Both mutations return the resulting allowed-team list so the response can
 	// be checked against what was asked for. A backend that accepts the request
