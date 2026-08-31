@@ -1,29 +1,17 @@
 <script lang="ts">
-	import { Alert } from '@nais/ds-svelte-community';
+	import { Alert, Button } from '@nais/ds-svelte-community';
 	import type { Snippet } from 'svelte';
 
 	let { children }: { children: Snippet } = $props();
 </script>
 
-<svelte:boundary>
+<svelte:boundary onerror={(e) => console.error('Chart render error:', e)}>
 	{@render children()}
 
 	{#snippet failed(error, reset)}
-		<Alert variant="warning" size="small">
-			Chart failed to render: {error instanceof Error ? error.message : 'unknown error'}.
-			<button class="retry" onclick={reset}>Retry</button>
+		<Alert variant="warning" size="small" data-error={error instanceof Error ? error.message : ''}>
+			Chart failed to render.
+			<Button variant="tertiary" size="xsmall" onclick={reset}>Retry</Button>
 		</Alert>
 	{/snippet}
 </svelte:boundary>
-
-<style>
-	.retry {
-		background: none;
-		border: none;
-		color: var(--ax-text-accent);
-		cursor: pointer;
-		text-decoration: underline;
-		padding: 0;
-		font: inherit;
-	}
-</style>
