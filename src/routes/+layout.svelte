@@ -107,11 +107,11 @@
 					<PageHeader {user} />
 				{/if}
 
-				<svelte:boundary>
+				<svelte:boundary onerror={(e) => console.error('Page render error:', e)}>
 					{@render children?.()}
 
 					{#snippet failed(error, reset)}
-						{void console.error('Page render error:', error)}
+						{void error}
 						<div class="boundary-error">
 							<Alert variant="error">
 								<Heading size="xsmall" as="h2">Something went wrong</Heading>
