@@ -9,9 +9,14 @@ import { redirect } from '@sveltejs/kit';
 import { get } from 'svelte/store';
 
 export async function load(event) {
-	const field = (event.url.searchParams.get('field') ||
-		ValkeyAccessOrderField.WORKLOAD) as ValkeyAccessOrderField$options;
-	const direction = (event.url.searchParams.get('direction') || 'ASC') as OrderDirection$options;
+	const fieldParam = event.url.searchParams.get('field') || ValkeyAccessOrderField.WORKLOAD;
+	const field: ValkeyAccessOrderField$options = Object.values(ValkeyAccessOrderField).includes(
+		fieldParam as ValkeyAccessOrderField$options
+	)
+		? (fieldParam as ValkeyAccessOrderField$options)
+		: ValkeyAccessOrderField.WORKLOAD;
+	const direction: OrderDirection$options =
+		event.url.searchParams.get('direction') === 'DESC' ? 'DESC' : 'ASC';
 
 	const loadValkey = await load_Valkey({
 		event,

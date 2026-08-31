@@ -10,10 +10,16 @@ import { urlToOrderDirection, urlToOrderField } from '$lib/ui/OrderByMenu.svelte
 import { addPageMeta } from '$lib/utils/pageMeta.js';
 import { subDays } from 'date-fns';
 
+const validIntervals: TenantCostInterval[] = ['5y', '3y', '1y', '6m'];
+
 const rows = 20;
 
 export async function load(event) {
-	const interval = (event.url.searchParams.get('interval') ?? '6m') as TenantCostInterval;
+	const intervalParam = event.url.searchParams.get('interval');
+	const interval: TenantCostInterval =
+		intervalParam && validIntervals.includes(intervalParam as TenantCostInterval)
+			? (intervalParam as TenantCostInterval)
+			: '6m';
 	const to = subDays(new Date(), 2);
 	const after = event.url.searchParams.get('after') || '';
 	const before = event.url.searchParams.get('before') || '';

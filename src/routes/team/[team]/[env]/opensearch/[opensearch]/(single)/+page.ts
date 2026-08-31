@@ -1,8 +1,7 @@
 import {
 	load_OpenSearchInstance,
 	OpenSearchAccessOrderField,
-	type OpenSearchAccessOrderField$options,
-	type OrderDirection$options
+	type OpenSearchAccessOrderField$options
 } from '$houdini';
 import { addPageMeta } from '$lib/utils/pageMeta';
 import { redirect } from '@sveltejs/kit';
@@ -17,9 +16,12 @@ export async function load(event) {
 			team: event.params.team,
 			name: event.params.opensearch,
 			orderBy: {
-				field: (event.url.searchParams.get('field') ||
-					OpenSearchAccessOrderField.WORKLOAD) as OpenSearchAccessOrderField$options,
-				direction: (event.url.searchParams.get('direction') || 'ASC') as OrderDirection$options
+				field: Object.values(OpenSearchAccessOrderField).includes(
+					event.url.searchParams.get('field') as OpenSearchAccessOrderField$options
+				)
+					? (event.url.searchParams.get('field') as OpenSearchAccessOrderField$options)
+					: OpenSearchAccessOrderField.WORKLOAD,
+				direction: event.url.searchParams.get('direction') === 'DESC' ? 'DESC' : 'ASC'
 			}
 		}
 	});

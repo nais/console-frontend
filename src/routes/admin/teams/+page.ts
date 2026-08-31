@@ -1,5 +1,5 @@
 import type { OrderDirection$options, TeamOrderField$options } from '$houdini';
-import { load_Teams, TeamOrderField } from '$houdini';
+import { load_Teams, OrderDirection, TeamOrderField } from '$houdini';
 import type { TeamFilter } from '$houdini/graphql/inputs';
 import { addPageMeta } from '$lib/utils/pageMeta';
 
@@ -14,9 +14,18 @@ export async function load(event) {
 		filter = 'ALL';
 	}
 
-	const field = (event.url.searchParams.get('field') ||
-		TeamOrderField.SLUG) as TeamOrderField$options;
-	const direction = (event.url.searchParams.get('direction') || 'ASC') as OrderDirection$options;
+	const fieldParam = event.url.searchParams.get('field') || TeamOrderField.SLUG;
+	const field: TeamOrderField$options = Object.values(TeamOrderField).includes(
+		fieldParam as TeamOrderField$options
+	)
+		? (fieldParam as TeamOrderField$options)
+		: TeamOrderField.SLUG;
+	const dirParam = event.url.searchParams.get('direction') || 'ASC';
+	const direction: OrderDirection$options = Object.values(OrderDirection).includes(
+		dirParam as OrderDirection$options
+	)
+		? (dirParam as OrderDirection$options)
+		: 'ASC';
 
 	const hasWorkloads =
 		filter === 'WITHOUT_WORKLOADS' ? false : filter === 'WITH_WORKLOADS' ? true : undefined;
