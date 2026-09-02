@@ -153,12 +153,12 @@
 	<div class="layout-two-column">
 		<div class="content">
 			{#if !isManagedByConsole}
-				<Alert variant="info">
+				<Alert variant="warning">
 					This Valkey instance is managed outside Console.<br />
 					To migrate this instance to Console, see the
 					<ExternalLink href={docURL('/persistence/valkey/how-to/migrate-to-console/')}>
 						Nais documentation
-					</ExternalLink>.
+					</ExternalLink>. <br /><br />This will be automatically done on the 9th of September.
 				</Alert>
 			{/if}
 			{#if viewerIsMember && isManagedByConsole}

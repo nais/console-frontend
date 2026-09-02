@@ -5,6 +5,7 @@
 	import IssueSeverityTags from '$lib/domain/issues/IssueSeverityTags.svelte';
 	import WorkloadListFilters from '$lib/domain/workload/WorkloadListFilters.svelte';
 	import { envTagVariant } from '$lib/envTagVariant';
+	import WarningIcon from '$lib/icons/WarningIcon.svelte';
 	import CollapsibleSidebar from '$lib/ui/CollapsibleSidebar.svelte';
 	import ExternalLink from '$lib/ui/ExternalLink.svelte';
 	import GraphErrors from '$lib/ui/GraphErrors.svelte';
@@ -102,6 +103,10 @@
 		const next = isSelected ? selectedTiers.filter((t) => t !== tier) : [...selectedTiers, tier];
 		changeParams({ tiers: next.join(','), after: '', before: '' }, { noScroll: true });
 	}
+
+	function isManagedByConsole(instanceName: string) {
+		return !instanceName.startsWith(`opensearch-${page.params.team}-`);
+	}
 </script>
 
 <GraphErrors errors={$OpenSearch.errors} />
@@ -167,6 +172,13 @@
 									/>
 								{/if}
 							</TooltipAlignHack>
+							{#if !isManagedByConsole(instance.name)}
+								<TooltipAlignHack content="This instance will be migrated on the 9th of September.">
+									<WarningIcon
+										style="color: var(--ax-bg-warning-strong); font-size: 0.7rem; margin-right: var(--ax-space-2)"
+									/>
+								</TooltipAlignHack>
+							{/if}
 							<span class="item-name">{instance.name}</span>
 							<Tag size="xsmall" variant={envTagVariant(instance.teamEnvironment.environment.name)}
 								>{instance.teamEnvironment.environment.name}</Tag
