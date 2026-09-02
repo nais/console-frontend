@@ -163,12 +163,13 @@
 	<div class="layout-two-column">
 		<div class="content">
 			{#if !isManagedByConsole}
-				<Alert variant="info">
+				<Alert variant="warning">
 					This OpenSearch instance is managed outside Console.<br />
 					To migrate this instance to Console, see the
 					<ExternalLink href={docURL('/persistence/opensearch/how-to/migrate-to-console/')}>
 						Nais documentation
 					</ExternalLink>.
+					<br /><br />This will be automatically done on the 9th of September.
 				</Alert>
 			{/if}
 			{#if viewerIsMember && isManagedByConsole}
