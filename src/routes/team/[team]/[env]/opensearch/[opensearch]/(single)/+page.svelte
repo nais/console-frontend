@@ -222,7 +222,7 @@
 					{/if}
 					<dt>Shard indexing pressure</dt>
 					<dd>{instance.shardIndexingPressureEnabled ? 'Enabled' : 'Disabled'}</dd>
-					{#if instance.shardIndexingPressureEnforced}
+					{#if instance.shardIndexingPressureEnabled}
 						<dt>Shard indexing pressure mode</dt>
 						<dd>{instance.shardIndexingPressureEnforced ? 'Enforced' : 'Shadow'}</dd>
 					{/if}
