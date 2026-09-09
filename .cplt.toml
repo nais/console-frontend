@@ -12,12 +12,19 @@ env = ["SLACK_API_TOKEN"]
 # Suggested by: (root)
 allow_docker = true
 # Suggested by: (root)
-allow_env_files = true
-# Suggested by: (root)
 allow_localhost_any = true
+
+# allow_env_files intentionally NOT proposed: the sandbox should not read a real
+# .env (nais bootstrap writes secrets there). Pass --allow-env-files per-run if
+# the agent genuinely needs it. .env.example is carved out below instead.
 
 [propose.allow]
 localhost = [5173]
+# NOTE: the sandbox's .env*/.pem/.key read-deny is absolute — neither allow.read
+# nor --allow-read can carve out .env.example. Only sandbox.allow_env_files lifts
+# it, and that would also expose a real .env. So .env.example stays unreadable in
+# the sandbox; this only bites if the agent edits it or you run `git stash` /
+# `git checkout` in-sandbox. Plain status/add/commit/diff on it are unaffected.
 
 ## Machine-specific — these belong in ~/.config/cplt/config.toml, not here.
 ## Copy the [section] headers too: keys pasted at the end of that file are
@@ -25,4 +32,3 @@ localhost = [5173]
 #
 # [allow]
 # read = ["~/.npmrc"]
-
