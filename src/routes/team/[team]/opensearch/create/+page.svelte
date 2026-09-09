@@ -181,8 +181,14 @@
 			{/if}
 		{/snippet}
 	</TextField>
-
-	<ReadMore header="Advanced options" size="small">
+	<ReadMore
+		header="Advanced options"
+		size="small"
+		open={httpMaxContentLength !== '' ||
+			indicesQueryBoolMaxClauseCount !== '' ||
+			shardIndexingPressureEnabled ||
+			shardIndexingPressureEnforced}
+	>
 		<TextField
 			size="small"
 			label="HTTP max content length"

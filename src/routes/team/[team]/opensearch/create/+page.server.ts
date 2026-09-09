@@ -38,7 +38,7 @@ export const actions = {
 			tier,
 			memory,
 			version,
-			storage,
+			storageGB: storage,
 			http_max_content_length: httpMaxContentLength,
 			indices_query_bool_max_clause_count: maxClauseCount,
 			shard_indexing_pressure_enabled: shardIndexingPressureEnabled,
@@ -75,11 +75,6 @@ export const actions = {
 				error: 'Boolean query max clause count must be an integer between 64 and 4096'
 			});
 		}
-
-		console.log(
-			'CREATE OPENSEARCH WITH VERSION',
-			OpenSearchMajorVersion[version as keyof typeof OpenSearchMajorVersion]
-		);
 
 		const res = await mutation.mutate(
 			{

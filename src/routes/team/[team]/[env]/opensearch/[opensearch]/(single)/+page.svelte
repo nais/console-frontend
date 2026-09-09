@@ -220,13 +220,11 @@
 						<dt>Boolean query max clause count</dt>
 						<dd>{instance.indicesQueryBoolMaxClauseCount}</dd>
 					{/if}
-					{#if instance.shardIndexingPressureEnabled}
-						<dt>Shard indexing pressure</dt>
-						<dd>{instance.shardIndexingPressureEnabled}</dd>
-					{/if}
+					<dt>Shard indexing pressure</dt>
+					<dd>{instance.shardIndexingPressureEnabled ? 'Enabled' : 'Disabled'}</dd>
 					{#if instance.shardIndexingPressureEnforced}
 						<dt>Shard indexing pressure mode</dt>
-						<dd>{instance.shardIndexingPressureEnforced}</dd>
+						<dd>{instance.shardIndexingPressureEnforced ? 'Enforced' : 'Shadow'}</dd>
 					{/if}
 					<dt>Version</dt>
 					<dd>{instance.version.actual ?? 'Unknown'}</dd>
