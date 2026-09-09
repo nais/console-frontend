@@ -4486,7 +4486,7 @@ type KafkaTopic implements Node & Persistence {
 }
 
 type KafkaTopicAcl {
-  access: String!
+  access: KafkaTopicGrantAccess!
   team: Team
   teamName: String!
   topic: KafkaTopic!
@@ -4578,6 +4578,30 @@ input KafkaTopicFilter {
 
   """Filter by Kafka pool."""
   pools: [String!]
+}
+
+"""Valid access levels for Kafka Topic grants."""
+enum KafkaTopicGrantAccess {
+  """Read access to the Kafka Topic."""
+  READ
+
+  """Read and write access to the Kafka Topic."""
+  READWRITE
+
+  """Write access to the Kafka Topic."""
+  WRITE
+}
+
+"""Input for adding a grant to a Kafka Topic."""
+input KafkaTopicGrantInput {
+  """The access level for the grant."""
+  access: KafkaTopicGrantAccess!
+
+  """Subject that receives the grant."""
+  subject: String!
+
+  """The name of the team that receives the grant. Can be a wildcard."""
+  teamName: String!
 }
 
 input KafkaTopicOrder {
@@ -5076,6 +5100,9 @@ type Mutation {
     """Input for updating a job."""
     input: UpdateJobInput!
   ): UpdateJobPayload!
+
+  """Update a Kafka Topic."""
+  updateKafkaTopic(input: UpdateKafkaTopicInput!): UpdateKafkaTopicPayload!
 
   """Update an existing OpenSearch instance."""
   updateOpenSearch(input: UpdateOpenSearchInput!): UpdateOpenSearchPayload!
@@ -10355,6 +10382,27 @@ input UpdateJobInput {
 type UpdateJobPayload {
   """The updated job."""
   job: Job
+}
+
+"""Input for the updateKafkaTopic mutation."""
+input UpdateKafkaTopicInput {
+  """New grants for the Kafka Topic."""
+  addGrants: [KafkaTopicGrantInput!]
+
+  """Environment name of the Kafka Topic to update."""
+  environmentName: String!
+
+  """Name of the Kafka Topic to update."""
+  name: String!
+
+  """Slug of the team that owns the Kafka Topic."""
+  teamSlug: Slug!
+}
+
+"""Payload of the updateKafkaTopic mutation."""
+type UpdateKafkaTopicPayload {
+  """Updated Kafka topic."""
+  kafkaTopic: KafkaTopic!
 }
 
 input UpdateOpenSearchInput {
