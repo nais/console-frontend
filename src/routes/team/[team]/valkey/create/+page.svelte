@@ -16,6 +16,7 @@
 		BodyLong,
 		BodyShort,
 		Button,
+		Checkbox,
 		ErrorMessage,
 		ReadMore,
 		Select,
@@ -31,13 +32,28 @@
 		($CreateValkeyEnvironments.data?.team.environments ?? []).filter((env) => !!env.gcpProjectID)
 	);
 
-	const form = $derived(page.form);
+	const form: PageProps['form'] = $derived(page.form);
 
 	let tier = $derived((form?.tier as ValkeyTier$options) ?? ValkeyTier.HIGH_AVAILABILITY);
-	let memory = $derived((form?.size as ValkeyMemory$options) ?? ValkeyMemory.GB_1);
+	let memory = $derived((form?.memory as ValkeyMemory$options) ?? ValkeyMemory.GB_1);
 	let maxMemoryPolicy = $derived(
 		(form?.max_memory_policy as ValkeyMaxMemoryPolicy$options) ?? ValkeyMaxMemoryPolicy.NO_EVICTION
 	);
+	let persistenceDisabled = $derived((form?.persistence_disabled as boolean) ?? false);
+
+	let readMoreOpen = $derived.by(() => {
+		if (form?.persistence_disabled) {
+			return true;
+		}
+		if (form?.databases && form.databases != '16') {
+			return true;
+		}
+		if (form?.notify_keyspace_events && form.notify_keyspace_events != '') {
+			return true;
+		}
+
+		return false;
+	});
 </script>
 
 <form method="POST" use:enhance>
@@ -89,7 +105,7 @@
 		{/each}
 	</Select>
 
-	<ReadMore header="Advanced options" size="small">
+	<ReadMore header="Advanced options" size="small" open={readMoreOpen}>
 		<TextField
 			size="small"
 			label="Notify keyspace events"
@@ -118,6 +134,14 @@
 				service.
 			{/snippet}
 		</TextField>
+		<Checkbox
+			name="persistence_disabled"
+			size="small"
+			bind:checked={persistenceDisabled}
+			description="Disables RDB dumps and backups. All data is lost if the instance restarts."
+		>
+			Disable persistence
+		</Checkbox>
 	</ReadMore>
 
 	<BodyShort>

@@ -30,12 +30,20 @@ export const actions = {
 		const version = data.get('version') as OpenSearchMajorVersion$options | null;
 		const storage = data.get('storageGB') as string | null;
 		const labelsJson = data.get('labels') as string | null;
+		const httpMaxContentLength = data.get('http_max_content_length') as string | null;
+		const maxClauseCount = data.get('indices_query_bool_max_clause_count') as string | null;
+		const shardIndexingPressureEnabled = data.has('shard_indexing_pressure_enabled');
+		const shardIndexingPressureEnforced = data.has('shard_indexing_pressure_enforced');
 
 		const allProps = {
 			tier,
 			memory,
 			version,
-			storageGB: storage
+			storageGB: storage,
+			http_max_content_length: httpMaxContentLength,
+			indices_query_bool_max_clause_count: maxClauseCount,
+			shard_indexing_pressure_enabled: shardIndexingPressureEnabled,
+			shard_indexing_pressure_enforced: shardIndexingPressureEnforced
 		};
 
 		if (!tier || !memory || !version || !storage) {
@@ -52,6 +60,20 @@ export const actions = {
 				...allProps,
 				success: false,
 				error: 'Storage capacity must be a number in GB'
+			});
+		}
+
+		const indicesQueryBoolMaxClauseCount = maxClauseCount ? Number(maxClauseCount) : null;
+		if (
+			indicesQueryBoolMaxClauseCount !== null &&
+			(!Number.isInteger(indicesQueryBoolMaxClauseCount) ||
+				indicesQueryBoolMaxClauseCount < 64 ||
+				indicesQueryBoolMaxClauseCount > 4096)
+		) {
+			return fail(400, {
+				...allProps,
+				success: false,
+				error: 'Boolean query max clause count must be an integer between 64 and 4096'
 			});
 		}
 
@@ -94,6 +116,10 @@ export const actions = {
 					memory: OpenSearchMemory[memory as keyof typeof OpenSearchMemory],
 					version: OpenSearchMajorVersion[version as keyof typeof OpenSearchMajorVersion],
 					storageGB: storageGB,
+					httpMaxContentLength: httpMaxContentLength || null,
+					indicesQueryBoolMaxClauseCount,
+					shardIndexingPressureEnabled,
+					shardIndexingPressureEnforced,
 					labels
 				}
 			},

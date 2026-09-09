@@ -22,6 +22,10 @@ query OpenSearchInstance(
 				tier
 				memory
 				storageGB
+				httpMaxContentLength
+				indicesQueryBoolMaxClauseCount
+				shardIndexingPressureEnabled
+				shardIndexingPressureEnforced
 				state
 				teamEnvironment {
 					environment {

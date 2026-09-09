@@ -16,6 +16,7 @@
 		BodyLong,
 		BodyShort,
 		Button,
+		Checkbox,
 		CopyButton,
 		ErrorMessage,
 		ReadMore,
@@ -69,12 +70,38 @@
 	});
 
 	let availableMemories = $derived(
-		Object.values(OpenSearchMemory).filter((memory) => {
-			if (tier == OpenSearchTier.HIGH_AVAILABILITY && memory == OpenSearchMemory.GB_2) {
-				return false;
-			}
-			return true;
-		})
+		Object.values(OpenSearchMemory)
+			.filter((memory) => {
+				if (tier == OpenSearchTier.HIGH_AVAILABILITY && memory == OpenSearchMemory.GB_2) {
+					return false;
+				}
+				return true;
+			})
+			.sort((a, b) => {
+				return Number(a.replace('GB_', '')) - Number(b.replace('GB_', ''));
+			})
+	);
+
+	let httpMaxContentLength = $derived(
+		(form?.http_max_content_length as string) ??
+			$UpdateOpenSearchData.data?.team.environment.openSearch.httpMaxContentLength ??
+			''
+	);
+	let indicesQueryBoolMaxClauseCount = $derived(
+		(form?.indices_query_bool_max_clause_count as string) ??
+			String(
+				$UpdateOpenSearchData.data?.team.environment.openSearch.indicesQueryBoolMaxClauseCount ?? ''
+			)
+	);
+	let shardIndexingPressureEnabled = $derived(
+		(form?.shard_indexing_pressure_enabled as boolean) ??
+			$UpdateOpenSearchData.data?.team.environment.openSearch.shardIndexingPressureEnabled ??
+			false
+	);
+	let shardIndexingPressureEnforced = $derived(
+		(form?.shard_indexing_pressure_enforced as boolean) ??
+			$UpdateOpenSearchData.data?.team.environment.openSearch.shardIndexingPressureEnforced ??
+			false
 	);
 
 	const tomlManifest =
@@ -84,6 +111,36 @@ memory = "${memory}"
 version = "${version}"
 storageGB = "${storage}"
 `);
+
+	function versionLabel(v: OpenSearchMajorVersion$options) {
+		return v.replaceAll('_', '.').replace('V', 'v');
+	}
+
+	function tierLabel(t: OpenSearchTier$options) {
+		switch (t) {
+			case OpenSearchTier.SINGLE_NODE:
+				return 'Single node';
+			case OpenSearchTier.HIGH_AVAILABILITY:
+				return 'High availability';
+		}
+	}
+
+	function memoryLabel(m: OpenSearchMemory$options) {
+		switch (m) {
+			case OpenSearchMemory.GB_2:
+				return '2 GB';
+			case OpenSearchMemory.GB_4:
+				return '4 GB';
+			case OpenSearchMemory.GB_8:
+				return '8 GB';
+			case OpenSearchMemory.GB_16:
+				return '16 GB';
+			case OpenSearchMemory.GB_32:
+				return '32 GB';
+			case OpenSearchMemory.GB_64:
+				return '64 GB';
+		}
+	}
 </script>
 
 <form method="POST" use:enhance>
@@ -101,19 +158,19 @@ storageGB = "${storage}"
 	</Alert>
 	<Select size="small" label="Desired version" name="version" required bind:value={version}>
 		{#each Object.values(OpenSearchMajorVersion) as opt (opt)}
-			<option value={opt}>{opt}</option>
+			<option value={opt}>{versionLabel(opt)}</option>
 		{/each}
 	</Select>
 
 	<Select size="small" label="Tier" name="tier" required bind:value={tier}>
 		{#each Object.values(OpenSearchTier) as opt (opt)}
-			<option value={opt}>{opt}</option>
+			<option value={opt}>{tierLabel(opt)}</option>
 		{/each}
 	</Select>
 
 	<Select size="small" label="Memory" name="memory" required bind:value={memory}>
 		{#each availableMemories as opt (opt)}
-			<option value={opt}>{opt}</option>
+			<option value={opt}>{memoryLabel(opt)}</option>
 		{/each}
 	</Select>
 
@@ -142,6 +199,59 @@ storageGB = "${storage}"
 			{/if}
 		{/snippet}
 	</TextField>
+
+	<ReadMore
+		header="Advanced options"
+		size="small"
+		open={httpMaxContentLength !== '' ||
+			indicesQueryBoolMaxClauseCount !== '' ||
+			shardIndexingPressureEnabled ||
+			shardIndexingPressureEnforced}
+	>
+		<TextField
+			size="small"
+			label="HTTP max content length"
+			name="http_max_content_length"
+			placeholder="100Mi"
+			bind:value={httpMaxContentLength}
+		>
+			{#snippet description()}
+				Maximum request size, for example <code>100Mi</code> or <code>1Gi</code>. Defaults to 100Mi.
+			{/snippet}
+		</TextField>
+		<TextField
+			size="small"
+			label="Boolean query max clause count"
+			name="indices_query_bool_max_clause_count"
+			type="number"
+			min={64}
+			max={4096}
+			step={1}
+			placeholder="1024"
+			bind:value={indicesQueryBoolMaxClauseCount}
+		>
+			{#snippet description()}
+				Maximum clauses in a Lucene BooleanQuery. Defaults to 1024. Higher values may affect
+				performance.
+			{/snippet}
+		</TextField>
+		<Checkbox
+			name="shard_indexing_pressure_enabled"
+			size="small"
+			bind:checked={shardIndexingPressureEnabled}
+			description="Track shard-level indexing pressure."
+		>
+			Enable shard indexing pressure
+		</Checkbox>
+		<Checkbox
+			name="shard_indexing_pressure_enforced"
+			size="small"
+			bind:checked={shardIndexingPressureEnforced}
+			description="Reject requests that may degrade cluster performance instead of only tracking metrics."
+		>
+			Enforce shard indexing pressure
+		</Checkbox>
+	</ReadMore>
 
 	<input
 		type="hidden"

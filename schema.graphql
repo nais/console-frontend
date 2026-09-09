@@ -2220,11 +2220,29 @@ input CreateOpenSearchInput {
   """The environment name that the OpenSearch instance belongs to."""
   environmentName: String!
 
+  """
+  Maximum content length for requests to the OpenSearch HTTP API. Specified as a human-readable quantity (e.g. "100Mi", "1Gi"); unitless values are interpreted as bytes. Must be between 1 byte and 2147483647 bytes (around 2047Mi). When not set, the instance uses the default of 100Mi.
+  """
+  httpMaxContentLength: String
+
+  """
+  Maximum number of clauses a Lucene BooleanQuery can contain. Must be between 64 and 4096. When not set, the instance uses the default of 1024.
+  """
+  indicesQueryBoolMaxClauseCount: Int
+
   """Available memory for the OpenSearch instance."""
   memory: OpenSearchMemory!
 
   """Name of the OpenSearch instance."""
   name: String!
+
+  """Enable shard indexing back pressure. Defaults to false."""
+  shardIndexingPressureEnabled: Boolean
+
+  """
+  Run shard indexing back pressure in enforced mode. Defaults to false (shadow mode).
+  """
+  shardIndexingPressureEnforced: Boolean
 
   """Available storage in GB."""
   storageGB: Int!
@@ -2427,6 +2445,9 @@ input CreateValkeyInput {
   Configure keyspace notifications for the Valkey instance. See https://valkey.io/topics/notifications/ for details.
   """
   notifyKeyspaceEvents: String
+
+  """Disable persistence (RDB dumps and backups). Defaults to false."""
+  persistenceDisabled: Boolean
 
   """The team that owns the Valkey instance."""
   teamSlug: Slug!
@@ -4486,7 +4507,7 @@ type KafkaTopic implements Node & Persistence {
 }
 
 type KafkaTopicAcl {
-  access: String!
+  access: KafkaTopicGrantAccess!
   team: Team
   teamName: String!
   topic: KafkaTopic!
@@ -4578,6 +4599,30 @@ input KafkaTopicFilter {
 
   """Filter by Kafka pool."""
   pools: [String!]
+}
+
+"""Valid access levels for Kafka Topic grants."""
+enum KafkaTopicGrantAccess {
+  """Read access to the Kafka Topic."""
+  READ
+
+  """Read and write access to the Kafka Topic."""
+  READWRITE
+
+  """Write access to the Kafka Topic."""
+  WRITE
+}
+
+"""Input for adding a grant to a Kafka Topic."""
+input KafkaTopicGrantInput {
+  """The access level for the grant."""
+  access: KafkaTopicGrantAccess!
+
+  """Subject that receives the grant."""
+  subject: String!
+
+  """The name of the team that receives the grant. Can be a wildcard."""
+  teamName: String!
 }
 
 input KafkaTopicOrder {
@@ -5077,6 +5122,9 @@ type Mutation {
     input: UpdateJobInput!
   ): UpdateJobPayload!
 
+  """Update a Kafka Topic."""
+  updateKafkaTopic(input: UpdateKafkaTopicInput!): UpdateKafkaTopicPayload!
+
   """Update an existing OpenSearch instance."""
   updateOpenSearch(input: UpdateOpenSearchInput!): UpdateOpenSearchPayload!
 
@@ -5178,7 +5226,17 @@ type OpenSearch implements ActivityLogger & Node & Persistence {
     last: Int
   ): ActivityLogEntryConnection!
   cost: OpenSearchCost!
+
+  """
+  Maximum content length, in a human-readable quantity (e.g. "100Mi", "1Gi"), for requests to the OpenSearch HTTP API. When not set, the instance uses the default of 100Mi.
+  """
+  httpMaxContentLength: String
   id: ID!
+
+  """
+  Maximum number of clauses a Lucene BooleanQuery can contain. When not set, the instance uses the default of 1024. Increasing this value may cause performance issues.
+  """
+  indicesQueryBoolMaxClauseCount: Int
 
   """Issues that affects the instance."""
   issues(
@@ -5214,6 +5272,14 @@ type OpenSearch implements ActivityLogger & Node & Persistence {
   """Available memory for the OpenSearch instance."""
   memory: OpenSearchMemory!
   name: String!
+
+  """Whether shard indexing back pressure is enabled."""
+  shardIndexingPressureEnabled: Boolean!
+
+  """
+  Whether shard indexing back pressure runs in enforced mode. In enforced mode requests that may degrade cluster performance are rejected; in shadow mode (enforced false) metrics are tracked but no requests are rejected.
+  """
+  shardIndexingPressureEnforced: Boolean!
   state: OpenSearchState!
 
   """Available storage in GB."""
@@ -10357,9 +10423,40 @@ type UpdateJobPayload {
   job: Job
 }
 
+"""Input for the updateKafkaTopic mutation."""
+input UpdateKafkaTopicInput {
+  """New grants for the Kafka Topic."""
+  addGrants: [KafkaTopicGrantInput!]
+
+  """Environment name of the Kafka Topic to update."""
+  environmentName: String!
+
+  """Name of the Kafka Topic to update."""
+  name: String!
+
+  """Slug of the team that owns the Kafka Topic."""
+  teamSlug: Slug!
+}
+
+"""Payload of the updateKafkaTopic mutation."""
+type UpdateKafkaTopicPayload {
+  """Updated Kafka topic."""
+  kafkaTopic: KafkaTopic!
+}
+
 input UpdateOpenSearchInput {
   """The environment name that the OpenSearch instance belongs to."""
   environmentName: String!
+
+  """
+  Maximum content length for requests to the OpenSearch HTTP API. Specified as a human-readable quantity (e.g. "100Mi", "1Gi"); unitless values are interpreted as bytes. Must be between 1 byte and 2147483647 bytes (around 2047Mi). When not set, the instance uses the default of 100Mi.
+  """
+  httpMaxContentLength: String
+
+  """
+  Maximum number of clauses a Lucene BooleanQuery can contain. Must be between 64 and 4096. When not set, the instance uses the default of 1024.
+  """
+  indicesQueryBoolMaxClauseCount: Int
 
   """
   User-defined labels for the instance. When provided, replaces all existing user-defined labels. When omitted, labels are left unchanged.
@@ -10371,6 +10468,14 @@ input UpdateOpenSearchInput {
 
   """Name of the OpenSearch instance."""
   name: String!
+
+  """Enable shard indexing back pressure. Defaults to false."""
+  shardIndexingPressureEnabled: Boolean
+
+  """
+  Run shard indexing back pressure in enforced mode. Defaults to false (shadow mode).
+  """
+  shardIndexingPressureEnforced: Boolean
 
   """Available storage in GB."""
   storageGB: Int!
@@ -10561,6 +10666,9 @@ input UpdateValkeyInput {
   Configure keyspace notifications for the Valkey instance. See https://valkey.io/topics/notifications/ for details.
   """
   notifyKeyspaceEvents: String
+
+  """Disable persistence (RDB dumps and backups). Defaults to false."""
+  persistenceDisabled: Boolean
 
   """The team that owns the Valkey instance."""
   teamSlug: Slug!
@@ -10886,6 +10994,11 @@ type Valkey implements ActivityLogger & Node & Persistence {
   Keyspace notifications for the Valkey instance. See https://valkey.io/topics/notifications/ for details.
   """
   notifyKeyspaceEvents: String
+
+  """
+  Whether persistence (RDB dumps and backups) is disabled. If true, all data is lost if the instance is restarted for any reason.
+  """
+  persistenceDisabled: Boolean!
   state: ValkeyState!
   team: Team!
   teamEnvironment: TeamEnvironment!

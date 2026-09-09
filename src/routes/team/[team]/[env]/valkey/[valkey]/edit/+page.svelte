@@ -15,6 +15,7 @@
 		BodyLong,
 		BodyShort,
 		Button,
+		Checkbox,
 		CopyButton,
 		ErrorMessage,
 		ReadMore,
@@ -50,6 +51,11 @@
 	let databases = $derived(
 		(form?.databases as string) ??
 			String($UpdateValkeyData.data?.team.environment.valkey.databases ?? 16)
+	);
+	let persistenceDisabled = $derived(
+		(form?.persistence_disabled as boolean) ??
+			$UpdateValkeyData.data?.team.environment.valkey.persistenceDisabled ??
+			false
 	);
 
 	const tomlManifest = $derived(`[valkey.${$UpdateValkeyData.data?.team.environment.valkey.name}]
@@ -95,7 +101,7 @@ ${notifyKeyspaceEvents ? `notify_keyspace_events = "${notifyKeyspaceEvents}"` : 
 	<ReadMore
 		header="Advanced options"
 		size="small"
-		open={notifyKeyspaceEvents !== '' || databases !== '16'}
+		open={notifyKeyspaceEvents !== '' || databases !== '16' || persistenceDisabled}
 	>
 		<TextField
 			size="small"
@@ -125,6 +131,14 @@ ${notifyKeyspaceEvents ? `notify_keyspace_events = "${notifyKeyspaceEvents}"` : 
 				service.
 			{/snippet}
 		</TextField>
+		<Checkbox
+			name="persistence_disabled"
+			size="small"
+			bind:checked={persistenceDisabled}
+			description="Disables RDB dumps and backups. All data is lost if the instance restarts."
+		>
+			Disable persistence
+		</Checkbox>
 	</ReadMore>
 
 	<BodyShort>
