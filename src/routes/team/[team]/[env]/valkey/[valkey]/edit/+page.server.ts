@@ -31,6 +31,7 @@ export const actions = {
 		const notify_keyspace_events = data.get('notify_keyspace_events') as string | null;
 		const databases = data.get('databases') as string | null;
 		const labelsJson = data.get('labels') as string | null;
+		const persistenceDisabled = data.has('persistence_disabled');
 
 		const allProps = {
 			tier,
@@ -38,6 +39,7 @@ export const actions = {
 			max_memory_policy,
 			notify_keyspace_events,
 			databases,
+			persistence_disabled: persistenceDisabled,
 			labels: labelsJson
 		};
 
@@ -91,6 +93,7 @@ export const actions = {
 						: ValkeyMaxMemoryPolicy[max_memory_policy as keyof typeof ValkeyMaxMemoryPolicy],
 					notifyKeyspaceEvents: notify_keyspace_events, // empty strings are always passed along to clear any previously set value
 					databases: databases ? parseInt(databases, 10) : null,
+					persistenceDisabled,
 					labels
 				}
 			},
@@ -105,7 +108,8 @@ export const actions = {
 				memory,
 				max_memory_policy,
 				notify_keyspace_events,
-				databases
+				databases,
+				persistence_disabled: persistenceDisabled
 			});
 		} else if (!res.data) {
 			return fail(500, {
@@ -115,7 +119,8 @@ export const actions = {
 				memory,
 				max_memory_policy,
 				notify_keyspace_events,
-				databases
+				databases,
+				persistence_disabled: persistenceDisabled
 			});
 		}
 

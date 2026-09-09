@@ -209,6 +209,8 @@
 						<dt>Number of databases</dt>
 						<dd>{instance.databases}</dd>
 					{/if}
+					<dt>Persistence</dt>
+					<dd>{instance.persistenceDisabled ? 'Disabled' : 'Enabled'}</dd>
 					{#if instance.maintenance && instance.maintenance.window}
 						<dt>Maintenance day</dt>
 						<dd>{instance.maintenance.window.dayOfWeek}</dd>

@@ -28,6 +28,7 @@ export const actions = {
 		const max_memory_policy = data.get('max_memory_policy') as string | null;
 		const notify_keyspace_events = data.get('notify_keyspace_events') as string | null;
 		const databases = data.get('databases') as string | null;
+		const persistenceDisabled = data.has('persistence_disabled');
 
 		if (!name || !environment || !tier || !memory) {
 			return fail(400, {
@@ -39,7 +40,8 @@ export const actions = {
 				memory,
 				max_memory_policy,
 				notify_keyspace_events,
-				databases
+				databases,
+				persistence_disabled: persistenceDisabled
 			});
 		}
 
@@ -55,7 +57,8 @@ export const actions = {
 						? null
 						: ValkeyMaxMemoryPolicy[max_memory_policy as keyof typeof ValkeyMaxMemoryPolicy],
 					notifyKeyspaceEvents: !notify_keyspace_events ? null : notify_keyspace_events,
-					databases: databases ? parseInt(databases, 10) : null
+					databases: databases ? parseInt(databases, 10) : null,
+					persistenceDisabled
 				}
 			},
 			{ event }
@@ -71,7 +74,8 @@ export const actions = {
 				memory,
 				max_memory_policy,
 				notify_keyspace_events,
-				databases
+				databases,
+				persistence_disabled: persistenceDisabled
 			});
 		} else if (!res.data) {
 			return fail(500, {
@@ -83,7 +87,8 @@ export const actions = {
 				memory,
 				max_memory_policy,
 				notify_keyspace_events,
-				databases
+				databases,
+				persistence_disabled: persistenceDisabled
 			});
 		}
 

@@ -15,6 +15,7 @@
 		BodyLong,
 		BodyShort,
 		Button,
+		Checkbox,
 		CopyButton,
 		ErrorMessage,
 		ReadMore,
@@ -51,12 +52,66 @@
 		(form?.databases as string) ??
 			String($UpdateValkeyData.data?.team.environment.valkey.databases ?? 16)
 	);
+	let persistenceDisabled = $derived(
+		(form?.persistence_disabled as boolean) ??
+			$UpdateValkeyData.data?.team.environment.valkey.persistenceDisabled ??
+			false
+	);
 
 	const tomlManifest = $derived(`[valkey.${$UpdateValkeyData.data?.team.environment.valkey.name}]
 tier = "${tier}"
 memory = "${memory}"
 ${maxMemoryPolicy ? `max_memory_policy = "${maxMemoryPolicy}"` : ``}
 ${notifyKeyspaceEvents ? `notify_keyspace_events = "${notifyKeyspaceEvents}"` : ``}`);
+
+	const valkeyMemoryList = $derived.by(() => {
+		return Object.values(ValkeyMemory).sort((a, b) => {
+			const aParts = a.split('_');
+			const bParts = b.split('_');
+
+			if (aParts[0] === bParts[0]) {
+				return Number(aParts[1]) - Number(bParts[1]);
+			}
+			return aParts[0] === 'GB' ? 1 : -1;
+		});
+	});
+
+	function tierLabel(t: ValkeyTier$options) {
+		switch (t) {
+			case ValkeyTier.SINGLE_NODE:
+				return 'Single node';
+			case ValkeyTier.HIGH_AVAILABILITY:
+				return 'High availability';
+		}
+	}
+
+	function memoryLabel(m: ValkeyMemory$options) {
+		const parts = m.split('_');
+		return `${parts[1]} ${parts[0]}`;
+	}
+
+	function maxMemoryPolicyLabel(m: ValkeyMaxMemoryPolicy$options) {
+		switch (m) {
+			case ValkeyMaxMemoryPolicy.NO_EVICTION:
+				return 'No eviction';
+			case ValkeyMaxMemoryPolicy.ALLKEYS_LRU:
+				return 'Allkeys LRU';
+			case ValkeyMaxMemoryPolicy.ALLKEYS_LFU:
+				return 'Allkeys LFU';
+			case ValkeyMaxMemoryPolicy.VOLATILE_LRU:
+				return 'Volatile LRU';
+			case ValkeyMaxMemoryPolicy.VOLATILE_LFU:
+				return 'Volatile LFU';
+			case ValkeyMaxMemoryPolicy.ALLKEYS_RANDOM:
+				return 'Allkeys random';
+			case ValkeyMaxMemoryPolicy.VOLATILE_RANDOM:
+				return 'Volatile random';
+			case ValkeyMaxMemoryPolicy.VOLATILE_TTL:
+				return 'Volatile TTL';
+			default:
+				return m;
+		}
+	}
 </script>
 
 <form method="POST" use:enhance>
@@ -66,13 +121,13 @@ ${notifyKeyspaceEvents ? `notify_keyspace_events = "${notifyKeyspaceEvents}"` : 
 
 	<Select size="small" label="Tier" name="tier" required bind:value={tier}>
 		{#each Object.values(ValkeyTier) as opt (opt)}
-			<option value={opt}>{opt}</option>
+			<option value={opt}>{tierLabel(opt)}</option>
 		{/each}
 	</Select>
 
 	<Select size="small" label="Memory" name="memory" required bind:value={memory}>
-		{#each Object.values(ValkeyMemory) as opt (opt)}
-			<option value={opt}>{opt}</option>
+		{#each valkeyMemoryList as opt (opt)}
+			<option value={opt}>{memoryLabel(opt)}</option>
 		{/each}
 	</Select>
 
@@ -88,14 +143,14 @@ ${notifyKeyspaceEvents ? `notify_keyspace_events = "${notifyKeyspaceEvents}"` : 
 			> for details.
 		{/snippet}
 		{#each Object.values(ValkeyMaxMemoryPolicy) as opt (opt)}
-			<option value={opt}>{opt}</option>
+			<option value={opt}>{maxMemoryPolicyLabel(opt)}</option>
 		{/each}
 	</Select>
 
 	<ReadMore
 		header="Advanced options"
 		size="small"
-		open={notifyKeyspaceEvents !== '' || databases !== '16'}
+		open={notifyKeyspaceEvents !== '' || databases !== '16' || persistenceDisabled}
 	>
 		<TextField
 			size="small"
@@ -125,6 +180,14 @@ ${notifyKeyspaceEvents ? `notify_keyspace_events = "${notifyKeyspaceEvents}"` : 
 				service.
 			{/snippet}
 		</TextField>
+		<Checkbox
+			name="persistence_disabled"
+			size="small"
+			bind:checked={persistenceDisabled}
+			description="Disables RDB dumps and backups. All data is lost if the instance restarts."
+		>
+			Disable persistence
+		</Checkbox>
 	</ReadMore>
 
 	<BodyShort>

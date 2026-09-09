@@ -212,6 +212,20 @@
 					<dd>{instance.memory}</dd>
 					<dt>Storage</dt>
 					<dd>{instance.storageGB}GB</dd>
+					{#if instance.httpMaxContentLength}
+						<dt>HTTP max content length</dt>
+						<dd>{instance.httpMaxContentLength}</dd>
+					{/if}
+					{#if instance.indicesQueryBoolMaxClauseCount}
+						<dt>Boolean query max clause count</dt>
+						<dd>{instance.indicesQueryBoolMaxClauseCount}</dd>
+					{/if}
+					<dt>Shard indexing pressure</dt>
+					<dd>{instance.shardIndexingPressureEnabled ? 'Enabled' : 'Disabled'}</dd>
+					{#if instance.shardIndexingPressureEnabled}
+						<dt>Shard indexing pressure mode</dt>
+						<dd>{instance.shardIndexingPressureEnforced ? 'Enforced' : 'Shadow'}</dd>
+					{/if}
 					<dt>Version</dt>
 					<dd>{instance.version.actual ?? 'Unknown'}</dd>
 					{#if instance.maintenance && instance.maintenance.window}

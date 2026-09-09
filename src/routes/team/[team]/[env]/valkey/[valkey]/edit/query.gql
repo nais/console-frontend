@@ -10,6 +10,7 @@ query UpdateValkeyData($environment: String!, $team: Slug!, $name: String!)
 				maxMemoryPolicy
 				notifyKeyspaceEvents
 				databases
+				persistenceDisabled
 				labels {
 					key
 					value
