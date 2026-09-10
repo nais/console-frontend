@@ -345,7 +345,7 @@
 		<div class="layout-sidebar">
 			<ManifestCard
 				title="Use this OpenSearch"
-				manifest={`spec:\n  openSearch:\n    - instance: ${instance.name.replace(`opensearch-${teamSlug}-`, '')}`}
+				manifest={`spec:\n  openSearch:\n    instance: ${instance.name.replace(`opensearch-${teamSlug}-`, '')}`}
 			/>
 
 			<Labels
