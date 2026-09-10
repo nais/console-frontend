@@ -142,7 +142,7 @@
 						value={interval}
 						onchange={(interval) => changeParams({ interval }, { noScroll: true })}
 					>
-						{#each ['5y', '3y', '1y'] as interval (interval)}
+						{#each ['5y', '3y', '1y', '6m'] as interval (interval)}
 							<ToggleGroupItem value={interval}>{interval}</ToggleGroupItem>
 						{/each}
 					</ToggleGroup>
