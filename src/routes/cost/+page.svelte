@@ -142,17 +142,22 @@
 						value={interval}
 						onchange={(interval) => changeParams({ interval }, { noScroll: true })}
 					>
-						{#each ['5y', '3y', '1y', '6m'] as interval (interval)}
+						{#each ['5y', '3y', '1y'] as interval (interval)}
 							<ToggleGroupItem value={interval}>{interval}</ToggleGroupItem>
 						{/each}
 					</ToggleGroup>
 				</div>
 				{#if $CostMonthly.fetching && !$CostMonthly.data}
-					<div class="loading-centered" role="status" aria-label="Loading chart">
+					<div
+						class="loading-centered"
+						role="status"
+						aria-label="Loading chart"
+						style="height: 500px;"
+					>
 						<Loader size="3xlarge" />
 					</div>
 				{:else if $CostMonthly.data}
-					<LegendWrapper height="1000px">
+					<LegendWrapper height="500px">
 						<BarChart
 							legend={legendSnippet}
 							padding={{ top: 24, bottom: 24, left: 40, right: 40 }}
