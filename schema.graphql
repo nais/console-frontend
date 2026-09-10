@@ -10434,6 +10434,9 @@ input UpdateKafkaTopicInput {
   """Name of the Kafka Topic to update."""
   name: String!
 
+  """Grants to revoke from the Kafka Topic."""
+  revokeGrants: [KafkaTopicGrantInput!]
+
   """Slug of the team that owns the Kafka Topic."""
   teamSlug: Slug!
 }
