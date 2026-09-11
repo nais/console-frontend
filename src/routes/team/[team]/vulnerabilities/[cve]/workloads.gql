@@ -53,6 +53,8 @@ query TeamCVEWorkloads($identifier: String!, $first: Int!, $filter: CVEWorkloads
 						identifier
 						severity
 						package
+						fixVersion
+						latestVersion
 						suppression {
 							state
 						}
