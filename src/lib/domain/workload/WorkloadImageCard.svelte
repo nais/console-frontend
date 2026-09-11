@@ -1,7 +1,7 @@
 <script lang="ts">
 	import SurfaceCard from '$lib/ui/SurfaceCard.svelte';
-	import { formatImageRef, formatImageVersion, parseImage } from '$lib/utils/image';
-	import { CopyButton } from '@nais/ds-svelte-community';
+	import { formatImageRef, parseImage } from '$lib/utils/image';
+	import { CopyButton, Tooltip } from '@nais/ds-svelte-community';
 	import type { Snippet } from 'svelte';
 
 	interface Props {
@@ -42,8 +42,35 @@
 		}
 	});
 	const imageRef = $derived(imageName ? formatImageRef({ name: imageName, tag, digest }) : '');
-	const versionLabel = $derived(formatImageVersion({ tag, digest }));
+
+	// Digests are long sha256 hashes that are unreadable in full; show a short
+	// prefix/suffix and let people copy or hover for the exact value.
+	const digestShort = $derived.by(() => {
+		if (!digest) return null;
+		const [algorithm, value] = digest.split(':');
+		if (!value) return digest;
+		return value.length > 16 ? `${algorithm}:${value.slice(0, 8)}…${value.slice(-6)}` : digest;
+	});
 </script>
+
+{#snippet versionRows()}
+	{#if tag}
+		<div>
+			<dt>Tag</dt>
+			<dd><code>{tag}</code></dd>
+		</div>
+	{/if}
+	{#if digest && digestShort}
+		<div>
+			<dt>Digest</dt>
+			<dd>
+				<Tooltip content={digest}>
+					<code>{digestShort}</code>
+				</Tooltip>
+			</dd>
+		</div>
+	{/if}
+{/snippet}
 
 <SurfaceCard {title} {level} {bordered}>
 	{#snippet headerAside()}
@@ -58,10 +85,7 @@
 				<dt>Name</dt>
 				<dd><code>{imageName}</code></dd>
 			</div>
-			<div>
-				<dt>Version</dt>
-				<dd><code class="tag">{versionLabel}</code></dd>
-			</div>
+			{@render versionRows()}
 		</dl>
 	{:else}
 		<dl class="kv">
@@ -77,10 +101,7 @@
 				<dt>Name</dt>
 				<dd><code>{imageDetails.name}</code></dd>
 			</div>
-			<div>
-				<dt>Version</dt>
-				<dd><code class="tag">{versionLabel}</code></dd>
-			</div>
+			{@render versionRows()}
 		</dl>
 	{/if}
 
@@ -119,9 +140,5 @@
 		font-family: monospace;
 		overflow-wrap: anywhere;
 		word-break: break-word;
-	}
-
-	.tag {
-		word-break: break-all;
 	}
 </style>
