@@ -16,7 +16,7 @@ export async function load(event) {
 			event,
 			variables: {
 				orderBy: {
-					field: urlToOrderField(CVEOrderField, CVEOrderField.CVSS_SCORE, event.url),
+					field: urlToOrderField(CVEOrderField, CVEOrderField.PRIORITY, event.url),
 					direction: urlToOrderDirection(event.url, OrderDirection.DESC)
 				},
 				...(before ? { before, last: rows } : { after, first: rows })
