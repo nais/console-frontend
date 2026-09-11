@@ -1,4 +1,18 @@
-query TeamVulnerabilities($team: Slug!) {
+query TeamVulnerabilities(
+	$team: Slug!
+	$highAfter: Cursor
+	$highBefore: Cursor
+	$highFirst: Int
+	$highLast: Int
+	$elevatedAfter: Cursor
+	$elevatedBefore: Cursor
+	$elevatedFirst: Int
+	$elevatedLast: Int
+	$monitorAfter: Cursor
+	$monitorBefore: Cursor
+	$monitorFirst: Int
+	$monitorLast: Int
+) {
 	team(slug: $team) {
 		environments {
 			id
@@ -15,14 +29,141 @@ query TeamVulnerabilities($team: Slug!) {
 		vulnerabilitySummary {
 			sbomCount
 			coverage
+			highWorkloadCount
+			elevatedWorkloadCount
+			monitorWorkloadCount
+			countsByPriority {
+				knownExploited
+				highRisk
+				elevatedRisk
+				monitor
+			}
 			critical
 			high
 			medium
 			low
 			unassigned
-			riskScore
-			riskScoreTrend
 			lastUpdated
+		}
+		high: vulnerabilitySummaries(
+			first: $highFirst
+			last: $highLast
+			after: $highAfter
+			before: $highBefore
+			filter: { priorities: [HIGH] }
+			orderBy: { field: NAME, direction: ASC }
+		) {
+			pageInfo {
+				hasNextPage
+				hasPreviousPage
+				startCursor
+				endCursor
+				pageStart
+				pageEnd
+				totalCount
+			}
+			nodes {
+				id
+				workload {
+					__typename
+					name
+					team {
+						slug
+					}
+					teamEnvironment {
+						environment {
+							name
+						}
+					}
+				}
+				summary {
+					countsByPriority {
+						highRisk
+						elevatedRisk
+						monitor
+					}
+				}
+			}
+		}
+		elevated: vulnerabilitySummaries(
+			first: $elevatedFirst
+			last: $elevatedLast
+			after: $elevatedAfter
+			before: $elevatedBefore
+			filter: { priorities: [ELEVATED] }
+			orderBy: { field: NAME, direction: ASC }
+		) {
+			pageInfo {
+				hasNextPage
+				hasPreviousPage
+				startCursor
+				endCursor
+				pageStart
+				pageEnd
+				totalCount
+			}
+			nodes {
+				id
+				workload {
+					__typename
+					name
+					team {
+						slug
+					}
+					teamEnvironment {
+						environment {
+							name
+						}
+					}
+				}
+				summary {
+					countsByPriority {
+						highRisk
+						elevatedRisk
+						monitor
+					}
+				}
+			}
+		}
+		monitor: vulnerabilitySummaries(
+			first: $monitorFirst
+			last: $monitorLast
+			after: $monitorAfter
+			before: $monitorBefore
+			filter: { priorities: [MONITOR] }
+			orderBy: { field: NAME, direction: ASC }
+		) {
+			pageInfo {
+				hasNextPage
+				hasPreviousPage
+				startCursor
+				endCursor
+				pageStart
+				pageEnd
+				totalCount
+			}
+			nodes {
+				id
+				workload {
+					__typename
+					name
+					team {
+						slug
+					}
+					teamEnvironment {
+						environment {
+							name
+						}
+					}
+				}
+				summary {
+					countsByPriority {
+						highRisk
+						elevatedRisk
+						monitor
+					}
+				}
+			}
 		}
 	}
 }
