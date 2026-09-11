@@ -37,6 +37,25 @@
 		direction: currentOrderDirection === OrderDirection.ASC ? 'ascending' : 'descending'
 	}));
 
+	const severityRank: Record<string, number> = {
+		CRITICAL: 4,
+		HIGH: 3,
+		MEDIUM: 2,
+		LOW: 1,
+		UNASSIGNED: 0
+	};
+
+	// The API only supports a single sort field, so rows sharing the same
+	// priority come back in an arbitrary order. Break ties by severity within
+	// the page that's already loaded (this doesn't affect pagination).
+	const sortedEdges = $derived.by(() => {
+		const edges = $CVES.data?.cves.edges ?? [];
+		if (currentOrderField !== CVEOrderField.PRIORITY) return edges;
+		return [...edges].sort(
+			(a, b) => (severityRank[b.node.severity] ?? -1) - (severityRank[a.node.severity] ?? -1)
+		);
+	});
+
 	const handleSortChange = (key: string) => {
 		const nextDirection =
 			currentOrderField === key
@@ -96,7 +115,7 @@
 							</Td>
 						</Tr>
 					{:else}
-						{#each $CVES.data?.cves.edges ?? [] as { node: cve } (cve.identifier)}
+						{#each sortedEdges as { node: cve } (cve.identifier)}
 							<Tr>
 								<Td>
 									<a href="/vulnerabilities/{cve.identifier}">{cve.identifier}</a>
