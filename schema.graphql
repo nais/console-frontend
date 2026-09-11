@@ -55,6 +55,9 @@ enum ActivityLogActivityType {
   """Filter for Kafka credential creation events."""
   KAFKA_CREDENTIALS_CREATED
 
+  """Filter for Kafka topic update events."""
+  KAFKA_TOPIC_UPDATED
+
   """OpenSearch was created."""
   OPENSEARCH_CREATED
 
@@ -3311,6 +3314,12 @@ type ImageVulnerability implements Node {
   """Whether the vulnerability has known ransomware use."""
   knownRansomwareUse: Boolean!
 
+  """
+  Latest available version of the package, which may include changes beyond
+  just the fix for this vulnerability. Null if unknown.
+  """
+  latestVersion: String
+
   """Package name of the vulnerability."""
   package: String!
 
@@ -3349,6 +3358,13 @@ type ImageVulnerabilityEdge {
 
 """Input for filtering image vulnerabilities."""
 input ImageVulnerabilityFilter {
+  """
+  Only return vulnerabilities whose priority is exactly one of the given values.
+  URGENT is workload-contextual and cannot be resolved at image scope, so
+  including it in this set is rejected as an error.
+  """
+  priorities: [CVEPriority!]
+
   """Only return vulnerabilities with the given severity."""
   severity: ImageVulnerabilitySeverity
   severitySince: Time
@@ -3456,11 +3472,18 @@ type ImageVulnerabilitySummaryCountsByPriority {
   """Vulnerabilities with strong exploitation indicators."""
   highRisk: Int!
 
+  """
+  Number of vulnerabilities with a CISA Known Exploited Vulnerabilities (KEV) entry.
+  """
+  knownExploited: Int!
+
   """Vulnerabilities that should be monitored."""
   monitor: Int!
 
-  """Known-exploited vulnerabilities that require immediate action."""
-  urgent: Int!
+  """
+  Deprecated. Always 0 at image and summary scope; use knownExploited for the KEV count.
+  """
+  urgent: Int! @deprecated(reason: "Always 0 at image and summary scope. Use knownExploited for the KEV count.")
 }
 
 """Vulnerability counts grouped by severity."""
@@ -4633,6 +4656,54 @@ input KafkaTopicOrder {
 enum KafkaTopicOrderField {
   ENVIRONMENT
   NAME
+}
+
+type KafkaTopicUpdatedActivityLogEntry implements ActivityLogEntry & Node {
+  """The identity of the actor who performed the action."""
+  actor: String!
+
+  """Creation time of the entry."""
+  createdAt: Time!
+
+  """Data associated with the update."""
+  data: KafkaTopicUpdatedActivityLogEntryData!
+
+  """The environment name that the entry belongs to."""
+  environmentName: String
+
+  """ID of the entry."""
+  id: ID!
+
+  """Message that summarizes the entry."""
+  message: String!
+
+  """Name of the resource that was affected by the action."""
+  resourceName: String!
+
+  """Type of the resource that was affected by the action."""
+  resourceType: ActivityLogEntryResourceType!
+
+  """The team slug that the entry belongs to."""
+  teamSlug: Slug!
+}
+
+type KafkaTopicUpdatedActivityLogEntryData {
+  """Grants added to the Kafka topic."""
+  addedGrants: [KafkaTopicUpdatedActivityLogEntryDataGrant!]!
+
+  """Grants revoked from the Kafka topic."""
+  revokedGrants: [KafkaTopicUpdatedActivityLogEntryDataGrant!]!
+}
+
+type KafkaTopicUpdatedActivityLogEntryDataGrant {
+  """Access level affected by the grant."""
+  access: KafkaTopicGrantAccess!
+
+  """Subject affected by the grant."""
+  subject: String!
+
+  """Team affected by the grant."""
+  teamName: String!
 }
 
 """
@@ -9877,8 +9948,28 @@ type TeamVulnerabilitySummary {
   """Number of vulnerabilities with severity CRITICAL."""
   critical: Int! @deprecated(reason: "Use countsBySeverity.critical instead.")
 
+  """
+  Number of workloads whose highest vulnerability priority is ELEVATED.
+  
+  Counts workloads, not findings. Use countsByPriority.elevatedRisk for the
+  number of findings. Each workload is counted under exactly one priority, and
+  workloads without unsuppressed findings are not counted at all, so these
+  counts do not necessarily sum to the total number of workloads.
+  """
+  elevatedWorkloadCount: Int!
+
   """Number of vulnerabilities with severity HIGH."""
   high: Int! @deprecated(reason: "Use countsBySeverity.high instead.")
+
+  """
+  Number of workloads whose highest vulnerability priority is HIGH.
+  
+  Counts workloads, not findings. Use countsByPriority.highRisk for the number
+  of findings. Each workload is counted under exactly one priority, and
+  workloads without unsuppressed findings are not counted at all, so these
+  counts do not necessarily sum to the total number of workloads.
+  """
+  highWorkloadCount: Int!
 
   """Timestamp of the last update of the vulnerability summary."""
   lastUpdated: Time
@@ -9888,6 +9979,16 @@ type TeamVulnerabilitySummary {
 
   """Number of vulnerabilities with severity MEDIUM."""
   medium: Int! @deprecated(reason: "Use countsBySeverity.medium instead.")
+
+  """
+  Number of workloads whose highest vulnerability priority is MONITOR.
+  
+  Counts workloads, not findings. Use countsByPriority.monitor for the number
+  of findings. Each workload is counted under exactly one priority, and
+  workloads without unsuppressed findings are not counted at all, so these
+  counts do not necessarily sum to the total number of workloads.
+  """
+  monitorWorkloadCount: Int!
 
   """Risk score of the team."""
   riskScore: Int!
@@ -9908,7 +10009,15 @@ input TeamVulnerabilitySummaryFilter {
   environmentName: String
 
   """
-  Only return vulnerability summaries at or above the given vulnerability priority.
+  Only return vulnerability summaries whose highest priority is exactly one of
+  the given values. URGENT is workload-contextual and cannot be resolved at
+  summary scope, so including it in this set is rejected as an error.
+  """
+  priorities: [CVEPriority!]
+
+  """
+  Deprecated. Use priorities instead. When set, this is treated as a
+  single-element priorities list. Ignored if priorities is also set.
   """
   priority: CVEPriority
 }
@@ -11530,7 +11639,7 @@ enum VulnerabilitySummaryOrderByField {
   Urgent vulnerabilities are known to be actively exploited and should be
   prioritized for immediate action.
   """
-  VULNERABILITY_PRIORITY_URGENT
+  VULNERABILITY_PRIORITY_URGENT @deprecated(reason: "Backed by a count that is always 0. URGENT requires workload internet exposure, so ordering by this value has no effect and falls back to a stable name sort.")
 
   """Order by risk score."""
   VULNERABILITY_RISK_SCORE
