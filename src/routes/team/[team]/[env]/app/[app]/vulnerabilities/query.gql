@@ -46,6 +46,12 @@ query ApplicationImageDetails($team: Slug!, $env: String!, $app: String!)
 						}
 					}
 					vulnerabilitySummary {
+						countsByPriority {
+							knownExploited
+							highRisk
+							elevatedRisk
+							monitor
+						}
 						critical
 						high
 						medium
