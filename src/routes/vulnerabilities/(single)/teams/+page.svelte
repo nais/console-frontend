@@ -11,6 +11,7 @@
 		Heading,
 		Loader,
 		Table,
+		Tag,
 		Tbody,
 		Td,
 		Th,
@@ -55,40 +56,16 @@
 		);
 	};
 
-	const severityColumns = [
-		{
-			sortKey: TeamOrderField.CRITICAL_VULNERABILITIES,
-			label: 'Critical',
-			summaryKey: 'critical',
-			className: 'CRITICAL'
-		},
-		{
-			sortKey: TeamOrderField.HIGH_VULNERABILITIES,
-			label: 'High',
-			summaryKey: 'high',
-			className: 'HIGH'
-		},
-		{
-			sortKey: TeamOrderField.MEDIUM_VULNERABILITIES,
-			label: 'Medium',
-			summaryKey: 'medium',
-			className: 'MEDIUM'
-		},
-		{
-			sortKey: TeamOrderField.LOW_VULNERABILITIES,
-			label: 'Low',
-			summaryKey: 'low',
-			className: 'LOW'
-		},
-		{
-			sortKey: TeamOrderField.UNASSIGNED_VULNERABILITIES,
-			label: 'Unassigned',
-			summaryKey: 'unassigned',
-			className: 'UNASSIGNED'
-		}
+	// Priority-tier counts, not severity: a team can have plenty of High/Critical
+	// severity findings while still landing in the Monitor priority tier, so
+	// showing severity here would be misleading about what actually needs action.
+	const priorityColumns = [
+		{ label: 'High', summaryKey: 'highRisk' },
+		{ label: 'Elevated', summaryKey: 'elevatedRisk' },
+		{ label: 'Monitor', summaryKey: 'monitor' }
 	] as const;
 
-	type SeverityKey = 'critical' | 'high' | 'medium' | 'low' | 'unassigned';
+	type PriorityCountKey = 'highRisk' | 'elevatedRisk' | 'monitor';
 </script>
 
 <div class="wrapper">
@@ -112,8 +89,9 @@
 				<Thead>
 					<Tr>
 						<Th sortable={true} sortKey={TeamOrderField.SLUG}>Team</Th>
-						{#each severityColumns as column (column.sortKey)}
-							<Th sortable={true} sortKey={column.sortKey}>{column.label}</Th>
+						<Th class="known-exploited-column">Known exploited</Th>
+						{#each priorityColumns as column (column.summaryKey)}
+							<Th>{column.label}</Th>
 						{/each}
 						<Th sortable={true} sortKey={TeamOrderField.RISK_SCORE}>Risk score</Th>
 						<Th sortable={true} sortKey={TeamOrderField.SBOM_COVERAGE}>SBOM coverage</Th>
@@ -130,16 +108,26 @@
 									icon={PersonGroupIcon}
 								/>
 							</Td>
-							{#each severityColumns as column (column.sortKey)}
+							<Td class="severity-cell">
+								{#if team.vulnerabilitySummary.countsByPriority.knownExploited > 0}
+									<a href="/team/{team.slug}/vulnerabilities">
+										<Tag variant="error" size="small"
+											>{team.vulnerabilitySummary.countsByPriority.knownExploited}</Tag
+										>
+									</a>
+								{:else}
+									<CheckmarkIcon class="no-vulnerability" />
+								{/if}
+							</Td>
+							{#each priorityColumns as column (column.summaryKey)}
 								<Td class="severity-cell">
 									{const count = $derived(
-										team.vulnerabilitySummary[column.summaryKey as SeverityKey]
+										team.vulnerabilitySummary.countsByPriority[
+											column.summaryKey as PriorityCountKey
+										]
 									)}
 									{#if count > 0}
-										<a
-											href="/team/{team.slug}/vulnerabilities"
-											class="severity-badge {column.className}"
-										>
+										<a href="/team/{team.slug}/vulnerabilities">
 											{count}
 										</a>
 									{:else}
@@ -205,7 +193,7 @@
 		margin-top: var(--spacing-layout);
 	}
 
-	.severity-cell {
+	:global(.severity-cell) {
 		text-align: center;
 	}
 

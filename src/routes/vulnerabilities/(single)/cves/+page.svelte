@@ -107,7 +107,7 @@
 										>{cve.severity.toLowerCase()}</Tag
 									>
 								</Td>
-								<Td>{cve.cvssScore?.toFixed(1) ?? 'N/A'}</Td>
+								<Td>{cve.cvssScore ? cve.cvssScore.toFixed(1) : '—'}</Td>
 								<Td>
 									<div class="title-cell">
 										<span>{cve.title}</span>

@@ -172,14 +172,12 @@
 												<Detail as="dt">Package</Detail>
 												<BodyShort as="dd"><code>{vuln.package}</code></BodyShort>
 											</div>
-											<div class="detail-row">
-												<Detail as="dt">Priority</Detail>
-												<BodyShort as="dd"><PriorityBadge priority={vuln.priority} /></BodyShort>
-											</div>
-											<div class="detail-row">
-												<Detail as="dt">Fix version</Detail>
-												<BodyShort as="dd"><code>{vuln.fixVersion ?? 'Unknown'}</code></BodyShort>
-											</div>
+											{#if vuln.fixVersion}
+												<div class="detail-row">
+													<Detail as="dt">Fix version</Detail>
+													<BodyShort as="dd"><code>{vuln.fixVersion}</code></BodyShort>
+												</div>
+											{/if}
 											<div class="detail-row">
 												<Detail as="dt">Image</Detail>
 												{#if workload.image}
