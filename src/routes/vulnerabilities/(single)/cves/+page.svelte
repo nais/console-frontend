@@ -1,6 +1,8 @@
 <script lang="ts">
 	import { page } from '$app/state';
 	import { CVEOrderField, OrderDirection } from '$houdini';
+	import PriorityBadge from '$lib/domain/vulnerability/priority/PriorityBadge.svelte';
+	import PrioritySignals from '$lib/domain/vulnerability/priority/PrioritySignals.svelte';
 	import GraphErrors from '$lib/ui/GraphErrors.svelte';
 	import { urlToOrderDirection, urlToOrderField } from '$lib/ui/OrderByMenu.svelte';
 	import Pagination from '$lib/ui/Pagination.svelte';
@@ -25,7 +27,7 @@
 	let { CVES } = $derived(data);
 
 	const currentOrderField = $derived(
-		urlToOrderField(CVEOrderField, CVEOrderField.CVSS_SCORE, page.url)
+		urlToOrderField(CVEOrderField, CVEOrderField.PRIORITY, page.url)
 	);
 
 	const currentOrderDirection = $derived(urlToOrderDirection(page.url, OrderDirection.DESC));
@@ -77,6 +79,7 @@
 				<Thead>
 					<Tr>
 						<Th sortable={true} sortKey={CVEOrderField.IDENTIFIER}>CVE</Th>
+						<Th sortable={true} sortKey={CVEOrderField.PRIORITY}>Priority</Th>
 						<Th sortable={true} sortKey={CVEOrderField.SEVERITY}>Severity</Th>
 						<Th sortable={true} sortKey={CVEOrderField.CVSS_SCORE}>CVSS</Th>
 						<Th>Title</Th>
@@ -98,13 +101,24 @@
 								<Td>
 									<a href="/vulnerabilities/{cve.identifier}">{cve.identifier}</a>
 								</Td>
+								<Td><PriorityBadge priority={cve.priority} /></Td>
 								<Td>
 									<Tag variant={severityToVariant(cve.severity)} size="small"
 										>{cve.severity.toLowerCase()}</Tag
 									>
 								</Td>
 								<Td>{cve.cvssScore?.toFixed(1) ?? 'N/A'}</Td>
-								<Td>{cve.title}</Td>
+								<Td>
+									<div class="title-cell">
+										<span>{cve.title}</span>
+										<PrioritySignals
+											hasKevEntry={cve.hasKevEntry}
+											knownRansomwareUse={cve.knownRansomwareUse}
+											epssScore={cve.epssScore}
+											epssPercentile={cve.epssPercentile}
+										/>
+									</div>
+								</Td>
 								<Td>{cve.workloads.pageInfo.totalCount}</Td>
 							</Tr>
 						{:else}
@@ -148,5 +162,12 @@
 		flex-direction: column;
 		gap: var(--spacing-layout);
 		margin-top: var(--spacing-layout);
+	}
+
+	.title-cell {
+		display: flex;
+		flex-direction: column;
+		gap: var(--ax-space-4);
+		min-width: 18rem;
 	}
 </style>
