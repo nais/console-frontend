@@ -1,5 +1,12 @@
 query TeamVulnerabilities($team: Slug!) {
 	team(slug: $team) {
+		urgentVulnerabilityIssues: issues(
+			filter: { issueType: EXTERNAL_INGRESS_URGENT_VULNERABILITY }
+		) {
+			pageInfo {
+				totalCount
+			}
+		}
 		environments {
 			id
 			environment {
@@ -29,6 +36,7 @@ query TeamVulnerabilities($team: Slug!) {
 			medium
 			low
 			unassigned
+			riskScore
 			lastUpdated
 		}
 	}
