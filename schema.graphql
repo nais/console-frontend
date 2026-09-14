@@ -55,6 +55,9 @@ enum ActivityLogActivityType {
   """Filter for Kafka credential creation events."""
   KAFKA_CREDENTIALS_CREATED
 
+  """Filter for Kafka topic update events."""
+  KAFKA_TOPIC_UPDATED
+
   """OpenSearch was created."""
   OPENSEARCH_CREATED
 
@@ -4633,6 +4636,54 @@ input KafkaTopicOrder {
 enum KafkaTopicOrderField {
   ENVIRONMENT
   NAME
+}
+
+type KafkaTopicUpdatedActivityLogEntry implements ActivityLogEntry & Node {
+  """The identity of the actor who performed the action."""
+  actor: String!
+
+  """Creation time of the entry."""
+  createdAt: Time!
+
+  """Data associated with the update."""
+  data: KafkaTopicUpdatedActivityLogEntryData!
+
+  """The environment name that the entry belongs to."""
+  environmentName: String
+
+  """ID of the entry."""
+  id: ID!
+
+  """Message that summarizes the entry."""
+  message: String!
+
+  """Name of the resource that was affected by the action."""
+  resourceName: String!
+
+  """Type of the resource that was affected by the action."""
+  resourceType: ActivityLogEntryResourceType!
+
+  """The team slug that the entry belongs to."""
+  teamSlug: Slug!
+}
+
+type KafkaTopicUpdatedActivityLogEntryData {
+  """Grants added to the Kafka topic."""
+  addedGrants: [KafkaTopicUpdatedActivityLogEntryDataGrant!]!
+
+  """Grants revoked from the Kafka topic."""
+  revokedGrants: [KafkaTopicUpdatedActivityLogEntryDataGrant!]!
+}
+
+type KafkaTopicUpdatedActivityLogEntryDataGrant {
+  """Access level affected by the grant."""
+  access: KafkaTopicGrantAccess!
+
+  """Subject affected by the grant."""
+  subject: String!
+
+  """Team affected by the grant."""
+  teamName: String!
 }
 
 """
