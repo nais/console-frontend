@@ -15,26 +15,28 @@
 <div>
 	Kafka topic updated
 	{#if data.resourceName}
-		for <strong>{data.resourceName}</strong>
+		for <strong>{data.resourceName}</strong> in {data.environmentName}
 	{/if}
-	<ReadMore header="Kafka topic updated">
-		{#if data.kafkaTopicUpdatedData.addedGrants.length > 0}
-			{#each data.kafkaTopicUpdatedData.addedGrants as grant, index (index)}
-				<code>{grant.access}</code> granted to
-				<strong>{grant.subject}</strong>
-				in team
-				<strong>{grant.teamName}</strong><br />
-			{/each}
-		{/if}
-		{#if data.kafkaTopicUpdatedData.revokedGrants.length > 0}
-			{#each data.kafkaTopicUpdatedData.revokedGrants as grant, index (index)}
-				<code>{grant.access}</code> revoked from
-				<strong>{grant.subject}</strong>
-				in team
-				<strong>{grant.teamName}</strong><br />
-			{/each}
-		{/if}
-	</ReadMore>
+	{#if mode === 'full'}
+		<ReadMore header="Kafka topic updated">
+			{#if data.kafkaTopicUpdatedData.addedGrants.length > 0}
+				{#each data.kafkaTopicUpdatedData.addedGrants as grant, index (index)}
+					<code>{grant.access}</code> granted to
+					<strong>{grant.subject}</strong>
+					in team
+					<strong>{grant.teamName}</strong><br />
+				{/each}
+			{/if}
+			{#if data.kafkaTopicUpdatedData.revokedGrants.length > 0}
+				{#each data.kafkaTopicUpdatedData.revokedGrants as grant, index (index)}
+					<code>{grant.access}</code> revoked from
+					<strong>{grant.subject}</strong>
+					in team
+					<strong>{grant.teamName}</strong><br />
+				{/each}
+			{/if}
+		</ReadMore>
+	{/if}
 	<Meta
 		actor={data.actor}
 		createdAt={data.createdAt}
