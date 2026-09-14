@@ -1,7 +1,7 @@
 <script lang="ts">
 	import SurfaceCard from '$lib/ui/SurfaceCard.svelte';
 	import { formatImageRef, parseImage } from '$lib/utils/image';
-	import { CopyButton, Tooltip } from '@nais/ds-svelte-community';
+	import { BodyShort, CopyButton, Detail, Tooltip } from '@nais/ds-svelte-community';
 	import type { Snippet } from 'svelte';
 
 	interface Props {
@@ -55,19 +55,22 @@
 
 {#snippet versionRows()}
 	{#if tag}
-		<div>
-			<dt>Tag</dt>
-			<dd><code>{tag}</code></dd>
+		<div class="kv-row">
+			<Detail as="dt">Tag</Detail>
+			<BodyShort as="dd"><code>{tag}</code></BodyShort>
 		</div>
 	{/if}
 	{#if digest && digestShort}
-		<div>
-			<dt>Digest</dt>
-			<dd>
-				<Tooltip content={digest}>
-					<code>{digestShort}</code>
-				</Tooltip>
-			</dd>
+		<div class="kv-row">
+			<Detail as="dt">Digest</Detail>
+			<BodyShort as="dd">
+				<span class="digest-cell">
+					<Tooltip content={digest}>
+						<code>{digestShort}</code>
+					</Tooltip>
+					<CopyButton copyText={digest} size="xsmall" variant="action" />
+				</span>
+			</BodyShort>
 		</div>
 	{/if}
 {/snippet}
@@ -81,25 +84,25 @@
 
 	{#if imageDetails.registry === '' || imageDetails.repository === '' || imageDetails.name === ''}
 		<dl class="kv">
-			<div>
-				<dt>Name</dt>
-				<dd><code>{imageName}</code></dd>
+			<div class="kv-row">
+				<Detail as="dt">Name</Detail>
+				<BodyShort as="dd"><code>{imageName}</code></BodyShort>
 			</div>
 			{@render versionRows()}
 		</dl>
 	{:else}
 		<dl class="kv">
-			<div>
-				<dt>Registry</dt>
-				<dd><code>{imageDetails.registry}</code></dd>
+			<div class="kv-row">
+				<Detail as="dt">Registry</Detail>
+				<BodyShort as="dd"><code>{imageDetails.registry}</code></BodyShort>
 			</div>
-			<div>
-				<dt>Repository</dt>
-				<dd><code>{imageDetails.repository}</code></dd>
+			<div class="kv-row">
+				<Detail as="dt">Repository</Detail>
+				<BodyShort as="dd"><code>{imageDetails.repository}</code></BodyShort>
 			</div>
-			<div>
-				<dt>Name</dt>
-				<dd><code>{imageDetails.name}</code></dd>
+			<div class="kv-row">
+				<Detail as="dt">Name</Detail>
+				<BodyShort as="dd"><code>{imageDetails.name}</code></BodyShort>
 			</div>
 			{@render versionRows()}
 		</dl>
@@ -112,27 +115,29 @@
 
 <style>
 	.kv {
-		display: grid;
-		grid-template-columns: auto 1fr;
-		gap: var(--ax-space-4) var(--ax-space-12);
-		align-items: baseline;
-		min-width: 0;
-	}
-
-	.kv > div {
-		display: contents;
-	}
-
-	.kv dt {
-		font-size: var(--ax-font-size-small);
-		font-weight: var(--ax-font-weight-bold);
-		color: var(--ax-text-neutral-subtle);
-	}
-
-	.kv dd {
+		display: flex;
+		flex-direction: column;
+		gap: var(--ax-space-12);
 		margin: 0;
-		color: var(--ax-text-neutral);
 		min-width: 0;
+	}
+
+	.kv-row {
+		display: flex;
+		flex-direction: column;
+		gap: var(--ax-space-2);
+		min-width: 0;
+	}
+
+	.kv-row :global(dd) {
+		margin: 0;
+		min-width: 0;
+	}
+
+	.digest-cell {
+		display: inline-flex;
+		align-items: center;
+		gap: var(--ax-space-4);
 	}
 
 	code {
