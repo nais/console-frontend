@@ -3362,6 +3362,12 @@ type ImageVulnerabilityEdge {
 """Input for filtering image vulnerabilities."""
 input ImageVulnerabilityFilter {
   """
+  Only return vulnerabilities with (true) or without (false) a CISA Known
+  Exploited Vulnerabilities (KEV) catalog entry.
+  """
+  hasKevEntry: Boolean
+
+  """
   Only return vulnerabilities whose priority is exactly one of the given values.
   URGENT is workload-contextual and cannot be resolved at image scope, so
   including it in this set is rejected as an error.
@@ -6372,6 +6378,27 @@ type Query {
 
   """Get the mean time to fix history for all teams."""
   vulnerabilityFixHistory(from: Date!): VulnerabilityFixHistory!
+
+  """List per-workload vulnerability summaries across all teams."""
+  vulnerabilitySummaries(
+    """Get items after this cursor."""
+    after: Cursor
+
+    """Get items before this cursor."""
+    before: Cursor
+    filter: TenantVulnerabilitySummaryFilter
+
+    """
+    Get the first n items in the connection. This can be used in combination with the after parameter.
+    """
+    first: Int
+
+    """
+    Get the last n items in the connection. This can be used in combination with the before parameter.
+    """
+    last: Int
+    orderBy: VulnerabilitySummaryOrder
+  ): WorkloadVulnerabilitySummaryConnection!
 
   """Get the vulnerability summary for the tenant."""
   vulnerabilitySummary: TenantVulnerabilitySummary!
@@ -9810,6 +9837,11 @@ enum TeamOrderField {
   """The accumulated number of high vulnerabilities of the teams workloads."""
   HIGH_VULNERABILITIES
 
+  """
+  The accumulated number of known exploited vulnerabilities (KEV) of the teams workloads.
+  """
+  KNOWN_EXPLOITED_VULNERABILITIES
+
   """The accumulated number of low vulnerabilities of the teams workloads."""
   LOW_VULNERABILITIES
 
@@ -10012,6 +10044,12 @@ input TeamVulnerabilitySummaryFilter {
   environmentName: String
 
   """
+  Only return vulnerability summaries with (true) or without (false) at least
+  one CISA Known Exploited Vulnerabilities (KEV) catalog entry.
+  """
+  hasKevEntry: Boolean
+
+  """
   Only return vulnerability summaries whose highest priority is exactly one of
   the given values. URGENT is workload-contextual and cannot be resolved at
   summary scope, so including it in this set is rejected as an error.
@@ -10067,6 +10105,22 @@ type TenantVulnerabilitySummary {
 
   """Number of vulnerabilities with severity UNASSIGNED."""
   unassigned: Int! @deprecated(reason: "Use countsBySeverity.unassigned instead.")
+}
+
+"""Input for filtering vulnerability summaries across all teams."""
+input TenantVulnerabilitySummaryFilter {
+  """
+  Only return vulnerability summaries with (true) or without (false) at least
+  one CISA Known Exploited Vulnerabilities (KEV) catalog entry.
+  """
+  hasKevEntry: Boolean
+
+  """
+  Only return vulnerability summaries whose highest priority is exactly one of
+  the given values. URGENT is workload-contextual and cannot be resolved at
+  summary scope, so including it in this set is rejected as an error.
+  """
+  priorities: [CVEPriority!]
 }
 
 """
