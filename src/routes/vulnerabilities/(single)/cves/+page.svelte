@@ -28,7 +28,7 @@
 		urlToOrderField(CVEOrderField, CVEOrderField.PRIORITY, page.url)
 	);
 
-	const currentOrderDirection = $derived(urlToOrderDirection(page.url, OrderDirection.DESC));
+	const currentOrderDirection = $derived(urlToOrderDirection(page.url, OrderDirection.ASC));
 
 	const tableSortState = $derived.by((): TableSortState => ({
 		orderBy: currentOrderField,
@@ -120,10 +120,7 @@
 								</Td>
 								<Td><PriorityBadge priority={cve.priority} /></Td>
 								<Td>
-									<span class="severity-plain {cve.severity}">
-										<span class="dot"></span>
-										{cve.severity.toLowerCase()}
-									</span>
+									<span class="severity-badge {cve.severity}">{cve.severity}</span>
 								</Td>
 								<Td>{cve.cvssScore ? cve.cvssScore.toFixed(1) : '—'}</Td>
 								<Td>
@@ -187,42 +184,5 @@
 		flex-direction: column;
 		gap: var(--ax-space-4);
 		min-width: 18rem;
-	}
-
-	/* Severity reads as plain text with a color dot rather than a pill, so it
-	   doesn't visually compete with the priority badge for attention — priority
-	   is the actionable signal here, severity is supporting context. */
-	.severity-plain {
-		display: inline-flex;
-		align-items: center;
-		gap: var(--ax-space-8);
-		color: var(--ax-text-neutral-subtle);
-	}
-
-	.severity-plain .dot {
-		width: 8px;
-		height: 8px;
-		border-radius: 50%;
-		flex-shrink: 0;
-	}
-
-	.severity-plain.CRITICAL .dot {
-		background: var(--ax-text-danger);
-	}
-
-	.severity-plain.HIGH .dot {
-		background: color-mix(in oklab, var(--ax-text-danger), var(--ax-text-warning));
-	}
-
-	.severity-plain.MEDIUM .dot {
-		background: var(--ax-text-warning);
-	}
-
-	.severity-plain.LOW .dot {
-		background: var(--ax-text-success);
-	}
-
-	.severity-plain.UNASSIGNED .dot {
-		background: var(--ax-text-neutral-subtle);
 	}
 </style>
