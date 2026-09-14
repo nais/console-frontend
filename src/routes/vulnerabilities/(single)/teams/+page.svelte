@@ -26,7 +26,7 @@
 	let { TenantVulnerabilites } = $derived(data);
 
 	const currentOrderField = $derived(
-		urlToOrderField(TeamOrderField, TeamOrderField.RISK_SCORE, page.url)
+		urlToOrderField(TeamOrderField, TeamOrderField.KNOWN_EXPLOITED_VULNERABILITIES, page.url)
 	);
 
 	const currentOrderDirection = $derived(urlToOrderDirection(page.url, OrderDirection.DESC));
@@ -89,7 +89,11 @@
 				<Thead>
 					<Tr>
 						<Th sortable={true} sortKey={TeamOrderField.SLUG}>Team</Th>
-						<Th class="known-exploited-column">Known exploited</Th>
+						<Th
+							class="known-exploited-column"
+							sortable={true}
+							sortKey={TeamOrderField.KNOWN_EXPLOITED_VULNERABILITIES}>Known exploited</Th
+						>
 						{#each priorityColumns as column (column.summaryKey)}
 							<Th>{column.label}</Th>
 						{/each}

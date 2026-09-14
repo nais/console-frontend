@@ -5,7 +5,6 @@
 	import VulnerabilitySummaryMetrics from '$lib/domain/vulnerability/VulnerabilitySummaryMetrics.svelte';
 	import WorkloadsWithVulnerabilities from '$lib/domain/vulnerability/WorkloadsWithVulnerabilities.svelte';
 	import GraphErrors from '$lib/ui/GraphErrors.svelte';
-	import SurfaceCard from '$lib/ui/SurfaceCard.svelte';
 	import { BodyLong, Heading } from '@nais/ds-svelte-community';
 	import type { PageProps } from './$types';
 
@@ -18,12 +17,11 @@
 {#if $TeamVulnerabilities.data}
 	<div class="wrapper">
 		{#if $TeamVulnerabilities.data.team.vulnerabilitySummary}
-			<SurfaceCard title="Summary" level="h2" bordered>
-				<VulnerabilitySummaryMetrics
-					vulnerabilitySummary={$TeamVulnerabilities.data.team.vulnerabilitySummary}
-					showRiskScore={false}
-				/>
-			</SurfaceCard>
+			<VulnerabilitySummaryMetrics
+				vulnerabilitySummary={$TeamVulnerabilities.data.team.vulnerabilitySummary}
+				knownExploitedHref="#high-priority-heading"
+				urgentCount={$TeamVulnerabilities.data.team.urgentVulnerabilityIssues.pageInfo.totalCount}
+			/>
 		{/if}
 
 		<section aria-labelledby="workload-vulnerabilities">
@@ -46,6 +44,8 @@
 					?.elevatedWorkloadCount}
 				monitorWorkloadCount={$TeamVulnerabilities.data.team.vulnerabilitySummary
 					?.monitorWorkloadCount}
+				knownExploitedCount={$TeamVulnerabilities.data.team.vulnerabilitySummary?.countsByPriority
+					?.knownExploited}
 			/>
 		</section>
 
