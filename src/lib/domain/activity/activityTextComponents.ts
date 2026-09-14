@@ -9,9 +9,6 @@ import ClusterAuditActivityLogEntryText from './shared/texts/ClusterAuditActivit
 import ConfigCreatedActivityLogEntryText from './shared/texts/ConfigCreatedActivityLogEntryText.svelte';
 import ConfigDeletedActivityLogEntryText from './shared/texts/ConfigDeletedActivityLogEntryText.svelte';
 import ConfigUpdatedActivityLogEntryText from './shared/texts/ConfigUpdatedActivityLogEntryText.svelte';
-import KafkaCredentialsCreatedActivityLogEntryText from './shared/texts/KafkaCredentialsCreatedActivityLogEntryText.svelte';
-import OpenSearchCredentialsCreatedActivityLogEntryText from './shared/texts/OpenSearchCredentialsCreatedActivityLogEntryText.svelte';
-import ValkeyCredentialsCreatedActivityLogEntryText from './shared/texts/ValkeyCredentialsCreatedActivityLogEntryText.svelte';
 import DefaultText from './shared/texts/DefaultText.svelte';
 import DeploymentActivityLogEntryText from './shared/texts/DeploymentActivityLogEntryText.svelte';
 import GenericKubernetesResourceActivityLogEntryText from './shared/texts/GenericKubernetesResourceActivityLogEntryText.svelte';
@@ -20,7 +17,10 @@ import JobDeletedActivityLogEntryText from './shared/texts/JobDeletedActivityLog
 import JobRunDeletedActivityLogEntryText from './shared/texts/JobRunDeletedActivityLogEntryText.svelte';
 import JobTriggeredActivityLogEntryText from './shared/texts/JobTriggeredActivityLogEntryText.svelte';
 import JobUpdatedActivityLogEntryText from './shared/texts/JobUpdatedActivityLogEntryText.svelte';
+import KafkaCredentialsCreatedActivityLogEntryText from './shared/texts/KafkaCredentialsCreatedActivityLogEntryText.svelte';
+import KafkaTopicUpdatedActivityLogEntryText from './shared/texts/KafkaTopicUpdatedActivityLogEntryText.svelte';
 import OpenSearchCreatedActivityLogEntryText from './shared/texts/OpenSearchCreatedActivityLogEntryText.svelte';
+import OpenSearchCredentialsCreatedActivityLogEntryText from './shared/texts/OpenSearchCredentialsCreatedActivityLogEntryText.svelte';
 import OpenSearchDeletedActivityLogEntryText from './shared/texts/OpenSearchDeletedActivityLogEntryText.svelte';
 import OpenSearchUpdatedActivityLogEntryText from './shared/texts/OpenSearchUpdatedActivityLogEntryText.svelte';
 import PostgresDeletedActivityLogEntryText from './shared/texts/PostgresDeletedActivityLogEntryText.svelte';
@@ -58,6 +58,7 @@ import UnleashInstanceCreatedActivityLogEntryText from './shared/texts/UnleashIn
 import UnleashInstanceDeletedActivityLogEntryText from './shared/texts/UnleashInstanceDeletedActivityLogEntryText.svelte';
 import UnleashInstanceUpdatedActivityLogEntryText from './shared/texts/UnleashInstanceUpdatedActivityLogEntryText.svelte';
 import ValkeyCreatedActivityLogEntryText from './shared/texts/ValkeyCreatedActivityLogEntryText.svelte';
+import ValkeyCredentialsCreatedActivityLogEntryText from './shared/texts/ValkeyCredentialsCreatedActivityLogEntryText.svelte';
 import ValkeyDeletedActivityLogEntryText from './shared/texts/ValkeyDeletedActivityLogEntryText.svelte';
 import ValkeyUpdatedActivityLogEntryText from './shared/texts/ValkeyUpdatedActivityLogEntryText.svelte';
 import VulnerabilityUpdatedActivityLogEntryText from './shared/texts/VulnerabilityUpdatedActivityLogEntryText.svelte';
@@ -90,6 +91,8 @@ export function activityTextComponent(typename: string | null): Component<textCo
 			return ConfigUpdatedActivityLogEntryText as Component<textComponentProps>;
 		case 'KafkaCredentialsCreatedActivityLogEntry':
 			return KafkaCredentialsCreatedActivityLogEntryText as Component<textComponentProps>;
+		case 'KafkaTopicUpdatedActivityLogEntry':
+			return KafkaTopicUpdatedActivityLogEntryText as Component<textComponentProps>;
 		case 'OpenSearchCredentialsCreatedActivityLogEntry':
 			return OpenSearchCredentialsCreatedActivityLogEntryText as Component<textComponentProps>;
 		case 'ValkeyCredentialsCreatedActivityLogEntry':

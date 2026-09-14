@@ -81,6 +81,20 @@
 							ttl
 						}
 					}
+					... on KafkaTopicUpdatedActivityLogEntry {
+						kafkaTopicUpdatedData: data {
+							addedGrants {
+								access
+								subject
+								teamName
+							}
+							revokedGrants {
+								access
+								subject
+								teamName
+							}
+						}
+					}
 					... on OpenSearchCredentialsCreatedActivityLogEntry {
 						opensearchCredentialsData: data {
 							permission

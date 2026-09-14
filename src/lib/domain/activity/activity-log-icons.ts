@@ -100,6 +100,8 @@ export const icons: { [typename: string]: Component } = {
 	ValkeyUpdatedActivityLogEntry: ValkeyIcon,
 	ValkeyMaintenanceStartedActivityLogEntry: ValkeyIcon,
 
+	KafkaTopicUpdatedActivityLogEntry: KafkaIcon,
+
 	/* Security / Audit */
 	VulnerabilityUpdatedActivityLogEntry: VirusIcon,
 	ClusterAuditActivityLogEntry: TerminalIcon,
