@@ -68,6 +68,8 @@ export function activityTooltip(typename: string): string {
 			return 'Kubernetes audit';
 		case 'KafkaCredentialsCreatedActivityLogEntry':
 			return 'Kafka credentials';
+		case 'KafkaTopicUpdatedActivityLogEntry':
+			return 'Kafka topic';
 		case 'OpenSearchCredentialsCreatedActivityLogEntry':
 			return 'OpenSearch credentials';
 		case 'ValkeyCredentialsCreatedActivityLogEntry':
