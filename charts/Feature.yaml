@@ -1,3 +1,6 @@
+dependencies:
+  - allOf:
+      - fqdn-policy
 environmentKinds:
   - management
 values:
