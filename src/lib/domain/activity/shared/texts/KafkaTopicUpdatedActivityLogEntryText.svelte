@@ -14,7 +14,7 @@
 
 <div>
 	Kafka topic updated
-	{#if data.resourceName}
+	{#if data.resourceName && data.environmentName}
 		for <strong>{data.resourceName}</strong> in {data.environmentName}
 	{/if}
 	{#if mode === 'full'}
