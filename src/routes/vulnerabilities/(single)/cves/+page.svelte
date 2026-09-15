@@ -44,14 +44,30 @@
 	};
 
 	// The API only supports a single sort field, so rows sharing the same
-	// priority come back in an arbitrary order. Break ties by severity within
-	// the page that's already loaded (this doesn't affect pagination).
+	// priority come back in an arbitrary order. The API response is already
+	// grouped by priority in the requested direction — capture each priority
+	// value's first position as its group rank, then break ties by severity
+	// (most severe first) within the page that's already loaded. This avoids
+	// guessing what "ascending"/"descending" means for priority ourselves and
+	// doesn't affect pagination.
 	const sortedEdges = $derived.by(() => {
 		const edges = $CVES.data?.cves.edges ?? [];
 		if (currentOrderField !== CVEOrderField.PRIORITY) return edges;
-		return [...edges].sort(
-			(a, b) => (severityRank[b.node.severity] ?? -1) - (severityRank[a.node.severity] ?? -1)
-		);
+
+		const firstIndexForPriority: Record<string, number> = {};
+		edges.forEach((edge, index) => {
+			if (!(edge.node.priority in firstIndexForPriority)) {
+				firstIndexForPriority[edge.node.priority] = index;
+			}
+		});
+
+		return [...edges].sort((a, b) => {
+			const priorityDiff =
+				(firstIndexForPriority[a.node.priority] ?? 0) -
+				(firstIndexForPriority[b.node.priority] ?? 0);
+			if (priorityDiff !== 0) return priorityDiff;
+			return (severityRank[b.node.severity] ?? -1) - (severityRank[a.node.severity] ?? -1);
+		});
 	});
 
 	const handleSortChange = (key: string) => {
@@ -100,6 +116,7 @@
 						<Th sortable={true} sortKey={CVEOrderField.SEVERITY}>Severity</Th>
 						<Th sortable={true} sortKey={CVEOrderField.CVSS_SCORE}>CVSS</Th>
 						<Th>Title</Th>
+						<Th>Threat signals</Th>
 						<Th sortable={true} sortKey={CVEOrderField.AFFECTED_WORKLOADS_COUNT}>Workloads</Th>
 					</Tr>
 				</Thead>
@@ -122,17 +139,18 @@
 								<Td>
 									<span class="severity-badge {cve.severity}">{cve.severity}</span>
 								</Td>
-								<Td>{cve.cvssScore ? cve.cvssScore.toFixed(1) : '—'}</Td>
+								<Td>{cve.cvssScore !== null ? cve.cvssScore.toFixed(1) : '—'}</Td>
 								<Td>
-									<div class="title-cell">
-										<span>{cve.title}</span>
-										<PrioritySignals
-											hasKevEntry={cve.hasKevEntry}
-											knownRansomwareUse={cve.knownRansomwareUse}
-											epssScore={cve.epssScore}
-											epssPercentile={cve.epssPercentile}
-										/>
-									</div>
+									<span>{cve.title}</span>
+								</Td>
+								<Td>
+									<PrioritySignals
+										hasKevEntry={cve.hasKevEntry}
+										knownRansomwareUse={cve.knownRansomwareUse}
+										epssScore={cve.epssScore}
+										epssPercentile={cve.epssPercentile}
+										showEmpty
+									/>
 								</Td>
 								<Td>{cve.workloads.pageInfo.totalCount}</Td>
 							</Tr>
@@ -177,12 +195,5 @@
 		flex-direction: column;
 		gap: var(--spacing-layout);
 		margin-top: var(--spacing-layout);
-	}
-
-	.title-cell {
-		display: flex;
-		flex-direction: column;
-		gap: var(--ax-space-4);
-		min-width: 18rem;
 	}
 </style>
