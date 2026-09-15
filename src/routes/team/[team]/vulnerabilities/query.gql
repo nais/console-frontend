@@ -1,5 +1,12 @@
 query TeamVulnerabilities($team: Slug!) {
 	team(slug: $team) {
+		urgentVulnerabilityIssues: issues(
+			filter: { issueType: EXTERNAL_INGRESS_URGENT_VULNERABILITY }
+		) {
+			pageInfo {
+				totalCount
+			}
+		}
 		environments {
 			id
 			environment {
@@ -15,13 +22,21 @@ query TeamVulnerabilities($team: Slug!) {
 		vulnerabilitySummary {
 			sbomCount
 			coverage
+			highWorkloadCount
+			elevatedWorkloadCount
+			monitorWorkloadCount
+			countsByPriority {
+				knownExploited
+				highRisk
+				elevatedRisk
+				monitor
+			}
 			critical
 			high
 			medium
 			low
 			unassigned
 			riskScore
-			riskScoreTrend
 			lastUpdated
 		}
 	}

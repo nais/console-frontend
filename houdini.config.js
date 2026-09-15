@@ -3,8 +3,10 @@
 /** @type {import('houdini').ConfigFile} */
 
 const config = {
+	include: 'src/**/*.{svelte,graphql,gql,ts,js}',
 	runtimeDir: '.houdini',
 	defaultPaginateMode: 'SinglePage',
+	pluginTransport: 'stdio',
 	schemaPath: './schema.graphql',
 	url: '/graphql',
 	watchSchema: {

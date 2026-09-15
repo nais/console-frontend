@@ -9,6 +9,15 @@ query ApplicationImageDetails($team: Slug!, $env: String!, $app: String!)
 			workload(name: $app) {
 				__typename
 				name
+				... on Application {
+					urgentVulnerabilityIssues: issues(
+						filter: { issueType: EXTERNAL_INGRESS_URGENT_VULNERABILITY }
+					) {
+						pageInfo {
+							totalCount
+						}
+					}
+				}
 				team {
 					slug
 				}
@@ -46,6 +55,12 @@ query ApplicationImageDetails($team: Slug!, $env: String!, $app: String!)
 						}
 					}
 					vulnerabilitySummary {
+						countsByPriority {
+							knownExploited
+							highRisk
+							elevatedRisk
+							monitor
+						}
 						critical
 						high
 						medium
@@ -56,20 +71,61 @@ query ApplicationImageDetails($team: Slug!, $env: String!, $app: String!)
 						staleImageTag
 					}
 					workloadReferences {
-						nodes {
-							workload {
-								id
-								__typename
-								team {
-									slug
-								}
-								teamEnvironment {
-									environment {
-										name
+						edges {
+							node {
+								workload {
+									id
+									__typename
+									team {
+										slug
 									}
+									teamEnvironment {
+										environment {
+											name
+										}
+									}
+									name
 								}
-								name
 							}
+						}
+					}
+					handleFirst: vulnerabilities(
+						first: 50
+						filter: { hasKevEntry: true }
+						orderBy: { field: SEVERITY, direction: DESC }
+					) {
+						edges {
+							node {
+								id
+								identifier
+								package
+								priority
+								fixVersion
+								latestVersion
+								epssScore
+								epssPercentile
+								hasKevEntry
+								knownRansomwareUse
+							}
+						}
+					}
+					knownExploitedHigh: vulnerabilities(filter: { priorities: [HIGH], hasKevEntry: true }) {
+						pageInfo {
+							totalCount
+						}
+					}
+					knownExploitedElevated: vulnerabilities(
+						filter: { priorities: [ELEVATED], hasKevEntry: true }
+					) {
+						pageInfo {
+							totalCount
+						}
+					}
+					knownExploitedMonitor: vulnerabilities(
+						filter: { priorities: [MONITOR], hasKevEntry: true }
+					) {
+						pageInfo {
+							totalCount
 						}
 					}
 				}

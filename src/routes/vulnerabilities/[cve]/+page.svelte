@@ -1,5 +1,8 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
+	import PriorityBadge from '$lib/domain/vulnerability/priority/PriorityBadge.svelte';
+	import PrioritySignals from '$lib/domain/vulnerability/priority/PrioritySignals.svelte';
+	import { priorityDetails } from '$lib/domain/vulnerability/priority/priority';
 	import WorkloadLink from '$lib/domain/workload/WorkloadLink.svelte';
 	import ExternalLink from '$lib/ui/ExternalLink.svelte';
 	import GraphErrors from '$lib/ui/GraphErrors.svelte';
@@ -76,21 +79,42 @@
 			</Alert>
 		{:else if $CVEDetails.data}
 			{const cve = $derived($CVEDetails.data.cve)}
+			{const priority = $derived(priorityDetails(cve.priority))}
 			<div class="wrapper">
 				<div class="header">
 					<div class="title-row">
 						<Heading as="h1" size="large">{cve.identifier}</Heading>
-						<span class="severity-badge {cve.severity}">{cve.severity}</span>
 					</div>
 					{#if cve.title}
 						<Detail>{cve.title}</Detail>
 					{/if}
 				</div>
 
+				<section
+					class="priority-card {cve.priority.toLowerCase()}"
+					aria-labelledby="priority-heading"
+				>
+					<div class="priority-card-header">
+						<div>
+							<Detail as="p">Operational priority</Detail>
+							<Heading as="h2" size="medium" id="priority-heading">
+								<PriorityBadge priority={cve.priority} /> priority
+							</Heading>
+						</div>
+						<BodyShort size="small" class="priority-guidance">{priority.guidance}</BodyShort>
+					</div>
+					<PrioritySignals
+						hasKevEntry={cve.hasKevEntry}
+						knownRansomwareUse={cve.knownRansomwareUse}
+						epssScore={cve.epssScore}
+						epssPercentile={cve.epssPercentile}
+					/>
+				</section>
+
 				<div class="card">
 					<Heading as="h2" size="small" spacing>Details</Heading>
 					<dl class="details-list">
-						{#if cve.cvssScore}
+						{#if cve.cvssScore !== null && cve.cvssScore !== undefined}
 							<div>
 								<Detail as="dt">CVSS Score</Detail>
 								<BodyShort as="dd"><strong>{cve.cvssScore.toFixed(1)}</strong></BodyShort>
@@ -148,6 +172,12 @@
 												<Detail as="dt">Package</Detail>
 												<BodyShort as="dd"><code>{vuln.package}</code></BodyShort>
 											</div>
+											{#if vuln.fixVersion}
+												<div class="detail-row">
+													<Detail as="dt">Fix version</Detail>
+													<BodyShort as="dd"><code>{vuln.fixVersion}</code></BodyShort>
+												</div>
+											{/if}
 											<div class="detail-row">
 												<Detail as="dt">Image</Detail>
 												{#if workload.image}
@@ -261,6 +291,46 @@
 		gap: var(--ax-space-12);
 	}
 
+	.priority-card {
+		display: flex;
+		flex-direction: column;
+		gap: var(--ax-space-16);
+		padding: var(--ax-space-20);
+		border: 1px solid var(--ax-border-neutral-subtleA);
+		border-left: var(--ax-space-2) solid var(--ax-border-neutral-subtleA);
+		border-radius: var(--ax-radius-8);
+		background: var(--ax-neutral-100);
+	}
+
+	.priority-card.high {
+		border-left-color: var(--ax-border-warning);
+	}
+
+	.priority-card.urgent {
+		border-left-color: var(--ax-text-danger-decoration);
+	}
+
+	.priority-card-header {
+		display: flex;
+		align-items: start;
+		justify-content: space-between;
+		gap: var(--ax-space-16);
+	}
+
+	.priority-card :global(h2) {
+		display: flex;
+		align-items: center;
+		flex-wrap: wrap;
+		gap: var(--ax-space-8);
+		margin: var(--ax-space-4) 0 0;
+	}
+
+	.priority-guidance {
+		max-width: 24ch;
+		text-align: right;
+		color: var(--ax-text-neutral-subtle);
+	}
+
 	.card {
 		padding: var(--ax-space-16);
 		border-radius: var(--ax-radius-8);
@@ -301,6 +371,14 @@
 	@media (max-width: 767px) {
 		.workload-container {
 			grid-template-columns: 1fr;
+		}
+
+		.priority-card-header {
+			flex-direction: column;
+		}
+
+		.priority-guidance {
+			text-align: left;
 		}
 	}
 
