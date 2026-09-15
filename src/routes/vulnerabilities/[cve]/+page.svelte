@@ -114,7 +114,7 @@
 				<div class="card">
 					<Heading as="h2" size="small" spacing>Details</Heading>
 					<dl class="details-list">
-						{#if cve.cvssScore}
+						{#if cve.cvssScore !== null && cve.cvssScore !== undefined}
 							<div>
 								<Detail as="dt">CVSS Score</Detail>
 								<BodyShort as="dd"><strong>{cve.cvssScore.toFixed(1)}</strong></BodyShort>
