@@ -19,6 +19,7 @@
 		{#if $TeamVulnerabilities.data.team.vulnerabilitySummary}
 			<VulnerabilitySummaryMetrics
 				vulnerabilitySummary={$TeamVulnerabilities.data.team.vulnerabilitySummary}
+				knownExploitedHref="#high-priority-heading"
 				urgentCount={$TeamVulnerabilities.data.team.urgentVulnerabilityIssues.pageInfo.totalCount}
 			/>
 		{/if}
@@ -43,6 +44,8 @@
 					?.elevatedWorkloadCount}
 				monitorWorkloadCount={$TeamVulnerabilities.data.team.vulnerabilitySummary
 					?.monitorWorkloadCount}
+				knownExploitedCount={$TeamVulnerabilities.data.team.vulnerabilitySummary?.countsByPriority
+					?.knownExploited}
 			/>
 		</section>
 
