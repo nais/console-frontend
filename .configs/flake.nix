@@ -1,43 +1,23 @@
 {
   description = "Console Frontend development environment";
-
-  # Flake inputs
-  inputs = { nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable"; };
-
-  # Flake outputs
-  outputs = { self, nixpkgs }:
-    let
-      # Systems supported
-      allSystems = [
-        "x86_64-linux" # 64-bit Intel/AMD Linux
-        "aarch64-linux" # 64-bit ARM Linux
-        "x86_64-darwin" # 64-bit Intel macOS
-        "aarch64-darwin" # 64-bit ARM macOS
-      ];
-
-      # Helper to provide system-specific attributes
-      forAllSystems = f:
-        nixpkgs.lib.genAttrs allSystems
-        (system: f { pkgs = import nixpkgs { inherit system; }; });
-    in {
-      # Development environment output
-      devShells = forAllSystems ({ pkgs }: {
-        default = pkgs.mkShell {
+  inputs = {
+    nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
+    flake-utils.url = "github:numtide/flake-utils";
+  };
+  outputs =
+    inputs:
+    inputs.flake-utils.lib.eachDefaultSystem (
+      system:
+      let
+        pkgs = import inputs.nixpkgs { localSystem = { inherit system; }; };
+      in
+      {
+        devShells.default = pkgs.mkShellNoCC {
           packages = with pkgs; [
-            nodejs_24
-            pnpm
-            git
+            mise
+            kubernetes-helm
           ];
-
-          shellHook = ''
-            echo "Console Frontend development environment"
-            echo "Node.js version: $(node --version)"
-            echo "pnpm version: $(pnpm --version)"
-            echo ""
-            echo "Run 'pnpm install' to install dependencies"
-            echo "Run 'pnpm run dev' to start the development server"
-          '';
         };
-      });
-    };
+      }
+    );
 }
