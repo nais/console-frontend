@@ -17,11 +17,7 @@ export async function load(event) {
 			blocking: true,
 			variables: {
 				orderBy: {
-					field: urlToOrderField(
-						TeamOrderField,
-						TeamOrderField.KNOWN_EXPLOITED_VULNERABILITIES,
-						event.url
-					),
+					field: urlToOrderField(TeamOrderField, TeamOrderField.RISK_SCORE, event.url),
 					direction: urlToOrderDirection(event.url, OrderDirection.DESC)
 				},
 				...(before ? { before, last: rows } : { after, first: rows })

@@ -5,6 +5,7 @@
 	import VulnerabilitySummaryMetrics from '$lib/domain/vulnerability/VulnerabilitySummaryMetrics.svelte';
 	import WorkloadsWithVulnerabilities from '$lib/domain/vulnerability/WorkloadsWithVulnerabilities.svelte';
 	import GraphErrors from '$lib/ui/GraphErrors.svelte';
+	import SurfaceCard from '$lib/ui/SurfaceCard.svelte';
 	import { BodyLong, Heading } from '@nais/ds-svelte-community';
 	import type { PageProps } from './$types';
 
@@ -17,11 +18,11 @@
 {#if $TeamVulnerabilities.data}
 	<div class="wrapper">
 		{#if $TeamVulnerabilities.data.team.vulnerabilitySummary}
-			<VulnerabilitySummaryMetrics
-				vulnerabilitySummary={$TeamVulnerabilities.data.team.vulnerabilitySummary}
-				knownExploitedHref="#high-priority-heading"
-				urgentCount={$TeamVulnerabilities.data.team.urgentVulnerabilityIssues.pageInfo.totalCount}
-			/>
+			<SurfaceCard title="Summary" level="h2" bordered>
+				<VulnerabilitySummaryMetrics
+					vulnerabilitySummary={$TeamVulnerabilities.data.team.vulnerabilitySummary}
+				/>
+			</SurfaceCard>
 		{/if}
 
 		<section aria-labelledby="workload-vulnerabilities">
@@ -37,19 +38,7 @@
 				<TeamCveSearch team={teamSlug} />
 			</div>
 
-			<WorkloadsWithVulnerabilities
-				team={teamSlug}
-				environmentNames={$TeamVulnerabilities.data.team.environments.map(
-					(env) => env.environment.name
-				)}
-				highWorkloadCount={$TeamVulnerabilities.data.team.vulnerabilitySummary?.highWorkloadCount}
-				elevatedWorkloadCount={$TeamVulnerabilities.data.team.vulnerabilitySummary
-					?.elevatedWorkloadCount}
-				monitorWorkloadCount={$TeamVulnerabilities.data.team.vulnerabilitySummary
-					?.monitorWorkloadCount}
-				knownExploitedCount={$TeamVulnerabilities.data.team.vulnerabilitySummary?.countsByPriority
-					?.knownExploited}
-			/>
+			<WorkloadsWithVulnerabilities team={teamSlug} />
 		</section>
 
 		<section aria-label="Vulnerability History">

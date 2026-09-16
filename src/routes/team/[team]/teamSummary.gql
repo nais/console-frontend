@@ -1,11 +1,7 @@
 query TeamSummaryVulnerabilities($team: Slug!) {
 	team(slug: $team) {
-		urgentVulnerabilityIssues: issues(
-			filter: { issueType: EXTERNAL_INGRESS_URGENT_VULNERABILITY }
-		) {
-			pageInfo {
-				totalCount
-			}
+		vulnerabilitySummary {
+			critical
 		}
 	}
 }

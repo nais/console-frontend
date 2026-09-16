@@ -3,13 +3,12 @@
 	import BulkSuppressCVE, {
 		type BulkSuppressWorkload
 	} from '$lib/domain/vulnerability/BulkSuppressCVE.svelte';
-	import PrioritySignals from '$lib/domain/vulnerability/priority/PrioritySignals.svelte';
 	import WorkloadLink from '$lib/domain/workload/WorkloadLink.svelte';
 	import ExternalLink from '$lib/ui/ExternalLink.svelte';
 	import GraphErrors from '$lib/ui/GraphErrors.svelte';
 	import { formatImageRef } from '$lib/utils/image';
 
-	import { formatFixVersion, suppressionStateLabels } from '$lib/utils/vulnerabilities';
+	import { suppressionStateLabels } from '$lib/utils/vulnerabilities';
 	import {
 		Alert,
 		BodyShort,
@@ -207,7 +206,7 @@
 				<dl class="details-list">
 					{#if cve.cvssScore}
 						<div>
-							<Detail as="dt">CVSS score</Detail>
+							<Detail as="dt">CVSS Score</Detail>
 							<BodyShort as="dd"><strong>{cve.cvssScore.toFixed(1)}</strong></BodyShort>
 						</div>
 					{/if}
@@ -220,26 +219,17 @@
 							>
 						</BodyShort>
 					</div>
-					{#if hasDetailsLink(cve.detailsLink)}
-						<div>
-							<Detail as="dt">More Information</Detail>
-							<BodyShort as="dd">
+					<div>
+						<Detail as="dt">More Information</Detail>
+						<BodyShort as="dd">
+							{#if hasDetailsLink(cve.detailsLink)}
 								<ExternalLink href={cve.detailsLink}>View full details</ExternalLink>
-							</BodyShort>
-						</div>
-					{/if}
+							{:else}
+								No link available
+							{/if}
+						</BodyShort>
+					</div>
 				</dl>
-
-				{#if cve.description}
-					<BodyShort spacing>{cve.description}</BodyShort>
-				{/if}
-
-				<PrioritySignals
-					hasKevEntry={cve.hasKevEntry}
-					knownRansomwareUse={cve.knownRansomwareUse}
-					epssScore={cve.epssScore}
-					epssPercentile={cve.epssPercentile}
-				/>
 			</section>
 		</div>
 	{:else if hasOtherErrors($TeamCVEPage.errors)}
@@ -343,23 +333,6 @@
 												<Detail as="dt">Workloads</Detail>
 												<Detail as="dd">{group.nodes.length} affected</Detail>
 											</div>
-											{#if group.nodes[0]?.vulnerability.fixVersion}
-												<div>
-													<Detail as="dt">Fix version</Detail>
-													<Detail as="dd"
-														><code>{formatFixVersion(group.nodes[0].vulnerability.fixVersion)}</code
-														></Detail
-													>
-												</div>
-											{/if}
-											{#if group.nodes[0]?.vulnerability.latestVersion}
-												<div>
-													<Detail as="dt">Latest version</Detail>
-													<Detail as="dd"
-														><code>{group.nodes[0].vulnerability.latestVersion}</code></Detail
-													>
-												</div>
-											{/if}
 										</dl>
 									</div>
 								</div>

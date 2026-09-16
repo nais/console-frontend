@@ -31,12 +31,6 @@ query TenantVulnerabilites(
 					}
 				}
 				vulnerabilitySummary {
-					countsByPriority {
-						knownExploited
-						highRisk
-						elevatedRisk
-						monitor
-					}
 					critical
 					high
 					medium
@@ -49,12 +43,6 @@ query TenantVulnerabilites(
 		}
 	}
 	vulnerabilitySummary {
-		countsByPriority {
-			knownExploited
-			highRisk
-			elevatedRisk
-			monitor
-		}
 		critical
 		high
 		medium

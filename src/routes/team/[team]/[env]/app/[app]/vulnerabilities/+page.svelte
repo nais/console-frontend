@@ -10,9 +10,9 @@
 
 	$effect(() => {
 		const workload = $ApplicationImageDetails.data?.team.environment.workload;
-		const image = workload && 'image' in workload ? workload.image : undefined;
 		const shouldPoll =
-			image?.sbom.status === 'PROCESSING' || !!image?.vulnerabilitySummary?.staleImageTag;
+			workload?.image.sbom.status === 'PROCESSING' ||
+			!!workload?.image.vulnerabilitySummary?.staleImageTag;
 		if (!shouldPoll) return;
 		const interval = setInterval(() => {
 			if (document.hidden) return;

@@ -145,7 +145,7 @@
 			case 'MEMORY_UTILIZATION':
 				return 'Memory Utilization';
 			case 'CVSS_SCORE':
-				return 'CVSS score';
+				return 'CVSS Score';
 			case 'AFFECTED_WORKLOADS_COUNT':
 				return 'Affected workloads';
 			default:
