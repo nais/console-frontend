@@ -207,7 +207,7 @@
 				<dl class="details-list">
 					{#if cve.cvssScore}
 						<div>
-							<Detail as="dt">CVSS Score</Detail>
+							<Detail as="dt">CVSS score</Detail>
 							<BodyShort as="dd"><strong>{cve.cvssScore.toFixed(1)}</strong></BodyShort>
 						</div>
 					{/if}
