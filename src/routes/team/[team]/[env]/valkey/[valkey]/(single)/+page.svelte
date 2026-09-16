@@ -211,6 +211,8 @@
 					{/if}
 					<dt>Persistence</dt>
 					<dd>{instance.persistenceDisabled ? 'Disabled' : 'Enabled'}</dd>
+					<dt>Version</dt>
+					<dd>{instance.version.actual ?? 'Unknown'}</dd>
 					{#if instance.maintenance && instance.maintenance.window}
 						<dt>Maintenance day</dt>
 						<dd>{instance.maintenance.window.dayOfWeek}</dd>

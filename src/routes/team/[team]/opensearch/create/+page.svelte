@@ -10,6 +10,7 @@
 		type OpenSearchTier$options
 	} from '$houdini';
 	import { openSearchPlanCosts, storageRequirements } from '$lib/utils/aivencost';
+	import { majorVersionLabel } from '$lib/utils/formatters';
 	import {
 		Alert,
 		BodyLong,
@@ -87,10 +88,6 @@
 			})
 	);
 
-	function versionLabel(v: OpenSearchMajorVersion$options) {
-		return v.replaceAll('_', '.').replace('V', 'v');
-	}
-
 	function tierLabel(t: OpenSearchTier$options) {
 		switch (t) {
 			case OpenSearchTier.SINGLE_NODE:
@@ -141,7 +138,7 @@
 
 	<Select size="small" label="Desired version" name="version" required bind:value={version}>
 		{#each Object.values(OpenSearchMajorVersion) as opt (opt)}
-			<option value={opt}>{versionLabel(opt)}</option>
+			<option value={opt}>{majorVersionLabel(opt)}</option>
 		{/each}
 	</Select>
 

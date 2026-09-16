@@ -15,6 +15,11 @@ export function percentageFormatter(value: number, maximumFractionDigits: number
 	});
 }
 
+/** Turns a GraphQL major-version enum member such as `V9_1` into `v9.1`. */
+export function majorVersionLabel(version: string): string {
+	return version.replaceAll('_', '.').replace('V', 'v');
+}
+
 export function capitalizeFirstLetter(sentence: string): string {
 	return sentence.length ? sentence.charAt(0).toUpperCase() + sentence.slice(1) : sentence;
 }

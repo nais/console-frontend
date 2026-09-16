@@ -2224,7 +2224,7 @@ input CreateOpenSearchInput {
   environmentName: String!
 
   """
-  Maximum content length for requests to the OpenSearch HTTP API. Specified as a human-readable quantity (e.g. "100Mi", "1Gi"); unitless values are interpreted as bytes. Must be between 1 byte and 2147483647 bytes (around 2047Mi). When not set, the instance uses the default of 100Mi.
+  Maximum content length for requests to the OpenSearch HTTP API. Specified as a human-readable quantity (e.g. "100Mi", "1Gi"); unitless values are interpreted as bytes. Must be between 1048576 bytes (1Mi) and 2147483647 bytes (around 2047Mi). When not set, the instance uses the default of 100Mi.
   """
   httpMaxContentLength: String
 
@@ -2457,6 +2457,9 @@ input CreateValkeyInput {
 
   """Tier of the Valkey instance."""
   tier: ValkeyTier!
+
+  """Major version of the Valkey instance."""
+  version: ValkeyMajorVersion! = V9_1
 }
 
 type CreateValkeyPayload {
@@ -10503,7 +10506,7 @@ input UpdateOpenSearchInput {
   environmentName: String!
 
   """
-  Maximum content length for requests to the OpenSearch HTTP API. Specified as a human-readable quantity (e.g. "100Mi", "1Gi"); unitless values are interpreted as bytes. Must be between 1 byte and 2147483647 bytes (around 2047Mi). When not set, the instance uses the default of 100Mi.
+  Maximum content length for requests to the OpenSearch HTTP API. Specified as a human-readable quantity (e.g. "100Mi", "1Gi"); unitless values are interpreted as bytes. Must be between 1048576 bytes (1Mi) and 2147483647 bytes (around 2047Mi). When not set, the instance uses the default of 100Mi.
   """
   httpMaxContentLength: String
 
@@ -10729,6 +10732,11 @@ input UpdateValkeyInput {
 
   """Tier of the Valkey instance."""
   tier: ValkeyTier!
+
+  """
+  Major version of the Valkey instance. When omitted, the version is left unchanged.
+  """
+  version: ValkeyMajorVersion
 }
 
 type UpdateValkeyPayload {
@@ -11060,6 +11068,9 @@ type Valkey implements ActivityLogger & Node & Persistence {
 
   """Availability tier for the Valkey instance."""
   tier: ValkeyTier!
+
+  """Fetch version for the Valkey instance."""
+  version: ValkeyVersion!
   workload: Workload @deprecated(reason: "Owners of valkeys have been removed, so this will always be null.")
 }
 
@@ -11320,6 +11331,14 @@ type ValkeyMaintenanceUpdateEdge {
   node: ValkeyMaintenanceUpdate!
 }
 
+enum ValkeyMajorVersion {
+  """Valkey Version 8.1.x"""
+  V8_1
+
+  """Valkey Version 9.1.x. Default for new instances."""
+  V9_1
+}
+
 enum ValkeyMaxMemoryPolicy {
   """Keeps frequently used keys; removes least frequently used (LFU) keys"""
   ALLKEYS_LFU
@@ -11456,6 +11475,16 @@ type ValkeyUpdatedActivityLogEntryDataUpdatedField {
 
   """The old value of the field."""
   oldValue: String
+}
+
+type ValkeyVersion {
+  """
+  The full version string of the Valkey instance. This will be available after the instance is created.
+  """
+  actual: String
+
+  """The desired major version of the Valkey instance."""
+  desiredMajor: ValkeyMajorVersion!
 }
 
 """Encoding of a secret or config value."""

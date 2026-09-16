@@ -1,4 +1,10 @@
-import { graphql, ValkeyMaxMemoryPolicy, ValkeyMemory, ValkeyTier } from '$houdini';
+import {
+	graphql,
+	ValkeyMajorVersion,
+	ValkeyMaxMemoryPolicy,
+	ValkeyMemory,
+	ValkeyTier
+} from '$houdini';
 import { fail, redirect } from '@sveltejs/kit';
 
 const mutation = graphql(`
@@ -25,23 +31,29 @@ export const actions = {
 		const environment = data.get('environment') as string | null;
 		const tier = data.get('tier') as string | null;
 		const memory = data.get('memory') as string | null;
+		const version = data.get('version') as string | null;
 		const max_memory_policy = data.get('max_memory_policy') as string | null;
 		const notify_keyspace_events = data.get('notify_keyspace_events') as string | null;
 		const databases = data.get('databases') as string | null;
 		const persistenceDisabled = data.has('persistence_disabled');
 
-		if (!name || !environment || !tier || !memory) {
+		const allProps = {
+			name,
+			environment,
+			tier,
+			memory,
+			version,
+			max_memory_policy,
+			notify_keyspace_events,
+			databases,
+			persistence_disabled: persistenceDisabled
+		};
+
+		if (!name || !environment || !tier || !memory || !version) {
 			return fail(400, {
+				...allProps,
 				success: false,
-				error: 'Missing required fields',
-				name,
-				environment,
-				tier,
-				memory,
-				max_memory_policy,
-				notify_keyspace_events,
-				databases,
-				persistence_disabled: persistenceDisabled
+				error: 'Missing required fields'
 			});
 		}
 
@@ -53,6 +65,7 @@ export const actions = {
 					teamSlug: params.team,
 					tier: ValkeyTier[tier as keyof typeof ValkeyTier],
 					memory: ValkeyMemory[memory as keyof typeof ValkeyMemory],
+					version: ValkeyMajorVersion[version as keyof typeof ValkeyMajorVersion],
 					maxMemoryPolicy: !max_memory_policy
 						? null
 						: ValkeyMaxMemoryPolicy[max_memory_policy as keyof typeof ValkeyMaxMemoryPolicy],
@@ -66,29 +79,15 @@ export const actions = {
 
 		if (res.errors && res.errors.length > 0) {
 			return fail(400, {
+				...allProps,
 				success: false,
-				error: res.errors[0].message,
-				name,
-				environment,
-				tier,
-				memory,
-				max_memory_policy,
-				notify_keyspace_events,
-				databases,
-				persistence_disabled: persistenceDisabled
+				error: res.errors[0].message
 			});
 		} else if (!res.data) {
 			return fail(500, {
+				...allProps,
 				success: false,
-				error: 'Failed to create Valkey',
-				name,
-				environment,
-				tier,
-				memory,
-				max_memory_policy,
-				notify_keyspace_events,
-				databases,
-				persistence_disabled: persistenceDisabled
+				error: 'Failed to create Valkey'
 			});
 		}
 
