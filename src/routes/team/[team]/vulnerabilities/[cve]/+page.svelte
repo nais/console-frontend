@@ -9,7 +9,7 @@
 	import GraphErrors from '$lib/ui/GraphErrors.svelte';
 	import { formatImageRef } from '$lib/utils/image';
 
-	import { suppressionStateLabels } from '$lib/utils/vulnerabilities';
+	import { formatFixVersion, suppressionStateLabels } from '$lib/utils/vulnerabilities';
 	import {
 		Alert,
 		BodyShort,
@@ -347,7 +347,8 @@
 												<div>
 													<Detail as="dt">Fix version</Detail>
 													<Detail as="dd"
-														><code>{group.nodes[0].vulnerability.fixVersion}</code></Detail
+														><code>{formatFixVersion(group.nodes[0].vulnerability.fixVersion)}</code
+														></Detail
 													>
 												</div>
 											{/if}
