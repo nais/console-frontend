@@ -100,6 +100,17 @@ export const sbomStatusDetails = (source: SbomStatusSource): SbomStatusDetails =
 	return { status, indicator, iconIndicator, label };
 };
 
+export function formatFixVersion(value: string | null | undefined): string | null {
+	if (!value) return null;
+
+	const trimmed = value.trim();
+	if (!trimmed) return null;
+	if (/^(>=|<=|==|>|<|=)\s*/i.test(trimmed)) return trimmed;
+	if (/^v?\d/.test(trimmed)) return `>= ${trimmed.replace(/^v/i, '')}`;
+
+	return trimmed;
+}
+
 export function severityToColor({
 	severity,
 	isText,

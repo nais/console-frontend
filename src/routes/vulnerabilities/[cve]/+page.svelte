@@ -11,7 +11,7 @@
 	import Pagination from '$lib/ui/Pagination.svelte';
 	import { formatImageRef } from '$lib/utils/image';
 	import { changeParams } from '$lib/utils/searchparams';
-	import { suppressionStateLabels } from '$lib/utils/vulnerabilities';
+	import { formatFixVersion, suppressionStateLabels } from '$lib/utils/vulnerabilities';
 	import {
 		Alert,
 		BodyShort,
@@ -175,7 +175,9 @@
 											{#if vuln.fixVersion}
 												<div class="detail-row">
 													<Detail as="dt">Fix version</Detail>
-													<BodyShort as="dd"><code>{vuln.fixVersion}</code></BodyShort>
+													<BodyShort as="dd"
+														><code>{formatFixVersion(vuln.fixVersion)}</code></BodyShort
+													>
 												</div>
 											{/if}
 											<div class="detail-row">
