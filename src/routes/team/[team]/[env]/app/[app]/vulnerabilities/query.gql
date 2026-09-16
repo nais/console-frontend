@@ -20,6 +20,111 @@ query ApplicationImageDetails($team: Slug!, $env: String!, $app: String!)
 							totalCount
 						}
 					}
+					image {
+						id
+						name
+						tag
+						digest
+						sbom {
+							status
+							processingStartedAt
+						}
+						activityLog @paginate(mode: SinglePage) {
+							pageInfo {
+								hasNextPage
+								endCursor
+								hasPreviousPage
+								startCursor
+								totalCount
+								pageStart
+								pageEnd
+							}
+							edges {
+								node {
+									id
+									__typename
+									...ActivityLogEntryFragment
+								}
+							}
+						}
+						vulnerabilitySummary {
+							countsByPriority {
+								knownExploited
+								highRisk
+								elevatedRisk
+								monitor
+							}
+							critical
+							high
+							medium
+							low
+							unassigned
+							riskScore
+							lastUpdated
+							staleImageTag
+						}
+						workloadReferences {
+							edges {
+								node {
+									workload {
+										id
+										__typename
+										team {
+											slug
+										}
+										teamEnvironment {
+											environment {
+												name
+											}
+										}
+										name
+									}
+								}
+							}
+						}
+						handleFirst: vulnerabilities(
+							first: 50
+							filter: { hasKevEntry: true }
+							orderBy: { field: SEVERITY, direction: DESC }
+						) {
+							pageInfo {
+								totalCount
+							}
+							edges {
+								node {
+									id
+									identifier
+									package
+									priority
+									fixVersion
+									latestVersion
+									epssScore
+									epssPercentile
+									hasKevEntry
+									knownRansomwareUse
+								}
+							}
+						}
+						knownExploitedHigh: vulnerabilities(filter: { priorities: [HIGH], hasKevEntry: true }) {
+							pageInfo {
+								totalCount
+							}
+						}
+						knownExploitedElevated: vulnerabilities(
+							filter: { priorities: [ELEVATED], hasKevEntry: true }
+						) {
+							pageInfo {
+								totalCount
+							}
+						}
+						knownExploitedMonitor: vulnerabilities(
+							filter: { priorities: [MONITOR], hasKevEntry: true }
+						) {
+							pageInfo {
+								totalCount
+							}
+						}
+					}
 				}
 				team {
 					slug
@@ -27,112 +132,6 @@ query ApplicationImageDetails($team: Slug!, $env: String!, $app: String!)
 				teamEnvironment {
 					environment {
 						name
-					}
-				}
-
-				image {
-					id
-					name
-					tag
-					digest
-					sbom {
-						status
-						processingStartedAt
-					}
-					activityLog @paginate(mode: SinglePage) {
-						pageInfo {
-							hasNextPage
-							endCursor
-							hasPreviousPage
-							startCursor
-							totalCount
-							pageStart
-							pageEnd
-						}
-						edges {
-							node {
-								id
-								__typename
-								...ActivityLogEntryFragment
-							}
-						}
-					}
-					vulnerabilitySummary {
-						countsByPriority {
-							knownExploited
-							highRisk
-							elevatedRisk
-							monitor
-						}
-						critical
-						high
-						medium
-						low
-						unassigned
-						riskScore
-						lastUpdated
-						staleImageTag
-					}
-					workloadReferences {
-						edges {
-							node {
-								workload {
-									id
-									__typename
-									team {
-										slug
-									}
-									teamEnvironment {
-										environment {
-											name
-										}
-									}
-									name
-								}
-							}
-						}
-					}
-					handleFirst: vulnerabilities(
-						first: 50
-						filter: { hasKevEntry: true }
-						orderBy: { field: SEVERITY, direction: DESC }
-					) {
-						pageInfo {
-							totalCount
-						}
-						edges {
-							node {
-								id
-								identifier
-								package
-								priority
-								fixVersion
-								latestVersion
-								epssScore
-								epssPercentile
-								hasKevEntry
-								knownRansomwareUse
-							}
-						}
-					}
-					knownExploitedHigh: vulnerabilities(filter: { priorities: [HIGH], hasKevEntry: true }) {
-						pageInfo {
-							totalCount
-						}
-					}
-					knownExploitedElevated: vulnerabilities(
-						filter: { priorities: [ELEVATED], hasKevEntry: true }
-					) {
-						pageInfo {
-							totalCount
-						}
-					}
-					knownExploitedMonitor: vulnerabilities(
-						filter: { priorities: [MONITOR], hasKevEntry: true }
-					) {
-						pageInfo {
-							totalCount
-						}
 					}
 				}
 			}
