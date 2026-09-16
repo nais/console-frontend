@@ -7,9 +7,17 @@ query ApplicationImageDetails($team: Slug!, $env: String!, $app: String!)
 				name
 			}
 			workload(name: $app) {
-				__typename
-				name
 				... on Application {
+					__typename
+					name
+					team {
+						slug
+					}
+					teamEnvironment {
+						environment {
+							name
+						}
+					}
 					ingresses {
 						type
 					}
@@ -126,12 +134,16 @@ query ApplicationImageDetails($team: Slug!, $env: String!, $app: String!)
 						}
 					}
 				}
-				team {
-					slug
-				}
-				teamEnvironment {
-					environment {
-						name
+				... on Job {
+					__typename
+					name
+					team {
+						slug
+					}
+					teamEnvironment {
+						environment {
+							name
+						}
 					}
 				}
 			}
