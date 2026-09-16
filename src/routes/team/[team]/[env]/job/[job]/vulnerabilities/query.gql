@@ -83,6 +83,9 @@ query JobImageDetails($team: Slug!, $env: String!, $job: String!) @cache(policy:
 						filter: { hasKevEntry: true }
 						orderBy: { field: SEVERITY, direction: DESC }
 					) {
+						pageInfo {
+							totalCount
+						}
 						edges {
 							node {
 								id

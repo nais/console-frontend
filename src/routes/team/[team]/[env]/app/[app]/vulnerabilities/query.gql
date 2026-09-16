@@ -10,6 +10,9 @@ query ApplicationImageDetails($team: Slug!, $env: String!, $app: String!)
 				__typename
 				name
 				... on Application {
+					ingresses {
+						type
+					}
 					urgentVulnerabilityIssues: issues(
 						filter: { issueType: EXTERNAL_INGRESS_URGENT_VULNERABILITY }
 					) {
@@ -94,6 +97,9 @@ query ApplicationImageDetails($team: Slug!, $env: String!, $app: String!)
 						filter: { hasKevEntry: true }
 						orderBy: { field: SEVERITY, direction: DESC }
 					) {
+						pageInfo {
+							totalCount
+						}
 						edges {
 							node {
 								id

@@ -37,6 +37,7 @@ query TeamVulnerabilities($team: Slug!) {
 			low
 			unassigned
 			riskScore
+			riskScoreTrend
 			lastUpdated
 		}
 	}

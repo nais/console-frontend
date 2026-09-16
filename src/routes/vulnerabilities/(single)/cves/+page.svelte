@@ -114,7 +114,7 @@
 						<Th sortable={true} sortKey={CVEOrderField.IDENTIFIER}>CVE</Th>
 						<Th sortable={true} sortKey={CVEOrderField.PRIORITY}>Priority</Th>
 						<Th sortable={true} sortKey={CVEOrderField.SEVERITY}>Severity</Th>
-						<Th sortable={true} sortKey={CVEOrderField.CVSS_SCORE}>CVSS</Th>
+						<Th sortable={true} sortKey={CVEOrderField.CVSS_SCORE}>CVSS score</Th>
 						<Th>Title</Th>
 						<Th>Threat signals</Th>
 						<Th sortable={true} sortKey={CVEOrderField.AFFECTED_WORKLOADS_COUNT}>Workloads</Th>
