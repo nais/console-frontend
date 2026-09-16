@@ -49,12 +49,21 @@
 			team(slug: $team) {
 				environment(name: $env) {
 					application(name: $app) {
+						urgentVulnerabilityIssues: issues(
+							filter: { issueType: EXTERNAL_INGRESS_URGENT_VULNERABILITY }
+						) {
+							pageInfo {
+								totalCount
+							}
+						}
 						image {
 							sbom {
 								status
 							}
 							vulnerabilitySummary {
-								critical
+								countsByPriority {
+									knownExploited
+								}
 							}
 						}
 					}
@@ -73,7 +82,9 @@
 								status
 							}
 							vulnerabilitySummary {
-								critical
+								countsByPriority {
+									knownExploited
+								}
 							}
 						}
 					}
@@ -148,7 +159,21 @@
 			: $jobVulnQuery?.data?.team?.environment?.job?.image
 	);
 
-	let criticalVulnerabilities = $derived(imageData?.vulnerabilitySummary?.critical);
+	let urgentVulnerabilityCount = $derived(
+		workloadType === 'app'
+			? $vulnQuery?.data?.team?.environment?.application?.urgentVulnerabilityIssues?.pageInfo
+					?.totalCount
+			: undefined
+	);
+	let knownExploitedCount = $derived(
+		imageData?.vulnerabilitySummary?.countsByPriority?.knownExploited
+	);
+	// Prefer the internet-facing+known-exploited (urgent) count when there is
+	// one; otherwise fall back to the plain known-exploited count.
+	let showingUrgent = $derived((urgentVulnerabilityCount ?? 0) > 0);
+	let vulnerabilityValue = $derived(
+		showingUrgent ? urgentVulnerabilityCount : (knownExploitedCount ?? undefined)
+	);
 	let sbomProcessing = $derived(imageData?.sbom?.status === 'PROCESSING');
 
 	$effect(() => {
@@ -245,21 +270,21 @@
 			<a
 				href="{basePath}/vulnerabilities"
 				class="metric"
-				class:danger={(criticalVulnerabilities ?? 0) > 0}
-				class:success={criticalVulnerabilities === 0}
+				class:danger={(vulnerabilityValue ?? 0) > 0}
+				class:success={vulnerabilityValue === 0}
 			>
 				<div
 					class="metric-icon"
-					class:danger={(criticalVulnerabilities ?? 0) > 0}
-					class:success={criticalVulnerabilities === 0}
+					class:danger={(vulnerabilityValue ?? 0) > 0}
+					class:success={vulnerabilityValue === 0}
 				>
 					<VirusIcon />
 				</div>
 				<div class="metric-body">
 					<span class="metric-value"
-						>{criticalVulnerabilities !== undefined ? criticalVulnerabilities : '-'}</span
+						>{vulnerabilityValue !== undefined ? vulnerabilityValue : '-'}</span
 					>
-					<span class="metric-label">Critical vulns</span>
+					<span class="metric-label">{showingUrgent ? 'Urgent' : 'Known exploited'}</span>
 				</div>
 				{#if sbomProcessing}
 					<div class="metric-processing">
