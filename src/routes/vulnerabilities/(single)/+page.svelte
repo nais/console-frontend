@@ -1,6 +1,6 @@
 <script lang="ts">
+	import TenantKnownExploitedWorkloads from '$lib/domain/vulnerability/TenantKnownExploitedWorkloads.svelte';
 	import VulnerabilitySummaryMetrics from '$lib/domain/vulnerability/VulnerabilitySummaryMetrics.svelte';
-	import SurfaceCard from '$lib/ui/SurfaceCard.svelte';
 	import { Heading } from '@nais/ds-svelte-community';
 	import VulnerabilityHistory from '../VulnerabilityHistory.svelte';
 	import VulnerabilityLeaderBoard from '../VulnerabilityLeaderBoard.svelte';
@@ -14,12 +14,15 @@
 	<Heading as="h1" size="large">Vulnerabilities</Heading>
 
 	{#if $TenantVulnerabilites.data?.vulnerabilitySummary}
-		<SurfaceCard title="Summary" level="h2" bordered>
-			<VulnerabilitySummaryMetrics
-				vulnerabilitySummary={$TenantVulnerabilites.data?.vulnerabilitySummary}
-			/>
-		</SurfaceCard>
+		<VulnerabilitySummaryMetrics
+			vulnerabilitySummary={$TenantVulnerabilites.data?.vulnerabilitySummary}
+			knownExploitedHref="#known-exploited-list"
+		/>
 	{/if}
+
+	<div id="known-exploited-list">
+		<TenantKnownExploitedWorkloads />
+	</div>
 
 	<VulnerabilityHistory />
 
