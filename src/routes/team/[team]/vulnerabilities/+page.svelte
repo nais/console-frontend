@@ -39,6 +39,9 @@
 
 			<WorkloadsWithVulnerabilities
 				team={teamSlug}
+				environmentNames={$TeamVulnerabilities.data.team.environments.map(
+					(env) => env.environment.name
+				)}
 				highWorkloadCount={$TeamVulnerabilities.data.team.vulnerabilitySummary?.highWorkloadCount}
 				elevatedWorkloadCount={$TeamVulnerabilities.data.team.vulnerabilitySummary
 					?.elevatedWorkloadCount}

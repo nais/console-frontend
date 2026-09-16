@@ -476,7 +476,7 @@
 		{/if}
 		{#if $data?.__typename === 'ExternalIngressCriticalVulnerabilityIssue' && 'cvssScore' in ($data as Record<string, unknown>)}
 			<div class="extra">
-				<strong>CVSS Score:</strong>
+				<strong>CVSS score:</strong>
 				{($data as unknown as { cvssScore: number }).cvssScore}
 			</div>
 		{/if}
