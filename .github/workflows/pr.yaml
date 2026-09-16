@@ -48,6 +48,7 @@ jobs:
           push: true
           build_args: |
             NODE_VERSION=${{ steps.node_version.outputs.node_version }}
+            APK_REFRESH=${{ github.run_id }}-${{ github.run_attempt }}
       - uses: azure/setup-helm@9bc31f4ebc9c6b171d7bfbaa5d006ae7abdb4310 # ratchet:azure/setup-helm@v5
         name: "Setup Helm"
         with:
