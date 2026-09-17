@@ -11,6 +11,9 @@ query UpdateValkeyData($environment: String!, $team: Slug!, $name: String!)
 				notifyKeyspaceEvents
 				databases
 				persistenceDisabled
+				version {
+					desiredMajor
+				}
 				labels {
 					key
 					value

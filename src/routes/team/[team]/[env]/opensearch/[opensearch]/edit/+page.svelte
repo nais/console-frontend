@@ -11,6 +11,7 @@
 	import { docURL } from '$lib/doc';
 	import ExternalLink from '$lib/ui/ExternalLink.svelte';
 	import { openSearchPlanCosts, storageRequirements } from '$lib/utils/aivencost';
+	import { majorVersionLabel } from '$lib/utils/formatters';
 	import {
 		Alert,
 		BodyLong,
@@ -112,10 +113,6 @@ version = "${version}"
 storageGB = "${storage}"
 `);
 
-	function versionLabel(v: OpenSearchMajorVersion$options) {
-		return v.replaceAll('_', '.').replace('V', 'v');
-	}
-
 	function tierLabel(t: OpenSearchTier$options) {
 		switch (t) {
 			case OpenSearchTier.SINGLE_NODE:
@@ -158,7 +155,7 @@ storageGB = "${storage}"
 	</Alert>
 	<Select size="small" label="Desired version" name="version" required bind:value={version}>
 		{#each Object.values(OpenSearchMajorVersion) as opt (opt)}
-			<option value={opt}>{versionLabel(opt)}</option>
+			<option value={opt}>{majorVersionLabel(opt)}</option>
 		{/each}
 	</Select>
 

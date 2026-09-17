@@ -1,6 +1,8 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
 	import {
+		ValkeyMajorVersion,
+		type ValkeyMajorVersion$options,
 		ValkeyMaxMemoryPolicy,
 		type ValkeyMaxMemoryPolicy$options,
 		ValkeyMemory,
@@ -10,6 +12,7 @@
 	} from '$houdini';
 	import ExternalLink from '$lib/ui/ExternalLink.svelte';
 	import { valkeyPlanCosts } from '$lib/utils/aivencost';
+	import { majorVersionLabel } from '$lib/utils/formatters';
 	import {
 		Alert,
 		BodyLong,
@@ -28,6 +31,11 @@
 
 	const { UpdateValkeyData } = $derived(data);
 
+	let version = $derived(
+		(form?.version as ValkeyMajorVersion$options) ??
+			$UpdateValkeyData.data?.team.environment.valkey.version.desiredMajor ??
+			''
+	);
 	let tier = $derived(
 		(form?.tier as ValkeyTier$options) ??
 			$UpdateValkeyData.data?.team.environment.valkey.tier ??
@@ -61,6 +69,7 @@
 	const tomlManifest = $derived(`[valkey.${$UpdateValkeyData.data?.team.environment.valkey.name}]
 tier = "${tier}"
 memory = "${memory}"
+version = "${version}"
 ${maxMemoryPolicy ? `max_memory_policy = "${maxMemoryPolicy}"` : ``}
 ${notifyKeyspaceEvents ? `notify_keyspace_events = "${notifyKeyspaceEvents}"` : ``}`);
 
@@ -115,9 +124,20 @@ ${notifyKeyspaceEvents ? `notify_keyspace_events = "${notifyKeyspaceEvents}"` : 
 </script>
 
 <form method="POST" use:enhance>
-	<Alert variant="info" size="small"
-		>Changing these settings may cause a restart of this Valkey instance.</Alert
-	>
+	<Alert variant="info" size="small">
+		<BodyShort size="small">
+			Changing these settings may cause a restart of this Valkey instance.
+		</BodyShort>
+		<BodyShort size="small">
+			If you're upgrading to a new major version, ensure to check for breaking changes first!
+		</BodyShort>
+	</Alert>
+
+	<Select size="small" label="Desired version" name="version" required bind:value={version}>
+		{#each Object.values(ValkeyMajorVersion) as opt (opt)}
+			<option value={opt}>{majorVersionLabel(opt)}</option>
+		{/each}
+	</Select>
 
 	<Select size="small" label="Tier" name="tier" required bind:value={tier}>
 		{#each Object.values(ValkeyTier) as opt (opt)}

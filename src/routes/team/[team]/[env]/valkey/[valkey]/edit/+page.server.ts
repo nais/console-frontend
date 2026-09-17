@@ -1,5 +1,7 @@
 import {
 	graphql,
+	ValkeyMajorVersion,
+	type ValkeyMajorVersion$options,
 	ValkeyMaxMemoryPolicy,
 	type ValkeyMaxMemoryPolicy$options,
 	ValkeyMemory,
@@ -27,6 +29,7 @@ export const actions = {
 
 		const tier = data.get('tier') as ValkeyTier$options | null;
 		const memory = data.get('memory') as ValkeyMemory$options | null;
+		const version = data.get('version') as ValkeyMajorVersion$options | null;
 		const max_memory_policy = data.get('max_memory_policy') as ValkeyMaxMemoryPolicy$options | null;
 		const notify_keyspace_events = data.get('notify_keyspace_events') as string | null;
 		const databases = data.get('databases') as string | null;
@@ -36,6 +39,7 @@ export const actions = {
 		const allProps = {
 			tier,
 			memory,
+			version,
 			max_memory_policy,
 			notify_keyspace_events,
 			databases,
@@ -88,6 +92,7 @@ export const actions = {
 					teamSlug: params.team,
 					tier: ValkeyTier[tier as keyof typeof ValkeyTier],
 					memory: ValkeyMemory[memory as keyof typeof ValkeyMemory],
+					version: version ? ValkeyMajorVersion[version as keyof typeof ValkeyMajorVersion] : null,
 					maxMemoryPolicy: !max_memory_policy
 						? null
 						: ValkeyMaxMemoryPolicy[max_memory_policy as keyof typeof ValkeyMaxMemoryPolicy],
@@ -102,25 +107,15 @@ export const actions = {
 
 		if (res.errors && res.errors.length > 0) {
 			return fail(400, {
+				...allProps,
 				success: false,
-				error: res.errors[0].message,
-				tier,
-				memory,
-				max_memory_policy,
-				notify_keyspace_events,
-				databases,
-				persistence_disabled: persistenceDisabled
+				error: res.errors[0].message
 			});
 		} else if (!res.data) {
 			return fail(500, {
+				...allProps,
 				success: false,
-				error: 'Failed to update Valkey',
-				tier,
-				memory,
-				max_memory_policy,
-				notify_keyspace_events,
-				databases,
-				persistence_disabled: persistenceDisabled
+				error: 'Failed to update Valkey'
 			});
 		}
 

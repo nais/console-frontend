@@ -2,6 +2,8 @@
 	import { enhance } from '$app/forms';
 	import { page } from '$app/state';
 	import {
+		ValkeyMajorVersion,
+		type ValkeyMajorVersion$options,
 		ValkeyMaxMemoryPolicy,
 		type ValkeyMaxMemoryPolicy$options,
 		ValkeyMemory,
@@ -11,6 +13,7 @@
 	} from '$houdini';
 	import ExternalLink from '$lib/ui/ExternalLink.svelte';
 	import { valkeyPlanCosts } from '$lib/utils/aivencost';
+	import { majorVersionLabel } from '$lib/utils/formatters';
 	import {
 		Alert,
 		BodyLong,
@@ -34,6 +37,7 @@
 
 	const form: PageProps['form'] = $derived(page.form);
 
+	let version = $derived((form?.version as ValkeyMajorVersion$options) ?? ValkeyMajorVersion.V9_1);
 	let tier = $derived((form?.tier as ValkeyTier$options) ?? ValkeyTier.HIGH_AVAILABILITY);
 	let memory = $derived((form?.memory as ValkeyMemory$options) ?? ValkeyMemory.GB_1);
 	let maxMemoryPolicy = $derived(
@@ -123,6 +127,12 @@
 	>
 		{#each environments ?? [] as env (env.environment.name)}
 			<option value={env.environment.name}>{env.environment.name}</option>
+		{/each}
+	</Select>
+
+	<Select size="small" label="Desired version" name="version" required bind:value={version}>
+		{#each Object.values(ValkeyMajorVersion) as opt (opt)}
+			<option value={opt}>{majorVersionLabel(opt)}</option>
 		{/each}
 	</Select>
 

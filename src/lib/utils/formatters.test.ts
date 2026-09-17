@@ -3,6 +3,7 @@ import {
 	euroValueFormatter,
 	formatKubernetesCPU,
 	formatKubernetesMemory,
+	majorVersionLabel,
 	numberFormatter,
 	percentageFormatter
 } from './formatters';
@@ -166,6 +167,17 @@ describe('formatters', () => {
 			expect(result01).toContain('0,01');
 			expect(result001).toContain('€');
 			expect(result001).toContain('0');
+		});
+	});
+
+	describe('majorVersionLabel', () => {
+		test('formats major-version enum members', () => {
+			expect(majorVersionLabel('V9_1')).toBe('v9.1');
+			expect(majorVersionLabel('V2_19')).toBe('v2.19');
+		});
+
+		test('formats members without a minor part', () => {
+			expect(majorVersionLabel('V1')).toBe('v1');
 		});
 	});
 
