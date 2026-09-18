@@ -4,12 +4,14 @@ query CVEDetails($identifier: String!) {
 		identifier
 		title
 		severity
-		cvssScore
 		detailsLink
-		priority
-		epssScore
-		epssPercentile
-		hasKevEntry
-		knownRansomwareUse
+		riskAssessment {
+			cvssScore
+			priority
+			epssScore
+			epssPercentile
+			hasKevEntry
+			knownRansomwareUse
+		}
 	}
 }

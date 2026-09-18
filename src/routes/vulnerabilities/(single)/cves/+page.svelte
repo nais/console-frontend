@@ -56,15 +56,15 @@
 
 		const firstIndexForPriority: Record<string, number> = {};
 		edges.forEach((edge, index) => {
-			if (!(edge.node.priority in firstIndexForPriority)) {
-				firstIndexForPriority[edge.node.priority] = index;
+			if (!(edge.node.riskAssessment.priority in firstIndexForPriority)) {
+				firstIndexForPriority[edge.node.riskAssessment.priority] = index;
 			}
 		});
 
 		return [...edges].sort((a, b) => {
 			const priorityDiff =
-				(firstIndexForPriority[a.node.priority] ?? 0) -
-				(firstIndexForPriority[b.node.priority] ?? 0);
+				(firstIndexForPriority[a.node.riskAssessment.priority] ?? 0) -
+				(firstIndexForPriority[b.node.riskAssessment.priority] ?? 0);
 			if (priorityDiff !== 0) return priorityDiff;
 			return (severityRank[b.node.severity] ?? -1) - (severityRank[a.node.severity] ?? -1);
 		});
@@ -135,20 +135,24 @@
 								<Td>
 									<a href="/vulnerabilities/{cve.identifier}">{cve.identifier}</a>
 								</Td>
-								<Td><PriorityBadge priority={cve.priority} /></Td>
+								<Td><PriorityBadge priority={cve.riskAssessment.priority} /></Td>
 								<Td>
 									<span class="severity-badge {cve.severity}">{cve.severity}</span>
 								</Td>
-								<Td>{cve.cvssScore !== null ? cve.cvssScore.toFixed(1) : '—'}</Td>
+								<Td
+									>{cve.riskAssessment.cvssScore !== null
+										? cve.riskAssessment.cvssScore.toFixed(1)
+										: '—'}</Td
+								>
 								<Td>
 									<span>{cve.title}</span>
 								</Td>
 								<Td>
 									<PrioritySignals
-										hasKevEntry={cve.hasKevEntry}
-										knownRansomwareUse={cve.knownRansomwareUse}
-										epssScore={cve.epssScore}
-										epssPercentile={cve.epssPercentile}
+										hasKevEntry={cve.riskAssessment.hasKevEntry}
+										knownRansomwareUse={cve.riskAssessment.knownRansomwareUse}
+										epssScore={cve.riskAssessment.epssScore}
+										epssPercentile={cve.riskAssessment.epssPercentile}
 										showEmpty
 									/>
 								</Td>

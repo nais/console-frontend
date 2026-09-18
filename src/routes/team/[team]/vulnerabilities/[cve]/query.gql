@@ -5,12 +5,14 @@ query TeamCVEPage($identifier: String!, $team: Slug!) {
 		title
 		description
 		severity
-		cvssScore
 		detailsLink
-		hasKevEntry
-		knownRansomwareUse
-		epssScore
-		epssPercentile
+		riskAssessment {
+			cvssScore
+			hasKevEntry
+			knownRansomwareUse
+			epssScore
+			epssPercentile
+		}
 	}
 	team(slug: $team) {
 		viewerIsMember

@@ -92,13 +92,17 @@ query JobImageDetails($team: Slug!, $env: String!, $job: String!) @cache(policy:
 									id
 									identifier
 									package
-									priority
-									fixVersion
-									latestVersion
-									epssScore
-									epssPercentile
-									hasKevEntry
-									knownRansomwareUse
+									riskAssessment {
+										priority
+										epssScore
+										epssPercentile
+										hasKevEntry
+										knownRansomwareUse
+									}
+									remediation {
+										fixVersion
+										latestVersion
+									}
 								}
 							}
 						}
