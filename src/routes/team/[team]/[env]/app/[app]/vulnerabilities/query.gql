@@ -103,13 +103,17 @@ query ApplicationImageDetails($team: Slug!, $env: String!, $app: String!)
 									id
 									identifier
 									package
-									priority
-									fixVersion
-									latestVersion
-									epssScore
-									epssPercentile
-									hasKevEntry
-									knownRansomwareUse
+									riskAssessment {
+										priority
+										epssScore
+										epssPercentile
+										hasKevEntry
+										knownRansomwareUse
+									}
+									remediation {
+										fixVersion
+										latestVersion
+									}
 								}
 							}
 						}

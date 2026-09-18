@@ -79,7 +79,7 @@
 			</Alert>
 		{:else if $CVEDetails.data}
 			{const cve = $derived($CVEDetails.data.cve)}
-			{const priority = $derived(priorityDetails(cve.priority))}
+			{const priority = $derived(priorityDetails(cve.riskAssessment.priority))}
 			<div class="wrapper">
 				<div class="header">
 					<div class="title-row">
@@ -91,33 +91,35 @@
 				</div>
 
 				<section
-					class="priority-card {cve.priority.toLowerCase()}"
+					class="priority-card {cve.riskAssessment.priority.toLowerCase()}"
 					aria-labelledby="priority-heading"
 				>
 					<div class="priority-card-header">
 						<div>
 							<Detail as="p">Operational priority</Detail>
 							<Heading as="h2" size="medium" id="priority-heading">
-								<PriorityBadge priority={cve.priority} /> priority
+								<PriorityBadge priority={cve.riskAssessment.priority} /> priority
 							</Heading>
 						</div>
 						<BodyShort size="small" class="priority-guidance">{priority.guidance}</BodyShort>
 					</div>
 					<PrioritySignals
-						hasKevEntry={cve.hasKevEntry}
-						knownRansomwareUse={cve.knownRansomwareUse}
-						epssScore={cve.epssScore}
-						epssPercentile={cve.epssPercentile}
+						hasKevEntry={cve.riskAssessment.hasKevEntry}
+						knownRansomwareUse={cve.riskAssessment.knownRansomwareUse}
+						epssScore={cve.riskAssessment.epssScore}
+						epssPercentile={cve.riskAssessment.epssPercentile}
 					/>
 				</section>
 
 				<div class="card">
 					<Heading as="h2" size="small" spacing>Details</Heading>
 					<dl class="details-list">
-						{#if cve.cvssScore !== null && cve.cvssScore !== undefined}
+						{#if cve.riskAssessment.cvssScore !== null && cve.riskAssessment.cvssScore !== undefined}
 							<div>
 								<Detail as="dt">CVSS score</Detail>
-								<BodyShort as="dd"><strong>{cve.cvssScore.toFixed(1)}</strong></BodyShort>
+								<BodyShort as="dd"
+									><strong>{cve.riskAssessment.cvssScore.toFixed(1)}</strong></BodyShort
+								>
 							</div>
 						{/if}
 						<div>
@@ -172,11 +174,11 @@
 												<Detail as="dt">Package</Detail>
 												<BodyShort as="dd"><code>{vuln.package}</code></BodyShort>
 											</div>
-											{#if vuln.fixVersion}
+											{#if vuln.remediation.fixVersion}
 												<div class="detail-row">
 													<Detail as="dt">Fix version</Detail>
 													<BodyShort as="dd"
-														><code>{formatFixVersion(vuln.fixVersion)}</code></BodyShort
+														><code>{formatFixVersion(vuln.remediation.fixVersion)}</code></BodyShort
 													>
 												</div>
 											{/if}

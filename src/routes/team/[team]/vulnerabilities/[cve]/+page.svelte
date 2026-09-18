@@ -205,10 +205,12 @@
 			<section aria-labelledby="cve-details">
 				<Heading as="h2" size="small" spacing id="cve-details">Details</Heading>
 				<dl class="details-list">
-					{#if cve.cvssScore}
+					{#if cve.riskAssessment.cvssScore}
 						<div>
 							<Detail as="dt">CVSS score</Detail>
-							<BodyShort as="dd"><strong>{cve.cvssScore.toFixed(1)}</strong></BodyShort>
+							<BodyShort as="dd"
+								><strong>{cve.riskAssessment.cvssScore.toFixed(1)}</strong></BodyShort
+							>
 						</div>
 					{/if}
 					<div>
@@ -235,10 +237,10 @@
 				{/if}
 
 				<PrioritySignals
-					hasKevEntry={cve.hasKevEntry}
-					knownRansomwareUse={cve.knownRansomwareUse}
-					epssScore={cve.epssScore}
-					epssPercentile={cve.epssPercentile}
+					hasKevEntry={cve.riskAssessment.hasKevEntry}
+					knownRansomwareUse={cve.riskAssessment.knownRansomwareUse}
+					epssScore={cve.riskAssessment.epssScore}
+					epssPercentile={cve.riskAssessment.epssPercentile}
 				/>
 			</section>
 		</div>
@@ -343,20 +345,24 @@
 												<Detail as="dt">Workloads</Detail>
 												<Detail as="dd">{group.nodes.length} affected</Detail>
 											</div>
-											{#if group.nodes[0]?.vulnerability.fixVersion}
+											{#if group.nodes[0]?.vulnerability.remediation.fixVersion}
 												<div>
 													<Detail as="dt">Fix version</Detail>
 													<Detail as="dd"
-														><code>{formatFixVersion(group.nodes[0].vulnerability.fixVersion)}</code
+														><code
+															>{formatFixVersion(
+																group.nodes[0].vulnerability.remediation.fixVersion
+															)}</code
 														></Detail
 													>
 												</div>
 											{/if}
-											{#if group.nodes[0]?.vulnerability.latestVersion}
+											{#if group.nodes[0]?.vulnerability.remediation.latestVersion}
 												<div>
 													<Detail as="dt">Latest version</Detail>
 													<Detail as="dd"
-														><code>{group.nodes[0].vulnerability.latestVersion}</code></Detail
+														><code>{group.nodes[0].vulnerability.remediation.latestVersion}</code
+														></Detail
 													>
 												</div>
 											{/if}
