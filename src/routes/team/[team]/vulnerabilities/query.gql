@@ -24,7 +24,6 @@ query TeamVulnerabilities($team: Slug!) {
 			highWorkloadCount
 			elevatedWorkloadCount
 			monitorWorkloadCount
-			noSbomWorkloadCount
 			countsByPriority {
 				knownExploited
 				highRisk

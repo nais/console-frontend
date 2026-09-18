@@ -10025,11 +10025,6 @@ type TeamVulnerabilitySummary {
   """
   monitorWorkloadCount: Int!
 
-  """
-  Number of workloads without a software bill of materials (SBOM) attached.
-  """
-  noSbomWorkloadCount: Int!
-
   """Risk score of the team."""
   riskScore: Int!
 
