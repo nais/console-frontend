@@ -3,12 +3,13 @@
 	import BulkSuppressCVE, {
 		type BulkSuppressWorkload
 	} from '$lib/domain/vulnerability/BulkSuppressCVE.svelte';
+	import PrioritySignals from '$lib/domain/vulnerability/priority/PrioritySignals.svelte';
 	import WorkloadLink from '$lib/domain/workload/WorkloadLink.svelte';
 	import ExternalLink from '$lib/ui/ExternalLink.svelte';
 	import GraphErrors from '$lib/ui/GraphErrors.svelte';
 	import { formatImageRef } from '$lib/utils/image';
 
-	import { suppressionStateLabels } from '$lib/utils/vulnerabilities';
+	import { formatFixVersion, suppressionStateLabels } from '$lib/utils/vulnerabilities';
 	import {
 		Alert,
 		BodyShort,
@@ -204,10 +205,12 @@
 			<section aria-labelledby="cve-details">
 				<Heading as="h2" size="small" spacing id="cve-details">Details</Heading>
 				<dl class="details-list">
-					{#if cve.cvssScore}
+					{#if cve.riskAssessment.cvssScore !== null && cve.riskAssessment.cvssScore !== undefined}
 						<div>
-							<Detail as="dt">CVSS Score</Detail>
-							<BodyShort as="dd"><strong>{cve.cvssScore.toFixed(1)}</strong></BodyShort>
+							<Detail as="dt">CVSS score</Detail>
+							<BodyShort as="dd"
+								><strong>{cve.riskAssessment.cvssScore.toFixed(1)}</strong></BodyShort
+							>
 						</div>
 					{/if}
 					<div>
@@ -219,17 +222,26 @@
 							>
 						</BodyShort>
 					</div>
-					<div>
-						<Detail as="dt">More Information</Detail>
-						<BodyShort as="dd">
-							{#if hasDetailsLink(cve.detailsLink)}
+					{#if hasDetailsLink(cve.detailsLink)}
+						<div>
+							<Detail as="dt">More Information</Detail>
+							<BodyShort as="dd">
 								<ExternalLink href={cve.detailsLink}>View full details</ExternalLink>
-							{:else}
-								No link available
-							{/if}
-						</BodyShort>
-					</div>
+							</BodyShort>
+						</div>
+					{/if}
 				</dl>
+
+				{#if cve.description}
+					<BodyShort spacing>{cve.description}</BodyShort>
+				{/if}
+
+				<PrioritySignals
+					hasKevEntry={cve.riskAssessment.hasKevEntry}
+					knownRansomwareUse={cve.riskAssessment.knownRansomwareUse}
+					epssScore={cve.riskAssessment.epssScore}
+					epssPercentile={cve.riskAssessment.epssPercentile}
+				/>
 			</section>
 		</div>
 	{:else if hasOtherErrors($TeamCVEPage.errors)}
@@ -333,6 +345,27 @@
 												<Detail as="dt">Workloads</Detail>
 												<Detail as="dd">{group.nodes.length} affected</Detail>
 											</div>
+											{#if group.nodes[0]?.vulnerability.remediation.fixVersion}
+												<div>
+													<Detail as="dt">Fix version</Detail>
+													<Detail as="dd"
+														><code
+															>{formatFixVersion(
+																group.nodes[0].vulnerability.remediation.fixVersion
+															)}</code
+														></Detail
+													>
+												</div>
+											{/if}
+											{#if group.nodes[0]?.vulnerability.remediation.latestVersion}
+												<div>
+													<Detail as="dt">Latest version</Detail>
+													<Detail as="dd"
+														><code>{group.nodes[0].vulnerability.remediation.latestVersion}</code
+														></Detail
+													>
+												</div>
+											{/if}
 										</dl>
 									</div>
 								</div>
