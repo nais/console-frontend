@@ -457,6 +457,7 @@
 			<div class="chart h-64">
 				<AreaChart
 					series={cpuChartData}
+					seriesLayout="overlap"
 					x="timestamp"
 					y="value"
 					brush={{
@@ -620,6 +621,7 @@
 			<div class="chart h-64">
 				<AreaChart
 					series={memoryChartData}
+					seriesLayout="overlap"
 					x="timestamp"
 					y="value"
 					brush={{
