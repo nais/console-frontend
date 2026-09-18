@@ -205,7 +205,7 @@
 			<section aria-labelledby="cve-details">
 				<Heading as="h2" size="small" spacing id="cve-details">Details</Heading>
 				<dl class="details-list">
-					{#if cve.riskAssessment.cvssScore}
+{#if cve.riskAssessment.cvssScore !== null && cve.riskAssessment.cvssScore !== undefined}
 						<div>
 							<Detail as="dt">CVSS score</Detail>
 							<BodyShort as="dd"
