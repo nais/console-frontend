@@ -47,8 +47,6 @@
 					?.elevatedWorkloadCount}
 				monitorWorkloadCount={$TeamVulnerabilities.data.team.vulnerabilitySummary
 					?.monitorWorkloadCount}
-				noSbomWorkloadCount={$TeamVulnerabilities.data.team.vulnerabilitySummary
-					?.noSbomWorkloadCount}
 				knownExploitedCount={$TeamVulnerabilities.data.team.vulnerabilitySummary?.countsByPriority
 					?.knownExploited}
 			/>
