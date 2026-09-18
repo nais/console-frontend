@@ -18,13 +18,13 @@ query TeamVulnerabilities($team: Slug!) {
 				totalCount
 			}
 		}
-
 		vulnerabilitySummary {
 			sbomCount
 			coverage
 			highWorkloadCount
 			elevatedWorkloadCount
 			monitorWorkloadCount
+			noSbomWorkloadCount
 			countsByPriority {
 				knownExploited
 				highRisk
