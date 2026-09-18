@@ -1528,6 +1528,9 @@ type CPUScalingStrategy {
 }
 
 type CVE implements Node {
+  """CVSS score of the CVE."""
+  cvssScore: Float @deprecated(reason: "Use riskAssessment.cvssScore instead.")
+
   """Description of the CVE."""
   description: String!
 
@@ -12283,6 +12286,9 @@ type VulnerabilityFixSample {
   totalWorkloads: Int!
 }
 
+"""
+Package version information that helps remediate an image vulnerability.
+"""
 type VulnerabilityRemediation {
   """First known package version that contains a fix."""
   fixVersion: String
@@ -12293,6 +12299,9 @@ type VulnerabilityRemediation {
   latestVersion: String
 }
 
+"""
+Threat intelligence and scoring signals used to prioritize a vulnerability.
+"""
 type VulnerabilityRiskAssessment {
   """CVSS score of the vulnerability."""
   cvssScore: Float
