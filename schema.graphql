@@ -1498,23 +1498,11 @@ type CPUScalingStrategy {
 }
 
 type CVE implements Node {
-  """CVSS score of the CVE."""
-  cvssScore: Float
-
   """Description of the CVE."""
   description: String!
 
   """Link to the CVE details."""
   detailsLink: String!
-
-  """EPSS percentile of the CVE."""
-  epssPercentile: Float
-
-  """EPSS score of the CVE (probability of exploitation)."""
-  epssScore: Float
-
-  """Whether the CVE has a Known Exploited Vulnerability (KEV) entry."""
-  hasKevEntry: Boolean!
 
   """The globally unique ID of the CVE."""
   id: ID!
@@ -1522,11 +1510,8 @@ type CVE implements Node {
   """The unique identifier of the CVE. E.g. CVE-****-****."""
   identifier: String!
 
-  """Whether the CVE is known to be used in ransomware attacks."""
-  knownRansomwareUse: Boolean!
-
-  """Priority of the CVE based on threat intelligence signals."""
-  priority: CVEPriority!
+  """Risk and threat intelligence signals used to prioritize the CVE."""
+  riskAssessment: VulnerabilityRiskAssessment!
 
   """Severity of the CVE."""
   severity: ImageVulnerabilitySeverity!
@@ -3290,23 +3275,8 @@ type IDPortenAuthIntegration implements AuthIntegration {
 }
 
 type ImageVulnerability implements Node {
-  """CVSS score of the vulnerability."""
-  cvssScore: Float
-
   """Description of the vulnerability."""
   description: String!
-
-  """EPSS percentile of the vulnerability (0-1)."""
-  epssPercentile: Float
-
-  """EPSS score of the vulnerability."""
-  epssScore: Float
-
-  """First known package version that contains a fix."""
-  fixVersion: String
-
-  """Whether the vulnerability has a CISA KEV entry."""
-  hasKevEntry: Boolean!
 
   """The globally unique ID of the image vulnerability node."""
   id: ID!
@@ -3314,20 +3284,16 @@ type ImageVulnerability implements Node {
   """The unique identifier of the vulnerability. E.g. CVE-****-****."""
   identifier: String!
 
-  """Whether the vulnerability has known ransomware use."""
-  knownRansomwareUse: Boolean!
-
-  """
-  Latest available version of the package, which may include changes beyond
-  just the fix for this vulnerability. Null if unknown.
-  """
-  latestVersion: String
-
   """Package name of the vulnerability."""
   package: String!
 
-  """Priority of the vulnerability based on threat intelligence signals."""
-  priority: CVEPriority!
+  """Package version information used to remediate the image vulnerability."""
+  remediation: VulnerabilityRemediation!
+
+  """
+  Risk and threat intelligence signals used to prioritize the image vulnerability.
+  """
+  riskAssessment: VulnerabilityRiskAssessment!
 
   """Severity of the vulnerability."""
   severity: ImageVulnerabilitySeverity!
@@ -11677,6 +11643,38 @@ type VulnerabilityFixSample {
 
   """Total number of workloads with this severity of vulnerabilities."""
   totalWorkloads: Int!
+}
+
+type VulnerabilityRemediation {
+  """First known package version that contains a fix."""
+  fixVersion: String
+
+  """
+  Latest available version of the package, which may include changes beyond the fix.
+  """
+  latestVersion: String
+}
+
+type VulnerabilityRiskAssessment {
+  """CVSS score of the vulnerability."""
+  cvssScore: Float
+
+  """EPSS percentile of the vulnerability (0-1)."""
+  epssPercentile: Float
+
+  """EPSS score, representing the estimated probability of exploitation."""
+  epssScore: Float
+
+  """
+  Whether the vulnerability has a CISA Known Exploited Vulnerabilities (KEV) entry.
+  """
+  hasKevEntry: Boolean!
+
+  """Whether the vulnerability is known to be used in ransomware attacks."""
+  knownRansomwareUse: Boolean!
+
+  """Operational priority derived from the available risk signals."""
+  priority: CVEPriority!
 }
 
 """Ordering options when fetching vulnerability summaries for workloads."""

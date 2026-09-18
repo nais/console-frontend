@@ -14,16 +14,18 @@ query CVES($first: Int, $last: Int, $before: Cursor, $after: Cursor, $orderBy: C
 			node {
 				id
 				identifier
-				priority
 				severity
 				title
 				description
 				detailsLink
-				cvssScore
-				epssScore
-				epssPercentile
-				hasKevEntry
-				knownRansomwareUse
+				riskAssessment {
+					priority
+					cvssScore
+					epssScore
+					epssPercentile
+					hasKevEntry
+					knownRansomwareUse
+				}
 				workloads {
 					pageInfo {
 						totalCount
