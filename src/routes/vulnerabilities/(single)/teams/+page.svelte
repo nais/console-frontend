@@ -75,7 +75,7 @@
 	const viewLabels: Record<string, string> = {
 		table: 'Table (current)',
 		cards: 'Card grid',
-		grouped: 'Grouped by urgency'
+		grouped: 'Grouped by priority'
 	};
 	let view = $derived(
 		(views as readonly string[]).includes(page.url.searchParams.get('view') ?? '')
