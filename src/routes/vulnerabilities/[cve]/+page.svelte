@@ -176,7 +176,7 @@
 											</div>
 											{#if vuln.remediation.fixVersion}
 												<div class="detail-row">
-													<Detail as="dt">Fix version</Detail>
+													<Detail as="dt">Fixed in</Detail>
 													<BodyShort as="dd"
 														><code>{formatFixVersion(vuln.remediation.fixVersion)}</code></BodyShort
 													>
