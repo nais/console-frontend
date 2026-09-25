@@ -9,11 +9,7 @@
 	import GraphErrors from '$lib/ui/GraphErrors.svelte';
 	import { formatImageRef } from '$lib/utils/image';
 
-	import {
-		formatFixVersion,
-		suppressionStateLabels,
-		vulnerabilityDetailsLinkLabel
-	} from '$lib/utils/vulnerabilities';
+	import { formatFixVersion, suppressionStateLabels } from '$lib/utils/vulnerabilities';
 	import {
 		Alert,
 		BodyShort,
@@ -243,9 +239,7 @@
 				{/if}
 				{#if hasDetailsLink(cve.detailsLink)}
 					<BodyShort>
-						<ExternalLink href={cve.detailsLink}>
-							{vulnerabilityDetailsLinkLabel(cve.detailsLink, cve.identifier)}
-						</ExternalLink>
+						<ExternalLink href={cve.detailsLink}>View the CVE details</ExternalLink>
 					</BodyShort>
 				{/if}
 			</section>

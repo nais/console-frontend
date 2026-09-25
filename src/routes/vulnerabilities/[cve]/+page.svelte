@@ -11,11 +11,7 @@
 	import Pagination from '$lib/ui/Pagination.svelte';
 	import { formatImageRef } from '$lib/utils/image';
 	import { changeParams } from '$lib/utils/searchparams';
-	import {
-		formatFixVersion,
-		suppressionStateLabels,
-		vulnerabilityDetailsLinkLabel
-	} from '$lib/utils/vulnerabilities';
+	import { formatFixVersion, suppressionStateLabels } from '$lib/utils/vulnerabilities';
 	import {
 		Alert,
 		BodyShort,
@@ -142,9 +138,7 @@
 					<Heading as="h2" size="small" spacing>Details</Heading>
 					<BodyShort>
 						{#if hasDetailsLink(cve.detailsLink)}
-							<ExternalLink href={cve.detailsLink}>
-								{vulnerabilityDetailsLinkLabel(cve.detailsLink, cve.identifier)}
-							</ExternalLink>
+							<ExternalLink href={cve.detailsLink}>View the CVE details</ExternalLink>
 						{:else}
 							No link available
 						{/if}
