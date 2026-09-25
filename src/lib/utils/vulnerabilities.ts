@@ -105,8 +105,10 @@ export function formatFixVersion(value: string | null | undefined): string | nul
 
 	const trimmed = value.trim();
 	if (!trimmed) return null;
+	const minimumVersion = /^>=\s*(\d\S*)$/.exec(trimmed);
+	if (minimumVersion) return `${minimumVersion[1]} or later`;
 	if (/^(>=|<=|==|>|<|=)\s*/i.test(trimmed)) return trimmed;
-	if (/^v?\d/.test(trimmed)) return `>= ${trimmed.replace(/^v/i, '')}`;
+	if (/^v?\d/.test(trimmed)) return `${trimmed.replace(/^v/i, '')} or later`;
 
 	return trimmed;
 }

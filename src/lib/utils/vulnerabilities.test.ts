@@ -307,8 +307,8 @@ describe('vulnerabilities', () => {
 		});
 
 		describe('comparison operators', () => {
-			test('returns >= expressions unchanged', () => {
-				expect(formatFixVersion('>=2.25.5')).toBe('>=2.25.5');
+			test('displays >= expressions as a minimum fixed version', () => {
+				expect(formatFixVersion('>=2.25.5')).toBe('2.25.5 or later');
 			});
 
 			test('returns <= expressions unchanged', () => {
@@ -331,18 +331,18 @@ describe('vulnerabilities', () => {
 				expect(formatFixVersion('=2.25.5')).toBe('=2.25.5');
 			});
 
-			test('preserves a space between the operator and the version', () => {
-				expect(formatFixVersion('>= 2.25.5')).toBe('>= 2.25.5');
+			test('accepts a space between the operator and the version', () => {
+				expect(formatFixVersion('>= 2.25.5')).toBe('2.25.5 or later');
 			});
 		});
 
 		describe('bare version numbers', () => {
-			test('prefixes a bare version with >=', () => {
-				expect(formatFixVersion('2.25.5')).toBe('>= 2.25.5');
+			test('describes a bare version as the minimum fixed version', () => {
+				expect(formatFixVersion('1.0.1')).toBe('1.0.1 or later');
 			});
 
-			test('strips a lowercase v prefix and adds >=', () => {
-				expect(formatFixVersion('v2.25.5')).toBe('>= 2.25.5');
+			test('strips a lowercase v prefix', () => {
+				expect(formatFixVersion('v2.25.5')).toBe('2.25.5 or later');
 			});
 
 			test('does not recognize an uppercase V prefix as a version', () => {
@@ -350,7 +350,7 @@ describe('vulnerabilities', () => {
 			});
 
 			test('trims surrounding whitespace before formatting', () => {
-				expect(formatFixVersion('  2.25.5  ')).toBe('>= 2.25.5');
+				expect(formatFixVersion('  2.25.5  ')).toBe('2.25.5 or later');
 			});
 		});
 

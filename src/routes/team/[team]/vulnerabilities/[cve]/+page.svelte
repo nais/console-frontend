@@ -347,7 +347,7 @@
 											</div>
 											{#if group.nodes[0]?.vulnerability.remediation.fixVersion}
 												<div>
-													<Detail as="dt">Fix version</Detail>
+													<Detail as="dt">Fixed in</Detail>
 													<Detail as="dd"
 														><code
 															>{formatFixVersion(
