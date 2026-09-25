@@ -429,6 +429,7 @@ html {
 }
 
 .severity-badge {
+	border: none;
 	border-radius: var(--ax-radius-4);
 	padding: 2px 8px;
 	font-weight: var(--ax-font-weight-bold);

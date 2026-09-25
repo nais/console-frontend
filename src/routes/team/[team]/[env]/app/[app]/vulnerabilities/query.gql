@@ -103,6 +103,7 @@ query ApplicationImageDetails($team: Slug!, $env: String!, $app: String!)
 									id
 									identifier
 									package
+									severitySince
 									riskAssessment {
 										priority
 										epssScore

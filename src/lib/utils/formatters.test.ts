@@ -1,11 +1,13 @@
 import {
 	capitalizeFirstLetter,
+	daysOpenLabel,
 	euroValueFormatter,
 	formatKubernetesCPU,
 	formatKubernetesMemory,
 	majorVersionLabel,
 	numberFormatter,
-	percentageFormatter
+	percentageFormatter,
+	pluralize
 } from './formatters';
 
 describe('formatters', () => {
@@ -178,6 +180,40 @@ describe('formatters', () => {
 
 		test('formats members without a minor part', () => {
 			expect(majorVersionLabel('V1')).toBe('v1');
+		});
+	});
+
+	describe('pluralize', () => {
+		test('returns singular for count of 1', () => {
+			expect(pluralize(1, 'workload')).toBe('workload');
+		});
+
+		test('returns plural for count other than 1', () => {
+			expect(pluralize(0, 'workload')).toBe('workloads');
+			expect(pluralize(2, 'workload')).toBe('workloads');
+		});
+
+		test('supports irregular plurals', () => {
+			expect(pluralize(1, 'finding', 'findings')).toBe('finding');
+			expect(pluralize(3, 'finding', 'findings')).toBe('findings');
+		});
+	});
+
+	describe('daysOpenLabel', () => {
+		test('labels today distinctly', () => {
+			expect(daysOpenLabel(new Date())).toBe('Open today');
+		});
+
+		test('uses singular for one day', () => {
+			expect(daysOpenLabel(new Date(Date.now() - 25 * 60 * 60 * 1000))).toBe('Open 1 day');
+		});
+
+		test('uses plural for multiple days', () => {
+			expect(daysOpenLabel(new Date(Date.now() - 12 * 24 * 60 * 60 * 1000))).toBe('Open 12 days');
+		});
+
+		test('never goes negative for clock skew', () => {
+			expect(daysOpenLabel(new Date(Date.now() + 60 * 60 * 1000))).toBe('Open today');
 		});
 	});
 

@@ -1537,11 +1537,26 @@ type CVE implements Node {
   """Link to the CVE details."""
   detailsLink: String!
 
+  """EPSS percentile of the CVE (0-1)."""
+  epssPercentile: Float @deprecated(reason: "Use riskAssessment.epssPercentile instead.")
+
+  """EPSS score of the CVE (probability of exploitation)."""
+  epssScore: Float @deprecated(reason: "Use riskAssessment.epssScore instead.")
+
+  """Whether the CVE has a Known Exploited Vulnerability (KEV) entry."""
+  hasKevEntry: Boolean! @deprecated(reason: "Use riskAssessment.hasKevEntry instead.")
+
   """The globally unique ID of the CVE."""
   id: ID!
 
   """The unique identifier of the CVE. E.g. CVE-****-****."""
   identifier: String!
+
+  """Whether the CVE is known to be used in ransomware attacks."""
+  knownRansomwareUse: Boolean! @deprecated(reason: "Use riskAssessment.knownRansomwareUse instead.")
+
+  """Priority of the CVE based on threat intelligence signals."""
+  priority: CVEPriority! @deprecated(reason: "Use riskAssessment.priority instead.")
 
   """Risk and threat intelligence signals used to prioritize the CVE."""
   riskAssessment: VulnerabilityRiskAssessment!
@@ -3437,8 +3452,23 @@ type IDPortenAuthIntegration implements AuthIntegration {
 }
 
 type ImageVulnerability implements Node {
+  """CVSS score of the vulnerability."""
+  cvssScore: Float @deprecated(reason: "Use riskAssessment.cvssScore instead.")
+
   """Description of the vulnerability."""
   description: String!
+
+  """EPSS percentile of the vulnerability (0-1)."""
+  epssPercentile: Float @deprecated(reason: "Use riskAssessment.epssPercentile instead.")
+
+  """EPSS score of the vulnerability."""
+  epssScore: Float @deprecated(reason: "Use riskAssessment.epssScore instead.")
+
+  """First known package version that contains a fix."""
+  fixVersion: String @deprecated(reason: "Use remediation.fixVersion instead.")
+
+  """Whether the vulnerability has a CISA KEV entry."""
+  hasKevEntry: Boolean! @deprecated(reason: "Use riskAssessment.hasKevEntry instead.")
 
   """The globally unique ID of the image vulnerability node."""
   id: ID!
@@ -3446,8 +3476,17 @@ type ImageVulnerability implements Node {
   """The unique identifier of the vulnerability. E.g. CVE-****-****."""
   identifier: String!
 
+  """Whether the vulnerability has known ransomware use."""
+  knownRansomwareUse: Boolean! @deprecated(reason: "Use riskAssessment.knownRansomwareUse instead.")
+
+  """Latest available version of the package."""
+  latestVersion: String @deprecated(reason: "Use remediation.latestVersion instead.")
+
   """Package name of the vulnerability."""
   package: String!
+
+  """Priority of the vulnerability based on threat intelligence signals."""
+  priority: CVEPriority! @deprecated(reason: "Use riskAssessment.priority instead.")
 
   """Package version information used to remediate the image vulnerability."""
   remediation: VulnerabilityRemediation!
@@ -12306,7 +12345,7 @@ type VulnerabilityRiskAssessment {
   """CVSS score of the vulnerability."""
   cvssScore: Float
 
-  """EPSS percentile of the vulnerability (0-1)."""
+  """EPSS percentile of the vulnerability as a percentage (0-100)."""
   epssPercentile: Float
 
   """EPSS score, representing the estimated probability of exploitation."""
