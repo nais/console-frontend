@@ -2,7 +2,7 @@
 	import { graphql } from '$houdini';
 	import IssuePills from '$lib/domain/issues/IssuePills.svelte';
 	import SurfaceCard from '$lib/ui/SurfaceCard.svelte';
-	import { Loader, Tooltip } from '@nais/ds-svelte-community';
+	import { Loader, Tag, Tooltip } from '@nais/ds-svelte-community';
 	import {
 		BriefcaseClockIcon,
 		PackageIcon,
@@ -49,12 +49,26 @@
 			team(slug: $team) {
 				environment(name: $env) {
 					application(name: $app) {
+						urgentVulnerabilityIssues: issues(
+							first: 1
+							filter: { issueType: EXTERNAL_INGRESS_URGENT_VULNERABILITY }
+						) {
+							edges {
+								node {
+									... on ExternalIngressUrgentVulnerabilityIssue {
+										priorityUrgent
+									}
+								}
+							}
+						}
 						image {
 							sbom {
 								status
 							}
 							vulnerabilitySummary {
-								critical
+								countsByPriority {
+									knownExploited
+								}
 							}
 						}
 					}
@@ -73,7 +87,9 @@
 								status
 							}
 							vulnerabilitySummary {
-								critical
+								countsByPriority {
+									knownExploited
+								}
 							}
 						}
 					}
@@ -148,7 +164,23 @@
 			: $jobVulnQuery?.data?.team?.environment?.job?.image
 	);
 
-	let criticalVulnerabilities = $derived(imageData?.vulnerabilitySummary?.critical);
+	let urgentVulnerabilityCount = $derived.by(() => {
+		if (workloadType !== 'app') return undefined;
+		const issue =
+			$vulnQuery?.data?.team?.environment?.application?.urgentVulnerabilityIssues?.edges[0]?.node;
+		return issue?.__typename === 'ExternalIngressUrgentVulnerabilityIssue'
+			? issue.priorityUrgent
+			: undefined;
+	});
+	let knownExploitedCount = $derived(
+		imageData?.vulnerabilitySummary?.countsByPriority?.knownExploited
+	);
+	// Prefer the internet-facing+known-exploited (urgent) count when there is
+	// one; otherwise fall back to the plain known-exploited count.
+	let showingUrgent = $derived((urgentVulnerabilityCount ?? 0) > 0);
+	let vulnerabilityValue = $derived(
+		showingUrgent ? urgentVulnerabilityCount : (knownExploitedCount ?? undefined)
+	);
 	let sbomProcessing = $derived(imageData?.sbom?.status === 'PROCESSING');
 
 	$effect(() => {
@@ -245,21 +277,28 @@
 			<a
 				href="{basePath}/vulnerabilities"
 				class="metric"
-				class:danger={(criticalVulnerabilities ?? 0) > 0}
-				class:success={criticalVulnerabilities === 0}
+				class:danger={(vulnerabilityValue ?? 0) > 0}
+				class:success={vulnerabilityValue === 0}
 			>
 				<div
 					class="metric-icon"
-					class:danger={(criticalVulnerabilities ?? 0) > 0}
-					class:success={criticalVulnerabilities === 0}
+					class:danger={(vulnerabilityValue ?? 0) > 0}
+					class:success={vulnerabilityValue === 0}
 				>
 					<VirusIcon />
 				</div>
 				<div class="metric-body">
 					<span class="metric-value"
-						>{criticalVulnerabilities !== undefined ? criticalVulnerabilities : '-'}</span
+						>{vulnerabilityValue !== undefined ? vulnerabilityValue : '-'}</span
 					>
-					<span class="metric-label">Critical vulns</span>
+					{#if showingUrgent}
+						<span class="metric-label">
+							<Tag size="xsmall" variant="error-moderate">Internet-facing</Tag>
+							<Tag size="xsmall" variant="warning-moderate">Known exploited</Tag>
+						</span>
+					{:else}
+						<span class="metric-label">Known exploited</span>
+					{/if}
 				</div>
 				{#if sbomProcessing}
 					<div class="metric-processing">

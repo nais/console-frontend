@@ -31,18 +31,31 @@ query TenantVulnerabilites(
 					}
 				}
 				vulnerabilitySummary {
+					countsByPriority {
+						knownExploited
+						highRisk
+						elevatedRisk
+						monitor
+					}
 					critical
 					high
 					medium
 					low
 					unassigned
 					riskScore
+					riskScoreTrend
 					coverage
 				}
 			}
 		}
 	}
 	vulnerabilitySummary {
+		countsByPriority {
+			knownExploited
+			highRisk
+			elevatedRisk
+			monitor
+		}
 		critical
 		high
 		medium
@@ -51,5 +64,10 @@ query TenantVulnerabilites(
 		riskScore
 		coverage
 		sbomCount
+	}
+	exploitedWorkloads: vulnerabilitySummaries(first: 1, filter: { hasKevEntry: true }) {
+		pageInfo {
+			totalCount
+		}
 	}
 }

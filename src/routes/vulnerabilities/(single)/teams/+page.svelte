@@ -1,6 +1,12 @@
 <script lang="ts">
 	import { page } from '$app/state';
 	import { OrderDirection, TeamOrderField } from '$houdini';
+	import { priorityDetails } from '$lib/domain/vulnerability/priority/priority';
+	import RiskTrendIndicator from '$lib/domain/vulnerability/RiskTrendIndicator.svelte';
+	import { sbomCoverageTier } from '$lib/utils/vulnerabilities';
+	import PrototypeSwitcher from '$lib/domain/vulnerability/prototype/PrototypeSwitcher.svelte';
+	import TeamsCardGrid from '$lib/domain/vulnerability/prototype/TeamsCardGrid.svelte';
+	import TeamsGroupedByUrgency from '$lib/domain/vulnerability/prototype/TeamsGroupedByUrgency.svelte';
 	import GraphErrors from '$lib/ui/GraphErrors.svelte';
 	import IconLabel from '$lib/ui/IconLabel.svelte';
 	import { urlToOrderDirection, urlToOrderField } from '$lib/ui/OrderByMenu.svelte';
@@ -9,8 +15,10 @@
 	import {
 		BodyLong,
 		Heading,
+		HelpText,
 		Loader,
 		Table,
+		Tag,
 		Tbody,
 		Td,
 		Th,
@@ -25,7 +33,7 @@
 	let { TenantVulnerabilites } = $derived(data);
 
 	const currentOrderField = $derived(
-		urlToOrderField(TeamOrderField, TeamOrderField.RISK_SCORE, page.url)
+		urlToOrderField(TeamOrderField, TeamOrderField.KNOWN_EXPLOITED_VULNERABILITIES, page.url)
 	);
 
 	const currentOrderDirection = $derived(urlToOrderDirection(page.url, OrderDirection.DESC));
@@ -55,40 +63,25 @@
 		);
 	};
 
-	const severityColumns = [
-		{
-			sortKey: TeamOrderField.CRITICAL_VULNERABILITIES,
-			label: 'Critical',
-			summaryKey: 'critical',
-			className: 'CRITICAL'
-		},
-		{
-			sortKey: TeamOrderField.HIGH_VULNERABILITIES,
-			label: 'High',
-			summaryKey: 'high',
-			className: 'HIGH'
-		},
-		{
-			sortKey: TeamOrderField.MEDIUM_VULNERABILITIES,
-			label: 'Medium',
-			summaryKey: 'medium',
-			className: 'MEDIUM'
-		},
-		{
-			sortKey: TeamOrderField.LOW_VULNERABILITIES,
-			label: 'Low',
-			summaryKey: 'low',
-			className: 'LOW'
-		},
-		{
-			sortKey: TeamOrderField.UNASSIGNED_VULNERABILITIES,
-			label: 'Unassigned',
-			summaryKey: 'unassigned',
-			className: 'UNASSIGNED'
-		}
+	const priorityColumns = [
+		{ label: 'High', summaryKey: 'highRisk', priority: 'HIGH' },
+		{ label: 'Elevated', summaryKey: 'elevatedRisk', priority: 'ELEVATED' },
+		{ label: 'Monitor', summaryKey: 'monitor', priority: 'MONITOR' }
 	] as const;
 
-	type SeverityKey = 'critical' | 'high' | 'medium' | 'low' | 'unassigned';
+	type PriorityCountKey = 'highRisk' | 'elevatedRisk' | 'monitor';
+
+	const views = ['table', 'cards', 'grouped'] as const;
+	const viewLabels: Record<string, string> = {
+		table: 'Table (current)',
+		cards: 'Card grid',
+		grouped: 'Grouped by priority'
+	};
+	let view = $derived(
+		(views as readonly string[]).includes(page.url.searchParams.get('view') ?? '')
+			? (page.url.searchParams.get('view') as (typeof views)[number])
+			: 'table'
+	);
 </script>
 
 <div class="wrapper">
@@ -96,8 +89,9 @@
 	<div>
 		<Heading as="h2" spacing>Team Security Posture</Heading>
 		<BodyLong>
-			A detailed breakdown of all teams with workloads, showing the number of vulnerabilities by
-			severity, total risk score, SBOM coverage, and workload count. Use this table to explore and
+			A detailed breakdown of all teams with workloads, showing vulnerabilities by priority and
+			severity, total risk score, SBOM coverage, and workload count. Vulnerability counts are the
+			number of vulnerabilities, not the number of workloads affected. Use this table to explore and
 			compare security posture across teams.
 		</BodyLong>
 	</div>
@@ -106,14 +100,36 @@
 		<div class="loading-centered" role="status" aria-label="Loading">
 			<Loader size="3xlarge" />
 		</div>
+	{:else if view === 'cards'}
+		<TeamsCardGrid teams={$TenantVulnerabilites.data?.teams.edges ?? []} />
+	{:else if view === 'grouped'}
+		<TeamsGroupedByUrgency teams={$TenantVulnerabilites.data?.teams.edges ?? []} />
 	{:else}
 		<div class="table-scroll" role="region" aria-label="Team security posture">
 			<Table size="small" sort={tableSortState} onsortchange={handleSortChange}>
 				<Thead>
 					<Tr>
 						<Th sortable={true} sortKey={TeamOrderField.SLUG}>Team</Th>
-						{#each severityColumns as column (column.sortKey)}
-							<Th sortable={true} sortKey={column.sortKey}>{column.label}</Th>
+						<Th
+							class="known-exploited-column"
+							sortable={true}
+							sortKey={TeamOrderField.KNOWN_EXPLOITED_VULNERABILITIES}
+							>Known exploited vulnerabilities</Th
+						>
+						{#each priorityColumns as column (column.summaryKey)}
+							<Th>
+								<span class="priority-column-heading">
+									{column.label}
+									<HelpText
+										title="What is {column.label} priority?"
+										strategy="fixed"
+										placement="top"
+									>
+										{priorityDetails(column.priority).criteria}
+										{priorityDetails(column.priority).guidance}
+									</HelpText>
+								</span>
+							</Th>
 						{/each}
 						<Th sortable={true} sortKey={TeamOrderField.RISK_SCORE}>Risk score</Th>
 						<Th sortable={true} sortKey={TeamOrderField.SBOM_COVERAGE}>SBOM coverage</Th>
@@ -130,16 +146,26 @@
 									icon={PersonGroupIcon}
 								/>
 							</Td>
-							{#each severityColumns as column (column.sortKey)}
+							<Td class="severity-cell">
+								{#if team.vulnerabilitySummary.countsByPriority.knownExploited > 0}
+									<a href="/team/{team.slug}/vulnerabilities">
+										<Tag variant="error-moderate" size="small"
+											>{team.vulnerabilitySummary.countsByPriority.knownExploited}</Tag
+										>
+									</a>
+								{:else}
+									<CheckmarkIcon class="no-vulnerability" />
+								{/if}
+							</Td>
+							{#each priorityColumns as column (column.summaryKey)}
 								<Td class="severity-cell">
 									{const count = $derived(
-										team.vulnerabilitySummary[column.summaryKey as SeverityKey]
+										team.vulnerabilitySummary.countsByPriority[
+											column.summaryKey as PriorityCountKey
+										]
 									)}
 									{#if count > 0}
-										<a
-											href="/team/{team.slug}/vulnerabilities"
-											class="severity-badge {column.className}"
-										>
+										<a href="/team/{team.slug}/vulnerabilities">
 											{count}
 										</a>
 									{:else}
@@ -152,12 +178,13 @@
 									<a href="/team/{team.slug}/vulnerabilities" class="severity-badge RISK_SCORE">
 										{team.vulnerabilitySummary.riskScore}
 									</a>
+									<RiskTrendIndicator trend={team.vulnerabilitySummary.riskScoreTrend} />
 								{:else}
 									<CheckmarkIcon class="no-vulnerability" />
 								{/if}
 							</Td>
 							<Td class="numeric-cell">
-								<span class:low-coverage={team.vulnerabilitySummary.coverage < 100}>
+								<span class={sbomCoverageTier(team.vulnerabilitySummary.coverage)}>
 									{team.vulnerabilitySummary.coverage.toFixed(0)}%
 								</span>
 							</Td>
@@ -197,6 +224,10 @@
 	/>
 </div>
 
+{#if import.meta.env.DEV}
+	<PrototypeSwitcher variants={views} current={view} labels={viewLabels} paramName="view" />
+{/if}
+
 <style>
 	.wrapper {
 		display: flex;
@@ -205,7 +236,7 @@
 		margin-top: var(--spacing-layout);
 	}
 
-	.severity-cell {
+	:global(.severity-cell) {
 		text-align: center;
 	}
 
@@ -220,8 +251,24 @@
 		margin: 0 auto;
 	}
 
-	.low-coverage {
+	.success {
+		color: var(--ax-text-success);
+		font-weight: var(--ax-font-weight-bold);
+	}
+
+	.warning {
 		color: var(--ax-text-warning);
 		font-weight: var(--ax-font-weight-bold);
+	}
+
+	.danger {
+		color: var(--ax-text-danger);
+		font-weight: var(--ax-font-weight-bold);
+	}
+
+	.priority-column-heading {
+		display: inline-flex;
+		align-items: center;
+		gap: var(--ax-space-4);
 	}
 </style>

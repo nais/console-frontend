@@ -1499,7 +1499,7 @@ type CPUScalingStrategy {
 
 type CVE implements Node {
   """CVSS score of the CVE."""
-  cvssScore: Float
+  cvssScore: Float @deprecated(reason: "Use riskAssessment.cvssScore instead.")
 
   """Description of the CVE."""
   description: String!
@@ -1507,14 +1507,14 @@ type CVE implements Node {
   """Link to the CVE details."""
   detailsLink: String!
 
-  """EPSS percentile of the CVE."""
-  epssPercentile: Float
+  """EPSS percentile of the CVE (0-1)."""
+  epssPercentile: Float @deprecated(reason: "Use riskAssessment.epssPercentile instead.")
 
   """EPSS score of the CVE (probability of exploitation)."""
-  epssScore: Float
+  epssScore: Float @deprecated(reason: "Use riskAssessment.epssScore instead.")
 
   """Whether the CVE has a Known Exploited Vulnerability (KEV) entry."""
-  hasKevEntry: Boolean!
+  hasKevEntry: Boolean! @deprecated(reason: "Use riskAssessment.hasKevEntry instead.")
 
   """The globally unique ID of the CVE."""
   id: ID!
@@ -1523,10 +1523,13 @@ type CVE implements Node {
   identifier: String!
 
   """Whether the CVE is known to be used in ransomware attacks."""
-  knownRansomwareUse: Boolean!
+  knownRansomwareUse: Boolean! @deprecated(reason: "Use riskAssessment.knownRansomwareUse instead.")
 
   """Priority of the CVE based on threat intelligence signals."""
-  priority: CVEPriority!
+  priority: CVEPriority! @deprecated(reason: "Use riskAssessment.priority instead.")
+
+  """Risk and threat intelligence signals used to prioritize the CVE."""
+  riskAssessment: VulnerabilityRiskAssessment!
 
   """Severity of the CVE."""
   severity: ImageVulnerabilitySeverity!
@@ -3226,10 +3229,20 @@ type GenericKubernetesResourceActivityLogEntryData {
 
 """
 GitHub Actions OIDC token claims captured at the time of an apply operation.
+See https://docs.github.com/en/actions/reference/security/oidc#custom-claims-provided-by-github
 """
 type GitHubActorClaims {
   """The GitHub username that triggered the workflow."""
   actor: String!
+
+  """The ID of the personal account that initiated the workflow run."""
+  actorID: String
+
+  """The target branch of the pull request in a workflow run."""
+  baseRef: String
+
+  """The check run ID of the current job."""
+  checkRunID: String
 
   """The GitHub deployment environment name, if the job targets one."""
   environment: String!
@@ -3239,19 +3252,39 @@ type GitHubActorClaims {
   """
   eventName: String!
 
+  """The source branch of the pull request in a workflow run."""
+  headRef: String
+
   """
   The ref of the reusable workflow called by this job, if any. E.g. 'org/repo/.github/workflows/deploy.yaml@refs/heads/main'.
   """
   jobWorkflowRef: String!
 
+  """The commit SHA for the reusable workflow file, if the job uses one."""
+  jobWorkflowSha: String
+
   """The git ref that triggered the workflow, e.g. 'refs/heads/main'."""
   ref: String!
+
+  """The type of ref, e.g. 'branch'."""
+  refType: String
 
   """The repository name that triggered the workflow, e.g. 'org/repo'."""
   repository: String!
 
   """The immutable numeric GitHub repository ID."""
   repositoryID: String!
+
+  """The name of the organization in which the repository is stored."""
+  repositoryOwner: String
+
+  """The ID of the organization in which the repository is stored."""
+  repositoryOwnerID: String
+
+  """
+  The visibility of the repository, e.g. 'internal', 'private', or 'public'.
+  """
+  repositoryVisibility: String
 
   """The attempt number of the workflow run (1-indexed)."""
   runAttempt: String!
@@ -3261,8 +3294,24 @@ type GitHubActorClaims {
   """
   runID: String!
 
+  """The number of times this workflow has been run."""
+  runNumber: String
+
+  """
+  The type of runner used by the job, e.g. 'github-hosted' or 'self-hosted'.
+  """
+  runnerEnvironment: String
+
   """The path to the workflow file, e.g. '.github/workflows/deploy.yaml'."""
   workflow: String!
+
+  """
+  The ref path to the workflow, e.g. 'org/repo/.github/workflows/deploy.yaml@refs/heads/main'.
+  """
+  workflowRef: String
+
+  """The commit SHA for the workflow file."""
+  workflowSha: String
 }
 
 input GrantPostgresAccessInput {
@@ -3291,22 +3340,22 @@ type IDPortenAuthIntegration implements AuthIntegration {
 
 type ImageVulnerability implements Node {
   """CVSS score of the vulnerability."""
-  cvssScore: Float
+  cvssScore: Float @deprecated(reason: "Use riskAssessment.cvssScore instead.")
 
   """Description of the vulnerability."""
   description: String!
 
   """EPSS percentile of the vulnerability (0-1)."""
-  epssPercentile: Float
+  epssPercentile: Float @deprecated(reason: "Use riskAssessment.epssPercentile instead.")
 
   """EPSS score of the vulnerability."""
-  epssScore: Float
+  epssScore: Float @deprecated(reason: "Use riskAssessment.epssScore instead.")
 
   """First known package version that contains a fix."""
-  fixVersion: String
+  fixVersion: String @deprecated(reason: "Use remediation.fixVersion instead.")
 
   """Whether the vulnerability has a CISA KEV entry."""
-  hasKevEntry: Boolean!
+  hasKevEntry: Boolean! @deprecated(reason: "Use riskAssessment.hasKevEntry instead.")
 
   """The globally unique ID of the image vulnerability node."""
   id: ID!
@@ -3315,13 +3364,24 @@ type ImageVulnerability implements Node {
   identifier: String!
 
   """Whether the vulnerability has known ransomware use."""
-  knownRansomwareUse: Boolean!
+  knownRansomwareUse: Boolean! @deprecated(reason: "Use riskAssessment.knownRansomwareUse instead.")
+
+  """Latest available version of the package."""
+  latestVersion: String @deprecated(reason: "Use remediation.latestVersion instead.")
 
   """Package name of the vulnerability."""
   package: String!
 
   """Priority of the vulnerability based on threat intelligence signals."""
-  priority: CVEPriority!
+  priority: CVEPriority! @deprecated(reason: "Use riskAssessment.priority instead.")
+
+  """Package version information used to remediate the image vulnerability."""
+  remediation: VulnerabilityRemediation!
+
+  """
+  Risk and threat intelligence signals used to prioritize the image vulnerability.
+  """
+  riskAssessment: VulnerabilityRiskAssessment!
 
   """Severity of the vulnerability."""
   severity: ImageVulnerabilitySeverity!
@@ -3355,6 +3415,19 @@ type ImageVulnerabilityEdge {
 
 """Input for filtering image vulnerabilities."""
 input ImageVulnerabilityFilter {
+  """
+  Only return vulnerabilities with (true) or without (false) a CISA Known
+  Exploited Vulnerabilities (KEV) catalog entry.
+  """
+  hasKevEntry: Boolean
+
+  """
+  Only return vulnerabilities whose priority is exactly one of the given values.
+  URGENT is workload-contextual and cannot be resolved at image scope, so
+  including it in this set is rejected as an error.
+  """
+  priorities: [CVEPriority!]
+
   """Only return vulnerabilities with the given severity."""
   severity: ImageVulnerabilitySeverity
   severitySince: Time
@@ -3462,11 +3535,18 @@ type ImageVulnerabilitySummaryCountsByPriority {
   """Vulnerabilities with strong exploitation indicators."""
   highRisk: Int!
 
+  """
+  Number of vulnerabilities with a CISA Known Exploited Vulnerabilities (KEV) entry.
+  """
+  knownExploited: Int!
+
   """Vulnerabilities that should be monitored."""
   monitor: Int!
 
-  """Known-exploited vulnerabilities that require immediate action."""
-  urgent: Int!
+  """
+  Deprecated. Always 0 at image and summary scope; use knownExploited for the KEV count.
+  """
+  urgent: Int! @deprecated(reason: "Always 0 at image and summary scope. Use knownExploited for the KEV count.")
 }
 
 """Vulnerability counts grouped by severity."""
@@ -6352,6 +6432,27 @@ type Query {
 
   """Get the mean time to fix history for all teams."""
   vulnerabilityFixHistory(from: Date!): VulnerabilityFixHistory!
+
+  """List per-workload vulnerability summaries across all teams."""
+  vulnerabilitySummaries(
+    """Get items after this cursor."""
+    after: Cursor
+
+    """Get items before this cursor."""
+    before: Cursor
+    filter: TenantVulnerabilitySummaryFilter
+
+    """
+    Get the first n items in the connection. This can be used in combination with the after parameter.
+    """
+    first: Int
+
+    """
+    Get the last n items in the connection. This can be used in combination with the before parameter.
+    """
+    last: Int
+    orderBy: VulnerabilitySummaryOrder
+  ): WorkloadVulnerabilitySummaryConnection!
 
   """Get the vulnerability summary for the tenant."""
   vulnerabilitySummary: TenantVulnerabilitySummary!
@@ -9790,6 +9891,11 @@ enum TeamOrderField {
   """The accumulated number of high vulnerabilities of the teams workloads."""
   HIGH_VULNERABILITIES
 
+  """
+  The accumulated number of known exploited vulnerabilities (KEV) of the teams workloads.
+  """
+  KNOWN_EXPLOITED_VULNERABILITIES
+
   """The accumulated number of low vulnerabilities of the teams workloads."""
   LOW_VULNERABILITIES
 
@@ -9931,8 +10037,28 @@ type TeamVulnerabilitySummary {
   """Number of vulnerabilities with severity CRITICAL."""
   critical: Int! @deprecated(reason: "Use countsBySeverity.critical instead.")
 
+  """
+  Number of workloads whose highest vulnerability priority is ELEVATED.
+  
+  Counts workloads, not findings. Use countsByPriority.elevatedRisk for the
+  number of findings. Each workload is counted under exactly one priority, and
+  workloads without unsuppressed findings are not counted at all, so these
+  counts do not necessarily sum to the total number of workloads.
+  """
+  elevatedWorkloadCount: Int!
+
   """Number of vulnerabilities with severity HIGH."""
   high: Int! @deprecated(reason: "Use countsBySeverity.high instead.")
+
+  """
+  Number of workloads whose highest vulnerability priority is HIGH.
+  
+  Counts workloads, not findings. Use countsByPriority.highRisk for the number
+  of findings. Each workload is counted under exactly one priority, and
+  workloads without unsuppressed findings are not counted at all, so these
+  counts do not necessarily sum to the total number of workloads.
+  """
+  highWorkloadCount: Int!
 
   """Timestamp of the last update of the vulnerability summary."""
   lastUpdated: Time
@@ -9942,6 +10068,16 @@ type TeamVulnerabilitySummary {
 
   """Number of vulnerabilities with severity MEDIUM."""
   medium: Int! @deprecated(reason: "Use countsBySeverity.medium instead.")
+
+  """
+  Number of workloads whose highest vulnerability priority is MONITOR.
+  
+  Counts workloads, not findings. Use countsByPriority.monitor for the number
+  of findings. Each workload is counted under exactly one priority, and
+  workloads without unsuppressed findings are not counted at all, so these
+  counts do not necessarily sum to the total number of workloads.
+  """
+  monitorWorkloadCount: Int!
 
   """Risk score of the team."""
   riskScore: Int!
@@ -9962,7 +10098,21 @@ input TeamVulnerabilitySummaryFilter {
   environmentName: String
 
   """
-  Only return vulnerability summaries at or above the given vulnerability priority.
+  Only return vulnerability summaries with (true) or without (false) at least
+  one CISA Known Exploited Vulnerabilities (KEV) catalog entry.
+  """
+  hasKevEntry: Boolean
+
+  """
+  Only return vulnerability summaries whose highest priority is exactly one of
+  the given values. URGENT is workload-contextual and cannot be resolved at
+  summary scope, so including it in this set is rejected as an error.
+  """
+  priorities: [CVEPriority!]
+
+  """
+  Deprecated. Use priorities instead. When set, this is treated as a
+  single-element priorities list. Ignored if priorities is also set.
   """
   priority: CVEPriority
 }
@@ -9974,6 +10124,9 @@ input TeamWorkloadsFilter {
 
   """Filter by user-defined labels. All listed labels must match."""
   labels: [LabelFilter!]
+
+  """Only return workloads with the given SBOM pipeline status."""
+  sbomStatus: SBOMStatus
 }
 
 type TenantVulnerabilitySummary {
@@ -10009,6 +10162,22 @@ type TenantVulnerabilitySummary {
 
   """Number of vulnerabilities with severity UNASSIGNED."""
   unassigned: Int! @deprecated(reason: "Use countsBySeverity.unassigned instead.")
+}
+
+"""Input for filtering vulnerability summaries across all teams."""
+input TenantVulnerabilitySummaryFilter {
+  """
+  Only return vulnerability summaries with (true) or without (false) at least
+  one CISA Known Exploited Vulnerabilities (KEV) catalog entry.
+  """
+  hasKevEntry: Boolean
+
+  """
+  Only return vulnerability summaries whose highest priority is exactly one of
+  the given values. URGENT is workload-contextual and cannot be resolved at
+  summary scope, so including it in this set is rejected as an error.
+  """
+  priorities: [CVEPriority!]
 }
 
 """
@@ -11564,6 +11733,44 @@ type VulnerabilityFixSample {
   totalWorkloads: Int!
 }
 
+"""
+Package version information that helps remediate an image vulnerability.
+"""
+type VulnerabilityRemediation {
+  """First known package version that contains a fix."""
+  fixVersion: String
+
+  """
+  Latest available version of the package, which may include changes beyond the fix.
+  """
+  latestVersion: String
+}
+
+"""
+Threat intelligence and scoring signals used to prioritize a vulnerability.
+"""
+type VulnerabilityRiskAssessment {
+  """CVSS score of the vulnerability."""
+  cvssScore: Float
+
+  """EPSS percentile of the vulnerability as a percentage (0-100)."""
+  epssPercentile: Float
+
+  """EPSS score, representing the estimated probability of exploitation."""
+  epssScore: Float
+
+  """
+  Whether the vulnerability has a CISA Known Exploited Vulnerabilities (KEV) entry.
+  """
+  hasKevEntry: Boolean!
+
+  """Whether the vulnerability is known to be used in ransomware attacks."""
+  knownRansomwareUse: Boolean!
+
+  """Operational priority derived from the available risk signals."""
+  priority: CVEPriority!
+}
+
 """Ordering options when fetching vulnerability summaries for workloads."""
 input VulnerabilitySummaryOrder {
   """The direction to order items by."""
@@ -11610,7 +11817,7 @@ enum VulnerabilitySummaryOrderByField {
   Urgent vulnerabilities are known to be actively exploited and should be
   prioritized for immediate action.
   """
-  VULNERABILITY_PRIORITY_URGENT
+  VULNERABILITY_PRIORITY_URGENT @deprecated(reason: "Backed by a count that is always 0. URGENT requires workload internet exposure, so ordering by this value has no effect and falls back to a stable name sort.")
 
   """Order by risk score."""
   VULNERABILITY_RISK_SCORE

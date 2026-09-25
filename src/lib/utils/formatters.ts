@@ -48,6 +48,21 @@ export function euroValueFormatter(
 	});
 }
 
+export function pluralize(
+	count: number,
+	singular: string,
+	plural: string = `${singular}s`
+): string {
+	return count === 1 ? singular : plural;
+}
+
+export function daysOpenLabel(since: Date, prefix: string = 'Open'): string {
+	const days = Math.max(0, Math.floor((Date.now() - since.getTime()) / (24 * 60 * 60 * 1000)));
+	if (days === 0) return `${prefix} today`;
+	if (days === 1) return `${prefix} 1 day`;
+	return `${prefix} ${days} days`;
+}
+
 export function formatKubernetesMemory(bytes: number): string {
 	// Define the units used in Kubernetes memory representation.
 	const units = ['Ei', 'Pi', 'Ti', 'Gi', 'Mi', 'Ki'];

@@ -1,17 +1,20 @@
 <script lang="ts">
 	import { page } from '$app/state';
 	import { CVEOrderField, OrderDirection } from '$houdini';
+	import PriorityBadge from '$lib/domain/vulnerability/priority/PriorityBadge.svelte';
+	import PrioritySignals from '$lib/domain/vulnerability/priority/PrioritySignals.svelte';
+	import CvesCardGrid from '$lib/domain/vulnerability/prototype/CvesCardGrid.svelte';
+	import CvesGroupedByPriority from '$lib/domain/vulnerability/prototype/CvesGroupedByPriority.svelte';
+	import PrototypeSwitcher from '$lib/domain/vulnerability/prototype/PrototypeSwitcher.svelte';
 	import GraphErrors from '$lib/ui/GraphErrors.svelte';
 	import { urlToOrderDirection, urlToOrderField } from '$lib/ui/OrderByMenu.svelte';
 	import Pagination from '$lib/ui/Pagination.svelte';
 	import { changeParams } from '$lib/utils/searchparams';
-	import { severityToVariant } from '$lib/utils/vulnerabilities';
 	import {
 		BodyLong,
 		Heading,
 		Loader,
 		Table,
-		Tag,
 		Tbody,
 		Td,
 		Th,
@@ -25,15 +28,43 @@
 	let { CVES } = $derived(data);
 
 	const currentOrderField = $derived(
-		urlToOrderField(CVEOrderField, CVEOrderField.CVSS_SCORE, page.url)
+		urlToOrderField(CVEOrderField, CVEOrderField.PRIORITY, page.url)
 	);
 
-	const currentOrderDirection = $derived(urlToOrderDirection(page.url, OrderDirection.DESC));
+	const currentOrderDirection = $derived(urlToOrderDirection(page.url, OrderDirection.ASC));
 
 	const tableSortState = $derived.by((): TableSortState => ({
 		orderBy: currentOrderField,
 		direction: currentOrderDirection === OrderDirection.ASC ? 'ascending' : 'descending'
 	}));
+
+	const severityRank: Record<string, number> = {
+		CRITICAL: 4,
+		HIGH: 3,
+		MEDIUM: 2,
+		LOW: 1,
+		UNASSIGNED: 0
+	};
+
+	const sortedEdges = $derived.by(() => {
+		const edges = $CVES.data?.cves.edges ?? [];
+		if (currentOrderField !== CVEOrderField.PRIORITY) return edges;
+
+		const firstIndexForPriority: Record<string, number> = {};
+		edges.forEach((edge, index) => {
+			if (!(edge.node.riskAssessment.priority in firstIndexForPriority)) {
+				firstIndexForPriority[edge.node.riskAssessment.priority] = index;
+			}
+		});
+
+		return [...edges].sort((a, b) => {
+			const priorityDiff =
+				(firstIndexForPriority[a.node.riskAssessment.priority] ?? 0) -
+				(firstIndexForPriority[b.node.riskAssessment.priority] ?? 0);
+			if (priorityDiff !== 0) return priorityDiff;
+			return (severityRank[b.node.severity] ?? -1) - (severityRank[a.node.severity] ?? -1);
+		});
+	});
 
 	const handleSortChange = (key: string) => {
 		const nextDirection =
@@ -54,6 +85,18 @@
 			{ noScroll: true }
 		);
 	};
+
+	const views = ['table', 'cards', 'grouped'] as const;
+	const viewLabels: Record<string, string> = {
+		table: 'Table (current)',
+		cards: 'Card grid',
+		grouped: 'Grouped by priority'
+	};
+	let view = $derived(
+		(views as readonly string[]).includes(page.url.searchParams.get('view') ?? '')
+			? (page.url.searchParams.get('view') as (typeof views)[number])
+			: 'table'
+	);
 </script>
 
 <div class="wrapper">
@@ -62,8 +105,8 @@
 		<Heading as="h2" spacing>CVE Database</Heading>
 		<BodyLong>
 			Browse the complete list of Common Vulnerabilities and Exposures (CVEs) affecting your
-			workloads. Each CVE entry includes severity rating, CVSS score, description, and the number of
-			affected workloads.
+			workloads. Each CVE entry includes severity, threat signals, and the number of affected
+			workloads.
 		</BodyLong>
 	</div>
 
@@ -71,15 +114,20 @@
 		<div class="loading-centered" role="status" aria-label="Loading">
 			<Loader size="3xlarge" />
 		</div>
+	{:else if view === 'cards'}
+		<CvesCardGrid cves={sortedEdges} />
+	{:else if view === 'grouped'}
+		<CvesGroupedByPriority cves={sortedEdges} />
 	{:else}
 		<div class="table-scroll" role="region" aria-label="CVE database">
 			<Table size="small" sort={tableSortState} onsortchange={handleSortChange}>
 				<Thead>
 					<Tr>
 						<Th sortable={true} sortKey={CVEOrderField.IDENTIFIER}>CVE</Th>
+						<Th sortable={true} sortKey={CVEOrderField.PRIORITY}>Priority</Th>
 						<Th sortable={true} sortKey={CVEOrderField.SEVERITY}>Severity</Th>
-						<Th sortable={true} sortKey={CVEOrderField.CVSS_SCORE}>CVSS</Th>
 						<Th>Title</Th>
+						<Th>Threat signals</Th>
 						<Th sortable={true} sortKey={CVEOrderField.AFFECTED_WORKLOADS_COUNT}>Workloads</Th>
 					</Tr>
 				</Thead>
@@ -93,18 +141,28 @@
 							</Td>
 						</Tr>
 					{:else}
-						{#each $CVES.data?.cves.edges ?? [] as { node: cve } (cve.identifier)}
+						{#each sortedEdges as { node: cve } (cve.identifier)}
 							<Tr>
 								<Td>
 									<a href="/vulnerabilities/{cve.identifier}">{cve.identifier}</a>
 								</Td>
+								<Td><PriorityBadge priority={cve.riskAssessment.priority} /></Td>
 								<Td>
-									<Tag variant={severityToVariant(cve.severity)} size="small"
-										>{cve.severity.toLowerCase()}</Tag
-									>
+									<span class="severity-badge {cve.severity}">{cve.severity}</span>
 								</Td>
-								<Td>{cve.cvssScore?.toFixed(1) ?? 'N/A'}</Td>
-								<Td>{cve.title}</Td>
+								<Td>
+									<span>{cve.title}</span>
+								</Td>
+								<Td>
+									<PrioritySignals
+										hasKevEntry={cve.riskAssessment.hasKevEntry}
+										knownRansomwareUse={cve.riskAssessment.knownRansomwareUse}
+										epssScore={cve.riskAssessment.epssScore}
+										epssPercentile={cve.riskAssessment.epssPercentile}
+										showEmpty
+										showHelpText={false}
+									/>
+								</Td>
 								<Td>{cve.workloads.pageInfo.totalCount}</Td>
 							</Tr>
 						{:else}
@@ -141,6 +199,10 @@
 		}}
 	/>
 </div>
+
+{#if import.meta.env.DEV}
+	<PrototypeSwitcher variants={views} current={view} labels={viewLabels} paramName="view" />
+{/if}
 
 <style>
 	.wrapper {

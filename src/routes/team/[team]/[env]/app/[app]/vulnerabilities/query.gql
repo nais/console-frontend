@@ -7,69 +7,152 @@ query ApplicationImageDetails($team: Slug!, $env: String!, $app: String!)
 				name
 			}
 			workload(name: $app) {
-				__typename
-				name
-				team {
-					slug
-				}
-				teamEnvironment {
-					environment {
-						name
-					}
-				}
-
-				image {
-					id
+				... on Application {
+					__typename
 					name
-					tag
-					digest
-					sbom {
-						status
-						processingStartedAt
+					team {
+						slug
 					}
-					activityLog @paginate(mode: SinglePage) {
-						pageInfo {
-							hasNextPage
-							endCursor
-							hasPreviousPage
-							startCursor
-							totalCount
-							pageStart
-							pageEnd
+					teamEnvironment {
+						environment {
+							name
 						}
+					}
+					ingresses {
+						type
+					}
+					urgentVulnerabilityIssues: issues(
+						first: 1
+						filter: { issueType: EXTERNAL_INGRESS_URGENT_VULNERABILITY }
+					) {
 						edges {
 							node {
-								id
-								__typename
-								...ActivityLogEntryFragment
+								... on ExternalIngressUrgentVulnerabilityIssue {
+									priorityUrgent
+								}
 							}
 						}
 					}
-					vulnerabilitySummary {
-						critical
-						high
-						medium
-						low
-						unassigned
-						riskScore
-						lastUpdated
-						staleImageTag
-					}
-					workloadReferences {
-						nodes {
-							workload {
-								id
-								__typename
-								team {
-									slug
+					image {
+						id
+						name
+						tag
+						digest
+						sbom {
+							status
+							processingStartedAt
+						}
+						activityLog @paginate(mode: SinglePage) {
+							pageInfo {
+								hasNextPage
+								endCursor
+								hasPreviousPage
+								startCursor
+								totalCount
+								pageStart
+								pageEnd
+							}
+							edges {
+								node {
+									id
+									__typename
+									...ActivityLogEntryFragment
 								}
-								teamEnvironment {
-									environment {
+							}
+						}
+						vulnerabilitySummary {
+							countsByPriority {
+								knownExploited
+								highRisk
+								elevatedRisk
+								monitor
+							}
+							critical
+							high
+							medium
+							low
+							unassigned
+							riskScore
+							lastUpdated
+							staleImageTag
+						}
+						workloadReferences {
+							edges {
+								node {
+									workload {
+										id
+										__typename
+										team {
+											slug
+										}
+										teamEnvironment {
+											environment {
+												name
+											}
+										}
 										name
 									}
 								}
-								name
 							}
+						}
+						handleFirst: vulnerabilities(
+							first: 50
+							filter: { hasKevEntry: true }
+							orderBy: { field: SEVERITY, direction: DESC }
+						) {
+							pageInfo {
+								totalCount
+							}
+							edges {
+								node {
+									id
+									identifier
+									package
+									severitySince
+									riskAssessment {
+										priority
+										epssScore
+										epssPercentile
+										hasKevEntry
+										knownRansomwareUse
+									}
+									remediation {
+										fixVersion
+										latestVersion
+									}
+								}
+							}
+						}
+						knownExploitedHigh: vulnerabilities(filter: { priorities: [HIGH], hasKevEntry: true }) {
+							pageInfo {
+								totalCount
+							}
+						}
+						knownExploitedElevated: vulnerabilities(
+							filter: { priorities: [ELEVATED], hasKevEntry: true }
+						) {
+							pageInfo {
+								totalCount
+							}
+						}
+						knownExploitedMonitor: vulnerabilities(
+							filter: { priorities: [MONITOR], hasKevEntry: true }
+						) {
+							pageInfo {
+								totalCount
+							}
+						}
+					}
+				}
+				... on Job {
+					__typename
+					name
+					team {
+						slug
+					}
+					teamEnvironment {
+						environment {
+							name
 						}
 					}
 				}

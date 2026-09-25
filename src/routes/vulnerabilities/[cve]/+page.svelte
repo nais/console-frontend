@@ -1,5 +1,8 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
+	import PriorityBadge from '$lib/domain/vulnerability/priority/PriorityBadge.svelte';
+	import PrioritySignals from '$lib/domain/vulnerability/priority/PrioritySignals.svelte';
+	import { priorityDetails } from '$lib/domain/vulnerability/priority/priority';
 	import WorkloadLink from '$lib/domain/workload/WorkloadLink.svelte';
 	import ExternalLink from '$lib/ui/ExternalLink.svelte';
 	import GraphErrors from '$lib/ui/GraphErrors.svelte';
@@ -8,13 +11,14 @@
 	import Pagination from '$lib/ui/Pagination.svelte';
 	import { formatImageRef } from '$lib/utils/image';
 	import { changeParams } from '$lib/utils/searchparams';
-	import { suppressionStateLabels } from '$lib/utils/vulnerabilities';
+	import { formatFixVersion, suppressionStateLabels } from '$lib/utils/vulnerabilities';
 	import {
 		Alert,
 		BodyShort,
 		Button,
 		Detail,
 		Heading,
+		HelpText,
 		Loader,
 		Search
 	} from '@nais/ds-svelte-community';
@@ -76,46 +80,69 @@
 			</Alert>
 		{:else if $CVEDetails.data}
 			{const cve = $derived($CVEDetails.data.cve)}
+			{const priority = $derived(priorityDetails(cve.riskAssessment.priority))}
 			<div class="wrapper">
 				<div class="header">
 					<div class="title-row">
 						<Heading as="h1" size="large">{cve.identifier}</Heading>
-						<span class="severity-badge {cve.severity}">{cve.severity}</span>
 					</div>
 					{#if cve.title}
-						<Detail>{cve.title}</Detail>
+						<Detail>CVE title</Detail>
+						<BodyShort>{cve.title}</BodyShort>
 					{/if}
 				</div>
 
+				<section
+					class="priority-card {cve.riskAssessment.priority.toLowerCase()}"
+					aria-labelledby="priority-heading"
+				>
+					<div class="priority-card-header">
+						<div>
+							<Detail as="p">Operational priority</Detail>
+							<Heading as="h2" size="medium" id="priority-heading">
+								<PriorityBadge priority={cve.riskAssessment.priority} />
+							</Heading>
+						</div>
+						<div class="priority-explanation">
+							<BodyShort size="small" class="priority-guidance">{priority.guidance}</BodyShort>
+						</div>
+					</div>
+				</section>
+
+				<div class="card risk-assessment-card">
+					<Heading as="h2" size="small">Severity and threat signals</Heading>
+					<div class="risk-assessment-content">
+						<div class="risk-assessment-group">
+							<Detail as="p">Severity and CVSS</Detail>
+							<div class="risk-assessment-values">
+								<span class="severity-badge {cve.severity}">Severity: {cve.severity}</span>
+								{#if cve.riskAssessment.cvssScore !== null && cve.riskAssessment.cvssScore !== undefined}
+									<span class="severity-badge {cve.severity} cvss-score-badge">
+										CVSS: {cve.riskAssessment.cvssScore.toFixed(1)}
+									</span>
+								{/if}
+							</div>
+						</div>
+						<div class="risk-assessment-signals">
+							<Detail as="p">Threat signals</Detail>
+							<PrioritySignals
+								hasKevEntry={cve.riskAssessment.hasKevEntry}
+								knownRansomwareUse={cve.riskAssessment.knownRansomwareUse}
+								epssScore={cve.riskAssessment.epssScore}
+								epssPercentile={cve.riskAssessment.epssPercentile}
+							/>
+						</div>
+					</div>
+				</div>
 				<div class="card">
 					<Heading as="h2" size="small" spacing>Details</Heading>
-					<dl class="details-list">
-						{#if cve.cvssScore}
-							<div>
-								<Detail as="dt">CVSS Score</Detail>
-								<BodyShort as="dd"><strong>{cve.cvssScore.toFixed(1)}</strong></BodyShort>
-							</div>
+					<BodyShort>
+						{#if hasDetailsLink(cve.detailsLink)}
+							<ExternalLink href={cve.detailsLink}>View the CVE details</ExternalLink>
+						{:else}
+							No link available
 						{/if}
-						<div>
-							<Detail as="dt">Severity</Detail>
-							<BodyShort as="dd">
-								<span
-									class="severity-badge {cve.severity}"
-									style="font-size: var(--ax-font-size-small)">{cve.severity}</span
-								>
-							</BodyShort>
-						</div>
-						<div>
-							<Detail as="dt">More Information</Detail>
-							<BodyShort as="dd">
-								{#if hasDetailsLink(cve.detailsLink)}
-									<ExternalLink href={cve.detailsLink}>View full details</ExternalLink>
-								{:else}
-									No link available
-								{/if}
-							</BodyShort>
-						</div>
-					</dl>
+					</BodyShort>
 				</div>
 			</div>
 		{:else if hasOtherErrors($CVEDetails.errors)}
@@ -148,6 +175,27 @@
 												<Detail as="dt">Package</Detail>
 												<BodyShort as="dd"><code>{vuln.package}</code></BodyShort>
 											</div>
+											{#if vuln.remediation.fixVersion}
+												<div class="detail-row">
+													<Detail as="dt">
+														<span class="fix-version-term">
+															Fixed in
+															<HelpText
+																title="How do I apply the fix?"
+																strategy="fixed"
+																placement="right"
+															>
+																Update the dependency to this version or later, then rebuild and
+																redeploy the image. If it's not relevant here, it can be suppressed
+																instead.
+															</HelpText>
+														</span>
+													</Detail>
+													<BodyShort as="dd"
+														><code>{formatFixVersion(vuln.remediation.fixVersion)}</code></BodyShort
+													>
+												</div>
+											{/if}
 											<div class="detail-row">
 												<Detail as="dt">Image</Detail>
 												{#if workload.image}
@@ -214,6 +262,12 @@
 		gap: var(--spacing-layout);
 	}
 
+	.fix-version-term {
+		display: inline-flex;
+		align-items: center;
+		gap: var(--ax-space-4);
+	}
+
 	.search-form {
 		display: flex;
 		gap: var(--ax-space-12);
@@ -261,6 +315,54 @@
 		gap: var(--ax-space-12);
 	}
 
+	.priority-card {
+		display: flex;
+		flex-direction: column;
+		gap: var(--ax-space-16);
+		padding: var(--ax-space-20);
+		border: 1px solid var(--ax-border-neutral-subtleA);
+		border-left: var(--ax-space-2) solid var(--ax-border-neutral-subtleA);
+		border-radius: var(--ax-radius-8);
+		background: var(--ax-neutral-100);
+	}
+
+	.priority-card.high {
+		border-left-color: var(--ax-border-warning);
+	}
+
+	.priority-card.urgent {
+		border-left-color: var(--ax-text-danger-decoration);
+	}
+
+	.priority-card-header {
+		display: flex;
+		align-items: start;
+		justify-content: space-between;
+		gap: var(--ax-space-16);
+	}
+
+	.priority-card :global(h2) {
+		display: flex;
+		align-items: center;
+		flex-wrap: wrap;
+		gap: var(--ax-space-8);
+		margin: var(--ax-space-4) 0 0;
+	}
+
+	.priority-guidance {
+		font-weight: var(--ax-font-weight-bold);
+		text-align: right;
+		color: var(--ax-text-neutral-subtle);
+	}
+
+	.priority-explanation {
+		display: flex;
+		flex-direction: column;
+		gap: var(--ax-space-4);
+		max-width: 48ch;
+		text-align: right;
+	}
+
 	.card {
 		padding: var(--ax-space-16);
 		border-radius: var(--ax-radius-8);
@@ -286,6 +388,72 @@
 		}
 	}
 
+	.risk-assessment-content {
+		display: grid;
+		grid-template-columns: auto 1fr;
+		align-items: end;
+		gap: var(--ax-space-24);
+	}
+
+	.risk-assessment-card {
+		display: flex;
+		flex-direction: column;
+		gap: var(--ax-space-16);
+		background: var(--ax-bg-neutral-soft);
+		border: 1px solid var(--ax-border-neutral-subtleA);
+	}
+
+	.risk-assessment-signals {
+		display: flex;
+		flex-direction: column;
+		gap: var(--ax-space-4);
+	}
+
+	.risk-assessment-signals :global(ul.signals) {
+		flex-wrap: nowrap;
+	}
+
+	.risk-assessment-group,
+	.risk-assessment-signals {
+		display: flex;
+		flex-direction: column;
+		gap: var(--ax-space-4);
+	}
+
+	.risk-assessment-values {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		gap: var(--ax-space-8);
+	}
+
+	.risk-assessment-content :global(dd) {
+		display: flex;
+		align-items: center;
+		gap: var(--ax-space-8);
+	}
+
+	@media (max-width: 767px) {
+		.risk-assessment-signals :global(ul.signals) {
+			flex-wrap: wrap;
+		}
+	}
+
+	@media (max-width: 767px) {
+		.priority-card-header {
+			flex-direction: column;
+		}
+
+		.priority-explanation {
+			max-width: none;
+			text-align: left;
+		}
+
+		.risk-assessment-content {
+			grid-template-columns: 1fr;
+		}
+	}
+
 	.count {
 		font-weight: normal;
 		color: var(--ax-text-neutral);
@@ -301,6 +469,14 @@
 	@media (max-width: 767px) {
 		.workload-container {
 			grid-template-columns: 1fr;
+		}
+
+		.priority-card-header {
+			flex-direction: column;
+		}
+
+		.priority-guidance {
+			text-align: left;
 		}
 	}
 

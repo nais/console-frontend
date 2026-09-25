@@ -1,16 +1,25 @@
 <script lang="ts">
+	import { page } from '$app/state';
 	import TeamCveSearch from '$lib/domain/vulnerability/TeamCveSearch.svelte';
 	import TeamMeanTimeToFixHistoryGraph from '$lib/domain/vulnerability/TeamMeanTimeToFixHistoryGraph.svelte';
 	import TeamVulnerabilityHistoryGraph from '$lib/domain/vulnerability/TeamVulnerabilityHistoryGraph.svelte';
+	import PrototypeSwitcher from '$lib/domain/vulnerability/prototype/PrototypeSwitcher.svelte';
+	import VulnerabilitySummaryVariantC from '$lib/domain/vulnerability/prototype/VulnerabilitySummaryVariantC.svelte';
 	import VulnerabilitySummaryMetrics from '$lib/domain/vulnerability/VulnerabilitySummaryMetrics.svelte';
 	import WorkloadsWithVulnerabilities from '$lib/domain/vulnerability/WorkloadsWithVulnerabilities.svelte';
 	import GraphErrors from '$lib/ui/GraphErrors.svelte';
-	import SurfaceCard from '$lib/ui/SurfaceCard.svelte';
 	import { BodyLong, Heading } from '@nais/ds-svelte-community';
 	import type { PageProps } from './$types';
 
 	let { data }: PageProps = $props();
 	let { TeamVulnerabilities, teamSlug } = $derived(data);
+
+	const variants = ['A', 'C'] as const;
+	let variant = $derived(
+		(variants as readonly string[]).includes(page.url.searchParams.get('variant') ?? '')
+			? (page.url.searchParams.get('variant') as (typeof variants)[number])
+			: 'A'
+	);
 </script>
 
 <GraphErrors errors={$TeamVulnerabilities.errors} />
@@ -18,11 +27,25 @@
 {#if $TeamVulnerabilities.data}
 	<div class="wrapper">
 		{#if $TeamVulnerabilities.data.team.vulnerabilitySummary}
-			<SurfaceCard title="Summary" level="h2" bordered>
+			{@const urgentCount =
+				$TeamVulnerabilities.data.team.urgentVulnerabilityIssues.pageInfo.totalCount}
+			{@const exploitedWorkloadCount =
+				$TeamVulnerabilities.data.team.exploitedWorkloads.pageInfo.totalCount}
+			{#if variant === 'C'}
+				<VulnerabilitySummaryVariantC
+					vulnerabilitySummary={$TeamVulnerabilities.data.team.vulnerabilitySummary}
+					knownExploitedHref="#priority-groups"
+					{urgentCount}
+					knownExploitedWorkloadCount={exploitedWorkloadCount}
+				/>
+			{:else}
 				<VulnerabilitySummaryMetrics
 					vulnerabilitySummary={$TeamVulnerabilities.data.team.vulnerabilitySummary}
+					knownExploitedHref="#priority-groups"
+					{urgentCount}
+					knownExploitedWorkloadCount={exploitedWorkloadCount}
 				/>
-			</SurfaceCard>
+			{/if}
 		{/if}
 
 		<section aria-labelledby="workload-vulnerabilities">
@@ -38,7 +61,17 @@
 				<TeamCveSearch team={teamSlug} />
 			</div>
 
-			<WorkloadsWithVulnerabilities team={teamSlug} />
+			<WorkloadsWithVulnerabilities
+				team={teamSlug}
+				environmentNames={$TeamVulnerabilities.data.team.environments.map(
+					(env) => env.environment.name
+				)}
+				highWorkloadCount={$TeamVulnerabilities.data.team.vulnerabilitySummary?.highWorkloadCount}
+				elevatedWorkloadCount={$TeamVulnerabilities.data.team.vulnerabilitySummary
+					?.elevatedWorkloadCount}
+				monitorWorkloadCount={$TeamVulnerabilities.data.team.vulnerabilitySummary
+					?.monitorWorkloadCount}
+			/>
 		</section>
 
 		<section aria-label="Vulnerability History">
@@ -49,6 +82,10 @@
 			<TeamMeanTimeToFixHistoryGraph {teamSlug} />
 		</section>
 	</div>
+{/if}
+
+{#if import.meta.env.DEV}
+	<PrototypeSwitcher {variants} current={variant} />
 {/if}
 
 <style>

@@ -1,5 +1,6 @@
 import {
 	allSeverities,
+	formatFixVersion,
 	formatProcessingDuration,
 	sbomStatusDetails,
 	severityToColor,
@@ -283,6 +284,88 @@ describe('vulnerabilities', () => {
 		test('returns days for multi-day duration', () => {
 			const threeDaysAgo = new Date(Date.now() - 3 * 24 * 60 * 60_000);
 			expect(formatProcessingDuration(threeDaysAgo)).toBe('Scanning for vulnerabilities · 3 d');
+		});
+	});
+
+	describe('formatFixVersion', () => {
+		describe('blank values', () => {
+			test('returns null for null input', () => {
+				expect(formatFixVersion(null)).toBeNull();
+			});
+
+			test('returns null for undefined input', () => {
+				expect(formatFixVersion(undefined)).toBeNull();
+			});
+
+			test('returns null for empty string', () => {
+				expect(formatFixVersion('')).toBeNull();
+			});
+
+			test('returns null for whitespace-only string', () => {
+				expect(formatFixVersion('   ')).toBeNull();
+			});
+		});
+
+		describe('comparison operators', () => {
+			test('displays >= expressions as a minimum fixed version', () => {
+				expect(formatFixVersion('>=2.25.5')).toBe('2.25.5 or later');
+			});
+
+			test('returns <= expressions unchanged', () => {
+				expect(formatFixVersion('<=2.25.5')).toBe('<=2.25.5');
+			});
+
+			test('returns == expressions unchanged', () => {
+				expect(formatFixVersion('==2.25.5')).toBe('==2.25.5');
+			});
+
+			test('returns > expressions unchanged', () => {
+				expect(formatFixVersion('>2.25.5')).toBe('>2.25.5');
+			});
+
+			test('returns < expressions unchanged', () => {
+				expect(formatFixVersion('<2.25.5')).toBe('<2.25.5');
+			});
+
+			test('returns = expressions unchanged', () => {
+				expect(formatFixVersion('=2.25.5')).toBe('=2.25.5');
+			});
+
+			test('accepts a space between the operator and the version', () => {
+				expect(formatFixVersion('>= 2.25.5')).toBe('2.25.5 or later');
+			});
+		});
+
+		describe('bare version numbers', () => {
+			test('describes a bare version as the minimum fixed version', () => {
+				expect(formatFixVersion('1.0.1')).toBe('1.0.1 or later');
+			});
+
+			test('strips a lowercase v prefix', () => {
+				expect(formatFixVersion('v2.25.5')).toBe('2.25.5 or later');
+			});
+
+			test('does not recognize an uppercase V prefix as a version', () => {
+				expect(formatFixVersion('V2.25.5')).toBe('V2.25.5');
+			});
+
+			test('trims surrounding whitespace before formatting', () => {
+				expect(formatFixVersion('  2.25.5  ')).toBe('2.25.5 or later');
+			});
+		});
+
+		describe('other strings', () => {
+			test('returns non-version text unchanged', () => {
+				expect(formatFixVersion('unknown')).toBe('unknown');
+			});
+
+			test('does not treat a bare "v" as a version prefix', () => {
+				expect(formatFixVersion('v')).toBe('v');
+			});
+
+			test('does not treat a word starting with v as a version prefix', () => {
+				expect(formatFixVersion('version 2')).toBe('version 2');
+			});
 		});
 	});
 });
