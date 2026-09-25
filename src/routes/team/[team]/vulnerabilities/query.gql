@@ -7,6 +7,11 @@ query TeamVulnerabilities($team: Slug!) {
 				totalCount
 			}
 		}
+		exploitedWorkloads: vulnerabilitySummaries(first: 1, filter: { hasKevEntry: true }) {
+			pageInfo {
+				totalCount
+			}
+		}
 		environments {
 			id
 			environment {

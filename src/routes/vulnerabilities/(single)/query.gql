@@ -43,6 +43,7 @@ query TenantVulnerabilites(
 					low
 					unassigned
 					riskScore
+					riskScoreTrend
 					coverage
 				}
 			}
@@ -63,5 +64,10 @@ query TenantVulnerabilites(
 		riskScore
 		coverage
 		sbomCount
+	}
+	exploitedWorkloads: vulnerabilitySummaries(first: 1, filter: { hasKevEntry: true }) {
+		pageInfo {
+			totalCount
+		}
 	}
 }
