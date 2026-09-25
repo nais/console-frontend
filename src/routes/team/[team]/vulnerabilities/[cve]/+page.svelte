@@ -9,7 +9,11 @@
 	import GraphErrors from '$lib/ui/GraphErrors.svelte';
 	import { formatImageRef } from '$lib/utils/image';
 
-	import { formatFixVersion, suppressionStateLabels } from '$lib/utils/vulnerabilities';
+	import {
+		formatFixVersion,
+		suppressionStateLabels,
+		vulnerabilityDetailsLinkLabel
+	} from '$lib/utils/vulnerabilities';
 	import {
 		Alert,
 		BodyShort,
@@ -18,6 +22,7 @@
 		Checkbox,
 		Detail,
 		Heading,
+		HelpText,
 		Loader,
 		Search,
 		Tag
@@ -199,49 +204,50 @@
 		{const cve = $derived($TeamCVEPage.data.cve)}
 		<div class="wrapper">
 			{#if cve.title}
-				<BodyShort>{cve.title}</BodyShort>
+				<div class="vulnerability-type">
+					<Detail>Weakness type</Detail>
+					<BodyShort>{cve.title}</BodyShort>
+				</div>
 			{/if}
 
-			<section aria-labelledby="cve-details">
-				<Heading as="h2" size="small" spacing id="cve-details">Details</Heading>
-				<dl class="details-list">
-					{#if cve.riskAssessment.cvssScore !== null && cve.riskAssessment.cvssScore !== undefined}
-						<div>
-							<Detail as="dt">CVSS score</Detail>
-							<BodyShort as="dd"
-								><strong>{cve.riskAssessment.cvssScore.toFixed(1)}</strong></BodyShort
-							>
+			<section class="risk-assessment-card" aria-labelledby="cve-details">
+				<Heading as="h2" size="small" id="cve-details">Severity and threat signals</Heading>
+				<div class="risk-assessment-content">
+					<div class="risk-assessment-group">
+						<Detail as="p">Severity and CVSS</Detail>
+						<div class="risk-assessment-values">
+							<span class="severity-badge {cve.severity}">Severity: {cve.severity}</span>
+							{#if cve.riskAssessment.cvssScore !== null && cve.riskAssessment.cvssScore !== undefined}
+								<span class="severity-badge {cve.severity} cvss-score-badge">
+									CVSS: {cve.riskAssessment.cvssScore.toFixed(1)}
+								</span>
+							{/if}
 						</div>
-					{/if}
-					<div>
-						<Detail as="dt">Severity</Detail>
-						<BodyShort as="dd">
-							<span
-								class="severity-badge {cve.severity}"
-								style="font-size: var(--ax-font-size-small)">{cve.severity}</span
-							>
-						</BodyShort>
 					</div>
-					{#if hasDetailsLink(cve.detailsLink)}
-						<div>
-							<Detail as="dt">More Information</Detail>
-							<BodyShort as="dd">
-								<ExternalLink href={cve.detailsLink}>View full details</ExternalLink>
-							</BodyShort>
-						</div>
-					{/if}
-				</dl>
+					<div class="risk-assessment-signals">
+						<Detail as="p">Threat signals</Detail>
+						<PrioritySignals
+							hasKevEntry={cve.riskAssessment.hasKevEntry}
+							knownRansomwareUse={cve.riskAssessment.knownRansomwareUse}
+							epssScore={cve.riskAssessment.epssScore}
+							epssPercentile={cve.riskAssessment.epssPercentile}
+						/>
+					</div>
+				</div>
 
 				{#if cve.description}
-					<BodyShort spacing>{cve.description}</BodyShort>
+					<div class="vulnerability-description">
+						<Heading as="h3" size="small">Description</Heading>
+						<BodyShort class="cve-description">{cve.description}</BodyShort>
+					</div>
 				{/if}
-
-				<PrioritySignals
-					hasKevEntry={cve.riskAssessment.hasKevEntry}
-					knownRansomwareUse={cve.riskAssessment.knownRansomwareUse}
-					epssScore={cve.riskAssessment.epssScore}
-					epssPercentile={cve.riskAssessment.epssPercentile}
-				/>
+				{#if hasDetailsLink(cve.detailsLink)}
+					<BodyShort>
+						<ExternalLink href={cve.detailsLink}>
+							{vulnerabilityDetailsLinkLabel(cve.detailsLink, cve.identifier)}
+						</ExternalLink>
+					</BodyShort>
+				{/if}
 			</section>
 		</div>
 	{:else if hasOtherErrors($TeamCVEPage.errors)}
@@ -347,7 +353,20 @@
 											</div>
 											{#if group.nodes[0]?.vulnerability.remediation.fixVersion}
 												<div>
-													<Detail as="dt">Fixed in</Detail>
+													<Detail as="dt">
+														<span class="fix-version-term">
+															Fixed in
+															<HelpText
+																title="How do I apply the fix?"
+																strategy="fixed"
+																placement="right"
+															>
+																Update the dependency to this version or later, then rebuild and
+																redeploy the image. If it's not relevant here, it can be suppressed
+																instead.
+															</HelpText>
+														</span>
+													</Detail>
 													<Detail as="dd"
 														><code
 															>{formatFixVersion(
@@ -413,6 +432,12 @@
 		gap: var(--ax-space-32);
 	}
 
+	.fix-version-term {
+		display: inline-flex;
+		align-items: center;
+		gap: var(--ax-space-4);
+	}
+
 	.load-more {
 		display: flex;
 		justify-content: center;
@@ -452,23 +477,68 @@
 		gap: var(--ax-space-16);
 	}
 
-	.details-list {
+	.risk-assessment-content {
+		display: grid;
+		grid-template-columns: auto 1fr;
+		align-items: end;
+		gap: var(--ax-space-24);
+	}
+
+	.risk-assessment-card {
+		display: flex;
+		flex-direction: column;
+		gap: var(--ax-space-16);
+		padding: var(--ax-space-16);
+		border: 1px solid var(--ax-border-neutral-subtleA);
+		border-radius: var(--ax-radius-8);
+		background: var(--ax-bg-neutral-soft);
+	}
+
+	.risk-assessment-group,
+	.risk-assessment-signals {
+		display: flex;
+		flex-direction: column;
+		gap: var(--ax-space-4);
+	}
+
+	.risk-assessment-signals :global(ul.signals) {
+		flex-wrap: nowrap;
+	}
+
+	.risk-assessment-values {
 		display: flex;
 		flex-wrap: wrap;
-		gap: var(--ax-space-24);
-		margin: 0;
-		align-items: stretch;
+		align-items: center;
+		gap: var(--ax-space-8);
+	}
 
-		& > div {
-			display: grid;
-			grid-template-rows: auto 1fr;
-			gap: var(--ax-space-4);
+	@media (max-width: 767px) {
+		.risk-assessment-signals :global(ul.signals) {
+			flex-wrap: wrap;
 		}
+	}
 
-		& > div :global(dd) {
-			display: flex;
-			align-items: center;
-			margin: 0;
+	.vulnerability-type,
+	.vulnerability-description {
+		display: flex;
+		flex-direction: column;
+		gap: var(--ax-space-4);
+	}
+
+	.risk-assessment-content :global(dd) {
+		display: flex;
+		align-items: center;
+		gap: var(--ax-space-8);
+	}
+
+	.cve-description {
+		max-width: 80ch;
+		line-height: var(--ax-font-line-height-large);
+	}
+
+	@media (max-width: 767px) {
+		.risk-assessment-content {
+			grid-template-columns: 1fr;
 		}
 	}
 

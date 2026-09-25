@@ -92,6 +92,7 @@ query JobImageDetails($team: Slug!, $env: String!, $job: String!) @cache(policy:
 									id
 									identifier
 									package
+									severitySince
 									riskAssessment {
 										priority
 										epssScore

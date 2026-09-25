@@ -11,13 +11,18 @@
 	import Pagination from '$lib/ui/Pagination.svelte';
 	import { formatImageRef } from '$lib/utils/image';
 	import { changeParams } from '$lib/utils/searchparams';
-	import { formatFixVersion, suppressionStateLabels } from '$lib/utils/vulnerabilities';
+	import {
+		formatFixVersion,
+		suppressionStateLabels,
+		vulnerabilityDetailsLinkLabel
+	} from '$lib/utils/vulnerabilities';
 	import {
 		Alert,
 		BodyShort,
 		Button,
 		Detail,
 		Heading,
+		HelpText,
 		Loader,
 		Search
 	} from '@nais/ds-svelte-community';
@@ -86,7 +91,8 @@
 						<Heading as="h1" size="large">{cve.identifier}</Heading>
 					</div>
 					{#if cve.title}
-						<Detail>{cve.title}</Detail>
+						<Detail>Weakness type</Detail>
+						<BodyShort>{cve.title}</BodyShort>
 					{/if}
 				</div>
 
@@ -98,50 +104,51 @@
 						<div>
 							<Detail as="p">Operational priority</Detail>
 							<Heading as="h2" size="medium" id="priority-heading">
-								<PriorityBadge priority={cve.riskAssessment.priority} /> priority
+								<PriorityBadge priority={cve.riskAssessment.priority} />
 							</Heading>
 						</div>
-						<BodyShort size="small" class="priority-guidance">{priority.guidance}</BodyShort>
+						<div class="priority-explanation">
+							<BodyShort size="small" class="priority-guidance">{priority.guidance}</BodyShort>
+						</div>
 					</div>
-					<PrioritySignals
-						hasKevEntry={cve.riskAssessment.hasKevEntry}
-						knownRansomwareUse={cve.riskAssessment.knownRansomwareUse}
-						epssScore={cve.riskAssessment.epssScore}
-						epssPercentile={cve.riskAssessment.epssPercentile}
-					/>
 				</section>
 
+				<div class="card risk-assessment-card">
+					<Heading as="h2" size="small">Severity and threat signals</Heading>
+					<div class="risk-assessment-content">
+						<div class="risk-assessment-group">
+							<Detail as="p">Severity and CVSS</Detail>
+							<div class="risk-assessment-values">
+								<span class="severity-badge {cve.severity}">Severity: {cve.severity}</span>
+								{#if cve.riskAssessment.cvssScore !== null && cve.riskAssessment.cvssScore !== undefined}
+									<span class="severity-badge {cve.severity} cvss-score-badge">
+										CVSS: {cve.riskAssessment.cvssScore.toFixed(1)}
+									</span>
+								{/if}
+							</div>
+						</div>
+						<div class="risk-assessment-signals">
+							<Detail as="p">Threat signals</Detail>
+							<PrioritySignals
+								hasKevEntry={cve.riskAssessment.hasKevEntry}
+								knownRansomwareUse={cve.riskAssessment.knownRansomwareUse}
+								epssScore={cve.riskAssessment.epssScore}
+								epssPercentile={cve.riskAssessment.epssPercentile}
+							/>
+						</div>
+					</div>
+				</div>
 				<div class="card">
 					<Heading as="h2" size="small" spacing>Details</Heading>
-					<dl class="details-list">
-						{#if cve.riskAssessment.cvssScore !== null && cve.riskAssessment.cvssScore !== undefined}
-							<div>
-								<Detail as="dt">CVSS score</Detail>
-								<BodyShort as="dd"
-									><strong>{cve.riskAssessment.cvssScore.toFixed(1)}</strong></BodyShort
-								>
-							</div>
+					<BodyShort>
+						{#if hasDetailsLink(cve.detailsLink)}
+							<ExternalLink href={cve.detailsLink}>
+								{vulnerabilityDetailsLinkLabel(cve.detailsLink, cve.identifier)}
+							</ExternalLink>
+						{:else}
+							No link available
 						{/if}
-						<div>
-							<Detail as="dt">Severity</Detail>
-							<BodyShort as="dd">
-								<span
-									class="severity-badge {cve.severity}"
-									style="font-size: var(--ax-font-size-small)">{cve.severity}</span
-								>
-							</BodyShort>
-						</div>
-						<div>
-							<Detail as="dt">More Information</Detail>
-							<BodyShort as="dd">
-								{#if hasDetailsLink(cve.detailsLink)}
-									<ExternalLink href={cve.detailsLink}>View full details</ExternalLink>
-								{:else}
-									No link available
-								{/if}
-							</BodyShort>
-						</div>
-					</dl>
+					</BodyShort>
 				</div>
 			</div>
 		{:else if hasOtherErrors($CVEDetails.errors)}
@@ -176,7 +183,20 @@
 											</div>
 											{#if vuln.remediation.fixVersion}
 												<div class="detail-row">
-													<Detail as="dt">Fixed in</Detail>
+													<Detail as="dt">
+														<span class="fix-version-term">
+															Fixed in
+															<HelpText
+																title="How do I apply the fix?"
+																strategy="fixed"
+																placement="right"
+															>
+																Update the dependency to this version or later, then rebuild and
+																redeploy the image. If it's not relevant here, it can be suppressed
+																instead.
+															</HelpText>
+														</span>
+													</Detail>
 													<BodyShort as="dd"
 														><code>{formatFixVersion(vuln.remediation.fixVersion)}</code></BodyShort
 													>
@@ -246,6 +266,12 @@
 		flex-direction: column;
 		margin-top: var(--spacing-layout);
 		gap: var(--spacing-layout);
+	}
+
+	.fix-version-term {
+		display: inline-flex;
+		align-items: center;
+		gap: var(--ax-space-4);
 	}
 
 	.search-form {
@@ -330,9 +356,17 @@
 	}
 
 	.priority-guidance {
-		max-width: 24ch;
+		font-weight: var(--ax-font-weight-bold);
 		text-align: right;
 		color: var(--ax-text-neutral-subtle);
+	}
+
+	.priority-explanation {
+		display: flex;
+		flex-direction: column;
+		gap: var(--ax-space-4);
+		max-width: 48ch;
+		text-align: right;
 	}
 
 	.card {
@@ -357,6 +391,72 @@
 			display: flex;
 			align-items: center;
 			margin: 0;
+		}
+	}
+
+	.risk-assessment-content {
+		display: grid;
+		grid-template-columns: auto 1fr;
+		align-items: end;
+		gap: var(--ax-space-24);
+	}
+
+	.risk-assessment-card {
+		display: flex;
+		flex-direction: column;
+		gap: var(--ax-space-16);
+		background: var(--ax-bg-neutral-soft);
+		border: 1px solid var(--ax-border-neutral-subtleA);
+	}
+
+	.risk-assessment-signals {
+		display: flex;
+		flex-direction: column;
+		gap: var(--ax-space-4);
+	}
+
+	.risk-assessment-signals :global(ul.signals) {
+		flex-wrap: nowrap;
+	}
+
+	.risk-assessment-group,
+	.risk-assessment-signals {
+		display: flex;
+		flex-direction: column;
+		gap: var(--ax-space-4);
+	}
+
+	.risk-assessment-values {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		gap: var(--ax-space-8);
+	}
+
+	.risk-assessment-content :global(dd) {
+		display: flex;
+		align-items: center;
+		gap: var(--ax-space-8);
+	}
+
+	@media (max-width: 767px) {
+		.risk-assessment-signals :global(ul.signals) {
+			flex-wrap: wrap;
+		}
+	}
+
+	@media (max-width: 767px) {
+		.priority-card-header {
+			flex-direction: column;
+		}
+
+		.priority-explanation {
+			max-width: none;
+			text-align: left;
+		}
+
+		.risk-assessment-content {
+			grid-template-columns: 1fr;
 		}
 	}
 

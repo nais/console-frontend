@@ -2,7 +2,7 @@
 	import { graphql } from '$houdini';
 	import IssuePills from '$lib/domain/issues/IssuePills.svelte';
 	import SurfaceCard from '$lib/ui/SurfaceCard.svelte';
-	import { Loader, Tooltip } from '@nais/ds-svelte-community';
+	import { Loader, Tag, Tooltip } from '@nais/ds-svelte-community';
 	import {
 		BriefcaseClockIcon,
 		PackageIcon,
@@ -284,7 +284,14 @@
 					<span class="metric-value"
 						>{vulnerabilityValue !== undefined ? vulnerabilityValue : '-'}</span
 					>
-					<span class="metric-label">{showingUrgent ? 'Urgent' : 'Known exploited'}</span>
+					{#if showingUrgent}
+						<span class="metric-label">
+							<Tag size="xsmall" variant="error-moderate">Internet-facing</Tag>
+							<Tag size="xsmall" variant="warning-moderate">Known exploited</Tag>
+						</span>
+					{:else}
+						<span class="metric-label">Known exploited</span>
+					{/if}
 				</div>
 				{#if sbomProcessing}
 					<div class="metric-processing">

@@ -113,6 +113,25 @@ export function formatFixVersion(value: string | null | undefined): string | nul
 	return trimmed;
 }
 
+export function vulnerabilityDetailsLinkLabel(
+	detailsLink: string | null | undefined,
+	identifier?: string | null
+): string {
+	const isGithubAdvisory =
+		identifier?.startsWith('GHSA-') ||
+		(detailsLink?.includes('github.com') && detailsLink?.includes('/security/advisories'));
+
+	return isGithubAdvisory
+		? 'View details at GitHub Security Advisories'
+		: 'View CVE details at NVD';
+}
+
+export function sbomCoverageTier(coverage: number): 'success' | 'warning' | 'danger' {
+	if (coverage >= 100) return 'success';
+	if (coverage < 50) return 'danger';
+	return 'warning';
+}
+
 export function severityToColor({
 	severity,
 	isText,
