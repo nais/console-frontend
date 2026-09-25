@@ -50,10 +50,15 @@
 				environment(name: $env) {
 					application(name: $app) {
 						urgentVulnerabilityIssues: issues(
+							first: 1
 							filter: { issueType: EXTERNAL_INGRESS_URGENT_VULNERABILITY }
 						) {
-							pageInfo {
-								totalCount
+							edges {
+								node {
+									... on ExternalIngressUrgentVulnerabilityIssue {
+										priorityUrgent
+									}
+								}
 							}
 						}
 						image {
@@ -159,12 +164,14 @@
 			: $jobVulnQuery?.data?.team?.environment?.job?.image
 	);
 
-	let urgentVulnerabilityCount = $derived(
-		workloadType === 'app'
-			? $vulnQuery?.data?.team?.environment?.application?.urgentVulnerabilityIssues?.pageInfo
-					?.totalCount
-			: undefined
-	);
+	let urgentVulnerabilityCount = $derived.by(() => {
+		if (workloadType !== 'app') return undefined;
+		const issue =
+			$vulnQuery?.data?.team?.environment?.application?.urgentVulnerabilityIssues?.edges[0]?.node;
+		return issue?.__typename === 'ExternalIngressUrgentVulnerabilityIssue'
+			? issue.priorityUrgent
+			: undefined;
+	});
 	let knownExploitedCount = $derived(
 		imageData?.vulnerabilitySummary?.countsByPriority?.knownExploited
 	);

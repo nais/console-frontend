@@ -201,7 +201,7 @@
 		<div class="wrapper">
 			{#if cve.title}
 				<div class="vulnerability-type">
-					<Detail>Weakness type</Detail>
+					<Detail>CVE title</Detail>
 					<BodyShort>{cve.title}</BodyShort>
 				</div>
 			{/if}

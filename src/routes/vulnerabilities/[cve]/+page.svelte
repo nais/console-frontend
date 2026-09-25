@@ -87,7 +87,7 @@
 						<Heading as="h1" size="large">{cve.identifier}</Heading>
 					</div>
 					{#if cve.title}
-						<Detail>Weakness type</Detail>
+						<Detail>CVE title</Detail>
 						<BodyShort>{cve.title}</BodyShort>
 					{/if}
 				</div>

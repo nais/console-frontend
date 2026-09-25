@@ -22,10 +22,15 @@ query ApplicationImageDetails($team: Slug!, $env: String!, $app: String!)
 						type
 					}
 					urgentVulnerabilityIssues: issues(
+						first: 1
 						filter: { issueType: EXTERNAL_INGRESS_URGENT_VULNERABILITY }
 					) {
-						pageInfo {
-							totalCount
+						edges {
+							node {
+								... on ExternalIngressUrgentVulnerabilityIssue {
+									priorityUrgent
+								}
+							}
 						}
 					}
 					image {
