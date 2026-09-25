@@ -3,7 +3,6 @@
 	import TeamCveSearch from '$lib/domain/vulnerability/TeamCveSearch.svelte';
 	import TeamMeanTimeToFixHistoryGraph from '$lib/domain/vulnerability/TeamMeanTimeToFixHistoryGraph.svelte';
 	import TeamVulnerabilityHistoryGraph from '$lib/domain/vulnerability/TeamVulnerabilityHistoryGraph.svelte';
-	import KnownExploitedWorkloads from '$lib/domain/vulnerability/KnownExploitedWorkloads.svelte';
 	import PrototypeSwitcher from '$lib/domain/vulnerability/prototype/PrototypeSwitcher.svelte';
 	import VulnerabilitySummaryVariantC from '$lib/domain/vulnerability/prototype/VulnerabilitySummaryVariantC.svelte';
 	import VulnerabilitySummaryMetrics from '$lib/domain/vulnerability/VulnerabilitySummaryMetrics.svelte';
@@ -35,14 +34,14 @@
 			{#if variant === 'C'}
 				<VulnerabilitySummaryVariantC
 					vulnerabilitySummary={$TeamVulnerabilities.data.team.vulnerabilitySummary}
-					knownExploitedHref="#known-exploited-list"
+					knownExploitedHref="#priority-groups"
 					{urgentCount}
 					knownExploitedWorkloadCount={exploitedWorkloadCount}
 				/>
 			{:else}
 				<VulnerabilitySummaryMetrics
 					vulnerabilitySummary={$TeamVulnerabilities.data.team.vulnerabilitySummary}
-					knownExploitedHref="#known-exploited-list"
+					knownExploitedHref="#priority-groups"
 					{urgentCount}
 					knownExploitedWorkloadCount={exploitedWorkloadCount}
 				/>
@@ -73,9 +72,6 @@
 				monitorWorkloadCount={$TeamVulnerabilities.data.team.vulnerabilitySummary
 					?.monitorWorkloadCount}
 			/>
-			{#key teamSlug}
-				<KnownExploitedWorkloads team={teamSlug} />
-			{/key}
 		</section>
 
 		<section aria-label="Vulnerability History">

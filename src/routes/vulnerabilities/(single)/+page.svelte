@@ -1,6 +1,6 @@
 <script lang="ts">
+	import { resolve } from '$app/paths';
 	import { page } from '$app/state';
-	import KnownExploitedWorkloads from '$lib/domain/vulnerability/KnownExploitedWorkloads.svelte';
 	import PrototypeSwitcher from '$lib/domain/vulnerability/prototype/PrototypeSwitcher.svelte';
 	import VulnerabilitySummaryVariantC from '$lib/domain/vulnerability/prototype/VulnerabilitySummaryVariantC.svelte';
 	import VulnerabilitySummaryMetrics from '$lib/domain/vulnerability/VulnerabilitySummaryMetrics.svelte';
@@ -21,7 +21,7 @@
 			? (page.url.searchParams.get('variant') as (typeof variants)[number])
 			: 'A'
 	);
-	const knownExploitedHref = '#known-exploited-list';
+	const knownExploitedHref = resolve('/vulnerabilities/(single)/teams');
 </script>
 
 <div class="wrapper">
@@ -46,8 +46,6 @@
 	<VulnerabilityHistory />
 
 	<VulnerabilityLeaderBoard />
-
-	<KnownExploitedWorkloads />
 </div>
 
 {#if import.meta.env.DEV}
