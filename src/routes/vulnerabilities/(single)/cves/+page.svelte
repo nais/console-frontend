@@ -3,6 +3,9 @@
 	import { CVEOrderField, OrderDirection } from '$houdini';
 	import PriorityBadge from '$lib/domain/vulnerability/priority/PriorityBadge.svelte';
 	import PrioritySignals from '$lib/domain/vulnerability/priority/PrioritySignals.svelte';
+	import CvesCardGrid from '$lib/domain/vulnerability/prototype/CvesCardGrid.svelte';
+	import CvesGroupedByPriority from '$lib/domain/vulnerability/prototype/CvesGroupedByPriority.svelte';
+	import PrototypeSwitcher from '$lib/domain/vulnerability/prototype/PrototypeSwitcher.svelte';
 	import GraphErrors from '$lib/ui/GraphErrors.svelte';
 	import { urlToOrderDirection, urlToOrderField } from '$lib/ui/OrderByMenu.svelte';
 	import Pagination from '$lib/ui/Pagination.svelte';
@@ -43,13 +46,6 @@
 		UNASSIGNED: 0
 	};
 
-	// The API only supports a single sort field, so rows sharing the same
-	// priority come back in an arbitrary order. The API response is already
-	// grouped by priority in the requested direction — capture each priority
-	// value's first position as its group rank, then break ties by severity
-	// (most severe first) within the page that's already loaded. This avoids
-	// guessing what "ascending"/"descending" means for priority ourselves and
-	// doesn't affect pagination.
 	const sortedEdges = $derived.by(() => {
 		const edges = $CVES.data?.cves.edges ?? [];
 		if (currentOrderField !== CVEOrderField.PRIORITY) return edges;
@@ -89,6 +85,18 @@
 			{ noScroll: true }
 		);
 	};
+
+	const views = ['table', 'cards', 'grouped'] as const;
+	const viewLabels: Record<string, string> = {
+		table: 'Table (current)',
+		cards: 'Card grid',
+		grouped: 'Grouped by priority'
+	};
+	let view = $derived(
+		(views as readonly string[]).includes(page.url.searchParams.get('view') ?? '')
+			? (page.url.searchParams.get('view') as (typeof views)[number])
+			: 'table'
+	);
 </script>
 
 <div class="wrapper">
@@ -97,8 +105,8 @@
 		<Heading as="h2" spacing>CVE Database</Heading>
 		<BodyLong>
 			Browse the complete list of Common Vulnerabilities and Exposures (CVEs) affecting your
-			workloads. Each CVE entry includes severity rating, CVSS score, description, and the number of
-			affected workloads.
+			workloads. Each CVE entry includes severity, threat signals, and the number of affected
+			workloads.
 		</BodyLong>
 	</div>
 
@@ -106,6 +114,10 @@
 		<div class="loading-centered" role="status" aria-label="Loading">
 			<Loader size="3xlarge" />
 		</div>
+	{:else if view === 'cards'}
+		<CvesCardGrid cves={sortedEdges} />
+	{:else if view === 'grouped'}
+		<CvesGroupedByPriority cves={sortedEdges} />
 	{:else}
 		<div class="table-scroll" role="region" aria-label="CVE database">
 			<Table size="small" sort={tableSortState} onsortchange={handleSortChange}>
@@ -114,7 +126,6 @@
 						<Th sortable={true} sortKey={CVEOrderField.IDENTIFIER}>CVE</Th>
 						<Th sortable={true} sortKey={CVEOrderField.PRIORITY}>Priority</Th>
 						<Th sortable={true} sortKey={CVEOrderField.SEVERITY}>Severity</Th>
-						<Th sortable={true} sortKey={CVEOrderField.CVSS_SCORE}>CVSS score</Th>
 						<Th>Title</Th>
 						<Th>Threat signals</Th>
 						<Th sortable={true} sortKey={CVEOrderField.AFFECTED_WORKLOADS_COUNT}>Workloads</Th>
@@ -139,11 +150,6 @@
 								<Td>
 									<span class="severity-badge {cve.severity}">{cve.severity}</span>
 								</Td>
-								<Td
-									>{cve.riskAssessment.cvssScore !== null
-										? cve.riskAssessment.cvssScore.toFixed(1)
-										: '—'}</Td
-								>
 								<Td>
 									<span>{cve.title}</span>
 								</Td>
@@ -154,6 +160,7 @@
 										epssScore={cve.riskAssessment.epssScore}
 										epssPercentile={cve.riskAssessment.epssPercentile}
 										showEmpty
+										showHelpText={false}
 									/>
 								</Td>
 								<Td>{cve.workloads.pageInfo.totalCount}</Td>
@@ -192,6 +199,10 @@
 		}}
 	/>
 </div>
+
+{#if import.meta.env.DEV}
+	<PrototypeSwitcher variants={views} current={view} labels={viewLabels} paramName="view" />
+{/if}
 
 <style>
 	.wrapper {
