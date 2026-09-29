@@ -9,6 +9,7 @@
 <script lang="ts">
 	import { browser } from '$app/env';
 	import { graphql } from '$houdini';
+	import ChartBoundary from '$lib/chart/ChartBoundary.svelte';
 	import LegendWrapper, { legendSnippet } from '$lib/chart/LegendWrapper.svelte';
 	import CodeBlockPromQL from '$lib/domain/monitoring/CodeBlockPromQL.svelte';
 	import { intersect } from '$lib/utils/intersectionObserver';
@@ -308,63 +309,67 @@
 		<InformationIcon />
 	</button>
 
-	<LegendWrapper {height} bind:ref={htmlRef} onContextReady={(ctx) => (legendCtx = ctx)}>
-		<LineChart
-			series={chartData.series}
-			x="timestamp"
-			y="value"
-			padding={dynamicPadding}
-			xDomain={chartData.xDomain}
-			legend={legendSnippet}
-			yDomain={chartData.yDomain}
-			props={{
-				spline: {
-					class: 'stroke-2'
-				},
-				xAxis: {
-					format: formatXAxis,
-					...(chartData.tickInterval && {
-						ticks: {
-							interval: chartData.tickInterval
+	<div class="prometheus-chart-visualization" style:height>
+		<ChartBoundary>
+			<LegendWrapper {height} bind:ref={htmlRef} onContextReady={(ctx) => (legendCtx = ctx)}>
+				<LineChart
+					series={chartData.series}
+					x="timestamp"
+					y="value"
+					padding={dynamicPadding}
+					xDomain={chartData.xDomain}
+					legend={legendSnippet}
+					yDomain={chartData.yDomain}
+					props={{
+						spline: {
+							class: 'stroke-2'
+						},
+						xAxis: {
+							format: formatXAxis,
+							...(chartData.tickInterval && {
+								ticks: {
+									interval: chartData.tickInterval
+								}
+							})
+						},
+						yAxis: {
+							format: formatYValue
 						}
-					})
-				},
-				yAxis: {
-					format: formatYValue
-				}
-			}}
-		>
-			{#snippet tooltip({ context })}
-				<Tooltip.Root>
-					{#snippet children({ data })}
-						<Tooltip.Header>{formatXValue(context.x(data))}</Tooltip.Header>
-						<Tooltip.List>
-							{#each context.tooltipState.series.filter((p) => p.value !== undefined) as p, i (p.key ?? i)}
-								<Tooltip.Item label={p.label ?? p.key} color={p.color}>
-									{formatYValue(p.value)}
-								</Tooltip.Item>
-							{/each}
-						</Tooltip.List>
+					}}
+				>
+					{#snippet tooltip({ context })}
+						<Tooltip.Root>
+							{#snippet children({ data })}
+								<Tooltip.Header>{formatXValue(context.x(data))}</Tooltip.Header>
+								<Tooltip.List>
+									{#each context.tooltipState.series.filter((p) => p.value !== undefined) as p, i (p.key ?? i)}
+										<Tooltip.Item label={p.label ?? p.key} color={p.color}>
+											{formatYValue(p.value)}
+										</Tooltip.Item>
+									{/each}
+								</Tooltip.List>
+							{/snippet}
+						</Tooltip.Root>
 					{/snippet}
-				</Tooltip.Root>
-			{/snippet}
-		</LineChart>
-	</LegendWrapper>
+				</LineChart>
+			</LegendWrapper>
 
-	{#if overlayState}
-		<div class="prometheus-chart-overlay">
-			<div class="prometheus-chart-overlay-content">
-				{#if overlayState === 'loading'}
-					<div class="prometheus-chart-loading">
-						<Loader />
-						<span>Loading...</span>
+			{#if overlayState}
+				<div class="prometheus-chart-overlay">
+					<div class="prometheus-chart-overlay-content">
+						{#if overlayState === 'loading'}
+							<div class="prometheus-chart-loading">
+								<Loader />
+								<span>Loading...</span>
+							</div>
+						{:else if overlayState === 'no-data'}
+							<span>No data available</span>
+						{/if}
 					</div>
-				{:else if overlayState === 'no-data'}
-					<span>No data available</span>
-				{/if}
-			</div>
-		</div>
-	{/if}
+				</div>
+			{/if}
+		</ChartBoundary>
+	</div>
 </div>
 
 {#if showQueryModal}
@@ -428,6 +433,11 @@
 	.prometheus-chart-wrapper {
 		position: relative;
 		margin-bottom: 3rem;
+	}
+
+	.prometheus-chart-visualization {
+		position: relative;
+		width: 100%;
 	}
 
 	.prometheus-chart-header {

@@ -5,6 +5,7 @@
 	import TeamInventory from '$lib/domain/team/TeamInventory.svelte';
 	import TeamSummary from '$lib/domain/team/TeamSummary.svelte';
 	import GraphErrors from '$lib/ui/GraphErrors.svelte';
+	import SectionBoundary from '$lib/ui/SectionBoundary.svelte';
 	import { Alert, BodyShort } from '@nais/ds-svelte-community';
 	import type { PageProps } from './$types';
 
@@ -34,25 +35,29 @@
 <div class="wrapper">
 	<div class="main-content">
 		<CriticalIssues {teamSlug} store={TeamHealth} />
-		<TeamSummary
-			{teamSlug}
-			criticalIssues={$TeamOverview.data?.team.criticalIssues.pageInfo.totalCount ?? 0}
-			warningIssues={$TeamOverview.data?.team.warningIssues.pageInfo.totalCount ?? 0}
-			todoIssues={$TeamOverview.data?.team.todoIssues.pageInfo.totalCount ?? 0}
-			firingAlerts={$TeamOverview.data?.team.firingAlerts.pageInfo.totalCount ?? 0}
-			loading={$TeamOverview.fetching}
-			vulnerabilityData={$TeamSummaryVulnerabilities.data}
-			costData={$TeamSummaryCost.data}
-			costLoading={$TeamSummaryCost.fetching}
-		/>
+		<SectionBoundary message="Team summary failed to render.">
+			<TeamSummary
+				{teamSlug}
+				criticalIssues={$TeamOverview.data?.team.criticalIssues.pageInfo.totalCount ?? 0}
+				warningIssues={$TeamOverview.data?.team.warningIssues.pageInfo.totalCount ?? 0}
+				todoIssues={$TeamOverview.data?.team.todoIssues.pageInfo.totalCount ?? 0}
+				firingAlerts={$TeamOverview.data?.team.firingAlerts.pageInfo.totalCount ?? 0}
+				loading={$TeamOverview.fetching}
+				vulnerabilityData={$TeamSummaryVulnerabilities.data}
+				costData={$TeamSummaryCost.data}
+				costLoading={$TeamSummaryCost.fetching}
+			/>
+		</SectionBoundary>
 		<TeamInventory {teamSlug} />
 	</div>
 	<div class="summary-cards">
-		<TeamActivityCard
-			{teamSlug}
-			viewAllHref="/team/{teamSlug}/activity-log"
-			title="Latest Activity"
-		/>
+		<SectionBoundary message="Latest activity failed to render.">
+			<TeamActivityCard
+				{teamSlug}
+				viewAllHref="/team/{teamSlug}/activity-log"
+				title="Latest Activity"
+			/>
+		</SectionBoundary>
 	</div>
 </div>
 
