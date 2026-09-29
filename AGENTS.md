@@ -159,7 +159,7 @@ This project uses **Svelte 5 with runes mode** (enforced via `forceRunesMode: tr
 
 ## Rendering Error Boundaries
 
-Use error boundaries around independently rendered, non-critical UI when a render failure should not hide useful surrounding content. Prefer `$lib/chart/ChartBoundary` for individual charts and visualizations; use `<svelte:boundary>` with a useful `failed` snippet for other isolated sections. Keep the boundary as small as the independently recoverable section, and do not wrap every component.
+Use error boundaries around independently rendered, non-critical UI when a render failure should not hide useful surrounding content. Prefer `$lib/chart/ChartBoundary` for individual charts and visualizations, and `$lib/ui/SectionBoundary` for reusable non-chart panels. Use `<svelte:boundary>` directly when a custom fallback is needed. Keep the boundary as small as the independently recoverable section, and do not wrap every component.
 
 Expected GraphQL and application errors must continue to use explicit error handling. Boundaries handle rendering and effect errors, not event-handler failures or later asynchronous work. Keep fallback messages user-safe and provide retry only when resetting the content is useful.
 

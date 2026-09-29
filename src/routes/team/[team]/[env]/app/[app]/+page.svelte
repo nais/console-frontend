@@ -11,6 +11,7 @@
 	import WorkloadDeploy from '$lib/domain/workload/WorkloadDeploy.svelte';
 	import WorkloadHealth from '$lib/domain/workload/WorkloadHealth.svelte';
 	import GraphErrors from '$lib/ui/GraphErrors.svelte';
+	import SectionBoundary from '$lib/ui/SectionBoundary.svelte';
 	import Time from '$lib/ui/Time.svelte';
 	import { Alert, Heading, Loader } from '@nais/ds-svelte-community';
 	import { onMount } from 'svelte';
@@ -106,15 +107,19 @@
 					<Secrets workload={app?.name ?? ''} {environment} {teamSlug} />
 					<ServiceAccountBinding workload={app?.name ?? ''} {environment} {teamSlug} />
 				{/if}
-				<Labels labels={app.labels ?? []} />
+				<SectionBoundary message="Labels failed to render.">
+					<Labels labels={app.labels ?? []} />
+				</SectionBoundary>
 				{#if environment && application}
-					<WorkloadActivityCard
-						{teamSlug}
-						env={environment}
-						workload={application}
-						workloadType="app"
-						viewAllHref="/team/{teamSlug}/{environment}/app/{application}/activity-log"
-					/>
+					<SectionBoundary message="Workload activity failed to render.">
+						<WorkloadActivityCard
+							{teamSlug}
+							env={environment}
+							workload={application}
+							workloadType="app"
+							viewAllHref="/team/{teamSlug}/{environment}/app/{application}/activity-log"
+						/>
+					</SectionBoundary>
 				{/if}
 			</div>
 		</div>
