@@ -1,0 +1,41 @@
+query TenantActivityLog(
+	$first: Int
+	$last: Int
+	$before: Cursor
+	$after: Cursor
+	$filter: ActivityLogFilter
+) {
+	activityLog(first: $first, last: $last, before: $before, after: $after, filter: $filter)
+		@paginate(mode: SinglePage) {
+		pageInfo {
+			hasNextPage
+			hasPreviousPage
+			pageEnd
+			pageStart
+			totalCount
+			startCursor
+			endCursor
+		}
+		edges {
+			node {
+				id
+				__typename
+				...ActivityLogEntryFragment
+			}
+		}
+		facets {
+			activityTypes {
+				activityType
+				count
+			}
+			resourceTypes {
+				resourceType
+				count
+			}
+			environments {
+				value
+				count
+			}
+		}
+	}
+}

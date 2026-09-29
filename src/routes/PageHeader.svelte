@@ -49,6 +49,7 @@
 		{ href: '/utilization', label: 'Utilization' },
 		{ href: '/cost', label: 'Cost' },
 		{ href: '/vulnerabilities', label: 'Vulnerabilities' },
+		{ href: '/activity-log', label: 'Activity Log' },
 		{ href: '/deployments', label: 'Deployments' }
 	];
 

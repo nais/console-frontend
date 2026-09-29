@@ -5,7 +5,14 @@
 	import List from '$lib/ui/List.svelte';
 	import Pagination from '$lib/ui/Pagination.svelte';
 	import { changeParams } from '$lib/utils/searchparams';
-	import { Button, Heading, Loader, ToggleGroup, ToggleGroupItem } from '@nais/ds-svelte-community';
+	import {
+		Alert,
+		Button,
+		Heading,
+		Loader,
+		ToggleGroup,
+		ToggleGroupItem
+	} from '@nais/ds-svelte-community';
 	import { ActionMenu, ActionMenuCheckboxItem } from '@nais/ds-svelte-community/experimental';
 	import { ChevronDownIcon } from '@nais/ds-svelte-community/icons';
 	import type { PageProps } from './$types';
@@ -69,6 +76,9 @@
 <div class="page">
 	<div class="container">
 		<Heading as="h1" size="large">Tenant Deployments</Heading>
+		<Alert variant="info" size="small">
+			This page is deprecated. Use the <a href="/activity-log">Activity Log</a> for deployment activity.
+		</Alert>
 		<GraphErrors errors={$TenantDeployments.errors} />
 		{#if $TenantDeployments.fetching}
 			<div class="loading-centered" role="status" aria-label="Loading">
