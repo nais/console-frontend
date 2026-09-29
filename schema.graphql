@@ -228,6 +228,11 @@ interface ActivityLogEntry implements Node {
   """The environment name that the entry belongs to."""
   environmentName: String
 
+  """
+  GitHub Actions OIDC claims captured when the action was authenticated by a GitHub repository.
+  """
+  gitHubActorClaims: GitHubActorClaims
+
   """ID of the entry."""
   id: ID!
 
@@ -925,6 +930,9 @@ type ApplicationCreatedActivityLogEntry implements ActivityLogEntry & Node {
   """The environment name that the entry belongs to."""
   environmentName: String
 
+  """GitHub Actions OIDC claims when authenticated by a GitHub repository."""
+  gitHubActorClaims: GitHubActorClaims
+
   """ID of the entry."""
   id: ID!
 
@@ -952,6 +960,9 @@ type ApplicationDeletedActivityLogEntry implements ActivityLogEntry & Node {
 
   """The environment name that the entry belongs to."""
   environmentName: String
+
+  """GitHub Actions OIDC claims when authenticated by a GitHub repository."""
+  gitHubActorClaims: GitHubActorClaims
 
   """ID of the entry."""
   id: ID!
@@ -1153,6 +1164,9 @@ type ApplicationRestartedActivityLogEntry implements ActivityLogEntry & Node {
   """The environment name that the entry belongs to."""
   environmentName: String
 
+  """GitHub Actions OIDC claims when authenticated by a GitHub repository."""
+  gitHubActorClaims: GitHubActorClaims
+
   """ID of the entry."""
   id: ID!
 
@@ -1183,6 +1197,9 @@ type ApplicationScaledActivityLogEntry implements ActivityLogEntry & Node {
 
   """The environment name that the entry belongs to."""
   environmentName: String
+
+  """GitHub Actions OIDC claims when authenticated by a GitHub repository."""
+  gitHubActorClaims: GitHubActorClaims
 
   """ID of the entry."""
   id: ID!
@@ -1253,6 +1270,9 @@ type ApplicationUpdatedActivityLogEntry implements ActivityLogEntry & Node {
   """The environment name that the entry belongs to."""
   environmentName: String
 
+  """GitHub Actions OIDC claims when authenticated by a GitHub repository."""
+  gitHubActorClaims: GitHubActorClaims
+
   """ID of the entry."""
   id: ID!
 
@@ -1277,7 +1297,7 @@ type ApplicationUpdatedActivityLogEntryData {
   """
   GitHub Actions OIDC token claims at the time of the apply. Only present when the request was authenticated via a GitHub token.
   """
-  gitHubActorClaims: GitHubActorClaims
+  gitHubActorClaims: GitHubActorClaims @deprecated(reason: "Use gitHubActorClaims on the activity log entry instead.")
 }
 
 input AssignRoleToServiceAccountInput {
@@ -1660,6 +1680,9 @@ type ClusterAuditActivityLogEntry implements ActivityLogEntry & Node {
   """The environment name that the entry belongs to."""
   environmentName: String
 
+  """GitHub Actions OIDC claims when authenticated by a GitHub repository."""
+  gitHubActorClaims: GitHubActorClaims
+
   """ID of the entry."""
   id: ID!
 
@@ -1819,6 +1842,9 @@ type ConfigCreatedActivityLogEntry implements ActivityLogEntry & Node {
   """The environment name that the entry belongs to."""
   environmentName: String
 
+  """GitHub Actions OIDC claims when authenticated by a GitHub repository."""
+  gitHubActorClaims: GitHubActorClaims
+
   """ID of the entry."""
   id: ID!
 
@@ -1846,6 +1872,9 @@ type ConfigDeletedActivityLogEntry implements ActivityLogEntry & Node {
 
   """The environment name that the entry belongs to."""
   environmentName: String
+
+  """GitHub Actions OIDC claims when authenticated by a GitHub repository."""
+  gitHubActorClaims: GitHubActorClaims
 
   """ID of the entry."""
   id: ID!
@@ -1935,6 +1964,9 @@ type ConfigUpdatedActivityLogEntry implements ActivityLogEntry & Node {
 
   """The environment name that the entry belongs to."""
   environmentName: String
+
+  """GitHub Actions OIDC claims when authenticated by a GitHub repository."""
+  gitHubActorClaims: GitHubActorClaims
 
   """ID of the entry."""
   id: ID!
@@ -2752,6 +2784,9 @@ type DeploymentActivityLogEntry implements ActivityLogEntry & Node {
   """The environment name that the entry belongs to."""
   environmentName: String
 
+  """GitHub Actions OIDC claims when authenticated by a GitHub repository."""
+  gitHubActorClaims: GitHubActorClaims
+
   """ID of the entry."""
   id: ID!
 
@@ -3189,6 +3224,9 @@ type GenericKubernetesResourceActivityLogEntry implements ActivityLogEntry & Nod
   """The environment name that the entry belongs to."""
   environmentName: String
 
+  """GitHub Actions OIDC claims when authenticated by a GitHub repository."""
+  gitHubActorClaims: GitHubActorClaims
+
   """ID of the entry."""
   id: ID!
 
@@ -3218,18 +3256,28 @@ type GenericKubernetesResourceActivityLogEntryData {
   """
   GitHub Actions OIDC token claims at the time of the apply. Only present when the request was authenticated via a GitHub token.
   """
-  gitHubActorClaims: GitHubActorClaims
+  gitHubActorClaims: GitHubActorClaims @deprecated(reason: "Use gitHubActorClaims on the activity log entry instead.")
 
   """The kind of the applied resource."""
   kind: String!
 }
 
 """
-GitHub Actions OIDC token claims captured at the time of an apply operation.
+GitHub Actions OIDC token claims captured when an activity log entry is created.
+See https://docs.github.com/en/actions/reference/security/oidc#custom-claims-provided-by-github
 """
 type GitHubActorClaims {
   """The GitHub username that triggered the workflow."""
   actor: String!
+
+  """The ID of the personal account that initiated the workflow run."""
+  actorID: String
+
+  """The target branch of the pull request in a workflow run."""
+  baseRef: String
+
+  """The check run ID of the current job."""
+  checkRunID: String
 
   """The GitHub deployment environment name, if the job targets one."""
   environment: String!
@@ -3239,19 +3287,39 @@ type GitHubActorClaims {
   """
   eventName: String!
 
+  """The source branch of the pull request in a workflow run."""
+  headRef: String
+
   """
   The ref of the reusable workflow called by this job, if any. E.g. 'org/repo/.github/workflows/deploy.yaml@refs/heads/main'.
   """
   jobWorkflowRef: String!
 
+  """The commit SHA for the reusable workflow file, if the job uses one."""
+  jobWorkflowSha: String
+
   """The git ref that triggered the workflow, e.g. 'refs/heads/main'."""
   ref: String!
+
+  """The type of ref, e.g. 'branch'."""
+  refType: String
 
   """The repository name that triggered the workflow, e.g. 'org/repo'."""
   repository: String!
 
   """The immutable numeric GitHub repository ID."""
   repositoryID: String!
+
+  """The name of the organization in which the repository is stored."""
+  repositoryOwner: String
+
+  """The ID of the organization in which the repository is stored."""
+  repositoryOwnerID: String
+
+  """
+  The visibility of the repository, e.g. 'internal', 'private', or 'public'.
+  """
+  repositoryVisibility: String
 
   """The attempt number of the workflow run (1-indexed)."""
   runAttempt: String!
@@ -3261,8 +3329,24 @@ type GitHubActorClaims {
   """
   runID: String!
 
+  """The number of times this workflow has been run."""
+  runNumber: String
+
+  """
+  The type of runner used by the job, e.g. 'github-hosted' or 'self-hosted'.
+  """
+  runnerEnvironment: String
+
   """The path to the workflow file, e.g. '.github/workflows/deploy.yaml'."""
   workflow: String!
+
+  """
+  The ref path to the workflow, e.g. 'org/repo/.github/workflows/deploy.yaml@refs/heads/main'.
+  """
+  workflowRef: String
+
+  """The commit SHA for the workflow file."""
+  workflowSha: String
 }
 
 input GrantPostgresAccessInput {
@@ -4067,6 +4151,9 @@ type JobCreatedActivityLogEntry implements ActivityLogEntry & Node {
   """The environment name that the entry belongs to."""
   environmentName: String
 
+  """GitHub Actions OIDC claims when authenticated by a GitHub repository."""
+  gitHubActorClaims: GitHubActorClaims
+
   """ID of the entry."""
   id: ID!
 
@@ -4094,6 +4181,9 @@ type JobDeletedActivityLogEntry implements ActivityLogEntry & Node {
 
   """The environment name that the entry belongs to."""
   environmentName: String
+
+  """GitHub Actions OIDC claims when authenticated by a GitHub repository."""
+  gitHubActorClaims: GitHubActorClaims
 
   """ID of the entry."""
   id: ID!
@@ -4242,6 +4332,9 @@ type JobRunDeletedActivityLogEntry implements ActivityLogEntry & Node {
   """The environment name that the entry belongs to."""
   environmentName: String
 
+  """GitHub Actions OIDC claims when authenticated by a GitHub repository."""
+  gitHubActorClaims: GitHubActorClaims
+
   """ID of the entry."""
   id: ID!
 
@@ -4375,6 +4468,9 @@ type JobTriggeredActivityLogEntry implements ActivityLogEntry & Node {
   """The environment name that the entry belongs to."""
   environmentName: String
 
+  """GitHub Actions OIDC claims when authenticated by a GitHub repository."""
+  gitHubActorClaims: GitHubActorClaims
+
   """ID of the entry."""
   id: ID!
 
@@ -4407,6 +4503,9 @@ type JobUpdatedActivityLogEntry implements ActivityLogEntry & Node {
   """The environment name that the entry belongs to."""
   environmentName: String
 
+  """GitHub Actions OIDC claims when authenticated by a GitHub repository."""
+  gitHubActorClaims: GitHubActorClaims
+
   """ID of the entry."""
   id: ID!
 
@@ -4431,7 +4530,7 @@ type JobUpdatedActivityLogEntryData {
   """
   GitHub Actions OIDC token claims at the time of the apply. Only present when the request was authenticated via a GitHub token.
   """
-  gitHubActorClaims: GitHubActorClaims
+  gitHubActorClaims: GitHubActorClaims @deprecated(reason: "Use gitHubActorClaims on the activity log entry instead.")
 }
 
 type KafkaCredentials {
@@ -4466,6 +4565,9 @@ type KafkaCredentialsCreatedActivityLogEntry implements ActivityLogEntry & Node 
 
   """The environment name that the entry belongs to."""
   environmentName: String
+
+  """GitHub Actions OIDC claims when authenticated by a GitHub repository."""
+  gitHubActorClaims: GitHubActorClaims
 
   """ID of the entry."""
   id: ID!
@@ -4653,6 +4755,9 @@ type KafkaTopicUpdatedActivityLogEntry implements ActivityLogEntry & Node {
 
   """The environment name that the entry belongs to."""
   environmentName: String
+
+  """GitHub Actions OIDC claims when authenticated by a GitHub repository."""
+  gitHubActorClaims: GitHubActorClaims
 
   """ID of the entry."""
   id: ID!
@@ -5404,6 +5509,9 @@ type OpenSearchCreatedActivityLogEntry implements ActivityLogEntry & Node {
   """The environment name that the entry belongs to."""
   environmentName: String
 
+  """GitHub Actions OIDC claims when authenticated by a GitHub repository."""
+  gitHubActorClaims: GitHubActorClaims
+
   """ID of the entry."""
   id: ID!
 
@@ -5450,6 +5558,9 @@ type OpenSearchCredentialsCreatedActivityLogEntry implements ActivityLogEntry & 
   """The environment name that the entry belongs to."""
   environmentName: String
 
+  """GitHub Actions OIDC claims when authenticated by a GitHub repository."""
+  gitHubActorClaims: GitHubActorClaims
+
   """ID of the entry."""
   id: ID!
 
@@ -5485,6 +5596,9 @@ type OpenSearchDeletedActivityLogEntry implements ActivityLogEntry & Node {
 
   """The environment name that the entry belongs to."""
   environmentName: String
+
+  """GitHub Actions OIDC claims when authenticated by a GitHub repository."""
+  gitHubActorClaims: GitHubActorClaims
 
   """ID of the entry."""
   id: ID!
@@ -5699,6 +5813,9 @@ type OpenSearchUpdatedActivityLogEntry implements ActivityLogEntry & Node {
   """The environment name that the entry belongs to."""
   environmentName: String
 
+  """GitHub Actions OIDC claims when authenticated by a GitHub repository."""
+  gitHubActorClaims: GitHubActorClaims
+
   """ID of the entry."""
   id: ID!
 
@@ -5808,6 +5925,9 @@ type PostgresDeletedActivityLogEntry implements ActivityLogEntry & Node {
   """The environment name that the entry belongs to."""
   environmentName: String
 
+  """GitHub Actions OIDC claims when authenticated by a GitHub repository."""
+  gitHubActorClaims: GitHubActorClaims
+
   """ID of the entry."""
   id: ID!
 
@@ -5838,6 +5958,9 @@ type PostgresGrantAccessActivityLogEntry implements ActivityLogEntry & Node {
 
   """The environment name that the entry belongs to."""
   environmentName: String
+
+  """GitHub Actions OIDC claims when authenticated by a GitHub repository."""
+  gitHubActorClaims: GitHubActorClaims
 
   """ID of the entry."""
   id: ID!
@@ -6473,6 +6596,9 @@ type ReconcilerConfiguredActivityLogEntry implements ActivityLogEntry & Node {
   """The environment name that the entry belongs to."""
   environmentName: String
 
+  """GitHub Actions OIDC claims when authenticated by a GitHub repository."""
+  gitHubActorClaims: GitHubActorClaims
+
   """ID of the entry."""
   id: ID!
 
@@ -6517,6 +6643,9 @@ type ReconcilerDisabledActivityLogEntry implements ActivityLogEntry & Node {
   """The environment name that the entry belongs to."""
   environmentName: String
 
+  """GitHub Actions OIDC claims when authenticated by a GitHub repository."""
+  gitHubActorClaims: GitHubActorClaims
+
   """ID of the entry."""
   id: ID!
 
@@ -6552,6 +6681,9 @@ type ReconcilerEnabledActivityLogEntry implements ActivityLogEntry & Node {
 
   """The environment name that the entry belongs to."""
   environmentName: String
+
+  """GitHub Actions OIDC claims when authenticated by a GitHub repository."""
+  gitHubActorClaims: GitHubActorClaims
 
   """ID of the entry."""
   id: ID!
@@ -6708,6 +6840,9 @@ type RepositoryAddedActivityLogEntry implements ActivityLogEntry & Node {
   """The environment name that the entry belongs to."""
   environmentName: String
 
+  """GitHub Actions OIDC claims when authenticated by a GitHub repository."""
+  gitHubActorClaims: GitHubActorClaims
+
   """ID of the entry."""
   id: ID!
 
@@ -6768,6 +6903,9 @@ type RepositoryRemovedActivityLogEntry implements ActivityLogEntry & Node {
 
   """The environment name that the entry belongs to."""
   environmentName: String
+
+  """GitHub Actions OIDC claims when authenticated by a GitHub repository."""
+  gitHubActorClaims: GitHubActorClaims
 
   """ID of the entry."""
   id: ID!
@@ -6914,6 +7052,9 @@ type RoleAssignedToServiceAccountActivityLogEntry implements ActivityLogEntry & 
   """The environment name that the entry belongs to."""
   environmentName: String
 
+  """GitHub Actions OIDC claims when authenticated by a GitHub repository."""
+  gitHubActorClaims: GitHubActorClaims
+
   """ID of the entry."""
   id: ID!
 
@@ -6997,6 +7138,9 @@ type RoleRevokedFromServiceAccountActivityLogEntry implements ActivityLogEntry &
 
   """The environment name that the entry belongs to."""
   environmentName: String
+
+  """GitHub Actions OIDC claims when authenticated by a GitHub repository."""
+  gitHubActorClaims: GitHubActorClaims
 
   """ID of the entry."""
   id: ID!
@@ -7261,6 +7405,9 @@ type SecretCreatedActivityLogEntry implements ActivityLogEntry & Node {
   """The environment name that the entry belongs to."""
   environmentName: String
 
+  """GitHub Actions OIDC claims when authenticated by a GitHub repository."""
+  gitHubActorClaims: GitHubActorClaims
+
   """ID of the entry."""
   id: ID!
 
@@ -7288,6 +7435,9 @@ type SecretDeletedActivityLogEntry implements ActivityLogEntry & Node {
 
   """The environment name that the entry belongs to."""
   environmentName: String
+
+  """GitHub Actions OIDC claims when authenticated by a GitHub repository."""
+  gitHubActorClaims: GitHubActorClaims
 
   """ID of the entry."""
   id: ID!
@@ -7378,6 +7528,9 @@ type SecretUpdatedActivityLogEntry implements ActivityLogEntry & Node {
   """The environment name that the entry belongs to."""
   environmentName: String
 
+  """GitHub Actions OIDC claims when authenticated by a GitHub repository."""
+  gitHubActorClaims: GitHubActorClaims
+
   """ID of the entry."""
   id: ID!
 
@@ -7440,6 +7593,9 @@ type SecretValueAddedActivityLogEntry implements ActivityLogEntry & Node {
   """The environment name that the entry belongs to."""
   environmentName: String
 
+  """GitHub Actions OIDC claims when authenticated by a GitHub repository."""
+  gitHubActorClaims: GitHubActorClaims
+
   """ID of the entry."""
   id: ID!
 
@@ -7489,6 +7645,9 @@ type SecretValueRemovedActivityLogEntry implements ActivityLogEntry & Node {
   """The environment name that the entry belongs to."""
   environmentName: String
 
+  """GitHub Actions OIDC claims when authenticated by a GitHub repository."""
+  gitHubActorClaims: GitHubActorClaims
+
   """ID of the entry."""
   id: ID!
 
@@ -7524,6 +7683,9 @@ type SecretValueUpdatedActivityLogEntry implements ActivityLogEntry & Node {
 
   """The environment name that the entry belongs to."""
   environmentName: String
+
+  """GitHub Actions OIDC claims when authenticated by a GitHub repository."""
+  gitHubActorClaims: GitHubActorClaims
 
   """ID of the entry."""
   id: ID!
@@ -7561,6 +7723,9 @@ type SecretValuesViewedActivityLogEntry implements ActivityLogEntry & Node {
 
   """The environment name that the entry belongs to."""
   environmentName: String
+
+  """GitHub Actions OIDC claims when authenticated by a GitHub repository."""
+  gitHubActorClaims: GitHubActorClaims
 
   """ID of the entry."""
   id: ID!
@@ -7716,6 +7881,9 @@ type ServiceAccountCreatedActivityLogEntry implements ActivityLogEntry & Node {
   """The environment name that the entry belongs to."""
   environmentName: String
 
+  """GitHub Actions OIDC claims when authenticated by a GitHub repository."""
+  gitHubActorClaims: GitHubActorClaims
+
   """ID of the entry."""
   id: ID!
 
@@ -7743,6 +7911,9 @@ type ServiceAccountDeletedActivityLogEntry implements ActivityLogEntry & Node {
 
   """The environment name that the entry belongs to."""
   environmentName: String
+
+  """GitHub Actions OIDC claims when authenticated by a GitHub repository."""
+  gitHubActorClaims: GitHubActorClaims
 
   """ID of the entry."""
   id: ID!
@@ -7819,6 +7990,9 @@ type ServiceAccountTokenCreatedActivityLogEntry implements ActivityLogEntry & No
   """The environment name that the entry belongs to."""
   environmentName: String
 
+  """GitHub Actions OIDC claims when authenticated by a GitHub repository."""
+  gitHubActorClaims: GitHubActorClaims
+
   """ID of the entry."""
   id: ID!
 
@@ -7854,6 +8028,9 @@ type ServiceAccountTokenDeletedActivityLogEntry implements ActivityLogEntry & No
 
   """The environment name that the entry belongs to."""
   environmentName: String
+
+  """GitHub Actions OIDC claims when authenticated by a GitHub repository."""
+  gitHubActorClaims: GitHubActorClaims
 
   """ID of the entry."""
   id: ID!
@@ -7898,6 +8075,9 @@ type ServiceAccountTokenUpdatedActivityLogEntry implements ActivityLogEntry & No
 
   """The environment name that the entry belongs to."""
   environmentName: String
+
+  """GitHub Actions OIDC claims when authenticated by a GitHub repository."""
+  gitHubActorClaims: GitHubActorClaims
 
   """ID of the entry."""
   id: ID!
@@ -7950,6 +8130,9 @@ type ServiceAccountUpdatedActivityLogEntry implements ActivityLogEntry & Node {
 
   """The environment name that the entry belongs to."""
   environmentName: String
+
+  """GitHub Actions OIDC claims when authenticated by a GitHub repository."""
+  gitHubActorClaims: GitHubActorClaims
 
   """ID of the entry."""
   id: ID!
@@ -8040,6 +8223,9 @@ type ServiceAccountWorkloadBindingAddedActivityLogEntry implements ActivityLogEn
   """
   environmentName: String
 
+  """GitHub Actions OIDC claims when authenticated by a GitHub repository."""
+  gitHubActorClaims: GitHubActorClaims
+
   """ID of the entry."""
   id: ID!
 
@@ -8105,6 +8291,9 @@ type ServiceAccountWorkloadBindingRemovedActivityLogEntry implements ActivityLog
   """
   environmentName: String
 
+  """GitHub Actions OIDC claims when authenticated by a GitHub repository."""
+  gitHubActorClaims: GitHubActorClaims
+
   """ID of the entry."""
   id: ID!
 
@@ -8166,6 +8355,9 @@ type ServiceMaintenanceActivityLogEntry implements ActivityLogEntry & Node {
 
   """The environment name that the entry belongs to."""
   environmentName: String
+
+  """GitHub Actions OIDC claims when authenticated by a GitHub repository."""
+  gitHubActorClaims: GitHubActorClaims
 
   """ID of the entry."""
   id: ID!
@@ -9091,6 +9283,9 @@ type TeamConfirmDeleteKeyActivityLogEntry implements ActivityLogEntry & Node {
   """The environment name that the entry belongs to."""
   environmentName: String
 
+  """GitHub Actions OIDC claims when authenticated by a GitHub repository."""
+  gitHubActorClaims: GitHubActorClaims
+
   """ID of the entry."""
   id: ID!
 
@@ -9173,6 +9368,9 @@ type TeamCreateDeleteKeyActivityLogEntry implements ActivityLogEntry & Node {
   """The environment name that the entry belongs to."""
   environmentName: String
 
+  """GitHub Actions OIDC claims when authenticated by a GitHub repository."""
+  gitHubActorClaims: GitHubActorClaims
+
   """ID of the entry."""
   id: ID!
 
@@ -9200,6 +9398,9 @@ type TeamCreatedActivityLogEntry implements ActivityLogEntry & Node {
 
   """The environment name that the entry belongs to."""
   environmentName: String
+
+  """GitHub Actions OIDC claims when authenticated by a GitHub repository."""
+  gitHubActorClaims: GitHubActorClaims
 
   """ID of the entry."""
   id: ID!
@@ -9245,6 +9446,9 @@ type TeamDeployKeyUpdatedActivityLogEntry implements ActivityLogEntry & Node {
 
   """The environment name that the entry belongs to."""
   environmentName: String
+
+  """GitHub Actions OIDC claims when authenticated by a GitHub repository."""
+  gitHubActorClaims: GitHubActorClaims
 
   """ID of the entry."""
   id: ID!
@@ -9400,6 +9604,9 @@ type TeamEnvironmentUpdatedActivityLogEntry implements ActivityLogEntry & Node {
 
   """The environment name that the entry belongs to."""
   environmentName: String
+
+  """GitHub Actions OIDC claims when authenticated by a GitHub repository."""
+  gitHubActorClaims: GitHubActorClaims
 
   """ID of the entry."""
   id: ID!
@@ -9611,6 +9818,9 @@ type TeamMemberAddedActivityLogEntry implements ActivityLogEntry & Node {
   """The environment name that the entry belongs to."""
   environmentName: String
 
+  """GitHub Actions OIDC claims when authenticated by a GitHub repository."""
+  gitHubActorClaims: GitHubActorClaims
+
   """ID of the entry."""
   id: ID!
 
@@ -9693,6 +9903,9 @@ type TeamMemberRemovedActivityLogEntry implements ActivityLogEntry & Node {
   """The environment name that the entry belongs to."""
   environmentName: String
 
+  """GitHub Actions OIDC claims when authenticated by a GitHub repository."""
+  gitHubActorClaims: GitHubActorClaims
+
   """ID of the entry."""
   id: ID!
 
@@ -9740,6 +9953,9 @@ type TeamMemberSetRoleActivityLogEntry implements ActivityLogEntry & Node {
 
   """The environment name that the entry belongs to."""
   environmentName: String
+
+  """GitHub Actions OIDC claims when authenticated by a GitHub repository."""
+  gitHubActorClaims: GitHubActorClaims
 
   """ID of the entry."""
   id: ID!
@@ -9860,6 +10076,9 @@ type TeamUpdatedActivityLogEntry implements ActivityLogEntry & Node {
 
   """The environment name that the entry belongs to."""
   environmentName: String
+
+  """GitHub Actions OIDC claims when authenticated by a GitHub repository."""
+  gitHubActorClaims: GitHubActorClaims
 
   """ID of the entry."""
   id: ID!
@@ -10095,6 +10314,9 @@ type TunnelCreatedActivityLogEntry implements ActivityLogEntry & Node {
   """The environment name that the entry belongs to."""
   environmentName: String
 
+  """GitHub Actions OIDC claims when authenticated by a GitHub repository."""
+  gitHubActorClaims: GitHubActorClaims
+
   """ID of the entry."""
   id: ID!
 
@@ -10133,6 +10355,9 @@ type TunnelDeletedActivityLogEntry implements ActivityLogEntry & Node {
 
   """The environment name that the entry belongs to."""
   environmentName: String
+
+  """GitHub Actions OIDC claims when authenticated by a GitHub repository."""
+  gitHubActorClaims: GitHubActorClaims
 
   """ID of the entry."""
   id: ID!
@@ -10219,6 +10444,9 @@ type UnleashInstanceCreatedActivityLogEntry implements ActivityLogEntry & Node {
   """The environment name that the entry belongs to."""
   environmentName: String
 
+  """GitHub Actions OIDC claims when authenticated by a GitHub repository."""
+  gitHubActorClaims: GitHubActorClaims
+
   """ID of the entry."""
   id: ID!
 
@@ -10246,6 +10474,9 @@ type UnleashInstanceDeletedActivityLogEntry implements ActivityLogEntry & Node {
 
   """The environment name that the entry belongs to."""
   environmentName: String
+
+  """GitHub Actions OIDC claims when authenticated by a GitHub repository."""
+  gitHubActorClaims: GitHubActorClaims
 
   """ID of the entry."""
   id: ID!
@@ -10286,6 +10517,9 @@ type UnleashInstanceUpdatedActivityLogEntry implements ActivityLogEntry & Node {
 
   """The environment name that the entry belongs to."""
   environmentName: String
+
+  """GitHub Actions OIDC claims when authenticated by a GitHub repository."""
+  gitHubActorClaims: GitHubActorClaims
 
   """ID of the entry."""
   id: ID!
@@ -11128,6 +11362,9 @@ type ValkeyCreatedActivityLogEntry implements ActivityLogEntry & Node {
   """The environment name that the entry belongs to."""
   environmentName: String
 
+  """GitHub Actions OIDC claims when authenticated by a GitHub repository."""
+  gitHubActorClaims: GitHubActorClaims
+
   """ID of the entry."""
   id: ID!
 
@@ -11174,6 +11411,9 @@ type ValkeyCredentialsCreatedActivityLogEntry implements ActivityLogEntry & Node
   """The environment name that the entry belongs to."""
   environmentName: String
 
+  """GitHub Actions OIDC claims when authenticated by a GitHub repository."""
+  gitHubActorClaims: GitHubActorClaims
+
   """ID of the entry."""
   id: ID!
 
@@ -11209,6 +11449,9 @@ type ValkeyDeletedActivityLogEntry implements ActivityLogEntry & Node {
 
   """The environment name that the entry belongs to."""
   environmentName: String
+
+  """GitHub Actions OIDC claims when authenticated by a GitHub repository."""
+  gitHubActorClaims: GitHubActorClaims
 
   """ID of the entry."""
   id: ID!
@@ -11446,6 +11689,9 @@ type ValkeyUpdatedActivityLogEntry implements ActivityLogEntry & Node {
   """The environment name that the entry belongs to."""
   environmentName: String
 
+  """GitHub Actions OIDC claims when authenticated by a GitHub repository."""
+  gitHubActorClaims: GitHubActorClaims
+
   """ID of the entry."""
   id: ID!
 
@@ -11645,6 +11891,9 @@ type VulnerabilityUpdatedActivityLogEntry implements ActivityLogEntry & Node {
 
   """The environment name that the entry belongs to."""
   environmentName: String
+
+  """GitHub Actions OIDC claims when authenticated by a GitHub repository."""
+  gitHubActorClaims: GitHubActorClaims
 
   """ID of the entry."""
   id: ID!
