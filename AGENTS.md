@@ -165,6 +165,8 @@ Expected GraphQL and application errors must continue to use explicit error hand
 
 `vite.config.ts` enables SvelteKit's experimental `kit.experimental.handleRenderingErrors` and Svelte's `compilerOptions.experimental.async` so async rendering errors can reach boundaries during SSR. Rendering errors pass through SvelteKit's `handleError` hook; review both experimental settings when upgrading because async mode can affect rendering and effect ordering.
 
+For an unexpected SSR render error, a boundary can render its fallback and preserve surrounding page content while SvelteKit still returns HTTP 500 and reports the error through `handleError`.
+
 ---
 
 ## GraphQL with Houdini
