@@ -34,8 +34,14 @@ export default defineConfig((mode) => {
 				alias: {
 					$houdini: '.houdini/'
 				},
+				compilerOptions: {
+					experimental: {
+						async: true
+					}
+				},
 				experimental: {
-					explicitEnvironmentVariables: true
+					explicitEnvironmentVariables: true,
+					handleRenderingErrors: true
 				}
 			})
 		],

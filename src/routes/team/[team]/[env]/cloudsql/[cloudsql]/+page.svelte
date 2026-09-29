@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { page } from '$app/state';
+	import ChartBoundary from '$lib/chart/ChartBoundary.svelte';
 	import StaticUtilizationDonut from '$lib/chart/StaticUtilizationDonut.svelte';
 	import Labels from '$lib/domain/labels/Labels.svelte';
 	import IssueListItem from '$lib/domain/list-items/IssueListItem.svelte';
@@ -32,24 +33,30 @@
 			<section aria-labelledby="utilization-heading">
 				<Heading as="h2" id="utilization-heading" size="medium" spacing>Utilization</Heading>
 				<div class="summary-grid">
-					<StaticUtilizationDonut
-						value={instance.metrics.cpu.utilization}
-						label="CPU"
-						height="200px"
-						domainMax={100}
-					/>
-					<StaticUtilizationDonut
-						value={instance.metrics.memory.utilization}
-						label="Memory"
-						height="200px"
-						domainMax={100}
-					/>
-					<StaticUtilizationDonut
-						value={instance.metrics.disk.utilization}
-						label="Disk"
-						height="200px"
-						domainMax={100}
-					/>
+					<ChartBoundary>
+						<StaticUtilizationDonut
+							value={instance.metrics.cpu.utilization}
+							label="CPU"
+							height="200px"
+							domainMax={100}
+						/>
+					</ChartBoundary>
+					<ChartBoundary>
+						<StaticUtilizationDonut
+							value={instance.metrics.memory.utilization}
+							label="Memory"
+							height="200px"
+							domainMax={100}
+						/>
+					</ChartBoundary>
+					<ChartBoundary>
+						<StaticUtilizationDonut
+							value={instance.metrics.disk.utilization}
+							label="Disk"
+							height="200px"
+							domainMax={100}
+						/>
+					</ChartBoundary>
 				</div>
 			</section>
 

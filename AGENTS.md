@@ -157,6 +157,18 @@ This project uses **Svelte 5 with runes mode** (enforced via `forceRunesMode: tr
 
 ---
 
+## Rendering Error Boundaries
+
+Use error boundaries around independently rendered, non-critical UI when a render failure should not hide useful surrounding content. Prefer `$lib/chart/ChartBoundary` for individual charts and visualizations, and `$lib/ui/SectionBoundary` for reusable non-chart panels. Use `<svelte:boundary>` directly when a custom fallback is needed. Keep the boundary as small as the independently recoverable section, and do not wrap every component.
+
+Expected GraphQL and application errors must continue to use explicit error handling. Boundaries handle rendering and effect errors, not event-handler failures or later asynchronous work. Keep fallback messages user-safe and provide retry only when resetting the content is useful.
+
+`vite.config.ts` enables SvelteKit's experimental `kit.experimental.handleRenderingErrors` and Svelte's `compilerOptions.experimental.async` so async rendering errors can reach boundaries during SSR. Rendering errors pass through SvelteKit's `handleError` hook; review both experimental settings when upgrading because async mode can affect rendering and effect ordering.
+
+For an unexpected SSR render error, a boundary can render its fallback and preserve surrounding page content while SvelteKit still returns HTTP 500 and reports the error through `handleError`.
+
+---
+
 ## GraphQL with Houdini
 
 This project uses **Houdini** for GraphQL, not Apollo or other clients.

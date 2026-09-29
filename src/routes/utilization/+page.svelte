@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import { UtilizationResourceType, type TenantUtilization$result } from '$houdini';
+	import ChartBoundary from '$lib/chart/ChartBoundary.svelte';
 	import UtilizationChart from '$lib/chart/UtilizationChart.svelte';
 	import GraphErrors from '$lib/ui/GraphErrors.svelte';
 	import IconLabel from '$lib/ui/IconLabel.svelte';
@@ -242,8 +243,12 @@
 				</div>
 			{:else}
 				<div class="chart-row">
-					<UtilizationChart data={sortedCpuData} format="cpu" onBarClick={handleBarClick} />
-					<UtilizationChart data={sortedMemoryData} format="memory" onBarClick={handleBarClick} />
+					<ChartBoundary>
+						<UtilizationChart data={sortedCpuData} format="cpu" onBarClick={handleBarClick} />
+					</ChartBoundary>
+					<ChartBoundary>
+						<UtilizationChart data={sortedMemoryData} format="memory" onBarClick={handleBarClick} />
+					</ChartBoundary>
 				</div>
 			{/if}
 		</section>
