@@ -17,8 +17,6 @@
 				return 'BigQuery';
 			case 'SqlInstance':
 				return 'Cloud SQL';
-			case 'PostgresInstance':
-				return 'Postgres';
 			case 'Valkey':
 				return 'Valkey';
 			default:

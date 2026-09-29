@@ -68,7 +68,6 @@
 		buckets: { total: number };
 		kafkaTopics: { total: number };
 		openSearches: { total: number };
-		postgresInstances: { total: number };
 		sqlInstances: { total: number };
 		valkeys: { total: number };
 	};
@@ -98,10 +97,6 @@
 			{
 				total: inventoryCounts.openSearches.total,
 				label: 'OpenSearch instances'
-			},
-			{
-				total: inventoryCounts.postgresInstances.total,
-				label: 'Postgres instances'
 			},
 			{
 				total: inventoryCounts.sqlInstances.total,

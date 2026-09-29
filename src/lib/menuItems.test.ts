@@ -25,7 +25,6 @@ describe('menuItems', () => {
 					{ label: 'Secrets', href: '/team/devteam/secrets' },
 					{ label: 'Configs', href: '/team/devteam/configs' },
 					{ label: 'Cloud SQL', href: '/team/devteam/cloudsql' },
-					{ label: 'Postgres', href: '/team/devteam/postgres' },
 					{ label: 'Buckets', href: '/team/devteam/buckets' },
 					{ label: 'Valkey', href: '/team/devteam/valkey' },
 					{ label: 'OpenSearch', href: '/team/devteam/opensearch' },
@@ -60,7 +59,7 @@ describe('menuItems', () => {
 			).toBe(true);
 		});
 
-		test('postgres active for sub-pages', () => {
+		test('cloud sql active for sub-pages', () => {
 			expect(
 				menuItems({
 					path: '/team/nais/prod-gcp/cloudsql/gemini'
