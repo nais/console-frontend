@@ -18,6 +18,12 @@ export function formatOslo(date: Date): string {
 
 export function parseOslo(value: string): Date {
 	const wallTime = new Date(`${value}Z`);
-	const osloAtGuess = new Date(`${formatOslo(wallTime)}Z`);
-	return new Date(wallTime.getTime() - (osloAtGuess.getTime() - wallTime.getTime()));
+	let guess = wallTime;
+	// The offset at the UTC guess may differ from the offset at the actual Oslo instant.
+	for (let attempt = 0; attempt < 3; attempt++) {
+		const observed = formatOslo(guess);
+		if (observed === value) return guess;
+		guess = new Date(guess.getTime() + wallTime.getTime() - Date.parse(`${observed}Z`));
+	}
+	throw new RangeError('This time does not exist in Oslo due to daylight saving time.');
 }

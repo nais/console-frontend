@@ -140,6 +140,30 @@ describe('global activity log date range', () => {
 		expect(formatOslo(new Date('2026-07-15T10:34:56Z'))).toBe('2026-07-15T12:34:56');
 	});
 
+	it('round-trips Oslo times around the spring DST transition', () => {
+		expect(parseOslo('2026-03-29T01:30:00').toISOString()).toBe('2026-03-29T00:30:00.000Z');
+		expect(parseOslo('2026-03-29T03:30:00').toISOString()).toBe('2026-03-29T01:30:00.000Z');
+		expect(() => parseOslo('2026-03-29T02:30:00')).toThrow(
+			'This time does not exist in Oslo due to daylight saving time.'
+		);
+	});
+
+	it('selects a consistent instant for the repeated autumn hour', () => {
+		const result = parseOslo('2026-10-25T02:30:00');
+		expect(result.toISOString()).toBe('2026-10-25T01:30:00.000Z');
+		expect(formatOslo(result)).toBe('2026-10-25T02:30:00');
+	});
+
+	it('keeps both absolute instants when an existing URL spans the repeated hour', async () => {
+		const from = encodeURIComponent('2026-10-25T02:30:00+02:00');
+		const to = encodeURIComponent('2026-10-25T02:30:00+01:00');
+		const { dateRange } = await load(event(`?from=${from}&to=${to}`));
+		expect(dateRange.fromInput).toBe('2026-10-25T02:30:00');
+		expect(dateRange.toInput).toBe('2026-10-25T02:30:00');
+		expect(dateRange.from).toBe('2026-10-25T00:30:00.000Z');
+		expect(dateRange.to).toBe('2026-10-25T01:30:00.000Z');
+	});
+
 	it('accepts a single second and a 30-calendar-day range across a DST change', async () => {
 		await expect(
 			load(event('?from=2026-09-24T12:00:00Z&to=2026-09-24T12:00:00Z'))

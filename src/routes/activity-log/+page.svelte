@@ -117,10 +117,21 @@
 			const earliestFrom = `${earliestDay.toISOString().slice(0, 10)}T00:00:00`;
 			from = from > to ? to : from < earliestFrom ? earliestFrom : from;
 		}
+		let fromTime: Date;
+		let toTime: Date;
+		try {
+			fromTime = from === fromInput ? new Date(data.dateRange.from) : parseOslo(from);
+			toTime = to === toInput ? new Date(data.dateRange.to) : parseOslo(to);
+		} catch (error) {
+			if (!(error instanceof RangeError)) throw error;
+			input.setCustomValidity(error.message);
+			input.reportValidity();
+			return;
+		}
 		changeParams(
 			{
-				from: parseOslo(from).toISOString(),
-				to: parseOslo(to).toISOString(),
+				from: fromTime.toISOString(),
+				to: toTime.toISOString(),
 				after: '',
 				before: ''
 			},
@@ -149,7 +160,7 @@
 								</button>
 							{/if}
 						{/snippet}
-						{#each ae.edges || [] as { node: item }, i ((item.id, i))}
+						{#each ae.edges || [] as { node: item }, i ((item.__typename, i))}
 							<ActivityLogItem {item} mode="full" />
 						{/each}
 					</List>
@@ -253,7 +264,6 @@
 		gap: var(--ax-space-8);
 	}
 
-	/* Mobile responsive styles */
 	@media (max-width: 767px) {
 		.container {
 			gap: var(--ax-space-16);
