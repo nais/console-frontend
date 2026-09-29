@@ -4,6 +4,7 @@
 
 	import { UtilizationResourceType, type ResourceUtilizationForApp$result } from '$houdini';
 	import AnnotationSeries from '$lib/chart/AnnotationSeries.svelte';
+	import ChartBoundary from '$lib/chart/ChartBoundary.svelte';
 	import { docURL } from '$lib/doc';
 	import SurfaceCard from '$lib/ui/SurfaceCard.svelte';
 	import {
@@ -455,114 +456,116 @@
 				</ToggleGroup>
 			</div>
 			<div class="chart h-64">
-				<AreaChart
-					series={cpuChartData}
-					seriesLayout="overlap"
-					x="timestamp"
-					y="value"
-					brush={{
-						onBrushEnd(detail) {
-							brushXDomain = detail.brush.x as [Date, Date];
-						}
-					}}
-					yDomain={[0, cpuMax]}
-					xDomain={[
-						$ResourceUtilizationForApp.variables?.start,
-						$ResourceUtilizationForApp.variables?.end
-					]}
-					props={{
-						yAxis: {
-							// format: prettyBytes
-						},
-						highlight: {
-							points: false
-						},
-						area: {
-							motion: 'none'
-						}
-					}}
-					{annotations}
-				>
-					{#snippet aboveMarks()}
-						<AnnotationSeries
-							data={utilization.requested_cpu_series}
-							colorClass="stroke-warning [stroke-dasharray:2,2]"
-							label="Request"
-							labelColorClass="fill-warning"
-						/>
-						<AnnotationSeries
-							data={utilization.limit_cpu_series}
-							colorClass="stroke-danger [stroke-dasharray:2,2]"
-							label="Limit"
-							labelColorClass="fill-danger"
-							labelPosition="below"
-						/>
-					{/snippet}
-					{#snippet tooltip({ context })}
-						<Tooltip.Root>
-							{#snippet children({ data })}
-								{#if data.annotation}
-									{const log = $derived(data.annotation.details as groupedLogs)}
-									{#each log.logs as l (l.id)}
-										<div class="whitespace-nowrap">
-											{format(l.createdAt, 'dd/MM/yyyy HH:mm')} -
-											{#if l.__typename == 'DeploymentActivityLogEntry'}
-												New release
-											{:else if l.__typename == 'ApplicationScaledActivityLogEntry'}
-												Scaled {l.data.direction} to
-												{l.data.newSize}
-											{/if}
-										</div>
-									{/each}
-								{:else}
-									{const request = $derived(
-										utilization.requested_cpu_series.find(
-											(d) => d.timestamp.getTime() === context.x(data).getTime()
-										)?.value
-									)}
-									{const limit = $derived(
-										utilization.limit_cpu_series.find(
-											(d) => d.timestamp.getTime() === context.x(data).getTime()
-										)?.value
-									)}
-									<Tooltip.Header>{format(context.x(data), 'dd/MM/yyyy HH:mm')}</Tooltip.Header>
-									<Tooltip.List>
-										{#each context.tooltipState.series.filter((p) => p.value && p.value > 0) as p, i (p.key ?? i)}
-											<Tooltip.Item label={p.label ?? p.key} color={p.color} valueAlign="right">
-												{p.value.toFixed(3)}
-											</Tooltip.Item>
+				<ChartBoundary>
+					<AreaChart
+						series={cpuChartData}
+						seriesLayout="overlap"
+						x="timestamp"
+						y="value"
+						brush={{
+							onBrushEnd(detail) {
+								brushXDomain = detail.brush.x as [Date, Date];
+							}
+						}}
+						yDomain={[0, cpuMax]}
+						xDomain={[
+							$ResourceUtilizationForApp.variables?.start,
+							$ResourceUtilizationForApp.variables?.end
+						]}
+						props={{
+							yAxis: {
+								// format: prettyBytes
+							},
+							highlight: {
+								points: false
+							},
+							area: {
+								motion: 'none'
+							}
+						}}
+						{annotations}
+					>
+						{#snippet aboveMarks()}
+							<AnnotationSeries
+								data={utilization.requested_cpu_series}
+								colorClass="stroke-warning [stroke-dasharray:2,2]"
+								label="Request"
+								labelColorClass="fill-warning"
+							/>
+							<AnnotationSeries
+								data={utilization.limit_cpu_series}
+								colorClass="stroke-danger [stroke-dasharray:2,2]"
+								label="Limit"
+								labelColorClass="fill-danger"
+								labelPosition="below"
+							/>
+						{/snippet}
+						{#snippet tooltip({ context })}
+							<Tooltip.Root>
+								{#snippet children({ data })}
+									{#if data.annotation}
+										{const log = $derived(data.annotation.details as groupedLogs)}
+										{#each log.logs as l (l.id)}
+											<div class="whitespace-nowrap">
+												{format(l.createdAt, 'dd/MM/yyyy HH:mm')} -
+												{#if l.__typename == 'DeploymentActivityLogEntry'}
+													New release
+												{:else if l.__typename == 'ApplicationScaledActivityLogEntry'}
+													Scaled {l.data.direction} to
+													{l.data.newSize}
+												{/if}
+											</div>
 										{/each}
-										{#if request || limit}
-											<Tooltip.Separator />
-										{/if}
-										{#if request}
-											<Tooltip.Item
-												label="Request"
-												color="var(--ax-text-warning-decoration)"
-												value={request}
-												format={(v) => {
-													return v.toFixed(3);
-												}}
-												valueAlign="right"
-											/>
-										{/if}
-										{#if limit}
-											<Tooltip.Item
-												label="Limit"
-												color="var(--ax-text-danger-decoration)"
-												value={limit}
-												format={(v) => {
-													return v.toFixed(3);
-												}}
-												valueAlign="right"
-											/>
-										{/if}
-									</Tooltip.List>
-								{/if}
-							{/snippet}
-						</Tooltip.Root>
-					{/snippet}
-				</AreaChart>
+									{:else}
+										{const request = $derived(
+											utilization.requested_cpu_series.find(
+												(d) => d.timestamp.getTime() === context.x(data).getTime()
+											)?.value
+										)}
+										{const limit = $derived(
+											utilization.limit_cpu_series.find(
+												(d) => d.timestamp.getTime() === context.x(data).getTime()
+											)?.value
+										)}
+										<Tooltip.Header>{format(context.x(data), 'dd/MM/yyyy HH:mm')}</Tooltip.Header>
+										<Tooltip.List>
+											{#each context.tooltipState.series.filter((p) => p.value && p.value > 0) as p, i (p.key ?? i)}
+												<Tooltip.Item label={p.label ?? p.key} color={p.color} valueAlign="right">
+													{p.value.toFixed(3)}
+												</Tooltip.Item>
+											{/each}
+											{#if request || limit}
+												<Tooltip.Separator />
+											{/if}
+											{#if request}
+												<Tooltip.Item
+													label="Request"
+													color="var(--ax-text-warning-decoration)"
+													value={request}
+													format={(v) => {
+														return v.toFixed(3);
+													}}
+													valueAlign="right"
+												/>
+											{/if}
+											{#if limit}
+												<Tooltip.Item
+													label="Limit"
+													color="var(--ax-text-danger-decoration)"
+													value={limit}
+													format={(v) => {
+														return v.toFixed(3);
+													}}
+													valueAlign="right"
+												/>
+											{/if}
+										</Tooltip.List>
+									{/if}
+								{/snippet}
+							</Tooltip.Root>
+						{/snippet}
+					</AreaChart>
+				</ChartBoundary>
 			</div>
 			<ReadMore header="Analyzing Your CPU Usage">
 				<BodyLong>
@@ -619,110 +622,112 @@
 			</div>
 
 			<div class="chart h-64">
-				<AreaChart
-					series={memoryChartData}
-					seriesLayout="overlap"
-					x="timestamp"
-					y="value"
-					brush={{
-						onBrushEnd(detail) {
-							brushXDomain = detail.brush.x as [Date, Date];
-						}
-					}}
-					yDomain={[0, memoryMax]}
-					xDomain={[
-						$ResourceUtilizationForApp.variables?.start,
-						$ResourceUtilizationForApp.variables?.end
-					]}
-					props={{
-						yAxis: {
-							format: prettyBytes
-						},
-						highlight: {
-							points: false
-						},
-						area: {
-							motion: 'none'
-						}
-					}}
-					{annotations}
-				>
-					{#snippet aboveMarks()}
-						<AnnotationSeries
-							data={utilization.requested_memory_series}
-							colorClass="stroke-warning [stroke-dasharray:2,2]"
-							label="Request"
-							labelColorClass="fill-warning"
-						/>
-						<AnnotationSeries
-							data={utilization.limit_memory_series}
-							colorClass="stroke-danger [stroke-dasharray:2,2]"
-							label="Limit"
-							labelColorClass="fill-danger"
-							labelPosition="below"
-						/>
-					{/snippet}
-					{#snippet tooltip({ context })}
-						<Tooltip.Root>
-							{#snippet children({ data })}
-								{#if data.annotation}
-									{const log = $derived(data.annotation.details as groupedLogs)}
-									{#each log.logs as l (l.id)}
-										<div class="whitespace-nowrap">
-											{format(l.createdAt, 'dd/MM/yyyy HH:mm')} -
-											{#if l.__typename == 'DeploymentActivityLogEntry'}
-												New release
-											{:else if l.__typename == 'ApplicationScaledActivityLogEntry'}
-												Scaled {l.data.direction} to
-												{l.data.newSize}
-											{/if}
-										</div>
-									{/each}
-								{:else}
-									{const request = $derived(
-										utilization.requested_memory_series.find(
-											(d) => d.timestamp.getTime() === context.x(data).getTime()
-										)?.value
-									)}
-									{const limit = $derived(
-										utilization.limit_memory_series.find(
-											(d) => d.timestamp.getTime() === context.x(data).getTime()
-										)?.value
-									)}
-									<Tooltip.Header>{format(context.x(data), 'dd/MM/yyyy HH:mm')}</Tooltip.Header>
-									<Tooltip.List>
-										{#each context.tooltipState.series.filter((p) => p.value && p.value > 0) as p, i (p.key ?? i)}
-											<Tooltip.Item label={p.label ?? p.key} color={p.color} valueAlign="right">
-												{prettyBytes(p.value)}
-											</Tooltip.Item>
+				<ChartBoundary>
+					<AreaChart
+						series={memoryChartData}
+						seriesLayout="overlap"
+						x="timestamp"
+						y="value"
+						brush={{
+							onBrushEnd(detail) {
+								brushXDomain = detail.brush.x as [Date, Date];
+							}
+						}}
+						yDomain={[0, memoryMax]}
+						xDomain={[
+							$ResourceUtilizationForApp.variables?.start,
+							$ResourceUtilizationForApp.variables?.end
+						]}
+						props={{
+							yAxis: {
+								format: prettyBytes
+							},
+							highlight: {
+								points: false
+							},
+							area: {
+								motion: 'none'
+							}
+						}}
+						{annotations}
+					>
+						{#snippet aboveMarks()}
+							<AnnotationSeries
+								data={utilization.requested_memory_series}
+								colorClass="stroke-warning [stroke-dasharray:2,2]"
+								label="Request"
+								labelColorClass="fill-warning"
+							/>
+							<AnnotationSeries
+								data={utilization.limit_memory_series}
+								colorClass="stroke-danger [stroke-dasharray:2,2]"
+								label="Limit"
+								labelColorClass="fill-danger"
+								labelPosition="below"
+							/>
+						{/snippet}
+						{#snippet tooltip({ context })}
+							<Tooltip.Root>
+								{#snippet children({ data })}
+									{#if data.annotation}
+										{const log = $derived(data.annotation.details as groupedLogs)}
+										{#each log.logs as l (l.id)}
+											<div class="whitespace-nowrap">
+												{format(l.createdAt, 'dd/MM/yyyy HH:mm')} -
+												{#if l.__typename == 'DeploymentActivityLogEntry'}
+													New release
+												{:else if l.__typename == 'ApplicationScaledActivityLogEntry'}
+													Scaled {l.data.direction} to
+													{l.data.newSize}
+												{/if}
+											</div>
 										{/each}
-										{#if request || limit}
-											<Tooltip.Separator />
-										{/if}
-										{#if request}
-											<Tooltip.Item
-												label="Request"
-												color="var(--ax-text-warning-decoration)"
-												value={request}
-												format={prettyBytes}
-												valueAlign="right"
-											/>
-										{/if}
-										{#if limit}
-											<Tooltip.Item
-												label="Limit"
-												color="var(--ax-text-danger-decoration)"
-												value={limit}
-												format={prettyBytes}
-												valueAlign="right"
-											/>
-										{/if}
-									</Tooltip.List>
-								{/if}
-							{/snippet}
-						</Tooltip.Root>
-					{/snippet}
-				</AreaChart>
+									{:else}
+										{const request = $derived(
+											utilization.requested_memory_series.find(
+												(d) => d.timestamp.getTime() === context.x(data).getTime()
+											)?.value
+										)}
+										{const limit = $derived(
+											utilization.limit_memory_series.find(
+												(d) => d.timestamp.getTime() === context.x(data).getTime()
+											)?.value
+										)}
+										<Tooltip.Header>{format(context.x(data), 'dd/MM/yyyy HH:mm')}</Tooltip.Header>
+										<Tooltip.List>
+											{#each context.tooltipState.series.filter((p) => p.value && p.value > 0) as p, i (p.key ?? i)}
+												<Tooltip.Item label={p.label ?? p.key} color={p.color} valueAlign="right">
+													{prettyBytes(p.value)}
+												</Tooltip.Item>
+											{/each}
+											{#if request || limit}
+												<Tooltip.Separator />
+											{/if}
+											{#if request}
+												<Tooltip.Item
+													label="Request"
+													color="var(--ax-text-warning-decoration)"
+													value={request}
+													format={prettyBytes}
+													valueAlign="right"
+												/>
+											{/if}
+											{#if limit}
+												<Tooltip.Item
+													label="Limit"
+													color="var(--ax-text-danger-decoration)"
+													value={limit}
+													format={prettyBytes}
+													valueAlign="right"
+												/>
+											{/if}
+										</Tooltip.List>
+									{/if}
+								{/snippet}
+							</Tooltip.Root>
+						{/snippet}
+					</AreaChart>
+				</ChartBoundary>
 			</div>
 			<ReadMore header="Analyzing Your Memory Usage">
 				<BodyLong>

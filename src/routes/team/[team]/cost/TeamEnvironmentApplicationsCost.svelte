@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { graphql } from '$houdini';
+	import ChartBoundary from '$lib/chart/ChartBoundary.svelte';
 	import LegendWrapper, { legendSnippet } from '$lib/chart/LegendWrapper.svelte';
 	import { euroAxisFormatter } from '$lib/chart/util';
 	import GraphErrors from '$lib/ui/GraphErrors.svelte';
@@ -127,35 +128,37 @@
 			<div class="env-section">
 				<Heading as="h3" size="small">{env.environment.name}</Heading>
 				<div class="chart">
-					<LegendWrapper height="400px">
-						<LineChart
-							padding={{ left: 40 }}
-							legend={legendSnippet}
-							series={env.series.map((item, i) => {
-								return {
-									key: item.name!,
-									color: visualizationColors[i % visualizationColors.length],
-									data: item.data.map(([date, value]) => ({
-										date: new Date(date as number),
-										value
-									}))
-								};
-							})}
-							x="date"
-							y="value"
-							props={{
-								spline: {
-									class: 'stroke-2'
-								},
-								yAxis: {
-									format: euroAxisFormatter
-								},
-								xAxis: {
-									format: 'day'
-								}
-							}}
-						/>
-					</LegendWrapper>
+					<ChartBoundary>
+						<LegendWrapper height="400px">
+							<LineChart
+								padding={{ left: 40 }}
+								legend={legendSnippet}
+								series={env.series.map((item, i) => {
+									return {
+										key: item.name!,
+										color: visualizationColors[i % visualizationColors.length],
+										data: item.data.map(([date, value]) => ({
+											date: new Date(date as number),
+											value
+										}))
+									};
+								})}
+								x="date"
+								y="value"
+								props={{
+									spline: {
+										class: 'stroke-2'
+									},
+									yAxis: {
+										format: euroAxisFormatter
+									},
+									xAxis: {
+										format: 'day'
+									}
+								}}
+							/>
+						</LegendWrapper>
+					</ChartBoundary>
 				</div>
 			</div>
 		{/each}

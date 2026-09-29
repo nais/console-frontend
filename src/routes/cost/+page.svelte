@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { page } from '$app/state';
 	import { OrderDirection, TeamOrderField } from '$houdini';
+	import ChartBoundary from '$lib/chart/ChartBoundary.svelte';
 	import LegendWrapper, { legendSnippet } from '$lib/chart/LegendWrapper.svelte';
 	import { euroAxisFormatter, serviceColor } from '$lib/chart/util';
 	import GraphErrors from '$lib/ui/GraphErrors.svelte';
@@ -157,69 +158,71 @@
 						<Loader size="3xlarge" />
 					</div>
 				{:else if $CostMonthly.data}
-					<LegendWrapper height="500px">
-						<BarChart
-							legend={legendSnippet}
-							padding={{ top: 24, bottom: 24, left: 40, right: 40 }}
-							data={tenantCostData}
-							x="date"
-							series={allServicesSeries}
-							seriesLayout="stack"
-							props={{
-								xAxis: {
-									format: formatDate
-								},
-								yAxis: { format: euroAxisFormatter }
-							}}
-						>
-							{#snippet tooltip({ context })}
-								<Tooltip.Root>
-									{#snippet children({ data })}
-										{const visibleSeries = $derived(context.series.visibleSeries)}
-										{const payload = $derived(
-											context.tooltipState.series.map((s) => ({
-												key: s.key,
-												name: s.label ?? s.key,
-												color: s.color,
-												value: s.value
-											}))
-										)}
-										{const total = $derived(
-											sum(visibleSeries, (s) => {
-												const seriesTooltipData = s.data
-													? findRelatedData(s.data, data, context.x)
-													: data;
-												const valueAccessor = accessor(s.value ?? (s.data ? context.y : s.key));
-												return valueAccessor(seriesTooltipData);
-											})
-										)}
-										<Tooltip.Header value={data.date} format={formatDate} />
-										<Tooltip.List>
-											{#each sortedPayload(payload) as p, i (p.key ?? i)}
-												<Tooltip.Item label={p.name} color={p.color} valueAlign="right">
-													{#if p.value && p.value > 0}
-														{euroValueFormatter(p.value)}
-														({((p.value / total) * 100).toFixed(1)}%)
-													{:else}
-														<span style="opacity:0.5;">{euroValueFormatter(0)}</span>
-													{/if}
-												</Tooltip.Item>
-											{/each}
-											{#if payload.length > 1}
-												<Tooltip.Separator />
-												<Tooltip.Item
-													label="total"
-													value={total}
-													format="currency"
-													valueAlign="right"
-												/>
-											{/if}
-										</Tooltip.List>
-									{/snippet}
-								</Tooltip.Root>
-							{/snippet}
-						</BarChart>
-					</LegendWrapper>
+					<ChartBoundary>
+						<LegendWrapper height="500px">
+							<BarChart
+								legend={legendSnippet}
+								padding={{ top: 24, bottom: 24, left: 40, right: 40 }}
+								data={tenantCostData}
+								x="date"
+								series={allServicesSeries}
+								seriesLayout="stack"
+								props={{
+									xAxis: {
+										format: formatDate
+									},
+									yAxis: { format: euroAxisFormatter }
+								}}
+							>
+								{#snippet tooltip({ context })}
+									<Tooltip.Root>
+										{#snippet children({ data })}
+											{const visibleSeries = $derived(context.series.visibleSeries)}
+											{const payload = $derived(
+												context.tooltipState.series.map((s) => ({
+													key: s.key,
+													name: s.label ?? s.key,
+													color: s.color,
+													value: s.value
+												}))
+											)}
+											{const total = $derived(
+												sum(visibleSeries, (s) => {
+													const seriesTooltipData = s.data
+														? findRelatedData(s.data, data, context.x)
+														: data;
+													const valueAccessor = accessor(s.value ?? (s.data ? context.y : s.key));
+													return valueAccessor(seriesTooltipData);
+												})
+											)}
+											<Tooltip.Header value={data.date} format={formatDate} />
+											<Tooltip.List>
+												{#each sortedPayload(payload) as p, i (p.key ?? i)}
+													<Tooltip.Item label={p.name} color={p.color} valueAlign="right">
+														{#if p.value && p.value > 0}
+															{euroValueFormatter(p.value)}
+															({((p.value / total) * 100).toFixed(1)}%)
+														{:else}
+															<span style="opacity:0.5;">{euroValueFormatter(0)}</span>
+														{/if}
+													</Tooltip.Item>
+												{/each}
+												{#if payload.length > 1}
+													<Tooltip.Separator />
+													<Tooltip.Item
+														label="total"
+														value={total}
+														format="currency"
+														valueAlign="right"
+													/>
+												{/if}
+											</Tooltip.List>
+										{/snippet}
+									</Tooltip.Root>
+								{/snippet}
+							</BarChart>
+						</LegendWrapper>
+					</ChartBoundary>
 				{:else}
 					<BodyLong>No cost data available.</BodyLong>
 				{/if}

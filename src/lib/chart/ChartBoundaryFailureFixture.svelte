@@ -6,6 +6,10 @@
 	}
 </script>
 
+<p>Content before chart</p>
+
 <ChartBoundary>
 	<p>{failDuringRender()}</p>
 </ChartBoundary>
+
+<p>Content after chart</p>
