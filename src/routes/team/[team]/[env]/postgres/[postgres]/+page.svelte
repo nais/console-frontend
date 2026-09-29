@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { page } from '$app/state';
+	import ChartBoundary from '$lib/chart/ChartBoundary.svelte';
 	import PrometheusUtilizationDonut from '$lib/chart/PrometheusUtilizationDonut.svelte';
 	import Labels from '$lib/domain/labels/Labels.svelte';
 	import WorkloadLink from '$lib/domain/workload/WorkloadLink.svelte';
@@ -172,30 +173,36 @@ clamp_min(
 			<section aria-labelledby="utilization-heading">
 				<Heading as="h2" id="utilization-heading" size="medium" spacing>Utilization</Heading>
 				<div class="summary-grid">
-					<PrometheusUtilizationDonut
-						{environmentName}
-						query={postgresCpuUtilizationQuery}
-						label="CPU"
-						height="200px"
-						domainMax={1}
-						formatCenterValue={(value) => `${(value * 100).toFixed(1)}%`}
-					/>
-					<PrometheusUtilizationDonut
-						{environmentName}
-						query={postgresMemoryUtilizationQuery}
-						label="Memory"
-						height="200px"
-						domainMax={1}
-						formatCenterValue={(value) => `${(value * 100).toFixed(1)}%`}
-					/>
-					<PrometheusUtilizationDonut
-						{environmentName}
-						query={postgresDiskUtilizationQuery}
-						label="Disk"
-						height="200px"
-						domainMax={1}
-						formatCenterValue={(value) => `${(value * 100).toFixed(1)}%`}
-					/>
+					<ChartBoundary>
+						<PrometheusUtilizationDonut
+							{environmentName}
+							query={postgresCpuUtilizationQuery}
+							label="CPU"
+							height="200px"
+							domainMax={1}
+							formatCenterValue={(value) => `${(value * 100).toFixed(1)}%`}
+						/>
+					</ChartBoundary>
+					<ChartBoundary>
+						<PrometheusUtilizationDonut
+							{environmentName}
+							query={postgresMemoryUtilizationQuery}
+							label="Memory"
+							height="200px"
+							domainMax={1}
+							formatCenterValue={(value) => `${(value * 100).toFixed(1)}%`}
+						/>
+					</ChartBoundary>
+					<ChartBoundary>
+						<PrometheusUtilizationDonut
+							{environmentName}
+							query={postgresDiskUtilizationQuery}
+							label="Disk"
+							height="200px"
+							domainMax={1}
+							formatCenterValue={(value) => `${(value * 100).toFixed(1)}%`}
+						/>
+					</ChartBoundary>
 				</div>
 			</section>
 
