@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { PendingValue, graphql } from '$houdini';
+	import ChartBoundary from '$lib/chart/ChartBoundary.svelte';
 	import CostAreaChart from '$lib/chart/CostAreaChart.svelte';
 	import { serviceColor } from '$lib/chart/util';
 	import { getFromForCost, type CostInterval } from '$lib/domain/cost/dateUtils';
@@ -94,7 +95,6 @@
 			</ToggleGroup>
 		{/if}
 	{/snippet}
-
 	<GraphErrors errors={$costQuery?.errors} />
 
 	{#if $costQuery?.fetching && !$costQuery?.data}
@@ -117,15 +117,17 @@
 					</div>
 				{/if}
 				<div class="chart">
-					<CostAreaChart
-						data={workloadData.cost.daily.series.map((item) => {
-							const ret: { date: Date; [key: string]: number | Date } = { date: item.date };
-							item.services.forEach((service) => {
-								ret[service.service] = service.cost;
-							});
-							return ret;
-						})}
-					/>
+					<ChartBoundary>
+						<CostAreaChart
+							data={workloadData.cost.daily.series.map((item) => {
+								const ret: { date: Date; [key: string]: number | Date } = { date: item.date };
+								item.services.forEach((service) => {
+									ret[service.service] = service.cost;
+								});
+								return ret;
+							})}
+						/>
+					</ChartBoundary>
 				</div>
 			{:else}
 				<Detail>No cost data available</Detail>

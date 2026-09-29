@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import { UtilizationResourceType } from '$houdini';
+	import ChartBoundary from '$lib/chart/ChartBoundary.svelte';
 	import UtilizationChart from '$lib/chart/UtilizationChart.svelte';
 	import WorkloadLink from '$lib/domain/workload/WorkloadLink.svelte';
 	import GraphErrors from '$lib/ui/GraphErrors.svelte';
@@ -170,7 +171,9 @@
 						</div>
 					</div>
 					<div class="chart">
-						<UtilizationChart data={sortedCpuData} format="cpu" onBarClick={handleBarClick} />
+						<ChartBoundary>
+							<UtilizationChart data={sortedCpuData} format="cpu" onBarClick={handleBarClick} />
+						</ChartBoundary>
 					</div>
 				</SurfaceCard>
 				<SurfaceCard title="Estimated annual memory waste" level="h3" bordered>
@@ -180,7 +183,13 @@
 						</div>
 					</div>
 					<div class="chart">
-						<UtilizationChart data={sortedMemoryData} format="memory" onBarClick={handleBarClick} />
+						<ChartBoundary>
+							<UtilizationChart
+								data={sortedMemoryData}
+								format="memory"
+								onBarClick={handleBarClick}
+							/>
+						</ChartBoundary>
 					</div>
 				</SurfaceCard>
 			</div>

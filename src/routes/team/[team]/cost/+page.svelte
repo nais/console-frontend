@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { PendingValue } from '$houdini';
+	import ChartBoundary from '$lib/chart/ChartBoundary.svelte';
 	import CostAreaChart from '$lib/chart/CostAreaChart.svelte';
 	import GraphErrors from '$lib/ui/GraphErrors.svelte';
 	import { changeParams } from '$lib/utils/searchparams';
@@ -41,15 +42,17 @@
 
 		{#if $TeamCost.data && $TeamCost.data.team.cost !== PendingValue}
 			<div class="chart">
-				<CostAreaChart
-					data={$TeamCost.data.team.cost.daily.series.map((item) => {
-						const ret: { date: Date; [key: string]: number | Date } = { date: item.date };
-						item.services.forEach((service) => {
-							ret[service.service] = service.cost;
-						});
-						return ret;
-					})}
-				/>
+				<ChartBoundary>
+					<CostAreaChart
+						data={$TeamCost.data.team.cost.daily.series.map((item) => {
+							const ret: { date: Date; [key: string]: number | Date } = { date: item.date };
+							item.services.forEach((service) => {
+								ret[service.service] = service.cost;
+							});
+							return ret;
+						})}
+					/>
+				</ChartBoundary>
 			</div>
 		{:else}
 			<div class="loading-centered" role="status" aria-label="Loading">

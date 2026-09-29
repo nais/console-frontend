@@ -35,7 +35,8 @@ export default defineConfig((mode) => {
 					$houdini: '.houdini/'
 				},
 				experimental: {
-					explicitEnvironmentVariables: true
+					explicitEnvironmentVariables: true,
+					handleRenderingErrors: true
 				}
 			})
 		],
