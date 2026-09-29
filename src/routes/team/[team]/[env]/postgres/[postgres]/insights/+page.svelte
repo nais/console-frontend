@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { page } from '$app/state';
-	import PrometheusChart from '$lib/chart/PrometheusChart.svelte';
+	import PrometheusChart from '$lib/chart/PrometheusChartBoundary.svelte';
 	import { PrometheusChartQueryInterval } from '$lib/chart/util';
 	import { sanitizePromLabel } from '$lib/utils/formatters';
 	import { changeParams } from '$lib/utils/searchparams';

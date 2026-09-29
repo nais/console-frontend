@@ -1,8 +1,23 @@
 <script lang="ts" module>
+	import type { PrometheusChartQueryInterval as PrometheusChartQueryIntervalType } from './util';
+
 	export type PrometheusChartSeries = {
 		key: string;
 		data: { timestamp: Date; value: number }[];
 		color: string;
+	};
+
+	export type PrometheusChartProps = {
+		environmentName: string;
+		query: string;
+		title?: string;
+		description?: string;
+		height?: `${number}px`;
+		labelFormatter: (labels: { name: string; value: string }[]) => string;
+		colorizer?: (label: string, index: number) => string;
+		formatYValue?: (value: number) => string;
+		formatXValue?: (value: number) => string;
+		interval?: PrometheusChartQueryIntervalType;
 	};
 </script>
 
@@ -25,19 +40,6 @@
 	} from './util';
 
 	const minScale = 1;
-
-	type PrometheusChartProps = {
-		environmentName: string;
-		query: string;
-		title?: string;
-		description?: string;
-		height?: `${number}px`;
-		labelFormatter: (labels: { name: string; value: string }[]) => string;
-		colorizer?: (label: string, index: number) => string;
-		formatYValue?: (value: number) => string;
-		formatXValue?: (value: number) => string;
-		interval?: PrometheusChartQueryInterval;
-	};
 
 	let {
 		environmentName,
