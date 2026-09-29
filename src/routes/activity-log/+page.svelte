@@ -5,8 +5,10 @@
 	import ActivityLogFacets from '$lib/domain/activity/ActivityLogFacets.svelte';
 	import ActivityLogItem from '$lib/domain/list-items/ActivityLogListItem.svelte';
 	import CollapsibleSidebar from '$lib/ui/CollapsibleSidebar.svelte';
+	import GraphErrors from '$lib/ui/GraphErrors.svelte';
 	import List from '$lib/ui/List.svelte';
 	import ListFilters from '$lib/ui/ListFilters.svelte';
+	import ListItem from '$lib/ui/ListItem.svelte';
 	import Pagination from '$lib/ui/Pagination.svelte';
 	import SurfaceCard from '$lib/ui/SurfaceCard.svelte';
 	import { changeParams } from '$lib/utils/searchparams';
@@ -142,6 +144,7 @@
 
 <div class="page">
 	<div class="container">
+		<GraphErrors errors={$TenantActivityLog.errors} />
 		{#if $TenantActivityLog.data}
 			{const ae = $derived($TenantActivityLog.data.activityLog)}
 			<div class="layout-two-column">
@@ -162,6 +165,10 @@
 						{/snippet}
 						{#each ae.edges || [] as { node: item }, i ((item.__typename, i))}
 							<ActivityLogItem {item} mode="full" />
+						{:else}
+							<ListItem>
+								<span class="empty-state">No activity log entries found</span>
+							</ListItem>
 						{/each}
 					</List>
 					{#if ae.pageInfo.hasPreviousPage || ae.pageInfo.hasNextPage}
@@ -262,6 +269,10 @@
 	.date-range {
 		display: grid;
 		gap: var(--ax-space-8);
+	}
+
+	.empty-state {
+		color: var(--ax-text-neutral-subtle);
 	}
 
 	@media (max-width: 767px) {

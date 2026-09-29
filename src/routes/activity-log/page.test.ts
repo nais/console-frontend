@@ -50,10 +50,12 @@ describe('global activity log date range', () => {
 	});
 
 	it('defaults only the missing endpoint', async () => {
-		const fromOnly = (await load(event('?from=2026-09-20'))).dateRange;
+		const fromOnly = (await load(event(`?from=${encodeURIComponent('2026-09-20T00:00:00+02:00')}`)))
+			.dateRange;
 		expect(fromOnly.to).toBe('2026-09-24T21:59:59.000Z');
 		expect(fromOnly.custom).toBe(true);
-		const toOnly = (await load(event('?to=2026-09-21'))).dateRange;
+		const toOnly = (await load(event(`?to=${encodeURIComponent('2026-09-21T23:59:59+02:00')}`)))
+			.dateRange;
 		expect(toOnly.from).toBe('2026-09-17T22:00:00.000Z');
 		expect(toOnly.custom).toBe(true);
 	});
@@ -73,23 +75,10 @@ describe('global activity log date range', () => {
 		expect(dateRange.todayEnd).toBe('2026-09-25T23:59:59');
 	});
 
-	it('includes the complete to date in the API range', async () => {
-		const data = await load(event('?from=2026-09-01&to=2026-09-24'));
-		expect(data.dateRange.from).toBe('2026-09-01T00:00:00.000Z');
-		expect(loadTenantActivityLog).toHaveBeenCalledWith(
-			expect.objectContaining({
-				variables: expect.objectContaining({
-					filter: expect.objectContaining({
-						from: new Date('2026-09-01T00:00:00Z'),
-						to: new Date('2026-09-25T00:00:00Z')
-					})
-				})
-			})
-		);
-	});
-
 	it('accepts a 30-day inclusive range', async () => {
-		await expect(load(event('?from=2026-08-26&to=2026-09-24'))).resolves.toBeDefined();
+		const from = encodeURIComponent('2026-08-26T00:00:00+02:00');
+		const to = encodeURIComponent('2026-09-24T23:59:59+02:00');
+		await expect(load(event(`?from=${from}&to=${to}`))).resolves.toBeDefined();
 	});
 
 	it('accepts local timestamps with offsets and includes the selected to second', async () => {
@@ -174,31 +163,27 @@ describe('global activity log date range', () => {
 	});
 
 	it.each([
-		['?from=2026-08-25&to=2026-09-24', 'The activity log date range cannot exceed 30 days.'],
-		['?from=2026-09-25&to=2026-09-24', 'From must be on or before to.'],
+		[
+			'?from=2026-08-25T00:00:00Z&to=2026-09-24T23:59:59Z',
+			'The activity log date range cannot exceed 30 days.'
+		],
+		['?from=2026-09-25T00:00:00Z&to=2026-09-24T23:59:59Z', 'From must be on or before to.'],
 		[
 			'?from=2026-10-01T00:00:00Z&to=2026-10-31T00:00:00Z',
 			'The activity log date range cannot exceed 30 days.'
 		],
 		['?from=2026-09-24T13:00:00Z&to=2026-09-24T12:00:00Z', 'From must be on or before to.'],
-		['?from=2026-02-30', 'From and to must be valid dates or RFC 3339 timestamps with seconds.'],
-		[
-			'?from=2026-02-30T12:00:00Z',
-			'From and to must be valid dates or RFC 3339 timestamps with seconds.'
-		],
-		[
-			'?from=2026-09-24T12:00:00',
-			'From and to must be valid dates or RFC 3339 timestamps with seconds.'
-		],
-		[
-			'?to=2026-09-24T12:00:00.123Z',
-			'From and to must be valid dates or RFC 3339 timestamps with seconds.'
-		],
+		['?from=2026-09-24', 'From and to must be valid RFC 3339 timestamps with seconds.'],
+		['?to=2026-09-24', 'From and to must be valid RFC 3339 timestamps with seconds.'],
+		['?from=2026-02-30', 'From and to must be valid RFC 3339 timestamps with seconds.'],
+		['?from=2026-02-30T12:00:00Z', 'From and to must be valid RFC 3339 timestamps with seconds.'],
+		['?from=2026-09-24T12:00:00', 'From and to must be valid RFC 3339 timestamps with seconds.'],
+		['?to=2026-09-24T12:00:00.123Z', 'From and to must be valid RFC 3339 timestamps with seconds.'],
 		[
 			'?from=2026-09-24T12:00:00%2B15:00',
-			'From and to must be valid dates or RFC 3339 timestamps with seconds.'
+			'From and to must be valid RFC 3339 timestamps with seconds.'
 		],
-		['?to=', 'From and to must be valid dates or RFC 3339 timestamps with seconds.']
+		['?to=', 'From and to must be valid RFC 3339 timestamps with seconds.']
 	])('rejects invalid range %s before fetching', async (query, message) => {
 		await expect(load(event(query))).rejects.toMatchObject({
 			status: 400,

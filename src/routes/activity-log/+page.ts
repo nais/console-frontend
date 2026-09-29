@@ -7,20 +7,15 @@ import { formatOslo, parseOslo } from './osloTime';
 
 const maxDays = 30;
 const defaultDays = 7;
-const datePattern = /^\d{4}-\d{2}-\d{2}$/;
 const timestampPattern =
 	/^\d{4}-\d{2}-\d{2}T(?:[01]\d|2[0-3]):[0-5]\d:[0-5]\d(?:\.000)?(?:Z|[+-](?:0\d|1[0-3]):[0-5]\d|[+-]14:00)$/;
 
 function activityLogBound(value: string, upper: boolean): Date {
 	const date = parseISO(value);
-	if (datePattern.test(value) && isValid(date) && format(date, 'yyyy-MM-dd') === value) {
-		const day = upper ? format(addDays(date, 1), 'yyyy-MM-dd') : value;
-		return new Date(`${day}T00:00:00.000Z`);
-	}
 	if (timestampPattern.test(value) && isValid(date)) {
 		return new Date(date.getTime() + (upper ? 1000 : 0));
 	}
-	error(400, 'From and to must be valid dates or RFC 3339 timestamps with seconds.');
+	error(400, 'From and to must be valid RFC 3339 timestamps with seconds.');
 }
 
 export async function load(event) {
@@ -41,10 +36,8 @@ export async function load(event) {
 	if (fromTime.getTime() >= toExclusive.getTime()) {
 		error(400, 'From must be on or before to.');
 	}
-	const fromDay = datePattern.test(from) ? from : formatOslo(fromTime).slice(0, 10);
-	const toDay = datePattern.test(to)
-		? to
-		: formatOslo(new Date(toExclusive.getTime() - 1000)).slice(0, 10);
+	const fromDay = formatOslo(fromTime).slice(0, 10);
+	const toDay = formatOslo(new Date(toExclusive.getTime() - 1000)).slice(0, 10);
 	const daysBetween = differenceInCalendarDays(parseISO(toDay), parseISO(fromDay));
 	if (daysBetween >= maxDays) {
 		error(400, `The activity log date range cannot exceed ${maxDays} days.`);
