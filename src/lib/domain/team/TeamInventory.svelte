@@ -45,9 +45,6 @@
 					bigQueryDatasets {
 						total
 					}
-					postgresInstances {
-						total
-					}
 					secrets {
 						total
 					}
@@ -94,12 +91,6 @@
 				label: 'Cloud SQL',
 				count: counts.sqlInstances.total,
 				href: `/team/${teamSlug}/cloudsql`
-			});
-		if (counts.postgresInstances.total > 0)
-			items.push({
-				label: 'Postgres',
-				count: counts.postgresInstances.total,
-				href: `/team/${teamSlug}/postgres`
 			});
 		if (counts.buckets.total > 0)
 			items.push({

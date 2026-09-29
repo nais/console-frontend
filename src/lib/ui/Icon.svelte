@@ -48,7 +48,6 @@
 				return FileTextIcon;
 			case 'cloudsql':
 			case 'cloud sql':
-			case 'postgres':
 				return DatabaseIcon;
 			case 'buckets':
 			case 'bucket':
