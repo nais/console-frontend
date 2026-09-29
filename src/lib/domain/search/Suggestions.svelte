@@ -19,7 +19,6 @@
 		{ prefix: 'bq', label: 'BigQuery' },
 		{ prefix: 'bucket', label: 'Bucket' },
 		{ prefix: 'os', label: 'OpenSearch' },
-		{ prefix: 'postgres', label: 'Postgres' },
 		{ prefix: 'sql', label: 'Cloud SQL' },
 		{ prefix: 'valkey', label: 'Valkey' }
 	] as const;

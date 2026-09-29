@@ -51,9 +51,6 @@ query Teams(
 					openSearches {
 						total
 					}
-					postgresInstances {
-						total
-					}
 					sqlInstances {
 						total
 					}

@@ -2,6 +2,7 @@
 	import { page } from '$app/state';
 	import { graphql, type SearchQuery$input } from '$houdini';
 	import { envTagVariant } from '$lib/envTagVariant';
+	import { exhaustive } from '$lib/utils/houdini';
 	import BigQueryIcon from '$lib/icons/BigQueryIcon.svelte';
 	import KafkaIcon from '$lib/icons/KafkaIcon.svelte';
 	import OpenSearchIcon from '$lib/icons/OpenSearchIcon.svelte';
@@ -53,17 +54,6 @@
 						}
 					}
 					... on SqlInstance {
-						name
-						team {
-							slug
-						}
-						teamEnvironment {
-							environment {
-								name
-							}
-						}
-					}
-					... on PostgresInstance {
 						name
 						team {
 							slug
@@ -159,12 +149,6 @@
 			prefix: 'sql',
 			type: 'SQL_INSTANCE'
 		},
-		PostgresInstance: {
-			icon: DatabaseIcon,
-			urlName: 'postgres',
-			prefix: 'postgres',
-			type: 'POSTGRES'
-		},
 		Valkey: {
 			icon: ValkeyIcon,
 			urlName: 'valkey',
@@ -235,7 +219,9 @@
 		const category = Object.values(categories).find((c) => c.prefix === prefix);
 		const type = category?.type;
 		const searchQuery = type ? q?.trim() || '' : value;
-		const types: SearchQuery$input['types'] = type ? [type] : undefined;
+		const types: SearchQuery$input['types'] = type
+			? [type]
+			: Object.values(categories).map((category) => category.type);
 		const teams: SearchQuery$input['teams'] =
 			teamFilter && type !== 'TEAM' ? [teamFilter] : undefined;
 
@@ -369,7 +355,7 @@
 		loading={!favoriteMode && $store.fetching}
 		results={favoriteMode
 			? favoriteResults
-			: $store.data?.search.nodes.map((result) => {
+			: exhaustive($store.data?.search.nodes ?? []).map((result) => {
 					const { icon, urlName } = categories[result.__typename];
 					if (result.__typename === 'Team') {
 						const href = `/team/${result.slug}`;

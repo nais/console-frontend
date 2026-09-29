@@ -74,14 +74,6 @@
 							}
 						}
 					}
-					postgresInstances {
-						edges {
-							node {
-								id
-								name
-							}
-						}
-					}
 					valkeys {
 						edges {
 							node {
@@ -117,7 +109,6 @@
 		buckets: $data.buckets.edges.map(toIconLabel('bucket', 'Cloud Storage Bucket')),
 		bigQuery: $data.bigQueryDatasets.edges.map(toIconLabel('bigquery', 'BigQuery Dataset')),
 		cloudSql: $data.sqlInstances.edges.map(toIconLabel('cloudsql', 'Cloud SQL')),
-		postgres: $data.postgresInstances.edges.map(toIconLabel('postgres', 'PostgreSQL')),
 		kafka: $data.kafkaTopicAcls.edges
 			.filter((acl) => acl.node.teamName !== '*')
 			.map((e) => e.node)
