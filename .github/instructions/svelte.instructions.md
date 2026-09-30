@@ -9,7 +9,8 @@ This project uses Svelte 5 with `forceRunesMode: true`. All components must use 
 - `$state()` for reactive state
 - `$derived()` / `$derived.by()` for computed values
 - `$props()` for component props with TypeScript types
-- `$effect()` as an escape hatch for browser-side effects (DOM, timers, subscriptions, external I/O)
+- `{@attach}` for element-owned DOM integrations, including third-party setup and cleanup; use nested `$effect()` for reactive updates that should not recreate the integration
+- `$effect()` as an escape hatch for other browser-side effects (timers, subscriptions, external I/O)
 - Do not use `$effect()` to trigger GraphQL query fetches or to sync one piece of state with another. If you believe an effect is the only viable solution, add a comment explaining why no derived value or load function applies.
 
 Components should use `@nais/ds-svelte-community` before building custom UI elements.
