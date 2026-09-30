@@ -135,7 +135,8 @@ This project uses **Svelte 5 with runes mode** (enforced via `forceRunesMode: tr
 
 - Use `$state()` for reactive state (not `let` with reactivity)
 - Use `$derived()` for computed values (not `$:`)
-- Treat `$effect()` as an escape hatch for browser-side effects such as DOM integration, subscriptions, timers, or external I/O
+- Prefer `{@attach}` for behavior owned by a DOM element, including third-party setup and cleanup. Use nested `$effect()` blocks for reactive updates that should not recreate the integration.
+- Treat `$effect()` as an escape hatch for other browser-side effects such as subscriptions, timers, or external I/O
 - Prefer `$derived()`/`$derived.by()` for derived state and explicit event handlers for input-driven flows like debounced search
 - Do not use `$effect()` to synchronize one piece of state with another unless there is no clearer alternative
 - Use `$props()` for component props with TypeScript types
