@@ -2,7 +2,7 @@
 	import { goto } from '$app/navigation';
 	import { page } from '$app/state';
 	import { ValueEncoding, graphql } from '$houdini';
-	import Confirm from '$lib/ui/Confirm.svelte';
+	import Confirm from '#lib/ui/Confirm.svelte';
 	import {
 		Alert,
 		BodyShort,
@@ -21,15 +21,15 @@
 		Tr
 	} from '@nais/ds-svelte-community';
 
-	import ResourceActivityCard from '$lib/domain/activity/ResourceActivityCard.svelte';
-	import Labels from '$lib/domain/labels/Labels.svelte';
-	import LabelsEditorModal from '$lib/domain/labels/LabelsEditorModal.svelte';
-	import type { Label } from '$lib/domain/labels/labels';
-	import WorkloadLink from '$lib/domain/workload/WorkloadLink.svelte';
-	import GraphErrors from '$lib/ui/GraphErrors.svelte';
-	import ManifestCard from '$lib/ui/ManifestCard.svelte';
-	import Textarea from '$lib/ui/Textarea.svelte';
-	import { getConfigPermissions } from '$lib/utils/configPermissions';
+	import ResourceActivityCard from '#lib/domain/activity/ResourceActivityCard.svelte';
+	import Labels from '#lib/domain/labels/Labels.svelte';
+	import LabelsEditorModal from '#lib/domain/labels/LabelsEditorModal.svelte';
+	import type { Label } from '#lib/domain/labels/labels.js';
+	import WorkloadLink from '#lib/domain/workload/WorkloadLink.svelte';
+	import GraphErrors from '#lib/ui/GraphErrors.svelte';
+	import ManifestCard from '#lib/ui/ManifestCard.svelte';
+	import Textarea from '#lib/ui/Textarea.svelte';
+	import { getConfigPermissions } from '#lib/utils/configPermissions.js';
 	import { DocPencilIcon, DownloadIcon, TrashIcon } from '@nais/ds-svelte-community/icons';
 	import type { PageProps } from './$types';
 	import AddKeyValue from './AddKeyValue.svelte';

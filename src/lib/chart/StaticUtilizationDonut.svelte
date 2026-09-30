@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { getSegmentFill } from '$lib/chart/util';
+	import { getSegmentFill } from '#lib/chart/util.js';
 	import { Arc, Chart, Group, Svg, Text } from 'layerchart';
 
 	type StaticUtilizationDonutProps = {

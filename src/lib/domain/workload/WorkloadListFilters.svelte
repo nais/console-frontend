@@ -1,6 +1,6 @@
 <script lang="ts">
-	import ListFilters from '$lib/ui/ListFilters.svelte';
-	import { capitalizeFirstLetter } from '$lib/utils/formatters';
+	import ListFilters from '#lib/ui/ListFilters.svelte';
+	import { capitalizeFirstLetter } from '#lib/utils/formatters.js';
 	import type { Snippet } from 'svelte';
 	import LabelFacets from '../labels/LabelFacets.svelte';
 

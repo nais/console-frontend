@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { capitalizeFirstLetter } from '$lib/utils/formatters';
+	import { capitalizeFirstLetter } from '#lib/utils/formatters.js';
 
 	interface EnvironmentFacet {
 		value: string;

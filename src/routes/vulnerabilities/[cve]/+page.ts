@@ -1,5 +1,5 @@
 import { load_CVEDetails, load_CVEWorkloads } from '$houdini';
-import { addPageMeta } from '$lib/utils/pageMeta';
+import { addPageMeta } from '#lib/utils/pageMeta.js';
 
 const rows = 25;
 

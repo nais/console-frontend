@@ -1,7 +1,7 @@
 <script lang="ts">
-	import { favorites } from '$lib/stores/favorites.svelte';
-	import IconLabel from '$lib/ui/IconLabel.svelte';
-	import ListItem from '$lib/ui/ListItem.svelte';
+	import { favorites } from '#lib/stores/favorites.svelte.js';
+	import IconLabel from '#lib/ui/IconLabel.svelte';
+	import ListItem from '#lib/ui/ListItem.svelte';
 	import { Button, Tooltip } from '@nais/ds-svelte-community';
 	import { DragVerticalIcon, StarFillIcon, TrashIcon } from '@nais/ds-svelte-community/icons';
 

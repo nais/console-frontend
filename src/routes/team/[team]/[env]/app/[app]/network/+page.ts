@@ -1,6 +1,6 @@
 import { load_IngressMetrics } from '$houdini';
-import { PrometheusChartQueryInterval } from '$lib/chart/util';
-import { addPageMeta } from '$lib/utils/pageMeta';
+import { PrometheusChartQueryInterval } from '#lib/chart/util.js';
+import { addPageMeta } from '#lib/utils/pageMeta.js';
 
 export const ssr = false;
 export async function load(event) {

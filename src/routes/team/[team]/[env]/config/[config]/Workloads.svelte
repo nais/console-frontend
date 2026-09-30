@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { type Config$result } from '$houdini';
-	import WorkloadLink from '$lib/domain/workload/WorkloadLink.svelte';
-	import SurfaceCard from '$lib/ui/SurfaceCard.svelte';
+	import WorkloadLink from '#lib/domain/workload/WorkloadLink.svelte';
+	import SurfaceCard from '#lib/ui/SurfaceCard.svelte';
 	import { Alert } from '@nais/ds-svelte-community';
 
 	interface Props {

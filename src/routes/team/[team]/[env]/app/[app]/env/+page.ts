@@ -1,4 +1,4 @@
-import { addPageMeta } from '$lib/utils/pageMeta';
+import { addPageMeta } from '#lib/utils/pageMeta.js';
 import { error } from '@sveltejs/kit';
 
 export async function load(event) {

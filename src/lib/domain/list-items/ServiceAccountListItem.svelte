@@ -1,7 +1,7 @@
 <script lang="ts">
-	import IconLabel from '$lib/ui/IconLabel.svelte';
-	import ListItem from '$lib/ui/ListItem.svelte';
-	import Time from '$lib/ui/Time.svelte';
+	import IconLabel from '#lib/ui/IconLabel.svelte';
+	import ListItem from '#lib/ui/ListItem.svelte';
+	import Time from '#lib/ui/Time.svelte';
 	import { Detail } from '@nais/ds-svelte-community';
 	import { RobotIcon } from '@nais/ds-svelte-community/icons';
 

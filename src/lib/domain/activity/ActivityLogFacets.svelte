@@ -1,6 +1,6 @@
 <script lang="ts">
 	import type { ActivityLogActivityType$options } from '$houdini';
-	import { capitalizeFirstLetter } from '$lib/utils/formatters';
+	import { capitalizeFirstLetter } from '#lib/utils/formatters.js';
 
 	interface ActivityTypeFacet {
 		activityType: ActivityLogActivityType$options;

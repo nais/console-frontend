@@ -9,8 +9,8 @@
 		OpenSearchTier,
 		type OpenSearchTier$options
 	} from '$houdini';
-	import { openSearchPlanCosts, storageRequirements } from '$lib/utils/aivencost';
-	import { majorVersionLabel } from '$lib/utils/formatters';
+	import { openSearchPlanCosts, storageRequirements } from '#lib/utils/aivencost.js';
+	import { majorVersionLabel } from '#lib/utils/formatters.js';
 	import {
 		Alert,
 		BodyLong,

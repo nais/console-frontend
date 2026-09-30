@@ -1,6 +1,6 @@
 import { load_TenantActivityLog } from '$houdini';
 import type { ActivityLogFilter } from '$houdini/graphql/inputs';
-import { addPageMeta } from '$lib/utils/pageMeta';
+import { addPageMeta } from '#lib/utils/pageMeta.js';
 import { error } from '@sveltejs/kit';
 import { addDays, differenceInCalendarDays, format, isValid, parseISO, subDays } from 'date-fns';
 import { formatOslo, parseOslo } from './osloTime';

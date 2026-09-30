@@ -1,13 +1,13 @@
 <script lang="ts">
 	import { JobState, type JobRunState$options } from '$houdini';
-	import IssuePills from '$lib/domain/issues/IssuePills.svelte';
-	import { envTagVariant } from '$lib/envTagVariant';
-	import ErrorIcon from '$lib/icons/ErrorIcon.svelte';
-	import SuccessIcon from '$lib/icons/SuccessIcon.svelte';
-	import ListItem from '$lib/ui/ListItem.svelte';
-	import RunningIndicator from '$lib/ui/RunningIndicator.svelte';
-	import Time from '$lib/ui/Time.svelte';
-	import { countIssuesBySeverity } from '$lib/utils/issueCounts';
+	import IssuePills from '#lib/domain/issues/IssuePills.svelte';
+	import { envTagVariant } from '#lib/envTagVariant.js';
+	import ErrorIcon from '#lib/icons/ErrorIcon.svelte';
+	import SuccessIcon from '#lib/icons/SuccessIcon.svelte';
+	import ListItem from '#lib/ui/ListItem.svelte';
+	import RunningIndicator from '#lib/ui/RunningIndicator.svelte';
+	import Time from '#lib/ui/Time.svelte';
+	import { countIssuesBySeverity } from '#lib/utils/issueCounts.js';
 	import { Loader, Tag, Tooltip } from '@nais/ds-svelte-community';
 	import { CalendarIcon, RocketIcon } from '@nais/ds-svelte-community/icons';
 

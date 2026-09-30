@@ -1,5 +1,5 @@
 import { load_ReconcilerLogs } from '$houdini';
-import { addPageMeta } from '$lib/utils/pageMeta';
+import { addPageMeta } from '#lib/utils/pageMeta.js';
 import { get } from 'svelte/store';
 
 export async function load(event) {

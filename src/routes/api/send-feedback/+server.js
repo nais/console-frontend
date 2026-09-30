@@ -2,7 +2,6 @@ import { SLACK_API_TOKEN, SLACK_FEEDBACK_CHANNEL_ID, TENANT_NAME } from '$app/en
 import { ServerGetUserStore } from '$houdini';
 import { createFeedbackMessage } from './message';
 import { WebClient } from '@slack/web-api';
-import { json } from '@sveltejs/kit';
 
 const client = new WebClient(SLACK_API_TOKEN);
 const channel = SLACK_FEEDBACK_CHANNEL_ID || '';
@@ -14,10 +13,10 @@ export async function POST(event) {
 	const q = new ServerGetUserStore();
 	const { data } = await q.fetch({ event });
 	if (data?.me.__typename !== 'User') {
-		return json({ error: 'Not authenticated' }, { status: 401 });
+		return Response.json({ error: 'Not authenticated' }, { status: 401 });
 	}
 	if (!data?.me.email) {
-		return json({ error: 'Not authenticated' }, { status: 401 });
+		return Response.json({ error: 'Not authenticated' }, { status: 401 });
 	}
 
 	const email = data.me.email;
@@ -30,7 +29,10 @@ export async function POST(event) {
 	try {
 		blocks = createFeedbackMessage(anonymous, email, feedback, path, tenant, type);
 	} catch (error) {
-		return json({ error: 'Failed to create feedback message - ' + error }, { status: 500 });
+		return Response.json(
+			{ error: 'Failed to create feedback message - ' + error },
+			{ status: 500 }
+		);
 	}
 
 	try {
@@ -43,11 +45,11 @@ export async function POST(event) {
 		});
 
 		if (result.ok) {
-			return json({ message: 'Feedback sent successfully!' });
+			return Response.json({ message: 'Feedback sent successfully!' });
 		} else {
-			return json({ error: 'Failed to send feedback' }, { status: 500 });
+			return Response.json({ error: 'Failed to send feedback' }, { status: 500 });
 		}
 	} catch (error) {
-		return json({ error: 'An error occurred - ' + error }, { status: 500 });
+		return Response.json({ error: 'An error occurred - ' + error }, { status: 500 });
 	}
 }

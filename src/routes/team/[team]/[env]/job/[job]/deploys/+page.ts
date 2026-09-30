@@ -1,5 +1,5 @@
 import { load_JobDeploys } from '$houdini';
-import { addPageMeta } from '$lib/utils/pageMeta';
+import { addPageMeta } from '#lib/utils/pageMeta.js';
 
 const rows = 25;
 

@@ -2,9 +2,9 @@
 	import { resolve } from '$app/paths';
 	import { page } from '$app/state';
 	import type { RouteId } from '$app/types';
-	import AddToFavorites from '$lib/ui/AddToFavorites.svelte';
-	import DocsLink from '$lib/ui/DocsLink.svelte';
-	import { getHeaderActionsContext } from '$lib/ui/headerActionsContext.svelte';
+	import AddToFavorites from '#lib/ui/AddToFavorites.svelte';
+	import DocsLink from '#lib/ui/DocsLink.svelte';
+	import { getHeaderActionsContext } from '#lib/ui/headerActionsContext.svelte.js';
 	import { Heading, Tag } from '@nais/ds-svelte-community';
 	import type { Snippet } from 'svelte';
 

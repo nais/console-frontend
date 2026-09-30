@@ -6,7 +6,7 @@ const { loadTenantActivityLog, addPageMeta } = vi.hoisted(() => ({
 }));
 
 vi.mock('$houdini', () => ({ load_TenantActivityLog: loadTenantActivityLog }));
-vi.mock('$lib/utils/pageMeta', () => ({ addPageMeta }));
+vi.mock('#lib/utils/pageMeta.js', () => ({ addPageMeta }));
 
 import { load } from './+page';
 import { formatOslo, parseOslo } from './osloTime';

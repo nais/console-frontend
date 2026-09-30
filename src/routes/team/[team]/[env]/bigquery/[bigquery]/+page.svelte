@@ -1,13 +1,13 @@
 <script lang="ts">
-	import Labels from '$lib/domain/labels/Labels.svelte';
-	import WorkloadLink from '$lib/domain/workload/WorkloadLink.svelte';
-	import WarningIcon from '$lib/icons/WarningIcon.svelte';
-	import GraphErrors from '$lib/ui/GraphErrors.svelte';
-	import IconLabel from '$lib/ui/IconLabel.svelte';
-	import SurfaceCard from '$lib/ui/SurfaceCard.svelte';
-	import Time from '$lib/ui/Time.svelte';
-	import TooltipAlignHack from '$lib/ui/TooltipAlignHack.svelte';
-	import { euroValueFormatter } from '$lib/utils/formatters';
+	import Labels from '#lib/domain/labels/Labels.svelte';
+	import WorkloadLink from '#lib/domain/workload/WorkloadLink.svelte';
+	import WarningIcon from '#lib/icons/WarningIcon.svelte';
+	import GraphErrors from '#lib/ui/GraphErrors.svelte';
+	import IconLabel from '#lib/ui/IconLabel.svelte';
+	import SurfaceCard from '#lib/ui/SurfaceCard.svelte';
+	import Time from '#lib/ui/Time.svelte';
+	import TooltipAlignHack from '#lib/ui/TooltipAlignHack.svelte';
+	import { euroValueFormatter } from '#lib/utils/formatters.js';
 	import {
 		BodyShort,
 		CopyButton,

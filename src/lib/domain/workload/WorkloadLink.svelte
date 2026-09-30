@@ -1,8 +1,8 @@
 <script lang="ts">
-	import { envTagVariant } from '$lib/envTagVariant';
-	import WarningIcon from '$lib/icons/WarningIcon.svelte';
-	import IconLabel from '$lib/ui/IconLabel.svelte';
-	import TooltipAlignHack from '$lib/ui/TooltipAlignHack.svelte';
+	import { envTagVariant } from '#lib/envTagVariant.js';
+	import WarningIcon from '#lib/icons/WarningIcon.svelte';
+	import IconLabel from '#lib/ui/IconLabel.svelte';
+	import TooltipAlignHack from '#lib/ui/TooltipAlignHack.svelte';
 	import { BriefcaseClockIcon, PackageIcon } from '@nais/ds-svelte-community/icons';
 
 	interface Props {

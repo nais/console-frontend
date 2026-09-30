@@ -1,7 +1,7 @@
 <script lang="ts">
 	import type { TeamSummaryCost$result, TeamSummaryVulnerabilities$result } from '$houdini';
-	import IssuePills from '$lib/domain/issues/IssuePills.svelte';
-	import SurfaceCard from '$lib/ui/SurfaceCard.svelte';
+	import IssuePills from '#lib/domain/issues/IssuePills.svelte';
+	import SurfaceCard from '#lib/ui/SurfaceCard.svelte';
 	import { Loader } from '@nais/ds-svelte-community';
 	import {
 		BellDotFillIcon,

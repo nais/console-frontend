@@ -1,12 +1,12 @@
 <script lang="ts">
 	import { PendingValue, graphql } from '$houdini';
-	import ChartBoundary from '$lib/chart/ChartBoundary.svelte';
-	import CostAreaChart from '$lib/chart/CostAreaChart.svelte';
-	import { serviceColor } from '$lib/chart/util';
-	import { getFromForCost, type CostInterval } from '$lib/domain/cost/dateUtils';
-	import GraphErrors from '$lib/ui/GraphErrors.svelte';
-	import SurfaceCard from '$lib/ui/SurfaceCard.svelte';
-	import { changeParams } from '$lib/utils/searchparams';
+	import ChartBoundary from '#lib/chart/ChartBoundary.svelte';
+	import CostAreaChart from '#lib/chart/CostAreaChart.svelte';
+	import { serviceColor } from '#lib/chart/util.js';
+	import { getFromForCost, type CostInterval } from '#lib/domain/cost/dateUtils.js';
+	import GraphErrors from '#lib/ui/GraphErrors.svelte';
+	import SurfaceCard from '#lib/ui/SurfaceCard.svelte';
+	import { changeParams } from '#lib/utils/searchparams.js';
 	import { Detail, Loader, ToggleGroup, ToggleGroupItem } from '@nais/ds-svelte-community';
 	import { subDays } from 'date-fns';
 

@@ -1,7 +1,7 @@
 <script lang="ts">
-	import ListItem from '$lib/ui/ListItem.svelte';
-	import ServiceMaintenanceStatus from '$lib/ui/ServiceMaintenanceStatus.svelte';
-	import Time from '$lib/ui/Time.svelte';
+	import ListItem from '#lib/ui/ListItem.svelte';
+	import ServiceMaintenanceStatus from '#lib/ui/ServiceMaintenanceStatus.svelte';
+	import Time from '#lib/ui/Time.svelte';
 	import { BodyShort, Heading } from '@nais/ds-svelte-community';
 	interface Props {
 		title: string;

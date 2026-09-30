@@ -1,5 +1,5 @@
-import { PrometheusChartQueryInterval } from '$lib/chart/util.js';
-import { addPageMeta } from '$lib/utils/pageMeta';
+import { PrometheusChartQueryInterval } from '#lib/chart/util.js';
+import { addPageMeta } from '#lib/utils/pageMeta.js';
 
 export async function load(event) {
 	let interval = (event.url.searchParams.get('interval') || '7d') as PrometheusChartQueryInterval;

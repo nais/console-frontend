@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { fragment, graphql, type Manifest } from '$houdini';
-	import SurfaceCard from '$lib/ui/SurfaceCard.svelte';
+	import SurfaceCard from '#lib/ui/SurfaceCard.svelte';
 	import { CopyButton } from '@nais/ds-svelte-community';
 	import Highlight, { LineNumbers } from 'svelte-highlight';
 	import { yaml } from 'svelte-highlight/languages';

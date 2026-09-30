@@ -5,9 +5,9 @@ import {
 	OrderDirection,
 	TeamOrderField
 } from '$houdini';
-import { getFromForTenantCost, type TenantCostInterval } from '$lib/domain/cost/dateUtils';
-import { urlToOrderDirection, urlToOrderField } from '$lib/ui/OrderByMenu.svelte';
-import { addPageMeta } from '$lib/utils/pageMeta.js';
+import { getFromForTenantCost, type TenantCostInterval } from '#lib/domain/cost/dateUtils.js';
+import { urlToOrderDirection, urlToOrderField } from '#lib/ui/OrderByMenu.svelte';
+import { addPageMeta } from '#lib/utils/pageMeta.js';
 import { subDays } from 'date-fns';
 
 const validIntervals: TenantCostInterval[] = ['5y', '3y', '1y', '6m'];

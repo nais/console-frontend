@@ -1,6 +1,6 @@
 <script lang="ts">
-	import WorkloadVulnerabilitiesPage from '$lib/domain/vulnerability/WorkloadVulnerabilitiesPage.svelte';
-	import GraphErrors from '$lib/ui/GraphErrors.svelte';
+	import WorkloadVulnerabilitiesPage from '#lib/domain/vulnerability/WorkloadVulnerabilitiesPage.svelte';
+	import GraphErrors from '#lib/ui/GraphErrors.svelte';
 	import { Heading } from '@nais/ds-svelte-community';
 	import type { PageProps } from './$types';
 

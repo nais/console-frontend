@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
-	import IconLabel from '$lib/ui/IconLabel.svelte';
+	import IconLabel from '#lib/ui/IconLabel.svelte';
 	import { Button, Tag } from '@nais/ds-svelte-community';
 	import type { TagProps } from '@nais/ds-svelte-community/components/Tag/type.js';
 	import { ArrowDownIcon, ArrowDownRightIcon, ArrowUpIcon } from '@nais/ds-svelte-community/icons';

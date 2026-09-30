@@ -1,5 +1,5 @@
 import type { UserInfo$result } from '$houdini';
-import { addPageMeta } from '$lib/utils/pageMeta.js';
+import { addPageMeta } from '#lib/utils/pageMeta.js';
 import { error } from '@sveltejs/kit';
 import { get, type Readable } from 'svelte/store';
 

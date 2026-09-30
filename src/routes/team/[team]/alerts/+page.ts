@@ -6,8 +6,8 @@ import {
 	type AlertState$options
 } from '$houdini';
 import type { TeamAlertsFilter } from '$houdini/graphql/inputs';
-import { urlToOrderDirection, urlToOrderField } from '$lib/ui/OrderByMenu.svelte';
-import { addPageMeta } from '$lib/utils/pageMeta';
+import { urlToOrderDirection, urlToOrderField } from '#lib/ui/OrderByMenu.svelte';
+import { addPageMeta } from '#lib/utils/pageMeta.js';
 
 const rows = 25;
 

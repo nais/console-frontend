@@ -1,13 +1,13 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
 	import { fragment, graphql, type ServiceAccountAuthenticationFragment } from '$houdini';
-	import { envTagVariant } from '$lib/envTagVariant';
-	import Confirm from '$lib/ui/Confirm.svelte';
-	import GraphErrors from '$lib/ui/GraphErrors.svelte';
-	import IconLabel from '$lib/ui/IconLabel.svelte';
-	import List from '$lib/ui/List.svelte';
-	import ListItem from '$lib/ui/ListItem.svelte';
-	import Time from '$lib/ui/Time.svelte';
+	import { envTagVariant } from '#lib/envTagVariant.js';
+	import Confirm from '#lib/ui/Confirm.svelte';
+	import GraphErrors from '#lib/ui/GraphErrors.svelte';
+	import IconLabel from '#lib/ui/IconLabel.svelte';
+	import List from '#lib/ui/List.svelte';
+	import ListItem from '#lib/ui/ListItem.svelte';
+	import Time from '#lib/ui/Time.svelte';
 	import { Button, Detail, Heading } from '@nais/ds-svelte-community';
 	import { LinkIcon, TokenIcon, TrashIcon } from '@nais/ds-svelte-community/icons';
 

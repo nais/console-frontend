@@ -1,11 +1,11 @@
 <script lang="ts">
-	import TeamCveSearch from '$lib/domain/vulnerability/TeamCveSearch.svelte';
-	import TeamMeanTimeToFixHistoryGraph from '$lib/domain/vulnerability/TeamMeanTimeToFixHistoryGraph.svelte';
-	import TeamVulnerabilityHistoryGraph from '$lib/domain/vulnerability/TeamVulnerabilityHistoryGraph.svelte';
-	import VulnerabilitySummaryMetrics from '$lib/domain/vulnerability/VulnerabilitySummaryMetrics.svelte';
-	import WorkloadsWithVulnerabilities from '$lib/domain/vulnerability/WorkloadsWithVulnerabilities.svelte';
-	import GraphErrors from '$lib/ui/GraphErrors.svelte';
-	import SurfaceCard from '$lib/ui/SurfaceCard.svelte';
+	import TeamCveSearch from '#lib/domain/vulnerability/TeamCveSearch.svelte';
+	import TeamMeanTimeToFixHistoryGraph from '#lib/domain/vulnerability/TeamMeanTimeToFixHistoryGraph.svelte';
+	import TeamVulnerabilityHistoryGraph from '#lib/domain/vulnerability/TeamVulnerabilityHistoryGraph.svelte';
+	import VulnerabilitySummaryMetrics from '#lib/domain/vulnerability/VulnerabilitySummaryMetrics.svelte';
+	import WorkloadsWithVulnerabilities from '#lib/domain/vulnerability/WorkloadsWithVulnerabilities.svelte';
+	import GraphErrors from '#lib/ui/GraphErrors.svelte';
+	import SurfaceCard from '#lib/ui/SurfaceCard.svelte';
 	import { BodyLong, Heading } from '@nais/ds-svelte-community';
 	import type { PageProps } from './$types';
 

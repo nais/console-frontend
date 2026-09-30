@@ -3,7 +3,7 @@ import {
 	load_KafkaTopic,
 	type KafkaTopicAclOrderField$options
 } from '$houdini';
-import { addPageMeta } from '$lib/utils/pageMeta';
+import { addPageMeta } from '#lib/utils/pageMeta.js';
 
 export async function load(event) {
 	return {
