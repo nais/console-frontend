@@ -16,10 +16,10 @@ import {
 	VirusIcon
 } from '@nais/ds-svelte-community/icons';
 
-import KafkaIcon from '$lib/icons/KafkaIcon.svelte';
-import OpenSearchIcon from '$lib/icons/OpenSearchIcon.svelte';
-import UnleashIcon from '$lib/icons/UnleashIcon.svelte';
-import ValkeyIcon from '$lib/icons/ValkeyIcon.svelte';
+import KafkaIcon from '#lib/icons/KafkaIcon.svelte';
+import OpenSearchIcon from '#lib/icons/OpenSearchIcon.svelte';
+import UnleashIcon from '#lib/icons/UnleashIcon.svelte';
+import ValkeyIcon from '#lib/icons/ValkeyIcon.svelte';
 
 /**
  * ICON SHAPES (what is operated on)

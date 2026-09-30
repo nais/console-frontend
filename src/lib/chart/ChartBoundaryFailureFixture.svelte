@@ -1,6 +1,6 @@
 <script lang="ts">
 	import ChartBoundary from './ChartBoundary.svelte';
-	import SectionBoundary from '$lib/ui/SectionBoundary.svelte';
+	import SectionBoundary from '#lib/ui/SectionBoundary.svelte';
 
 	function failDuringRender(): never {
 		throw new Error('synthetic chart render failure');

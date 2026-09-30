@@ -1,13 +1,13 @@
 <script lang="ts">
 	import { ActivityLogEntryResourceType } from '$houdini';
-	import TeamActivityCard from '$lib/domain/activity/TeamActivityCard.svelte';
-	import ServiceAccountListItem from '$lib/domain/list-items/ServiceAccountListItem.svelte';
-	import CollapsibleSidebar from '$lib/ui/CollapsibleSidebar.svelte';
-	import GraphErrors from '$lib/ui/GraphErrors.svelte';
-	import List from '$lib/ui/List.svelte';
-	import PageModal, { pageModalClick } from '$lib/ui/PageModal.svelte';
-	import Pagination from '$lib/ui/Pagination.svelte';
-	import { changeParams } from '$lib/utils/searchparams';
+	import TeamActivityCard from '#lib/domain/activity/TeamActivityCard.svelte';
+	import ServiceAccountListItem from '#lib/domain/list-items/ServiceAccountListItem.svelte';
+	import CollapsibleSidebar from '#lib/ui/CollapsibleSidebar.svelte';
+	import GraphErrors from '#lib/ui/GraphErrors.svelte';
+	import List from '#lib/ui/List.svelte';
+	import PageModal, { pageModalClick } from '#lib/ui/PageModal.svelte';
+	import Pagination from '#lib/ui/Pagination.svelte';
+	import { changeParams } from '#lib/utils/searchparams.js';
 	import { BodyLong, Button } from '@nais/ds-svelte-community';
 	import { PlusIcon } from '@nais/ds-svelte-community/icons';
 	import type { PageProps } from './$types';

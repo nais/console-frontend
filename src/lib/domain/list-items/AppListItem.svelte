@@ -1,10 +1,10 @@
 <script lang="ts">
-	import IssuePills from '$lib/domain/issues/IssuePills.svelte';
-	import { envTagVariant } from '$lib/envTagVariant';
-	import ListItem from '$lib/ui/ListItem.svelte';
-	import RunningIndicator from '$lib/ui/RunningIndicator.svelte';
-	import Time from '$lib/ui/Time.svelte';
-	import { countIssuesBySeverity } from '$lib/utils/issueCounts';
+	import IssuePills from '#lib/domain/issues/IssuePills.svelte';
+	import { envTagVariant } from '#lib/envTagVariant.js';
+	import ListItem from '#lib/ui/ListItem.svelte';
+	import RunningIndicator from '#lib/ui/RunningIndicator.svelte';
+	import Time from '#lib/ui/Time.svelte';
+	import { countIssuesBySeverity } from '#lib/utils/issueCounts.js';
 	import { Tag, Tooltip } from '@nais/ds-svelte-community';
 	import { RocketIcon } from '@nais/ds-svelte-community/icons';
 

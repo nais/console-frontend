@@ -1,8 +1,8 @@
 import { KafkaTopicOrderField, load_KafkaTopics } from '$houdini';
 import type { KafkaTopicFilter } from '$houdini/graphql/inputs';
-import { parseLabelsParam } from '$lib/domain/labels/labels';
-import { urlToOrderDirection, urlToOrderField } from '$lib/ui/OrderByMenu.svelte';
-import { addPageMeta } from '$lib/utils/pageMeta';
+import { parseLabelsParam } from '#lib/domain/labels/labels.js';
+import { urlToOrderDirection, urlToOrderField } from '#lib/ui/OrderByMenu.svelte';
+import { addPageMeta } from '#lib/utils/pageMeta.js';
 
 const rows = 25;
 

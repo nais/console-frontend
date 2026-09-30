@@ -1,17 +1,17 @@
 <script lang="ts">
 	import { page } from '$app/state';
 	import { ActivityLogActivityType, graphql, OrderDirection, RepositoryOrderField } from '$houdini';
-	import TeamActivityCard from '$lib/domain/activity/TeamActivityCard.svelte';
-	import GitHubIcon from '$lib/icons/GitHubIcon.svelte';
-	import CollapsibleSidebar from '$lib/ui/CollapsibleSidebar.svelte';
-	import ExternalLink from '$lib/ui/ExternalLink.svelte';
-	import GraphErrors from '$lib/ui/GraphErrors.svelte';
-	import List from '$lib/ui/List.svelte';
-	import ListFilters from '$lib/ui/ListFilters.svelte';
-	import ListItem from '$lib/ui/ListItem.svelte';
-	import Pagination from '$lib/ui/Pagination.svelte';
-	import SurfaceCard from '$lib/ui/SurfaceCard.svelte';
-	import { changeParams } from '$lib/utils/searchparams';
+	import TeamActivityCard from '#lib/domain/activity/TeamActivityCard.svelte';
+	import GitHubIcon from '#lib/icons/GitHubIcon.svelte';
+	import CollapsibleSidebar from '#lib/ui/CollapsibleSidebar.svelte';
+	import ExternalLink from '#lib/ui/ExternalLink.svelte';
+	import GraphErrors from '#lib/ui/GraphErrors.svelte';
+	import List from '#lib/ui/List.svelte';
+	import ListFilters from '#lib/ui/ListFilters.svelte';
+	import ListItem from '#lib/ui/ListItem.svelte';
+	import Pagination from '#lib/ui/Pagination.svelte';
+	import SurfaceCard from '#lib/ui/SurfaceCard.svelte';
+	import { changeParams } from '#lib/utils/searchparams.js';
 	import { Alert, Button, Detail, Heading, Modal, TextField } from '@nais/ds-svelte-community';
 	import { FunnelIcon, PlusIcon, TrashIcon } from '@nais/ds-svelte-community/icons';
 	import type { PageProps } from './$types';

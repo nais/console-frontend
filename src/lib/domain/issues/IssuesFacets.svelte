@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { capitalizeFirstLetter } from '$lib/utils/formatters';
-	import { issueTypeLabel } from '$lib/utils/issueTypeLabel';
+	import { capitalizeFirstLetter } from '#lib/utils/formatters.js';
+	import { issueTypeLabel } from '#lib/utils/issueTypeLabel.js';
 
 	interface SeverityFacet {
 		severity: string;

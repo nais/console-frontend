@@ -7,12 +7,12 @@
 		type GetTeamDeleteKey$input,
 		type GetTeamDeleteKey$result
 	} from '$houdini';
-	import { docURL } from '$lib/doc';
-	import TeamActivityCard from '$lib/domain/activity/TeamActivityCard.svelte';
-	import ExternalLink from '$lib/ui/ExternalLink.svelte';
-	import GraphErrors from '$lib/ui/GraphErrors.svelte';
-	import SurfaceCard from '$lib/ui/SurfaceCard.svelte';
-	import Time from '$lib/ui/Time.svelte';
+	import { docURL } from '#lib/doc.js';
+	import TeamActivityCard from '#lib/domain/activity/TeamActivityCard.svelte';
+	import ExternalLink from '#lib/ui/ExternalLink.svelte';
+	import GraphErrors from '#lib/ui/GraphErrors.svelte';
+	import SurfaceCard from '#lib/ui/SurfaceCard.svelte';
+	import Time from '#lib/ui/Time.svelte';
 	import {
 		Alert,
 		BodyLong,

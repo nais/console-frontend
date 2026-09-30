@@ -1,5 +1,5 @@
 import { load_AdminServiceAccounts } from '$houdini';
-import { addPageMeta } from '$lib/utils/pageMeta';
+import { addPageMeta } from '#lib/utils/pageMeta.js';
 
 const rows = 25;
 

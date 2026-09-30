@@ -24,7 +24,7 @@ COPY --from=node-with-deps \
 	/usr/app/.npmrc \
 	./
 
-RUN pnpm install --frozen-lockfile --prod
+RUN pnpm install --frozen-lockfile --prod --ignore-scripts
 
 
 FROM node:${NODE_VERSION}-alpine

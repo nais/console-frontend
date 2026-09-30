@@ -1,6 +1,6 @@
 <script lang="ts">
-	import VulnerabilitySummaryMetrics from '$lib/domain/vulnerability/VulnerabilitySummaryMetrics.svelte';
-	import SurfaceCard from '$lib/ui/SurfaceCard.svelte';
+	import VulnerabilitySummaryMetrics from '#lib/domain/vulnerability/VulnerabilitySummaryMetrics.svelte';
+	import SurfaceCard from '#lib/ui/SurfaceCard.svelte';
 	import { Heading } from '@nais/ds-svelte-community';
 	import VulnerabilityHistory from '../VulnerabilityHistory.svelte';
 	import VulnerabilityLeaderBoard from '../VulnerabilityLeaderBoard.svelte';

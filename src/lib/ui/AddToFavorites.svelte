@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { favorites } from '$lib/stores/favorites.svelte';
+	import { favorites } from '#lib/stores/favorites.svelte.js';
 	import { Button, Tooltip } from '@nais/ds-svelte-community';
 	import { StarFillIcon, StarIcon } from '@nais/ds-svelte-community/icons';
 

@@ -1,10 +1,10 @@
 <script lang="ts">
 	import { fragment, graphql, type NetworkPolicy, type NetworkPolicy$data } from '$houdini';
-	import WorkloadLink from '$lib/domain/workload/WorkloadLink.svelte';
-	import DocsLink from '$lib/ui/DocsLink.svelte';
-	import IconLabel from '$lib/ui/IconLabel.svelte';
-	import List from '$lib/ui/List.svelte';
-	import TooltipAlignHack from '$lib/ui/TooltipAlignHack.svelte';
+	import WorkloadLink from '#lib/domain/workload/WorkloadLink.svelte';
+	import DocsLink from '#lib/ui/DocsLink.svelte';
+	import IconLabel from '#lib/ui/IconLabel.svelte';
+	import List from '#lib/ui/List.svelte';
+	import TooltipAlignHack from '#lib/ui/TooltipAlignHack.svelte';
 	import { BodyLong, Heading, Tag } from '@nais/ds-svelte-community';
 	import {
 		ArrowLeftIcon,

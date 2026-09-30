@@ -1,8 +1,8 @@
 <script lang="ts">
 	import { resolve } from '$app/paths';
 	import { page } from '$app/state';
-	import CveSearch from '$lib/domain/vulnerability/CveSearch.svelte';
-	import GraphErrors from '$lib/ui/GraphErrors.svelte';
+	import CveSearch from '#lib/domain/vulnerability/CveSearch.svelte';
+	import GraphErrors from '#lib/ui/GraphErrors.svelte';
 	import { BodyLong, Heading, Tab, TabList, Tabs } from '@nais/ds-svelte-community';
 	import type { LayoutProps } from './$types';
 

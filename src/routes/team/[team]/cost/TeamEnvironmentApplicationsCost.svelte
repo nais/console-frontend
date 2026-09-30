@@ -1,11 +1,11 @@
 <script lang="ts">
 	import { graphql } from '$houdini';
-	import ChartBoundary from '$lib/chart/ChartBoundary.svelte';
-	import LegendWrapper, { legendSnippet } from '$lib/chart/LegendWrapper.svelte';
-	import { euroAxisFormatter } from '$lib/chart/util';
-	import GraphErrors from '$lib/ui/GraphErrors.svelte';
-	import { changeParams } from '$lib/utils/searchparams';
-	import { visualizationColors } from '$lib/visualizationColors';
+	import ChartBoundary from '#lib/chart/ChartBoundary.svelte';
+	import LegendWrapper, { legendSnippet } from '#lib/chart/LegendWrapper.svelte';
+	import { euroAxisFormatter } from '#lib/chart/util.js';
+	import GraphErrors from '#lib/ui/GraphErrors.svelte';
+	import { changeParams } from '#lib/utils/searchparams.js';
+	import { visualizationColors } from '#lib/visualizationColors.js';
 	import {
 		BodyLong,
 		Heading,

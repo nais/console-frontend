@@ -1,16 +1,16 @@
 <script lang="ts">
 	import { page } from '$app/state';
 	import { OrderDirection, TeamOrderField } from '$houdini';
-	import ChartBoundary from '$lib/chart/ChartBoundary.svelte';
-	import LegendWrapper, { legendSnippet } from '$lib/chart/LegendWrapper.svelte';
-	import { euroAxisFormatter, serviceColor } from '$lib/chart/util';
-	import GraphErrors from '$lib/ui/GraphErrors.svelte';
-	import IconLabel from '$lib/ui/IconLabel.svelte';
-	import { urlToOrderDirection, urlToOrderField } from '$lib/ui/OrderByMenu.svelte';
-	import Pagination from '$lib/ui/Pagination.svelte';
-	import Time from '$lib/ui/Time.svelte';
-	import { euroValueFormatter } from '$lib/utils/formatters';
-	import { changeParams } from '$lib/utils/searchparams';
+	import ChartBoundary from '#lib/chart/ChartBoundary.svelte';
+	import LegendWrapper, { legendSnippet } from '#lib/chart/LegendWrapper.svelte';
+	import { euroAxisFormatter, serviceColor } from '#lib/chart/util.js';
+	import GraphErrors from '#lib/ui/GraphErrors.svelte';
+	import IconLabel from '#lib/ui/IconLabel.svelte';
+	import { urlToOrderDirection, urlToOrderField } from '#lib/ui/OrderByMenu.svelte';
+	import Pagination from '#lib/ui/Pagination.svelte';
+	import Time from '#lib/ui/Time.svelte';
+	import { euroValueFormatter } from '#lib/utils/formatters.js';
+	import { changeParams } from '#lib/utils/searchparams.js';
 	import {
 		BodyLong,
 		Heading,

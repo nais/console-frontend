@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { resolve } from '$app/paths';
 	import { page } from '$app/state';
-	import CreateTokenForm from '$lib/domain/service-accounts/CreateTokenForm.svelte';
+	import CreateTokenForm from '#lib/domain/service-accounts/CreateTokenForm.svelte';
 	import { Alert } from '@nais/ds-svelte-community';
 	import type { PageProps } from './$types';
 

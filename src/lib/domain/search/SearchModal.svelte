@@ -1,13 +1,13 @@
 <script lang="ts">
 	import { page } from '$app/state';
 	import { graphql, type SearchQuery$input } from '$houdini';
-	import { envTagVariant } from '$lib/envTagVariant';
-	import { exhaustive } from '$lib/utils/houdini';
-	import BigQueryIcon from '$lib/icons/BigQueryIcon.svelte';
-	import KafkaIcon from '$lib/icons/KafkaIcon.svelte';
-	import OpenSearchIcon from '$lib/icons/OpenSearchIcon.svelte';
-	import ValkeyIcon from '$lib/icons/ValkeyIcon.svelte';
-	import { favorites } from '$lib/stores/favorites.svelte';
+	import { envTagVariant } from '#lib/envTagVariant.js';
+	import { exhaustive } from '#lib/utils/houdini.js';
+	import BigQueryIcon from '#lib/icons/BigQueryIcon.svelte';
+	import KafkaIcon from '#lib/icons/KafkaIcon.svelte';
+	import OpenSearchIcon from '#lib/icons/OpenSearchIcon.svelte';
+	import ValkeyIcon from '#lib/icons/ValkeyIcon.svelte';
+	import { favorites } from '#lib/stores/favorites.svelte.js';
 	import { Modal } from '@nais/ds-svelte-community';
 	import {
 		BriefcaseClockIcon,

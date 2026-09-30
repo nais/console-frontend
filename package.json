@@ -3,6 +3,9 @@
 	"version": "0.0.1",
 	"private": true,
 	"packageManager": "pnpm@11.22.0",
+	"imports": {
+		"#lib/*": "./src/lib/*"
+	},
 	"scripts": {
 		"build": "vite build",
 		"check-outdated": "pnpm outdated",
@@ -14,7 +17,7 @@
 		"format": "prettier --write .",
 		"lint-staged": "lint-staged",
 		"lint": "prettier --check . && eslint .",
-		"prepare": "svelte-kit sync || echo ''",
+		"prepare": "svelte-kit sync",
 		"preview": "vite preview",
 		"test": "vitest",
 		"update-outdated": "pnpm update --latest"

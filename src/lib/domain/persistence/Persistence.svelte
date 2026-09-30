@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { fragment, graphql, type Persistence } from '$houdini';
-	import IconLabel from '$lib/ui/IconLabel.svelte';
-	import SurfaceCard from '$lib/ui/SurfaceCard.svelte';
+	import IconLabel from '#lib/ui/IconLabel.svelte';
+	import SurfaceCard from '#lib/ui/SurfaceCard.svelte';
 
 	interface Props {
 		workload: Persistence;

@@ -1,5 +1,5 @@
 import { load_AppDeploys } from '$houdini';
-import { addPageMeta } from '$lib/utils/pageMeta.js';
+import { addPageMeta } from '#lib/utils/pageMeta.js';
 
 const rows = 25;
 

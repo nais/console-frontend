@@ -1,5 +1,5 @@
 import { load_App, load_AppDeployment, load_AppInstanceGroups } from '$houdini';
-import { addPageMeta } from '$lib/utils/pageMeta.js';
+import { addPageMeta } from '#lib/utils/pageMeta.js';
 
 export async function load(event) {
 	return {

@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { page } from '$app/state';
 	import { fragment, graphql, type ActivityLogEntryFragment } from '$houdini';
-	import ListItem from '$lib/ui/ListItem.svelte';
+	import ListItem from '#lib/ui/ListItem.svelte';
 	import { BodyLong, Tooltip } from '@nais/ds-svelte-community';
 	import { QuestionmarkIcon } from '@nais/ds-svelte-community/icons';
 	import { icons } from '../activity/activity-log-icons';

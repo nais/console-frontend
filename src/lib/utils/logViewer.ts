@@ -1,4 +1,4 @@
-import { appendSortedBoundedLog } from '$lib/utils/logStream';
+import { appendSortedBoundedLog } from '#lib/utils/logStream.js';
 
 type WorkloadLog = {
 	time: Date | string | number;

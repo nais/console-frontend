@@ -3,7 +3,7 @@ import {
 	OpenSearchAccessOrderField,
 	type OpenSearchAccessOrderField$options
 } from '$houdini';
-import { addPageMeta } from '$lib/utils/pageMeta';
+import { addPageMeta } from '#lib/utils/pageMeta.js';
 import { redirect } from '@sveltejs/kit';
 import { get } from 'svelte/store';
 

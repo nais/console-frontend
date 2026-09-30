@@ -1,5 +1,5 @@
 import { load_AppLayout } from '$houdini';
-import { addPageMeta } from '$lib/utils/pageMeta.js';
+import { addPageMeta } from '#lib/utils/pageMeta.js';
 
 export async function load(event) {
 	const appLayout = await load_AppLayout({

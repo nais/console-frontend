@@ -1,10 +1,10 @@
 <script lang="ts">
 	import { afterNavigate } from '$app/navigation';
 	import { page } from '$app/state';
-	import { menuItems } from '$lib/menuItems';
-	import Icon from '$lib/ui/Icon.svelte';
-	import Menu from '$lib/ui/Menu.svelte';
-	import MobileSideDrawer from '$lib/ui/MobileSideDrawer.svelte';
+	import { menuItems } from '#lib/menuItems.js';
+	import Icon from '#lib/ui/Icon.svelte';
+	import Menu from '#lib/ui/Menu.svelte';
+	import MobileSideDrawer from '#lib/ui/MobileSideDrawer.svelte';
 	import { getTeamContext } from './teamContext.svelte';
 
 	const {

@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { graphql } from '$houdini';
-	import SurfaceCard from '$lib/ui/SurfaceCard.svelte';
+	import SurfaceCard from '#lib/ui/SurfaceCard.svelte';
 	import { Loader } from '@nais/ds-svelte-community';
 
 	import type { ActivityLogFilter } from '$houdini/graphql/inputs';

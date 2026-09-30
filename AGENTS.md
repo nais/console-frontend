@@ -165,7 +165,7 @@ This project uses **Svelte 5 with runes mode** (enforced via `forceRunesMode: tr
 
 ## Rendering Error Boundaries
 
-Use error boundaries around independently rendered, non-critical UI when a render failure should not hide useful surrounding content. Prefer `$lib/chart/ChartBoundary` for individual charts and visualizations, and `$lib/ui/SectionBoundary` for reusable non-chart panels. Use `<svelte:boundary>` directly when a custom fallback is needed. Keep the boundary as small as the independently recoverable section, and do not wrap every component.
+Use error boundaries around independently rendered, non-critical UI when a render failure should not hide useful surrounding content. Prefer `#lib/chart/ChartBoundary.svelte` for individual charts and visualizations, and `#lib/ui/SectionBoundary.svelte` for reusable non-chart panels. Use `<svelte:boundary>` directly when a custom fallback is needed. Keep the boundary as small as the independently recoverable section, and do not wrap every component.
 
 Expected GraphQL and application errors must continue to use explicit error handling. Boundaries handle rendering and effect errors, not event-handler failures or later asynchronous work. Keep fallback messages user-safe and provide retry only when resetting the content is useful.
 
@@ -209,10 +209,10 @@ The default cache policy is `CacheAndNetwork` (set in `houdini.config.js`). Do n
 
 Houdini 2.0 adds a `{ __typename: "non-exhaustive; don't match this" }` catch-all variant to every interface/union result type. This variant has **no fields** — accessing `id`, `createdAt`, etc. on it causes type errors.
 
-Use `exhaustive()` from `$lib/utils/houdini` to filter the non-exhaustive catch-all from arrays:
+Use `exhaustive()` from `#lib/utils/houdini.js` to filter the non-exhaustive catch-all from arrays:
 
 ```typescript
-import { exhaustive, type Exhaustive } from '$lib/utils/houdini';
+import { exhaustive, type Exhaustive } from '#lib/utils/houdini.js';
 
 // Filter out non-exhaustive variants before iterating
 const realNodes = exhaustive(activityLog.nodes);
@@ -356,7 +356,7 @@ export async function load(event) {
 ```svelte
 <script lang="ts">
 	import { graphql } from '$houdini';
-	import GraphErrors from '$lib/ui/GraphErrors.svelte';
+	import GraphErrors from '#lib/ui/GraphErrors.svelte';
 
 	const myMutation = graphql(`
 		mutation UpdateItem($id: ID!, $name: String!) {
@@ -411,7 +411,7 @@ Global utility classes defined in `src/styles/app.css` for common page patterns.
 
 ### CollapsibleSidebar Pattern
 
-All list pages use `CollapsibleSidebar` (`$lib/ui/CollapsibleSidebar.svelte`) to handle filter visibility across breakpoints:
+All list pages use `CollapsibleSidebar` (`#lib/ui/CollapsibleSidebar.svelte`) to handle filter visibility across breakpoints:
 
 - **Wide desktop (>1024px):** Filters display in the right sidebar column (`.desktop-only`).
 - **Narrow desktop / tablet (≤1024px):** Sidebar collapses. A "Filters" toggle button appears in the List header. Clicking it opens a right-side drawer overlay (uses `Modal`).
@@ -421,7 +421,7 @@ All list pages use `CollapsibleSidebar` (`$lib/ui/CollapsibleSidebar.svelte`) to
 
 ```svelte
 <script lang="ts">
-	import CollapsibleSidebar from '$lib/ui/CollapsibleSidebar.svelte';
+	import CollapsibleSidebar from '#lib/ui/CollapsibleSidebar.svelte';
 	import { FunnelIcon } from '@nais/ds-svelte-community/icons';
 
 	let filtersOpen = $state(false);
@@ -480,7 +480,7 @@ Global utility classes:
 
 ### SurfaceCard Component
 
-Use `SurfaceCard` (`$lib/ui/SurfaceCard.svelte`) for **sidebar cards only**:
+Use `SurfaceCard` (`#lib/ui/SurfaceCard.svelte`) for **sidebar cards only**:
 
 - Props: `title` (uppercase eyebrow label), `headerAside` (snippet), `bordered`
 - Applies `--surface-elevated-background` and `--surface-elevated-shadow`
@@ -538,7 +538,7 @@ When rendering type-specific content from GraphQL unions:
 2. **Tokens first**: Use `--ax-*` tokens for spacing, colors, borders, and radii — never hardcode raw values
 3. **Utility classes first**: Use the layout utility classes (`.layout-two-column`, `.table-scroll`, etc.) before writing custom layout CSS
 4. **Surface variables compose tokens**: The `--surface-*` variables are project-level abstractions built from `--ax-*` tokens — do not bypass them with raw color values
-5. **Icons**: Import from `@nais/ds-svelte-community/icons` or `$lib/icons/` — never use inline SVGs
+5. **Icons**: Import from `@nais/ds-svelte-community/icons` or `#lib/icons/` — never use inline SVGs
 6. **Dark mode**: The surface system handles dark mode via CSS selectors on the root element; do not add separate dark-mode overrides for surface properties
 7. **No hardcoded values**: Use `gap: var(--ax-space-8)` not `gap: 0.5rem`; use `border-radius: var(--ax-radius-medium)` not `border-radius: 8px`; use `color: var(--ax-text-neutral)` not `color: #333`
 

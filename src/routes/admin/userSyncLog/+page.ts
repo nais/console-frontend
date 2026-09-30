@@ -1,5 +1,5 @@
 import { load_UserSyncLogs } from '$houdini';
-import { addPageMeta } from '$lib/utils/pageMeta';
+import { addPageMeta } from '#lib/utils/pageMeta.js';
 
 export async function load(event) {
 	return {

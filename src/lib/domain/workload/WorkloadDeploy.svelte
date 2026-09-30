@@ -6,9 +6,9 @@
 		type DeploymentStatusState$options,
 		type WorkloadDeploy
 	} from '$houdini';
-	import Meta from '$lib/domain/activity/Meta.svelte';
-	import GitHubIcon from '$lib/icons/GitHubIcon.svelte';
-	import SurfaceCard from '$lib/ui/SurfaceCard.svelte';
+	import Meta from '#lib/domain/activity/Meta.svelte';
+	import GitHubIcon from '#lib/icons/GitHubIcon.svelte';
+	import SurfaceCard from '#lib/ui/SurfaceCard.svelte';
 	import { BodyShort, Tag, Tooltip } from '@nais/ds-svelte-community';
 	import { ExternalLinkIcon } from '@nais/ds-svelte-community/icons';
 

@@ -1,9 +1,9 @@
 <script lang="ts">
-	import TeamListItem from '$lib/domain/list-items/TeamListItem.svelte';
-	import List from '$lib/ui/List.svelte';
-	import PageModal, { pageModalClick } from '$lib/ui/PageModal.svelte';
-	import Pagination from '$lib/ui/Pagination.svelte';
-	import { capitalizeFirstLetter } from '$lib/utils/formatters';
+	import TeamListItem from '#lib/domain/list-items/TeamListItem.svelte';
+	import List from '#lib/ui/List.svelte';
+	import PageModal, { pageModalClick } from '#lib/ui/PageModal.svelte';
+	import Pagination from '#lib/ui/Pagination.svelte';
+	import { capitalizeFirstLetter } from '#lib/utils/formatters.js';
 	import { BodyLong, Button, Heading } from '@nais/ds-svelte-community';
 	import Logo from '../Logo.svelte';
 	import type { PageProps } from './$types';

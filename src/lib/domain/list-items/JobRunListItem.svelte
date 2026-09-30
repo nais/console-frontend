@@ -1,9 +1,9 @@
 <script lang="ts">
-	import SuccessIcon from '$lib/icons/SuccessIcon.svelte';
-	import IconLabel from '$lib/ui/IconLabel.svelte';
-	import ListItem from '$lib/ui/ListItem.svelte';
-	import Time from '$lib/ui/Time.svelte';
-	import TooltipAlignHack from '$lib/ui/TooltipAlignHack.svelte';
+	import SuccessIcon from '#lib/icons/SuccessIcon.svelte';
+	import IconLabel from '#lib/ui/IconLabel.svelte';
+	import ListItem from '#lib/ui/ListItem.svelte';
+	import Time from '#lib/ui/Time.svelte';
+	import TooltipAlignHack from '#lib/ui/TooltipAlignHack.svelte';
 	import { Button, Detail, Loader } from '@nais/ds-svelte-community';
 	import { QuestionmarkIcon, TimerIcon, TrashIcon } from '@nais/ds-svelte-community/icons';
 	import ErrorIcon from '../../icons/ErrorIcon.svelte';

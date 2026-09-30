@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { docURL } from '$lib/doc';
+	import { docURL } from '#lib/doc.js';
 	import { Button, Tooltip } from '@nais/ds-svelte-community';
 	import { BookIcon } from '@nais/ds-svelte-community/icons';
 

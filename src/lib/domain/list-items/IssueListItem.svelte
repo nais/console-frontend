@@ -1,11 +1,11 @@
 <script lang="ts">
 	import { fragment, graphql, type IssueFragment } from '$houdini';
-	import { envTagVariant } from '$lib/envTagVariant';
-	import OpenSearchIcon from '$lib/icons/OpenSearchIcon.svelte';
-	import UnleashIcon from '$lib/icons/UnleashIcon.svelte';
-	import ValkeyIcon from '$lib/icons/ValkeyIcon.svelte';
-	import CriticalIndicator from '$lib/ui/CriticalIndicator.svelte';
-	import { issueTypeLabel } from '$lib/utils/issueTypeLabel';
+	import { envTagVariant } from '#lib/envTagVariant.js';
+	import OpenSearchIcon from '#lib/icons/OpenSearchIcon.svelte';
+	import UnleashIcon from '#lib/icons/UnleashIcon.svelte';
+	import ValkeyIcon from '#lib/icons/ValkeyIcon.svelte';
+	import CriticalIndicator from '#lib/ui/CriticalIndicator.svelte';
+	import { issueTypeLabel } from '#lib/utils/issueTypeLabel.js';
 	import { Tag } from '@nais/ds-svelte-community';
 	import {
 		BriefcaseClockIcon,

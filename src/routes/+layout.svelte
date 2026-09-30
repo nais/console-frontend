@@ -3,11 +3,11 @@
 	import { afterNavigate, beforeNavigate } from '$app/navigation';
 	import { page } from '$app/state';
 	import { graphql } from '$houdini';
-	import { isAuthenticated, isUnauthenticated } from '$lib/authentication';
-	import { localizeLayerChart } from '$lib/chart/util';
-	import '$lib/font.css';
-	import { themeSwitch } from '$lib/stores/theme.svelte';
-	import ProgressBar from '$lib/ui/ProgressBar.svelte';
+	import { isAuthenticated, isUnauthenticated } from '#lib/authentication.js';
+	import { localizeLayerChart } from '#lib/chart/util.js';
+	import '#lib/font.css';
+	import { themeSwitch } from '#lib/stores/theme.svelte.js';
+	import ProgressBar from '#lib/ui/ProgressBar.svelte';
 	import { Alert, BodyShort, Button, Heading, Page, Theme } from '@nais/ds-svelte-community';
 	import { onMount } from 'svelte';
 	import '../styles/app.css';

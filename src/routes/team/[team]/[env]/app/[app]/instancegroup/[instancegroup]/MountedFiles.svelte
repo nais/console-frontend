@@ -1,6 +1,6 @@
 <script lang="ts">
 	import type { InstanceGroupDetail$result } from '$houdini';
-	import List from '$lib/ui/List.svelte';
+	import List from '#lib/ui/List.svelte';
 	import { Button } from '@nais/ds-svelte-community';
 	import { DownloadIcon } from '@nais/ds-svelte-community/icons';
 

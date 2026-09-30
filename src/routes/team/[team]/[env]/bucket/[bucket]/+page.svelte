@@ -1,11 +1,11 @@
 <script lang="ts">
-	import Labels from '$lib/domain/labels/Labels.svelte';
-	import WorkloadLink from '$lib/domain/workload/WorkloadLink.svelte';
-	import WarningIcon from '$lib/icons/WarningIcon.svelte';
-	import ExternalLink from '$lib/ui/ExternalLink.svelte';
-	import GraphErrors from '$lib/ui/GraphErrors.svelte';
-	import SurfaceCard from '$lib/ui/SurfaceCard.svelte';
-	import TooltipAlignHack from '$lib/ui/TooltipAlignHack.svelte';
+	import Labels from '#lib/domain/labels/Labels.svelte';
+	import WorkloadLink from '#lib/domain/workload/WorkloadLink.svelte';
+	import WarningIcon from '#lib/icons/WarningIcon.svelte';
+	import ExternalLink from '#lib/ui/ExternalLink.svelte';
+	import GraphErrors from '#lib/ui/GraphErrors.svelte';
+	import SurfaceCard from '#lib/ui/SurfaceCard.svelte';
+	import TooltipAlignHack from '#lib/ui/TooltipAlignHack.svelte';
 	import { BodyShort, CopyButton, Heading } from '@nais/ds-svelte-community';
 	import { CheckmarkIcon, XMarkIcon } from '@nais/ds-svelte-community/icons';
 	import type { PageProps } from './$types';

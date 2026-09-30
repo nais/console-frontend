@@ -1,6 +1,6 @@
 <script lang="ts">
-	import SurfaceCard from '$lib/ui/SurfaceCard.svelte';
-	import { getLocalizedCronDescription, type ScheduleContext } from '$lib/utils/cron';
+	import SurfaceCard from '#lib/ui/SurfaceCard.svelte';
+	import { getLocalizedCronDescription, type ScheduleContext } from '#lib/utils/cron.js';
 	import { Alert, Heading } from '@nais/ds-svelte-community';
 
 	interface Props {

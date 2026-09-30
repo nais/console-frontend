@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { getHeaderActionsContext } from '$lib/ui/headerActionsContext.svelte';
+	import { getHeaderActionsContext } from '#lib/ui/headerActionsContext.svelte.js';
 	import type { Snippet } from 'svelte';
 
 	let { children }: { children: Snippet } = $props();
