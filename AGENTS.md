@@ -155,9 +155,7 @@ This project uses **Svelte 5 with runes mode** (enforced via `forceRunesMode: tr
 	let doubled = $derived(count * 2);
 	const uid = $props.id();
 
-	$effect(() => {
-		console.log('Count changed:', count);
-	});
+	$inspect(count);
 
 	let { data }: { data: MyType } = $props();
 </script>
