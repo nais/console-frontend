@@ -290,7 +290,7 @@
 	}
 </script>
 
-<div class="prometheus-chart-wrapper" use:intersect={handleIntersection}>
+<div class="prometheus-chart-wrapper" {@attach intersect(handleIntersection)}>
 	{#if title}
 		<div class="prometheus-chart-header">
 			<Heading as="h3" size="small">{title}</Heading>

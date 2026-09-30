@@ -13,10 +13,8 @@
 		children: Snippet;
 	} = $props();
 
-	let containerEl: HTMLElement;
-
 	function setupSortable(el: HTMLElement) {
-		Sortable.create(el, {
+		const sortable = Sortable.create(el, {
 			animation: 150,
 			handle: '.drag-handle',
 			onEnd: (evt) => {
@@ -32,10 +30,12 @@
 				onReorder?.(updated);
 			}
 		});
+
+		return () => sortable.destroy();
 	}
 </script>
 
-<div bind:this={containerEl} use:setupSortable class="list">
+<div {@attach setupSortable} class="list">
 	{@render children()}
 </div>
 
