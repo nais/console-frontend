@@ -5,16 +5,20 @@
 		[s: string]: string;
 	};
 
+	type URLWithSearchParams = {
+		searchParams: Pick<URLSearchParams, 'get'>;
+	};
+
 	export const urlToOrderField = <T extends OrderField>(
 		orderField: T,
 		defaultValue: ValueOf<T>,
-		url: URL
+		url: URLWithSearchParams
 	): ValueOf<T> =>
 		(Object.values(orderField).find((field) => url.searchParams.get('sort')?.startsWith(field)) as
 			ValueOf<T> | undefined) ?? defaultValue;
 
 	export const urlToOrderDirection = (
-		url: URL,
+		url: URLWithSearchParams,
 		defaultDirection: OrderDirection$options = OrderDirection.ASC
 	) =>
 		Object.values(OrderDirection).find((dir) => url.searchParams.get('sort')?.endsWith(dir)) ??

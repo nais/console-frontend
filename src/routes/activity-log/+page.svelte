@@ -25,7 +25,9 @@
 	let customRangePreview = $state(false);
 	let customRangeOpen = $derived(data.dateRange.custom || customRangePreview);
 
-	afterNavigate(() => {
+	afterNavigate(({ shallow }) => {
+		if (shallow) return;
+
 		customRangePreview = false;
 	});
 
@@ -33,11 +35,9 @@
 		(page.url.searchParams.get('activityTypes')?.split(',').filter(Boolean) ??
 			[]) as ActivityLogActivityType$options[]
 	);
-
 	let selectedResourceTypes: string[] = $derived(
 		page.url.searchParams.get('resourceTypes')?.split(',').filter(Boolean) ?? []
 	);
-
 	let selectedEnvironments: string[] = $derived(
 		page.url.searchParams.get('environments')?.split(',').filter(Boolean) ?? []
 	);
@@ -89,6 +89,7 @@
 	function handleDateChange(event: Event, bound: 'from' | 'to') {
 		const input = event.currentTarget as HTMLInputElement;
 		const selected = input.value.length === 16 ? `${input.value}:00` : input.value;
+
 		if (
 			!/^\d{4}-\d{2}-\d{2}T(?:[01]\d|2[0-3]):[0-5]\d:[0-5]\d$/.test(selected) ||
 			Number.isNaN(Date.parse(`${selected}Z`)) ||

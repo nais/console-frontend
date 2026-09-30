@@ -61,12 +61,16 @@
 	let loading = $state(false);
 
 	beforeNavigate((navigation) => {
+		if (navigation.shallow) return;
+
 		if (navigation.from?.url.hostname === navigation.to?.url.hostname) {
 			loading = true;
 		}
 	});
 
-	afterNavigate(() => {
+	afterNavigate(({ shallow }) => {
+		if (shallow) return;
+
 		loading = false;
 	});
 

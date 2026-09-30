@@ -1,7 +1,6 @@
 <script lang="ts">
 	import { browser } from '$app/env';
 	import { enhance } from '$app/forms';
-	import { resolve } from '$app/paths';
 	import { page } from '$app/state';
 	import { docURL } from '#lib/doc.js';
 	import ExternalLink from '#lib/ui/ExternalLink.svelte';
@@ -22,11 +21,8 @@
 {#if usesCount > 0}
 	<Alert variant="warning"
 		>This Valkey instance is currently <a
-			href={resolve('/team/[team]/[env]/valkey/[valkey]', {
-				team: data.teamSlug,
-				env: page.params.env ?? '',
-				valkey: page.params.valkey ?? ''
-			})}>used by {usesCount} workload{usesCount > 1 ? 's' : ''}</a
+			href={`/team/${encodeURIComponent(data.teamSlug)}/${encodeURIComponent(page.params.env ?? '')}/valkey/${encodeURIComponent(page.params.valkey ?? '')}`}
+			>used by {usesCount} workload{usesCount > 1 ? 's' : ''}</a
 		>.</Alert
 	>
 {/if}

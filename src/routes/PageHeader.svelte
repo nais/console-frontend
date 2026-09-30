@@ -32,12 +32,7 @@
 	import Logo from '../Logo.svelte';
 
 	interface Props {
-		user:
-			| {
-					readonly name: string;
-					readonly isAdmin: boolean;
-			  }
-			| undefined;
+		user: { readonly name: string; readonly isAdmin: boolean } | undefined;
 	}
 
 	let { user }: Props = $props();
@@ -64,7 +59,9 @@
 		popover?.hidePopover?.();
 	}
 
-	afterNavigate(() => {
+	afterNavigate(({ shallow }) => {
+		if (shallow) return;
+
 		mobileNavOpen = false;
 	});
 </script>
@@ -92,10 +89,9 @@
 		aria-controls="mobile-navigation-drawer"
 		onclick={() => {
 			mobileNavOpen = true;
-		}}
+		}}><MenuHamburgerIcon title="Navigation" /></InternalHeaderButton
 	>
-		<MenuHamburgerIcon title="Navigation" />
-	</InternalHeaderButton>
+
 	<MobileSideDrawer bind:open={mobileNavOpen} id="mobile-navigation-drawer" title="Navigation">
 		<nav class="mobile-drawer-nav" aria-label="Navigation">
 			<div class="mobile-drawer-section">

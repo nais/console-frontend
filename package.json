@@ -4,6 +4,7 @@
 	"private": true,
 	"packageManager": "pnpm@11.22.0",
 	"imports": {
+		"#lib": "./src/lib/index.js",
 		"#lib/*": "./src/lib/*"
 	},
 	"scripts": {
@@ -26,8 +27,8 @@
 		"@eslint/compat": "2.1.1",
 		"@eslint/js": "10.0.1",
 		"@nais/ds-svelte-community": "2.0.0-next.8",
-		"@sveltejs/adapter-node": "5.5.7",
-		"@sveltejs/kit": "2.70.3",
+		"@sveltejs/adapter-node": "^6.0.0-next.0",
+		"@sveltejs/kit": "^3.0.0-next.0",
 		"@sveltejs/vite-plugin-svelte": "7.3.1",
 		"@tailwindcss/vite": "4.3.3",
 		"@types/d3-array": "3.2.2",

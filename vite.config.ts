@@ -31,17 +31,13 @@ export default defineConfig((mode) => {
 			houdini(),
 			sveltekit({
 				adapter: adapter(),
-				alias: {
-					$houdini: '.houdini/'
-				},
 				compilerOptions: {
 					experimental: {
 						async: true
 					}
 				},
 				experimental: {
-					explicitEnvironmentVariables: true,
-					handleRenderingErrors: true
+					explicitEnvironmentVariables: true
 				}
 			})
 		],

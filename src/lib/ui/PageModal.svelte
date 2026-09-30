@@ -1,4 +1,5 @@
 <script lang="ts" module>
+	import { goto } from '$app/navigation';
 	import { page } from '$app/state';
 
 	export async function pageModalClick(
@@ -10,8 +11,9 @@
 			innerWidth < 640 || // bail if the screen is too small
 			e.shiftKey || // or the link is opened in a new window
 			e.metaKey ||
-			e.ctrlKey // or a new tab (mac: metaKey, win/linux: ctrlKey)
-		) {
+			e.ctrlKey
+		) // or a new tab (mac: metaKey, win/linux: ctrlKey)
+		{
 			return;
 		}
 
@@ -20,7 +22,7 @@
 
 		const { href } = e.currentTarget;
 
-		pushState(href, { modalHref: href });
+		goto(href, { shallow: true, state: { modalHref: href } });
 	}
 
 	/**
@@ -33,7 +35,7 @@
 </script>
 
 <script lang="ts">
-	import { goto, preloadData, pushState } from '$app/navigation';
+	import { preloadData } from '$app/navigation';
 	import { Loader, Modal } from '@nais/ds-svelte-community';
 	import type { ModalProps } from '@nais/ds-svelte-community/components/Modal/type.js';
 	import type { Component, Snippet } from 'svelte';
