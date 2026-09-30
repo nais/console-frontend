@@ -464,7 +464,7 @@
 	<div class="detail">
 		<p class="message">{$data?.message}</p>
 		{#if $data?.__typename === 'DeprecatedIngressIssue' && 'ingresses' in ($data as Record<string, unknown>)}
-			{@const ingresses = ($data as unknown as { ingresses: string[] }).ingresses}
+			{const ingresses = $derived(($data as unknown as { ingresses: string[] }).ingresses)}
 			<div class="extra">
 				<strong>
 					{ingresses.length === 1 ? 'Deprecated ingress:' : 'Deprecated ingresses:'}

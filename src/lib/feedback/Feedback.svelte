@@ -10,6 +10,10 @@
 	}
 
 	let { close }: Props = $props();
+	const uid = $props.id();
+	const detailsId = `${uid}-details`;
+	const countId = `${uid}-count`;
+	const errorId = `${uid}-error`;
 
 	let type: FeedbackType | '' = $state('');
 	let details = $state('');
@@ -110,13 +114,13 @@
 					<p class="aksel-error-message aksel-label aksel-label--small">Feedback type required</p>
 				{/if}
 
-				<label class="aksel-form-field__label aksel-label aksel-label--small" for="details">
+				<label class="aksel-form-field__label aksel-label aksel-label--small" for={detailsId}>
 					Details
 				</label>
 				<div class="details">
 					<textarea
 						class="aksel-textarea__input aksel-body-short aksel-body-short--small textarea"
-						id="details"
+						id={detailsId}
 						bind:value={details}
 						rows="5"
 						cols="40"
@@ -124,14 +128,14 @@
 						style="resize: vertical; min-height: 16rem; "
 						placeholder="Enter your feedback here..."
 						disabled={feedbackSent}
-						aria-describedby="charCount tf-uid-43"></textarea>
-					<span id="charCount"
+						aria-describedby="{countId} {errorId}"></textarea>
+					<span id={countId} class="char-count"
 						>{maxlength - details.length} character{maxlength - details.length == 1 ? '' : 's'} remaining</span
 					>
 				</div>
 				<div
 					class="aksel-form-field__error"
-					id="tf-uid-43"
+					id={errorId}
 					aria-relevant="additions removals"
 					aria-live="polite"
 				>
@@ -170,7 +174,7 @@
 		flex-direction: column;
 		align-items: end;
 	}
-	#charCount {
+	.char-count {
 		font-size: 0.75rem;
 		color: var(--ax-text-neutral-subtle);
 		margin: 0;

@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { MagnifyingGlassIcon } from '@nais/ds-svelte-community/icons';
+	const inputId = $props.id();
 
 	const {
 		value = '',
@@ -41,14 +42,14 @@
 		onsubmit?.();
 	}}
 >
-	<label for="search-input" class="sr-only">{label}</label>
+	<label for={inputId} class="sr-only">{label}</label>
 	<div class="search-icon">
 		<MagnifyingGlassIcon />
 	</div>
 	<input
 		bind:this={inputEl}
 		{value}
-		id="search-input"
+		id={inputId}
 		type="text"
 		class="search-input"
 		{placeholder}

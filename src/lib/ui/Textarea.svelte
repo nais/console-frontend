@@ -1,4 +1,6 @@
 <script lang="ts">
+	const uid = $props.id();
+
 	interface Props {
 		text: string | undefined;
 		id?: string;
@@ -11,7 +13,7 @@
 
 	let {
 		text = $bindable(),
-		id = crypto.randomUUID(),
+		id = uid,
 		label = '',
 		description = '',
 		readonly = false,
