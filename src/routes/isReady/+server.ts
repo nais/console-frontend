@@ -1,5 +1,5 @@
-import { building } from '$app/env';
 import { logger } from '#lib/logger.js';
+import { building } from '$app/env';
 import { GRAPHQL_ENDPOINT } from '$app/env/private';
 
 const GRAPHQL_API_URL = GRAPHQL_ENDPOINT || 'http://localhost:3000/graphql';
