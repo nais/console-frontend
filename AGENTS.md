@@ -135,6 +135,12 @@ This project uses **Svelte 5 with runes mode** (enforced via `forceRunesMode: tr
 
 - Use `$state()` for reactive state (not `let` with reactivity)
 - Use `$derived()` for computed values (not `$:`)
+- Use `$props.id()` for component-instance IDs referenced by labels or ARIA attributes; it stays consistent across SSR and hydration. Preserve explicitly supplied IDs when a component supports them.
+- Use `{const ...}` / `{let ...}` for local presentation variables in markup (Svelte 5.56+). Wrap reactive expressions in `$derived(...)` instead of assuming a plain declaration will update; `{@const ...}` is legacy.
+- Use `$inspect()` and `$inspect.trace()` for development-only reactive diagnostics, not production logging.
+- Writable `$derived` values can provide temporary optimistic overrides of computed data; use them only when the source of truth will eventually update.
+- Use `getAbortSignal()` from `svelte` for cancellable async work within a running derived value or effect, not as a substitute for Houdini page queries and load functions.
+- Prefer typed `createContext<T>()` from `svelte` when introducing shared context between components.
 - Prefer `{@attach}` for behavior owned by a DOM element, including third-party setup and cleanup. Use nested `$effect()` blocks for reactive updates that should not recreate the integration.
 - Treat `$effect()` as an escape hatch for other browser-side effects such as subscriptions, timers, or external I/O
 - Prefer `$derived()`/`$derived.by()` for derived state and explicit event handlers for input-driven flows like debounced search
@@ -147,6 +153,7 @@ This project uses **Svelte 5 with runes mode** (enforced via `forceRunesMode: tr
 <script lang="ts">
 	let count = $state(0);
 	let doubled = $derived(count * 2);
+	const uid = $props.id();
 
 	$effect(() => {
 		console.log('Count changed:', count);
