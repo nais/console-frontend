@@ -85,18 +85,9 @@
 		Boolean(results?.[0]?.teamSlug && /^team:[^\s]+$/.test(query.trim()))
 	);
 
-	function focusWhenEnabled(node: HTMLInputElement, enabled: boolean) {
-		if (enabled) {
-			setTimeout(() => node.focus());
-		}
-
-		return {
-			update(enabled: boolean) {
-				if (enabled) {
-					setTimeout(() => node.focus());
-				}
-			}
-		};
+	function focusWhenEnabled(node: HTMLInputElement) {
+		const timeout = setTimeout(() => node.focus());
+		return () => clearTimeout(timeout);
 	}
 
 	const scrollSelectedIntoView = () => {
@@ -255,7 +246,7 @@
 				<input
 					aria-label="Search"
 					bind:this={queryInput}
-					use:focusWhenEnabled={autofocus}
+					{@attach autofocus && focusWhenEnabled}
 					bind:value={query}
 					oninput={onQueryInput}
 					placeholder={teamFilter ? 'Search within team' : placeholder}

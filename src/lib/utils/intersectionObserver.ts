@@ -1,4 +1,5 @@
 import { browser } from '$app/env';
+import type { Attachment } from 'svelte/attachments';
 
 /**
  * Shared intersection observer service to optimize performance when multiple
@@ -57,24 +58,9 @@ class SharedIntersectionObserver {
 // Create a singleton instance to be shared across the application
 const sharedIntersectionObserver = new SharedIntersectionObserver();
 
-/**
- * Svelte action for intersection observation
- * Usage: <div use:intersect={callback}>
- */
-export function intersect(element: HTMLElement, callback: (isVisible: boolean) => void) {
-	// Start observing when action is applied
-	sharedIntersectionObserver.observe(element, callback);
-
-	return {
-		// Cleanup when action is destroyed
-		destroy() {
-			sharedIntersectionObserver.unobserve(element);
-		},
-
-		// Update callback if it changes
-		update(newCallback: (isVisible: boolean) => void) {
-			sharedIntersectionObserver.unobserve(element);
-			sharedIntersectionObserver.observe(element, newCallback);
-		}
+export function intersect(callback: (isVisible: boolean) => void): Attachment<HTMLElement> {
+	return (element) => {
+		sharedIntersectionObserver.observe(element, callback);
+		return () => sharedIntersectionObserver.unobserve(element);
 	};
 }

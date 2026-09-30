@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { themeSwitch } from '$lib/stores/theme.svelte';
-	import { onMount } from 'svelte';
+	import { untrack } from 'svelte';
 
 	import { defaultHighlightStyle, syntaxHighlighting } from '@codemirror/language';
 	import { Compartment, EditorState } from '@codemirror/state';
@@ -10,9 +10,6 @@
 
 	let { code = '', wrap = true, className = '' } = $props();
 
-	let host: HTMLDivElement;
-	let view: EditorView | null = null;
-
 	const themeComp = new Compartment();
 	const wrapComp = new Compartment();
 
@@ -21,48 +18,42 @@
 
 	const wrapExt = (enable: boolean) => (enable ? EditorView.lineWrapping : []);
 
-	onMount(() => {
+	function setupEditor(host: HTMLDivElement) {
 		const promqlExt = new PromQLExtension();
 
-		view = new EditorView({
+		const view = new EditorView({
 			parent: host,
 			state: EditorState.create({
-				doc: code,
+				doc: untrack(() => code),
 				extensions: [
 					EditorView.editable.of(false),
-					themeComp.of(themeExt(themeSwitch.theme === 'dark')),
-					wrapComp.of(wrapExt(wrap)),
+					themeComp.of(themeExt(untrack(() => themeSwitch.theme === 'dark'))),
+					wrapComp.of(wrapExt(untrack(() => wrap))),
 					promqlExt.asExtension()
 				]
 			})
 		});
 
-		return () => {
-			view?.destroy();
-			view = null;
-		};
-	});
+		$effect(() => {
+			if (code !== view.state.doc.toString()) {
+				view.dispatch({ changes: { from: 0, to: view.state.doc.length, insert: code } });
+			}
+		});
 
-	$effect(() => {
-		if (!view) return;
-		if (code !== view.state.doc.toString()) {
-			view.dispatch({ changes: { from: 0, to: view.state.doc.length, insert: code } });
-		}
-	});
+		$effect(() => {
+			view.dispatch({ effects: wrapComp.reconfigure(wrapExt(wrap)) });
+		});
 
-	$effect(() => {
-		if (!view) return;
-		view.dispatch({ effects: wrapComp.reconfigure(wrapExt(wrap)) });
-	});
+		$effect(() => {
+			const isDark = themeSwitch.theme === 'dark';
+			view.dispatch({ effects: themeComp.reconfigure(themeExt(isDark)) });
+		});
 
-	$effect(() => {
-		if (!view) return;
-		const isDark = themeSwitch.theme === 'dark';
-		view.dispatch({ effects: themeComp.reconfigure(themeExt(isDark)) });
-	});
+		return () => view.destroy();
+	}
 </script>
 
-<div class={'cm-host ' + className} bind:this={host}></div>
+<div class={'cm-host ' + className} {@attach setupEditor}></div>
 
 <style>
 	.cm-host :global(.cm-editor) {
