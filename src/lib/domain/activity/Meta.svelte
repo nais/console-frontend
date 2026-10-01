@@ -54,7 +54,7 @@
 		<Time time={createdAt} distance />
 	{/if}
 	{#if teamSlug}
-		<span>&nbsp;in team <a href="/team/{teamSlug}">{teamSlug}</a></span>
+		<span>in team <a href="/team/{teamSlug}">{teamSlug}</a></span>
 	{/if}
 </small>
 
