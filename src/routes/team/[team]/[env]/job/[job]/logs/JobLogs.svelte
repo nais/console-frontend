@@ -1,6 +1,4 @@
 <script lang="ts">
-	import { page } from '$app/state';
-	import { graphql, JobRunState, type RunsWithPodNames$result } from '$houdini';
 	import { apmURL } from '#lib/doc.js';
 	import ExternalLink from '#lib/ui/ExternalLink.svelte';
 	import { exhaustive } from '#lib/utils/houdini.js';
@@ -10,7 +8,17 @@
 		parseLogMessage,
 		type LogLine
 	} from '#lib/utils/logViewer.js';
-	import { BodyShort, Button, Chips, ToggleChip } from '@nais/ds-svelte-community';
+	import { page } from '$app/state';
+	import { graphql, JobRunState, type RunsWithPodNames$result } from '$houdini';
+	import {
+		BodyShort,
+		Button,
+		Chips,
+		ToggleChip,
+		ToggleGroup,
+		ToggleGroupItem
+	} from '@nais/ds-svelte-community';
+	import { SortDownIcon, SortUpIcon } from '@nais/ds-svelte-community/icons';
 	import { onDestroy, onMount } from 'svelte';
 	import { SvelteSet } from 'svelte/reactivity';
 
@@ -102,7 +110,8 @@
 		});
 	}
 
-	let displayedLogs = $derived(logs.toReversed());
+	let logOrder = $state<'newest' | 'oldest'>('newest');
+	let displayedLogs = $derived(logOrder === 'newest' ? logs.toReversed() : logs);
 	let selectedInstances: string[] = $state.raw([]);
 
 	let isStarted: boolean = $state(false);
@@ -301,7 +310,7 @@
 		</div>
 	</div>
 
-	<div>
+	<div class="display-controls">
 		<Chips size="small">
 			{#each viewOptions as option (option)}
 				<ToggleChip
@@ -328,6 +337,14 @@
 				/>
 			{/each}
 		</Chips>
+		<ToggleGroup label="Log order" size="small" bind:value={logOrder}>
+			<ToggleGroupItem value="newest"
+				><SortDownIcon aria-hidden="true" /> Newest first</ToggleGroupItem
+			>
+			<ToggleGroupItem value="oldest"
+				><SortUpIcon aria-hidden="true" /> Oldest first</ToggleGroupItem
+			>
+		</ToggleGroup>
 	</div>
 
 	{#if isPaused && logs.length === 0}
@@ -405,6 +422,13 @@
 
 		gap: var(--ax-space-8);
 		flex-grow: 1;
+	}
+	.display-controls {
+		display: flex;
+		align-items: end;
+		justify-content: space-between;
+		flex-wrap: wrap;
+		gap: var(--ax-space-8);
 	}
 	.log-wrapper {
 		display: flex;
