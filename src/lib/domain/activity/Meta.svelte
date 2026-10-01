@@ -1,9 +1,10 @@
 <script lang="ts">
+	import Time from '#lib/ui/Time.svelte';
 	import type {
 		ActivityLogActivityType$options,
 		ActivityLogEntryResourceType$options
 	} from '$houdini';
-	import Time from '#lib/ui/Time.svelte';
+	import { getOptionalActivityMetaContext } from './activityMetaContext';
 	import type { TimelineModes } from './shared/texts/types';
 
 	interface Props {
@@ -20,6 +21,12 @@
 	}
 
 	let { actor, createdAt, mode = 'full', link }: Props = $props();
+	const activityMetaContext = getOptionalActivityMetaContext();
+	let teamSlug = $derived(
+		activityMetaContext?.showTeam() && activityMetaContext.resourceType() !== 'TEAM'
+			? activityMetaContext.teamSlug()
+			: undefined
+	);
 
 	function buildHref() {
 		if (!link || !link.teamSlug) return null;
@@ -45,6 +52,9 @@
 		</a>
 	{:else}
 		<Time time={createdAt} distance />
+	{/if}
+	{#if teamSlug}
+		<span>&nbsp;in team <a href="/team/{teamSlug}">{teamSlug}</a></span>
 	{/if}
 </small>
 

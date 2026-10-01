@@ -7,14 +7,16 @@
 	import { icons } from '../activity/activity-log-icons';
 	import { activityTooltip } from '../activity/activity-log-tooltip';
 	import { activityTextComponent } from '../activity/activityTextComponents';
+	import { setActivityMetaContext } from '../activity/activityMetaContext';
 	import type { TimelineModes } from '../activity/shared/texts/types';
 
 	interface Props {
 		item: ActivityLogEntryFragment;
 		mode?: TimelineModes;
+		showTeam?: boolean;
 	}
 
-	let { item, mode = 'full' }: Props = $props();
+	let { item, mode = 'full', showTeam = false }: Props = $props();
 
 	let data = $derived(
 		fragment(
@@ -383,6 +385,12 @@
 			`)
 		)
 	);
+
+	setActivityMetaContext({
+		showTeam: () => showTeam,
+		teamSlug: () => $data.teamSlug,
+		resourceType: () => $data.resourceType
+	});
 
 	const Icon = $derived(icons[$data.__typename] || QuestionmarkIcon);
 
