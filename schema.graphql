@@ -73,11 +73,17 @@ enum ActivityLogActivityType {
   """OpenSearch was updated."""
   OPENSEARCH_UPDATED
 
-  """A Postgres instance was deleted"""
+  """A Postgres branch was deleted"""
   POSTGRES_DELETED
 
   """A user was granted access to a Postgres cluster"""
   POSTGRES_GRANT_ACCESS
+
+  """Personal Postgres connection materials were retrieved"""
+  POSTGRES_PERSONAL_ACCESS_CONNECTION
+
+  """A personal Postgres access was created through the API broker"""
+  POSTGRES_PERSONAL_ACCESS_CREATED
 
   """Reconciler configured activity log entry."""
   RECONCILER_CONFIGURED
@@ -828,13 +834,11 @@ type Application implements ActivityLogger & Node & Workload {
   """OpenSearch instance referenced by the workload."""
   openSearch: OpenSearch
 
-  """
-  Postgres instances referenced by the application. This does not currently support pagination, but will return all available Postgres instances.
-  """
-  postgresInstances(
+  """Active PostgresBranches for all Postgres entries in uses.postgres."""
+  postgresBranches(
     """Ordering options for items returned from the connection."""
-    orderBy: PostgresInstanceOrder
-  ): PostgresInstanceConnection!
+    orderBy: PostgresBranchOrder
+  ): PostgresBranchConnection!
 
   """Resources for the application."""
   resources: ApplicationResources!
@@ -2297,6 +2301,41 @@ type CreateOpenSearchPayload {
   openSearch: OpenSearch!
 }
 
+"""Input for creating a time-limited personal Postgres access."""
+input CreatePostgresAccessInput {
+  """Privileges requested for the personal database role."""
+  accessLevel: PostgresAccessLevel!
+
+  """Local name of the branch to access."""
+  branch: String!
+
+  """Environment containing the Postgres branch."""
+  environmentName: String!
+
+  """Name of the Postgres containing the branch."""
+  postgres: String!
+
+  """Reason for personal database access. Must be at least 10 characters."""
+  reason: String!
+
+  """Team that owns the Postgres branch."""
+  teamSlug: Slug!
+
+  """
+  Requested access lifetime (for example '30m' or '1h'). Defaults to '1h' and cannot exceed '1h'.
+  """
+  ttl: String
+}
+
+"""Result of creating a personal Postgres access."""
+type CreatePostgresAccessPayload {
+  """Server-controlled expiry for this personal access."""
+  expiresAt: Time!
+
+  """Name of the newly created PostgresAccess resource."""
+  name: String!
+}
+
 input CreateSecretInput {
   """The environment the secret exists in."""
   environment: String!
@@ -2607,20 +2646,23 @@ type DeleteOpenSearchPayload {
   openSearchDeleted: Boolean
 }
 
-input DeletePostgresInput {
-  """The environment name that the Postgres instance belongs to."""
+input DeletePostgresBranchInput {
+  """Local name of the branch to delete."""
+  branch: String!
+
+  """The environment containing the PostgresBranch."""
   environmentName: String!
 
-  """Name of the Postgres instance."""
-  name: String!
+  """Name of the Postgres containing the branch."""
+  postgres: String!
 
-  """The team that owns the Postgres instance."""
+  """The team that owns the PostgresBranch."""
   teamSlug: Slug!
 }
 
-type DeletePostgresPayload {
-  """Whether or not the Postgres instance was deleted."""
-  postgresDeleted: Boolean
+type DeletePostgresBranchPayload {
+  """Whether the PostgresBranch was deleted."""
+  postgresBranchDeleted: Boolean
 }
 
 input DeleteSecretInput {
@@ -4030,13 +4072,11 @@ type Job implements ActivityLogger & Node & Workload {
   """OpenSearch instance referenced by the workload."""
   openSearch: OpenSearch
 
-  """
-  Postgres instances referenced by the job. This does not currently support pagination, but will return all available Postgres instances.
-  """
-  postgresInstances(
+  """Active PostgresBranches for all Postgres entries in uses.postgres."""
+  postgresBranches(
     """Ordering options for items returned from the connection."""
-    orderBy: PostgresInstanceOrder
-  ): PostgresInstanceConnection!
+    orderBy: PostgresBranchOrder
+  ): PostgresBranchConnection!
 
   """Resources for the job."""
   resources: JobResources!
@@ -5079,6 +5119,13 @@ type Mutation {
   """Create temporary credentials for an OpenSearch instance."""
   createOpenSearchCredentials(input: CreateOpenSearchCredentialsInput!): CreateOpenSearchCredentialsPayload!
 
+  """
+  EXPERIMENTAL: DO NOT USE
+  Create time-limited personal access to a NAIS Postgres branch through the brokered PostgresAccess and relay flow.
+  When the access is ready, retrieve its connection materials through PostgresAccess.connection.
+  """
+  createPostgresAccess(input: CreatePostgresAccessInput!): CreatePostgresAccessPayload!
+
   """Create a new secret."""
   createSecret(input: CreateSecretInput!): CreateSecretPayload!
 
@@ -5147,8 +5194,8 @@ type Mutation {
   """Delete an existing OpenSearch instance."""
   deleteOpenSearch(input: DeleteOpenSearchInput!): DeleteOpenSearchPayload!
 
-  """Delete an existing Postgres instance."""
-  deletePostgres(input: DeletePostgresInput!): DeletePostgresPayload!
+  """Delete a PostgresBranch that is not active on its Postgres."""
+  deletePostgresBranch(input: DeletePostgresBranchInput!): DeletePostgresBranchPayload!
 
   """Delete a secret, and the values it contains."""
   deleteSecret(input: DeleteSecretInput!): DeleteSecretPayload!
@@ -5913,6 +5960,243 @@ interface Persistence implements Node {
   teamEnvironment: TeamEnvironment!
 }
 
+"""A Postgres whose active branch can change."""
+type Postgres implements Node {
+  """Currently active branch, if selected."""
+  activeBranch: PostgresBranch
+
+  """Branch with this local name in this Postgres."""
+  branch(name: String!): PostgresBranch!
+
+  """Branches belonging to this Postgres."""
+  branches(after: Cursor, before: Cursor, first: Int, last: Int, orderBy: PostgresBranchOrder): PostgresBranchConnection!
+
+  """Whether high availability is configured."""
+  highAvailability: Boolean!
+
+  """Opaque identifier for this Postgres."""
+  id: ID!
+
+  """User-defined labels on this Postgres."""
+  labels: [ResourceLabel!]!
+
+  """Configured PostgreSQL major version."""
+  majorVersion: String!
+
+  """Name of this Postgres."""
+  name: String!
+
+  """Requested CPU, memory and disk size, when present on this Postgres."""
+  resources: PostgresResources!
+}
+
+"""A time-limited personal access request for a Postgres branch."""
+type PostgresAccess implements Node {
+  """Requested access level."""
+  accessLevel: PostgresAccessLevel!
+
+  """
+  EXPERIMENTAL: DO NOT USE
+  Get connection materials for this ready access. Only its owner can read them.
+  """
+  connection: PostgresAccessConnectionDetails
+
+  """Server-controlled expiry for this personal access."""
+  expiresAt: Time!
+
+  """Opaque ID for this PostgresAccess resource."""
+  id: ID!
+
+  """Human-readable message for the current state."""
+  message: String
+
+  """Name of the PostgresAccess resource."""
+  name: String!
+
+  """PostgresBranch selected by this access."""
+  postgresBranch: PostgresBranch!
+
+  """
+  Name of the controller-owned relay mapping, once created. Contains no credential.
+  """
+  relayAccess: String
+
+  """High-level state of the access."""
+  state: PostgresAccessState!
+
+  """Team that owns the access."""
+  team: Team!
+
+  """Environment for the access."""
+  teamEnvironment: TeamEnvironment!
+}
+
+"""Sensitive connection materials for a ready personal Postgres access."""
+type PostgresAccessConnectionDetails {
+  """CA certificate required to verify the PostgreSQL server certificate."""
+  caCertificate: String!
+
+  """Short-lived password for the caller's database role."""
+  password: String!
+
+  """Relay-Access header value (namespace/name)."""
+  relayAccess: String!
+
+  """Public HTTP/3 relay endpoint."""
+  relayEndpoint: String!
+
+  """Owner-only bearer token for this access; never log it."""
+  relayToken: String!
+
+  """PostgreSQL server name used for TLS verification."""
+  serverName: String!
+
+  """Database username for the caller's personal role."""
+  username: String!
+}
+
+"""Privilege level granted to a personal Postgres database role."""
+enum PostgresAccessLevel {
+  """Read data without modifying it."""
+  READ
+
+  """Read and modify existing data."""
+  READWRITE
+
+  """Read, modify, and create database objects where supported."""
+  READWRITECREATE
+}
+
+"""High-level reconciliation state of a personal Postgres access."""
+enum PostgresAccessState {
+  """The server-controlled expiry time has passed."""
+  EXPIRED
+
+  """The controller cannot provision the requested access."""
+  FAILED
+
+  """The controller has not finished provisioning the access."""
+  PENDING
+
+  """The access and its connection materials are ready."""
+  READY
+}
+
+"""A named PostgresBranch belonging to a Postgres."""
+type PostgresBranch implements Node & Persistence {
+  id: ID!
+
+  """User-defined labels on this branch."""
+  labels: [ResourceLabel!]!
+
+  """Local name of this branch within its Postgres."""
+  name: String!
+
+  """Postgres owning this PostgresBranch."""
+  postgres: Postgres!
+
+  """Current observed state of the branch."""
+  state: PostgresBranchState!
+  team: Team!
+  teamEnvironment: TeamEnvironment!
+
+  """Workloads using this branch while it is active."""
+  workloads(
+    """Get items after this cursor."""
+    after: Cursor
+
+    """Get items before this cursor."""
+    before: Cursor
+
+    """
+    Get the first n items in the connection. This can be used in combination with the after parameter.
+    """
+    first: Int
+
+    """
+    Get the last n items in the connection. This can be used in combination with the before parameter.
+    """
+    last: Int
+  ): WorkloadConnection!
+}
+
+type PostgresBranchConnection {
+  edges: [PostgresBranchEdge!]!
+
+  """
+  Facets for Postgres branches. Provides distribution counts to help narrow down results.
+  Facet counts are computed over the full result set (ignoring pagination) but respect the current filter.
+  """
+  facets: PostgresBranchFacets
+  nodes: [PostgresBranch!]!
+  pageInfo: PageInfo!
+}
+
+type PostgresBranchEdge {
+  cursor: Cursor!
+  node: PostgresBranch!
+}
+
+"""
+Facets for Postgres branches, providing distribution counts across different dimensions.
+"""
+type PostgresBranchFacets {
+  """Distribution of branches by environment."""
+  environments: [StringFacetItem!]!
+
+  """Distribution of branches by user-defined labels."""
+  labels: [LabelFacetItem!]!
+
+  """Distribution of branches by state."""
+  states: [PostgresBranchStateFacetItem!]!
+}
+
+"""Input for filtering Postgres branches."""
+input PostgresBranchFilter {
+  """Filter by environments."""
+  environments: [String!]
+
+  """Filter by user-defined labels. All listed labels must match."""
+  labels: [LabelFilter!]
+
+  """Filter by the name of the branch."""
+  name: String
+
+  """Filter by branch state."""
+  states: [PostgresBranchState!]
+}
+
+input PostgresBranchOrder {
+  direction: OrderDirection!
+  field: PostgresBranchOrderField!
+}
+
+enum PostgresBranchOrderField {
+  ENVIRONMENT
+  NAME
+}
+
+"""Reconciliation and observed health of a PostgresBranch."""
+enum PostgresBranchState {
+  """The branch is healthy and ready."""
+  AVAILABLE
+
+  """The branch has reported a failure."""
+  DEGRADED
+
+  """The branch is provisioning or its state has not been observed yet."""
+  PROGRESSING
+}
+
+"""A single facet item for Postgres branch states."""
+type PostgresBranchStateFacetItem {
+  """Number of matching branches."""
+  count: Int!
+
+  """The Postgres branch state."""
+  state: PostgresBranchState!
+}
+
 type PostgresDeletedActivityLogEntry implements ActivityLogEntry & Node {
   """
   The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
@@ -5983,159 +6267,100 @@ type PostgresGrantAccessActivityLogEntryData {
   until: Time!
 }
 
-type PostgresInstance implements Node & Persistence {
-  """Audit logging configuration for the Postgres cluster."""
-  audit: PostgresInstanceAudit!
+"""
+An audit-log entry for retrieval of personal Postgres connection materials.
+"""
+type PostgresPersonalAccessConnectionActivityLogEntry implements ActivityLogEntry & Node {
+  """Identity that retrieved the connection materials."""
+  actor: String!
 
-  """
-  Indicates whether the Postgres cluster is configured for high availability.
-  """
-  highAvailability: Boolean!
+  """Creation time of the entry."""
+  createdAt: Time!
+
+  """Environment name that the entry belongs to."""
+  environmentName: String
+
+  """GitHub Actions OIDC claims when authenticated by a GitHub repository."""
+  gitHubActorClaims: GitHubActorClaims
+
+  """ID of the entry."""
   id: ID!
 
-  """User-defined labels attached to this instance."""
-  labels: [ResourceLabel!]!
+  """Message that summarizes the entry."""
+  message: String!
 
-  """Maintenance window for the Postgres cluster, if configured."""
-  maintenanceWindow: PostgresInstanceMaintenanceWindow
+  """Name of the affected PostgresAccess resource."""
+  resourceName: String!
 
-  """Major version of PostgreSQL."""
-  majorVersion: String!
-  name: String!
+  """Type of the affected resource."""
+  resourceType: ActivityLogEntryResourceType!
 
-  """Resource allocation for the Postgres cluster."""
-  resources: PostgresInstanceResources!
-
-  """Current state of the Postgres cluster."""
-  state: PostgresInstanceState!
-  team: Team!
-  teamEnvironment: TeamEnvironment!
-
-  """Workloads that reference the Postgres instance."""
-  workloads(
-    """Get items after this cursor."""
-    after: Cursor
-
-    """Get items before this cursor."""
-    before: Cursor
-
-    """
-    Get the first n items in the connection. This can be used in combination with the after parameter.
-    """
-    first: Int
-
-    """
-    Get the last n items in the connection. This can be used in combination with the before parameter.
-    """
-    last: Int
-  ): WorkloadConnection!
-}
-
-type PostgresInstanceAudit {
-  """Indicates whether audit logging is enabled for the Postgres cluster."""
-  enabled: Boolean!
-
-  """
-  List of statement classes that are being logged, such as `ddl`, `dml`, and `read`.
-  """
-  statementClasses: [String!]
-
-  """URL for accessing the audit logs."""
-  url: String
-}
-
-type PostgresInstanceConnection {
-  edges: [PostgresInstanceEdge!]!
-
-  """
-  Facets for Postgres instances. Provides distribution counts to help narrow down results.
-  Facet counts are computed over the full result set (ignoring pagination) but respect the current filter.
-  """
-  facets: PostgresInstanceFacets
-  nodes: [PostgresInstance!]!
-  pageInfo: PageInfo!
-}
-
-type PostgresInstanceEdge {
-  cursor: Cursor!
-  node: PostgresInstance!
+  """Team slug that the entry belongs to."""
+  teamSlug: Slug!
 }
 
 """
-Facets for Postgres instances, providing distribution counts across different dimensions.
+An audit-log entry for personal Postgres access created through the API broker.
 """
-type PostgresInstanceFacets {
-  """Distribution of instances by environment."""
-  environments: [StringFacetItem!]!
+type PostgresPersonalAccessCreatedActivityLogEntry implements ActivityLogEntry & Node {
+  """The identity of the actor who created the personal access."""
+  actor: String!
 
-  """Distribution of instances by high availability."""
-  highAvailability: [BooleanFacetItem!]!
+  """Creation time of the entry."""
+  createdAt: Time!
 
-  """Distribution of instances by user-defined labels."""
-  labels: [LabelFacetItem!]!
+  """Personal-access specific audit data."""
+  data: PostgresPersonalAccessCreatedActivityLogEntryData!
 
-  """Distribution of instances by major version."""
-  majorVersions: [StringFacetItem!]!
+  """The environment name that the entry belongs to."""
+  environmentName: String
 
-  """Distribution of instances by state."""
-  states: [PostgresInstanceStateFacetItem!]!
+  """GitHub Actions OIDC claims when authenticated by a GitHub repository."""
+  gitHubActorClaims: GitHubActorClaims
+
+  """ID of the entry."""
+  id: ID!
+
+  """Message that summarizes the entry."""
+  message: String!
+
+  """Name of the affected Postgres branch."""
+  resourceName: String!
+
+  """Type of the affected resource."""
+  resourceType: ActivityLogEntryResourceType!
+
+  """The team slug that the entry belongs to."""
+  teamSlug: Slug!
 }
 
-"""Input for filtering Postgres instances."""
-input PostgresInstanceFilter {
-  """Filter by environments."""
-  environments: [String!]
+"""Personal-access-specific audit data."""
+type PostgresPersonalAccessCreatedActivityLogEntryData {
+  """
+  Requested privilege level; null for events recorded before this field was added.
+  """
+  accessLevel: PostgresAccessLevel
 
-  """Filter by high availability."""
-  highAvailability: Boolean
+  """Server-controlled expiry of the access."""
+  expiresAt: Time!
 
-  """Filter by user-defined labels. All listed labels must match."""
-  labels: [LabelFilter!]
+  """Caller-provided audit reason."""
+  reason: String!
 
-  """Filter by major versions."""
-  majorVersions: [String!]
-
-  """Filter by the name of the instance."""
-  name: String
-
-  """Filter by instance state."""
-  states: [PostgresInstanceState!]
+  """Identity that owns the new personal access."""
+  username: String!
 }
 
-type PostgresInstanceMaintenanceWindow {
-  day: Int!
-  hour: Int!
-}
+"""Resource requests configured on Postgres. Omitted requests are null."""
+type PostgresResources {
+  """Requested CPU."""
+  cpu: String
 
-input PostgresInstanceOrder {
-  direction: OrderDirection!
-  field: PostgresInstanceOrderField!
-}
+  """Requested disk size."""
+  diskSize: String
 
-enum PostgresInstanceOrderField {
-  ENVIRONMENT
-  NAME
-}
-
-type PostgresInstanceResources {
-  cpu: String!
-  diskSize: String!
-  memory: String!
-}
-
-enum PostgresInstanceState {
-  AVAILABLE
-  DEGRADED
-  PROGRESSING
-}
-
-"""A single facet item for Postgres instance states."""
-type PostgresInstanceStateFacetItem {
-  """Number of matching instances."""
-  count: Int!
-
-  """The Postgres instance state."""
-  state: PostgresInstanceState!
+  """Requested memory."""
+  memory: String
 }
 
 type Price {
@@ -7228,7 +7453,7 @@ input SearchFilter {
 }
 
 """Types that can be searched for."""
-union SearchNode = Application | BigQueryDataset | Bucket | Job | KafkaTopic | OpenSearch | PostgresInstance | SqlInstance | Team | Valkey
+union SearchNode = Application | BigQueryDataset | Bucket | Job | KafkaTopic | OpenSearch | PostgresBranch | SqlInstance | Team | Valkey
 
 """Search node connection."""
 type SearchNodeConnection {
@@ -7260,7 +7485,7 @@ enum SearchType {
   JOB
   KAFKA_TOPIC
   OPENSEARCH
-  POSTGRES
+  POSTGRES_BRANCH
   SQL_INSTANCE
 
   """Search for teams."""
@@ -9024,8 +9249,8 @@ type Team implements ActivityLogger & Node {
     orderBy: OpenSearchOrder
   ): OpenSearchConnection!
 
-  """Postgres instances owned by the team."""
-  postgresInstances(
+  """Postgres branches owned by the team."""
+  postgresBranches(
     """Get items after this cursor."""
     after: Cursor
 
@@ -9033,7 +9258,7 @@ type Team implements ActivityLogger & Node {
     before: Cursor
 
     """Filtering options for items returned from the connection."""
-    filter: PostgresInstanceFilter
+    filter: PostgresBranchFilter
 
     """
     Get the first n items in the connection. This can be used in combination with the after parameter.
@@ -9046,8 +9271,8 @@ type Team implements ActivityLogger & Node {
     last: Int
 
     """Ordering options for items returned from the connection."""
-    orderBy: PostgresInstanceOrder
-  ): PostgresInstanceConnection!
+    orderBy: PostgresBranchOrder
+  ): PostgresBranchConnection!
 
   """Purpose of the team."""
   purpose: String!
@@ -9544,8 +9769,20 @@ type TeamEnvironment implements Node {
   """OpenSearch instance in the team environment."""
   openSearch(name: String!): OpenSearch!
 
-  """Postgres instance in the team environment."""
-  postgresInstance(name: String!): PostgresInstance!
+  """Postgres in the team environment."""
+  postgres(
+    """Name of the Postgres in this team environment."""
+    name: String!
+  ): Postgres!
+
+  """
+  EXPERIMENTAL: DO NOT USE
+  Get a PostgresAccess and its state. Available to authorized team members.
+  """
+  postgresAccess(
+    """Name of the PostgresAccess in this team environment."""
+    name: String!
+  ): PostgresAccess!
 
   """Get a secret by name."""
   secret(name: String!): Secret!
@@ -9736,8 +9973,8 @@ type TeamInventoryCountOpenSearches {
   total: Int!
 }
 
-type TeamInventoryCountPostgresInstances {
-  """Total number of Postgres instances."""
+type TeamInventoryCountPostgresBranches {
+  """Total number of Postgres branches."""
   total: Int!
 }
 
@@ -9768,7 +10005,7 @@ type TeamInventoryCounts {
   jobs: TeamInventoryCountJobs!
   kafkaTopics: TeamInventoryCountKafkaTopics!
   openSearches: TeamInventoryCountOpenSearches!
-  postgresInstances: TeamInventoryCountPostgresInstances!
+  postgresBranches: TeamInventoryCountPostgresBranches!
 
   """Secret inventory count for a team."""
   secrets: TeamInventoryCountSecrets!
@@ -12092,13 +12329,11 @@ interface Workload implements ActivityLogger & Node {
   """OpenSearch instance referenced by the workload."""
   openSearch: OpenSearch
 
-  """
-  Postgres instances referenced by the workload. This does not currently support pagination, but will return all available Postgres instances.
-  """
-  postgresInstances(
+  """Active PostgresBranches for all Postgres entries in uses.postgres."""
+  postgresBranches(
     """Ordering options for items returned from the connection."""
-    orderBy: PostgresInstanceOrder
-  ): PostgresInstanceConnection!
+    orderBy: PostgresBranchOrder
+  ): PostgresBranchConnection!
 
   """The resources allocated to the workload."""
   resources: WorkloadResources!

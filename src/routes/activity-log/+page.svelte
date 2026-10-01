@@ -164,7 +164,7 @@
 							{/if}
 						{/snippet}
 						{#each ae.edges || [] as { node: item }, i ((item.__typename, i))}
-							<ActivityLogItem {item} mode="full" />
+							<ActivityLogItem {item} mode="full" showTeam />
 						{:else}
 							<ListItem>
 								<span class="empty-state">No activity log entries found</span>
