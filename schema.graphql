@@ -3391,20 +3391,6 @@ type GitHubActorClaims {
   workflowSha: String
 }
 
-input GrantPostgresAccessInput {
-  clusterName: String!
-
-  """Duration of the access grant (maximum 4 hours)."""
-  duration: String!
-  environmentName: String!
-  grantee: String!
-  teamSlug: Slug!
-}
-
-type GrantPostgresAccessPayload {
-  error: String
-}
-
 """
 ID-porten authentication.
 
@@ -5233,9 +5219,6 @@ type Mutation {
   A reconciler must be fully configured before it can be enabled.
   """
   enableReconciler(input: EnableReconcilerInput!): Reconciler!
-
-  """Grant temporary access to a Postgres cluster."""
-  grantPostgresAccess(input: GrantPostgresAccessInput!): GrantPostgresAccessPayload!
 
   """Remove a value from a config."""
   removeConfigValue(input: RemoveConfigValueInput!): RemoveConfigValuePayload!
