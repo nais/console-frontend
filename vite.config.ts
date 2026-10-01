@@ -45,6 +45,9 @@ export default defineConfig((mode) => {
 				}
 			})
 		],
+		optimizeDeps: {
+			exclude: ['svelte-highlight']
+		},
 		server: {
 			host: '0.0.0.0',
 			proxy: {
