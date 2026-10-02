@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { browser } from '$app/env';
 	import { afterNavigate, beforeNavigate } from '$app/navigation';
-	import { page } from '$app/state';
+	import { navigating, page, updated } from '$app/state';
 	import { graphql } from '$houdini';
 	import { isAuthenticated, isUnauthenticated } from '#lib/authentication.js';
 	import { localizeLayerChart } from '#lib/chart/util.js';
@@ -9,12 +9,13 @@
 	import { themeSwitch } from '#lib/stores/theme.svelte.js';
 	import ProgressBar from '#lib/ui/ProgressBar.svelte';
 	import { Alert, BodyShort, Button, Heading, Page, Theme } from '@nais/ds-svelte-community';
+	import { ArrowCirclepathIcon } from '@nais/ds-svelte-community/icons';
 	import { onMount } from 'svelte';
 	import '../styles/app.css';
 	import '../styles/colors.css';
 	import type { LayoutProps } from './$types';
 	import Login from './Login.svelte';
-	import Naisdevice from './Naisdevice.svelte';
+	import Naisdevice, { isNaisdevice } from './Naisdevice.svelte';
 	import PageHeader from './PageHeader.svelte';
 
 	let { data, children }: LayoutProps = $props();
@@ -59,6 +60,7 @@
 	});
 
 	let loading = $state(false);
+	let updateDismissed = $state(false);
 
 	beforeNavigate((navigation) => {
 		if (navigation.from?.url.hostname === navigation.to?.url.hostname) {
@@ -103,6 +105,34 @@
 					<PageHeader {user} />
 				{/if}
 
+				<div role="status" aria-live="polite">
+					{#if updated.current && !updateDismissed && !isNaisdevice()}
+						<div class="update-status">
+							<Alert
+								variant="info"
+								size="small"
+								contentMaxWidth={false}
+								closeButton
+								closeButtonIconText="Dismiss update notification"
+								onclose={() => (updateDismissed = true)}
+							>
+								<div class="update-notice">
+									<span>New version available</span>
+									<Button
+										variant="secondary"
+										size="small"
+										disabled={!!navigating.to}
+										onclick={() => window.location.reload()}
+									>
+										{#snippet icon()}<ArrowCirclepathIcon aria-hidden="true" />{/snippet}
+										Update
+									</Button>
+								</div>
+							</Alert>
+						</div>
+					{/if}
+				</div>
+
 				<svelte:boundary onerror={(e) => console.error('Page render error:', e)}>
 					{@render children?.()}
 
@@ -139,6 +169,21 @@
 
 	.full-wrapper {
 		padding-bottom: 1rem;
+	}
+
+	.update-status {
+		position: fixed;
+		bottom: var(--ax-space-8);
+		right: var(--ax-space-8);
+		max-width: calc(100% - var(--ax-space-16));
+		z-index: 1000;
+	}
+
+	.update-notice {
+		display: flex;
+		align-items: center;
+		flex-wrap: wrap;
+		gap: var(--ax-space-12);
 	}
 
 	.boundary-error {
