@@ -156,7 +156,62 @@
 							}
 						}
 					}
+					... on PostgresCreatedActivityLogEntry {
+						id
+						createdAt
+						actor
+						environmentName
+						message
+						resourceName
+						resourceType
+						postgresTeamSlug: teamSlug
+						__typename
+					}
+					... on PostgresUpdatedActivityLogEntry {
+						id
+						createdAt
+						actor
+						environmentName
+						message
+						resourceName
+						resourceType
+						postgresTeamSlug: teamSlug
+						postgresUpdated: data {
+							updatedFields {
+								field
+								newValue
+								oldValue
+							}
+						}
+					}
 					... on PostgresDeletedActivityLogEntry {
+						__typename
+					}
+					... on PostgresPersonalAccessCreatedActivityLogEntry {
+						id
+						createdAt
+						actor
+						environmentName
+						message
+						resourceName
+						resourceType
+						postgresTeamSlug: teamSlug
+						postgresPersonalAccessCreated: data {
+							accessLevel
+							expiresAt
+							reason
+							username
+						}
+					}
+					... on PostgresPersonalAccessConnectionActivityLogEntry {
+						id
+						createdAt
+						actor
+						environmentName
+						message
+						resourceName
+						resourceType
+						postgresTeamSlug: teamSlug
 						__typename
 					}
 					... on PostgresGrantAccessActivityLogEntry {
@@ -168,6 +223,33 @@
 					}
 					... on RepositoryAddedActivityLogEntry {
 						__typename
+					}
+					... on TunnelCreatedActivityLogEntry {
+						id
+						createdAt
+						actor
+						environmentName
+						message
+						resourceName
+						resourceType
+						teamSlug
+						tunnelCreated: data {
+							targetHost
+							tunnelName
+						}
+					}
+					... on TunnelDeletedActivityLogEntry {
+						id
+						createdAt
+						actor
+						environmentName
+						message
+						resourceName
+						resourceType
+						teamSlug
+						tunnelDeleted: data {
+							tunnelName
+						}
 					}
 					... on RepositoryRemovedActivityLogEntry {
 						__typename
@@ -375,12 +457,6 @@
 					... on ReconcilerEnabledActivityLogEntry {
 						__typename
 					}
-					... on TunnelCreatedActivityLogEntry {
-						__typename
-					}
-					... on TunnelDeletedActivityLogEntry {
-						__typename
-					}
 				}
 			`)
 		)
@@ -388,7 +464,7 @@
 
 	setActivityMetaContext({
 		showTeam: () => showTeam,
-		teamSlug: () => $data.teamSlug,
+		teamSlug: () => textData.teamSlug,
 		resourceType: () => $data.resourceType
 	});
 
@@ -398,10 +474,12 @@
 
 	const textData = $derived.by(() => {
 		const payload = $data[$data.__typename as keyof typeof $data];
-		if (payload && typeof payload === 'object') {
-			return { ...$data, ...(payload as object) };
+		const resolved =
+			payload && typeof payload === 'object' ? { ...$data, ...(payload as object) } : $data;
+		if ('postgresTeamSlug' in resolved) {
+			return { ...resolved, teamSlug: resolved.postgresTeamSlug };
 		}
-		return $data;
+		return resolved;
 	}) as unknown as typeof $data;
 </script>
 

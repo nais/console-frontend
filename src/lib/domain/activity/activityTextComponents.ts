@@ -23,8 +23,12 @@ import OpenSearchCreatedActivityLogEntryText from './shared/texts/OpenSearchCrea
 import OpenSearchCredentialsCreatedActivityLogEntryText from './shared/texts/OpenSearchCredentialsCreatedActivityLogEntryText.svelte';
 import OpenSearchDeletedActivityLogEntryText from './shared/texts/OpenSearchDeletedActivityLogEntryText.svelte';
 import OpenSearchUpdatedActivityLogEntryText from './shared/texts/OpenSearchUpdatedActivityLogEntryText.svelte';
+import PostgresCreatedActivityLogEntryText from './shared/texts/PostgresCreatedActivityLogEntryText.svelte';
 import PostgresDeletedActivityLogEntryText from './shared/texts/PostgresDeletedActivityLogEntryText.svelte';
 import PostgresGrantAccessActivityLogEntryText from './shared/texts/PostgresGrantAccessActivityLogEntryText.svelte';
+import PostgresPersonalAccessConnectionActivityLogEntryText from './shared/texts/PostgresPersonalAccessConnectionActivityLogEntryText.svelte';
+import PostgresPersonalAccessCreatedActivityLogEntryText from './shared/texts/PostgresPersonalAccessCreatedActivityLogEntryText.svelte';
+import PostgresUpdatedActivityLogEntryText from './shared/texts/PostgresUpdatedActivityLogEntryText.svelte';
 import RepositoryAddedActivityLogEntryText from './shared/texts/RepositoryAddedActivityLogEntryText.svelte';
 import RepositoryRemovedActivityLogEntryText from './shared/texts/RepositoryRemovedActivityLogEntryText.svelte';
 import RoleAssignedToServiceAccountActivityLogEntryText from './shared/texts/RoleAssignedToServiceAccountActivityLogEntryText.svelte';
@@ -54,6 +58,8 @@ import TeamMemberAddedActivityLogEntryText from './shared/texts/TeamMemberAddedA
 import TeamMemberRemovedActivityLogEntryText from './shared/texts/TeamMemberRemovedActivityLogEntryText.svelte';
 import TeamMemberSetRoleActivityLogEntryText from './shared/texts/TeamMemberSetRoleActivityLogEntryText.svelte';
 import TeamUpdatedActivityLogEntryText from './shared/texts/TeamUpdatedActivityLogEntryText.svelte';
+import TunnelCreatedActivityLogEntryText from './shared/texts/TunnelCreatedActivityLogEntryText.svelte';
+import TunnelDeletedActivityLogEntryText from './shared/texts/TunnelDeletedActivityLogEntryText.svelte';
 import UnleashInstanceCreatedActivityLogEntryText from './shared/texts/UnleashInstanceCreatedActivityLogEntryText.svelte';
 import UnleashInstanceDeletedActivityLogEntryText from './shared/texts/UnleashInstanceDeletedActivityLogEntryText.svelte';
 import UnleashInstanceUpdatedActivityLogEntryText from './shared/texts/UnleashInstanceUpdatedActivityLogEntryText.svelte';
@@ -119,8 +125,20 @@ export function activityTextComponent(typename: string | null): Component<textCo
 			return OpenSearchUpdatedActivityLogEntryText as Component<textComponentProps>;
 		case 'PostgresDeletedActivityLogEntry':
 			return PostgresDeletedActivityLogEntryText as Component<textComponentProps>;
+		case 'PostgresCreatedActivityLogEntry':
+			return PostgresCreatedActivityLogEntryText as Component<textComponentProps>;
+		case 'PostgresUpdatedActivityLogEntry':
+			return PostgresUpdatedActivityLogEntryText as Component<textComponentProps>;
 		case 'PostgresGrantAccessActivityLogEntry':
 			return PostgresGrantAccessActivityLogEntryText as Component<textComponentProps>;
+		case 'PostgresPersonalAccessCreatedActivityLogEntry':
+			return PostgresPersonalAccessCreatedActivityLogEntryText as Component<textComponentProps>;
+		case 'PostgresPersonalAccessConnectionActivityLogEntry':
+			return PostgresPersonalAccessConnectionActivityLogEntryText as Component<textComponentProps>;
+		case 'TunnelCreatedActivityLogEntry':
+			return TunnelCreatedActivityLogEntryText as Component<textComponentProps>;
+		case 'TunnelDeletedActivityLogEntry':
+			return TunnelDeletedActivityLogEntryText as Component<textComponentProps>;
 		case 'RepositoryAddedActivityLogEntry':
 			return RepositoryAddedActivityLogEntryText as Component<textComponentProps>;
 		case 'RepositoryRemovedActivityLogEntry':
