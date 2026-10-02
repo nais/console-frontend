@@ -2,6 +2,7 @@ import type { Component } from 'svelte';
 
 // Resource icons (same "shapes" you use elsewhere)
 import {
+	ArrowRightLeftIcon,
 	BranchingIcon,
 	BriefcaseClockIcon,
 	CogIcon,
@@ -105,8 +106,14 @@ export const icons: { [typename: string]: Component } = {
 	/* Security / Audit */
 	VulnerabilityUpdatedActivityLogEntry: VirusIcon,
 	ClusterAuditActivityLogEntry: TerminalIcon,
+	PostgresCreatedActivityLogEntry: DatabaseIcon,
+	PostgresUpdatedActivityLogEntry: DatabaseIcon,
 	PostgresDeletedActivityLogEntry: DatabaseIcon,
 	PostgresGrantAccessActivityLogEntry: PadlockLockedIcon,
+	PostgresPersonalAccessCreatedActivityLogEntry: PadlockLockedIcon,
+	PostgresPersonalAccessConnectionActivityLogEntry: DatabaseIcon,
+	TunnelCreatedActivityLogEntry: ArrowRightLeftIcon,
+	TunnelDeletedActivityLogEntry: ArrowRightLeftIcon,
 
 	/* Fallback / infra ops */
 	TeamDeployKeyUpdatedActivityLogEntry: CogIcon,
