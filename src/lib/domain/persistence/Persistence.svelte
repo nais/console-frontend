@@ -1,7 +1,7 @@
 <script lang="ts">
-	import { fragment, graphql, type Persistence } from '$houdini';
 	import IconLabel from '#lib/ui/IconLabel.svelte';
 	import SurfaceCard from '#lib/ui/SurfaceCard.svelte';
+	import { fragment, graphql, type Persistence } from '$houdini';
 
 	interface Props {
 		workload: Persistence;
@@ -105,6 +105,14 @@
 			tooltip
 		});
 
+	type KafkaNode = {
+		id: string;
+		label: string;
+		href: string;
+		icon: string;
+		tooltip: string;
+		description: string;
+	};
 	const persistence = $derived({
 		buckets: $data.buckets.edges.map(toIconLabel('bucket', 'Cloud Storage Bucket')),
 		bigQuery: $data.bigQueryDatasets.edges.map(toIconLabel('bigquery', 'BigQuery Dataset')),
@@ -112,14 +120,21 @@
 		kafka: $data.kafkaTopicAcls.edges
 			.filter((acl) => acl.node.teamName !== '*')
 			.map((e) => e.node)
-			.map((acl) => ({
+			.map((acl): KafkaNode => ({
 				id: `${acl.topic.team.slug}/${acl.topic.teamEnvironment.environment.name}/${acl.topic.name}/${acl.workloadName}/${acl.access}`,
 				label: acl.topic.name,
 				href: `/team/${acl.topic.team.slug}/${acl.topic.teamEnvironment.environment.name}/kafka/${acl.topic.name}`,
 				icon: 'kafka',
 				tooltip: 'Kafka',
 				description: acl.access
-			})),
+			}))
+			.reduce((acc, acl) => {
+				const existing = acc.find((a) => a.id === acl.id);
+				if (!existing) {
+					acc.push(acl);
+				}
+				return acc;
+			}, [] as KafkaNode[]),
 		openSearch: ($data.openSearch ? [$data.openSearch] : []).map((os) => ({
 			id: os.id,
 			label: os.name,
