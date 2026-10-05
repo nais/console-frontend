@@ -3,7 +3,9 @@
 	import BulkSuppressCVE, {
 		type BulkSuppressWorkload
 	} from '#lib/domain/vulnerability/BulkSuppressCVE.svelte';
+	import PriorityBadge from '#lib/domain/vulnerability/priority/PriorityBadge.svelte';
 	import PrioritySignals from '#lib/domain/vulnerability/priority/PrioritySignals.svelte';
+	import { priorityDetails } from '#lib/domain/vulnerability/priority/priority.js';
 	import WorkloadLink from '#lib/domain/workload/WorkloadLink.svelte';
 	import ExternalLink from '#lib/ui/ExternalLink.svelte';
 	import GraphErrors from '#lib/ui/GraphErrors.svelte';
@@ -198,6 +200,7 @@
 		</Alert>
 	{:else if $TeamCVEPage.data}
 		{const cve = $derived($TeamCVEPage.data.cve)}
+		{const priority = $derived(priorityDetails(cve.riskAssessment.priority))}
 		<div class="wrapper">
 			{#if cve.title}
 				<div class="vulnerability-type">
@@ -207,8 +210,17 @@
 			{/if}
 
 			<section class="risk-assessment-card" aria-labelledby="cve-details">
-				<Heading as="h2" size="small" id="cve-details">Severity and threat signals</Heading>
+				<Heading as="h2" size="small" id="cve-details"
+					>Priority, severity and threat signals</Heading
+				>
 				<div class="risk-assessment-content">
+					<div class="risk-assessment-group">
+						<Detail as="p">Operational priority</Detail>
+						<div class="risk-assessment-values">
+							<PriorityBadge priority={cve.riskAssessment.priority} />
+						</div>
+						<BodyShort size="small">{priority.guidance}</BodyShort>
+					</div>
 					<div class="risk-assessment-group">
 						<Detail as="p">Severity and CVSS</Detail>
 						<div class="risk-assessment-values">
