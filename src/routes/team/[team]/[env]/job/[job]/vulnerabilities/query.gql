@@ -60,7 +60,16 @@ query JobImageDetails($team: Slug!, $env: String!, $job: String!) @cache(policy:
 							lastUpdated
 							staleImageTag
 						}
-						workloadReferences {
+						workloadReferences(first: 20) {
+							pageInfo {
+								hasNextPage
+								hasPreviousPage
+								startCursor
+								endCursor
+								totalCount
+								pageStart
+								pageEnd
+							}
 							edges {
 								node {
 									workload {

@@ -77,7 +77,16 @@ query ApplicationImageDetails($team: Slug!, $env: String!, $app: String!)
 							lastUpdated
 							staleImageTag
 						}
-						workloadReferences {
+						workloadReferences(first: 20) {
+							pageInfo {
+								hasNextPage
+								hasPreviousPage
+								startCursor
+								endCursor
+								totalCount
+								pageStart
+								pageEnd
+							}
 							edges {
 								node {
 									workload {
