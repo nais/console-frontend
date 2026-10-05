@@ -1,11 +1,8 @@
 <script lang="ts">
-	import { page } from '$app/state';
+	import VulnerabilitySummaryVariantC from '#lib/domain/vulnerability/prototype/VulnerabilitySummaryVariantC.svelte';
 	import TeamCveSearch from '#lib/domain/vulnerability/TeamCveSearch.svelte';
 	import TeamMeanTimeToFixHistoryGraph from '#lib/domain/vulnerability/TeamMeanTimeToFixHistoryGraph.svelte';
 	import TeamVulnerabilityHistoryGraph from '#lib/domain/vulnerability/TeamVulnerabilityHistoryGraph.svelte';
-	import PrototypeSwitcher from '#lib/domain/vulnerability/prototype/PrototypeSwitcher.svelte';
-	import VulnerabilitySummaryVariantC from '#lib/domain/vulnerability/prototype/VulnerabilitySummaryVariantC.svelte';
-	import VulnerabilitySummaryMetrics from '#lib/domain/vulnerability/VulnerabilitySummaryMetrics.svelte';
 	import WorkloadsWithVulnerabilities from '#lib/domain/vulnerability/WorkloadsWithVulnerabilities.svelte';
 	import GraphErrors from '#lib/ui/GraphErrors.svelte';
 	import { BodyLong, Heading } from '@nais/ds-svelte-community';
@@ -13,13 +10,6 @@
 
 	let { data }: PageProps = $props();
 	let { TeamVulnerabilities, teamSlug } = $derived(data);
-
-	const variants = ['A', 'C'] as const;
-	let variant = $derived(
-		(variants as readonly string[]).includes(page.url.searchParams.get('variant') ?? '')
-			? (page.url.searchParams.get('variant') as (typeof variants)[number])
-			: 'A'
-	);
 </script>
 
 <GraphErrors errors={$TeamVulnerabilities.errors} />
@@ -33,21 +23,12 @@
 			{const exploitedWorkloadCount = $derived(
 				$TeamVulnerabilities.data.team.exploitedWorkloads.pageInfo.totalCount
 			)}
-			{#if variant === 'C'}
-				<VulnerabilitySummaryVariantC
-					vulnerabilitySummary={$TeamVulnerabilities.data.team.vulnerabilitySummary}
-					knownExploitedHref="#priority-groups"
-					{urgentCount}
-					knownExploitedWorkloadCount={exploitedWorkloadCount}
-				/>
-			{:else}
-				<VulnerabilitySummaryMetrics
-					vulnerabilitySummary={$TeamVulnerabilities.data.team.vulnerabilitySummary}
-					knownExploitedHref="#priority-groups"
-					{urgentCount}
-					knownExploitedWorkloadCount={exploitedWorkloadCount}
-				/>
-			{/if}
+			<VulnerabilitySummaryVariantC
+				vulnerabilitySummary={$TeamVulnerabilities.data.team.vulnerabilitySummary}
+				knownExploitedHref="#priority-groups"
+				{urgentCount}
+				knownExploitedWorkloadCount={exploitedWorkloadCount}
+			/>
 		{/if}
 
 		<section aria-labelledby="workload-vulnerabilities">
@@ -86,10 +67,6 @@
 			<TeamMeanTimeToFixHistoryGraph {teamSlug} />
 		</section>
 	</div>
-{/if}
-
-{#if import.meta.env.DEV}
-	<PrototypeSwitcher {variants} current={variant} />
 {/if}
 
 <style>

@@ -9,6 +9,31 @@ directive @defer(
   label: String
 ) on FRAGMENT_SPREAD | INLINE_FRAGMENT
 
+"""
+Request a branch for normal workloads; pgrator activates it once its cluster is ready.
+"""
+input ActivatePostgresBranchInput {
+  """Local name of the branch to activate."""
+  branch: String!
+
+  """Environment containing the Postgres."""
+  environmentName: String!
+
+  """Name of the owning Postgres."""
+  postgres: String!
+
+  """Team owning the Postgres."""
+  teamSlug: Slug!
+}
+
+"""
+Result of requesting activation; compare desiredActiveBranch to activeBranch while reconciling.
+"""
+type ActivatePostgresBranchPayload {
+  """Postgres with desired and observed branch selection."""
+  postgres: Postgres!
+}
+
 enum ActivityLogActivityType {
   """An application was deleted."""
   APPLICATION_DELETED
@@ -2343,6 +2368,35 @@ type CreatePostgresAccessPayload {
 
   """Name of the newly created PostgresAccess resource."""
   name: String!
+}
+
+"""
+Recovery request for a new, inactive branch. A branch cannot be re-created with different recovery settings.
+"""
+input CreatePostgresBranchInput {
+  """Local name of the new branch."""
+  branch: String!
+
+  """Environment containing the Postgres."""
+  environmentName: String!
+
+  """Name of the owning Postgres."""
+  postgres: String!
+
+  """Local name of the source branch in the same Postgres."""
+  sourceBranch: String!
+
+  """Explicit UTC recovery target; must not be in the future."""
+  targetTime: Time!
+
+  """Team owning the Postgres."""
+  teamSlug: Slug!
+}
+
+"""Result of creating a branch; provisioning continues asynchronously."""
+type CreatePostgresBranchPayload {
+  """The new branch."""
+  postgresBranch: PostgresBranch!
 }
 
 """Input for creating a Postgres."""
@@ -5128,6 +5182,11 @@ type MissingSbomIssue implements Issue & Node {
 
 """The mutation root for the Nais GraphQL API."""
 type Mutation {
+  """
+  Request activation of an available PostgresBranch. The observed active branch may lag behind the request.
+  """
+  activatePostgresBranch(input: ActivatePostgresBranchInput!): ActivatePostgresBranchPayload!
+
   """Add a value to a config."""
   addConfigValue(input: AddConfigValueInput!): AddConfigValuePayload!
 
@@ -5197,6 +5256,11 @@ type Mutation {
   When the access is ready, retrieve its connection materials through PostgresAccess.connection.
   """
   createPostgresAccess(input: CreatePostgresAccessInput!): CreatePostgresAccessPayload!
+
+  """
+  Create an inactive PostgresBranch recovered from a source branch archive at a UTC point in time.
+  """
+  createPostgresBranch(input: CreatePostgresBranchInput!): CreatePostgresBranchPayload!
 
   """Create a new secret."""
   createSecret(input: CreateSecretInput!): CreateSecretPayload!
@@ -6036,7 +6100,7 @@ interface Persistence implements Node {
 
 """A Postgres whose active branch can change."""
 type Postgres implements Node {
-  """Currently active branch, if selected."""
+  """Currently observed active branch, if selected."""
   activeBranch: PostgresBranch
 
   """Branch with this local name in this Postgres."""
@@ -6044,6 +6108,11 @@ type Postgres implements Node {
 
   """Branches belonging to this Postgres."""
   branches(after: Cursor, before: Cursor, first: Int, last: Int, orderBy: PostgresBranchOrder): PostgresBranchConnection!
+
+  """
+  Branch requested for activation; may differ from the observed active branch while reconciliation runs.
+  """
+  desiredActiveBranch: String
 
   """Whether high availability is configured."""
   highAvailability: Boolean!
@@ -6867,6 +6936,8 @@ type Query {
 
     """Get items before this cursor."""
     before: Cursor
+
+    """Filter workload vulnerability summaries across all teams."""
     filter: TenantVulnerabilitySummaryFilter
 
     """
@@ -6878,6 +6949,8 @@ type Query {
     Get the last n items in the connection. This can be used in combination with the before parameter.
     """
     last: Int
+
+    """Order workload vulnerability summaries across all teams."""
     orderBy: VulnerabilitySummaryOrder
   ): WorkloadVulnerabilitySummaryConnection!
 
@@ -12404,10 +12477,7 @@ enum VulnerabilitySummaryOrderByField {
   VULNERABILITY_PRIORITY_MONITOR
 
   """
-  Order by the number of urgent vulnerabilities.
-  
-  Urgent vulnerabilities are known to be actively exploited and should be
-  prioritized for immediate action.
+  Deprecated. URGENT requires workload internet exposure and cannot be ordered at summary scope.
   """
   VULNERABILITY_PRIORITY_URGENT @deprecated(reason: "Backed by a count that is always 0. URGENT requires workload internet exposure, so ordering by this value has no effect and falls back to a stable name sort.")
 
