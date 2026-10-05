@@ -63,17 +63,19 @@
 				<TeamCveSearch team={teamSlug} />
 			</div>
 
-			<WorkloadsWithVulnerabilities
-				team={teamSlug}
-				environmentNames={$TeamVulnerabilities.data.team.environments.map(
-					(env) => env.environment.name
-				)}
-				highWorkloadCount={$TeamVulnerabilities.data.team.vulnerabilitySummary?.highWorkloadCount}
-				elevatedWorkloadCount={$TeamVulnerabilities.data.team.vulnerabilitySummary
-					?.elevatedWorkloadCount}
-				monitorWorkloadCount={$TeamVulnerabilities.data.team.vulnerabilitySummary
-					?.monitorWorkloadCount}
-			/>
+			{#key teamSlug}
+				<WorkloadsWithVulnerabilities
+					team={teamSlug}
+					environmentNames={$TeamVulnerabilities.data.team.environments.map(
+						(env) => env.environment.name
+					)}
+					highWorkloadCount={$TeamVulnerabilities.data.team.vulnerabilitySummary?.highWorkloadCount}
+					elevatedWorkloadCount={$TeamVulnerabilities.data.team.vulnerabilitySummary
+						?.elevatedWorkloadCount}
+					monitorWorkloadCount={$TeamVulnerabilities.data.team.vulnerabilitySummary
+						?.monitorWorkloadCount}
+				/>
+			{/key}
 		</section>
 
 		<section aria-label="Vulnerability History">
