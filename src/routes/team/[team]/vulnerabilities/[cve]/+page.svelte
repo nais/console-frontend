@@ -314,6 +314,9 @@
 					{/if}
 					<div class="vulnerability-groups">
 						{#each groupedWorkloads as group (group.vulnerabilityId)}
+							{const fixVersion = $derived(
+								formatFixVersion(group.nodes[0]?.vulnerability.remediation.fixVersion)
+							)}
 							<Box
 								borderRadius="12"
 								padding="space-16"
@@ -357,7 +360,7 @@
 												<Detail as="dt">Workloads</Detail>
 												<Detail as="dd">{group.nodes.length} affected</Detail>
 											</div>
-											{#if group.nodes[0]?.vulnerability.remediation.fixVersion}
+											{#if fixVersion}
 												<div>
 													<Detail as="dt">
 														<span class="fix-version-term">
@@ -373,13 +376,7 @@
 															</HelpText>
 														</span>
 													</Detail>
-													<Detail as="dd"
-														><code
-															>{formatFixVersion(
-																group.nodes[0].vulnerability.remediation.fixVersion
-															)}</code
-														></Detail
-													>
+													<Detail as="dd"><code>{fixVersion}</code></Detail>
 												</div>
 											{/if}
 											{#if group.nodes[0]?.vulnerability.remediation.latestVersion}

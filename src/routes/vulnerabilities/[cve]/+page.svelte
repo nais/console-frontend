@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { goto } from '$app/navigation';
 	import PriorityBadge from '#lib/domain/vulnerability/priority/PriorityBadge.svelte';
 	import PrioritySignals from '#lib/domain/vulnerability/priority/PrioritySignals.svelte';
 	import { priorityDetails } from '#lib/domain/vulnerability/priority/priority.js';
@@ -12,6 +11,7 @@
 	import { formatImageRef } from '#lib/utils/image.js';
 	import { changeParams } from '#lib/utils/searchparams.js';
 	import { formatFixVersion, suppressionStateLabels } from '#lib/utils/vulnerabilities.js';
+	import { goto } from '$app/navigation';
 	import {
 		Alert,
 		BodyShort,
@@ -167,6 +167,7 @@
 							{#each workloads.nodes as node ([node.workload.name, node.workload.team.slug, node.workload.teamEnvironment.environment.name, node.vulnerability.package].join('|'))}
 								{const workload = $derived(node.workload)}
 								{const vuln = $derived(node.vulnerability)}
+								{const fixVersion = $derived(formatFixVersion(vuln.remediation.fixVersion))}
 								<ListItem>
 									<div class="workload-container">
 										<WorkloadLink {workload} />
@@ -175,7 +176,7 @@
 												<Detail as="dt">Package</Detail>
 												<BodyShort as="dd"><code>{vuln.package}</code></BodyShort>
 											</div>
-											{#if vuln.remediation.fixVersion}
+											{#if fixVersion}
 												<div class="detail-row">
 													<Detail as="dt">
 														<span class="fix-version-term">
@@ -191,9 +192,7 @@
 															</HelpText>
 														</span>
 													</Detail>
-													<BodyShort as="dd"
-														><code>{formatFixVersion(vuln.remediation.fixVersion)}</code></BodyShort
-													>
+													<BodyShort as="dd"><code>{fixVersion}</code></BodyShort>
 												</div>
 											{/if}
 											<div class="detail-row">

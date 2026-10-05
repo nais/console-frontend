@@ -53,7 +53,14 @@
 						ingresses
 						workload {
 							__typename
-							name
+							... on Application {
+								__typename
+								name
+							}
+							... on Job {
+								__typename
+								name
+							}
 						}
 					}
 					... on LastRunFailedIssue {
