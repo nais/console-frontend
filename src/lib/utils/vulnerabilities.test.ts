@@ -1,3 +1,5 @@
+import { readFileSync } from 'node:fs';
+import { parse } from 'svelte/compiler';
 import {
 	allSeverities,
 	formatFixVersion,
@@ -6,6 +8,33 @@ import {
 	severityToColor,
 	severityToRiskScore
 } from './vulnerabilities';
+
+function remediationGuidance(node: unknown): string[] {
+	if (Array.isArray(node)) return node.flatMap(remediationGuidance);
+	if (!node || typeof node !== 'object') return [];
+
+	const element = node as Record<string, unknown>;
+	if (element.type === 'Component' && element.name === 'HelpText') {
+		const attributes = element.attributes as { name: string; value?: { data?: string }[] }[];
+		if (
+			attributes.some(
+				(attribute) =>
+					attribute.name === 'title' && attribute.value?.[0]?.data === 'How do I apply the fix?'
+			)
+		) {
+			const fragment = element.fragment as { nodes: { type: string; data?: string }[] };
+			return [
+				fragment.nodes
+					.filter((child) => child.type === 'Text')
+					.map((child) => child.data)
+					.join(' ')
+					.replace(/\s+/g, ' ')
+					.trim()
+			];
+		}
+	}
+	return Object.values(element).flatMap(remediationGuidance);
+}
 
 describe('vulnerabilities', () => {
 	describe('severityToColor', () => {
@@ -284,6 +313,21 @@ describe('vulnerabilities', () => {
 		test('returns days for multi-day duration', () => {
 			const threeDaysAgo = new Date(Date.now() - 3 * 24 * 60 * 60_000);
 			expect(formatProcessingDuration(threeDaysAgo)).toBe('Scanning for vulnerabilities · 3 d');
+		});
+	});
+
+	describe('fix-version guidance', () => {
+		test.each([
+			'../domain/vulnerability/SuppressFinding.svelte',
+			'../../routes/vulnerabilities/[cve]/+page.svelte',
+			'../../routes/team/[team]/vulnerabilities/[cve]/+page.svelte'
+		])('preserves operator semantics in %s', (path) => {
+			const source = readFileSync(new URL(path, import.meta.url), 'utf8');
+			const guidance = remediationGuidance(parse(source, { modern: true }));
+
+			expect(guidance).toHaveLength(1);
+			expect(guidance[0]).toContain('satisfies the displayed fix requirement');
+			expect(guidance[0]).not.toContain('this version or later');
 		});
 	});
 

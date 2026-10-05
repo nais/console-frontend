@@ -370,9 +370,9 @@
 																strategy="fixed"
 																placement="right"
 															>
-																Update the dependency to this version or later, then rebuild and
-																redeploy the image. If it's not relevant here, it can be suppressed
-																instead.
+																Update the dependency to a version that satisfies the displayed fix
+																requirement, then rebuild and redeploy the image. If it's not
+																relevant here, it can be suppressed instead.
 															</HelpText>
 														</span>
 													</Detail>

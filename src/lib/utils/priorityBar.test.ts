@@ -1,5 +1,18 @@
+import { render } from 'svelte/server';
 import { describe, expect, test } from 'vitest';
+import PriorityAlertBar from '../domain/vulnerability/PriorityAlertBar.svelte';
 import { calculateSegmentWidths } from './priorityBar';
+
+describe('PriorityAlertBar guidance', () => {
+	test.each([false, true])('keeps KEV separate from priority (compact: %s)', async (compact) => {
+		const { body } = await render(PriorityAlertBar, {
+			props: { knownExploited: 1, high: 3, elevated: 0, monitor: 2, compact }
+		});
+
+		expect(body).toMatch(/Use operational priority to decide what to address\s+first\./);
+		expect(body).not.toContain('before anything else');
+	});
+});
 
 describe('calculateSegmentWidths', () => {
 	test('returns all zeros when total is zero', () => {

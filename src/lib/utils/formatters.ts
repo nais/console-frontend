@@ -31,6 +31,17 @@ export function numberFormatter(value: number, maximumFractionDigits: number = 2
 	return value.toLocaleString('no-NO', { maximumFractionDigits });
 }
 
+const ordinalRules = new Intl.PluralRules('en', { type: 'ordinal' });
+const ordinalSuffixes: Partial<Record<Intl.LDMLPluralRule, string>> = {
+	one: 'st',
+	two: 'nd',
+	few: 'rd'
+};
+
+export function ordinalFormatter(value: number): string {
+	return `${value}${ordinalSuffixes[ordinalRules.select(value)] ?? 'th'}`;
+}
+
 export function euroValueFormatter(
 	value?: number,
 	{ maximumFractionDigits = 2 }: Intl.NumberFormatOptions = {}
