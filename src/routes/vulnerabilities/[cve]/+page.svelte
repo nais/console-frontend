@@ -319,7 +319,7 @@
 		flex-direction: column;
 		gap: var(--ax-space-16);
 		padding: var(--ax-space-20);
-		border: 1px solid var(--ax-border-neutral-subtleA);
+		border: var(--ax-space-1) solid var(--ax-border-neutral-subtleA);
 		border-left: var(--ax-space-2) solid var(--ax-border-neutral-subtleA);
 		border-radius: var(--ax-radius-8);
 		background: var(--ax-neutral-100);
@@ -399,7 +399,7 @@
 		flex-direction: column;
 		gap: var(--ax-space-16);
 		background: var(--ax-bg-neutral-soft);
-		border: 1px solid var(--ax-border-neutral-subtleA);
+		border: var(--ax-space-1) solid var(--ax-border-neutral-subtleA);
 	}
 
 	.risk-assessment-signals {

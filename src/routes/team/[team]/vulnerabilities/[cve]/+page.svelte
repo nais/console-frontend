@@ -492,7 +492,7 @@
 		flex-direction: column;
 		gap: var(--ax-space-16);
 		padding: var(--ax-space-16);
-		border: 1px solid var(--ax-border-neutral-subtleA);
+		border: var(--ax-space-1) solid var(--ax-border-neutral-subtleA);
 		border-radius: var(--ax-radius-8);
 		background: var(--ax-bg-neutral-soft);
 	}
@@ -616,7 +616,7 @@
 		list-style: none;
 		margin: var(--ax-space-16) 0 0;
 		padding: var(--ax-space-12) 0 0;
-		border-top: 1px solid var(--ax-border-neutral-subtleA);
+		border-top: var(--ax-space-1) solid var(--ax-border-neutral-subtleA);
 		display: flex;
 		flex-direction: column;
 		gap: var(--ax-space-8);
