@@ -37,7 +37,7 @@
 
 	let totalIssues = $derived(criticalIssues + warningIssues + todoIssues);
 
-	let urgentVulnerabilities = $derived(
+	let urgentVulnerabilityIssues = $derived(
 		vulnerabilityData?.team?.urgentVulnerabilityIssues?.pageInfo?.totalCount ?? 0
 	);
 
@@ -79,7 +79,7 @@
 
 	let allSuccess = $derived(
 		totalIssues === 0 &&
-			urgentVulnerabilities === 0 &&
+			urgentVulnerabilityIssues === 0 &&
 			firingAlerts === 0 &&
 			(!costTrend || costTrend.change <= 5)
 	);
@@ -120,20 +120,20 @@
 				<a
 					href="/team/{teamSlug}/vulnerabilities"
 					class="metric"
-					class:danger={urgentVulnerabilities > 0}
-					class:success={urgentVulnerabilities === 0}
+					class:danger={urgentVulnerabilityIssues > 0}
+					class:success={urgentVulnerabilityIssues === 0}
 				>
 					<span class="metric-category">Vulnerabilities</span>
 					<div
 						class="metric-icon"
-						class:danger={urgentVulnerabilities > 0}
-						class:success={urgentVulnerabilities === 0}
+						class:danger={urgentVulnerabilityIssues > 0}
+						class:success={urgentVulnerabilityIssues === 0}
 					>
 						<VirusIcon />
 					</div>
 					<div class="metric-body">
-						<span class="metric-value">{urgentVulnerabilities}</span>
-						<span class="metric-label">Urgent</span>
+						<span class="metric-value">{urgentVulnerabilityIssues}</span>
+						<span class="metric-label">Urgent issues</span>
 					</div>
 				</a>
 
