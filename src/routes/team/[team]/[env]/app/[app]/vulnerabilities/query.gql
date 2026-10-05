@@ -28,6 +28,7 @@ query ApplicationImageDetails($team: Slug!, $env: String!, $app: String!)
 						edges {
 							node {
 								... on ExternalIngressUrgentVulnerabilityIssue {
+									__typename
 									priorityUrgent
 								}
 							}
