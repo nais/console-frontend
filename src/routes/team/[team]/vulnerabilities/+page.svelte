@@ -1,5 +1,5 @@
 <script lang="ts">
-	import VulnerabilitySummaryVariantC from '#lib/domain/vulnerability/prototype/VulnerabilitySummaryVariantC.svelte';
+	import VulnerabilitySummary from '#lib/domain/vulnerability/VulnerabilitySummary.svelte';
 	import TeamCveSearch from '#lib/domain/vulnerability/TeamCveSearch.svelte';
 	import TeamMeanTimeToFixHistoryGraph from '#lib/domain/vulnerability/TeamMeanTimeToFixHistoryGraph.svelte';
 	import TeamVulnerabilityHistoryGraph from '#lib/domain/vulnerability/TeamVulnerabilityHistoryGraph.svelte';
@@ -23,7 +23,7 @@
 			{const exploitedWorkloadCount = $derived(
 				$TeamVulnerabilities.data.team.exploitedWorkloads.pageInfo.totalCount
 			)}
-			<VulnerabilitySummaryVariantC
+			<VulnerabilitySummary
 				vulnerabilitySummary={$TeamVulnerabilities.data.team.vulnerabilitySummary}
 				knownExploitedHref="#priority-groups"
 				{urgentCount}

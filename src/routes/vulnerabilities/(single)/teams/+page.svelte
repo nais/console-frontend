@@ -1,5 +1,5 @@
 <script lang="ts">
-	import TeamsGroupedByUrgency from '#lib/domain/vulnerability/prototype/TeamsGroupedByUrgency.svelte';
+	import TeamsGroupedByUrgency from '#lib/domain/vulnerability/TeamsGroupedByUrgency.svelte';
 	import GraphErrors from '#lib/ui/GraphErrors.svelte';
 	import Pagination from '#lib/ui/Pagination.svelte';
 	import { changeParams } from '#lib/utils/searchparams.js';

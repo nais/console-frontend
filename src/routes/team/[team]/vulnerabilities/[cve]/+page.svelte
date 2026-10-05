@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { goto } from '$app/navigation';
 	import BulkSuppressCVE, {
 		type BulkSuppressWorkload
 	} from '#lib/domain/vulnerability/BulkSuppressCVE.svelte';
@@ -10,6 +9,7 @@
 	import ExternalLink from '#lib/ui/ExternalLink.svelte';
 	import GraphErrors from '#lib/ui/GraphErrors.svelte';
 	import { formatImageRef } from '#lib/utils/image.js';
+	import { goto } from '$app/navigation';
 
 	import { formatFixVersion, suppressionStateLabels } from '#lib/utils/vulnerabilities.js';
 	import {

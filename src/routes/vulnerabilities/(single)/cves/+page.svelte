@@ -1,5 +1,5 @@
 <script lang="ts">
-	import CvesGroupedByPriority from '#lib/domain/vulnerability/prototype/CvesGroupedByPriority.svelte';
+	import CvesGroupedByPriority from '#lib/domain/vulnerability/CvesGroupedByPriority.svelte';
 	import GraphErrors from '#lib/ui/GraphErrors.svelte';
 	import { urlToOrderField } from '#lib/ui/OrderByMenu.svelte';
 	import Pagination from '#lib/ui/Pagination.svelte';

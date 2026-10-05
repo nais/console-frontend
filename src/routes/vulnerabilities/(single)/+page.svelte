@@ -1,5 +1,5 @@
 <script lang="ts">
-	import VulnerabilitySummaryVariantC from '#lib/domain/vulnerability/prototype/VulnerabilitySummaryVariantC.svelte';
+	import VulnerabilitySummary from '#lib/domain/vulnerability/VulnerabilitySummary.svelte';
 	import { resolve } from '$app/paths';
 	import { Heading } from '@nais/ds-svelte-community';
 	import VulnerabilityHistory from '../VulnerabilityHistory.svelte';
@@ -19,7 +19,7 @@
 	<Heading as="h1" size="large">Vulnerabilities</Heading>
 
 	{#if $TenantVulnerabilites.data?.vulnerabilitySummary}
-		<VulnerabilitySummaryVariantC
+		<VulnerabilitySummary
 			vulnerabilitySummary={$TenantVulnerabilites.data.vulnerabilitySummary}
 			{knownExploitedHref}
 			knownExploitedWorkloadCount={exploitedWorkloadCount}
