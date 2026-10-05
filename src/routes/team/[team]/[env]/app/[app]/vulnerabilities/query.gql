@@ -81,17 +81,32 @@ query ApplicationImageDetails($team: Slug!, $env: String!, $app: String!)
 							edges {
 								node {
 									workload {
-										id
-										__typename
-										team {
-											slug
-										}
-										teamEnvironment {
-											environment {
-												name
+										... on Application {
+											__typename
+											id
+											name
+											team {
+												slug
+											}
+											teamEnvironment {
+												environment {
+													name
+												}
 											}
 										}
-										name
+										... on Job {
+											__typename
+											id
+											name
+											team {
+												slug
+											}
+											teamEnvironment {
+												environment {
+													name
+												}
+											}
+										}
 									}
 								}
 							}
