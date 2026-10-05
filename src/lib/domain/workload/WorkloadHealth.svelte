@@ -56,6 +56,7 @@
 							edges {
 								node {
 									... on ExternalIngressUrgentVulnerabilityIssue {
+										__typename
 										priorityUrgent
 									}
 								}
