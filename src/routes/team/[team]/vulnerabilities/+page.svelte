@@ -27,10 +27,12 @@
 {#if $TeamVulnerabilities.data}
 	<div class="wrapper">
 		{#if $TeamVulnerabilities.data.team.vulnerabilitySummary}
-			{@const urgentCount =
-				$TeamVulnerabilities.data.team.urgentVulnerabilityIssues.pageInfo.totalCount}
-			{@const exploitedWorkloadCount =
-				$TeamVulnerabilities.data.team.exploitedWorkloads.pageInfo.totalCount}
+			{const urgentCount = $derived(
+				$TeamVulnerabilities.data.team.urgentVulnerabilityIssues.pageInfo.totalCount
+			)}
+			{const exploitedWorkloadCount = $derived(
+				$TeamVulnerabilities.data.team.exploitedWorkloads.pageInfo.totalCount
+			)}
 			{#if variant === 'C'}
 				<VulnerabilitySummaryVariantC
 					vulnerabilitySummary={$TeamVulnerabilities.data.team.vulnerabilitySummary}
