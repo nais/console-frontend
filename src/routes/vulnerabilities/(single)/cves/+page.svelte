@@ -5,6 +5,7 @@
 	import { changeParams } from '#lib/utils/searchparams.js';
 	import { BodyLong, Heading, Loader } from '@nais/ds-svelte-community';
 	import type { PageProps } from './$types';
+	import { cvePageParams } from './pagination.js';
 
 	let { data }: PageProps = $props();
 	let { CvePriorityGroups } = $derived(data);
@@ -12,7 +13,7 @@
 		{ key: 'high', priority: 'HIGH', connection: $CvePriorityGroups.data?.high },
 		{ key: 'elevated', priority: 'ELEVATED', connection: $CvePriorityGroups.data?.elevated },
 		{ key: 'monitor', priority: 'MONITOR', connection: $CvePriorityGroups.data?.monitor }
-	]);
+	] as const);
 	const hasCves = $derived(
 		groups.some((group) => (group.connection?.pageInfo.totalCount ?? 0) > 0)
 	);
@@ -50,18 +51,22 @@
 							loaders={{
 								loadPreviousPage: () =>
 									changeParams(
-										{
-											[`${group.key}Before`]: group.connection?.pageInfo.startCursor ?? '',
-											[`${group.key}After`]: ''
-										},
+										cvePageParams(
+											group.key,
+											'previous',
+											group.connection?.pageInfo.startCursor ?? null,
+											data.cveOrder
+										),
 										{ noScroll: true }
 									),
 								loadNextPage: () =>
 									changeParams(
-										{
-											[`${group.key}After`]: group.connection?.pageInfo.endCursor ?? '',
-											[`${group.key}Before`]: ''
-										},
+										cvePageParams(
+											group.key,
+											'next',
+											group.connection?.pageInfo.endCursor ?? null,
+											data.cveOrder
+										),
 										{ noScroll: true }
 									)
 							}}

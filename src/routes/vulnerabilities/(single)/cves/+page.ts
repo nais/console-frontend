@@ -1,24 +1,20 @@
-import { CVEOrderField, load_CvePriorityGroups, OrderDirection } from '$houdini';
+import { urlToOrderDirection, urlToOrderField } from '#lib/ui/OrderByMenu.svelte';
 import { addPageMeta } from '#lib/utils/pageMeta.js';
-
-const rows = 20;
+import { CVEOrderField, load_CvePriorityGroups, OrderDirection } from '$houdini';
+import { cvePagination } from './pagination.js';
 
 export async function load(event) {
-	function pagination(group: string) {
-		const before = event.url.searchParams.get(`${group}Before`) || null;
-		const after = event.url.searchParams.get(`${group}After`) || null;
-		return {
-			first: before ? null : rows,
-			last: before ? rows : null,
-			after: before ? null : after,
-			before
-		};
-	}
-	const high = pagination('high');
-	const elevated = pagination('elevated');
-	const monitor = pagination('monitor');
+	const orderBy = {
+		field: urlToOrderField(CVEOrderField, CVEOrderField.PRIORITY, event.url),
+		direction: urlToOrderDirection(event.url, OrderDirection.ASC)
+	};
+	const cveOrder = `${orderBy.field}-${orderBy.direction}`;
+	const high = cvePagination('high', event.url, cveOrder);
+	const elevated = cvePagination('elevated', event.url, cveOrder);
+	const monitor = cvePagination('monitor', event.url, cveOrder);
 
 	return {
+		cveOrder,
 		...(await addPageMeta(event, {
 			title: 'CVE Database'
 		})),
@@ -26,10 +22,7 @@ export async function load(event) {
 			event,
 			blocking: true,
 			variables: {
-				orderBy: {
-					field: CVEOrderField.PRIORITY,
-					direction: OrderDirection.ASC
-				},
+				orderBy,
 				highFirst: high.first,
 				highLast: high.last,
 				highAfter: high.after,
