@@ -1,10 +1,10 @@
 <script lang="ts">
-	import { page } from '$app/state';
 	import GraphErrors from '#lib/ui/GraphErrors.svelte';
+	import { page } from '$app/state';
 
-	import { UtilizationResourceType, type ResourceUtilizationForApp$result } from '$houdini';
 	import AnnotationSeries from '#lib/chart/AnnotationSeries.svelte';
 	import ChartBoundary from '#lib/chart/ChartBoundary.svelte';
+	import { getBrushDateDomain } from '#lib/chart/util.js';
 	import { docURL } from '#lib/doc.js';
 	import SurfaceCard from '#lib/ui/SurfaceCard.svelte';
 	import {
@@ -16,6 +16,7 @@
 	import { round, yearlyOverageCost } from '#lib/utils/resources.js';
 	import { changeParams } from '#lib/utils/searchparams.js';
 	import { visualizationColors } from '#lib/visualizationColors.js';
+	import { UtilizationResourceType, type ResourceUtilizationForApp$result } from '$houdini';
 	import {
 		BodyLong,
 		BodyShort,
@@ -464,7 +465,7 @@
 						y="value"
 						brush={{
 							onBrushEnd(detail) {
-								brushXDomain = detail.brush.x as [Date, Date];
+								brushXDomain = getBrushDateDomain(detail.brush.x);
 							}
 						}}
 						yDomain={[0, cpuMax]}
@@ -630,7 +631,7 @@
 						y="value"
 						brush={{
 							onBrushEnd(detail) {
-								brushXDomain = detail.brush.x as [Date, Date];
+								brushXDomain = getBrushDateDomain(detail.brush.x);
 							}
 						}}
 						yDomain={[0, memoryMax]}

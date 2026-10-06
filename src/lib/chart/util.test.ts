@@ -1,6 +1,33 @@
-import { getSegmentFill, serviceColor, truncateString } from './util';
+import { getBrushDateDomain, getSegmentFill, serviceColor, truncateString } from './util';
 
 describe('chart/util', () => {
+	describe('getBrushDateDomain', () => {
+		const start = new Date('2026-10-01T00:00:00Z');
+		const end = new Date('2026-10-02T00:00:00Z');
+
+		test('preserves a valid drag selection', () => {
+			expect(getBrushDateDomain([start, end])).toEqual([start, end]);
+		});
+
+		test.each(
+			[undefined, null, [null, null], [start, null], [null, end]].map((domain) => ({ domain }))
+		)('resets an empty or incomplete selection: $domain', ({ domain }) => {
+			expect(getBrushDateDomain(domain)).toBeUndefined();
+		});
+
+		test.each(
+			[
+				[start, start],
+				[end, start],
+				[new Date(NaN), end],
+				[start, new Date(NaN)],
+				[0, 1]
+			].map((domain) => ({ domain }))
+		)('rejects a non-date or invalid range: $domain', ({ domain }) => {
+			expect(getBrushDateDomain(domain)).toBeUndefined();
+		});
+	});
+
 	describe('truncateString', () => {
 		test('returns string unchanged if shorter than limit', () => {
 			expect(truncateString('hello', 10)).toBe('hello');

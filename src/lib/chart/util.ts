@@ -1,6 +1,16 @@
 import { euroValueFormatter } from '#lib/utils/formatters.js';
 import { createLocaleSettings, DateToken, DayOfWeek, defaultLocale } from '@layerstack/utils';
 
+export function getBrushDateDomain(domain: unknown): [Date, Date] | undefined {
+	if (!Array.isArray(domain) || domain.length !== 2) return undefined;
+	const [start, end] = domain;
+	if (!(start instanceof Date) || !(end instanceof Date)) return undefined;
+	if (!Number.isFinite(start.getTime()) || !Number.isFinite(end.getTime()) || start >= end) {
+		return undefined;
+	}
+	return [start, end];
+}
+
 export function truncateString(str: string, num: number) {
 	if (str.length <= num) {
 		return str;
