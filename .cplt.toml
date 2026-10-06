@@ -10,9 +10,9 @@ env = ["SLACK_API_TOKEN"]
 [propose]
 # ⚠️  grants access to the Docker socket, effectively root on the host
 # Suggested by: (root)
-allow_docker = true
+allow_docker = false
 # Suggested by: (root)
-allow_localhost_any = true
+allow_localhost_any = false
 
 # allow_env_files intentionally NOT proposed: the sandbox should not read a real
 # .env (nais bootstrap writes secrets there). Pass --allow-env-files per-run if
