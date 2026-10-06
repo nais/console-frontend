@@ -1,0 +1,52 @@
+query TeamPostgres(
+	$team: Slug!
+	$filter: PostgresFilter
+	$first: Int
+	$last: Int
+	$before: Cursor
+	$after: Cursor
+) {
+	team(slug: $team) {
+		environments {
+			environment {
+				name
+			}
+		}
+		postgreses(first: $first, last: $last, filter: $filter, before: $before, after: $after)
+			@paginate(mode: SinglePage) {
+			pageInfo {
+				hasNextPage
+				hasPreviousPage
+				pageStart
+				pageEnd
+				totalCount
+				startCursor
+				endCursor
+			}
+			facets {
+				labels {
+					key
+					value
+					count
+				}
+			}
+			edges {
+				node {
+					id
+					name
+					desiredActiveBranch
+					activeBranch {
+						name
+						state
+					}
+					teamEnvironment {
+						environment {
+							name
+						}
+					}
+					majorVersion
+				}
+			}
+		}
+	}
+}

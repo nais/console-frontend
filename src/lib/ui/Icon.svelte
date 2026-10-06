@@ -2,6 +2,7 @@
 	import BigQueryIcon from '#lib/icons/BigQueryIcon.svelte';
 	import KafkaIcon from '#lib/icons/KafkaIcon.svelte';
 	import OpenSearchIcon from '#lib/icons/OpenSearchIcon.svelte';
+	import PostgreSQLIcon from '#lib/icons/PostgreSQLIcon.svelte';
 	import UnleashIcon from '#lib/icons/UnleashIcon.svelte';
 	import ValkeyIcon from '#lib/icons/ValkeyIcon.svelte';
 	import {
@@ -49,6 +50,8 @@
 			case 'cloudsql':
 			case 'cloud sql':
 				return DatabaseIcon;
+			case 'postgres':
+				return PostgreSQLIcon;
 			case 'buckets':
 			case 'bucket':
 				return BucketIcon;

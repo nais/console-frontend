@@ -6131,6 +6131,9 @@ type Postgres implements Node {
 
   """Requested CPU, memory and disk size, when present on this Postgres."""
   resources: PostgresResources!
+
+  """Team environment containing this Postgres."""
+  teamEnvironment: TeamEnvironment!
 }
 
 """A time-limited personal access request for a Postgres branch."""
@@ -6227,6 +6230,8 @@ enum PostgresAccessState {
 
 """A named PostgresBranch belonging to a Postgres."""
 type PostgresBranch implements Node & Persistence {
+  """Observed CNPG Cluster name, when the cluster exists."""
+  clusterName: String
   id: ID!
 
   """User-defined labels on this branch."""
@@ -6340,6 +6345,16 @@ type PostgresBranchStateFacetItem {
   state: PostgresBranchState!
 }
 
+"""A paginated list of Postgres databases."""
+type PostgresConnection {
+  edges: [PostgresEdge!]!
+
+  """Labels across team Postgres databases, independent of pagination."""
+  facets: PostgresFacets!
+  nodes: [Postgres!]!
+  pageInfo: PageInfo!
+}
+
 """Activity log entry for a Postgres that was created."""
 type PostgresCreatedActivityLogEntry implements ActivityLogEntry & Node {
   """
@@ -6401,6 +6416,26 @@ type PostgresDeletedActivityLogEntry implements ActivityLogEntry & Node {
 
   """The team slug that the entry belongs to."""
   teamSlug: Slug!
+}
+
+type PostgresEdge {
+  cursor: Cursor!
+  node: Postgres!
+}
+
+"""Facets for Postgres databases."""
+type PostgresFacets {
+  """User-defined labels on team Postgres databases."""
+  labels: [LabelFacetItem!]!
+}
+
+"""Filter Postgres databases by environment and user-defined labels."""
+input PostgresFilter {
+  """Filter by environments."""
+  environments: [String!]
+
+  """All listed labels must match."""
+  labels: [LabelFilter!]
 }
 
 type PostgresGrantAccessActivityLogEntry implements ActivityLogEntry & Node {
@@ -9526,6 +9561,30 @@ type Team implements ActivityLogger & Node {
     """Ordering options for items returned from the connection."""
     orderBy: PostgresBranchOrder
   ): PostgresBranchConnection!
+
+  """
+  Postgres databases owned by the team, including those without branches.
+  """
+  postgreses(
+    """Get items after this cursor."""
+    after: Cursor
+
+    """Get items before this cursor."""
+    before: Cursor
+
+    """Filter Postgres databases by environment or labels."""
+    filter: PostgresFilter
+
+    """
+    Get the first n items in the connection. This can be used in combination with the after parameter.
+    """
+    first: Int
+
+    """
+    Get the last n items in the connection. This can be used in combination with the before parameter.
+    """
+    last: Int
+  ): PostgresConnection!
 
   """Purpose of the team."""
   purpose: String!

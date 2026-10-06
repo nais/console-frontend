@@ -25,6 +25,7 @@ describe('menuItems', () => {
 					{ label: 'Secrets', href: '/team/devteam/secrets' },
 					{ label: 'Configs', href: '/team/devteam/configs' },
 					{ label: 'Cloud SQL', href: '/team/devteam/cloudsql' },
+					{ label: 'Postgres', href: '/team/devteam/postgres' },
 					{ label: 'Buckets', href: '/team/devteam/buckets' },
 					{ label: 'Valkey', href: '/team/devteam/valkey' },
 					{ label: 'OpenSearch', href: '/team/devteam/opensearch' },
@@ -66,6 +67,14 @@ describe('menuItems', () => {
 				})
 					.flatMap((g) => g)
 					.find((i) => i.label === 'Cloud SQL')?.active
+			).toBe(true);
+		});
+
+		test('postgres active on team page', () => {
+			expect(
+				menuItems({ path: '/team/nais/postgres' })
+					.flatMap((group) => group)
+					.find((item) => item.label === 'Postgres')?.active
 			).toBe(true);
 		});
 
