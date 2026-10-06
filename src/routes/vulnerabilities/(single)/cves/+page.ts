@@ -1,5 +1,4 @@
 import { CVEOrderField, load_CvePriorityGroups, OrderDirection } from '$houdini';
-import { urlToOrderDirection, urlToOrderField } from '#lib/ui/OrderByMenu.svelte';
 import { addPageMeta } from '#lib/utils/pageMeta.js';
 
 const rows = 20;
@@ -28,8 +27,8 @@ export async function load(event) {
 			blocking: true,
 			variables: {
 				orderBy: {
-					field: urlToOrderField(CVEOrderField, CVEOrderField.PRIORITY, event.url),
-					direction: urlToOrderDirection(event.url, OrderDirection.ASC)
+					field: CVEOrderField.PRIORITY,
+					direction: OrderDirection.ASC
 				},
 				highFirst: high.first,
 				highLast: high.last,
