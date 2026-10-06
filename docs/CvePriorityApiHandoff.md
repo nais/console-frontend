@@ -1,23 +1,23 @@
 # Overlevering: prioriteringsgrupper for CVE-er
 
-Implementer API-støtte i `nais/api` slik at Console kan vise prioritetsgrupper av CVE-er med egne totaler og uavhengig paginering.
+API-støtten i `nais/api` og integrasjonen i Console er implementert. Denne overleveringen dokumenterer kontrakten for tre globale CVE-grupper med egne totaler og uavhengig paginering: High, Elevated og Monitor.
 
 ## Bakgrunn
 
-Frontend henter 20 CVE-er, grupperer disse lokalt og sorterer dem etter alvorlighetsgrad. Det gir misvisende gruppetall og sortering mellom sider: MEDIUM på side 1 kan komme før CRITICAL på side 2.
+Frontend hentet tidligere 20 CVE-er, grupperte disse lokalt og sorterte dem etter alvorlighetsgrad. Det ga misvisende gruppetall og sortering mellom sider: MEDIUM på side 1 kunne komme før CRITICAL på side 2.
 
-«High (20)» teller bare High-CVE-ene på gjeldende side, mens pagineringens totaltall gjelder hele CVE-listen. Vi ønsker å beholde den grupperte layouten.
+«High (20)» telte bare High-CVE-ene på gjeldende side, mens pagineringens totaltall gjaldt hele CVE-listen. Den grupperte layouten er bevart, men filtrering, sortering og totaltall kommer nå fra API-et.
 
 Frontend-koden som bruker dataene:
 
 - [CVE-query](<../src/routes/vulnerabilities/(single)/cves/query.gql>)
 - [Load-funksjon](<../src/routes/vulnerabilities/(single)/cves/+page.ts>)
-- [Lokal sortering og paginering](<../src/routes/vulnerabilities/(single)/cves/+page.svelte>)
+- [Gruppevisning og paginering](<../src/routes/vulnerabilities/(single)/cves/+page.svelte>)
 - [Gruppering](../src/lib/domain/vulnerability/CvesGroupedByPriority.svelte)
 
-## Ønsket kontrakt
+## API-kontrakt
 
-Behold eksisterende `cves`-connection, og legg til et valgfritt prioritetsfilter. Forslag:
+Eksisterende `cves`-connection har et valgfritt prioritetsfilter:
 
 ```graphql
 input CVEFilter {
@@ -25,22 +25,22 @@ input CVEFilter {
 }
 ```
 
-Legg til `filter: CVEFilter` som argument på eksisterende `Query.cves`.
+`Query.cves` tar argumentet `filter: CVEFilter`.
 
-Bruk eksisterende `CVEPriority`: `URGENT`, `HIGH`, `ELEVATED`, `MONITOR`. Uten filter skal eksisterende oppførsel og utvalg bevares.
+Filteret bruker eksisterende `CVEPriority`. Globale CVE-er tildeles `HIGH`, `ELEVATED` eller `MONITOR`. `URGENT` krever workload-kontekst og gir derfor ingen treff ved global CVE-filtrering. Uten filter bevares eksisterende oppførsel og utvalg.
 
 ## Krav
 
 - Filtrer etter beregnet `riskAssessment.priority` før paginering.
 - `pageInfo.totalCount` skal telle hele det filtrerte utvalget, ikke bare siden.
 - Støtt både `first/after` og `last/before`.
-- Ved `PRIORITY` med `ASC`: Urgent → High → Elevated → Monitor.
+- Ved `PRIORITY` med `ASC` for globale CVE-er: High → Elevated → Monitor.
 - Definer global sekundærsortering etter alvorlighetsgrad, høyest først, og en stabil unik tie-breaker. Frontend skal ikke ettersortere hver side.
 - Behold eksisterende avgrensning til aktive CVE-er for tilgjengelige workloads og eksisterende tilgangskontroll.
-- Fire aliaser i samme query skal fungere uten unødvendig gjentatt beregning av hele CVE-utvalget.
+- Tre aliaser i samme query skal fungere uten unødvendig gjentatt beregning av hele CVE-utvalget.
 - Ikke bruk store `first`-verdier som løsning.
 
-Eksempel på frontendens bruk etter API-endringen:
+Eksempel på frontendens bruk:
 
 ```graphql
 query HighPriorityCves {
@@ -69,11 +69,11 @@ query HighPriorityCves {
 
 ## Avklaring: KEV og Urgent
 
-Skjermbildene fra Console viser KEV-merkede CVE-er under High, mens schema beskriver Urgent som aktivt utnyttede sårbarheter. Undersøk om klassifiseringen er korrekt og konsistent med kontrakten. Frontend skal ikke kompensere ved å beregne prioritet selv.
+Urgent krever workload-kontekst, inkludert internettilgjengelighet, og tildeles ikke CVE-er globalt. En KEV-oppføring alene betyr ikke Urgent; KEV-merkede CVE-er kan derfor vises under High. Frontend viser prioriteten fra API-et og beregner den ikke selv.
 
 ## Frontend-integrasjon
 
-API-agenten skal levere schema-endringen, implementasjon, tester og eksempelquery. Console oppdaterer deretter generert schema og kobler fire serverfiltrerte grupper til API-totaler og separate cursors.
+Console bruker det oppdaterte, genererte skjemaet og kobler tre serverfiltrerte grupper til API-totaler og separate cursors: High, Elevated og Monitor. Ingen global Urgent-gruppe hentes.
 
 Houdini tillater bare én `@paginate` per dokument, så kontrakten må kunne brukes med separate queryer eller eksplisitte cursor-variabler per alias.
 
