@@ -71,7 +71,7 @@
 			{/if}
 		{/each}
 	{:else if !$CvePriorityGroups.errors}
-		<p>No CVEs found.</p>
+		<BodyLong>No CVEs found.</BodyLong>
 	{/if}
 </div>
 
