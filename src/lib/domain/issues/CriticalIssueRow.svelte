@@ -48,6 +48,21 @@
 							name
 						}
 					}
+					... on ExternalIngressUrgentVulnerabilityIssue {
+						priorityUrgent
+						ingresses
+						workload {
+							__typename
+							... on Application {
+								__typename
+								name
+							}
+							... on Job {
+								__typename
+								name
+							}
+						}
+					}
 					... on LastRunFailedIssue {
 						job {
 							name
@@ -183,6 +198,7 @@
 			DeprecatedIngressIssue: 'Deprecated ingress',
 			DeprecatedRegistryIssue: 'Deprecated registry',
 			ExternalIngressCriticalVulnerabilityIssue: 'Critical CVE on external ingress',
+			ExternalIngressUrgentVulnerabilityIssue: 'Known exploited vulnerability on external ingress',
 			MissingSbomIssue: 'Missing SBOM',
 			VulnerableImageIssue: 'Vulnerable image',
 			OpenSearchIssue: 'OpenSearch issue',

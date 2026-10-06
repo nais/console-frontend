@@ -100,6 +100,25 @@ export const sbomStatusDetails = (source: SbomStatusSource): SbomStatusDetails =
 	return { status, indicator, iconIndicator, label };
 };
 
+export function formatFixVersion(value: string | null | undefined): string | null {
+	if (!value) return null;
+
+	const trimmed = value.trim();
+	if (!trimmed) return null;
+	const minimumVersion = /^>=\s*(\d\S*)$/.exec(trimmed);
+	if (minimumVersion) return `${minimumVersion[1]} or later`;
+	if (/^(>=|<=|==|>|<|=)\s*/i.test(trimmed)) return trimmed;
+	if (/^v?\d/.test(trimmed)) return `${trimmed.replace(/^v/i, '')} or later`;
+
+	return trimmed;
+}
+
+export function sbomCoverageTier(coverage: number): 'success' | 'warning' | 'danger' {
+	if (coverage >= 100) return 'success';
+	if (coverage < 50) return 'danger';
+	return 'warning';
+}
+
 export function severityToColor({
 	severity,
 	isText,
@@ -157,25 +176,6 @@ export function severityToColor({
 export type Severity = 'Critical' | 'High' | 'Medium' | 'Low' | 'Unassigned';
 
 export const allSeverities: Severity[] = ['Critical', 'High', 'Medium', 'Low', 'Unassigned'];
-
-export function severityToVariant(
-	severity: Severity | string
-): 'error' | 'warning' | 'success' | 'neutral' | 'info' {
-	const normalizedSeverity = severity.toLowerCase();
-	switch (normalizedSeverity) {
-		case 'critical':
-			return 'error';
-		case 'high':
-			return 'warning';
-		case 'medium':
-			return 'info';
-		case 'low':
-			return 'success';
-		case 'unassigned':
-		default:
-			return 'neutral';
-	}
-}
 
 export const severityToRiskScore: Record<Severity, number> = {
 	Critical: 10,

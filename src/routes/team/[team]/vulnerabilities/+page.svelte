@@ -2,10 +2,9 @@
 	import TeamCveSearch from '#lib/domain/vulnerability/TeamCveSearch.svelte';
 	import TeamMeanTimeToFixHistoryGraph from '#lib/domain/vulnerability/TeamMeanTimeToFixHistoryGraph.svelte';
 	import TeamVulnerabilityHistoryGraph from '#lib/domain/vulnerability/TeamVulnerabilityHistoryGraph.svelte';
-	import VulnerabilitySummaryMetrics from '#lib/domain/vulnerability/VulnerabilitySummaryMetrics.svelte';
+	import VulnerabilitySummary from '#lib/domain/vulnerability/VulnerabilitySummary.svelte';
 	import WorkloadsWithVulnerabilities from '#lib/domain/vulnerability/WorkloadsWithVulnerabilities.svelte';
 	import GraphErrors from '#lib/ui/GraphErrors.svelte';
-	import SurfaceCard from '#lib/ui/SurfaceCard.svelte';
 	import { BodyLong, Heading } from '@nais/ds-svelte-community';
 	import type { PageProps } from './$types';
 
@@ -18,11 +17,18 @@
 {#if $TeamVulnerabilities.data}
 	<div class="wrapper">
 		{#if $TeamVulnerabilities.data.team.vulnerabilitySummary}
-			<SurfaceCard title="Summary" level="h2" bordered>
-				<VulnerabilitySummaryMetrics
-					vulnerabilitySummary={$TeamVulnerabilities.data.team.vulnerabilitySummary}
-				/>
-			</SurfaceCard>
+			{const urgentCount = $derived(
+				$TeamVulnerabilities.data.team.urgentVulnerabilityIssues.pageInfo.totalCount
+			)}
+			{const exploitedWorkloadCount = $derived(
+				$TeamVulnerabilities.data.team.exploitedWorkloads.pageInfo.totalCount
+			)}
+			<VulnerabilitySummary
+				vulnerabilitySummary={$TeamVulnerabilities.data.team.vulnerabilitySummary}
+				knownExploitedHref="#priority-groups"
+				{urgentCount}
+				knownExploitedWorkloadCount={exploitedWorkloadCount}
+			/>
 		{/if}
 
 		<section aria-labelledby="workload-vulnerabilities">
@@ -38,7 +44,19 @@
 				<TeamCveSearch team={teamSlug} />
 			</div>
 
-			<WorkloadsWithVulnerabilities team={teamSlug} />
+			{#key teamSlug}
+				<WorkloadsWithVulnerabilities
+					team={teamSlug}
+					environmentNames={$TeamVulnerabilities.data.team.environments.map(
+						(env) => env.environment.name
+					)}
+					highWorkloadCount={$TeamVulnerabilities.data.team.vulnerabilitySummary?.highWorkloadCount}
+					elevatedWorkloadCount={$TeamVulnerabilities.data.team.vulnerabilitySummary
+						?.elevatedWorkloadCount}
+					monitorWorkloadCount={$TeamVulnerabilities.data.team.vulnerabilitySummary
+						?.monitorWorkloadCount}
+				/>
+			{/key}
 		</section>
 
 		<section aria-label="Vulnerability History">

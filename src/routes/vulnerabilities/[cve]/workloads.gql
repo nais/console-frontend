@@ -33,6 +33,15 @@ query CVEWorkloads($identifier: String!, $first: Int, $last: Int, $after: Cursor
 					identifier
 					severity
 					package
+					remediation {
+						fixVersion
+					}
+					riskAssessment {
+						epssScore
+						epssPercentile
+						hasKevEntry
+						knownRansomwareUse
+					}
 					suppression {
 						state
 					}

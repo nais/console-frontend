@@ -31,6 +31,17 @@ export function numberFormatter(value: number, maximumFractionDigits: number = 2
 	return value.toLocaleString('no-NO', { maximumFractionDigits });
 }
 
+const ordinalRules = new Intl.PluralRules('en', { type: 'ordinal' });
+const ordinalSuffixes: Partial<Record<Intl.LDMLPluralRule, string>> = {
+	one: 'st',
+	two: 'nd',
+	few: 'rd'
+};
+
+export function ordinalFormatter(value: number): string {
+	return `${value}${ordinalSuffixes[ordinalRules.select(value)] ?? 'th'}`;
+}
+
 export function euroValueFormatter(
 	value?: number,
 	{ maximumFractionDigits = 2 }: Intl.NumberFormatOptions = {}
@@ -46,6 +57,21 @@ export function euroValueFormatter(
 		maximumSignificantDigits: 2,
 		roundingPriority: 'morePrecision'
 	});
+}
+
+export function pluralize(
+	count: number,
+	singular: string,
+	plural: string = `${singular}s`
+): string {
+	return count === 1 ? singular : plural;
+}
+
+export function daysOpenLabel(since: Date, prefix: string = 'Open'): string {
+	const days = Math.max(0, Math.floor((Date.now() - since.getTime()) / (24 * 60 * 60 * 1000)));
+	if (days === 0) return `${prefix} today`;
+	if (days === 1) return `${prefix} 1 day`;
+	return `${prefix} ${days} days`;
 }
 
 export function formatKubernetesMemory(bytes: number): string {

@@ -38,8 +38,18 @@ export const handle: Handle = async ({ event, resolve }) => {
 	event.locals.tenantName = TENANT_NAME || '';
 	event.locals.githubOrganization = GITHUB_ORGANIZATION || '';
 
-	const response = await resolve(event, {
+	const originalResponse = await resolve(event, {
 		filterSerializedResponseHeaders: () => true
+	});
+
+	// Some responses (e.g. static assets) come back with immutable headers,
+	// so mutating them in place throws "TypeError: immutable". Rebuild the
+	// response with a fresh, mutable Headers instance before modifying it.
+	const headers = new Headers(originalResponse.headers);
+	const response = new Response(originalResponse.body, {
+		status: originalResponse.status,
+		statusText: originalResponse.statusText,
+		headers
 	});
 
 	if (response.headers.get('Link')) {

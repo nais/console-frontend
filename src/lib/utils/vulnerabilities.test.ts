@@ -1,10 +1,40 @@
+import { readFileSync } from 'node:fs';
+import { parse } from 'svelte/compiler';
 import {
 	allSeverities,
+	formatFixVersion,
 	formatProcessingDuration,
 	sbomStatusDetails,
 	severityToColor,
 	severityToRiskScore
 } from './vulnerabilities';
+
+function remediationGuidance(node: unknown): string[] {
+	if (Array.isArray(node)) return node.flatMap(remediationGuidance);
+	if (!node || typeof node !== 'object') return [];
+
+	const element = node as Record<string, unknown>;
+	if (element.type === 'Component' && element.name === 'HelpText') {
+		const attributes = element.attributes as { name: string; value?: { data?: string }[] }[];
+		if (
+			attributes.some(
+				(attribute) =>
+					attribute.name === 'title' && attribute.value?.[0]?.data === 'How do I apply the fix?'
+			)
+		) {
+			const fragment = element.fragment as { nodes: { type: string; data?: string }[] };
+			return [
+				fragment.nodes
+					.filter((child) => child.type === 'Text')
+					.map((child) => child.data)
+					.join(' ')
+					.replace(/\s+/g, ' ')
+					.trim()
+			];
+		}
+	}
+	return Object.values(element).flatMap(remediationGuidance);
+}
 
 describe('vulnerabilities', () => {
 	describe('severityToColor', () => {
@@ -283,6 +313,103 @@ describe('vulnerabilities', () => {
 		test('returns days for multi-day duration', () => {
 			const threeDaysAgo = new Date(Date.now() - 3 * 24 * 60 * 60_000);
 			expect(formatProcessingDuration(threeDaysAgo)).toBe('Scanning for vulnerabilities · 3 d');
+		});
+	});
+
+	describe('fix-version guidance', () => {
+		test.each([
+			'../domain/vulnerability/SuppressFinding.svelte',
+			'../../routes/vulnerabilities/[cve]/+page.svelte',
+			'../../routes/team/[team]/vulnerabilities/[cve]/+page.svelte'
+		])('preserves operator semantics in %s', (path) => {
+			const source = readFileSync(new URL(path, import.meta.url), 'utf8');
+			const guidance = remediationGuidance(parse(source, { modern: true }));
+
+			expect(guidance).toHaveLength(1);
+			expect(guidance[0]).toContain('satisfies the displayed fix requirement');
+			expect(guidance[0]).not.toContain('this version or later');
+		});
+	});
+
+	describe('formatFixVersion', () => {
+		describe('blank values', () => {
+			test('returns null for null input', () => {
+				expect(formatFixVersion(null)).toBeNull();
+			});
+
+			test('returns null for undefined input', () => {
+				expect(formatFixVersion(undefined)).toBeNull();
+			});
+
+			test('returns null for empty string', () => {
+				expect(formatFixVersion('')).toBeNull();
+			});
+
+			test('returns null for whitespace-only string', () => {
+				expect(formatFixVersion('   ')).toBeNull();
+			});
+		});
+
+		describe('comparison operators', () => {
+			test('displays >= expressions as a minimum fixed version', () => {
+				expect(formatFixVersion('>=2.25.5')).toBe('2.25.5 or later');
+			});
+
+			test('returns <= expressions unchanged', () => {
+				expect(formatFixVersion('<=2.25.5')).toBe('<=2.25.5');
+			});
+
+			test('returns == expressions unchanged', () => {
+				expect(formatFixVersion('==2.25.5')).toBe('==2.25.5');
+			});
+
+			test('returns > expressions unchanged', () => {
+				expect(formatFixVersion('>2.25.5')).toBe('>2.25.5');
+			});
+
+			test('returns < expressions unchanged', () => {
+				expect(formatFixVersion('<2.25.5')).toBe('<2.25.5');
+			});
+
+			test('returns = expressions unchanged', () => {
+				expect(formatFixVersion('=2.25.5')).toBe('=2.25.5');
+			});
+
+			test('accepts a space between the operator and the version', () => {
+				expect(formatFixVersion('>= 2.25.5')).toBe('2.25.5 or later');
+			});
+		});
+
+		describe('bare version numbers', () => {
+			test('describes a bare version as the minimum fixed version', () => {
+				expect(formatFixVersion('1.0.1')).toBe('1.0.1 or later');
+			});
+
+			test('strips a lowercase v prefix', () => {
+				expect(formatFixVersion('v2.25.5')).toBe('2.25.5 or later');
+			});
+
+			test('does not recognize an uppercase V prefix as a version', () => {
+				expect(formatFixVersion('V2.25.5')).toBe('V2.25.5');
+			});
+
+			test('trims surrounding whitespace before formatting', () => {
+				expect(formatFixVersion('  2.25.5  ')).toBe('2.25.5 or later');
+			});
+		});
+
+		describe('other strings', () => {
+			test('returns non-version text unchanged', () => {
+				expect(formatFixVersion('unknown')).toBe('unknown');
+			});
+
+			test('does not treat a bare "v" as a version prefix', () => {
+				expect(formatFixVersion('v')).toBe('v');
+			});
+
+			test('does not treat a word starting with v as a version prefix', () => {
+				expect(formatFixVersion('version 2')).toBe('version 2');
+			});
 		});
 	});
 });

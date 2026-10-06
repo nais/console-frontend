@@ -1,7 +1,7 @@
 <script lang="ts">
-	import type { TeamSummaryCost$result, TeamSummaryVulnerabilities$result } from '$houdini';
 	import IssuePills from '#lib/domain/issues/IssuePills.svelte';
 	import SurfaceCard from '#lib/ui/SurfaceCard.svelte';
+	import type { TeamSummaryCost$result, TeamSummaryVulnerabilities$result } from '$houdini';
 	import { Loader } from '@nais/ds-svelte-community';
 	import {
 		BellDotFillIcon,
@@ -37,8 +37,8 @@
 
 	let totalIssues = $derived(criticalIssues + warningIssues + todoIssues);
 
-	let criticalVulnerabilities = $derived(
-		vulnerabilityData?.team?.vulnerabilitySummary?.critical ?? 0
+	let urgentVulnerabilityIssues = $derived(
+		vulnerabilityData?.team?.urgentVulnerabilityIssues?.pageInfo?.totalCount ?? 0
 	);
 
 	let costTrend = $derived.by(() => {
@@ -79,7 +79,7 @@
 
 	let allSuccess = $derived(
 		totalIssues === 0 &&
-			criticalVulnerabilities === 0 &&
+			urgentVulnerabilityIssues === 0 &&
 			firingAlerts === 0 &&
 			(!costTrend || costTrend.change <= 5)
 	);
@@ -120,20 +120,20 @@
 				<a
 					href="/team/{teamSlug}/vulnerabilities"
 					class="metric"
-					class:danger={criticalVulnerabilities > 0}
-					class:success={criticalVulnerabilities === 0}
+					class:danger={urgentVulnerabilityIssues > 0}
+					class:success={urgentVulnerabilityIssues === 0}
 				>
 					<span class="metric-category">Vulnerabilities</span>
 					<div
 						class="metric-icon"
-						class:danger={criticalVulnerabilities > 0}
-						class:success={criticalVulnerabilities === 0}
+						class:danger={urgentVulnerabilityIssues > 0}
+						class:success={urgentVulnerabilityIssues === 0}
 					>
 						<VirusIcon />
 					</div>
 					<div class="metric-body">
-						<span class="metric-value">{criticalVulnerabilities}</span>
-						<span class="metric-label">Critical</span>
+						<span class="metric-value">{urgentVulnerabilityIssues}</span>
+						<span class="metric-label">Urgent issues</span>
 					</div>
 				</a>
 
