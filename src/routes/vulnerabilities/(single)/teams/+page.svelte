@@ -1,17 +1,25 @@
 <script lang="ts">
 	import TeamsGroupedByUrgency from '#lib/domain/vulnerability/TeamsGroupedByUrgency.svelte';
 	import GraphErrors from '#lib/ui/GraphErrors.svelte';
-	import Pagination from '#lib/ui/Pagination.svelte';
 	import { changeParams } from '#lib/utils/searchparams.js';
 	import { BodyLong, Heading, Loader } from '@nais/ds-svelte-community';
 	import type { PageProps } from './$types';
 
 	let { data }: PageProps = $props();
-	let { TenantVulnerabilites } = $derived(data);
+	let { TenantTeamPriorityGroups } = $derived(data);
+	const hasTeams = $derived.by(() => {
+		const groups = $TenantTeamPriorityGroups.data;
+		return (
+			groups &&
+			(['high', 'elevated', 'monitor', 'none'] as const).some(
+				(group) => groups[group].pageInfo.totalCount > 0
+			)
+		);
+	});
 </script>
 
 <div class="wrapper">
-	<GraphErrors errors={$TenantVulnerabilites.errors} />
+	<GraphErrors errors={$TenantTeamPriorityGroups.errors} />
 	<div>
 		<Heading as="h2" spacing>Team Security Posture</Heading>
 		<BodyLong>
@@ -22,38 +30,28 @@
 		</BodyLong>
 	</div>
 
-	{#if $TenantVulnerabilites.fetching}
+	{#if $TenantTeamPriorityGroups.fetching && !$TenantTeamPriorityGroups.data}
 		<div class="loading-centered" role="status" aria-label="Loading">
 			<Loader size="3xlarge" />
 		</div>
-	{:else if $TenantVulnerabilites.data?.teams.edges.length}
-		<TeamsGroupedByUrgency teams={$TenantVulnerabilites.data?.teams.edges ?? []} />
-	{:else}
+	{:else if hasTeams && $TenantTeamPriorityGroups.data}
+		<TeamsGroupedByUrgency
+			groups={$TenantTeamPriorityGroups.data}
+			fetching={$TenantTeamPriorityGroups.fetching}
+			loadPage={(group, direction) => {
+				const page = $TenantTeamPriorityGroups.data?.[group].pageInfo;
+				return changeParams(
+					{
+						[`${group}After`]: direction === 'next' ? (page?.endCursor ?? '') : '',
+						[`${group}Before`]: direction === 'previous' ? (page?.startCursor ?? '') : ''
+					},
+					{ noScroll: true }
+				);
+			}}
+		/>
+	{:else if !$TenantTeamPriorityGroups.errors?.length}
 		<BodyLong>No teams found.</BodyLong>
 	{/if}
-
-	<Pagination
-		page={$TenantVulnerabilites.data?.teams.pageInfo}
-		fetching={$TenantVulnerabilites.fetching}
-		loaders={{
-			loadPreviousPage: () =>
-				changeParams(
-					{
-						after: '',
-						before: $TenantVulnerabilites.data?.teams.pageInfo.startCursor ?? ''
-					},
-					{ noScroll: true }
-				),
-			loadNextPage: () =>
-				changeParams(
-					{
-						after: $TenantVulnerabilites.data?.teams.pageInfo.endCursor ?? '',
-						before: ''
-					},
-					{ noScroll: true }
-				)
-		}}
-	/>
 </div>
 
 <style>
