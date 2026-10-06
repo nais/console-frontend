@@ -1,52 +1,26 @@
 <script lang="ts">
 	import CvesGroupedByPriority from '#lib/domain/vulnerability/CvesGroupedByPriority.svelte';
 	import GraphErrors from '#lib/ui/GraphErrors.svelte';
-	import { urlToOrderField } from '#lib/ui/OrderByMenu.svelte';
 	import Pagination from '#lib/ui/Pagination.svelte';
 	import { changeParams } from '#lib/utils/searchparams.js';
-	import { page } from '$app/state';
-	import { CVEOrderField } from '$houdini';
 	import { BodyLong, Heading, Loader } from '@nais/ds-svelte-community';
 	import type { PageProps } from './$types';
+	import { cvePageParams } from './pagination.js';
 
 	let { data }: PageProps = $props();
-	let { CVES } = $derived(data);
-
-	const currentOrderField = $derived(
-		urlToOrderField(CVEOrderField, CVEOrderField.PRIORITY, page.url)
+	let { CvePriorityGroups } = $derived(data);
+	const groups = $derived([
+		{ key: 'high', priority: 'HIGH', connection: $CvePriorityGroups.data?.high },
+		{ key: 'elevated', priority: 'ELEVATED', connection: $CvePriorityGroups.data?.elevated },
+		{ key: 'monitor', priority: 'MONITOR', connection: $CvePriorityGroups.data?.monitor }
+	] as const);
+	const hasCves = $derived(
+		groups.some((group) => (group.connection?.pageInfo.totalCount ?? 0) > 0)
 	);
-
-	const severityRank: Record<string, number> = {
-		CRITICAL: 4,
-		HIGH: 3,
-		MEDIUM: 2,
-		LOW: 1,
-		UNASSIGNED: 0
-	};
-
-	const sortedEdges = $derived.by(() => {
-		const edges = $CVES.data?.cves.edges ?? [];
-		if (currentOrderField !== CVEOrderField.PRIORITY) return edges;
-
-		const firstIndexForPriority: Record<string, number> = {};
-		edges.forEach((edge, index) => {
-			if (!(edge.node.riskAssessment.priority in firstIndexForPriority)) {
-				firstIndexForPriority[edge.node.riskAssessment.priority] = index;
-			}
-		});
-
-		return [...edges].sort((a, b) => {
-			const priorityDiff =
-				(firstIndexForPriority[a.node.riskAssessment.priority] ?? 0) -
-				(firstIndexForPriority[b.node.riskAssessment.priority] ?? 0);
-			if (priorityDiff !== 0) return priorityDiff;
-			return (severityRank[b.node.severity] ?? -1) - (severityRank[a.node.severity] ?? -1);
-		});
-	});
 </script>
 
 <div class="wrapper">
-	<GraphErrors errors={$CVES.errors} />
+	<GraphErrors errors={$CvePriorityGroups.errors} />
 	<div>
 		<Heading as="h2" spacing>CVE Database</Heading>
 		<BodyLong>
@@ -56,36 +30,54 @@
 		</BodyLong>
 	</div>
 
-	{#if $CVES.fetching && !$CVES.data}
+	{#if $CvePriorityGroups.fetching && !$CvePriorityGroups.data}
 		<div class="loading-centered" role="status" aria-label="Loading">
 			<Loader size="3xlarge" />
 		</div>
-	{:else}
-		<CvesGroupedByPriority cves={sortedEdges} />
+	{:else if hasCves}
+		{#each groups as group (group.key)}
+			{#if group.connection && group.connection.pageInfo.totalCount > 0}
+				<CvesGroupedByPriority
+					cves={group.connection.edges}
+					priorityGroup={{
+						priority: group.priority,
+						totalCount: group.connection.pageInfo.totalCount
+					}}
+				>
+					{#snippet pagination()}
+						<Pagination
+							page={group.connection?.pageInfo}
+							fetching={$CvePriorityGroups.fetching}
+							loaders={{
+								loadPreviousPage: () =>
+									changeParams(
+										cvePageParams(
+											group.key,
+											'previous',
+											group.connection?.pageInfo.startCursor ?? null,
+											data.cveOrder
+										),
+										{ noScroll: true }
+									),
+								loadNextPage: () =>
+									changeParams(
+										cvePageParams(
+											group.key,
+											'next',
+											group.connection?.pageInfo.endCursor ?? null,
+											data.cveOrder
+										),
+										{ noScroll: true }
+									)
+							}}
+						/>
+					{/snippet}
+				</CvesGroupedByPriority>
+			{/if}
+		{/each}
+	{:else if !$CvePriorityGroups.errors}
+		<BodyLong>No CVEs found.</BodyLong>
 	{/if}
-
-	<Pagination
-		page={$CVES.data?.cves.pageInfo}
-		fetching={$CVES.fetching}
-		loaders={{
-			loadPreviousPage: () =>
-				changeParams(
-					{
-						before: $CVES.data?.cves.pageInfo.startCursor ?? '',
-						after: ''
-					},
-					{ noScroll: true }
-				),
-			loadNextPage: () =>
-				changeParams(
-					{
-						after: $CVES.data?.cves.pageInfo.endCursor ?? '',
-						before: ''
-					},
-					{ noScroll: true }
-				)
-		}}
-	/>
 </div>
 
 <style>

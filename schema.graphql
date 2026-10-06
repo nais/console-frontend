@@ -98,11 +98,25 @@ enum ActivityLogActivityType {
   """OpenSearch was updated."""
   OPENSEARCH_UPDATED
 
+  """A Postgres branch was activated."""
+  POSTGRES_BRANCH_ACTIVATED
+
+  """A Postgres branch was created."""
+  POSTGRES_BRANCH_CREATED
+
+  """A Postgres branch was deleted."""
+  POSTGRES_BRANCH_DELETED
+
   """A Postgres was created"""
   POSTGRES_CREATED
 
-  """A Postgres branch was deleted"""
+  """A Postgres branch was deleted (historical entries without branch name)"""
   POSTGRES_DELETED
+
+  """
+  A request to delete a whole Postgres was accepted; cleanup continues asynchronously.
+  """
+  POSTGRES_DELETION_REQUESTED
 
   """A user was granted access to a Postgres cluster"""
   POSTGRES_GRANT_ACCESS
@@ -865,11 +879,10 @@ type Application implements ActivityLogger & Node & Workload {
   """OpenSearch instance referenced by the workload."""
   openSearch: OpenSearch
 
-  """Active PostgresBranches for all Postgres entries in uses.postgres."""
-  postgresBranches(
-    """Ordering options for items returned from the connection."""
-    orderBy: PostgresBranchOrder
-  ): PostgresBranchConnection!
+  """
+  Postgres databases referenced by uses.postgres, whether or not they have an active branch.
+  """
+  postgreses: PostgresConnection!
 
   """Resources for the application."""
   resources: ApplicationResources!
@@ -1636,6 +1649,14 @@ type CVEEdge {
   node: CVE!
 }
 
+"""Filter active CVEs by their calculated risk assessment."""
+input CVEFilter {
+  """
+  Operational priority. URGENT requires workload context and currently returns no CVEs.
+  """
+  priority: CVEPriority
+}
+
 """Ordering options when fetching CVEs."""
 input CVEOrder {
   """The direction to order items by."""
@@ -1678,7 +1699,7 @@ enum CVEPriority {
   MONITOR
 
   """
-  Vulnerability is known to be actively exploited and requires immediate action.
+  Requires immediate action based on workload context, including internet exposure. Not assigned to CVEs at global scope; a KEV entry alone does not imply URGENT.
   """
   URGENT
 }
@@ -2767,6 +2788,28 @@ input DeletePostgresBranchInput {
 type DeletePostgresBranchPayload {
   """Whether the PostgresBranch was deleted."""
   postgresBranchDeleted: Boolean
+}
+
+"""
+Select the Postgres to delete. All branches and stored data are removed asynchronously by the platform.
+"""
+input DeletePostgresInput {
+  """Environment containing the Postgres."""
+  environmentName: String!
+
+  """Name of the Postgres."""
+  name: String!
+
+  """Owning team."""
+  teamSlug: Slug!
+}
+
+"""Result of accepting a Postgres deletion request, not proof of cleanup."""
+type DeletePostgresPayload {
+  """
+  True if Kubernetes accepted the deletion request; data deletion may still be pending.
+  """
+  deletionRequested: Boolean!
 }
 
 input DeleteSecretInput {
@@ -4193,11 +4236,10 @@ type Job implements ActivityLogger & Node & Workload {
   """OpenSearch instance referenced by the workload."""
   openSearch: OpenSearch
 
-  """Active PostgresBranches for all Postgres entries in uses.postgres."""
-  postgresBranches(
-    """Ordering options for items returned from the connection."""
-    orderBy: PostgresBranchOrder
-  ): PostgresBranchConnection!
+  """
+  Postgres databases referenced by uses.postgres, whether or not they have an active branch.
+  """
+  postgreses: PostgresConnection!
 
   """Resources for the job."""
   resources: JobResources!
@@ -5330,6 +5372,11 @@ type Mutation {
   """Delete an existing OpenSearch instance."""
   deleteOpenSearch(input: DeleteOpenSearchInput!): DeleteOpenSearchPayload!
 
+  """
+  Request deletion of an entire Postgres and all its branches/data. Fails while workloads or bindings reference it; cleanup is asynchronous.
+  """
+  deletePostgres(input: DeletePostgresInput!): DeletePostgresPayload!
+
   """Delete a PostgresBranch that is not active on its Postgres."""
   deletePostgresBranch(input: DeletePostgresBranchInput!): DeletePostgresBranchPayload!
 
@@ -6099,9 +6146,31 @@ interface Persistence implements Node {
 }
 
 """A Postgres whose active branch can change."""
-type Postgres implements Node {
+type Postgres implements ActivityLogger & Node {
   """Currently observed active branch, if selected."""
   activeBranch: PostgresBranch
+
+  """Activity log associated with this Postgres."""
+  activityLog(
+    """Get items after this cursor."""
+    after: Cursor
+
+    """Get items before this cursor."""
+    before: Cursor
+
+    """Filter items."""
+    filter: ActivityLogFilter
+
+    """
+    Get the first n items in the connection. This can be used in combination with the after parameter.
+    """
+    first: Int
+
+    """
+    Get the last n items in the connection. This can be used in combination with the before parameter.
+    """
+    last: Int
+  ): ActivityLogEntryConnection!
 
   """Branch with this local name in this Postgres."""
   branch(name: String!): PostgresBranch!
@@ -6131,6 +6200,9 @@ type Postgres implements Node {
 
   """Requested CPU, memory and disk size, when present on this Postgres."""
   resources: PostgresResources!
+
+  """Team environment containing this Postgres."""
+  teamEnvironment: TeamEnvironment!
 }
 
 """A time-limited personal access request for a Postgres branch."""
@@ -6263,6 +6335,34 @@ type PostgresBranch implements Node & Persistence {
   ): WorkloadConnection!
 }
 
+"""
+A request to activate a Postgres branch was accepted; the switchover may still be pending.
+"""
+type PostgresBranchActivatedActivityLogEntry implements ActivityLogEntry & Node {
+  actor: String!
+  createdAt: Time!
+  data: PostgresBranchActivityLogEntryData!
+  environmentName: String
+  gitHubActorClaims: GitHubActorClaims
+  id: ID!
+  message: String!
+
+  """Name of the Postgres containing the branch."""
+  resourceName: String!
+  resourceType: ActivityLogEntryResourceType!
+  teamSlug: Slug!
+}
+
+type PostgresBranchActivityLogEntryData {
+  branch: String!
+
+  """Source branch, populated for branch creation."""
+  sourceBranch: String
+
+  """Recovery instant, populated for branch creation."""
+  targetTime: Time
+}
+
 type PostgresBranchConnection {
   edges: [PostgresBranchEdge!]!
 
@@ -6273,6 +6373,38 @@ type PostgresBranchConnection {
   facets: PostgresBranchFacets
   nodes: [PostgresBranch!]!
   pageInfo: PageInfo!
+}
+
+"""A Postgres branch was created."""
+type PostgresBranchCreatedActivityLogEntry implements ActivityLogEntry & Node {
+  actor: String!
+  createdAt: Time!
+  data: PostgresBranchActivityLogEntryData!
+  environmentName: String
+  gitHubActorClaims: GitHubActorClaims
+  id: ID!
+  message: String!
+
+  """Name of the Postgres containing the branch."""
+  resourceName: String!
+  resourceType: ActivityLogEntryResourceType!
+  teamSlug: Slug!
+}
+
+"""A Postgres branch was deleted."""
+type PostgresBranchDeletedActivityLogEntry implements ActivityLogEntry & Node {
+  actor: String!
+  createdAt: Time!
+  data: PostgresBranchActivityLogEntryData!
+  environmentName: String
+  gitHubActorClaims: GitHubActorClaims
+  id: ID!
+  message: String!
+
+  """Name of the Postgres containing the branch."""
+  resourceName: String!
+  resourceType: ActivityLogEntryResourceType!
+  teamSlug: Slug!
 }
 
 type PostgresBranchEdge {
@@ -6340,6 +6472,16 @@ type PostgresBranchStateFacetItem {
   state: PostgresBranchState!
 }
 
+"""A paginated list of Postgres databases."""
+type PostgresConnection {
+  edges: [PostgresEdge!]!
+
+  """Labels across team Postgres databases, independent of pagination."""
+  facets: PostgresFacets!
+  nodes: [Postgres!]!
+  pageInfo: PageInfo!
+}
+
 """Activity log entry for a Postgres that was created."""
 type PostgresCreatedActivityLogEntry implements ActivityLogEntry & Node {
   """
@@ -6401,6 +6543,17 @@ type PostgresDeletedActivityLogEntry implements ActivityLogEntry & Node {
 
   """The team slug that the entry belongs to."""
   teamSlug: Slug!
+}
+
+type PostgresEdge {
+  cursor: Cursor!
+  node: Postgres!
+}
+
+"""Facets for Postgres databases."""
+type PostgresFacets {
+  """User-defined labels on team Postgres databases."""
+  labels: [LabelFacetItem!]!
 }
 
 type PostgresGrantAccessActivityLogEntry implements ActivityLogEntry & Node {
@@ -6691,6 +6844,11 @@ type Query {
 
     """Get items before this cursor."""
     before: Cursor
+
+    """
+    Filter CVEs before pagination. Totals cover the entire filtered selection.
+    """
+    filter: CVEFilter
 
     """
     Get the first n items in the connection. This can be used in combination with the after parameter.
@@ -9502,16 +9660,18 @@ type Team implements ActivityLogger & Node {
     orderBy: OpenSearchOrder
   ): OpenSearchConnection!
 
-  """Postgres branches owned by the team."""
-  postgresBranches(
+  """
+  Postgres databases owned by the team, including those without branches.
+  """
+  postgreses(
     """Get items after this cursor."""
     after: Cursor
 
     """Get items before this cursor."""
     before: Cursor
 
-    """Filtering options for items returned from the connection."""
-    filter: PostgresBranchFilter
+    """Filter Postgres databases by environment or labels."""
+    filter: TeamPostgresFilter
 
     """
     Get the first n items in the connection. This can be used in combination with the after parameter.
@@ -9522,10 +9682,7 @@ type Team implements ActivityLogger & Node {
     Get the last n items in the connection. This can be used in combination with the before parameter.
     """
     last: Int
-
-    """Ordering options for items returned from the connection."""
-    orderBy: PostgresBranchOrder
-  ): PostgresBranchConnection!
+  ): PostgresConnection!
 
   """Purpose of the team."""
   purpose: String!
@@ -10151,6 +10308,13 @@ type TeamExternalResources {
 input TeamFilter {
   """Filter teams by the existence of workloads."""
   hasWorkloads: Boolean
+
+  """
+  Filter by the team's highest operational vulnerability priority across all environments.
+  Groups are mutually exclusive. Without orderBy, teams are ordered by the group's
+  finding count descending, then slug ascending. Missing summaries produce an error.
+  """
+  vulnerabilityPriorityGroup: TeamVulnerabilityPriorityGroup
 }
 
 type TeamGitHubTeam {
@@ -10524,6 +10688,17 @@ enum TeamOrderField {
   UNASSIGNED_VULNERABILITIES
 }
 
+"""
+Filter a team's Postgres databases by environment and user-defined labels.
+"""
+input TeamPostgresFilter {
+  """Filter by environments."""
+  environments: [String!]
+
+  """All listed labels must match."""
+  labels: [LabelFilter!]
+}
+
 input TeamRepositoryFilter {
   """Filter by repository name containing the phrase."""
   name: String
@@ -10619,6 +10794,27 @@ type TeamUtilizationData {
 
   """The current resource usage."""
   used: Float!
+}
+
+"""
+Mutually exclusive groups based on the highest operational vulnerability priority.
+"""
+enum TeamVulnerabilityPriorityGroup {
+  """No high-risk findings and at least one elevated-risk finding."""
+  ELEVATED
+
+  """At least one high-risk finding."""
+  HIGH
+
+  """
+  No high-risk or elevated-risk findings and at least one monitor finding.
+  """
+  MONITOR
+
+  """
+  A valid summary confirms no high-risk, elevated-risk or monitor findings.
+  """
+  NONE
 }
 
 enum TeamVulnerabilityRiskScoreTrend {
@@ -12715,11 +12911,10 @@ interface Workload implements ActivityLogger & Node {
   """OpenSearch instance referenced by the workload."""
   openSearch: OpenSearch
 
-  """Active PostgresBranches for all Postgres entries in uses.postgres."""
-  postgresBranches(
-    """Ordering options for items returned from the connection."""
-    orderBy: PostgresBranchOrder
-  ): PostgresBranchConnection!
+  """
+  Postgres databases referenced by uses.postgres, whether or not they have an active branch.
+  """
+  postgreses: PostgresConnection!
 
   """The resources allocated to the workload."""
   resources: WorkloadResources!
