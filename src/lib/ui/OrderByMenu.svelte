@@ -5,6 +5,15 @@
 		[s: string]: string;
 	};
 
+	export function orderByParams(sort: string, resetParams: readonly string[] = []) {
+		return {
+			sort,
+			after: '',
+			before: '',
+			...Object.fromEntries(resetParams.map((param) => [param, '']))
+		};
+	}
+
 	export const urlToOrderField = <T extends OrderField>(
 		orderField: T,
 		defaultValue: ValueOf<T>,
@@ -39,13 +48,15 @@
 		defaultOrderField: ValueOf<T>;
 		defaultOrderDirection?: OrderDirection$options;
 		onlyInclude?: ValueOf<T>[];
+		resetParams?: readonly string[];
 	}
 
 	const {
 		orderField,
 		defaultOrderField,
 		defaultOrderDirection = OrderDirection.ASC,
-		onlyInclude
+		onlyInclude,
+		resetParams = []
 	}: Props = $props();
 
 	const orderFieldWeights: Record<string, number> = {
@@ -179,10 +190,9 @@
 				<ActionMenuRadioItem
 					value={field}
 					onselect={(value) =>
-						changeParams(
-							{ sort: `${value}-${orderDirection}`, after: '', before: '' },
-							{ noScroll: true }
-						)}
+						changeParams(orderByParams(`${value}-${orderDirection}`, resetParams), {
+							noScroll: true
+						})}
 				>
 					{fieldLabel(field)}
 				</ActionMenuRadioItem>
@@ -196,10 +206,9 @@
 				<ActionMenuRadioItem
 					value={direction}
 					onselect={(value) =>
-						changeParams(
-							{ sort: `${currentOrderField}-${value}`, after: '', before: '' },
-							{ noScroll: true }
-						)}
+						changeParams(orderByParams(`${currentOrderField}-${value}`, resetParams), {
+							noScroll: true
+						})}
 				>
 					{#if direction === OrderDirection.ASC}
 						<SortUpIcon /> Ascending

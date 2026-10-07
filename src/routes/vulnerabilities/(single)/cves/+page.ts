@@ -1,6 +1,6 @@
 import { urlToOrderDirection, urlToOrderField } from '#lib/ui/OrderByMenu.svelte';
 import { addPageMeta } from '#lib/utils/pageMeta.js';
-import { CVEOrderField, load_CvePriorityGroups, OrderDirection } from '$houdini';
+import { CVEOrderField, load_CveList, load_CvePriorityGroups, OrderDirection } from '$houdini';
 import { cvePagination } from './pagination.js';
 
 export async function load(event) {
@@ -9,15 +9,30 @@ export async function load(event) {
 		direction: urlToOrderDirection(event.url, OrderDirection.ASC)
 	};
 	const cveOrder = `${orderBy.field}-${orderBy.direction}`;
+	const grouped = orderBy.field === CVEOrderField.PRIORITY;
+	const meta = await addPageMeta(event, { title: 'CVE Database' });
+	if (!grouped) {
+		return {
+			...meta,
+			cveOrder,
+			grouped,
+			CvePriorityGroups: null,
+			...(await load_CveList({
+				event,
+				blocking: true,
+				variables: { orderBy, ...cvePagination('all', event.url, cveOrder) }
+			}))
+		};
+	}
 	const high = cvePagination('high', event.url, cveOrder);
 	const elevated = cvePagination('elevated', event.url, cveOrder);
 	const monitor = cvePagination('monitor', event.url, cveOrder);
 
 	return {
+		...meta,
 		cveOrder,
-		...(await addPageMeta(event, {
-			title: 'CVE Database'
-		})),
+		grouped,
+		CveList: null,
 		...(await load_CvePriorityGroups({
 			event,
 			blocking: true,
