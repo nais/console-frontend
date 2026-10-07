@@ -1,6 +1,4 @@
 overrides:
-  "@codemirror/state": 6.7.5
-  "@codemirror/view": 6.43.12
   cookie: "^0.7.0"
   esbuild: 0.28.2
 
