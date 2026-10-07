@@ -10,6 +10,27 @@
 
 	let { data }: PageProps = $props();
 	let { TeamVulnerabilities, teamSlug } = $derived(data);
+
+	const noVulnerabilitiesWorkloadCount = (
+		summary:
+			| {
+					sbomCount: number;
+					highWorkloadCount: number;
+					elevatedWorkloadCount: number;
+					monitorWorkloadCount: number;
+			  }
+			| null
+			| undefined
+	) =>
+		summary
+			? Math.max(
+					0,
+					summary.sbomCount -
+						summary.highWorkloadCount -
+						summary.elevatedWorkloadCount -
+						summary.monitorWorkloadCount
+				)
+			: undefined;
 </script>
 
 <GraphErrors errors={$TeamVulnerabilities.errors} />
@@ -55,6 +76,9 @@
 						?.elevatedWorkloadCount}
 					monitorWorkloadCount={$TeamVulnerabilities.data.team.vulnerabilitySummary
 						?.monitorWorkloadCount}
+					noVulnerabilitiesWorkloadCount={noVulnerabilitiesWorkloadCount(
+						$TeamVulnerabilities.data.team.vulnerabilitySummary
+					)}
 				/>
 			{/key}
 		</section>
