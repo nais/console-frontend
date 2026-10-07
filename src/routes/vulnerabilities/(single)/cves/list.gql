@@ -1,0 +1,5 @@
+query CveList($first: Int, $last: Int, $after: Cursor, $before: Cursor, $orderBy: CVEOrder) {
+	cves(first: $first, last: $last, after: $after, before: $before, orderBy: $orderBy) {
+		...CvePriorityConnection @mask_disable
+	}
+}

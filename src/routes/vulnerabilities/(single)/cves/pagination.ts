@@ -1,4 +1,4 @@
-type Group = 'high' | 'elevated' | 'monitor';
+type Group = 'high' | 'elevated' | 'monitor' | 'all';
 
 export function cvePagination(group: Group, url: URL, order: string) {
 	const matchesOrder = url.searchParams.get(`${group}Order`) === order;
