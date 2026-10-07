@@ -7,7 +7,7 @@
 	import { CVEOrderField, OrderDirection } from '$houdini';
 	import { BodyLong, Heading, Loader } from '@nais/ds-svelte-community';
 	import type { PageProps } from './$types';
-	import { cvePageParams } from './pagination.js';
+	import { cvePageParams, cvePaginationParams } from './pagination.js';
 
 	let { data }: PageProps = $props();
 	let { CvePriorityGroups, CveList } = $derived(data);
@@ -35,6 +35,7 @@
 				orderField={CVEOrderField}
 				defaultOrderField={CVEOrderField.PRIORITY}
 				defaultOrderDirection={OrderDirection.ASC}
+				resetParams={cvePaginationParams}
 			/>
 		</div>
 		<BodyLong>

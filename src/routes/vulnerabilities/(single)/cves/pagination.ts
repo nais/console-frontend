@@ -1,5 +1,9 @@
 type Group = 'high' | 'elevated' | 'monitor' | 'all';
 
+export const cvePaginationParams = ['high', 'elevated', 'monitor', 'all'].flatMap((group) =>
+	['After', 'Before', 'Order'].map((suffix) => `${group}${suffix}`)
+);
+
 export function cvePagination(group: Group, url: URL, order: string) {
 	const matchesOrder = url.searchParams.get(`${group}Order`) === order;
 	const before = matchesOrder ? url.searchParams.get(`${group}Before`) || null : null;
