@@ -10936,6 +10936,16 @@ input TeamWorkloadsFilter {
 
   """Only return workloads with the given SBOM pipeline status."""
   sbomStatus: SBOMStatus
+
+  """
+  Only return workloads with one of the given SBOM pipeline statuses. Combined with sbomStatus if both are set.
+  """
+  sbomStatuses: [SBOMStatus!]
+
+  """
+  Only return workloads that have (true) or lack (false) vulnerability data. A workload whose image is processing has data when a previous image tag has been analyzed.
+  """
+  hasVulnerabilityData: Boolean
 }
 
 type TenantVulnerabilitySummary {
