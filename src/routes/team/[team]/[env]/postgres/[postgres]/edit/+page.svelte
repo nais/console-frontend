@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
 	import PostgresConfigurationFields from '#lib/domain/postgres/PostgresConfigurationFields.svelte';
+	import { quantityInUnits } from '#lib/domain/postgres/forms.js';
 	import GraphErrors from '#lib/ui/GraphErrors.svelte';
 	import { Alert, BodyShort, Button } from '@nais/ds-svelte-community';
 	import type { PageProps } from './$types';
@@ -30,10 +31,11 @@
 			>Update configuration for {postgres.name}. Changes are applied asynchronously.</BodyShort
 		>
 		<PostgresConfigurationFields
+			errors={form?.errors}
 			editing
-			cpu={form?.cpu ?? postgres.resources.cpu}
-			memory={form?.memory ?? postgres.resources.memory}
-			diskSize={form?.diskSize ?? postgres.resources.diskSize}
+			cpu={form?.cpu ?? quantityInUnits(postgres.resources.cpu, 'cores')}
+			memory={form?.memory ?? quantityInUnits(postgres.resources.memory, 'GiB')}
+			diskSize={form?.diskSize ?? quantityInUnits(postgres.resources.diskSize, 'GiB')}
 			highAvailability={form?.highAvailability ?? postgres.highAvailability}
 		/>
 		{#if form?.error}<Alert variant="error">{form.error}</Alert>{/if}

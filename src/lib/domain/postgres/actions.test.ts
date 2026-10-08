@@ -93,11 +93,11 @@ describe('Postgres management actions', () => {
 	test('returns creation errors and retains submitted fields', async () => {
 		create.mutate.mockResolvedValue({ errors: [{ message: 'Invalid quantity.' }] });
 		const result = await createActions.default(
-			createEvent({ name: 'database', environment: 'dev', majorVersion: '18', cpu: 'invalid' })
+			createEvent({ name: 'database', environment: 'dev', majorVersion: '18', cpu: '0,1' })
 		);
 		expect(result).toMatchObject({
 			status: 400,
-			data: { name: 'database', cpu: 'invalid', error: 'Invalid quantity.' }
+			data: { name: 'database', cpu: '0,1', error: 'Invalid quantity.' }
 		});
 	});
 
@@ -111,7 +111,7 @@ describe('Postgres management actions', () => {
 	test('updates quantities and permits disabling high availability', async () => {
 		update.mutate.mockResolvedValue({ data: { updatePostgres: { postgres: { id: 'pg' } } } });
 		await expect(
-			updateActions.default(updateEvent({ cpu: '250m', memory: '1Gi', diskSize: '20Gi' }))
+			updateActions.default(updateEvent({ cpu: '0,25', memory: '1', diskSize: '20' }))
 		).rejects.toMatchObject({ status: 303, location: '/team/test/dev/postgres/database' });
 		expect(update.mutate).toHaveBeenCalledWith(
 			{
@@ -119,7 +119,7 @@ describe('Postgres management actions', () => {
 					name: 'database',
 					teamSlug: 'test',
 					environmentName: 'dev',
-					cpu: '250m',
+					cpu: '0.25',
 					memory: '1Gi',
 					diskSize: '20Gi',
 					highAvailability: false
@@ -127,6 +127,29 @@ describe('Postgres management actions', () => {
 			},
 			expect.any(Object)
 		);
+	});
+
+	test.each([
+		['cpu', '100m'],
+		['memory', '-0.5'],
+		['diskSize', '9'],
+		['diskSize', '10.5'],
+		['cpu', '8.1'],
+		['memory', '32.1'],
+		['diskSize', '1001']
+	])('blocks invalid resources before create and update: %s=%s', async (name, value) => {
+		const fields = { [name]: value };
+		expect(
+			await createActions.default(
+				createEvent({ name: 'database', environment: 'dev', majorVersion: '18', ...fields })
+			)
+		).toMatchObject({ status: 400, data: { errors: { [name]: expect.any(String) } } });
+		expect(await updateActions.default(updateEvent(fields))).toMatchObject({
+			status: 400,
+			data: { errors: { [name]: expect.any(String) } }
+		});
+		expect(create.mutate).not.toHaveBeenCalled();
+		expect(update.mutate).not.toHaveBeenCalled();
 	});
 
 	test('requires the full environment/name before deletion', async () => {

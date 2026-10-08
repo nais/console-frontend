@@ -1,6 +1,11 @@
 import { graphql } from '$houdini';
 import { requirePostgresAccess } from '#lib/domain/postgres/access.server.js';
-import { formString, postgresConfiguration, resourceInput } from '#lib/domain/postgres/forms.js';
+import {
+	configurationErrors,
+	formString,
+	postgresConfiguration,
+	resourceInput
+} from '#lib/domain/postgres/forms.js';
 import { fail, redirect } from '@sveltejs/kit';
 import type { Actions } from './$types';
 
@@ -30,9 +35,12 @@ export const actions = {
 			majorVersion: formString(data, 'majorVersion'),
 			...postgresConfiguration(data)
 		};
+		const errors = configurationErrors(values);
 		if (!values.name || !values.environment || !values.majorVersion) {
-			return fail(400, { ...values, error: 'Name, environment and version are required.' });
+			return fail(400, { ...values, errors, error: 'Name, environment and version are required.' });
 		}
+		if (Object.keys(errors).length)
+			return fail(400, { ...values, errors, error: 'Check the resource fields below.' });
 		const result = await mutation.mutate(
 			{
 				input: {
@@ -46,10 +54,18 @@ export const actions = {
 			{ event }
 		);
 		if (result.errors?.length) {
-			return fail(400, { ...values, error: result.errors.map((item) => item.message).join('. ') });
+			return fail(400, {
+				...values,
+				errors,
+				error: result.errors.map((item) => item.message).join('. ')
+			});
 		}
 		if (!result.data) {
-			return fail(500, { ...values, error: 'Could not create Postgres. Please try again.' });
+			return fail(500, {
+				...values,
+				errors,
+				error: 'Could not create Postgres. Please try again.'
+			});
 		}
 		const postgres = result.data.createPostgres.postgres;
 		redirect(

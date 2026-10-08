@@ -48,6 +48,7 @@
 		<option value="18">18</option>
 	</Select>
 	<PostgresConfigurationFields
+		errors={form?.errors}
 		cpu={form?.cpu}
 		memory={form?.memory}
 		diskSize={form?.diskSize}

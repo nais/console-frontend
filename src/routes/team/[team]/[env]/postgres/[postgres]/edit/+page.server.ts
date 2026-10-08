@@ -1,6 +1,10 @@
 import { graphql } from '$houdini';
 import { requirePostgresAccess } from '#lib/domain/postgres/access.server.js';
-import { postgresConfiguration, resourceInput } from '#lib/domain/postgres/forms.js';
+import {
+	configurationErrors,
+	postgresConfiguration,
+	resourceInput
+} from '#lib/domain/postgres/forms.js';
 import { fail, redirect } from '@sveltejs/kit';
 import type { Actions } from './$types';
 
@@ -25,6 +29,9 @@ export const actions = {
 	default: async (event) => {
 		await requirePostgresAccess(event, event.params.team);
 		const values = postgresConfiguration(await event.request.formData());
+		const errors = configurationErrors(values);
+		if (Object.keys(errors).length)
+			return fail(400, { ...values, errors, error: 'Check the resource fields below.' });
 		const result = await mutation.mutate(
 			{
 				input: {
@@ -37,10 +44,18 @@ export const actions = {
 			{ event }
 		);
 		if (result.errors?.length) {
-			return fail(400, { ...values, error: result.errors.map((item) => item.message).join('. ') });
+			return fail(400, {
+				...values,
+				errors,
+				error: result.errors.map((item) => item.message).join('. ')
+			});
 		}
 		if (!result.data) {
-			return fail(500, { ...values, error: 'Could not update Postgres. Please try again.' });
+			return fail(500, {
+				...values,
+				errors,
+				error: 'Could not update Postgres. Please try again.'
+			});
 		}
 		redirect(
 			303,
