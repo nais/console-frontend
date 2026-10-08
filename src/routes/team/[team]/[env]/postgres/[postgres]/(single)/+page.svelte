@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { page } from '$app/state';
 	import PersistenceActivityCard from '#lib/domain/activity/PersistenceActivityCard.svelte';
 	import Labels from '#lib/domain/labels/Labels.svelte';
 	import WorkloadLink from '#lib/domain/workload/WorkloadLink.svelte';
@@ -7,6 +6,7 @@
 	import SectionBoundary from '#lib/ui/SectionBoundary.svelte';
 	import SurfaceCard from '#lib/ui/SurfaceCard.svelte';
 	import { exhaustive } from '#lib/utils/houdini.js';
+	import { page } from '$app/state';
 	import { BodyShort, Heading, Loader } from '@nais/ds-svelte-community';
 	import type { PageProps } from './$types';
 
@@ -70,10 +70,6 @@
 			</section>
 		</div>
 		<div class="layout-sidebar">
-			<Labels labels={postgres.labels} showEmpty />
-			<SectionBoundary message="Activity failed to render.">
-				<PersistenceActivityCard resourceType="postgres" resource={postgres} />
-			</SectionBoundary>
 			<SurfaceCard title="Used by">
 				{#if activeBranch}
 					{const workloads = $derived(exhaustive(activeBranch.workloads.nodes))}
@@ -96,6 +92,10 @@
 					<BodyShort>Usage information is not yet available.</BodyShort>
 				{/if}
 			</SurfaceCard>
+			<Labels labels={postgres.labels} showEmpty />
+			<SectionBoundary message="Activity failed to render.">
+				<PersistenceActivityCard resourceType="postgres" resource={postgres} />
+			</SectionBoundary>
 		</div>
 	</div>
 {/if}
