@@ -4,8 +4,16 @@
 	import { PrometheusChartQueryInterval } from '#lib/chart/util.js';
 	import GraphErrors from '#lib/ui/GraphErrors.svelte';
 	import { changeParams } from '#lib/utils/searchparams.js';
-	import { BodyShort, Loader, ToggleGroup, ToggleGroupItem } from '@nais/ds-svelte-community';
+	import {
+		BodyShort,
+		Heading,
+		Loader,
+		ToggleGroup,
+		ToggleGroupItem
+	} from '@nais/ds-svelte-community';
 	import type { PageProps } from './$types';
+
+	const uid = $props.id();
 
 	let { data }: PageProps = $props();
 	let { PostgresInsights, interval } = $derived(data);
@@ -68,35 +76,38 @@
 		</ToggleGroup>
 	</div>
 
-	{#if postgres.activeBranch}
-		<PrometheusChart
-			{interval}
-			title="CPU utilization"
-			description="CPU usage as a percentage of requested CPU for the active database."
-			query={cpuQuery}
-			environmentName={postgres.teamEnvironment.environment.name}
-			labelFormatter={() => 'CPU used'}
-			formatYValue={formatPercentage}
-		/>
-		<PrometheusChart
-			{interval}
-			title="Memory utilization"
-			description="Memory working set as a percentage of requested memory for the active database."
-			query={memoryQuery}
-			environmentName={postgres.teamEnvironment.environment.name}
-			labelFormatter={() => 'Memory used'}
-			formatYValue={formatPercentage}
-		/>
-		<PrometheusChart
-			{interval}
-			title="Disk utilization"
-			description="Storage used as a percentage of disk capacity for the active database."
-			query={diskQuery}
-			environmentName={postgres.teamEnvironment.environment.name}
-			labelFormatter={() => 'Disk used'}
-			formatYValue={formatPercentage}
-		/>
-	{:else}
-		<BodyShort>Utilization is not yet available.</BodyShort>
-	{/if}
+	<section aria-labelledby={`${uid}-utilization-heading`}>
+		<Heading as="h2" size="medium" spacing id={`${uid}-utilization-heading`}>Utilization</Heading>
+		{#if postgres.activeBranch}
+			<PrometheusChart
+				{interval}
+				title="CPU utilization"
+				description="CPU usage as a percentage of requested CPU for the active database."
+				query={cpuQuery}
+				environmentName={postgres.teamEnvironment.environment.name}
+				labelFormatter={() => 'CPU used'}
+				formatYValue={formatPercentage}
+			/>
+			<PrometheusChart
+				{interval}
+				title="Memory utilization"
+				description="Memory working set as a percentage of requested memory for the active database."
+				query={memoryQuery}
+				environmentName={postgres.teamEnvironment.environment.name}
+				labelFormatter={() => 'Memory used'}
+				formatYValue={formatPercentage}
+			/>
+			<PrometheusChart
+				{interval}
+				title="Disk utilization"
+				description="Storage used as a percentage of disk capacity for the active database."
+				query={diskQuery}
+				environmentName={postgres.teamEnvironment.environment.name}
+				labelFormatter={() => 'Disk used'}
+				formatYValue={formatPercentage}
+			/>
+		{:else}
+			<BodyShort>Utilization is not yet available.</BodyShort>
+		{/if}
+	</section>
 {/if}

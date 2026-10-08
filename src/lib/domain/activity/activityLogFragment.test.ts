@@ -1,5 +1,13 @@
 import { readFileSync } from 'node:fs';
-import { buildSchema, OverlappingFieldsCanBeMergedRule, parse, validate, visit } from 'graphql';
+import {
+	buildSchema,
+	FieldsOnCorrectTypeRule,
+	Kind,
+	OverlappingFieldsCanBeMergedRule,
+	parse,
+	validate,
+	visit
+} from 'graphql';
 
 const component = readFileSync(
 	new URL('../list-items/ActivityLogListItem.svelte', import.meta.url),
@@ -21,6 +29,41 @@ const schema = buildSchema(
 );
 
 describe('ActivityLogEntryFragment', () => {
+	test.each([
+		'PostgresBranchCreatedActivityLogEntry',
+		'PostgresBranchActivatedActivityLogEntry',
+		'PostgresBranchDeletedActivityLogEntry'
+	])('selects all presenter fields on %s for SSR', (typeName) => {
+		const definition = fragment.definitions.find(
+			(definition) => definition.kind === Kind.FRAGMENT_DEFINITION
+		);
+		const selection = definition?.selectionSet.selections.find(
+			(selection) =>
+				selection.kind === Kind.INLINE_FRAGMENT && selection.typeCondition?.name.value === typeName
+		);
+		if (selection?.kind !== Kind.INLINE_FRAGMENT) {
+			throw new Error(`Missing concrete fragment for ${typeName}`);
+		}
+		const fields = selection.selectionSet.selections
+			.filter((field) => field.kind === Kind.FIELD)
+			.map((field) => [field.alias?.value ?? field.name.value, field.name.value]);
+
+		expect(fields).toEqual(
+			expect.arrayContaining([
+				['__typename', '__typename'],
+				['id', 'id'],
+				['createdAt', 'createdAt'],
+				['actor', 'actor'],
+				['environmentName', 'environmentName'],
+				['message', 'message'],
+				['resourceName', 'resourceName'],
+				['resourceType', 'resourceType'],
+				['postgresTeamSlug', 'teamSlug']
+			])
+		);
+		expect(validate(schema, fragment, [FieldsOnCorrectTypeRule])).toEqual([]);
+	});
+
 	test('selects nullable and non-null team slugs without conflicting response fields', () => {
 		const errors = validate(schema, fragment, [OverlappingFieldsCanBeMergedRule]);
 

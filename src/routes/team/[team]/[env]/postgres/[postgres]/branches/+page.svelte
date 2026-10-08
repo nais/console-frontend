@@ -120,7 +120,7 @@
 			newName = '';
 			targetTime = '';
 			await refresh();
-			createMessage = `${createdName} was created and is being provisioned. It will not become active automatically.`;
+			createMessage = `${createdName} was created. Provisioning is asynchronous; use Refresh status to check when it is available. It will not become active automatically.`;
 		} finally {
 			creating = false;
 		}
@@ -149,7 +149,7 @@
 			return { ok: false, message: 'Could not request activation. Please try again.' };
 		}
 		await refresh();
-		activationMessage = `Requested ${target} as the active branch. Activation is in progress; check the active status to see when it has completed.`;
+		activationMessage = `Requested ${target} as the active branch. Activation is asynchronous; use Refresh status to check when it has completed.`;
 		return { ok: true, message: activationMessage };
 	}
 </script>
@@ -173,6 +173,15 @@
 					(activation requested for <strong>{postgres.desiredActiveBranch}</strong>)
 				{/if}
 			</BodyShort>
+			<Button
+				size="small"
+				variant="secondary"
+				onclick={refresh}
+				loading={$PostgresBranches.fetching}
+				disabled={loadingMore}
+			>
+				Refresh status
+			</Button>
 			{#if activationMessage}
 				<Alert variant="success" size="small">{activationMessage}</Alert>
 			{/if}
@@ -257,7 +266,7 @@
 	.branches-page {
 		display: grid;
 		gap: var(--ax-space-32);
-		max-width: 800px;
+		max-width: var(--ax-breakpoint-md);
 	}
 	.branch-list {
 		list-style: none;
@@ -275,7 +284,7 @@
 	.recovery-form {
 		display: grid;
 		gap: var(--ax-space-12);
-		max-width: 400px;
+		max-width: var(--ax-breakpoint-sm);
 		margin-top: var(--ax-space-16);
 	}
 </style>

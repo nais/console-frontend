@@ -156,6 +156,39 @@
 							}
 						}
 					}
+					... on PostgresBranchCreatedActivityLogEntry {
+						__typename
+						id
+						createdAt
+						actor
+						environmentName
+						message
+						resourceName
+						resourceType
+						postgresTeamSlug: teamSlug
+					}
+					... on PostgresBranchActivatedActivityLogEntry {
+						__typename
+						id
+						createdAt
+						actor
+						environmentName
+						message
+						resourceName
+						resourceType
+						postgresTeamSlug: teamSlug
+					}
+					... on PostgresBranchDeletedActivityLogEntry {
+						__typename
+						id
+						createdAt
+						actor
+						environmentName
+						message
+						resourceName
+						resourceType
+						postgresTeamSlug: teamSlug
+					}
 					... on PostgresCreatedActivityLogEntry {
 						id
 						createdAt

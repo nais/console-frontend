@@ -1649,6 +1649,14 @@ type CVEEdge {
   node: CVE!
 }
 
+"""Filter active CVEs by their calculated risk assessment."""
+input CVEFilter {
+  """
+  Operational priority. URGENT requires workload context and currently returns no CVEs.
+  """
+  priority: CVEPriority
+}
+
 """Ordering options when fetching CVEs."""
 input CVEOrder {
   """The direction to order items by."""
@@ -1691,7 +1699,7 @@ enum CVEPriority {
   MONITOR
 
   """
-  Vulnerability is known to be actively exploited and requires immediate action.
+  Requires immediate action based on workload context, including internet exposure. Not assigned to CVEs at global scope; a KEV entry alone does not imply URGENT.
   """
   URGENT
 }
@@ -6836,6 +6844,11 @@ type Query {
 
     """Get items before this cursor."""
     before: Cursor
+
+    """
+    Filter CVEs before pagination. Totals cover the entire filtered selection.
+    """
+    filter: CVEFilter
 
     """
     Get the first n items in the connection. This can be used in combination with the after parameter.

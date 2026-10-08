@@ -12,7 +12,7 @@
 	import SurfaceCard from '#lib/ui/SurfaceCard.svelte';
 	import TooltipAlignHack from '#lib/ui/TooltipAlignHack.svelte';
 	import { changeParams } from '#lib/utils/searchparams.js';
-	import { Loader, Tag } from '@nais/ds-svelte-community';
+	import { Checkbox, Loader, Tag } from '@nais/ds-svelte-community';
 	import { CircleFillIcon, FunnelIcon } from '@nais/ds-svelte-community/icons';
 	import type { PageProps } from './$types';
 
@@ -56,7 +56,7 @@
 						aria-expanded={filtersOpen}
 						onclick={() => (filtersOpen = !filtersOpen)}
 					>
-						<FunnelIcon aria-hidden="true" style="font-size: 1rem" />
+						<FunnelIcon aria-hidden="true" style="font-size: var(--ax-font-size-medium)" />
 						Filters
 					</button>
 				{/snippet}
@@ -80,7 +80,7 @@
 										AVAILABLE: '--ax-bg-success-strong',
 										DEGRADED: '--ax-bg-danger-strong',
 										PROGRESSING: '--ax-bg-warning-moderate-pressed'
-									}[state]}); font-size: 0.7rem"
+									}[state]}); font-size: var(--ax-font-size-small)"
 								/>
 							</TooltipAlignHack>
 							<span class="item-name">{postgres.name}</span>
@@ -123,14 +123,13 @@
 					<summary class="section-heading">Environments</summary>
 					<div class="facet-list">
 						{#each $TeamPostgres.data.team.environments as teamEnvironment (teamEnvironment.environment.name)}
-							<label class="facet-item">
-								<input
-									type="checkbox"
-									checked={selectedEnvironments.includes(teamEnvironment.environment.name)}
-									onchange={() => toggleEnvironment(teamEnvironment.environment.name)}
-								/>
+							<Checkbox
+								size="small"
+								checked={selectedEnvironments.includes(teamEnvironment.environment.name)}
+								onchange={() => toggleEnvironment(teamEnvironment.environment.name)}
+							>
 								<span class="facet-label">{teamEnvironment.environment.name}</span>
-							</label>
+							</Checkbox>
 						{/each}
 					</div>
 				</details>
@@ -167,7 +166,7 @@
 	}
 	.item-name {
 		color: var(--ax-text-neutral);
-		font-weight: 500;
+		font-weight: var(--ax-font-weight-bold);
 		overflow: hidden;
 		text-overflow: ellipsis;
 		min-width: 0;
