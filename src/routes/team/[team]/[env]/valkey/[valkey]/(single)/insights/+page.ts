@@ -10,7 +10,8 @@ export async function load(event) {
 	return {
 		interval,
 		...(await addPageMeta(event, {
-			title: 'Insights'
+			title: 'Insights',
+			pageHeaderTitle: event.params.valkey
 		}))
 	};
 }
