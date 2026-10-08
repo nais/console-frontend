@@ -1,0 +1,88 @@
+query TenantTeamPriorityGroups(
+	$highFirst: Int
+	$highLast: Int
+	$highAfter: Cursor
+	$highBefore: Cursor
+	$elevatedFirst: Int
+	$elevatedLast: Int
+	$elevatedAfter: Cursor
+	$elevatedBefore: Cursor
+	$monitorFirst: Int
+	$monitorLast: Int
+	$monitorAfter: Cursor
+	$monitorBefore: Cursor
+	$noneFirst: Int
+	$noneLast: Int
+	$noneAfter: Cursor
+	$noneBefore: Cursor
+) {
+	high: teams(
+		first: $highFirst
+		last: $highLast
+		after: $highAfter
+		before: $highBefore
+		filter: { hasWorkloads: true, vulnerabilityPriorityGroup: HIGH }
+	) {
+		...TeamPriorityConnection @mask_disable
+	}
+	elevated: teams(
+		first: $elevatedFirst
+		last: $elevatedLast
+		after: $elevatedAfter
+		before: $elevatedBefore
+		filter: { hasWorkloads: true, vulnerabilityPriorityGroup: ELEVATED }
+	) {
+		...TeamPriorityConnection @mask_disable
+	}
+	monitor: teams(
+		first: $monitorFirst
+		last: $monitorLast
+		after: $monitorAfter
+		before: $monitorBefore
+		filter: { hasWorkloads: true, vulnerabilityPriorityGroup: MONITOR }
+	) {
+		...TeamPriorityConnection @mask_disable
+	}
+	none: teams(
+		first: $noneFirst
+		last: $noneLast
+		after: $noneAfter
+		before: $noneBefore
+		filter: { hasWorkloads: true, vulnerabilityPriorityGroup: NONE }
+	) {
+		...TeamPriorityConnection @mask_disable
+	}
+}
+
+fragment TeamPriorityConnection on TeamConnection {
+	pageInfo {
+		endCursor
+		hasNextPage
+		hasPreviousPage
+		pageEnd
+		pageStart
+		startCursor
+		totalCount
+	}
+	edges {
+		node {
+			slug
+			workloads {
+				pageInfo {
+					totalCount
+				}
+			}
+			vulnerabilitySummary {
+				countsByPriority {
+					knownExploited
+					highRisk
+					elevatedRisk
+					monitor
+				}
+				riskScore
+				riskScoreTrend
+				coverage
+			}
+		}
+	}
+}

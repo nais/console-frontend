@@ -1,35 +1,77 @@
-query CVES($first: Int, $last: Int, $before: Cursor, $after: Cursor, $orderBy: CVEOrder) {
-	cves(first: $first, last: $last, before: $before, after: $after, orderBy: $orderBy)
-		@paginate(mode: SinglePage) {
-		pageInfo {
-			endCursor
-			hasNextPage
-			hasPreviousPage
-			pageEnd
-			pageStart
-			startCursor
-			totalCount
-		}
-		edges {
-			node {
-				id
-				identifier
-				severity
-				title
-				description
-				detailsLink
-				riskAssessment {
-					priority
-					cvssScore
-					epssScore
-					epssPercentile
-					hasKevEntry
-					knownRansomwareUse
-				}
-				workloads {
-					pageInfo {
-						totalCount
-					}
+query CvePriorityGroups(
+	$highFirst: Int
+	$highLast: Int
+	$highAfter: Cursor
+	$highBefore: Cursor
+	$elevatedFirst: Int
+	$elevatedLast: Int
+	$elevatedAfter: Cursor
+	$elevatedBefore: Cursor
+	$monitorFirst: Int
+	$monitorLast: Int
+	$monitorAfter: Cursor
+	$monitorBefore: Cursor
+	$orderBy: CVEOrder
+) {
+	high: cves(
+		first: $highFirst
+		last: $highLast
+		after: $highAfter
+		before: $highBefore
+		filter: { priority: HIGH }
+		orderBy: $orderBy
+	) {
+		...CvePriorityConnection @mask_disable
+	}
+	elevated: cves(
+		first: $elevatedFirst
+		last: $elevatedLast
+		after: $elevatedAfter
+		before: $elevatedBefore
+		filter: { priority: ELEVATED }
+		orderBy: $orderBy
+	) {
+		...CvePriorityConnection @mask_disable
+	}
+	monitor: cves(
+		first: $monitorFirst
+		last: $monitorLast
+		after: $monitorAfter
+		before: $monitorBefore
+		filter: { priority: MONITOR }
+		orderBy: $orderBy
+	) {
+		...CvePriorityConnection @mask_disable
+	}
+}
+
+fragment CvePriorityConnection on CVEConnection {
+	pageInfo {
+		endCursor
+		hasNextPage
+		hasPreviousPage
+		pageEnd
+		pageStart
+		startCursor
+		totalCount
+	}
+	edges {
+		node {
+			id
+			identifier
+			severity
+			title
+			riskAssessment {
+				priority
+				cvssScore
+				epssScore
+				epssPercentile
+				hasKevEntry
+				knownRansomwareUse
+			}
+			workloads {
+				pageInfo {
+					totalCount
 				}
 			}
 		}

@@ -3,6 +3,7 @@
 	import { AlertOrderField, OrderDirection } from '$houdini';
 	import { docURL, tenantURL } from '#lib/doc.js';
 	import AlertsFacets from '#lib/domain/alerts/AlertsFacets.svelte';
+	import { silenceFilter } from '#lib/domain/alerts/silenceFilter.js';
 	import CodeBlockPromQl from '#lib/domain/monitoring/CodeBlockPromQL.svelte';
 	import { formatSeconds } from '#lib/domain/vulnerability/dateUtils.js';
 	import { envTagVariant } from '#lib/envTagVariant.js';
@@ -14,8 +15,14 @@
 	import Pagination from '#lib/ui/Pagination.svelte';
 	import SurfaceCard from '#lib/ui/SurfaceCard.svelte';
 	import { changeParams } from '#lib/utils/searchparams.js';
-	import { CopyButton, Heading, Tag } from '@nais/ds-svelte-community';
-	import { ChevronRightIcon, ClockDashedIcon, FunnelIcon } from '@nais/ds-svelte-community/icons';
+	import { Button, Tag } from '@nais/ds-svelte-community';
+	import {
+		BellSlashIcon,
+		ChevronRightIcon,
+		ClockDashedIcon,
+		ExternalLinkIcon,
+		FunnelIcon
+	} from '@nais/ds-svelte-community/icons';
 	import type { PageProps } from './$types';
 	import PrometheusAlarmDetail from './PrometheusAlarmDetail.svelte';
 
@@ -101,6 +108,18 @@
 		return tenantURL('grafana', `/explore?${params.toString()}`);
 	}
 
+	function makeAlertmanagerSilenceUrl(
+		name: string,
+		namespace: string,
+		environment: string
+	): string {
+		const filter = silenceFilter(name, namespace, environment, page.data.tenantName || 'nav');
+		return tenantURL(
+			'mimir-alertmanager-tenant',
+			`/alertmanager/#/silences/new?filter=${encodeURIComponent(filter)}`
+		);
+	}
+
 	const changeQuery = (
 		params: {
 			after?: string;
@@ -184,29 +203,47 @@
 								<div class="muted">No alerts firing</div>
 							{/if}
 
-							<div class="query-heading">
-								<Heading as="h2" size="xsmall">Query</Heading>
-								<div class="query-actions">
-									<ExternalLink href={makeGrafanaExploreUrl(alert.query)}>
-										<span style="font-size: 16px;">Run in Grafana</span>
-									</ExternalLink>
-									<CopyButton
-										text="Copy query"
-										activeText="Query copied"
-										variant="action"
-										copyText={alert.query}
-										size="xsmall"
-									/>
-								</div>
+							<div class="rule-actions">
+								<Button
+									as="a"
+									href={makeGrafanaExploreUrl(alert.query)}
+									target="_blank"
+									rel="noopener noreferrer"
+									variant="secondary"
+									size="small"
+									icon={ExternalLinkIcon}
+								>
+									Run in Grafana
+								</Button>
+								{#if alert.alarms.some((alarm) => alarm.state === 'FIRING')}
+									<Button
+										as="a"
+										href={makeAlertmanagerSilenceUrl(
+											alert.name,
+											alert.team.slug,
+											alert.teamEnvironment.environment.name
+										)}
+										target="_blank"
+										rel="noopener noreferrer"
+										variant="secondary"
+										size="small"
+										icon={BellSlashIcon}
+									>
+										Silence
+									</Button>
+								{/if}
 							</div>
-							<div
-								style="display: flex; flex-direction: column; gap: var(--ax-space-8); flex-wrap: wrap;"
-							>
-								<CodeBlockPromQl code={alert.query} />
-								<div class="muted small for">
-									<ClockDashedIcon />&nbsp;for: {formatSeconds(alert.duration)}
+							<details class="query-details">
+								<summary class="query-toggle">
+									<ChevronRightIcon aria-hidden="true" /> Query
+								</summary>
+								<div class="query-content">
+									<CodeBlockPromQl code={alert.query} />
+									<div class="for">
+										<ClockDashedIcon aria-hidden="true" /> for: {formatSeconds(alert.duration)}
+									</div>
 								</div>
-							</div>
+							</details>
 						</div>
 					</details>
 				{/each}
@@ -266,21 +303,6 @@
 </div>
 
 <style>
-	/* Mobile responsive layout */
-	@media (max-width: 767px), (max-height: 500px) {
-		.query-heading {
-			flex-direction: column;
-			align-items: flex-start;
-			gap: var(--ax-space-4);
-		}
-
-		.query-actions {
-			width: 100%;
-			flex-wrap: wrap;
-			gap: var(--ax-space-6);
-		}
-	}
-
 	details > summary {
 		list-style: none;
 	}
@@ -344,9 +366,6 @@
 	.muted {
 		color: var(--ax-text-neutral);
 	}
-	.small {
-		font-size: 0.8rem;
-	}
 	.for {
 		display: inline-flex;
 		align-items: center;
@@ -360,6 +379,9 @@
 	}
 
 	.rule {
+		display: flex;
+		flex-direction: column;
+		gap: var(--ax-space-24);
 		padding: var(--ax-space-12) var(--ax-space-16) var(--ax-space-16)
 			calc(var(--ax-space-16) + 22px);
 		background: var(--ax-bg-default);
@@ -369,25 +391,35 @@
 	.alarms {
 		display: flex;
 		flex-direction: column;
-		gap: var(--ax-space-8);
+		gap: var(--ax-space-24);
 	}
 
-	.query-heading {
-		margin-top: var(--ax-space-8);
-		margin-bottom: var(--ax-space-8);
+	.rule-actions {
 		display: flex;
 		align-items: center;
-		justify-content: space-between;
-		word-break: break-word;
+		flex-wrap: wrap;
+		gap: var(--ax-space-8);
 	}
-	.query-actions {
+	.query-toggle {
 		display: flex;
 		align-items: center;
 		gap: var(--ax-space-4);
+		cursor: pointer;
+		font-weight: var(--ax-font-weight-bold);
 	}
-
-	.query-heading :global(h2) {
-		width: 100%;
-		text-align: left;
+	.query-details[open] .query-toggle :global(svg) {
+		transform: rotate(90deg);
+	}
+	.query-content {
+		display: flex;
+		flex-direction: column;
+		gap: var(--ax-space-8);
+		margin-top: var(--ax-space-12);
+		min-width: 0;
+	}
+	@media (max-width: 767px) {
+		.rule {
+			padding: var(--ax-space-16);
+		}
 	}
 </style>
