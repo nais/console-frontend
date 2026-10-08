@@ -24,6 +24,7 @@ import OpenSearchCredentialsCreatedActivityLogEntryText from './shared/texts/Ope
 import OpenSearchDeletedActivityLogEntryText from './shared/texts/OpenSearchDeletedActivityLogEntryText.svelte';
 import OpenSearchUpdatedActivityLogEntryText from './shared/texts/OpenSearchUpdatedActivityLogEntryText.svelte';
 import PostgresCreatedActivityLogEntryText from './shared/texts/PostgresCreatedActivityLogEntryText.svelte';
+import PostgresBranchActivityLogEntryText from './shared/texts/PostgresBranchActivityLogEntryText.svelte';
 import PostgresDeletedActivityLogEntryText from './shared/texts/PostgresDeletedActivityLogEntryText.svelte';
 import PostgresGrantAccessActivityLogEntryText from './shared/texts/PostgresGrantAccessActivityLogEntryText.svelte';
 import PostgresPersonalAccessConnectionActivityLogEntryText from './shared/texts/PostgresPersonalAccessConnectionActivityLogEntryText.svelte';
@@ -127,6 +128,10 @@ export function activityTextComponent(typename: string | null): Component<textCo
 			return PostgresDeletedActivityLogEntryText as Component<textComponentProps>;
 		case 'PostgresCreatedActivityLogEntry':
 			return PostgresCreatedActivityLogEntryText as Component<textComponentProps>;
+		case 'PostgresBranchCreatedActivityLogEntry':
+		case 'PostgresBranchActivatedActivityLogEntry':
+		case 'PostgresBranchDeletedActivityLogEntry':
+			return PostgresBranchActivityLogEntryText as Component<textComponentProps>;
 		case 'PostgresUpdatedActivityLogEntry':
 			return PostgresUpdatedActivityLogEntryText as Component<textComponentProps>;
 		case 'PostgresGrantAccessActivityLogEntry':

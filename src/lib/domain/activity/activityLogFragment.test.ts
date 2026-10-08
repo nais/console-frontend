@@ -32,7 +32,13 @@ describe('ActivityLogEntryFragment', () => {
 	test.each([
 		'PostgresBranchCreatedActivityLogEntry',
 		'PostgresBranchActivatedActivityLogEntry',
-		'PostgresBranchDeletedActivityLogEntry'
+		'PostgresBranchDeletedActivityLogEntry',
+		'PostgresCreatedActivityLogEntry',
+		'PostgresUpdatedActivityLogEntry',
+		'PostgresDeletedActivityLogEntry',
+		'PostgresGrantAccessActivityLogEntry',
+		'PostgresPersonalAccessCreatedActivityLogEntry',
+		'PostgresPersonalAccessConnectionActivityLogEntry'
 	])('selects all presenter fields on %s for SSR', (typeName) => {
 		const definition = fragment.definitions.find(
 			(definition) => definition.kind === Kind.FRAGMENT_DEFINITION
@@ -68,6 +74,34 @@ describe('ActivityLogEntryFragment', () => {
 		const errors = validate(schema, fragment, [OverlappingFieldsCanBeMergedRule]);
 
 		expect(errors.map((error) => error.message)).toEqual([]);
+	});
+
+	test.each([
+		['PostgresBranchCreatedActivityLogEntry', ['branch', 'sourceBranch', 'targetTime']],
+		['PostgresBranchActivatedActivityLogEntry', ['branch']],
+		['PostgresBranchDeletedActivityLogEntry', ['branch']]
+	])('selects structured branch data on %s', (typeName, expectedFields) => {
+		const definition = fragment.definitions.find(
+			(definition) => definition.kind === Kind.FRAGMENT_DEFINITION
+		);
+		const selection = definition?.selectionSet.selections.find(
+			(selection) =>
+				selection.kind === Kind.INLINE_FRAGMENT && selection.typeCondition?.name.value === typeName
+		);
+		if (selection?.kind !== Kind.INLINE_FRAGMENT) {
+			throw new Error(`Missing concrete fragment for ${typeName}`);
+		}
+		const data = selection.selectionSet.selections.find(
+			(field) => field.kind === Kind.FIELD && field.alias?.value === 'postgresBranch'
+		);
+		if (data?.kind !== Kind.FIELD || !data.selectionSet) {
+			throw new Error(`Missing branch data for ${typeName}`);
+		}
+		expect(
+			data.selectionSet.selections
+				.filter((field) => field.kind === Kind.FIELD)
+				.map((field) => field.name.value)
+		).toEqual(expectedFields);
 	});
 
 	test('detects the team slug conflict when the Postgres alias is removed', () => {
