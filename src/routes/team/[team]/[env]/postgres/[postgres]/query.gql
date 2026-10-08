@@ -2,6 +2,7 @@ query PostgresOverview($team: Slug!, $env: String!, $name: String!) {
 	team(slug: $team) {
 		environment(name: $env) {
 			postgres(name: $name) {
+				...PersistenceActivityCardPostgresFragment
 				id
 				name
 				teamEnvironment {
@@ -24,7 +25,6 @@ query PostgresOverview($team: Slug!, $env: String!, $name: String!) {
 				activeBranch {
 					id
 					name
-					clusterName
 					state
 					workloads(first: 25) {
 						pageInfo {
@@ -57,6 +57,16 @@ query PostgresOverview($team: Slug!, $env: String!, $name: String!) {
 								}
 							}
 						}
+					}
+				}
+				branches(first: 20) {
+					pageInfo {
+						totalCount
+					}
+					nodes {
+						id
+						name
+						state
 					}
 				}
 			}

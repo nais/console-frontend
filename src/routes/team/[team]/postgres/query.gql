@@ -1,6 +1,6 @@
 query TeamPostgres(
 	$team: Slug!
-	$filter: PostgresFilter
+	$filter: TeamPostgresFilter
 	$first: Int
 	$last: Int
 	$before: Cursor

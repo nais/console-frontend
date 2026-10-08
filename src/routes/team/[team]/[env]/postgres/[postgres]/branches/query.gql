@@ -1,0 +1,30 @@
+query PostgresBranches($team: Slug!, $env: String!, $name: String!, $first: Int!) {
+	me {
+		... on User {
+			isAdmin
+		}
+	}
+	team(slug: $team) {
+		environment(name: $env) {
+			postgres(name: $name) {
+				id
+				name
+				activeBranch {
+					id
+					name
+				}
+				desiredActiveBranch
+				branches(first: $first) @paginate(mode: Infinite) {
+					pageInfo {
+						hasNextPage
+					}
+					nodes {
+						id
+						name
+						state
+					}
+				}
+			}
+		}
+	}
+}

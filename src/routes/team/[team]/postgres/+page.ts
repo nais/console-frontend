@@ -13,7 +13,7 @@ export async function load(event) {
 
 	return {
 		...(await addPageMeta(event, {
-			title: 'Postgres Instances',
+			title: 'Postgres',
 			pageHeaderTitle: '',
 			docPath: '/persistence/postgresql'
 		})),

@@ -1,12 +1,16 @@
 import { addPageMeta } from '#lib/utils/pageMeta.js';
 
 export async function load(event) {
+	if (event.route.id === '/team/[team]/[env]/postgres/[postgres]') {
+		return {};
+	}
+
 	return {
 		...(await addPageMeta(event, {
 			breadcrumbs: [
 				{
-					label: 'Postgres',
-					href: '/team/[team]/postgres'
+					label: event.params.postgres,
+					href: '/team/[team]/[env]/postgres/[postgres]'
 				}
 			]
 		}))
