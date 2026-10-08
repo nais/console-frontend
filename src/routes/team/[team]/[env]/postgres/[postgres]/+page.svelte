@@ -7,7 +7,7 @@
 	import SectionBoundary from '#lib/ui/SectionBoundary.svelte';
 	import SurfaceCard from '#lib/ui/SurfaceCard.svelte';
 	import { exhaustive } from '#lib/utils/houdini.js';
-	import { BodyShort, Heading, Loader } from '@nais/ds-svelte-community';
+	import { BodyShort, Button, Heading, Loader } from '@nais/ds-svelte-community';
 	import type { PageProps } from './$types';
 	import BranchStatus from './BranchStatus.svelte';
 
@@ -29,6 +29,26 @@
 		<Loader size="3xlarge" />
 	</div>
 {:else if postgres}
+	{#if data.viewerIsMember || data.isAdmin}
+		<div class="detail-actions">
+			<Button
+				as="a"
+				variant="secondary"
+				size="small"
+				href="/team/{page.params.team}/{page.params.env}/postgres/{page.params.postgres}/edit"
+			>
+				Edit
+			</Button>
+			<Button
+				as="a"
+				variant="danger"
+				size="small"
+				href="/team/{page.params.team}/{page.params.env}/postgres/{page.params.postgres}/delete"
+			>
+				Delete
+			</Button>
+		</div>
+	{/if}
 	<div class="layout-two-column">
 		<div class="content">
 			<section aria-labelledby="branches-heading">

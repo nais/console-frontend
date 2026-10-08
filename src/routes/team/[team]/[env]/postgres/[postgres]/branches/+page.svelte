@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { page } from '$app/state';
 	import { graphql } from '$houdini';
+	import { canDeleteBranch } from '#lib/domain/postgres/forms.js';
 	import ActionConfirm from '#lib/ui/ActionConfirm.svelte';
 	import GraphErrors from '#lib/ui/GraphErrors.svelte';
 	import {
@@ -9,6 +10,7 @@
 		Button,
 		Heading,
 		Loader,
+		Modal,
 		Select,
 		TextField
 	} from '@nais/ds-svelte-community';
@@ -29,6 +31,12 @@
 	let activationTarget = $state('');
 	let confirmActivation = $state(false);
 	let activationMessage = $state('');
+	let deletionTarget = $state('');
+	let deletionConfirmation = $state('');
+	let deletionOpen = $state(false);
+	let deleting = $state(false);
+	let deletionError = $state('');
+	let deletionMessage = $state('');
 	let canManage = $derived(
 		viewerIsMember ||
 			($PostgresBranches.data?.me?.__typename === 'User' && $PostgresBranches.data.me.isAdmin)
@@ -59,6 +67,52 @@
 			}
 		}
 	`);
+	const deleteBranch = graphql(`
+		mutation DeletePostgresBranch($input: DeletePostgresBranchInput!) {
+			deletePostgresBranch(input: $input) {
+				postgresBranchDeleted
+			}
+		}
+	`);
+
+	async function removeBranch(event: SubmitEvent) {
+		event.preventDefault();
+		const target = deletionTarget;
+		deletionError = '';
+		if (
+			!canManage ||
+			deletionConfirmation !== target ||
+			!branches.some((branch) => branch.name === target) ||
+			!canDeleteBranch(target, postgres?.activeBranch?.name, postgres?.desiredActiveBranch)
+		) {
+			deletionError = 'Confirm an inactive branch before requesting deletion.';
+			return;
+		}
+		deleting = true;
+		try {
+			const result = await deleteBranch.mutate({
+				input: {
+					teamSlug: page.params.team!,
+					environmentName: page.params.env!,
+					postgres: page.params.postgres!,
+					branch: target
+				}
+			});
+			if (result.errors?.length) {
+				deletionError = result.errors.map((item) => item.message).join('. ');
+				return;
+			}
+			if (!result.data?.deletePostgresBranch.postgresBranchDeleted) {
+				deletionError = 'Deletion was not accepted. Please try again.';
+				return;
+			}
+			deletionMessage = `Deletion requested for ${target}. Cleanup is asynchronous; use Refresh status to check when it has completed.`;
+			deletionOpen = false;
+			await refresh();
+		} finally {
+			deleting = false;
+		}
+	}
 
 	async function refresh() {
 		await PostgresBranches.fetch({ policy: 'NetworkOnly' });
@@ -185,6 +239,9 @@
 			{#if activationMessage}
 				<Alert variant="success" size="small">{activationMessage}</Alert>
 			{/if}
+			{#if deletionMessage}
+				<Alert variant="success" size="small">{deletionMessage}</Alert>
+			{/if}
 			<ul class="branch-list">
 				{#each branches as branch (branch.id)}
 					<li>
@@ -201,6 +258,19 @@
 									activationTarget = branch.name;
 									confirmActivation = true;
 								}}>Use as active</Button
+							>
+						{/if}
+						{#if canManage && canDeleteBranch(branch.name, postgres.activeBranch?.name, postgres.desiredActiveBranch)}
+							<Button
+								size="small"
+								variant="danger"
+								disabled={deleting}
+								onclick={() => {
+									deletionTarget = branch.name;
+									deletionConfirmation = '';
+									deletionError = '';
+									deletionOpen = true;
+								}}>Delete {branch.name}</Button
 							>
 						{/if}
 					</li>
@@ -262,6 +332,31 @@
 	Activation is asynchronous; switching does not merge data between branches.
 </ActionConfirm>
 
+<Modal bind:open={deletionOpen} aria-label="Delete branch" onBeforeClose={() => !deleting}>
+	{#snippet header()}<Heading as="h2" size="medium">Delete branch</Heading>{/snippet}
+	<form onsubmit={removeBranch} class="deletion-form">
+		<Alert variant="warning">
+			This permanently deletes {deletionTarget} and its stored data. Remove any workload references to
+			this branch before deletion. The active and requested active branches cannot be deleted.
+		</Alert>
+		<TextField
+			label={`Confirm deletion by typing ${deletionTarget}`}
+			bind:value={deletionConfirmation}
+			required
+		/>
+		{#if deletionError}<Alert variant="error">{deletionError}</Alert>{/if}
+		<Button
+			type="submit"
+			variant="danger"
+			loading={deleting}
+			disabled={deletionConfirmation !== deletionTarget}>Delete branch</Button
+		>
+		<Button variant="tertiary" disabled={deleting} onclick={() => (deletionOpen = false)}
+			>Cancel</Button
+		>
+	</form>
+</Modal>
+
 <style>
 	.branches-page {
 		display: grid;
@@ -286,5 +381,9 @@
 		gap: var(--ax-space-12);
 		max-width: var(--ax-breakpoint-sm);
 		margin-top: var(--ax-space-16);
+	}
+	.deletion-form {
+		display: grid;
+		gap: var(--ax-space-16);
 	}
 </style>

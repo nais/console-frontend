@@ -12,7 +12,7 @@
 	import SurfaceCard from '#lib/ui/SurfaceCard.svelte';
 	import TooltipAlignHack from '#lib/ui/TooltipAlignHack.svelte';
 	import { changeParams } from '#lib/utils/searchparams.js';
-	import { Checkbox, Loader, Tag } from '@nais/ds-svelte-community';
+	import { Alert, Button, Checkbox, Loader, Tag } from '@nais/ds-svelte-community';
 	import { CircleFillIcon, FunnelIcon } from '@nais/ds-svelte-community/icons';
 	import type { PageProps } from './$types';
 
@@ -39,6 +39,12 @@
 </script>
 
 <GraphErrors errors={$TeamPostgres.errors} />
+{#if page.url.searchParams.get('deletionRequested')}
+	<Alert variant="success">
+		Deletion requested for {page.url.searchParams.get('deletionRequested')}. Cleanup is
+		asynchronous; the database may remain in this list until it completes.
+	</Alert>
+{/if}
 
 {#if $TeamPostgres.fetching && !$TeamPostgres.data}
 	<div class="loading-centered" role="status" aria-label="Loading">
@@ -50,6 +56,14 @@
 		<div>
 			<List title="Postgres" count={postgreses.pageInfo.totalCount}>
 				{#snippet actions()}
+					{#if data.viewerIsMember || data.isAdmin}
+						<Button
+							as="a"
+							href="/team/{page.params.team}/postgres/create"
+							size="small"
+							variant="secondary">Create Postgres</Button
+						>
+					{/if}
 					<button
 						type="button"
 						class="sidebar-toggle"

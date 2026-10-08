@@ -1,0 +1,9 @@
+query CreatePostgresEnvironments($team: Slug!) {
+	team(slug: $team) {
+		environments {
+			environment {
+				name
+			}
+		}
+	}
+}
