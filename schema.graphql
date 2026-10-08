@@ -1699,11 +1699,6 @@ enum CVEPriority {
   MONITOR
 
   """
-  Only used as a filter for vulnerability summaries: workloads with an SBOM and no findings. Not assigned to CVEs.
-  """
-  NONE
-
-  """
   Requires immediate action based on workload context, including internet exposure. Not assigned to CVEs at global scope; a KEV entry alone does not imply URGENT.
   """
   URGENT
