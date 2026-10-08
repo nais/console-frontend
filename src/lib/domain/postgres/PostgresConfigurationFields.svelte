@@ -6,7 +6,7 @@
 		type ResourceErrors,
 		type ResourceField
 	} from './forms.js';
-	import { BodyShort, Checkbox, Heading, ReadMore, TextField } from '@nais/ds-svelte-community';
+	import { Checkbox, Heading, ReadMore, TextField } from '@nais/ds-svelte-community';
 
 	interface Props {
 		cpu?: string | null;
@@ -45,6 +45,13 @@
 		})
 	);
 
+	function customizeResources(open: boolean) {
+		if (!open) return;
+		if (!cpuValue.trim()) cpuValue = defaults.cpu;
+		if (!memoryValue.trim()) memoryValue = defaults.memory;
+		if (!diskSizeValue.trim()) diskSizeValue = defaults.diskSize;
+	}
+
 	function validateForm(element: HTMLElement) {
 		const form = element.closest('form');
 		if (!form) throw new Error('Postgres configuration fields require a form.');
@@ -72,7 +79,6 @@
 		inputmode="decimal"
 		onblur={() => (touched.cpu = true)}
 		error={touched.cpu || errors.cpu ? fieldErrors.cpu : undefined}
-		placeholder={editing ? undefined : defaults.cpu}
 		description={editing
 			? `Maximum ${postgresResources.cpu.max} cores. Leave blank to keep the current value.`
 			: `Maximum ${postgresResources.cpu.max} cores.`}
@@ -84,7 +90,6 @@
 		inputmode="decimal"
 		onblur={() => (touched.memory = true)}
 		error={touched.memory || errors.memory ? fieldErrors.memory : undefined}
-		placeholder={editing ? undefined : defaults.memory}
 		description={editing
 			? `Maximum ${postgresResources.memory.max} GiB. Leave blank to keep the current value.`
 			: `Maximum ${postgresResources.memory.max} GiB.`}
@@ -96,7 +101,6 @@
 		inputmode="numeric"
 		onblur={() => (touched.diskSize = true)}
 		error={touched.diskSize || errors.diskSize ? fieldErrors.diskSize : undefined}
-		placeholder={editing ? undefined : defaults.diskSize}
 		description={editing
 			? `${postgresResources.diskSize.min}–${postgresResources.diskSize.max} GiB, whole numbers. Leave blank to keep the current value.`
 			: `${postgresResources.diskSize.min}–${postgresResources.diskSize.max} GiB, whole numbers.`}
@@ -125,9 +129,13 @@
 				<dd>{diskSizeValue || defaults.diskSize}</dd>
 			</div>
 		</dl>
-		<ReadMore header="Customize resources" size="small" bind:open={customizeOpen}>
+		<ReadMore
+			header="Customize resources"
+			size="small"
+			bind:open={customizeOpen}
+			onopenchange={customizeResources}
+		>
 			<div class="resource-fields">
-				<BodyShort size="small">Leave blank to use platform defaults.</BodyShort>
 				{@render resourceFields()}
 			</div>
 		</ReadMore>

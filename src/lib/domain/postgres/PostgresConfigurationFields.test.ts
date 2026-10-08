@@ -16,14 +16,15 @@ describe('PostgresConfigurationFields', () => {
 		expect(body).toContain('Storage (GiB) must be a whole number between 10 and 1000.');
 		expect(body.match(/aria-invalid="true"/g)).toHaveLength(3);
 	});
-	test('renders named resource fields and default guidance for creation', async () => {
+	test('renders a default summary without placeholders or submitted defaults', async () => {
 		const { body } = await render(PostgresConfigurationFields);
 		for (const name of ['cpu', 'memory', 'diskSize', 'highAvailability']) {
 			expect(body).toContain(`name="${name}"`);
 		}
-		expect(body).toContain('Leave blank to use platform defaults.');
+		expect(body).not.toContain('Leave blank to use platform defaults.');
+		expect(body).not.toContain('placeholder=');
 		for (const value of ['0.1', '0.5', '10']) {
-			expect(body).toContain(`placeholder="${value}"`);
+			expect(body).toMatch(new RegExp(`<dd[^>]*>${value.replace('.', '\\.')}<\\/dd>`));
 			expect(body).not.toContain(`value="${value}"`);
 		}
 		expect(body).not.toContain('checked');
