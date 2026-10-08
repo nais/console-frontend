@@ -266,7 +266,7 @@
 				<Heading as="h2" size="small" spacing>
 					Affected Workloads
 					{#if ($TeamCVEWorkloads.data?.cve.workloads.pageInfo.totalCount ?? 0) > 0}
-						{@const findings = $TeamCVEWorkloads.data?.cve.workloads.pageInfo.totalCount}
+						{const findings = $derived($TeamCVEWorkloads.data?.cve.workloads.pageInfo.totalCount)}
 						<span class="count">({findings} {findings === 1 ? 'finding' : 'findings'})</span>
 					{/if}
 				</Heading>
