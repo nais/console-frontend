@@ -59,16 +59,6 @@ query PostgresOverview($team: Slug!, $env: String!, $name: String!) {
 						}
 					}
 				}
-				branches(first: 20) {
-					pageInfo {
-						totalCount
-					}
-					nodes {
-						id
-						name
-						state
-					}
-				}
 			}
 		}
 	}

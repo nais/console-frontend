@@ -7,9 +7,8 @@
 	import SectionBoundary from '#lib/ui/SectionBoundary.svelte';
 	import SurfaceCard from '#lib/ui/SurfaceCard.svelte';
 	import { exhaustive } from '#lib/utils/houdini.js';
-	import { BodyShort, Button, Heading, Loader } from '@nais/ds-svelte-community';
+	import { BodyShort, Heading, Loader } from '@nais/ds-svelte-community';
 	import type { PageProps } from './$types';
-	import BranchStatus from './BranchStatus.svelte';
 
 	let { data }: PageProps = $props();
 	let { PostgresOverview } = $derived(data);
@@ -29,75 +28,28 @@
 		<Loader size="3xlarge" />
 	</div>
 {:else if postgres}
-	{#if data.viewerIsMember || data.isAdmin}
-		<div class="detail-actions">
-			<Button
-				as="a"
-				variant="secondary"
-				size="small"
-				href="/team/{page.params.team}/{page.params.env}/postgres/{page.params.postgres}/edit"
-			>
-				Edit
-			</Button>
-			<Button
-				as="a"
-				variant="danger"
-				size="small"
-				href="/team/{page.params.team}/{page.params.env}/postgres/{page.params.postgres}/delete"
-			>
-				Delete
-			</Button>
-		</div>
-	{/if}
 	<div class="layout-two-column">
 		<div class="content">
-			<section aria-labelledby="branches-heading">
-				<Heading as="h2" id="branches-heading" size="medium" spacing>Branches</Heading>
-				<BodyShort>
-					Each branch has its own data history. Workloads use the active branch.
-				</BodyShort>
-				<BodyShort>
-					Currently active: <strong>{activeBranch?.name ?? 'None'}</strong>
-					{#if postgres.desiredActiveBranch && postgres.desiredActiveBranch !== activeBranch?.name}
-						(activation requested for <strong>{postgres.desiredActiveBranch}</strong>)
-					{/if}
-				</BodyShort>
-				<ul class="branches-list">
-					{#each postgres.branches.nodes as branch (branch.id)}
-						<li>
-							<BranchStatus
-								{branch}
-								activeBranchId={activeBranch?.id}
-								requestedBranch={postgres.desiredActiveBranch}
-							/>
-						</li>
-					{:else}
-						<li>No branches found.</li>
-					{/each}
-				</ul>
-				{#if postgres.branches.pageInfo.totalCount > postgres.branches.nodes.length}
-					<BodyShort>
-						Showing first {postgres.branches.nodes.length} of {postgres.branches.pageInfo
-							.totalCount}
-						branches. See the Branches tab for the full list.
-					</BodyShort>
-				{/if}
-				<BodyShort>
-					<a
-						href="/team/{page.params.team}/{page.params.env}/postgres/{page.params
-							.postgres}/branches">View and manage branches</a
-					>
-				</BodyShort>
-			</section>
 			<section aria-labelledby="configuration-heading">
 				<Heading as="h2" id="configuration-heading" size="medium" spacing>Configuration</Heading>
 				<dl class="settings-list">
 					<dt>State</dt>
 					<dd>{state.toLowerCase()}</dd>
 					<dt>Active branch</dt>
-					<dd>{activeBranch?.name ?? 'None'}</dd>
+					<dd>
+						{#if activeBranch}
+							<a
+								href="/team/{page.params.team}/{page.params.env}/postgres/{page.params
+									.postgres}/branches"
+							>
+								<strong>{activeBranch.name}</strong>
+							</a>
+						{:else}
+							None
+						{/if}
+					</dd>
 					{#if postgres.desiredActiveBranch && postgres.desiredActiveBranch !== activeBranch?.name}
-						<dt>Requested branch</dt>
+						<dt>Activation requested</dt>
 						<dd>{postgres.desiredActiveBranch}</dd>
 					{/if}
 					<dt>High availability</dt>
@@ -155,14 +107,6 @@
 		gap: var(--ax-space-24);
 		min-width: 0;
 	}
-	.branches-list {
-		list-style: none;
-		padding: 0;
-		margin: var(--ax-space-8) 0;
-		display: grid;
-		gap: var(--ax-space-8);
-	}
-
 	.workloads-list {
 		list-style: none;
 		margin: 0;

@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { page } from '$app/state';
 	import { graphql } from '$houdini';
+	import { onMount } from 'svelte';
 	import { canDeleteBranch } from '#lib/domain/postgres/forms.js';
 	import ActionConfirm from '#lib/ui/ActionConfirm.svelte';
 	import GraphErrors from '#lib/ui/GraphErrors.svelte';
@@ -24,6 +25,15 @@
 	let sourceBranch = $state('');
 	let newName = $state('');
 	let targetTime = $state('');
+	let maxTargetTime = $state<string>();
+	function updateMaxTargetTime() {
+		maxTargetTime = new Date().toISOString().slice(0, 16);
+	}
+	onMount(() => {
+		updateMaxTargetTime();
+		const interval = setInterval(updateMaxTargetTime, 60_000);
+		return () => clearInterval(interval);
+	});
 	let createError = $state('');
 	let createMessage = $state('');
 	let creating = $state(false);
@@ -313,6 +323,8 @@
 					<TextField
 						label="Restore to (UTC)"
 						type="datetime-local"
+						max={maxTargetTime}
+						onfocus={updateMaxTargetTime}
 						step={60}
 						required
 						bind:value={targetTime}
