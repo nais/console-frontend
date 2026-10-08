@@ -3,6 +3,7 @@
 .agent-shell/
 *.BAK
 node_modules
+.pnpm-store/
 /build
 /.svelte-kit
 /package
