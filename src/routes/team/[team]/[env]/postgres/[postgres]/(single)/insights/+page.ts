@@ -1,6 +1,6 @@
-import { load_PostgresInsights } from '$houdini';
 import { PrometheusChartQueryInterval } from '#lib/chart/util.js';
 import { addPageMeta } from '#lib/utils/pageMeta.js';
+import { load_PostgresInsights } from '$houdini';
 
 export async function load(event) {
 	let interval = (event.url.searchParams.get('interval') || '7d') as PrometheusChartQueryInterval;
@@ -10,7 +10,7 @@ export async function load(event) {
 
 	return {
 		interval,
-		...(await addPageMeta(event, { title: 'Insights' })),
+		...(await addPageMeta(event, { title: 'Insights', pageHeaderTitle: event.params.postgres })),
 		...(await load_PostgresInsights({
 			event,
 			blocking: true,

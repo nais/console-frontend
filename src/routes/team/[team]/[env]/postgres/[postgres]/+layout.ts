@@ -1,7 +1,7 @@
 import { addPageMeta } from '#lib/utils/pageMeta.js';
 
 export async function load(event) {
-	if (event.route.id === '/team/[team]/[env]/postgres/[postgres]') {
+	if (event.route.id === '/team/[team]/[env]/postgres/[postgres]/(single)') {
 		return {};
 	}
 
@@ -10,7 +10,7 @@ export async function load(event) {
 			breadcrumbs: [
 				{
 					label: event.params.postgres,
-					href: '/team/[team]/[env]/postgres/[postgres]'
+					href: '/team/[team]/[env]/postgres/[postgres]/(single)'
 				}
 			]
 		}))

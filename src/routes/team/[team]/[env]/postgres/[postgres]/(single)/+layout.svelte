@@ -19,25 +19,30 @@
 	let routeId = $derived(page.route.id ?? '');
 	let tabs = $derived([
 		{
-			value: '/team/[team]/[env]/postgres/[postgres]',
+			value: '/team/[team]/[env]/postgres/[postgres]/(single)',
 			label: 'Overview',
-			href: resolve('/team/[team]/[env]/postgres/[postgres]', page.params as never)
+			href: resolve('/team/[team]/[env]/postgres/[postgres]/(single)', page.params as never)
 		},
 		{
-			value: '/team/[team]/[env]/postgres/[postgres]/branches',
+			value: '/team/[team]/[env]/postgres/[postgres]/(single)/branches',
 			label: 'Branches',
-			href: resolve('/team/[team]/[env]/postgres/[postgres]/branches', page.params as never)
+			href: resolve(
+				'/team/[team]/[env]/postgres/[postgres]/(single)/branches',
+				page.params as never
+			)
 		},
 		{
-			value: '/team/[team]/[env]/postgres/[postgres]/insights',
+			value: '/team/[team]/[env]/postgres/[postgres]/(single)/insights',
 			label: 'Insights',
-			href: resolve('/team/[team]/[env]/postgres/[postgres]/insights', page.params as never)
+			href: resolve(
+				'/team/[team]/[env]/postgres/[postgres]/(single)/insights',
+				page.params as never
+			)
 		}
 	]);
-	let visibleTabs = $derived(tabs.some((tab) => tab.value === routeId) ? tabs : []);
 </script>
 
-{#if visibleTabs.length > 0 && (data.viewerIsMember || data.isAdmin)}
+{#if data.viewerIsMember || data.isAdmin}
 	<HeaderActions>
 		<ActionMenu>
 			{#snippet trigger(props)}
@@ -68,20 +73,16 @@
 	</HeaderActions>
 {/if}
 
-{#if visibleTabs.length > 0}
-	<Tabs value={routeId} size="small">
-		<TabList>
-			{#each visibleTabs as tab (tab.value)}
-				<Tab value={tab.value} as="a" href={tab.href}>{tab.label}</Tab>
-			{/each}
-		</TabList>
-		<div class="tab-content">
-			{@render children()}
-		</div>
-	</Tabs>
-{:else}
-	{@render children()}
-{/if}
+<Tabs value={routeId} size="small">
+	<TabList>
+		{#each tabs as tab (tab.value)}
+			<Tab value={tab.value} as="a" href={tab.href}>{tab.label}</Tab>
+		{/each}
+	</TabList>
+	<div class="tab-content">
+		{@render children()}
+	</div>
+</Tabs>
 
 <style>
 	.action-menu-button {
