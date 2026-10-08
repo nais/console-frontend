@@ -18,71 +18,94 @@
 		};
 		i: number;
 	} = $props();
+
+	const uid = $props.id();
 </script>
 
-<div class="alarm">
+<section class="alarm" aria-labelledby={`${uid}-heading`}>
 	<div class="alarm-head">
 		<div class="heading-with-tag">
 			<Tag variant={alarm.state === 'FIRING' ? 'error' : 'warning'} size="small">
 				{alarm.state}
 			</Tag>
-			<Heading as="h3" size="xsmall">
-				{alarm.summary !== '' ? alarm.summary : `Alarm ${i + 1}`}
-			</Heading>
+			<Heading as="h3" size="xsmall" id={`${uid}-heading`}>Alarm {i + 1}</Heading>
 		</div>
-		<div class="right">
-			<span class="since">
-				Active since
-				<Time time={alarm.since} distance />
-			</span>
-		</div>
+		<span class="since">
+			Active since
+			<Time time={alarm.since} distance />
+		</span>
 	</div>
 
-	<dl class="kv">
-		<dt>Action</dt>
-		<dd>{alarm.action || 'No action label defined in PrometheusRule'}</dd>
-
+	{#if alarm.summary}
+		<p class="summary">{alarm.summary}</p>
+	{/if}
+	<dl class="annotations">
 		<dt>Consequence</dt>
 		<dd>{alarm.consequence || 'No consequence defined in PrometheusRule'}</dd>
 
+		<dt>Action</dt>
+		<dd>{alarm.action || 'No action label defined in PrometheusRule'}</dd>
+	</dl>
+	<dl class="metric">
 		<dt>Value</dt>
 		<dd>{alarm.value}</dd>
 	</dl>
-</div>
+</section>
 
 <style>
 	.alarm {
-		margin-bottom: var(--ax-space-16);
-		border-bottom: 1px solid var(--ax-border-neutral-subtle);
-	}
-	.alarm:last-child {
-		border-bottom: 0;
+		display: flex;
+		flex-direction: column;
+		gap: var(--ax-space-16);
+		border-left: var(--ax-space-4) solid var(--ax-border-neutral-subtleA);
+		padding-left: var(--ax-space-16);
+		min-width: 0;
+		overflow-wrap: anywhere;
 	}
 	.alarm-head {
 		display: flex;
+		align-items: center;
 		justify-content: space-between;
+		flex-wrap: wrap;
+		gap: var(--ax-space-8);
 	}
 	.heading-with-tag {
 		display: flex;
 		align-items: center;
+		flex-wrap: wrap;
 		gap: var(--ax-space-8);
-		margin-bottom: var(--ax-space-8);
 	}
 
-	.kv {
-		display: grid;
-		grid-template-columns: auto 1fr;
-		gap: var(--ax-space-2) var(--ax-space-6);
-		align-items: start;
-		margin-top: var(--ax-space-2);
-		font-size: 0.9rem;
+	.summary {
+		margin: 0;
 	}
-	.kv dt {
-		font-weight: 600;
+	.annotations {
+		display: grid;
+		gap: var(--ax-space-4);
+		margin: 0;
+	}
+	.annotations dt {
+		font-weight: var(--ax-font-weight-bold);
+	}
+	.annotations dt:not(:first-child) {
+		margin-top: var(--ax-space-12);
+	}
+	.annotations dd {
+		margin: 0;
+		white-space: pre-wrap;
+	}
+	.metric {
+		display: flex;
+		flex-wrap: wrap;
+		gap: var(--ax-space-8);
+		margin: 0;
+		font-size: var(--ax-font-size-small);
+	}
+	.metric dd {
+		margin: 0;
 	}
 	.since {
 		color: var(--ax-text-neutral);
-		font-size: 0.9rem;
-		text-align: right;
+		font-size: var(--ax-font-size-small);
 	}
 </style>
