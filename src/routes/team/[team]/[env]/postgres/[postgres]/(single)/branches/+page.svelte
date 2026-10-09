@@ -15,6 +15,8 @@
 		Select,
 		TextField
 	} from '@nais/ds-svelte-community';
+	import { ActionMenu, ActionMenuItem } from '@nais/ds-svelte-community/experimental';
+	import { MenuElipsisVerticalIcon } from '@nais/ds-svelte-community/icons';
 	import type { PageProps } from './$types';
 	import BranchStatus from '../BranchStatus.svelte';
 
@@ -25,6 +27,7 @@
 	let sourceBranch = $state('');
 	let newName = $state('');
 	let targetTime = $state('');
+	let creationOpen = $state(false);
 	let maxTargetTime = $state<string>();
 	function updateMaxTargetTime() {
 		maxTargetTime = new Date().toISOString().slice(0, 16);
@@ -32,7 +35,22 @@
 	onMount(() => {
 		updateMaxTargetTime();
 		const interval = setInterval(updateMaxTargetTime, 60_000);
-		return () => clearInterval(interval);
+		const pollingInterval = setInterval(() => {
+			if (
+				document.visibilityState !== 'visible' ||
+				$PostgresBranches.fetching ||
+				loadingMore ||
+				creating ||
+				deleting
+			) {
+				return;
+			}
+			refresh();
+		}, 10_000);
+		return () => {
+			clearInterval(interval);
+			clearInterval(pollingInterval);
+		};
 	});
 	let createError = $state('');
 	let createMessage = $state('');
@@ -51,6 +69,16 @@
 		viewerIsMember ||
 			($PostgresBranches.data?.me?.__typename === 'User' && $PostgresBranches.data.me.isAdmin)
 	);
+
+	function openCreation(source?: string) {
+		if (creating) return;
+		sourceBranch = source ?? postgres?.activeBranch?.name ?? branches[0]?.name ?? '';
+		newName = '';
+		updateMaxTargetTime();
+		targetTime = maxTargetTime ?? '';
+		createError = '';
+		creationOpen = true;
+	}
 
 	const createBranch = graphql(`
 		mutation CreatePostgresBranch($input: CreatePostgresBranchInput!) {
@@ -116,7 +144,7 @@
 				deletionError = 'Deletion was not accepted. Please try again.';
 				return;
 			}
-			deletionMessage = `Deletion requested for ${target}. Cleanup is asynchronous; use Refresh status to check when it has completed.`;
+			deletionMessage = `Deletion requested for ${target}. Cleanup is asynchronous; status updates automatically.`;
 			deletionOpen = false;
 			await refresh();
 		} finally {
@@ -139,6 +167,7 @@
 
 	async function create(event: SubmitEvent) {
 		event.preventDefault();
+		if (creating) return;
 		createError = '';
 		createMessage = '';
 		const selected = new Date(`${targetTime}Z`);
@@ -167,6 +196,7 @@
 			createError = 'You do not have permission to create a branch.';
 			return;
 		}
+		const createdName = newName.trim();
 		creating = true;
 		try {
 			const result = await createBranch.mutate({
@@ -174,17 +204,24 @@
 					teamSlug: page.params.team!,
 					environmentName: page.params.env!,
 					postgres: page.params.postgres!,
-					branch: newName.trim(),
+					branch: createdName,
 					sourceBranch,
 					targetTime: selected
 				}
 			});
-			if (result.errors || !result.data) return;
-			const createdName = newName.trim();
+			if (result.errors?.length) {
+				createError = result.errors.map((item) => item.message).join('. ');
+				return;
+			}
+			if (!result.data) {
+				createError = 'Could not create branch. Please try again.';
+				return;
+			}
+			creationOpen = false;
 			newName = '';
 			targetTime = '';
+			createMessage = `${createdName} was created. Provisioning is asynchronous; status updates automatically. It will not become active automatically.`;
 			await refresh();
-			createMessage = `${createdName} was created. Provisioning is asynchronous; use Refresh status to check when it is available. It will not become active automatically.`;
 		} finally {
 			creating = false;
 		}
@@ -220,7 +257,7 @@
 			return { ok: false, message: 'Could not request activation. Please try again.' };
 		}
 		await refresh();
-		activationMessage = `Requested ${target} as the active branch. Activation is asynchronous; use Refresh status to check when it has completed.`;
+		activationMessage = `Requested ${target} as the active branch. Activation is asynchronous; status updates automatically.`;
 		return { ok: true, message: activationMessage };
 	}
 </script>
@@ -232,8 +269,17 @@
 	</div>
 {:else if postgres}
 	<div class="branches-page">
-		<section aria-labelledby="branches-heading">
-			<Heading as="h2" id="branches-heading" size="medium" spacing>Branches</Heading>
+		<section class="branches-section" aria-labelledby="branches-heading">
+			<div class="section-header">
+				<Heading as="h2" id="branches-heading" size="medium">
+					Branches ({branches.length}{postgres.branches.pageInfo.hasNextPage ? '+' : ''})
+				</Heading>
+				<div class="branch-actions">
+					{#if canManage && branches.length > 0}
+						<Button size="small" onclick={() => openCreation()}>Create branch</Button>
+					{/if}
+				</div>
+			</div>
 			<BodyShort>
 				Each branch is a separate writable database with its own data history. Workloads normally
 				use the active branch. Switching branches does not merge their data.
@@ -244,15 +290,11 @@
 					(activation requested for <strong>{postgres.desiredActiveBranch}</strong>)
 				{/if}
 			</BodyShort>
-			<Button
-				size="small"
-				variant="secondary"
-				onclick={refresh}
-				loading={$PostgresBranches.fetching}
-				disabled={loadingMore}
+			<BodyShort>Status updates automatically every 10 seconds while this tab is visible.</BodyShort
 			>
-				Refresh status
-			</Button>
+			{#if createMessage}
+				<Alert variant="success" size="small">{createMessage}</Alert>
+			{/if}
 			{#if activationMessage}
 				<Alert variant="success" size="small">{activationMessage}</Alert>
 			{/if}
@@ -267,28 +309,48 @@
 							activeBranchId={postgres.activeBranch?.id}
 							requestedBranch={postgres.desiredActiveBranch}
 						/>
-						{#if canManage && canActivateBranch(branch, postgres.activeBranch?.name, postgres.desiredActiveBranch)}
-							<Button
-								size="small"
-								variant="secondary"
-								onclick={() => {
-									activationTarget = branch.name;
-									confirmActivation = true;
-								}}>Use as active</Button
-							>
-						{/if}
-						{#if canManage && canDeleteBranch(branch.name, postgres.activeBranch?.name, postgres.desiredActiveBranch)}
-							<Button
-								size="small"
-								variant="danger"
-								disabled={deleting}
-								onclick={() => {
-									deletionTarget = branch.name;
-									deletionConfirmation = '';
-									deletionError = '';
-									deletionOpen = true;
-								}}>Delete {branch.name}</Button
-							>
+						{#if canManage}
+							<ActionMenu>
+								{#snippet trigger(props)}
+									<Button
+										size="small"
+										variant="tertiary"
+										icon={MenuElipsisVerticalIcon}
+										aria-label={`Actions for ${branch.name}`}
+										{...props}
+									/>
+								{/snippet}
+								<button class="action-menu-button" onclick={() => openCreation(branch.name)}>
+									<ActionMenuItem>Create child branch</ActionMenuItem>
+								</button>
+								{#if canActivateBranch(branch, postgres.activeBranch?.name, postgres.desiredActiveBranch)}
+									<button
+										class="action-menu-button"
+										onclick={() => {
+											activationTarget = branch.name;
+											confirmActivation = true;
+										}}
+									>
+										<ActionMenuItem>Use as active</ActionMenuItem>
+									</button>
+								{/if}
+								{#if canDeleteBranch(branch.name, postgres.activeBranch?.name, postgres.desiredActiveBranch)}
+									<button
+										class="action-menu-button"
+										disabled={deleting}
+										onclick={() => {
+											deletionTarget = branch.name;
+											deletionConfirmation = '';
+											deletionError = '';
+											deletionOpen = true;
+										}}
+									>
+										<ActionMenuItem variant="danger" disabled={deleting}
+											>Delete branch</ActionMenuItem
+										>
+									</button>
+								{/if}
+							</ActionMenu>
 						{/if}
 					</li>
 				{:else}
@@ -301,49 +363,58 @@
 				</Button>
 			{/if}
 		</section>
-
-		{#if canManage && branches.length > 0}
-			<section aria-labelledby="recover-heading">
-				<Heading as="h2" id="recover-heading" size="medium" spacing
-					>Recover to a point in time</Heading
-				>
-				<BodyShort>
-					Create a new branch using the source branch's data at the chosen time. The source remains
-					unchanged. The new branch is not automatically used by workloads.
-				</BodyShort>
-				{#if createMessage}
-					<Alert variant="success" size="small">{createMessage}</Alert>
-				{/if}
-				<form onsubmit={create} class="recovery-form">
-					<Select label="Source branch" required bind:value={sourceBranch}>
-						<option value="" disabled>Select a branch</option>
-						{#each branches as branch (branch.id)}
-							<option value={branch.name}>{branch.name}</option>
-						{/each}
-					</Select>
-					<TextField
-						label="New branch name"
-						description="Lowercase letters, numbers and hyphens; up to 63 characters."
-						required
-						bind:value={newName}
-					/>
-					<TextField
-						label="Restore to (UTC)"
-						type="datetime-local"
-						max={maxTargetTime}
-						onfocus={updateMaxTargetTime}
-						step={60}
-						required
-						bind:value={targetTime}
-					/>
-					{#if createError}<Alert variant="error" size="small">{createError}</Alert>{/if}
-					<GraphErrors errors={$createBranch.errors} />
-					<Button type="submit" loading={creating}>Create branch</Button>
-				</form>
-			</section>
-		{/if}
 	</div>
 {/if}
+
+<Modal
+	bind:open={creationOpen}
+	aria-label="Create branch"
+	width="medium"
+	onBeforeClose={() => !creating}
+>
+	{#snippet header()}<Heading as="h2" size="medium">Create branch</Heading>{/snippet}
+	<form onsubmit={create} class="recovery-form">
+		<BodyShort>
+			Create a writable branch with the source branch's data and schema at the selected time. The
+			source remains unchanged. Provisioning is asynchronous.
+		</BodyShort>
+		<TextField
+			label="Branch name"
+			description="Lowercase letters, numbers and hyphens; up to 63 characters."
+			required
+			bind:value={newName}
+			disabled={creating}
+		/>
+		<Select label="Source branch" required bind:value={sourceBranch} disabled={creating}>
+			<option value="" disabled>Select a branch</option>
+			{#each branches as branch (branch.id)}
+				<option value={branch.name}>{branch.name}</option>
+			{/each}
+		</Select>
+		<TextField
+			label="Restore to (UTC)"
+			description="Restore from a backup to this point in time. Availability depends on retained backups."
+			type="datetime-local"
+			max={maxTargetTime}
+			onfocus={updateMaxTargetTime}
+			step={60}
+			required
+			bind:value={targetTime}
+			disabled={creating}
+		/>
+		<BodyShort>The new branch will not become active automatically.</BodyShort>
+		{#if createError}<Alert variant="error" size="small">{createError}</Alert>{/if}
+		<div class="branch-actions">
+			<Button
+				type="button"
+				variant="tertiary"
+				disabled={creating}
+				onclick={() => (creationOpen = false)}>Cancel</Button
+			>
+			<Button type="submit" loading={creating}>Create branch</Button>
+		</div>
+	</form>
+</Modal>
 
 <ActionConfirm bind:open={confirmActivation} onconfirm={activate} confirmText="Use as active">
 	{#snippet header()}<Heading as="h2" size="medium">Switch active branch</Heading>{/snippet}
@@ -370,8 +441,11 @@
 			loading={deleting}
 			disabled={deletionConfirmation !== deletionTarget}>Delete branch</Button
 		>
-		<Button variant="tertiary" disabled={deleting} onclick={() => (deletionOpen = false)}
-			>Cancel</Button
+		<Button
+			type="button"
+			variant="tertiary"
+			disabled={deleting}
+			onclick={() => (deletionOpen = false)}>Cancel</Button
 		>
 	</form>
 </Modal>
@@ -382,11 +456,16 @@
 		gap: var(--ax-space-32);
 		max-width: var(--ax-breakpoint-md);
 	}
+	.branches-section {
+		display: grid;
+		gap: var(--ax-space-16);
+	}
 	.branch-list {
 		list-style: none;
 		padding: 0;
+		margin: 0;
 		display: grid;
-		gap: var(--ax-space-12);
+		gap: var(--ax-space-16);
 	}
 	.branch-list li {
 		display: flex;
@@ -394,12 +473,29 @@
 		justify-content: space-between;
 		gap: var(--ax-space-8);
 		flex-wrap: wrap;
+		padding-block: var(--ax-space-8);
+	}
+	.section-header,
+	.branch-actions {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: var(--ax-space-12);
+		flex-wrap: wrap;
+	}
+	.branch-actions {
+		justify-content: flex-end;
+	}
+	.action-menu-button {
+		all: unset;
+		display: contents;
+		:global(*) {
+			cursor: pointer;
+		}
 	}
 	.recovery-form {
 		display: grid;
 		gap: var(--ax-space-12);
-		max-width: var(--ax-breakpoint-sm);
-		margin-top: var(--ax-space-16);
 	}
 	.deletion-form {
 		display: grid;
