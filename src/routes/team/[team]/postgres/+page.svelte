@@ -112,7 +112,7 @@
 				{:else}
 					<ListItem>
 						<p>
-							No Postgres found. Postgres provide managed relational databases in the cloud.
+							No Postgres found. Postgres provides managed relational databases in the cloud.
 							<ExternalLink href={docURL('/persistence/postgresql')}
 								>Learn more about Postgres in Nais and how to get started.</ExternalLink
 							>
