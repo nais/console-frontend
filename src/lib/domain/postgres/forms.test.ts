@@ -1,4 +1,5 @@
 import {
+	canActivateBranch,
 	canDeleteBranch,
 	configurationError,
 	configurationErrors,
@@ -9,6 +10,20 @@ import {
 } from './forms';
 
 describe('Postgres forms', () => {
+	test.each(['PROGRESSING', 'DEGRADED', 'DELETING', 'UNKNOWN'])(
+		'does not activate a branch in %s state',
+		(state) => {
+			expect(canActivateBranch({ name: 'restore', state }, 'main', null)).toBe(false);
+		}
+	);
+	test('only activates available branches that are not the requested selection', () => {
+		expect(canActivateBranch({ name: 'restore', state: 'AVAILABLE' }, 'main', null)).toBe(true);
+		expect(canActivateBranch({ name: 'main', state: 'AVAILABLE' }, 'main', null)).toBe(false);
+		expect(canActivateBranch({ name: 'restore', state: 'AVAILABLE' }, 'main', 'restore')).toBe(
+			false
+		);
+		expect(canActivateBranch({ name: 'main', state: 'AVAILABLE' }, 'main', 'restore')).toBe(true);
+	});
 	test('returns all resource errors keyed by field', () => {
 		expect(configurationErrors({ cpu: '9', memory: '0', diskSize: '1001' })).toEqual({
 			cpu: 'CPU (cores) must be no greater than 8.',

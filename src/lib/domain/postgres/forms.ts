@@ -3,6 +3,14 @@ export function formString(data: FormData, name: string): string {
 	return typeof value === 'string' ? value.trim() : '';
 }
 
+export function canActivateBranch(
+	branch: { name: string; state: string },
+	activeBranch: string | null | undefined,
+	desiredActiveBranch: string | null | undefined
+) {
+	return branch.state === 'AVAILABLE' && branch.name !== (desiredActiveBranch ?? activeBranch);
+}
+
 export function postgresConfiguration(data: FormData) {
 	return {
 		cpu: formString(data, 'cpu'),

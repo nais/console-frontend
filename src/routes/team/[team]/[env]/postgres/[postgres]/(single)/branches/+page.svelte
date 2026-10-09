@@ -2,7 +2,7 @@
 	import { page } from '$app/state';
 	import { graphql } from '$houdini';
 	import { onMount } from 'svelte';
-	import { canDeleteBranch } from '#lib/domain/postgres/forms.js';
+	import { canActivateBranch, canDeleteBranch } from '#lib/domain/postgres/forms.js';
 	import ActionConfirm from '#lib/ui/ActionConfirm.svelte';
 	import GraphErrors from '#lib/ui/GraphErrors.svelte';
 	import {
@@ -192,7 +192,14 @@
 
 	async function activate() {
 		const target = activationTarget;
-		if (!canManage || !branches.some((branch) => branch.name === target)) {
+		if (
+			!canManage ||
+			!branches.some(
+				(branch) =>
+					branch.name === target &&
+					canActivateBranch(branch, postgres?.activeBranch?.name, postgres?.desiredActiveBranch)
+			)
+		) {
 			return { ok: false, message: 'This branch is not available for activation.' };
 		}
 		const result = await activateBranch.mutate({
@@ -260,7 +267,7 @@
 							activeBranchId={postgres.activeBranch?.id}
 							requestedBranch={postgres.desiredActiveBranch}
 						/>
-						{#if canManage && branch.name !== (postgres.desiredActiveBranch ?? postgres.activeBranch?.name)}
+						{#if canManage && canActivateBranch(branch, postgres.activeBranch?.name, postgres.desiredActiveBranch)}
 							<Button
 								size="small"
 								variant="secondary"
