@@ -6201,6 +6201,9 @@ type Postgres implements ActivityLogger & Node {
   """Requested CPU, memory and disk size, when present on this Postgres."""
   resources: PostgresResources!
 
+  """Team owning this Postgres."""
+  team: Team!
+
   """Team environment containing this Postgres."""
   teamEnvironment: TeamEnvironment!
 }
@@ -6315,7 +6318,9 @@ type PostgresBranch implements Node & Persistence {
   team: Team!
   teamEnvironment: TeamEnvironment!
 
-  """Workloads using this branch while it is active."""
+  """
+  Workloads explicitly using this branch, or following it while it is active.
+  """
   workloads(
     """Get items after this cursor."""
     after: Cursor
@@ -7864,7 +7869,7 @@ input SearchFilter {
 }
 
 """Types that can be searched for."""
-union SearchNode = Application | BigQueryDataset | Bucket | Job | KafkaTopic | OpenSearch | PostgresBranch | SqlInstance | Team | Valkey
+union SearchNode = Application | BigQueryDataset | Bucket | Job | KafkaTopic | OpenSearch | Postgres | SqlInstance | Team | Valkey
 
 """Search node connection."""
 type SearchNodeConnection {
@@ -7896,7 +7901,9 @@ enum SearchType {
   JOB
   KAFKA_TOPIC
   OPENSEARCH
-  POSTGRES_BRANCH
+
+  """Search for Postgres databases by name."""
+  POSTGRES
   SQL_INSTANCE
 
   """Search for teams."""
