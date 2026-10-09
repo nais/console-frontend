@@ -290,8 +290,6 @@
 					(activation requested for <strong>{postgres.desiredActiveBranch}</strong>)
 				{/if}
 			</BodyShort>
-			<BodyShort>Status updates automatically every 10 seconds while this tab is visible.</BodyShort
-			>
 			{#if createMessage}
 				<Alert variant="success" size="small">{createMessage}</Alert>
 			{/if}
@@ -465,7 +463,7 @@
 		padding: 0;
 		margin: 0;
 		display: grid;
-		gap: var(--ax-space-16);
+		gap: var(--ax-space-12);
 	}
 	.branch-list li {
 		display: flex;
@@ -473,7 +471,6 @@
 		justify-content: space-between;
 		gap: var(--ax-space-8);
 		flex-wrap: wrap;
-		padding-block: var(--ax-space-8);
 	}
 	.section-header,
 	.branch-actions {
