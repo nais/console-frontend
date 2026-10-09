@@ -6,7 +6,6 @@ import {
 	BranchingIcon,
 	BriefcaseClockIcon,
 	CogIcon,
-	DatabaseIcon,
 	FileTextIcon,
 	PackageIcon,
 	PadlockLockedIcon,
@@ -19,6 +18,7 @@ import {
 
 import KafkaIcon from '#lib/icons/KafkaIcon.svelte';
 import OpenSearchIcon from '#lib/icons/OpenSearchIcon.svelte';
+import PostgreSQLIcon from '#lib/icons/PostgreSQLIcon.svelte';
 import UnleashIcon from '#lib/icons/UnleashIcon.svelte';
 import ValkeyIcon from '#lib/icons/ValkeyIcon.svelte';
 
@@ -106,12 +106,15 @@ export const icons: { [typename: string]: Component } = {
 	/* Security / Audit */
 	VulnerabilityUpdatedActivityLogEntry: VirusIcon,
 	ClusterAuditActivityLogEntry: TerminalIcon,
-	PostgresCreatedActivityLogEntry: DatabaseIcon,
-	PostgresUpdatedActivityLogEntry: DatabaseIcon,
-	PostgresDeletedActivityLogEntry: DatabaseIcon,
+	PostgresCreatedActivityLogEntry: PostgreSQLIcon,
+	PostgresBranchCreatedActivityLogEntry: PostgreSQLIcon,
+	PostgresBranchActivatedActivityLogEntry: PostgreSQLIcon,
+	PostgresBranchDeletedActivityLogEntry: PostgreSQLIcon,
+	PostgresUpdatedActivityLogEntry: PostgreSQLIcon,
+	PostgresDeletedActivityLogEntry: PostgreSQLIcon,
 	PostgresGrantAccessActivityLogEntry: PadlockLockedIcon,
 	PostgresPersonalAccessCreatedActivityLogEntry: PadlockLockedIcon,
-	PostgresPersonalAccessConnectionActivityLogEntry: DatabaseIcon,
+	PostgresPersonalAccessConnectionActivityLogEntry: PostgreSQLIcon,
 	TunnelCreatedActivityLogEntry: ArrowRightLeftIcon,
 	TunnelDeletedActivityLogEntry: ArrowRightLeftIcon,
 

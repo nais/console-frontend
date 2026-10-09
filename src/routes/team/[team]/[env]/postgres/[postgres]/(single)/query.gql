@@ -1,0 +1,65 @@
+query PostgresOverview($team: Slug!, $env: String!, $name: String!) {
+	team(slug: $team) {
+		environment(name: $env) {
+			postgres(name: $name) {
+				...PersistenceActivityCardPostgresFragment
+				id
+				name
+				teamEnvironment {
+					environment {
+						name
+					}
+				}
+				majorVersion
+				highAvailability
+				desiredActiveBranch
+				resources {
+					cpu
+					memory
+					diskSize
+				}
+				labels {
+					key
+					value
+				}
+				activeBranch {
+					id
+					name
+					state
+					workloads(first: 25) {
+						pageInfo {
+							totalCount
+						}
+						nodes {
+							__typename
+							... on Application {
+								id
+								name
+								team {
+									slug
+								}
+								teamEnvironment {
+									environment {
+										name
+									}
+								}
+							}
+							... on Job {
+								id
+								name
+								team {
+									slug
+								}
+								teamEnvironment {
+									environment {
+										name
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+}

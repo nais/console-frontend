@@ -1,0 +1,19 @@
+query PostgresInsights($team: Slug!, $env: String!, $name: String!) {
+	team(slug: $team) {
+		environment(name: $env) {
+			postgres(name: $name) {
+				id
+				name
+				teamEnvironment {
+					environment {
+						name
+					}
+				}
+				activeBranch {
+					id
+					name
+				}
+			}
+		}
+	}
+}

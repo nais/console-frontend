@@ -11,12 +11,13 @@
 	interface Props {
 		labels: readonly Label[];
 		onEdit?: () => void;
+		showEmpty?: boolean;
 	}
 
-	let { labels, onEdit }: Props = $props();
+	let { labels, onEdit, showEmpty = false }: Props = $props();
 </script>
 
-{#if labels.length > 0 || onEdit}
+{#if labels.length > 0 || onEdit || showEmpty}
 	<SurfaceCard title="Labels">
 		{#snippet headerAside()}
 			{#if onEdit}

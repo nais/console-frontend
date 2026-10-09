@@ -25,6 +25,7 @@ storybook-static
 *storybook.log
 /misc/coding-team/
 docs/houdini-mask-disable-issue.md
+.pnpm-store/
 
 .direnv/
 result*

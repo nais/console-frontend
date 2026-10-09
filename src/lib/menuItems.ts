@@ -41,6 +41,7 @@ export const menuItems = ({
 			menuItem('Secrets', 'secrets', 'secret'),
 			menuItem('Configs', 'configs', 'config'),
 			menuItem('Cloud SQL', 'cloudsql', 'cloudsql'),
+			menuItem('Postgres', 'postgres', 'postgres'),
 			menuItem('Buckets', 'buckets', 'bucket'),
 			features?.valkey && menuItem('Valkey', 'valkey', 'valkey'),
 			features?.openSearch && menuItem('OpenSearch', 'opensearch', 'opensearch'),

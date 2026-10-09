@@ -156,6 +156,50 @@
 							}
 						}
 					}
+					... on PostgresBranchCreatedActivityLogEntry {
+						__typename
+						id
+						createdAt
+						actor
+						environmentName
+						message
+						resourceName
+						resourceType
+						postgresTeamSlug: teamSlug
+						postgresBranch: data {
+							branch
+							sourceBranch
+							targetTime
+						}
+					}
+					... on PostgresBranchActivatedActivityLogEntry {
+						__typename
+						id
+						createdAt
+						actor
+						environmentName
+						message
+						resourceName
+						resourceType
+						postgresTeamSlug: teamSlug
+						postgresBranch: data {
+							branch
+						}
+					}
+					... on PostgresBranchDeletedActivityLogEntry {
+						__typename
+						id
+						createdAt
+						actor
+						environmentName
+						message
+						resourceName
+						resourceType
+						postgresTeamSlug: teamSlug
+						postgresBranch: data {
+							branch
+						}
+					}
 					... on PostgresCreatedActivityLogEntry {
 						id
 						createdAt
@@ -168,6 +212,7 @@
 						__typename
 					}
 					... on PostgresUpdatedActivityLogEntry {
+						__typename
 						id
 						createdAt
 						actor
@@ -186,8 +231,17 @@
 					}
 					... on PostgresDeletedActivityLogEntry {
 						__typename
+						id
+						createdAt
+						actor
+						environmentName
+						message
+						resourceName
+						resourceType
+						postgresTeamSlug: teamSlug
 					}
 					... on PostgresPersonalAccessCreatedActivityLogEntry {
+						__typename
 						id
 						createdAt
 						actor
@@ -216,6 +270,14 @@
 					}
 					... on PostgresGrantAccessActivityLogEntry {
 						__typename
+						id
+						createdAt
+						actor
+						environmentName
+						message
+						resourceName
+						resourceType
+						postgresTeamSlug: teamSlug
 						postgresGrantAccessData: data {
 							grantee
 							until

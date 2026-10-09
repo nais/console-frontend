@@ -39,7 +39,7 @@
 				};
 			case 'postgres':
 				return {
-					pageName: 'Postgres Instances',
+					pageName: 'Postgres',
 					plural: 'postgres'
 				};
 			case 'bucket':
