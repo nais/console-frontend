@@ -1,15 +1,17 @@
 import { vi } from 'vitest';
 
-const { access, create, update, remove } = vi.hoisted(() => ({
+const { access, create, update, remove, environmentCheck } = vi.hoisted(() => ({
 	access: { fetch: vi.fn() },
 	create: { mutate: vi.fn() },
 	update: { mutate: vi.fn() },
-	remove: { mutate: vi.fn() }
+	remove: { mutate: vi.fn() },
+	environmentCheck: { fetch: vi.fn() }
 }));
 
 vi.mock('$houdini', () => ({
 	graphql: (query: string) => {
 		if (query.includes('query PostgresManagementAccess')) return access;
+		if (query.includes('query PostgresCreationEnvironments')) return environmentCheck;
 		if (query.includes('mutation CreatePostgres')) return create;
 		if (query.includes('mutation UpdatePostgres')) return update;
 		if (query.includes('mutation DeletePostgres')) return remove;
@@ -52,6 +54,13 @@ beforeEach(() => {
 	vi.resetAllMocks();
 	access.fetch.mockResolvedValue({
 		data: { me: { __typename: 'User', isAdmin: false }, team: { viewerIsMember: true } }
+	});
+	environmentCheck.fetch.mockResolvedValue({
+		data: {
+			team: {
+				environments: [{ environment: { name: 'dev' }, gcpProjectID: 'project-id' }]
+			}
+		}
 	});
 });
 
@@ -104,6 +113,25 @@ describe('Postgres management actions', () => {
 	test('rejects missing required creation fields before mutation', async () => {
 		expect(await createActions.default(createEvent({ name: 'database' }))).toMatchObject({
 			status: 400
+		});
+		expect(create.mutate).not.toHaveBeenCalled();
+	});
+
+	test('rejects Postgres creation in on-premises environments', async () => {
+		environmentCheck.fetch.mockResolvedValue({
+			data: {
+				team: {
+					environments: [{ environment: { name: 'dev-fss' }, gcpProjectID: null }]
+				}
+			}
+		});
+		expect(
+			await createActions.default(
+				createEvent({ name: 'database', environment: 'dev-fss', majorVersion: '18' })
+			)
+		).toMatchObject({
+			status: 400,
+			data: { error: 'Postgres is only available in GCP environments.' }
 		});
 		expect(create.mutate).not.toHaveBeenCalled();
 	});

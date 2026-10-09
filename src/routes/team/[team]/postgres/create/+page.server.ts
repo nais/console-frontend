@@ -25,6 +25,19 @@ const mutation = graphql(`
 	}
 `);
 
+const environmentsQuery = graphql(`
+	query PostgresCreationEnvironments($team: Slug!) {
+		team(slug: $team) {
+			environments {
+				gcpProjectID
+				environment {
+					name
+				}
+			}
+		}
+	}
+`);
+
 export const actions = {
 	default: async (event) => {
 		await requirePostgresAccess(event, event.params.team);
@@ -38,6 +51,35 @@ export const actions = {
 		const errors = configurationErrors(values);
 		if (!values.name || !values.environment || !values.majorVersion) {
 			return fail(400, { ...values, errors, error: 'Name, environment and version are required.' });
+		}
+		const environmentsResult = await environmentsQuery.fetch({
+			event,
+			variables: { team: event.params.team },
+			policy: 'NetworkOnly'
+		});
+		if (environmentsResult.errors?.length) {
+			return fail(500, {
+				...values,
+				errors,
+				error: environmentsResult.errors.map((item) => item.message).join('. ')
+			});
+		}
+		if (!environmentsResult.data) {
+			return fail(500, {
+				...values,
+				errors,
+				error: 'Could not verify environment support. Please try again.'
+			});
+		}
+		const selectedEnvironment = environmentsResult.data.team.environments.find(
+			(environment) => environment.environment.name === values.environment
+		);
+		if (!selectedEnvironment?.gcpProjectID) {
+			return fail(400, {
+				...values,
+				errors,
+				error: 'Postgres is only available in GCP environments.'
+			});
 		}
 		if (Object.keys(errors).length)
 			return fail(400, { ...values, errors, error: 'Check the resource fields below.' });

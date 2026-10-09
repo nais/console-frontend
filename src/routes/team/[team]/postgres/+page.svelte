@@ -19,6 +19,11 @@
 	let { data }: PageProps = $props();
 	let { TeamPostgres } = $derived(data);
 	let filtersOpen = $state(false);
+	let hasSupportedEnvironment = $derived(
+		($TeamPostgres.data?.team.environments ?? []).some(
+			(teamEnvironment) => !!teamEnvironment.gcpProjectID
+		)
+	);
 	const selectedEnvironments = $derived(
 		page.url.searchParams.get('environments')?.split(',').filter(Boolean) ?? []
 	);
@@ -56,7 +61,7 @@
 		<div>
 			<List title="Postgres" count={postgreses.pageInfo.totalCount}>
 				{#snippet actions()}
-					{#if data.viewerIsMember || data.isAdmin}
+					{#if (data.viewerIsMember || data.isAdmin) && hasSupportedEnvironment}
 						<Button
 							as="a"
 							href="/team/{page.params.team}/postgres/create"
