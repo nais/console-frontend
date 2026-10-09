@@ -17,7 +17,6 @@
 	import { changeParams } from '#lib/utils/searchparams.js';
 	import { Button, Tag } from '@nais/ds-svelte-community';
 	import {
-		BellSlashIcon,
 		ChevronRightIcon,
 		ClockDashedIcon,
 		ExternalLinkIcon,
@@ -227,9 +226,9 @@
 										rel="noopener noreferrer"
 										variant="secondary"
 										size="small"
-										icon={BellSlashIcon}
+										icon={ExternalLinkIcon}
 									>
-										Silence
+										Set up silence in Alertmanager
 									</Button>
 								{/if}
 							</div>
