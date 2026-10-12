@@ -1,7 +1,21 @@
-import { load_TeamVulnerabilities } from '$houdini';
+import {
+	load_TeamPriorityWorkloadsHigh,
+	load_TeamSeverityWorkloads,
+	load_TeamVulnerabilities,
+	OrderDirection,
+	TeamPriorityWorkloadsHighStore,
+	TeamSeverityWorkloadsStore,
+	VulnerabilitySummaryOrderByField
+} from '$houdini';
 import { addPageMeta } from '#lib/utils/pageMeta.js';
 
 export async function load(event) {
+	const team = event.params.team;
+	// Only the initial view is loaded here; the toggle fetches the other one on demand.
+	const view = event.untrack(() =>
+		event.url.searchParams.get('view') === 'severity' ? 'severity' : 'priority'
+	);
+
 	return {
 		...(await addPageMeta(event, {
 			title: 'Vulnerabilities',
@@ -9,9 +23,31 @@ export async function load(event) {
 		})),
 		...(await load_TeamVulnerabilities({
 			event,
-			variables: {
-				team: event.params.team
-			}
-		}))
+			variables: { team }
+		})),
+		...(view === 'priority'
+			? await load_TeamPriorityWorkloadsHigh({
+					event,
+					variables: {
+						team,
+						orderBy: {
+							field: VulnerabilitySummaryOrderByField.VULNERABILITY_RISK_SCORE,
+							direction: OrderDirection.DESC
+						}
+					}
+				})
+			: { TeamPriorityWorkloadsHigh: new TeamPriorityWorkloadsHighStore() }),
+		...(view === 'severity'
+			? await load_TeamSeverityWorkloads({
+					event,
+					variables: {
+						team,
+						orderBy: {
+							field: VulnerabilitySummaryOrderByField.VULNERABILITY_SEVERITY_CRITICAL,
+							direction: OrderDirection.DESC
+						}
+					}
+				})
+			: { TeamSeverityWorkloads: new TeamSeverityWorkloadsStore() })
 	};
 }
