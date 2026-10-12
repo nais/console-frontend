@@ -6302,6 +6302,8 @@ enum PostgresAccessState {
 
 """A named PostgresBranch belonging to a Postgres."""
 type PostgresBranch implements Node & Persistence {
+  """Time when this branch was created."""
+  createdAt: Time!
   id: ID!
 
   """User-defined labels on this branch."""

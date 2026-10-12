@@ -22,6 +22,9 @@
 	import type { PageProps } from './$types';
 	import BranchStatus from '../BranchStatus.svelte';
 
+	const WAL_RETENTION_MS = 30 * 24 * 60 * 60 * 1000;
+	const WAL_INITIALIZATION_BUFFER_MS = 5 * 60 * 1000;
+
 	let { data }: PageProps = $props();
 	let { PostgresBranches, viewerIsMember } = $derived(data);
 	let postgres = $derived($PostgresBranches.data?.team.environment.postgres);
@@ -36,10 +39,26 @@
 	let newName = $state('');
 	let targetTime = $state('');
 	let creationOpen = $state(false);
+	let now = $state(new Date());
 	let maxTargetTime = $state<string>();
 	function updateMaxTargetTime() {
-		maxTargetTime = new Date().toISOString().slice(0, 16);
+		now = new Date();
+		maxTargetTime = now.toISOString().slice(0, 16);
 	}
+	let minTargetTime = $derived.by(() => {
+		const source = branches.find((branch) => branch.name === sourceBranch);
+		if (!source) return undefined;
+
+		const createdAt = new Date(source.createdAt).getTime();
+		if (!Number.isFinite(createdAt)) return undefined;
+
+		const earliest = Math.max(
+			createdAt + WAL_INITIALIZATION_BUFFER_MS,
+			now.getTime() - WAL_RETENTION_MS
+		);
+		const firstSelectableMinute = Math.ceil(earliest / 60_000) * 60_000;
+		return new Date(firstSelectableMinute).toISOString().slice(0, 16);
+	});
 	onMount(() => {
 		updateMaxTargetTime();
 		const interval = setInterval(updateMaxTargetTime, 60_000);
@@ -179,17 +198,26 @@
 		createError = '';
 		createMessage = '';
 		const selected = new Date(`${targetTime}Z`);
+		const source = branches.find((branch) => branch.name === sourceBranch);
+		if (!source) {
+			createError = 'Choose a source branch.';
+			return;
+		}
+		const createdAt = new Date(source.createdAt).getTime();
+		const earliestAllowed = Math.max(
+			createdAt + WAL_INITIALIZATION_BUFFER_MS,
+			Date.now() - WAL_RETENTION_MS
+		);
 		if (
 			!/^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}$/.test(targetTime) ||
 			Number.isNaN(selected.getTime()) ||
 			selected.toISOString().slice(0, 16) !== targetTime ||
-			selected >= new Date()
+			!Number.isFinite(earliestAllowed) ||
+			selected >= new Date() ||
+			selected.getTime() < earliestAllowed
 		) {
-			createError = 'Choose a valid UTC time in the past.';
-			return;
-		}
-		if (!branches.some((branch) => branch.name === sourceBranch)) {
-			createError = 'Choose a source branch.';
+			createError =
+				'Choose a restore time at least 5 minutes after the source branch was created and within the 30-day WAL retention window.';
 			return;
 		}
 		if (
@@ -405,8 +433,9 @@
 		</Select>
 		<TextField
 			label="Restore to (UTC)"
-			description="Restore from a backup to this point in time. Availability depends on retained backups."
+			description="Choose a time at least 5 minutes after the source branch was created and within the 30-day WAL retention window."
 			type="datetime-local"
+			min={minTargetTime}
 			max={maxTargetTime}
 			onfocus={updateMaxTargetTime}
 			step={60}
