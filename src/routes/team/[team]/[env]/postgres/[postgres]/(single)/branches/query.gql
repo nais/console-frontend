@@ -12,6 +12,7 @@ query PostgresBranches($team: Slug!, $env: String!, $name: String!, $first: Int!
 				activeBranch {
 					id
 					name
+					state
 				}
 				desiredActiveBranch
 				branches(first: $first) @paginate(mode: Infinite) {

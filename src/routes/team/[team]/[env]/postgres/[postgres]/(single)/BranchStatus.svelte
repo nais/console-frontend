@@ -22,29 +22,25 @@
 </script>
 
 <div class="branch-status">
-	<Tooltip content={active ? 'Active branch' : 'Not the active branch'}>
-		<span
-			class="status-indicator"
-			role="img"
-			aria-label={active ? 'Active branch' : 'Not the active branch'}
-		>
-			{#if active}
+	<Tooltip content={stateLabel}>
+		<span class="status-indicator" role="img" aria-label={stateLabel}>
+			{#if branch.state === 'AVAILABLE'}
 				<span aria-hidden="true"><RunningIndicator /></span>
+			{:else if branch.state === 'PROGRESSING'}
+				<Loader size="xsmall" aria-hidden="true" />
 			{:else}
-				<span class="inactive-dot" aria-hidden="true"></span>
+				<span class="status-dot" class:degraded={branch.state === 'DEGRADED'} aria-hidden="true"
+				></span>
 			{/if}
 		</span>
 	</Tooltip>
 	<strong>{branch.name}</strong>
+	{#if active}
+		<Tag size="xsmall" variant="neutral">Active</Tag>
+	{/if}
 	{#if requestedBranch === branch.name && activeBranchId !== branch.id}
 		<Tag size="xsmall" variant="warning">Activation requested</Tag>
 	{/if}
-	<span class="state">
-		{#if branch.state === 'PROGRESSING'}
-			<Loader size="xsmall" aria-hidden="true" />
-		{/if}
-		{stateLabel}
-	</span>
 </div>
 
 <style>
@@ -59,7 +55,7 @@
 		overflow-wrap: anywhere;
 	}
 	.status-indicator {
-		display: inline-flex;
+		display: flex;
 		align-items: center;
 		justify-content: center;
 		width: var(--ax-space-24);
@@ -69,15 +65,13 @@
 	.status-indicator > span {
 		display: inline-flex;
 	}
-	.inactive-dot {
+	.status-dot {
 		width: var(--ax-space-8);
 		height: var(--ax-space-8);
 		border-radius: var(--ax-radius-full);
 		background-color: var(--ax-text-neutral-decoration);
 	}
-	.state {
-		display: inline-flex;
-		align-items: center;
-		gap: var(--ax-space-4);
+	.status-dot.degraded {
+		background-color: var(--ax-text-danger-decoration);
 	}
 </style>

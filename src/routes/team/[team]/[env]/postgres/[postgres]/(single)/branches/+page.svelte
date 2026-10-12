@@ -5,6 +5,8 @@
 	import { canActivateBranch, canDeleteBranch } from '#lib/domain/postgres/forms.js';
 	import ActionConfirm from '#lib/ui/ActionConfirm.svelte';
 	import GraphErrors from '#lib/ui/GraphErrors.svelte';
+	import List from '#lib/ui/List.svelte';
+	import ListItem from '#lib/ui/ListItem.svelte';
 	import {
 		Alert,
 		BodyShort,
@@ -23,7 +25,13 @@
 	let { data }: PageProps = $props();
 	let { PostgresBranches, viewerIsMember } = $derived(data);
 	let postgres = $derived($PostgresBranches.data?.team.environment.postgres);
-	let branches = $derived(postgres?.branches.nodes ?? []);
+	let branches = $derived.by(() => {
+		const nodes = postgres?.branches.nodes ?? [];
+		const activeBranch = postgres?.activeBranch;
+		return activeBranch
+			? [activeBranch, ...nodes.filter((branch) => branch.id !== activeBranch.id)]
+			: nodes;
+	});
 	let sourceBranch = $state('');
 	let newName = $state('');
 	let targetTime = $state('');
@@ -299,62 +307,68 @@
 			{#if deletionMessage}
 				<Alert variant="success" size="small">{deletionMessage}</Alert>
 			{/if}
-			<ul class="branch-list">
-				{#each branches as branch (branch.id)}
-					<li>
-						<BranchStatus
-							{branch}
-							activeBranchId={postgres.activeBranch?.id}
-							requestedBranch={postgres.desiredActiveBranch}
-						/>
-						{#if canManage}
-							<ActionMenu>
-								{#snippet trigger(props)}
-									<Button
-										size="small"
-										variant="tertiary"
-										icon={MenuElipsisVerticalIcon}
-										aria-label={`Actions for ${branch.name}`}
-										{...props}
+			<List headerless>
+				<ul class="branch-list">
+					{#each branches as branch (branch.id)}
+						<li>
+							<ListItem>
+								<div class="branch-row">
+									<BranchStatus
+										{branch}
+										activeBranchId={postgres.activeBranch?.id}
+										requestedBranch={postgres.desiredActiveBranch}
 									/>
-								{/snippet}
-								<button class="action-menu-button" onclick={() => openCreation(branch.name)}>
-									<ActionMenuItem>Create child branch</ActionMenuItem>
-								</button>
-								{#if canActivateBranch(branch, postgres.activeBranch?.name, postgres.desiredActiveBranch)}
-									<button
-										class="action-menu-button"
-										onclick={() => {
-											activationTarget = branch.name;
-											confirmActivation = true;
-										}}
-									>
-										<ActionMenuItem>Use as active</ActionMenuItem>
-									</button>
-								{/if}
-								{#if canDeleteBranch(branch.name, postgres.activeBranch?.name, postgres.desiredActiveBranch)}
-									<button
-										class="action-menu-button"
-										disabled={deleting}
-										onclick={() => {
-											deletionTarget = branch.name;
-											deletionConfirmation = '';
-											deletionError = '';
-											deletionOpen = true;
-										}}
-									>
-										<ActionMenuItem variant="danger" disabled={deleting}
-											>Delete branch</ActionMenuItem
-										>
-									</button>
-								{/if}
-							</ActionMenu>
-						{/if}
-					</li>
-				{:else}
-					<li>No branches found.</li>
-				{/each}
-			</ul>
+									{#if canManage}
+										<ActionMenu>
+											{#snippet trigger(props)}
+												<Button
+													size="small"
+													variant="tertiary"
+													icon={MenuElipsisVerticalIcon}
+													aria-label={`Actions for ${branch.name}`}
+													{...props}
+												/>
+											{/snippet}
+											<button class="action-menu-button" onclick={() => openCreation(branch.name)}>
+												<ActionMenuItem>Create child branch</ActionMenuItem>
+											</button>
+											{#if canActivateBranch(branch, postgres.activeBranch?.name, postgres.desiredActiveBranch)}
+												<button
+													class="action-menu-button"
+													onclick={() => {
+														activationTarget = branch.name;
+														confirmActivation = true;
+													}}
+												>
+													<ActionMenuItem>Use as active</ActionMenuItem>
+												</button>
+											{/if}
+											{#if canDeleteBranch(branch.name, postgres.activeBranch?.name, postgres.desiredActiveBranch)}
+												<button
+													class="action-menu-button"
+													disabled={deleting}
+													onclick={() => {
+														deletionTarget = branch.name;
+														deletionConfirmation = '';
+														deletionError = '';
+														deletionOpen = true;
+													}}
+												>
+													<ActionMenuItem variant="danger" disabled={deleting}
+														>Delete branch</ActionMenuItem
+													>
+												</button>
+											{/if}
+										</ActionMenu>
+									{/if}
+								</div>
+							</ListItem>
+						</li>
+					{:else}
+						<li><ListItem>No branches found.</ListItem></li>
+					{/each}
+				</ul>
+			</List>
 			{#if postgres.branches.pageInfo.hasNextPage}
 				<Button variant="tertiary" size="small" onclick={loadMore} loading={loadingMore}>
 					Load more
@@ -462,15 +476,15 @@
 		list-style: none;
 		padding: 0;
 		margin: 0;
-		display: grid;
-		gap: var(--ax-space-12);
 	}
-	.branch-list li {
+	.branch-list li:last-child :global(.list-item) {
+		border-bottom: 0;
+	}
+	.branch-row {
 		display: flex;
 		align-items: center;
 		justify-content: space-between;
 		gap: var(--ax-space-8);
-		flex-wrap: wrap;
 	}
 	.section-header,
 	.branch-actions {
