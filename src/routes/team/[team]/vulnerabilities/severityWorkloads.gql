@@ -1,0 +1,86 @@
+query TeamSeverityWorkloads(
+	$team: Slug!
+	$orderBy: VulnerabilitySummaryOrder
+	$environmentName: String
+) {
+	team(slug: $team) {
+		vulnerabilitySummaries(
+			first: 20
+			filter: { environmentName: $environmentName }
+			orderBy: $orderBy
+		) @paginate(mode: SinglePage) {
+			pageInfo {
+				hasNextPage
+				hasPreviousPage
+				pageStart
+				pageEnd
+				startCursor
+				endCursor
+				totalCount
+			}
+			edges {
+				node {
+					id
+					workload {
+						... on Application {
+							__typename
+							id
+							name
+							team {
+								slug
+							}
+							teamEnvironment {
+								environment {
+									name
+								}
+							}
+							ingresses {
+								type
+							}
+							image {
+								sbom {
+									status
+									processingStartedAt
+								}
+							}
+						}
+						... on Job {
+							__typename
+							id
+							name
+							team {
+								slug
+							}
+							teamEnvironment {
+								environment {
+									name
+								}
+							}
+							image {
+								sbom {
+									status
+									processingStartedAt
+								}
+							}
+						}
+					}
+					summary {
+						countsBySeverity {
+							critical
+							high
+							medium
+							low
+							unassigned
+						}
+						countsByPriority {
+							knownExploited
+						}
+						riskScore
+						lastUpdated
+						staleImageTag
+					}
+				}
+			}
+		}
+	}
+}
