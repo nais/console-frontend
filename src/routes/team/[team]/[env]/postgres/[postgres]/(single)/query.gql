@@ -32,29 +32,35 @@ query PostgresOverview($team: Slug!, $env: String!, $name: String!) {
 						totalCount
 					}
 					nodes {
-						... on Application {
-							__typename
+						branch {
 							id
 							name
-							team {
-								slug
-							}
-							teamEnvironment {
-								environment {
-									name
+						}
+						workload {
+							... on Application {
+								__typename
+								id
+								name
+								team {
+									slug
+								}
+								teamEnvironment {
+									environment {
+										name
+									}
 								}
 							}
-						}
-						... on Job {
-							__typename
-							id
-							name
-							team {
-								slug
-							}
-							teamEnvironment {
-								environment {
-									name
+							... on Job {
+								__typename
+								id
+								name
+								team {
+									slug
+								}
+								teamEnvironment {
+									environment {
+										name
+									}
 								}
 							}
 						}

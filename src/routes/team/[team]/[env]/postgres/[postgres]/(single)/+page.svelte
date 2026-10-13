@@ -5,16 +5,15 @@
 	import GraphErrors from '#lib/ui/GraphErrors.svelte';
 	import SectionBoundary from '#lib/ui/SectionBoundary.svelte';
 	import SurfaceCard from '#lib/ui/SurfaceCard.svelte';
-	import { exhaustive } from '#lib/utils/houdini.js';
 	import { page } from '$app/state';
-	import { BodyShort, Heading, Loader } from '@nais/ds-svelte-community';
+	import { BodyShort, Detail, Heading, Loader } from '@nais/ds-svelte-community';
 	import type { PageProps } from './$types';
 
 	let { data }: PageProps = $props();
 	let { PostgresOverview } = $derived(data);
 	let postgres = $derived($PostgresOverview.data?.team.environment.postgres);
 	let activeBranch = $derived(postgres?.activeBranch);
-	let workloads = $derived(exhaustive(postgres?.workloads.nodes ?? []));
+	let workloads = $derived(postgres?.workloads.nodes ?? []);
 	let state = $derived(
 		postgres?.desiredActiveBranch && postgres.desiredActiveBranch !== activeBranch?.name
 			? 'PROGRESSING'
@@ -74,8 +73,21 @@
 			<SurfaceCard title="Used by">
 				{#if workloads.length > 0}
 					<ul class="workloads-list">
-						{#each workloads as workload (workload.id)}
-							<li><WorkloadLink {workload} hideTeam hideEnv /></li>
+						{#each workloads as usage (usage.workload.id)}
+							<li class="workload-usage">
+								{#if usage.workload.__typename === 'Application' || usage.workload.__typename === 'Job'}
+									<WorkloadLink workload={usage.workload} hideTeam hideEnv />
+								{/if}
+								<div class="branch-label">
+									<Detail>
+										Branch:
+										<a
+											href="/team/{page.params.team}/{page.params.env}/postgres/{page.params
+												.postgres}/branches">{usage.branch.name}</a
+										>
+									</Detail>
+								</div>
+							</li>
 						{/each}
 					</ul>
 					{#if postgres.workloads.pageInfo.totalCount > workloads.length}
@@ -109,5 +121,14 @@
 		padding: 0;
 		display: grid;
 		gap: var(--ax-space-6);
+	}
+	.workload-usage {
+		display: grid;
+		justify-items: start;
+		gap: var(--ax-space-2);
+	}
+	.branch-label {
+		margin-inline-start: var(--ax-space-32);
+		color: var(--ax-text-subtle);
 	}
 </style>
