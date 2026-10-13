@@ -6206,6 +6206,11 @@ type Postgres implements ActivityLogger & Node {
 
   """Team environment containing this Postgres."""
   teamEnvironment: TeamEnvironment!
+
+  """
+  Workloads referencing this Postgres, including references to inactive branches and workloads following the active branch. Each workload is included once.
+  """
+  workloads(after: Cursor, before: Cursor, first: Int, last: Int): WorkloadConnection!
 }
 
 """A time-limited personal access request for a Postgres branch."""
@@ -6304,6 +6309,11 @@ enum PostgresAccessState {
 type PostgresBranch implements Node & Persistence {
   """Time when this branch was created."""
   createdAt: Time!
+
+  """
+  Earliest time the branch can currently be restored from its archived backups.
+  """
+  earliestRestoreTime: Time
   id: ID!
 
   """User-defined labels on this branch."""
