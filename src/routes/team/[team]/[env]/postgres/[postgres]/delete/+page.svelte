@@ -33,9 +33,9 @@
 			This permanently deletes {postgres.name}, all its branches and their stored data. Deletion
 			continues asynchronously after the request is accepted.
 		</Alert>
-		{#if (postgres.activeBranch?.workloads.pageInfo.totalCount ?? 0) > 0}
+		{#if postgres.workloads.pageInfo.totalCount > 0}
 			<Alert variant="warning">
-				The active branch is used by {postgres.activeBranch?.workloads.pageInfo.totalCount} workloads.
+				This Postgres is used by {postgres.workloads.pageInfo.totalCount} workloads across its branches.
 			</Alert>
 		{/if}
 		<BodyShort>Remove references to this database from all workloads before deletion.</BodyShort>

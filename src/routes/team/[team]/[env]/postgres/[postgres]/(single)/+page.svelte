@@ -14,6 +14,7 @@
 	let { PostgresOverview } = $derived(data);
 	let postgres = $derived($PostgresOverview.data?.team.environment.postgres);
 	let activeBranch = $derived(postgres?.activeBranch);
+	let workloads = $derived(exhaustive(postgres?.workloads.nodes ?? []));
 	let state = $derived(
 		postgres?.desiredActiveBranch && postgres.desiredActiveBranch !== activeBranch?.name
 			? 'PROGRESSING'
@@ -71,25 +72,20 @@
 		</div>
 		<div class="layout-sidebar">
 			<SurfaceCard title="Used by">
-				{#if activeBranch}
-					{const workloads = $derived(exhaustive(activeBranch.workloads.nodes))}
-					{#if workloads.length > 0}
-						<ul class="workloads-list">
-							{#each workloads as workload (workload.id)}
-								<li><WorkloadLink {workload} hideTeam hideEnv /></li>
-							{/each}
-						</ul>
-						{#if activeBranch.workloads.pageInfo.totalCount > workloads.length}
-							<BodyShort>
-								Showing first {workloads.length} of {activeBranch.workloads.pageInfo.totalCount}
-								workloads.
-							</BodyShort>
-						{/if}
-					{:else}
-						<BodyShort>Not used by any workloads.</BodyShort>
+				{#if workloads.length > 0}
+					<ul class="workloads-list">
+						{#each workloads as workload (workload.id)}
+							<li><WorkloadLink {workload} hideTeam hideEnv /></li>
+						{/each}
+					</ul>
+					{#if postgres.workloads.pageInfo.totalCount > workloads.length}
+						<BodyShort>
+							Showing first {workloads.length} of {postgres.workloads.pageInfo.totalCount}
+							workloads.
+						</BodyShort>
 					{/if}
 				{:else}
-					<BodyShort>Usage information is not yet available.</BodyShort>
+					<BodyShort>Not used by any workloads.</BodyShort>
 				{/if}
 			</SurfaceCard>
 			<Labels labels={postgres.labels} showEmpty />

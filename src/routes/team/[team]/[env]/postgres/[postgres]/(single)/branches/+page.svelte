@@ -1,16 +1,19 @@
 <script lang="ts">
-	import { page } from '$app/state';
-	import { graphql } from '$houdini';
-	import { onMount } from 'svelte';
 	import { canActivateBranch, canDeleteBranch } from '#lib/domain/postgres/forms.js';
+	import WorkloadLink from '#lib/domain/workload/WorkloadLink.svelte';
 	import ActionConfirm from '#lib/ui/ActionConfirm.svelte';
 	import GraphErrors from '#lib/ui/GraphErrors.svelte';
 	import List from '#lib/ui/List.svelte';
 	import ListItem from '#lib/ui/ListItem.svelte';
+	import Time from '#lib/ui/Time.svelte';
+	import { exhaustive } from '#lib/utils/houdini.js';
+	import { page } from '$app/state';
+	import { graphql } from '$houdini';
 	import {
 		Alert,
 		BodyShort,
 		Button,
+		Detail,
 		Heading,
 		Loader,
 		Modal,
@@ -19,11 +22,9 @@
 	} from '@nais/ds-svelte-community';
 	import { ActionMenu, ActionMenuItem } from '@nais/ds-svelte-community/experimental';
 	import { MenuElipsisVerticalIcon } from '@nais/ds-svelte-community/icons';
-	import type { PageProps } from './$types';
+	import { onMount } from 'svelte';
 	import BranchStatus from '../BranchStatus.svelte';
-
-	const WAL_RETENTION_MS = 30 * 24 * 60 * 60 * 1000;
-	const WAL_INITIALIZATION_BUFFER_MS = 5 * 60 * 1000;
+	import type { PageProps } from './$types';
 
 	let { data }: PageProps = $props();
 	let { PostgresBranches, viewerIsMember } = $derived(data);
@@ -36,6 +37,10 @@
 			: nodes;
 	});
 	let sourceBranch = $state('');
+	let earliestRestoreTime = $state<Date | null>(null);
+	let recoveryWindowLoading = $state(false);
+	let recoveryWindowError = $state('');
+	let recoveryWindowRequest = 0;
 	let newName = $state('');
 	let targetTime = $state('');
 	let creationOpen = $state(false);
@@ -46,16 +51,9 @@
 		maxTargetTime = now.toISOString().slice(0, 16);
 	}
 	let minTargetTime = $derived.by(() => {
-		const source = branches.find((branch) => branch.name === sourceBranch);
-		if (!source) return undefined;
-
-		const createdAt = new Date(source.createdAt).getTime();
-		if (!Number.isFinite(createdAt)) return undefined;
-
-		const earliest = Math.max(
-			createdAt + WAL_INITIALIZATION_BUFFER_MS,
-			now.getTime() - WAL_RETENTION_MS
-		);
+		if (!earliestRestoreTime) return undefined;
+		const earliest = earliestRestoreTime.getTime();
+		if (!Number.isFinite(earliest)) return undefined;
 		const firstSelectableMinute = Math.ceil(earliest / 60_000) * 60_000;
 		return new Date(firstSelectableMinute).toISOString().slice(0, 16);
 	});
@@ -100,11 +98,72 @@
 	function openCreation(source?: string) {
 		if (creating) return;
 		sourceBranch = source ?? postgres?.activeBranch?.name ?? branches[0]?.name ?? '';
+		void loadRecoveryWindow(sourceBranch);
 		newName = '';
 		updateMaxTargetTime();
 		targetTime = maxTargetTime ?? '';
 		createError = '';
 		creationOpen = true;
+	}
+
+	const branchRecoveryWindowQuery = graphql(`
+		query PostgresBranchRecoveryWindow(
+			$team: Slug!
+			$env: String!
+			$name: String!
+			$branch: String!
+		) {
+			team(slug: $team) {
+				environment(name: $env) {
+					postgres(name: $name) {
+						branch(name: $branch) {
+							earliestRestoreTime
+						}
+					}
+				}
+			}
+		}
+	`);
+
+	async function loadRecoveryWindow(branch: string) {
+		const request = ++recoveryWindowRequest;
+		earliestRestoreTime = null;
+		recoveryWindowError = '';
+		if (!branch) {
+			recoveryWindowLoading = false;
+			return;
+		}
+		recoveryWindowLoading = true;
+		try {
+			const result = await branchRecoveryWindowQuery.fetch({
+				variables: {
+					team: page.params.team!,
+					env: page.params.env!,
+					name: page.params.postgres!,
+					branch
+				},
+				policy: 'NetworkOnly'
+			});
+			if (request !== recoveryWindowRequest) return;
+			if (result.errors?.length) {
+				recoveryWindowError = result.errors.map((error) => error.message).join('. ');
+				return;
+			}
+			earliestRestoreTime =
+				result.data?.team?.environment?.postgres?.branch?.earliestRestoreTime ?? null;
+		} catch (error) {
+			if (request === recoveryWindowRequest) {
+				recoveryWindowError =
+					error instanceof Error ? error.message : 'An unexpected error occurred.';
+			}
+		} finally {
+			if (request === recoveryWindowRequest) recoveryWindowLoading = false;
+		}
+	}
+
+	function changeSourceBranch(event: Event) {
+		sourceBranch = (event.currentTarget as HTMLSelectElement).value;
+		void loadRecoveryWindow(sourceBranch);
 	}
 
 	const createBranch = graphql(`
@@ -203,11 +262,7 @@
 			createError = 'Choose a source branch.';
 			return;
 		}
-		const createdAt = new Date(source.createdAt).getTime();
-		const earliestAllowed = Math.max(
-			createdAt + WAL_INITIALIZATION_BUFFER_MS,
-			Date.now() - WAL_RETENTION_MS
-		);
+		const earliestAllowed = earliestRestoreTime?.getTime() ?? NaN;
 		if (
 			!/^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}$/.test(targetTime) ||
 			Number.isNaN(selected.getTime()) ||
@@ -217,7 +272,7 @@
 			selected.getTime() < earliestAllowed
 		) {
 			createError =
-				'Choose a restore time at least 5 minutes after the source branch was created and within the 30-day WAL retention window.';
+				'Choose a restore time within the source branch recovery window and not in the future.';
 			return;
 		}
 		if (
@@ -320,12 +375,6 @@
 				Each branch is a separate writable database with its own data history. Workloads normally
 				use the active branch. Switching branches does not merge their data.
 			</BodyShort>
-			<BodyShort>
-				Currently active: <strong>{postgres.activeBranch?.name ?? 'None'}</strong>
-				{#if postgres.desiredActiveBranch && postgres.desiredActiveBranch !== postgres.activeBranch?.name}
-					(activation requested for <strong>{postgres.desiredActiveBranch}</strong>)
-				{/if}
-			</BodyShort>
 			{#if createMessage}
 				<Alert variant="success" size="small">{createMessage}</Alert>
 			{/if}
@@ -341,53 +390,82 @@
 						<li>
 							<ListItem>
 								<div class="branch-row">
-									<BranchStatus
-										{branch}
-										activeBranchId={postgres.activeBranch?.id}
-										requestedBranch={postgres.desiredActiveBranch}
-									/>
+									<div class="branch-info">
+										<BranchStatus
+											{branch}
+											activeBranchId={postgres.activeBranch?.id}
+											requestedBranch={postgres.desiredActiveBranch}
+										/>
+										<Detail>
+											Created <Time time={branch.createdAt} dateFormat="d MMM yyyy, HH:mm" />
+										</Detail>
+									</div>
+									<div class="branch-usage">
+										{const workloads = $derived(exhaustive(branch.workloads.nodes))}
+										{#if branch.workloads.pageInfo.totalCount > 0}
+											<Detail>Used by</Detail>
+											<ul class="branch-workloads">
+												{#each workloads as workload (workload.id)}
+													<li><WorkloadLink {workload} hideTeam hideEnv /></li>
+												{/each}
+											</ul>
+											{#if branch.workloads.pageInfo.totalCount > workloads.length}
+												<Detail>
+													Showing first {workloads.length} of {branch.workloads.pageInfo.totalCount}
+													workloads.
+												</Detail>
+											{/if}
+										{:else}
+											<Detail>No workloads</Detail>
+										{/if}
+									</div>
 									{#if canManage}
-										<ActionMenu>
-											{#snippet trigger(props)}
-												<Button
-													size="small"
-													variant="tertiary"
-													icon={MenuElipsisVerticalIcon}
-													aria-label={`Actions for ${branch.name}`}
-													{...props}
-												/>
-											{/snippet}
-											<button class="action-menu-button" onclick={() => openCreation(branch.name)}>
-												<ActionMenuItem>Create child branch</ActionMenuItem>
-											</button>
-											{#if canActivateBranch(branch, postgres.activeBranch?.name, postgres.desiredActiveBranch)}
+										<div class="branch-menu">
+											<ActionMenu>
+												{#snippet trigger(props)}
+													<Button
+														size="small"
+														variant="tertiary"
+														icon={MenuElipsisVerticalIcon}
+														aria-label={`Actions for ${branch.name}`}
+														{...props}
+													/>
+												{/snippet}
 												<button
 													class="action-menu-button"
-													onclick={() => {
-														activationTarget = branch.name;
-														confirmActivation = true;
-													}}
+													onclick={() => openCreation(branch.name)}
 												>
-													<ActionMenuItem>Use as active</ActionMenuItem>
+													<ActionMenuItem>Create child branch</ActionMenuItem>
 												</button>
-											{/if}
-											{#if canDeleteBranch(branch.name, postgres.activeBranch?.name, postgres.desiredActiveBranch)}
-												<button
-													class="action-menu-button"
-													disabled={deleting}
-													onclick={() => {
-														deletionTarget = branch.name;
-														deletionConfirmation = '';
-														deletionError = '';
-														deletionOpen = true;
-													}}
-												>
-													<ActionMenuItem variant="danger" disabled={deleting}
-														>Delete branch</ActionMenuItem
+												{#if canActivateBranch(branch, postgres.activeBranch?.name, postgres.desiredActiveBranch)}
+													<button
+														class="action-menu-button"
+														onclick={() => {
+															activationTarget = branch.name;
+															confirmActivation = true;
+														}}
 													>
-												</button>
-											{/if}
-										</ActionMenu>
+														<ActionMenuItem>Use as active</ActionMenuItem>
+													</button>
+												{/if}
+												{#if canDeleteBranch(branch.name, postgres.activeBranch?.name, postgres.desiredActiveBranch)}
+													<button
+														class="action-menu-button"
+														disabled={deleting}
+														onclick={() => {
+															deletionTarget = branch.name;
+															deletionConfirmation = '';
+															deletionError = '';
+															deletionOpen = true;
+														}}
+													>
+														<ActionMenuItem variant="danger" disabled={deleting}
+															>Delete branch</ActionMenuItem
+														>
+													</button>
+												{/if}
+											</ActionMenu>
+										</div>
 									{/if}
 								</div>
 							</ListItem>
@@ -425,15 +503,32 @@
 			bind:value={newName}
 			disabled={creating}
 		/>
-		<Select label="Source branch" required bind:value={sourceBranch} disabled={creating}>
+		<Select
+			label="Source branch"
+			required
+			bind:value={sourceBranch}
+			onchange={changeSourceBranch}
+			disabled={creating}
+		>
 			<option value="" disabled>Select a branch</option>
 			{#each branches as branch (branch.id)}
 				<option value={branch.name}>{branch.name}</option>
 			{/each}
 		</Select>
+		{#if recoveryWindowLoading}
+			<BodyShort>Checking the source branch restore window...</BodyShort>
+		{:else if recoveryWindowError}
+			<Alert variant="error" size="small"
+				>Could not load the restore window: {recoveryWindowError}</Alert
+			>
+		{:else if sourceBranch && !earliestRestoreTime}
+			<Alert variant="warning" size="small">
+				The source branch does not have a recoverable backup window yet.
+			</Alert>
+		{/if}
 		<TextField
 			label="Restore to (UTC)"
-			description="Choose a time at least 5 minutes after the source branch was created and within the 30-day WAL retention window."
+			description="Choose a time in the source branch's currently available recovery window."
 			type="datetime-local"
 			min={minTargetTime}
 			max={maxTargetTime}
@@ -441,7 +536,7 @@
 			step={60}
 			required
 			bind:value={targetTime}
-			disabled={creating}
+			disabled={creating || recoveryWindowLoading || !earliestRestoreTime}
 		/>
 		<BodyShort>The new branch will not become active automatically.</BodyShort>
 		{#if createError}<Alert variant="error" size="small">{createError}</Alert>{/if}
@@ -452,7 +547,13 @@
 				disabled={creating}
 				onclick={() => (creationOpen = false)}>Cancel</Button
 			>
-			<Button type="submit" loading={creating}>Create branch</Button>
+			<Button
+				type="submit"
+				loading={creating}
+				disabled={creating || recoveryWindowLoading || !earliestRestoreTime}
+			>
+				Create branch
+			</Button>
 		</div>
 	</form>
 </Modal>
@@ -510,10 +611,45 @@
 		border-bottom: 0;
 	}
 	.branch-row {
-		display: flex;
+		display: grid;
+		grid-template-columns: minmax(0, 1fr) minmax(0, 2fr) auto;
 		align-items: center;
-		justify-content: space-between;
-		gap: var(--ax-space-8);
+		gap: var(--ax-space-24);
+	}
+	.branch-info,
+	.branch-usage {
+		display: grid;
+		gap: var(--ax-space-4);
+		min-width: 0;
+	}
+	.branch-menu {
+		grid-column: 3;
+		grid-row: 1;
+	}
+	.branch-workloads {
+		display: flex;
+		flex-wrap: wrap;
+		gap: var(--ax-space-8) var(--ax-space-16);
+		list-style: none;
+		margin: 0;
+		padding: 0;
+	}
+	.branch-workloads li {
+		min-width: 0;
+		overflow-wrap: anywhere;
+	}
+	@container (max-width: 500px) {
+		.branch-row {
+			grid-template-columns: minmax(0, 1fr) auto;
+			gap: var(--ax-space-8) var(--ax-space-16);
+		}
+		.branch-usage {
+			grid-column: 1;
+			grid-row: 2;
+		}
+		.branch-menu {
+			grid-column: 2;
+		}
 	}
 	.section-header,
 	.branch-actions {

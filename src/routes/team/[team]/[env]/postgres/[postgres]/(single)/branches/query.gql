@@ -14,6 +14,7 @@ query PostgresBranches($team: Slug!, $env: String!, $name: String!, $first: Int!
 					name
 					state
 					createdAt
+					...PostgresBranchUsage @mask_disable
 				}
 				desiredActiveBranch
 				branches(first: $first) @paginate(mode: Infinite) {
@@ -25,6 +26,43 @@ query PostgresBranches($team: Slug!, $env: String!, $name: String!, $first: Int!
 						name
 						state
 						createdAt
+						...PostgresBranchUsage @mask_disable
+					}
+				}
+			}
+		}
+	}
+}
+
+fragment PostgresBranchUsage on PostgresBranch {
+	workloads(first: 5) {
+		pageInfo {
+			totalCount
+		}
+		nodes {
+			... on Application {
+				__typename
+				id
+				name
+				team {
+					slug
+				}
+				teamEnvironment {
+					environment {
+						name
+					}
+				}
+			}
+			... on Job {
+				__typename
+				id
+				name
+				team {
+					slug
+				}
+				teamEnvironment {
+					environment {
+						name
 					}
 				}
 			}
