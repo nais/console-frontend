@@ -9,7 +9,8 @@
 	import type { PageProps } from './$types';
 
 	let { data }: PageProps = $props();
-	let { TeamVulnerabilities, teamSlug } = $derived(data);
+	let { TeamVulnerabilities, TeamPriorityWorkloadsHigh, TeamSeverityWorkloads, teamSlug } =
+		$derived(data);
 </script>
 
 <GraphErrors errors={$TeamVulnerabilities.errors} />
@@ -47,6 +48,8 @@
 			{#key teamSlug}
 				<WorkloadsWithVulnerabilities
 					team={teamSlug}
+					high={TeamPriorityWorkloadsHigh}
+					severity={TeamSeverityWorkloads}
 					environmentNames={$TeamVulnerabilities.data.team.environments.map(
 						(env) => env.environment.name
 					)}
