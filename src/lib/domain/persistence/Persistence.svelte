@@ -14,7 +14,6 @@
 			workload,
 			graphql(`
 				fragment Persistence on Workload {
-					id
 					name
 					team {
 						slug
@@ -94,17 +93,12 @@
 					postgreses {
 						edges {
 							node {
-								id
-								name
-								workloads(first: 25) {
-									nodes {
-										workload {
-											id
-										}
-										branch {
-											name
-										}
-									}
+								postgres {
+									id
+									name
+								}
+								branch {
+									name
 								}
 							}
 						}
@@ -163,18 +157,14 @@
 			description: os.access.edges.find((access) => access.node.workload.name == $data.name)?.node
 				.access
 		})),
-		postgres: $data.postgreses.edges.map(({ node }) => {
-			const branch = node.workloads.nodes.find((usage) => usage.workload.id === $data.id)?.branch
-				.name;
-			return {
-				id: node.id,
-				label: node.name,
-				href: `/team/${$data.team.slug}/${$data.teamEnvironment.environment.name}/postgres/${node.name}`,
-				icon: 'postgres',
-				tooltip: 'Postgres',
-				description: branch ? `Branch: ${branch}` : undefined
-			};
-		}),
+		postgres: $data.postgreses.edges.map(({ node }) => ({
+			id: node.postgres.id,
+			label: node.postgres.name,
+			href: `/team/${$data.team.slug}/${$data.teamEnvironment.environment.name}/postgres/${node.postgres.name}`,
+			icon: 'postgres',
+			tooltip: 'Postgres',
+			description: `Branch: ${node.branch.name}`
+		})),
 		valkey: $data.valkeys.edges.map(toIconLabel('valkey', 'Valkey'))
 	});
 </script>
