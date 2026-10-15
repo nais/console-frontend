@@ -45,10 +45,12 @@
 
 <GraphErrors errors={$TeamPostgres.errors} />
 {#if page.url.searchParams.get('deletionRequested')}
-	<Alert variant="success">
-		Deletion requested for {page.url.searchParams.get('deletionRequested')}. Cleanup is
-		asynchronous; the database may remain in this list until it completes.
-	</Alert>
+	<div class="deletion-alert">
+		<Alert variant="success">
+			Deletion requested for {page.url.searchParams.get('deletionRequested')}. Cleanup is
+			asynchronous; the database may remain in this list until it completes.
+		</Alert>
+	</div>
 {/if}
 
 {#if $TeamPostgres.fetching && !$TeamPostgres.data}
@@ -165,6 +167,9 @@
 {/if}
 
 <style>
+	.deletion-alert {
+		margin-bottom: var(--ax-space-24);
+	}
 	.right {
 		text-align: right;
 	}

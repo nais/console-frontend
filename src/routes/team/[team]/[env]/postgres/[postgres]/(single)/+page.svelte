@@ -6,13 +6,25 @@
 	import SectionBoundary from '#lib/ui/SectionBoundary.svelte';
 	import SurfaceCard from '#lib/ui/SurfaceCard.svelte';
 	import { page } from '$app/state';
-	import { BodyShort, Detail, Heading, Loader } from '@nais/ds-svelte-community';
+	import { Alert, BodyShort, Detail, Heading, Loader } from '@nais/ds-svelte-community';
+	import { onMount } from 'svelte';
 	import type { PageProps } from './$types';
+	import BranchStateIndicator from './BranchStateIndicator.svelte';
+	import { branchStateLabel } from './branchStateLabel.js';
 
 	let { data }: PageProps = $props();
 	let { PostgresOverview } = $derived(data);
 	let postgres = $derived($PostgresOverview.data?.team.environment.postgres);
 	let activeBranch = $derived(postgres?.activeBranch);
+	let visibleErrors = $derived(
+		$PostgresOverview.errors?.filter(
+			(error) =>
+				activeBranch ||
+				!error.path?.includes('activeBranch') ||
+				!error.message.startsWith('Resource not found: ') ||
+				!error.message.endsWith('/main')
+		)
+	);
 	let workloads = $derived(
 		(postgres?.workloads.nodes ?? []).filter(
 			(usage) => usage.workload.__typename === 'Application' || usage.workload.__typename === 'Job'
@@ -23,22 +35,48 @@
 			? 'PROGRESSING'
 			: (activeBranch?.state ?? 'PROGRESSING')
 	);
+
+	onMount(() => {
+		const interval = window.setInterval(() => {
+			if (
+				document.visibilityState !== 'visible' ||
+				$PostgresOverview.fetching ||
+				!postgres ||
+				state !== 'PROGRESSING'
+			) {
+				return;
+			}
+			PostgresOverview.fetch({ policy: 'NetworkOnly' });
+		}, 10_000);
+
+		return () => window.clearInterval(interval);
+	});
 </script>
 
-<GraphErrors errors={$PostgresOverview.errors} />
+<GraphErrors errors={visibleErrors} />
 
 {#if $PostgresOverview.fetching && !postgres}
 	<div class="loading-centered" role="status" aria-label="Loading">
 		<Loader size="3xlarge" />
 	</div>
 {:else if postgres}
+	{#if !activeBranch}
+		<div class="provisioning-alert">
+			<Alert variant="info" size="small">
+				Postgres is being created. The main branch will appear when it is ready.
+			</Alert>
+		</div>
+	{/if}
 	<div class="layout-two-column">
 		<div class="content">
 			<section aria-labelledby="configuration-heading">
 				<Heading as="h2" id="configuration-heading" size="medium" spacing>Configuration</Heading>
 				<dl class="settings-list">
 					<dt>State</dt>
-					<dd>{state.toLowerCase()}</dd>
+					<dd class="state-value">
+						<BranchStateIndicator {state} />
+						{branchStateLabel(state)}
+					</dd>
 					<dt>Active branch</dt>
 					<dd>
 						{#if activeBranch}
@@ -111,6 +149,14 @@
 {/if}
 
 <style>
+	.provisioning-alert {
+		margin-bottom: var(--ax-space-24);
+	}
+	.state-value {
+		display: flex;
+		align-items: center;
+		gap: var(--ax-space-4);
+	}
 	.content {
 		display: flex;
 		flex-direction: column;

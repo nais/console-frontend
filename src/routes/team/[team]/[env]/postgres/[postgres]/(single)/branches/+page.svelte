@@ -90,10 +90,7 @@
 	let deleting = $state(false);
 	let deletionError = $state('');
 	let deletionMessage = $state('');
-	let canManage = $derived(
-		viewerIsMember ||
-			($PostgresBranches.data?.me?.__typename === 'User' && $PostgresBranches.data.me.isAdmin)
-	);
+	let canManage = $derived(viewerIsMember || data.isAdmin);
 
 	function openCreation(source?: string) {
 		if (creating) return;
