@@ -16,7 +16,7 @@
 	Applied {data.genericKubernetesData.kind.toLowerCase()}
 	<strong>{data.resourceName}</strong>{data.environmentName ? ` in ${data.environmentName}` : ''}.
 	{#if mode === 'full' && data.genericKubernetesData.changedFields.length > 0}
-		<ReadMore header="Changed fields">
+		<ReadMore header="Changed fields" size="small">
 			<dl>
 				{#each data.genericKubernetesData.changedFields as field (field.field)}
 					<dt>

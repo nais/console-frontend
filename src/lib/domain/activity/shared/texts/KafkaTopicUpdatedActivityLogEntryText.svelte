@@ -18,7 +18,7 @@
 		for <strong>{data.resourceName}</strong> in {data.environmentName}
 	{/if}
 	{#if mode === 'full'}
-		<ReadMore header="Kafka topic updated">
+		<ReadMore header="Kafka topic updated" size="small">
 			{#if data.kafkaTopicUpdatedData.addedGrants.length > 0}
 				{#each data.kafkaTopicUpdatedData.addedGrants as grant, index (index)}
 					<code>{grant.access}</code> granted to

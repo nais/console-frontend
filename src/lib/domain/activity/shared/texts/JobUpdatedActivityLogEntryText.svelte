@@ -32,7 +32,7 @@
 		in {data.environmentName}
 	{/if}.
 	{#if mode === 'full' && data.jobUpdated.changedFields.length > 0}
-		<ReadMore header="Updated fields">
+		<ReadMore header="Updated fields" size="small">
 			<dl>
 				{#each data.jobUpdated.changedFields as field (field.field)}
 					<dt>
