@@ -2456,6 +2456,9 @@ input CreatePostgresInput {
   """
   highAvailability: Boolean
 
+  """Initial user-defined labels to apply."""
+  labels: [ResourceLabelInput!]
+
   """PostgreSQL major version."""
   majorVersion: String!
 
@@ -11666,6 +11669,11 @@ input UpdatePostgresInput {
 
   """Add a third instance and enable synchronous replication."""
   highAvailability: Boolean
+
+  """
+  The complete set of user-defined labels to apply. When omitted or null, existing labels are left unchanged; use an empty list to remove all user-defined labels.
+  """
+  labels: [ResourceLabelInput!]
 
   """Requested memory, for example '512Mi'."""
   memory: String

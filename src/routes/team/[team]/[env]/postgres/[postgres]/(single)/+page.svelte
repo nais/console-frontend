@@ -1,11 +1,14 @@
 <script lang="ts">
 	import PersistenceActivityCard from '#lib/domain/activity/PersistenceActivityCard.svelte';
 	import Labels from '#lib/domain/labels/Labels.svelte';
+	import LabelsEditorModal from '#lib/domain/labels/LabelsEditorModal.svelte';
+	import type { Label } from '#lib/domain/labels/labels.js';
 	import WorkloadLink from '#lib/domain/workload/WorkloadLink.svelte';
 	import GraphErrors from '#lib/ui/GraphErrors.svelte';
 	import SectionBoundary from '#lib/ui/SectionBoundary.svelte';
 	import SurfaceCard from '#lib/ui/SurfaceCard.svelte';
 	import { page } from '$app/state';
+	import { graphql } from '$houdini';
 	import { Alert, BodyShort, Detail, Heading, Loader } from '@nais/ds-svelte-community';
 	import { onMount } from 'svelte';
 	import type { PageProps } from './$types';
@@ -16,6 +19,55 @@
 	let { PostgresOverview } = $derived(data);
 	let postgres = $derived($PostgresOverview.data?.team.environment.postgres);
 	let activeBranch = $derived(postgres?.activeBranch);
+	let canManage = $derived(data.viewerIsMember || data.isAdmin);
+	let labelsModalOpen = $state(false);
+	let labelErrors = $state<{ message: string }[] | null>(null);
+	const updateLabels = graphql(`
+		mutation UpdatePostgresLabels($input: UpdatePostgresInput!) {
+			updatePostgres(input: $input) {
+				postgres {
+					id
+					labels {
+						key
+						value
+					}
+				}
+			}
+		}
+	`);
+
+	async function saveLabels(labels: Label[]) {
+		labelErrors = null;
+		if (!canManage) {
+			labelErrors = [{ message: 'You do not have permission to manage Postgres for this team.' }];
+			return;
+		}
+		try {
+			const result = await updateLabels.mutate({
+				input: {
+					teamSlug: data.teamSlug,
+					environmentName: page.params.env!,
+					name: page.params.postgres!,
+					labels
+				}
+			});
+			if (result.errors?.length) {
+				labelErrors = result.errors;
+				return;
+			}
+			if (!result.data) {
+				labelErrors = [
+					{ message: 'The label update could not be confirmed. Check labels before trying again.' }
+				];
+				return;
+			}
+			labelsModalOpen = false;
+		} catch {
+			labelErrors = [
+				{ message: 'The label update could not be confirmed. Check labels before trying again.' }
+			];
+		}
+	}
 	let visibleErrors = $derived(
 		$PostgresOverview.errors?.filter(
 			(error) =>
@@ -30,7 +82,7 @@
 			(usage) => usage.workload.__typename === 'Application' || usage.workload.__typename === 'Job'
 		)
 	);
-	let state = $derived(
+	let branchState = $derived(
 		postgres?.desiredActiveBranch && postgres.desiredActiveBranch !== activeBranch?.name
 			? 'PROGRESSING'
 			: (activeBranch?.state ?? 'PROGRESSING')
@@ -42,7 +94,7 @@
 				document.visibilityState !== 'visible' ||
 				$PostgresOverview.fetching ||
 				!postgres ||
-				state !== 'PROGRESSING'
+				branchState !== 'PROGRESSING'
 			) {
 				return;
 			}
@@ -74,8 +126,8 @@
 				<dl class="settings-list">
 					<dt>State</dt>
 					<dd class="state-value">
-						<BranchStateIndicator {state} />
-						{branchStateLabel(state)}
+						<BranchStateIndicator state={branchState} />
+						{branchStateLabel(branchState)}
 					</dd>
 					<dt>Active branch</dt>
 					<dd>
@@ -140,12 +192,30 @@
 					<BodyShort>Not used by any workloads.</BodyShort>
 				{/if}
 			</SurfaceCard>
-			<Labels labels={postgres.labels} showEmpty />
+			<Labels
+				labels={postgres.labels}
+				showEmpty
+				onEdit={canManage
+					? () => {
+							labelErrors = null;
+							labelsModalOpen = true;
+						}
+					: undefined}
+			/>
 			<SectionBoundary message="Activity failed to render.">
 				<PersistenceActivityCard resourceType="postgres" resource={postgres} />
 			</SectionBoundary>
 		</div>
 	</div>
+	{#if labelsModalOpen}
+		<LabelsEditorModal
+			labels={postgres.labels}
+			title="Edit Postgres labels"
+			errors={labelErrors}
+			onsave={saveLabels}
+			onclose={() => (labelsModalOpen = false)}
+		/>
+	{/if}
 {/if}
 
 <style>

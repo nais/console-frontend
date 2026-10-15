@@ -1,8 +1,11 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
+	import LabelRows from '#lib/domain/labels/LabelRows.svelte';
+	import { labelRowsHaveErrors, type LabelRow } from '#lib/domain/labels/labels.js';
 	import PostgresConfigurationFields from '#lib/domain/postgres/PostgresConfigurationFields.svelte';
 	import GraphErrors from '#lib/ui/GraphErrors.svelte';
-	import { Alert, BodyShort, Button, Select, TextField } from '@nais/ds-svelte-community';
+	import { Alert, BodyShort, Button, Heading, Select, TextField } from '@nais/ds-svelte-community';
+	import { untrack } from 'svelte';
 	import type { PageProps } from './$types';
 
 	let { data, form }: PageProps = $props();
@@ -18,6 +21,9 @@
 			: (environments[0]?.environment.name ?? '')
 	);
 	let submitting = $state(false);
+	let labelRows = $state<LabelRow[]>(untrack(() => form?.labelRows ?? [{ key: '', value: '' }]));
+	let labelsInvalid = $derived(labelRowsHaveErrors(labelRows));
+	const uid = $props.id();
 </script>
 
 <GraphErrors errors={$CreatePostgresEnvironments.errors} />
@@ -61,8 +67,12 @@
 			diskSize={form?.diskSize}
 			highAvailability={form?.highAvailability}
 		/>
+		<section aria-labelledby="{uid}-labels">
+			<Heading as="h2" size="small" id="{uid}-labels" spacing>Labels</Heading>
+			<LabelRows bind:rows={labelRows} />
+		</section>
 		{#if form?.error}<Alert variant="error">{form.error}</Alert>{/if}
-		<Button type="submit" loading={submitting}>Create Postgres</Button>
+		<Button type="submit" loading={submitting} disabled={labelsInvalid}>Create Postgres</Button>
 	</form>
 {/if}
 

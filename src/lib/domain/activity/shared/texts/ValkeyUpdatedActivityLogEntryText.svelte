@@ -32,7 +32,7 @@
 		in {data.environmentName}
 	{/if}.
 	{#if mode === 'full' && data.valkeyData.updatedFields.length > 0}
-		<ReadMore header="Updated fields">
+		<ReadMore header="Updated fields" size="small">
 			<dl>
 				{#each data.valkeyData.updatedFields as field (field)}
 					<dt>

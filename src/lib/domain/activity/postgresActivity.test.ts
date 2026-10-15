@@ -5,6 +5,7 @@ import { icons } from './activity-log-icons';
 import { activityTooltip } from './activity-log-tooltip';
 import { activityTextComponent } from './activityTextComponents';
 import PostgresBranchActivityLogEntryText from './shared/texts/PostgresBranchActivityLogEntryText.svelte';
+import PostgresUpdatedActivityLogEntryText from './shared/texts/PostgresUpdatedActivityLogEntryText.svelte';
 import type { ActivityLogEntry } from './shared/texts/types';
 
 vi.mock('$app/env', () => ({ browser: false, building: false, dev: false }));
@@ -44,6 +45,49 @@ function entry(
 		}
 	};
 }
+
+describe('Postgres update activity', () => {
+	test.each([
+		['', 'owner=team', 'set to'],
+		[null, 'owner=team', 'set to'],
+		['owner=team', '', 'removed (was'],
+		['owner=team', null, 'removed (was'],
+		['owner=old', 'owner=new', ' -> '],
+		['0', 'false', ' -> '],
+		['', '', 'changed'],
+		[null, null, 'changed']
+	])('renders label changes from %s to %s', async (oldValue, newValue, expected) => {
+		const { body } = await render(PostgresUpdatedActivityLogEntryText, {
+			props: {
+				data: {
+					...entry('PostgresBranchCreatedActivityLogEntry'),
+					__typename: 'PostgresUpdatedActivityLogEntry',
+					postgresUpdated: { updatedFields: [{ field: 'labels', oldValue, newValue }] }
+				},
+				mode: 'full'
+			}
+		});
+		expect(body).toContain(expected);
+		expect(body).not.toContain('settings-list');
+	});
+
+	test('hides field details in sidebar mode', async () => {
+		const { body } = await render(PostgresUpdatedActivityLogEntryText, {
+			props: {
+				data: {
+					...entry('PostgresBranchCreatedActivityLogEntry'),
+					__typename: 'PostgresUpdatedActivityLogEntry',
+					postgresUpdated: {
+						updatedFields: [{ field: 'labels', oldValue: '', newValue: 'owner=team' }]
+					}
+				},
+				mode: 'sidebar'
+			}
+		});
+		expect(body).not.toContain('Updated fields');
+		expect(body).not.toContain('owner=team');
+	});
+});
 
 describe('Postgres branch activity', () => {
 	test.each(branchTypes)('registers an icon, tooltip and presenter for %s', (type) => {
