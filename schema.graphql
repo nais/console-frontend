@@ -880,9 +880,25 @@ type Application implements ActivityLogger & Node & Workload {
   openSearch: OpenSearch
 
   """
-  Postgres databases referenced by uses.postgres, whether or not they have an active branch.
+  Postgres references configured in uses.postgres, including their resolved branch.
   """
-  postgreses: PostgresConnection!
+  postgreses(
+    """Get items after this cursor."""
+    after: Cursor
+
+    """Get items before this cursor."""
+    before: Cursor
+
+    """
+    Get the first n items in the connection. This can be used in combination with the after parameter.
+    """
+    first: Int
+
+    """
+    Get the last n items in the connection. This can be used in combination with the before parameter.
+    """
+    last: Int
+  ): WorkloadPostgresConnection!
 
   """Resources for the application."""
   resources: ApplicationResources!
@@ -4237,9 +4253,25 @@ type Job implements ActivityLogger & Node & Workload {
   openSearch: OpenSearch
 
   """
-  Postgres databases referenced by uses.postgres, whether or not they have an active branch.
+  Postgres references configured in uses.postgres, including their resolved branch.
   """
-  postgreses: PostgresConnection!
+  postgreses(
+    """Get items after this cursor."""
+    after: Cursor
+
+    """Get items before this cursor."""
+    before: Cursor
+
+    """
+    Get the first n items in the connection. This can be used in combination with the after parameter.
+    """
+    first: Int
+
+    """
+    Get the last n items in the connection. This can be used in combination with the before parameter.
+    """
+    last: Int
+  ): WorkloadPostgresConnection!
 
   """Resources for the job."""
   resources: JobResources!
@@ -6201,8 +6233,28 @@ type Postgres implements ActivityLogger & Node {
   """Requested CPU, memory and disk size, when present on this Postgres."""
   resources: PostgresResources!
 
+  """Team owning this Postgres."""
+  team: Team!
+
   """Team environment containing this Postgres."""
   teamEnvironment: TeamEnvironment!
+
+  """
+  Workloads referencing this Postgres, including references to inactive branches and workloads following the active branch. Each workload is included once.
+  """
+  workloads(
+    """Get items after this cursor."""
+    after: Cursor
+
+    """Get items before this cursor."""
+    before: Cursor
+
+    """Get the first n items in the connection."""
+    first: Int
+
+    """Get the last n items in the connection."""
+    last: Int
+  ): PostgresWorkloadConnection!
 }
 
 """A time-limited personal access request for a Postgres branch."""
@@ -6299,6 +6351,13 @@ enum PostgresAccessState {
 
 """A named PostgresBranch belonging to a Postgres."""
 type PostgresBranch implements Node & Persistence {
+  """Time when this branch was created."""
+  createdAt: Time!
+
+  """
+  Earliest time the branch can currently be restored from its archived backups.
+  """
+  earliestRestoreTime: Time
   id: ID!
 
   """User-defined labels on this branch."""
@@ -6315,7 +6374,9 @@ type PostgresBranch implements Node & Persistence {
   team: Team!
   teamEnvironment: TeamEnvironment!
 
-  """Workloads using this branch while it is active."""
+  """
+  Workloads explicitly using this branch, or following it while it is active.
+  """
   workloads(
     """Get items after this cursor."""
     after: Cursor
@@ -6742,6 +6803,56 @@ type PostgresUpdatedActivityLogEntryDataUpdatedField {
 
   """The old value of the field, if it had one."""
   oldValue: String
+}
+
+"""Database privileges requested by a Postgres workload use."""
+enum PostgresUserRole {
+  """
+  Admin access, including a separate readwrite credential for ordinary application traffic.
+  """
+  ADMIN
+
+  """Read-only database access."""
+  READ
+
+  """Read and write database access."""
+  READWRITE
+}
+
+"""A workload referencing a Postgres and the branch it uses."""
+type PostgresWorkload {
+  """
+  The explicitly referenced branch, or the observed active branch when no branch is specified. Defaults to main when no active branch has been observed; a requested activation does not change this selection until observed.
+  """
+  branch: PostgresBranch!
+
+  """The application or job referencing this Postgres."""
+  workload: Workload!
+}
+
+"""
+A paginated list of workload and branch relationships. Each workload is included once.
+"""
+type PostgresWorkloadConnection {
+  """Workload and branch relationships with their pagination cursors."""
+  edges: [PostgresWorkloadEdge!]!
+
+  """Workload and branch relationships on this page."""
+  nodes: [PostgresWorkload!]!
+
+  """
+  Pagination information, including the total number of workloads before pagination.
+  """
+  pageInfo: PageInfo!
+}
+
+"""A workload and branch relationship with its pagination cursor."""
+type PostgresWorkloadEdge {
+  """Cursor for this workload in the connection."""
+  cursor: Cursor!
+
+  """The workload and the branch it uses."""
+  node: PostgresWorkload!
 }
 
 type Price {
@@ -7864,7 +7975,7 @@ input SearchFilter {
 }
 
 """Types that can be searched for."""
-union SearchNode = Application | BigQueryDataset | Bucket | Job | KafkaTopic | OpenSearch | PostgresBranch | SqlInstance | Team | Valkey
+union SearchNode = Application | BigQueryDataset | Bucket | Job | KafkaTopic | OpenSearch | Postgres | SqlInstance | Team | Valkey
 
 """Search node connection."""
 type SearchNodeConnection {
@@ -7896,7 +8007,9 @@ enum SearchType {
   JOB
   KAFKA_TOPIC
   OPENSEARCH
-  POSTGRES_BRANCH
+
+  """Search for Postgres databases by name."""
+  POSTGRES
   SQL_INSTANCE
 
   """Search for teams."""
@@ -12912,9 +13025,25 @@ interface Workload implements ActivityLogger & Node {
   openSearch: OpenSearch
 
   """
-  Postgres databases referenced by uses.postgres, whether or not they have an active branch.
+  Postgres references configured in uses.postgres, including their resolved branch.
   """
-  postgreses: PostgresConnection!
+  postgreses(
+    """Get items after this cursor."""
+    after: Cursor
+
+    """Get items before this cursor."""
+    before: Cursor
+
+    """
+    Get the first n items in the connection. This can be used in combination with the after parameter.
+    """
+    first: Int
+
+    """
+    Get the last n items in the connection. This can be used in combination with the before parameter.
+    """
+    last: Int
+  ): WorkloadPostgresConnection!
 
   """The resources allocated to the workload."""
   resources: WorkloadResources!
@@ -13117,6 +13246,46 @@ enum WorkloadOrderField {
 
   """Order apps by vulnerability severity unassigned"""
   VULNERABILITY_SEVERITY_UNASSIGNED
+}
+
+"""A Postgres reference from a workload's uses.postgres configuration."""
+type WorkloadPostgres {
+  """
+  The branch this workload resolves to: the explicit branch, observed active branch, or main before an active branch is observed.
+  """
+  branch: PostgresBranch!
+
+  """Prefix prepended to the environment variables for this Postgres."""
+  envPrefix: String
+
+  """The Postgres resource referenced by this use."""
+  postgres: Postgres!
+
+  """Database privileges granted to the workload. Defaults to admin."""
+  role: PostgresUserRole!
+}
+
+"""A paginated list of Postgres uses configured by a workload."""
+type WorkloadPostgresConnection {
+  """Postgres uses with their pagination cursors."""
+  edges: [WorkloadPostgresEdge!]!
+
+  """Postgres uses on this page."""
+  nodes: [WorkloadPostgres!]!
+
+  """
+  Pagination information, including the total number of Postgres uses before pagination.
+  """
+  pageInfo: PageInfo!
+}
+
+"""A Postgres use and its pagination cursor."""
+type WorkloadPostgresEdge {
+  """Cursor for this Postgres use in the connection."""
+  cursor: Cursor!
+
+  """The Postgres use and the branch it resolves to."""
+  node: WorkloadPostgres!
 }
 
 """

@@ -90,10 +90,45 @@
 							}
 						}
 					}
+					... on Application {
+						__typename
+						postgreses {
+							edges {
+								cursor
+								node {
+									postgres {
+										id
+										name
+									}
+									branch {
+										name
+									}
+								}
+							}
+						}
+					}
+					... on Job {
+						__typename
+						postgreses {
+							edges {
+								cursor
+								node {
+									postgres {
+										id
+										name
+									}
+									branch {
+										name
+									}
+								}
+							}
+						}
+					}
 				}
 			`)
 		)
 	);
+	let fragmentData = $derived($data);
 
 	const toIconLabel =
 		(urlName: string, tooltip: string) =>
@@ -113,6 +148,18 @@
 		tooltip: string;
 		description: string;
 	};
+	type PostgresUsage = {
+		postgres: { id: string; name: string };
+		branch: { name: string };
+	};
+	const postgresUsages = $derived.by(() => {
+		const workloadData = fragmentData as Record<string, unknown>;
+		if (workloadData.__typename !== 'Application' && workloadData.__typename !== 'Job') return [];
+		const postgreses = workloadData.postgreses as {
+			edges: { cursor: string; node: PostgresUsage }[];
+		};
+		return postgreses.edges;
+	});
 	const persistence = $derived({
 		buckets: $data.buckets.edges.map(toIconLabel('bucket', 'Cloud Storage Bucket')),
 		bigQuery: $data.bigQueryDatasets.edges.map(toIconLabel('bigquery', 'BigQuery Dataset')),
@@ -143,6 +190,14 @@
 			tooltip: 'OpenSearch',
 			description: os.access.edges.find((access) => access.node.workload.name == $data.name)?.node
 				.access
+		})),
+		postgres: postgresUsages.map(({ cursor, node: usage }) => ({
+			id: cursor,
+			label: usage.postgres.name,
+			href: `/team/${$data.team.slug}/${$data.teamEnvironment.environment.name}/postgres/${usage.postgres.name}`,
+			icon: 'postgres',
+			tooltip: 'Postgres',
+			description: `Branch: ${usage.branch.name}`
 		})),
 		valkey: $data.valkeys.edges.map(toIconLabel('valkey', 'Valkey'))
 	});

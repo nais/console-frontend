@@ -1,0 +1,16 @@
+query EditPostgres($team: Slug!, $env: String!, $name: String!) {
+	team(slug: $team) {
+		environment(name: $env) {
+			postgres(name: $name) {
+				id
+				name
+				highAvailability
+				resources {
+					cpu
+					memory
+					diskSize
+				}
+			}
+		}
+	}
+}

@@ -55,6 +55,9 @@ export function activityTooltip(typename: string): string {
 		case 'OpenSearchUpdatedActivityLogEntry':
 			return 'OpenSearch';
 		case 'PostgresCreatedActivityLogEntry':
+		case 'PostgresBranchCreatedActivityLogEntry':
+		case 'PostgresBranchActivatedActivityLogEntry':
+		case 'PostgresBranchDeletedActivityLogEntry':
 		case 'PostgresUpdatedActivityLogEntry':
 		case 'PostgresDeletedActivityLogEntry':
 		case 'PostgresGrantAccessActivityLogEntry':

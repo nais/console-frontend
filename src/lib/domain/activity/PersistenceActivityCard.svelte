@@ -3,6 +3,7 @@
 		graphql,
 		paginatedFragment,
 		type PersistenceActivityCardOpenSearchFragment,
+		type PersistenceActivityCardPostgresFragment,
 		type PersistenceActivityCardValkeyFragment
 	} from '$houdini';
 	import SurfaceCard from '#lib/ui/SurfaceCard.svelte';
@@ -18,7 +19,12 @@
 		resource: PersistenceActivityCardOpenSearchFragment;
 	}
 
-	type Props = ValkeyProps | OpenSearchProps;
+	interface PostgresProps {
+		resourceType: 'postgres';
+		resource: PersistenceActivityCardPostgresFragment;
+	}
+
+	type Props = ValkeyProps | OpenSearchProps | PostgresProps;
 
 	let { resourceType, resource }: Props = $props();
 
@@ -80,14 +86,33 @@
 		)
 	);
 
+	const postgresData = $derived(
+		paginatedFragment(
+			resourceType === 'postgres' ? (resource as PersistenceActivityCardPostgresFragment) : null,
+			graphql(`
+				fragment PersistenceActivityCardPostgresFragment on Postgres {
+					activityLog(first: 5) @paginate(mode: Infinite) {
+						edges {
+							node {
+								...ActivityLogEntryFragment
+							}
+						}
+					}
+				}
+			`)
+		)
+	);
+
 	let loadingMore = $state(false);
 
 	async function loadMore() {
 		loadingMore = true;
 		if (resourceType === 'valkey') {
 			await valkeyData.loadNextPage();
-		} else {
+		} else if (resourceType === 'opensearch') {
 			await opensearchData.loadNextPage();
+		} else {
+			await postgresData.loadNextPage();
 		}
 		loadingMore = false;
 	}
@@ -96,14 +121,20 @@
 		if (resourceType === 'valkey') {
 			return ($valkeyData?.data?.activityLog.edges ?? []).map((e) => e.node);
 		}
-		return ($opensearchData?.data?.activityLog.edges ?? []).map((e) => e.node);
+		if (resourceType === 'opensearch') {
+			return ($opensearchData?.data?.activityLog.edges ?? []).map((e) => e.node);
+		}
+		return ($postgresData?.data?.activityLog.edges ?? []).map((e) => e.node);
 	});
 
 	const hasNextPage = $derived.by(() => {
 		if (resourceType === 'valkey') {
 			return $valkeyData?.pageInfo.hasNextPage ?? false;
 		}
-		return $opensearchData?.pageInfo.hasNextPage ?? false;
+		if (resourceType === 'opensearch') {
+			return $opensearchData?.pageInfo.hasNextPage ?? false;
+		}
+		return $postgresData?.pageInfo.hasNextPage ?? false;
 	});
 </script>
 

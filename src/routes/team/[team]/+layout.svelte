@@ -32,7 +32,12 @@
 	{/if}
 
 	<main class="main">
-		<Menu features={$UserInfo.data?.features} member={viewerIsMember} {isAdmin} />
+		<Menu
+			features={$UserInfo.data?.features}
+			member={viewerIsMember}
+			postgresCount={data.postgreses?.pageInfo.totalCount ?? 0}
+			{isAdmin}
+		/>
 		<div class="container">
 			<PageHeader>
 				{#snippet beforeBreadcrumbs()}

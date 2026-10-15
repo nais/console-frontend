@@ -6,6 +6,7 @@
 	import BigQueryIcon from '#lib/icons/BigQueryIcon.svelte';
 	import KafkaIcon from '#lib/icons/KafkaIcon.svelte';
 	import OpenSearchIcon from '#lib/icons/OpenSearchIcon.svelte';
+	import PostgreSQLIcon from '#lib/icons/PostgreSQLIcon.svelte';
 	import ValkeyIcon from '#lib/icons/ValkeyIcon.svelte';
 	import { favorites } from '#lib/stores/favorites.svelte.js';
 	import { Modal } from '@nais/ds-svelte-community';
@@ -76,6 +77,17 @@
 						}
 					}
 					... on OpenSearch {
+						name
+						team {
+							slug
+						}
+						teamEnvironment {
+							environment {
+								name
+							}
+						}
+					}
+					... on Postgres {
 						name
 						team {
 							slug
@@ -160,6 +172,12 @@
 			urlName: 'opensearch',
 			prefix: 'os',
 			type: 'OPENSEARCH'
+		},
+		Postgres: {
+			icon: PostgreSQLIcon,
+			urlName: 'postgres',
+			prefix: 'postgres',
+			type: 'POSTGRES'
 		},
 		BigQueryDataset: {
 			icon: BigQueryIcon,

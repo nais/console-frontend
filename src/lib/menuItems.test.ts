@@ -13,7 +13,9 @@ describe('menuItems', () => {
 			expect(
 				menuItems({
 					path: '/team/devteam',
-					features
+					features,
+					member: true,
+					postgresCount: 1
 				})
 			).toEqual([
 				[{ label: 'Team Overview', href: '/team/devteam', active: true }],
@@ -25,6 +27,7 @@ describe('menuItems', () => {
 					{ label: 'Secrets', href: '/team/devteam/secrets' },
 					{ label: 'Configs', href: '/team/devteam/configs' },
 					{ label: 'Cloud SQL', href: '/team/devteam/cloudsql' },
+					{ label: 'Postgres', href: '/team/devteam/postgres' },
 					{ label: 'Buckets', href: '/team/devteam/buckets' },
 					{ label: 'Valkey', href: '/team/devteam/valkey' },
 					{ label: 'OpenSearch', href: '/team/devteam/opensearch' },
@@ -52,7 +55,9 @@ describe('menuItems', () => {
 		test('secrets active for sub-pages', () => {
 			expect(
 				menuItems({
-					path: '/team/nais/prod-gcp/secret/github-backup-config'
+					path: '/team/nais/prod-gcp/secret/github-backup-config',
+					member: false,
+					postgresCount: 0
 				})
 					.flatMap((g) => g)
 					.find((i) => i.label === 'Secrets')?.active
@@ -62,17 +67,48 @@ describe('menuItems', () => {
 		test('cloud sql active for sub-pages', () => {
 			expect(
 				menuItems({
-					path: '/team/nais/prod-gcp/cloudsql/gemini'
+					path: '/team/nais/prod-gcp/cloudsql/gemini',
+					member: false,
+					postgresCount: 0
 				})
 					.flatMap((g) => g)
 					.find((i) => i.label === 'Cloud SQL')?.active
 			).toBe(true);
 		});
 
+		test('postgres active on team page', () => {
+			expect(
+				menuItems({
+					path: '/team/nais/postgres',
+					member: true,
+					postgresCount: 1
+				})
+					.flatMap((group) => group)
+					.find((item) => item.label === 'Postgres')?.active
+			).toBe(true);
+		});
+
+		test.each([
+			{ member: false, postgresCount: 1 },
+			{ member: true, postgresCount: 0 },
+			{ member: false, postgresCount: 0 }
+		])('hides Postgres for $member member with $postgresCount resources', (visibility) => {
+			expect(
+				menuItems({
+					path: '/team/nais',
+					...visibility
+				})
+					.flatMap((group) => group)
+					.find((item) => item.label === 'Postgres')
+			).toBeUndefined();
+		});
+
 		test('valkey active for sub-pages with feature toogling', () => {
 			expect(
 				menuItems({
 					path: '/team/nais/prod-gcp/valkey/gemini',
+					member: true,
+					postgresCount: 1,
 					features
 				})
 					.flatMap((g) => g)
@@ -83,7 +119,9 @@ describe('menuItems', () => {
 		test('no features', () => {
 			expect(
 				menuItems({
-					path: '/team/devteam/jobs'
+					path: '/team/devteam/jobs',
+					member: false,
+					postgresCount: 0
 				})
 					.flatMap((g) => g)
 					.find((i) => ['Valkey', 'OpenSearch', 'Kafka Topics', 'Unleash'].includes(i.label))
@@ -94,6 +132,8 @@ describe('menuItems', () => {
 			expect(
 				menuItems({
 					path: '/team/nais',
+					member: true,
+					postgresCount: 1,
 					features
 				})
 					.flatMap((g) => g)
@@ -106,7 +146,9 @@ describe('menuItems', () => {
 		test('app detail routes keep applications active in the team menu', () => {
 			expect(
 				menuItems({
-					path: '/team/devteam/dev/app/app-w-all-storage/utilization'
+					path: '/team/devteam/dev/app/app-w-all-storage/utilization',
+					member: false,
+					postgresCount: 0
 				})
 					.flatMap((group) => group)
 					.find((item) => item.label === 'Applications')
@@ -116,7 +158,9 @@ describe('menuItems', () => {
 		test('job detail routes keep jobs active in the team menu', () => {
 			expect(
 				menuItems({
-					path: '/team/devteam/dev/job/dataproduct-apps-topics/vulnerabilities'
+					path: '/team/devteam/dev/job/dataproduct-apps-topics/vulnerabilities',
+					member: false,
+					postgresCount: 0
 				})
 					.flatMap((group) => group)
 					.find((item) => item.label === 'Jobs')
@@ -126,7 +170,9 @@ describe('menuItems', () => {
 		test('auxiliary workload routes do not add detail menu entries', () => {
 			expect(
 				menuItems({
-					path: '/team/devteam/dev/job/dataproduct-apps-topics/delete'
+					path: '/team/devteam/dev/job/dataproduct-apps-topics/delete',
+					member: false,
+					postgresCount: 0
 				})
 					.flatMap((group) => group)
 					.find((item) => item.label === 'Delete')
