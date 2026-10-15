@@ -40,7 +40,7 @@ describe('team vulnerability workload view', () => {
 		expect(loadSeverity).toHaveBeenCalledWith(
 			expect.objectContaining({
 				variables: expect.objectContaining({
-					orderBy: { field: 'NAME', direction: 'ASC' }
+					orderBy: { field: 'VULNERABILITY_SEVERITY_CRITICAL', direction: 'DESC' }
 				})
 			})
 		);

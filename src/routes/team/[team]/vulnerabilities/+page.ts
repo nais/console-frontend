@@ -43,8 +43,8 @@ export async function load(event) {
 					variables: {
 						team,
 						orderBy: {
-							field: VulnerabilitySummaryOrderByField.NAME,
-							direction: OrderDirection.ASC
+							field: VulnerabilitySummaryOrderByField.VULNERABILITY_SEVERITY_CRITICAL,
+							direction: OrderDirection.DESC
 						}
 					}
 				})
