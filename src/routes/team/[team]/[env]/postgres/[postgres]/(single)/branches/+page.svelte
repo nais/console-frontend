@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { canActivateBranch, canDeleteBranch } from '#lib/domain/postgres/forms.js';
+	import { branchOperation } from '#lib/domain/postgres/branchOperation.js';
 	import WorkloadLink from '#lib/domain/workload/WorkloadLink.svelte';
 	import ActionConfirm from '#lib/ui/ActionConfirm.svelte';
 	import GraphErrors from '#lib/ui/GraphErrors.svelte';
@@ -70,7 +71,9 @@
 			) {
 				return;
 			}
-			refresh();
+			void refresh().catch(() => {
+				refreshError = 'Branch status could not be refreshed. Automatic updates will retry.';
+			});
 		}, 10_000);
 		return () => {
 			clearInterval(interval);
@@ -90,6 +93,7 @@
 	let deleting = $state(false);
 	let deletionError = $state('');
 	let deletionMessage = $state('');
+	let refreshError = $state('');
 	let canManage = $derived(viewerIsMember || data.isAdmin);
 
 	function openCreation(source?: string) {
@@ -211,38 +215,47 @@
 		}
 		deleting = true;
 		try {
-			const result = await deleteBranch.mutate({
-				input: {
-					teamSlug: page.params.team!,
-					environmentName: page.params.env!,
-					postgres: page.params.postgres!,
-					branch: target
-				}
+			const result = await branchOperation({
+				request: () =>
+					deleteBranch.mutate({
+						input: {
+							teamSlug: page.params.team!,
+							environmentName: page.params.env!,
+							postgres: page.params.postgres!,
+							branch: target
+						}
+					}),
+				accepted: (data) => data.deletePostgresBranch.postgresBranchDeleted === true,
+				successMessage: `Deletion requested for ${target}. Cleanup is asynchronous; status updates automatically.`,
+				rejectedMessage: 'Deletion was not accepted. Please try again.',
+				refresh
 			});
-			if (result.errors?.length) {
-				deletionError = result.errors.map((item) => item.message).join('. ');
+			if (!result.ok) {
+				deletionError = result.message;
 				return;
 			}
-			if (!result.data?.deletePostgresBranch.postgresBranchDeleted) {
-				deletionError = 'Deletion was not accepted. Please try again.';
-				return;
-			}
-			deletionMessage = `Deletion requested for ${target}. Cleanup is asynchronous; status updates automatically.`;
+			deletionMessage = result.message;
 			deletionOpen = false;
-			await refresh();
 		} finally {
 			deleting = false;
 		}
 	}
 
 	async function refresh() {
-		await PostgresBranches.fetch({ policy: 'NetworkOnly' });
+		const result = await PostgresBranches.fetch({ policy: 'NetworkOnly' });
+		if (result.errors?.length) {
+			throw new Error(result.errors.map((error) => error.message).join('. '));
+		}
+		if (!result.data) throw new Error('No branch status returned.');
+		refreshError = '';
 	}
 
 	async function loadMore() {
 		loadingMore = true;
 		try {
 			await PostgresBranches.loadNextPage({ first: 20 });
+		} catch {
+			refreshError = 'More branches could not be loaded. Please try again.';
 		} finally {
 			loadingMore = false;
 		}
@@ -287,29 +300,31 @@
 		const createdName = newName.trim();
 		creating = true;
 		try {
-			const result = await createBranch.mutate({
-				input: {
-					teamSlug: page.params.team!,
-					environmentName: page.params.env!,
-					postgres: page.params.postgres!,
-					branch: createdName,
-					sourceBranch,
-					targetTime: selected
-				}
+			const result = await branchOperation({
+				request: () =>
+					createBranch.mutate({
+						input: {
+							teamSlug: page.params.team!,
+							environmentName: page.params.env!,
+							postgres: page.params.postgres!,
+							branch: createdName,
+							sourceBranch,
+							targetTime: selected
+						}
+					}),
+				accepted: (data) => !!data.createPostgresBranch.postgresBranch,
+				successMessage: `${createdName} was created. Provisioning is asynchronous; status updates automatically. It will not become active automatically.`,
+				rejectedMessage: 'Could not create branch. Please try again.',
+				refresh
 			});
-			if (result.errors?.length) {
-				createError = result.errors.map((item) => item.message).join('. ');
-				return;
-			}
-			if (!result.data) {
-				createError = 'Could not create branch. Please try again.';
+			if (!result.ok) {
+				createError = result.message;
 				return;
 			}
 			creationOpen = false;
 			newName = '';
 			targetTime = '';
-			createMessage = `${createdName} was created. Provisioning is asynchronous; status updates automatically. It will not become active automatically.`;
-			await refresh();
+			createMessage = result.message;
 		} finally {
 			creating = false;
 		}
@@ -327,30 +342,30 @@
 		) {
 			return { ok: false, message: 'This branch is not available for activation.' };
 		}
-		const result = await activateBranch.mutate({
-			input: {
-				teamSlug: page.params.team!,
-				environmentName: page.params.env!,
-				postgres: page.params.postgres!,
-				branch: target
-			}
+		const result = await branchOperation({
+			request: () =>
+				activateBranch.mutate({
+					input: {
+						teamSlug: page.params.team!,
+						environmentName: page.params.env!,
+						postgres: page.params.postgres!,
+						branch: target
+					}
+				}),
+			accepted: (data) => !!data.activatePostgresBranch.postgres,
+			successMessage: `Requested ${target} as the active branch. Activation is asynchronous; status updates automatically.`,
+			rejectedMessage: 'Could not request activation. Please try again.',
+			refresh
 		});
-		if (result.errors) {
-			return {
-				ok: false,
-				message: result.errors.map((error) => error.message).join('. ')
-			};
-		}
-		if (!result.data) {
-			return { ok: false, message: 'Could not request activation. Please try again.' };
-		}
-		await refresh();
-		activationMessage = `Requested ${target} as the active branch. Activation is asynchronous; status updates automatically.`;
-		return { ok: true, message: activationMessage };
+		if (result.ok) activationMessage = result.message;
+		return result;
 	}
 </script>
 
 <GraphErrors errors={$PostgresBranches.errors} />
+{#if refreshError}
+	<Alert variant="warning" size="small">{refreshError}</Alert>
+{/if}
 {#if $PostgresBranches.fetching && !postgres}
 	<div class="loading-centered" role="status" aria-label="Loading">
 		<Loader size="3xlarge" />
