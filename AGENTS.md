@@ -33,7 +33,7 @@ VITE_SCHEMA_ENDPOINT="http://localhost:3000/graphql"
 VITE_SCHEMA_ENDPOINT="http://localhost:4242/graphql"
 ```
 
-To connect to local API, run `nais alpha api proxy` on host machine.
+To connect through the Nais API proxy, run `nais api proxy` on the host machine.
 
 ---
 

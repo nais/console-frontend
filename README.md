@@ -50,7 +50,7 @@ To connect to a nais-api instance, run the [nais CLI](https://github.com/nais/cl
 
 ```bash
 nais auth login -n
-nais alpha api proxy
+nais api proxy
 ```
 
 Then set your `.env`:
