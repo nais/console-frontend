@@ -25,13 +25,15 @@ import { actions as createActions } from '../../../routes/team/[team]/postgres/c
 import { actions as updateActions } from '../../../routes/team/[team]/[env]/postgres/[postgres]/edit/+page.server';
 import { actions as deleteActions } from '../../../routes/team/[team]/[env]/postgres/[postgres]/delete/+page.server';
 
-function request(fields: Record<string, string>) {
+function request(fields: Record<string, string | string[]>) {
 	const body = new FormData();
-	for (const [name, value] of Object.entries(fields)) body.set(name, value);
+	for (const [name, values] of Object.entries(fields)) {
+		for (const value of Array.isArray(values) ? values : [values]) body.append(name, value);
+	}
 	return new Request('https://console.example.com/team/test/postgres', { method: 'POST', body });
 }
 
-function createEvent(fields: Record<string, string>) {
+function createEvent(fields: Record<string, string | string[]>) {
 	return {
 		params: { team: 'test' },
 		request: request(fields)
@@ -94,6 +96,7 @@ describe('Postgres management actions', () => {
 					teamSlug: 'test',
 					environmentName: 'dev',
 					majorVersion: '18',
+					labels: [],
 					cpu: undefined,
 					memory: undefined,
 					diskSize: undefined,
@@ -102,6 +105,62 @@ describe('Postgres management actions', () => {
 			},
 			expect.any(Object)
 		);
+	});
+
+	test('creates with labels and trims keys and values', async () => {
+		create.mutate.mockResolvedValue({
+			data: {
+				createPostgres: {
+					postgres: {
+						id: 'pg',
+						name: 'database',
+						teamEnvironment: { environment: { name: 'dev' } }
+					}
+				}
+			}
+		});
+		await expect(
+			createActions.default(
+				createEvent({
+					name: 'database',
+					environment: 'dev',
+					majorVersion: '18',
+					label_key: [' owner ', 'cost-center'],
+					label_value: [' team ', '']
+				})
+			)
+		).rejects.toMatchObject({ status: 303 });
+		expect(create.mutate).toHaveBeenCalledWith(
+			{
+				input: expect.objectContaining({
+					labels: [
+						{ key: 'owner', value: 'team' },
+						{ key: 'cost-center', value: '' }
+					]
+				})
+			},
+			expect.any(Object)
+		);
+	});
+
+	test.each([
+		{ label_key: ['duplicate', 'duplicate'], label_value: ['a', 'b'] },
+		{ label_key: ['bad key'], label_value: ['value'] },
+		{ label_key: ['key'], label_value: ['bad value'] }
+	])('rejects invalid labels before creation: %s', async (labels) => {
+		const result = await createActions.default(
+			createEvent({
+				name: 'database',
+				environment: 'dev',
+				majorVersion: '18',
+				...labels
+			})
+		);
+		expect(result).toMatchObject({
+			status: 400,
+			data: { labelRows: expect.any(Array), error: 'Check the label fields below.' }
+		});
+		expect(create.mutate).not.toHaveBeenCalled();
 	});
 
 	test('returns creation errors and retains submitted fields', async () => {

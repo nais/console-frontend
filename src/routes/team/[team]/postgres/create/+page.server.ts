@@ -1,4 +1,5 @@
 import { graphql } from '$houdini';
+import { labelRowsHaveErrors, rowsFromArrays, toLabelInput } from '#lib/domain/labels/labels.js';
 import { requirePostgresAccess } from '#lib/domain/postgres/access.server.js';
 import {
 	configurationErrors,
@@ -42,13 +43,21 @@ export const actions = {
 	default: async (event) => {
 		await requirePostgresAccess(event, event.params.team);
 		const data = await event.request.formData();
+		const labelRows = rowsFromArrays(
+			data.getAll('label_key').map((value) => (typeof value === 'string' ? value : '')),
+			data.getAll('label_value').map((value) => (typeof value === 'string' ? value : ''))
+		);
 		const values = {
 			name: formString(data, 'name'),
 			environment: formString(data, 'environment'),
 			majorVersion: formString(data, 'majorVersion'),
+			labelRows,
 			...postgresConfiguration(data)
 		};
 		const errors = configurationErrors(values);
+		if (labelRowsHaveErrors(labelRows)) {
+			return fail(400, { ...values, errors, error: 'Check the label fields below.' });
+		}
 		if (!values.name || !values.environment || !values.majorVersion) {
 			return fail(400, { ...values, errors, error: 'Name, environment and version are required.' });
 		}
@@ -90,6 +99,7 @@ export const actions = {
 					teamSlug: event.params.team,
 					environmentName: values.environment,
 					majorVersion: values.majorVersion,
+					labels: toLabelInput(labelRows),
 					...resourceInput(values)
 				}
 			},
