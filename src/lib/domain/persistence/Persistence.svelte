@@ -90,15 +90,34 @@
 							}
 						}
 					}
-					postgreses {
-						edges {
-							node {
-								postgres {
-									id
-									name
+					... on Application {
+						__typename
+						postgreses {
+							edges {
+								node {
+									postgres {
+										id
+										name
+									}
+									branch {
+										name
+									}
 								}
-								branch {
-									name
+							}
+						}
+					}
+					... on Job {
+						__typename
+						postgreses {
+							edges {
+								node {
+									postgres {
+										id
+										name
+									}
+									branch {
+										name
+									}
 								}
 							}
 						}
@@ -107,6 +126,7 @@
 			`)
 		)
 	);
+	let fragmentData = $derived($data);
 
 	const toIconLabel =
 		(urlName: string, tooltip: string) =>
@@ -126,6 +146,16 @@
 		tooltip: string;
 		description: string;
 	};
+	type PostgresUsage = {
+		postgres: { id: string; name: string };
+		branch: { name: string };
+	};
+	const postgresUsages = $derived.by(() => {
+		const workloadData = fragmentData as Record<string, unknown>;
+		if (workloadData.__typename !== 'Application' && workloadData.__typename !== 'Job') return [];
+		const postgreses = workloadData.postgreses as { edges: { node: PostgresUsage }[] };
+		return postgreses.edges.map(({ node }) => node);
+	});
 	const persistence = $derived({
 		buckets: $data.buckets.edges.map(toIconLabel('bucket', 'Cloud Storage Bucket')),
 		bigQuery: $data.bigQueryDatasets.edges.map(toIconLabel('bigquery', 'BigQuery Dataset')),
@@ -157,13 +187,13 @@
 			description: os.access.edges.find((access) => access.node.workload.name == $data.name)?.node
 				.access
 		})),
-		postgres: $data.postgreses.edges.map(({ node }) => ({
-			id: node.postgres.id,
-			label: node.postgres.name,
-			href: `/team/${$data.team.slug}/${$data.teamEnvironment.environment.name}/postgres/${node.postgres.name}`,
+		postgres: postgresUsages.map((usage) => ({
+			id: usage.postgres.id,
+			label: usage.postgres.name,
+			href: `/team/${$data.team.slug}/${$data.teamEnvironment.environment.name}/postgres/${usage.postgres.name}`,
 			icon: 'postgres',
 			tooltip: 'Postgres',
-			description: `Branch: ${node.branch.name}`
+			description: `Branch: ${usage.branch.name}`
 		})),
 		valkey: $data.valkeys.edges.map(toIconLabel('valkey', 'Valkey'))
 	});

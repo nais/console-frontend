@@ -113,7 +113,7 @@ export function canDeleteBranch(
 	return (
 		branch !== activeBranch &&
 		branch !== desiredActiveBranch &&
-		!(!activeBranch && !desiredActiveBranch && branch === 'main')
+		!(!activeBranch && branch === 'main')
 	);
 }
 export const postgresResources = {

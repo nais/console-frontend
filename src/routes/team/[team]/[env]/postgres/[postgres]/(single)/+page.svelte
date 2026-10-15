@@ -13,7 +13,11 @@
 	let { PostgresOverview } = $derived(data);
 	let postgres = $derived($PostgresOverview.data?.team.environment.postgres);
 	let activeBranch = $derived(postgres?.activeBranch);
-	let workloads = $derived(postgres?.workloads.nodes ?? []);
+	let workloads = $derived(
+		(postgres?.workloads.nodes ?? []).filter(
+			(usage) => usage.workload.__typename === 'Application' || usage.workload.__typename === 'Job'
+		)
+	);
 	let state = $derived(
 		postgres?.desiredActiveBranch && postgres.desiredActiveBranch !== activeBranch?.name
 			? 'PROGRESSING'
@@ -75,9 +79,7 @@
 					<ul class="workloads-list">
 						{#each workloads as usage (usage.workload.id)}
 							<li class="workload-usage">
-								{#if usage.workload.__typename === 'Application' || usage.workload.__typename === 'Job'}
-									<WorkloadLink workload={usage.workload} hideTeam hideEnv />
-								{/if}
+								<WorkloadLink workload={usage.workload} hideTeam hideEnv />
 								<div class="branch-label">
 									<Detail>
 										Branch:

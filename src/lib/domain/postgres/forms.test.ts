@@ -138,6 +138,7 @@ describe('Postgres forms', () => {
 		['restore', 'main', 'restore', false],
 		['old', 'main', 'restore', true],
 		['main', null, null, false],
+		['main', null, 'restore', false],
 		['restore', null, null, true]
 	])(
 		'checks deletion of %s with active %s and requested %s',
