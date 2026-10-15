@@ -8,10 +8,13 @@
 	import { getTeamContext } from './teamContext.svelte';
 
 	const {
-		features
+		features,
+		member,
+		postgresCount
 	}: {
 		member: boolean;
 		isAdmin: boolean;
+		postgresCount: number;
 		features?: {
 			unleash: { enabled: boolean };
 			valkey: { enabled: boolean };
@@ -23,7 +26,9 @@
 	const items = $derived(
 		menuItems({
 			path: page.url.pathname,
-			features
+			features,
+			member,
+			postgresCount
 		})
 	);
 
@@ -49,8 +54,7 @@
 			{#snippet headerContent()}
 				<a
 					href={overviewItem.href}
-					class="overview-link"
-					class:active={overviewItem.active}
+					class={['overview-link', { active: overviewItem.active }]}
 					onclick={() => teamContext.closeMobileMenu()}
 				>
 					<span class="icon-box"><Icon icon={overviewItem.label} /></span>

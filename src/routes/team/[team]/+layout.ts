@@ -49,6 +49,7 @@ export async function load(event) {
 					deletionInProgress: false,
 					lastSuccessfulSync: null,
 					viewerIsMember: false,
+					postgreses: { pageInfo: { totalCount: 0 } },
 					externalResources: { gitHubTeam: null },
 					purpose: '',
 					slackChannel: '',

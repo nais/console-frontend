@@ -1,5 +1,10 @@
 query TeamRoles($team: Slug!) {
 	team(slug: $team) {
+		postgreses(first: 1) {
+			pageInfo {
+				totalCount
+			}
+		}
 		members {
 			pageInfo {
 				totalCount
