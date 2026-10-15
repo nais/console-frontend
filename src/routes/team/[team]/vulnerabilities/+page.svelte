@@ -58,6 +58,7 @@
 						?.elevatedWorkloadCount}
 					monitorWorkloadCount={$TeamVulnerabilities.data.team.vulnerabilitySummary
 						?.monitorWorkloadCount}
+					noSbomWorkloadCount={$TeamVulnerabilities.data.team.noSbomWorkloads.pageInfo.totalCount}
 				/>
 			{/key}
 		</section>

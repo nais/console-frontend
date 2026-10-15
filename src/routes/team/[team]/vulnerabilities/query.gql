@@ -23,6 +23,11 @@ query TeamVulnerabilities($team: Slug!) {
 				totalCount
 			}
 		}
+		noSbomWorkloads: workloads(first: 1, filter: { sbomStatus: NO_SBOM }) {
+			pageInfo {
+				totalCount
+			}
+		}
 		vulnerabilitySummary {
 			sbomCount
 			coverage
