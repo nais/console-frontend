@@ -23,16 +23,6 @@ query TeamVulnerabilities($team: Slug!) {
 				totalCount
 			}
 		}
-		noSbomWorkloads: workloads(first: 1, filter: { sbomStatus: NO_SBOM }) {
-			pageInfo {
-				totalCount
-			}
-		}
-		processingSbomWorkloads: workloads(first: 1, filter: { sbomStatus: PROCESSING }) {
-			pageInfo {
-				totalCount
-			}
-		}
 		vulnerabilitySummary {
 			sbomCount
 			coverage

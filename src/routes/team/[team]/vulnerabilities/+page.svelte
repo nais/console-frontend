@@ -26,7 +26,7 @@
 			)}
 			<VulnerabilitySummary
 				vulnerabilitySummary={$TeamVulnerabilities.data.team.vulnerabilitySummary}
-				knownExploitedHref="#priority-groups"
+				knownExploitedHref="?view=priority#priority-groups"
 				{urgentCount}
 				knownExploitedWorkloadCount={exploitedWorkloadCount}
 			/>
@@ -58,9 +58,6 @@
 						?.elevatedWorkloadCount}
 					monitorWorkloadCount={$TeamVulnerabilities.data.team.vulnerabilitySummary
 						?.monitorWorkloadCount}
-					noSbomWorkloadCount={$TeamVulnerabilities.data.team.noSbomWorkloads.pageInfo.totalCount}
-					processingSbomWorkloadCount={$TeamVulnerabilities.data.team.processingSbomWorkloads
-						.pageInfo.totalCount}
 				/>
 			{/key}
 		</section>
