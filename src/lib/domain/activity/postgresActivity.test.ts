@@ -19,7 +19,7 @@ vi.mock('$app/state', () => ({
 
 const branchTypes = [
 	['PostgresBranchCreatedActivityLogEntry', 'created', 'POSTGRES_BRANCH_CREATED'],
-	['PostgresBranchActivatedActivityLogEntry', 'activated', 'POSTGRES_BRANCH_ACTIVATED'],
+	['PostgresBranchActivatedActivityLogEntry', 'requested as active', 'POSTGRES_BRANCH_ACTIVATED'],
 	['PostgresBranchDeletedActivityLogEntry', 'deleted', 'POSTGRES_BRANCH_DELETED']
 ] as const;
 
@@ -101,6 +101,8 @@ describe('Postgres branch activity', () => {
 			}
 		});
 		expect(body).toContain('<strong>main</strong>');
+		expect(body).toContain('requested as active');
+		expect(body).not.toContain('activated');
 		expect(body).not.toContain('in dev-gcp');
 		expect(body).not.toContain('Source:');
 		expect(body).not.toContain('Recovered to');

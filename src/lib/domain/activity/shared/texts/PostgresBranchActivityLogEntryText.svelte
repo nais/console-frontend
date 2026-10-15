@@ -15,7 +15,7 @@
 			activityType: 'POSTGRES_BRANCH_CREATED'
 		},
 		PostgresBranchActivatedActivityLogEntry: {
-			label: 'activated',
+			label: 'requested as active',
 			activityType: 'POSTGRES_BRANCH_ACTIVATED'
 		},
 		PostgresBranchDeletedActivityLogEntry: {

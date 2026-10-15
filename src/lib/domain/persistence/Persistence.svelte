@@ -94,6 +94,7 @@
 						__typename
 						postgreses {
 							edges {
+								cursor
 								node {
 									postgres {
 										id
@@ -110,6 +111,7 @@
 						__typename
 						postgreses {
 							edges {
+								cursor
 								node {
 									postgres {
 										id
@@ -153,8 +155,10 @@
 	const postgresUsages = $derived.by(() => {
 		const workloadData = fragmentData as Record<string, unknown>;
 		if (workloadData.__typename !== 'Application' && workloadData.__typename !== 'Job') return [];
-		const postgreses = workloadData.postgreses as { edges: { node: PostgresUsage }[] };
-		return postgreses.edges.map(({ node }) => node);
+		const postgreses = workloadData.postgreses as {
+			edges: { cursor: string; node: PostgresUsage }[];
+		};
+		return postgreses.edges;
 	});
 	const persistence = $derived({
 		buckets: $data.buckets.edges.map(toIconLabel('bucket', 'Cloud Storage Bucket')),
@@ -187,8 +191,8 @@
 			description: os.access.edges.find((access) => access.node.workload.name == $data.name)?.node
 				.access
 		})),
-		postgres: postgresUsages.map((usage) => ({
-			id: usage.postgres.id,
+		postgres: postgresUsages.map(({ cursor, node: usage }) => ({
+			id: cursor,
 			label: usage.postgres.name,
 			href: `/team/${$data.team.slug}/${$data.teamEnvironment.environment.name}/postgres/${usage.postgres.name}`,
 			icon: 'postgres',
