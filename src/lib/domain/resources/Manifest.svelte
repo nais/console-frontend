@@ -2,7 +2,8 @@
 	import { fragment, graphql, type Manifest } from '$houdini';
 	import SurfaceCard from '#lib/ui/SurfaceCard.svelte';
 	import { CopyButton } from '@nais/ds-svelte-community';
-	import Highlight, { LineNumbers } from 'svelte-highlight';
+	import Highlight from 'svelte-highlight/Highlight.svelte';
+	import LineNumbers from 'svelte-highlight/LineNumbers.svelte';
 	import { yaml } from 'svelte-highlight/languages';
 	import '../../../styles/aksel-highlight.css';
 
