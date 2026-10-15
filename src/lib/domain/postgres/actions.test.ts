@@ -1,17 +1,19 @@
 import { vi } from 'vitest';
 
-const { access, create, update, remove, environmentCheck } = vi.hoisted(() => ({
+const { access, create, update, remove, environmentCheck, currentResources } = vi.hoisted(() => ({
 	access: { fetch: vi.fn() },
 	create: { mutate: vi.fn() },
 	update: { mutate: vi.fn() },
 	remove: { mutate: vi.fn() },
-	environmentCheck: { fetch: vi.fn() }
+	environmentCheck: { fetch: vi.fn() },
+	currentResources: { fetch: vi.fn() }
 }));
 
 vi.mock('$houdini', () => ({
 	graphql: (query: string) => {
 		if (query.includes('query PostgresManagementAccess')) return access;
 		if (query.includes('query PostgresCreationEnvironments')) return environmentCheck;
+		if (query.includes('query PostgresUpdateResources')) return currentResources;
 		if (query.includes('mutation CreatePostgres')) return create;
 		if (query.includes('mutation UpdatePostgres')) return update;
 		if (query.includes('mutation DeletePostgres')) return remove;
@@ -52,6 +54,9 @@ function deleteEvent(fields: Record<string, string>) {
 
 beforeEach(() => {
 	vi.resetAllMocks();
+	currentResources.fetch.mockResolvedValue({
+		data: { team: { environment: { postgres: { resources: { diskSize: '10Gi' } } } } }
+	});
 	access.fetch.mockResolvedValue({
 		data: { me: { __typename: 'User', isAdmin: false }, team: { viewerIsMember: true } }
 	});
@@ -155,6 +160,33 @@ describe('Postgres management actions', () => {
 			},
 			expect.any(Object)
 		);
+	});
+
+	test('omits unchanged fractional storage while updating CPU and high availability', async () => {
+		currentResources.fetch.mockResolvedValue({
+			data: { team: { environment: { postgres: { resources: { diskSize: '20G' } } } } }
+		});
+		update.mutate.mockResolvedValue({ data: { updatePostgres: { postgres: { id: 'pg' } } } });
+		await expect(
+			updateActions.default(
+				updateEvent({ cpu: '0.25', diskSize: '18.6264514923095703125', highAvailability: 'on' })
+			)
+		).rejects.toMatchObject({ status: 303 });
+		expect(update.mutate).toHaveBeenCalledWith(
+			{
+				input: expect.objectContaining({ cpu: '0.25', diskSize: undefined, highAvailability: true })
+			},
+			expect.any(Object)
+		);
+	});
+
+	test('does not update when current storage cannot be verified', async () => {
+		currentResources.fetch.mockResolvedValue({ errors: [{ message: 'Storage lookup failed.' }] });
+		expect(await updateActions.default(updateEvent({ cpu: '0.25' }))).toMatchObject({
+			status: 500,
+			data: { cpu: '0.25', error: 'Storage lookup failed.' }
+		});
+		expect(update.mutate).not.toHaveBeenCalled();
 	});
 
 	test.each([

@@ -2,6 +2,28 @@ import { render } from 'svelte/server';
 import PostgresConfigurationFields from './PostgresConfigurationFields.svelte';
 
 describe('PostgresConfigurationFields', () => {
+	test('accepts an unchanged fractional storage prefill but rejects a fractional change', async () => {
+		const currentDiskSize = '18.6264514923095703125';
+		const unchanged = await render(PostgresConfigurationFields, {
+			props: {
+				editing: true,
+				diskSize: currentDiskSize,
+				currentDiskSize,
+				errors: { diskSize: 'invalid' }
+			}
+		});
+		expect(unchanged.body).toContain(`value="${currentDiskSize}"`);
+		expect(unchanged.body).not.toContain('aria-invalid="true"');
+		const changed = await render(PostgresConfigurationFields, {
+			props: {
+				editing: true,
+				diskSize: '19.5',
+				currentDiskSize,
+				errors: { diskSize: 'invalid' }
+			}
+		});
+		expect(changed.body).toContain('aria-invalid="true"');
+	});
 	test('renders server validation errors next to the corresponding fields', async () => {
 		const { body } = await render(PostgresConfigurationFields, {
 			props: {

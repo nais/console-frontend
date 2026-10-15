@@ -6,10 +6,27 @@ import {
 	formString,
 	postgresConfiguration,
 	quantityInUnits,
-	resourceInput
+	resourceInput,
+	withoutUnchangedStorage
 } from './forms';
 
 describe('Postgres forms', () => {
+	test('only excludes storage matching the current value from validation and input', () => {
+		const current = quantityInUnits('20G', 'GiB');
+		const values = { cpu: '0.25', memory: '', diskSize: current, highAvailability: true };
+		const changes = withoutUnchangedStorage(values, current);
+		expect(configurationErrors(changes)).toEqual({});
+		expect(resourceInput(changes).diskSize).toBeUndefined();
+		expect(values.diskSize).toBe(current);
+		expect(
+			configurationErrors(withoutUnchangedStorage({ ...values, diskSize: '19.5' }, current))
+				.diskSize
+		).toBeDefined();
+		expect(
+			resourceInput(withoutUnchangedStorage({ ...values, diskSize: '20' }, current)).diskSize
+		).toBe('20Gi');
+		expect(configurationErrors(withoutUnchangedStorage(values, undefined)).diskSize).toBeDefined();
+	});
 	test.each(['PROGRESSING', 'DEGRADED', 'DELETING', 'UNKNOWN'])(
 		'does not activate a branch in %s state',
 		(state) => {

@@ -3,6 +3,7 @@
 	import {
 		configurationErrors,
 		postgresResources,
+		withoutUnchangedStorage,
 		type ResourceErrors,
 		type ResourceField
 	} from './forms.js';
@@ -14,6 +15,7 @@
 		diskSize?: string | null;
 		highAvailability?: boolean;
 		editing?: boolean;
+		currentDiskSize?: string;
 		errors?: ResourceErrors;
 	}
 
@@ -23,6 +25,7 @@
 		diskSize = '',
 		highAvailability = false,
 		editing = false,
+		currentDiskSize,
 		errors = {}
 	}: Props = $props();
 
@@ -38,11 +41,16 @@
 	let customizeOpen = $derived(Boolean(cpu || memory || diskSize));
 	let touched = $state<Partial<Record<ResourceField, boolean>>>({});
 	let fieldErrors = $derived(
-		configurationErrors({
-			cpu: cpuValue,
-			memory: memoryValue,
-			diskSize: diskSizeValue
-		})
+		configurationErrors(
+			withoutUnchangedStorage(
+				{
+					cpu: cpuValue,
+					memory: memoryValue,
+					diskSize: diskSizeValue
+				},
+				editing ? currentDiskSize : undefined
+			)
+		)
 	);
 
 	function customizeResources(open: boolean) {

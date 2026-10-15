@@ -36,6 +36,7 @@
 			cpu={form?.cpu ?? quantityInUnits(postgres.resources.cpu, 'cores')}
 			memory={form?.memory ?? quantityInUnits(postgres.resources.memory, 'GiB')}
 			diskSize={form?.diskSize ?? quantityInUnits(postgres.resources.diskSize, 'GiB')}
+			currentDiskSize={quantityInUnits(postgres.resources.diskSize, 'GiB')}
 			highAvailability={form?.highAvailability ?? postgres.highAvailability}
 		/>
 		{#if form?.error}<Alert variant="error">{form.error}</Alert>{/if}

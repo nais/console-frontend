@@ -32,6 +32,15 @@ export function resourceInput(values: ReturnType<typeof postgresConfiguration>) 
 export type ResourceField = 'cpu' | 'memory' | 'diskSize';
 export type ResourceErrors = Partial<Record<ResourceField, string>>;
 
+export function withoutUnchangedStorage<T extends { diskSize: string }>(
+	values: T,
+	currentDiskSize: string | undefined
+): T {
+	return currentDiskSize !== undefined && values.diskSize.trim() === currentDiskSize
+		? { ...values, diskSize: '' }
+		: values;
+}
+
 export function configurationErrors(
 	values: Pick<ReturnType<typeof postgresConfiguration>, ResourceField>
 ) {
