@@ -59,6 +59,8 @@
 					monitorWorkloadCount={$TeamVulnerabilities.data.team.vulnerabilitySummary
 						?.monitorWorkloadCount}
 					noSbomWorkloadCount={$TeamVulnerabilities.data.team.noSbomWorkloads.pageInfo.totalCount}
+					processingSbomWorkloadCount={$TeamVulnerabilities.data.team.processingSbomWorkloads
+						.pageInfo.totalCount}
 				/>
 			{/key}
 		</section>

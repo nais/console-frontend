@@ -28,6 +28,11 @@ query TeamVulnerabilities($team: Slug!) {
 				totalCount
 			}
 		}
+		processingSbomWorkloads: workloads(first: 1, filter: { sbomStatus: PROCESSING }) {
+			pageInfo {
+				totalCount
+			}
+		}
 		vulnerabilitySummary {
 			sbomCount
 			coverage
