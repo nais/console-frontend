@@ -11,7 +11,35 @@ describe('PriorityAlertBar guidance', () => {
 
 		expect(body).toMatch(/Use operational priority to decide what to address\s+first\./);
 		expect(body).not.toContain('before anything else');
+		expect(body).toContain('What does known exploited mean?');
+		expect(body).toContain('https://www.cisa.gov/known-exploited-vulnerabilities-catalog');
+		expect(body).toContain('https://github.com/enisaeu/CNW/blob/main/advisories/eukev/README.md');
 	});
+
+	test.each([false, true])(
+		'shows separate concise signals when urgent (compact: %s)',
+		async (compact) => {
+			const { body } = await render(PriorityAlertBar, {
+				props: {
+					knownExploited: 4,
+					urgentCount: 2,
+					high: 6,
+					elevated: 3,
+					monitor: 352,
+					compact
+				}
+			});
+
+			expect(body).toMatch(/4<\/span>.*Known exploited/);
+			expect(body).toMatch(/2<\/span>.*Urgent · internet-facing/);
+			expect(body).toMatch(/Urgent findings affect\s+internet-facing workloads\./);
+			expect(body).not.toContain('These known exploited findings include');
+			expect(body).toContain('6</span>');
+			expect(body).toContain('>High</span>');
+			expect(body).toContain('>Elevated</span>');
+			expect(body).toContain('>Monitor</span>');
+		}
+	);
 });
 
 describe('calculateSegmentWidths', () => {
