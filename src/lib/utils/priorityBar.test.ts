@@ -31,8 +31,14 @@ describe('PriorityAlertBar guidance', () => {
 			});
 
 			expect(body).toMatch(/4<\/span>.*Known exploited/);
-			expect(body).toMatch(/2<\/span>.*Urgent · internet-facing/);
-			expect(body).toMatch(/Urgent findings affect\s+internet-facing workloads\./);
+			expect(body).toMatch(
+				new RegExp(`2</span>.*Urgent · internet-facing ${compact ? 'findings' : 'issues'}`)
+			);
+			expect(body).toContain(
+				compact
+					? 'Urgent findings affect this internet-facing workload.'
+					: 'Urgent issues flag internet-facing workloads.'
+			);
 			expect(body).not.toContain('These known exploited findings include');
 			expect(body).toContain('6</span>');
 			expect(body).toContain('>High</span>');
@@ -40,6 +46,18 @@ describe('PriorityAlertBar guidance', () => {
 			expect(body).toContain('>Monitor</span>');
 		}
 	);
+
+	test.each([
+		{ compact: false, unit: 'issue' },
+		{ compact: true, unit: 'finding' }
+	])('uses singular $unit for one urgent result', async ({ compact, unit }) => {
+		const { body } = await render(PriorityAlertBar, {
+			props: { knownExploited: 1, urgentCount: 1, high: 1, elevated: 0, monitor: 0, compact }
+		});
+
+		expect(body).toContain(`Urgent · internet-facing ${unit}`);
+		expect(body).not.toContain(`Urgent · internet-facing ${unit}s`);
+	});
 });
 
 describe('calculateSegmentWidths', () => {
