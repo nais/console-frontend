@@ -52,23 +52,6 @@ query SqlInstances(
 					connectionName
 					state
 					version
-					cost {
-						sum
-					}
-					metrics {
-						cpu {
-							cores
-							utilization
-						}
-						memory {
-							quotaBytes
-							utilization
-						}
-						disk {
-							quotaBytes
-							utilization
-						}
-					}
 					issues {
 						pageInfo {
 							totalCount

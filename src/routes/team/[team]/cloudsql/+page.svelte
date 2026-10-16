@@ -11,7 +11,6 @@
 	import ResourceTable from '#lib/ui/ResourceTable.svelte';
 	import Pagination from '#lib/ui/Pagination.svelte';
 	import StatusIndicator from '#lib/ui/StatusIndicator.svelte';
-	import { euroValueFormatter, percentageFormatter } from '#lib/utils/formatters.js';
 	import { countIssuesBySeverity } from '#lib/utils/issueCounts.js';
 	import { changeParams } from '#lib/utils/searchparams.js';
 	import { Loader, Tag, Td, Th, Tr, type TableSortState } from '@nais/ds-svelte-community';
@@ -85,10 +84,6 @@
 					<Th sortable sortKey={SqlInstanceOrderField.ISSUES}>Issues</Th>
 					<Th sortable sortKey={SqlInstanceOrderField.VERSION}>Version</Th>
 					<Th>Owner</Th>
-					<Th sortable sortKey={SqlInstanceOrderField.COST}>Cost (30d)</Th>
-					<Th sortable sortKey={SqlInstanceOrderField.CPU_UTILIZATION}>CPU</Th>
-					<Th sortable sortKey={SqlInstanceOrderField.MEMORY_UTILIZATION}>Memory</Th>
-					<Th sortable sortKey={SqlInstanceOrderField.DISK_UTILIZATION}>Disk</Th>
 				{/snippet}
 				{#each si.edges as { node: instance } (instance.id)}
 					<Tr>
@@ -143,22 +138,6 @@
 								<WorkloadLink workload={instance.workload} hideTeam hideEnv />
 							{/if}
 						</Td>
-						<Td><span class="table-meta">{euroValueFormatter(instance.cost.sum)}</span></Td>
-						<Td
-							><span class="table-meta"
-								>{percentageFormatter(instance.metrics.cpu.utilization)}</span
-							></Td
-						>
-						<Td
-							><span class="table-meta"
-								>{percentageFormatter(instance.metrics.memory.utilization)}</span
-							></Td
-						>
-						<Td
-							><span class="table-meta"
-								>{percentageFormatter(instance.metrics.disk.utilization)}</span
-							></Td
-						>
 					</Tr>
 				{/each}
 			</ResourceTable>
