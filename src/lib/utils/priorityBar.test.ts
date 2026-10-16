@@ -58,6 +58,27 @@ describe('PriorityAlertBar guidance', () => {
 		expect(body).toContain(`Urgent · internet-facing ${unit}`);
 		expect(body).not.toContain(`Urgent · internet-facing ${unit}s`);
 	});
+
+	test.each([
+		{ count: 1, label: '1 workload with known exploited vulnerabilities' },
+		{ count: 2, label: '2 workloads with known exploited vulnerabilities' }
+	])(
+		'describes $count KEV workloads without implying they are compromised',
+		async ({ count, label }) => {
+			const { body } = await render(PriorityAlertBar, {
+				props: {
+					knownExploited: count,
+					knownExploitedWorkloadCount: count,
+					high: 0,
+					elevated: 0,
+					monitor: 0
+				}
+			});
+
+			expect(body.replace(/\s+/g, ' ')).toContain(label);
+			expect(body).not.toContain('exploited workload');
+		}
+	);
 });
 
 describe('calculateSegmentWidths', () => {

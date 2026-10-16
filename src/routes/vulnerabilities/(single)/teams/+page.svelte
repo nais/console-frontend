@@ -23,10 +23,10 @@
 	<div>
 		<Heading as="h2" spacing>Team Security Posture</Heading>
 		<BodyLong>
-			A detailed breakdown of all teams with workloads, showing vulnerabilities by priority and
-			severity, total risk score, SBOM coverage, and workload count. Vulnerability counts are the
-			number of vulnerabilities, not the number of workloads affected. Use this overview to explore
-			and compare security posture across teams.
+			A detailed breakdown of teams with workloads, grouped by vulnerability priority. Teams without
+			SBOMs are marked so missing scan data is not mistaken for no priority findings. For teams with
+			scan data, you can also see risk score, SBOM coverage, and workload count. Vulnerability
+			counts are the number of vulnerabilities, not the number of workloads affected.
 		</BodyLong>
 	</div>
 
