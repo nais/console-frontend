@@ -17,7 +17,8 @@
 	} = $props();
 </script>
 
-<div class="table-scroll resource-table" role="region" aria-label={label}>
+<!-- svelte-ignore a11y_no_noninteractive_tabindex (Keyboard focus enables native horizontal scrolling.) -->
+<div class="table-scroll resource-table" role="region" aria-label={label} tabindex="0">
 	<Table size="medium" {sort} {onsortchange}>
 		<Thead>
 			<Tr>{@render header()}</Tr>
@@ -27,6 +28,11 @@
 </div>
 
 <style>
+	.resource-table:focus-visible {
+		outline: var(--ax-space-2) solid var(--ax-border-focus);
+		outline-offset: calc(-1 * var(--ax-space-2));
+	}
+
 	.resource-table :global(th.status-column) {
 		width: calc(var(--ax-space-64) + var(--ax-space-16));
 		min-width: calc(var(--ax-space-64) + var(--ax-space-16));

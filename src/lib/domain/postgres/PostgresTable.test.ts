@@ -72,6 +72,7 @@ describe('Postgres table', () => {
 		const { body } = await renderPage();
 
 		expect(body).toContain('status-column');
+		expect(body).toMatch(/role="region" aria-label="Postgres" tabindex="0"/);
 		expect(body).toMatch(
 			new RegExp(`class="status-indicator ${tone}[^"]*" role="img" aria-label="${label}"`)
 		);
