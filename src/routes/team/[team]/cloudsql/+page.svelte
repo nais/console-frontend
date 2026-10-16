@@ -5,19 +5,17 @@
 	import IssueSeverityTags from '#lib/domain/issues/IssueSeverityTags.svelte';
 	import WorkloadLink from '#lib/domain/workload/WorkloadLink.svelte';
 	import { envTagVariant } from '#lib/envTagVariant.js';
-	import CollapsibleSidebar from '#lib/ui/CollapsibleSidebar.svelte';
 	import ExternalLink from '#lib/ui/ExternalLink.svelte';
 	import GraphErrors from '#lib/ui/GraphErrors.svelte';
-	import List from '#lib/ui/List.svelte';
-	import ListFilters from '#lib/ui/ListFilters.svelte';
-	import ListItem from '#lib/ui/ListItem.svelte';
+	import Collection from '#lib/ui/Collection.svelte';
+	import ResourceTable from '#lib/ui/ResourceTable.svelte';
 	import Pagination from '#lib/ui/Pagination.svelte';
-	import SurfaceCard from '#lib/ui/SurfaceCard.svelte';
-	import TooltipAlignHack from '#lib/ui/TooltipAlignHack.svelte';
+	import StatusIndicator from '#lib/ui/StatusIndicator.svelte';
+	import { euroValueFormatter, percentageFormatter } from '#lib/utils/formatters.js';
 	import { countIssuesBySeverity } from '#lib/utils/issueCounts.js';
 	import { changeParams } from '#lib/utils/searchparams.js';
-	import { Loader, Tag } from '@nais/ds-svelte-community';
-	import { CircleFillIcon, FunnelIcon } from '@nais/ds-svelte-community/icons';
+	import { Loader, Tag, Td, Th, Tr, type TableSortState } from '@nais/ds-svelte-community';
+	import { DatabaseIcon } from '@nais/ds-svelte-community/icons';
 	import type { PageProps } from './$types';
 
 	type SqlOrderFieldOptions = (typeof SqlInstanceOrderField)[keyof typeof SqlInstanceOrderField];
@@ -25,21 +23,7 @@
 
 	let { data }: PageProps = $props();
 
-	let filtersOpen = $state(false);
-
 	let { SqlInstances } = $derived(data);
-
-	const sortFields: { value: SqlOrderFieldOptions; label: string }[] = [
-		{ value: SqlInstanceOrderField.ISSUES, label: 'Issues' },
-		{ value: SqlInstanceOrderField.NAME, label: 'Name' },
-		{ value: SqlInstanceOrderField.ENVIRONMENT, label: 'Environment' },
-		{ value: SqlInstanceOrderField.STATE, label: 'State' },
-		{ value: SqlInstanceOrderField.COST, label: 'Cost' },
-		{ value: SqlInstanceOrderField.CPU_UTILIZATION, label: 'CPU utilization' },
-		{ value: SqlInstanceOrderField.MEMORY_UTILIZATION, label: 'Memory utilization' },
-		{ value: SqlInstanceOrderField.DISK_UTILIZATION, label: 'Disk utilization' },
-		{ value: SqlInstanceOrderField.VERSION, label: 'Version' }
-	];
 
 	const currentSortField: SqlOrderFieldOptions = $derived(
 		(Object.values(SqlInstanceOrderField).find((f) =>
@@ -52,7 +36,14 @@
 			OrderDirectionOptions | undefined) ?? OrderDirection.DESC
 	);
 
-	function setSort(field: SqlOrderFieldOptions) {
+	const tableSort: TableSortState = $derived({
+		orderBy: currentSortField,
+		direction: currentSortDirection === OrderDirection.ASC ? 'ascending' : 'descending'
+	});
+
+	function setSort(key: string) {
+		const field = Object.values(SqlInstanceOrderField).find((field) => field === key);
+		if (!field) throw new Error(`Unsupported Cloud SQL sort field: ${key}`);
 		const defaultDirection =
 			field === SqlInstanceOrderField.NAME ||
 			field === SqlInstanceOrderField.ENVIRONMENT ||
@@ -73,72 +64,63 @@
 <GraphErrors errors={$SqlInstances.errors} />
 
 {#if $SqlInstances.fetching}
-	<div class="loading" role="status" aria-label="Loading">
+	<div class="loading-centered" role="status" aria-label="Loading">
 		<Loader size="3xlarge" />
 	</div>
 {:else if $SqlInstances.data}
 	{const si = $derived($SqlInstances.data.team.sqlInstances)}
 
-	<div class="layout-two-column">
-		<div>
-			<List title="Cloud SQL" count={si.pageInfo.totalCount}>
-				{#snippet actions()}
-					<button
-						type="button"
-						class="sidebar-toggle"
-						aria-expanded={filtersOpen}
-						onclick={() => (filtersOpen = !filtersOpen)}
-					>
-						<FunnelIcon aria-hidden="true" style="font-size: 1rem" />
-						Filters
-					</button>
+	<Collection
+		title="Cloud SQL"
+		icon={DatabaseIcon}
+		headerBorder={false}
+		count={si.pageInfo.totalCount}
+	>
+		{#if si.pageInfo.totalCount > 0}
+			<ResourceTable label="Cloud SQL" sort={tableSort} onsortchange={setSort}>
+				{#snippet header()}
+					<Th sortable sortKey={SqlInstanceOrderField.STATE}>Status</Th>
+					<Th sortable sortKey={SqlInstanceOrderField.NAME}>Name</Th>
+					<Th sortable sortKey={SqlInstanceOrderField.ENVIRONMENT}>Env</Th>
+					<Th sortable sortKey={SqlInstanceOrderField.ISSUES}>Issues</Th>
+					<Th sortable sortKey={SqlInstanceOrderField.VERSION}>Version</Th>
+					<Th>Owner</Th>
+					<Th sortable sortKey={SqlInstanceOrderField.COST}>Cost (30d)</Th>
+					<Th sortable sortKey={SqlInstanceOrderField.CPU_UTILIZATION}>CPU</Th>
+					<Th sortable sortKey={SqlInstanceOrderField.MEMORY_UTILIZATION}>Memory</Th>
+					<Th sortable sortKey={SqlInstanceOrderField.DISK_UTILIZATION}>Disk</Th>
 				{/snippet}
 				{#each si.edges as { node: instance } (instance.id)}
-					<ListItem interactive>
-						<div class="name-group">
-							<TooltipAlignHack
-								content={{
-									FAILED: 'FAILED',
-									MAINTENANCE: 'MAINTENANCE',
-									PENDING_CREATE: 'PENDING_CREATE',
-									PENDING_DELETE: 'PENDING_DELETE',
-									RUNNABLE: 'RUNNABLE',
-									SUSPENDED: 'SUSPENDED',
-									UNSPECIFIED: 'UNSPECIFIED',
-									STOPPED: 'STOPPED'
-								}[instance.state] ?? ''}
-							>
-								<CircleFillIcon
-									style="color: var({{
-										RUNNABLE: '--ax-bg-success-strong',
-										FAILED: '--ax-bg-danger-strong',
-										MAINTENANCE: '--ax-bg-warning-moderate-pressed',
-										PENDING_CREATE: '--ax-bg-info-strong',
-										PENDING_DELETE: '--ax-bg-info-strong',
-										SUSPENDED: '--ax-bg-info-strong',
-										UNSPECIFIED: '--ax-bg-info-strong',
-										STOPPED: '--ax-bg-info-strong'
-									}[instance.state] ?? '--ax-bg-info-strong'}); font-size: 0.7rem"
+					<Tr>
+						<Td>
+							<div class="status-cell">
+								<StatusIndicator
+									label={instance.state}
+									tone={instance.state === 'RUNNABLE'
+										? 'success'
+										: instance.state === 'FAILED'
+											? 'danger'
+											: instance.state === 'MAINTENANCE'
+												? 'warning'
+												: instance.state === 'UNSPECIFIED'
+													? 'neutral'
+													: 'info'}
 								/>
-							</TooltipAlignHack>
+							</div>
+						</Td>
+						<Td>
 							<a
-								class="item-name"
+								class="resource-name"
 								href="/team/{instance.team.slug}/{instance.teamEnvironment.environment
 									.name}/cloudsql/{instance.name}">{instance.name}</a
 							>
+						</Td>
+						<Td>
 							<Tag size="xsmall" variant={envTagVariant(instance.teamEnvironment.environment.name)}
 								>{instance.teamEnvironment.environment.name}</Tag
 							>
-						</div>
-
-						<div class="right">
-							{#if instance.workload}
-								<div style:display="flex" style:gap="var(--ax-space-6)">
-									Owner: <WorkloadLink workload={instance.workload} hideTeam hideEnv />
-								</div>
-							{/if}
-
-							<div>Version: <code>{instance.version}</code></div>
+						</Td>
+						<Td>
 							{#if (instance.issues?.pageInfo.totalCount ?? 0) > 0}
 								{const criticalCount = $derived(
 									countIssuesBySeverity(instance.issues?.edges, 'CRITICAL')
@@ -154,99 +136,50 @@
 									todo={todoCount}
 								/>
 							{/if}
-						</div>
-					</ListItem>
-				{:else}
-					<ListItem>
-						<p>
-							No Cloud SQL instances found. Cloud SQL instances provide managed relational databases
-							in the cloud.
-							<ExternalLink href={docURL('/persistence/cloudsql')}
-								>Learn more about Cloud SQL in Nais and how to get started.</ExternalLink
-							>
-						</p>
-					</ListItem>
+						</Td>
+						<Td><span class="table-meta">{instance.version}</span></Td>
+						<Td>
+							{#if instance.workload}
+								<WorkloadLink workload={instance.workload} hideTeam hideEnv />
+							{/if}
+						</Td>
+						<Td><span class="table-meta">{euroValueFormatter(instance.cost.sum)}</span></Td>
+						<Td
+							><span class="table-meta"
+								>{percentageFormatter(instance.metrics.cpu.utilization)}</span
+							></Td
+						>
+						<Td
+							><span class="table-meta"
+								>{percentageFormatter(instance.metrics.memory.utilization)}</span
+							></Td
+						>
+						<Td
+							><span class="table-meta"
+								>{percentageFormatter(instance.metrics.disk.utilization)}</span
+							></Td
+						>
+					</Tr>
 				{/each}
-			</List>
+			</ResourceTable>
+		{:else}
+			<p>
+				No Cloud SQL instances found. Cloud SQL instances provide managed relational databases in
+				the cloud.
+				<ExternalLink href={docURL('/persistence/cloudsql')}
+					>Learn more about Cloud SQL in Nais and how to get started.</ExternalLink
+				>
+			</p>
+		{/if}
+	</Collection>
 
-			<Pagination
-				page={si.pageInfo}
-				loaders={{
-					loadPreviousPage: () =>
-						changeParams({ after: '', before: si.pageInfo.startCursor ?? '' }, { noScroll: true }),
-					loadNextPage: () =>
-						changeParams({ before: '', after: si.pageInfo.endCursor ?? '' }, { noScroll: true })
-				}}
-			/>
-		</div>
-		<CollapsibleSidebar bind:open={filtersOpen}>
-			<SurfaceCard title="Filters">
-				<ListFilters
-					{sortFields}
-					{currentSortField}
-					{currentSortDirection}
-					onSort={(field) => setSort(field as SqlOrderFieldOptions)}
-				/>
-			</SurfaceCard>
-		</CollapsibleSidebar>
-	</div>
+	<Pagination
+		page={si.pageInfo}
+		loaders={{
+			loadPreviousPage: () =>
+				changeParams({ after: '', before: si.pageInfo.startCursor ?? '' }, { noScroll: true }),
+			loadNextPage: () =>
+				changeParams({ before: '', after: si.pageInfo.endCursor ?? '' }, { noScroll: true })
+		}}
+	/>
 {/if}
-
-<style>
-	.right {
-		display: flex;
-		flex-direction: column;
-		gap: var(--ax-space-6);
-		align-items: flex-end;
-	}
-
-	code {
-		font-size: 0.9rem;
-	}
-
-	.loading {
-		display: flex;
-		justify-content: center;
-		align-items: center;
-		height: 300px;
-		width: 100%;
-	}
-
-	/* Mobile responsive layout */
-	@media (max-width: 767px), (max-height: 500px) {
-		.right {
-			align-items: flex-end;
-			margin-top: var(--ax-space-6);
-		}
-
-		.right :global(.issues-container.inline) {
-			width: auto;
-			justify-content: flex-end;
-			gap: var(--ax-space-8);
-		}
-	}
-
-	.name-group {
-		display: flex;
-		align-items: center;
-		gap: var(--ax-space-8);
-		min-width: 0;
-	}
-	.name-group :global(.aksel-tag) {
-		white-space: nowrap;
-		flex-shrink: 0;
-	}
-	.item-name {
-		color: var(--ax-text-neutral);
-		text-decoration: none;
-		font-weight: 500;
-		white-space: nowrap;
-		overflow: hidden;
-		text-overflow: ellipsis;
-		min-width: 0;
-		flex: 0 1 auto;
-	}
-	.item-name:hover {
-		text-decoration: underline;
-	}
-</style>

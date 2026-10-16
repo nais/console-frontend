@@ -4,7 +4,7 @@
 	import ActivityLogFacets from '#lib/domain/activity/ActivityLogFacets.svelte';
 	import ActivityLogItem from '#lib/domain/list-items/ActivityLogListItem.svelte';
 	import GraphErrors from '#lib/ui/GraphErrors.svelte';
-	import List from '#lib/ui/List.svelte';
+	import Collection from '#lib/ui/Collection.svelte';
 	import ListFilters from '#lib/ui/ListFilters.svelte';
 	import ListItem from '#lib/ui/ListItem.svelte';
 	import Pagination from '#lib/ui/Pagination.svelte';
@@ -36,7 +36,7 @@
 {#if activityLog}
 	<div class="layout-two-column">
 		<div>
-			<List title="Activity log" count={totalCount}>
+			<Collection title="Activity log" count={totalCount}>
 				{#each activityLog.edges ?? [] as { node: item } (item)}
 					<ActivityLogItem {item} />
 				{:else}
@@ -44,7 +44,7 @@
 						<span class="empty-state">No activity log entries found</span>
 					</ListItem>
 				{/each}
-			</List>
+			</Collection>
 
 			{#if totalCount > 0}
 				<Pagination

@@ -9,12 +9,12 @@
 	import CollapsibleSidebar from '#lib/ui/CollapsibleSidebar.svelte';
 	import ExternalLink from '#lib/ui/ExternalLink.svelte';
 	import GraphErrors from '#lib/ui/GraphErrors.svelte';
-	import List from '#lib/ui/List.svelte';
-	import ListItem from '#lib/ui/ListItem.svelte';
+	import Collection from '#lib/ui/Collection.svelte';
+	import ResourceTable from '#lib/ui/ResourceTable.svelte';
 	import Pagination from '#lib/ui/Pagination.svelte';
 	import SurfaceCard from '#lib/ui/SurfaceCard.svelte';
 	import { changeParams } from '#lib/utils/searchparams.js';
-	import { Tag } from '@nais/ds-svelte-community';
+	import { Tag, Td, Th, Tr, type TableSortState } from '@nais/ds-svelte-community';
 	import { FunnelIcon } from '@nais/ds-svelte-community/icons';
 	import type { PageProps } from './$types';
 
@@ -25,11 +25,6 @@
 	let { data }: PageProps = $props();
 	let filtersOpen = $state(false);
 	let { BigQuery } = $derived(data);
-
-	const sortFields: { value: BigQueryOrderFieldOptions; label: string }[] = [
-		{ value: BigQueryDatasetOrderField.NAME, label: 'Name' },
-		{ value: BigQueryDatasetOrderField.ENVIRONMENT, label: 'Environment' }
-	];
 
 	const currentSortField: BigQueryOrderFieldOptions = $derived(
 		(Object.values(BigQueryDatasetOrderField).find((f) =>
@@ -42,7 +37,14 @@
 			OrderDirectionOptions | undefined) ?? OrderDirection.ASC
 	);
 
-	function setSort(field: BigQueryOrderFieldOptions) {
+	const tableSort: TableSortState = $derived({
+		orderBy: currentSortField,
+		direction: currentSortDirection === OrderDirection.ASC ? 'ascending' : 'descending'
+	});
+
+	function setSort(key: string) {
+		const field = Object.values(BigQueryDatasetOrderField).find((field) => field === key);
+		if (!field) throw new Error(`Unsupported BigQuery sort field: ${key}`);
 		const direction =
 			field === currentSortField
 				? currentSortDirection === OrderDirection.ASC
@@ -74,7 +76,12 @@
 {#if $BigQuery.data}
 	<div class="layout-two-column">
 		<div>
-			<List title="BigQuery" count={$BigQuery.data.team.bigQueryDatasets.pageInfo.totalCount}>
+			<Collection
+				title="BigQuery"
+				icon={BigQueryIcon}
+				headerBorder={false}
+				count={$BigQuery.data.team.bigQueryDatasets.pageInfo.totalCount}
+			>
 				{#snippet actions()}
 					<button
 						type="button"
@@ -86,37 +93,47 @@
 						Filters
 					</button>
 				{/snippet}
-				{#each $BigQuery.data.team.bigQueryDatasets.edges as { node: instance } (instance.id)}
-					<ListItem interactive>
-						<div class="name-group">
-							<BigQueryIcon style="font-size: 1.25rem; flex-shrink: 0" />
-							<a
-								class="item-name"
-								href="/team/{instance.team.slug}/{instance.teamEnvironment.environment
-									.name}/bigquery/{instance.name}">{instance.name}</a
-							>
-							<Tag size="xsmall" variant={envTagVariant(instance.teamEnvironment.environment.name)}
-								>{instance.teamEnvironment.environment.name}</Tag
-							>
-						</div>
-						{#if instance.workload}
-							<div class="right">
-								Owner: <WorkloadLink workload={instance.workload} hideTeam hideEnv />
-							</div>
-						{/if}
-					</ListItem>
+				{#if $BigQuery.data.team.bigQueryDatasets.pageInfo.totalCount > 0}
+					<ResourceTable label="BigQuery" sort={tableSort} onsortchange={setSort}>
+						{#snippet header()}
+							<Th sortable sortKey={BigQueryDatasetOrderField.NAME}>Name</Th>
+							<Th sortable sortKey={BigQueryDatasetOrderField.ENVIRONMENT}>Env</Th>
+							<Th>Owner</Th>
+						{/snippet}
+						{#each $BigQuery.data.team.bigQueryDatasets.edges as { node: instance } (instance.id)}
+							<Tr>
+								<Td>
+									<a
+										class="resource-name"
+										href="/team/{instance.team.slug}/{instance.teamEnvironment.environment
+											.name}/bigquery/{instance.name}">{instance.name}</a
+									>
+								</Td>
+								<Td
+									><Tag
+										size="xsmall"
+										variant={envTagVariant(instance.teamEnvironment.environment.name)}
+										>{instance.teamEnvironment.environment.name}</Tag
+									>
+								</Td>
+								<Td>
+									{#if instance.workload}
+										<WorkloadLink workload={instance.workload} hideTeam hideEnv />
+									{/if}
+								</Td>
+							</Tr>
+						{/each}
+					</ResourceTable>
 				{:else}
-					<ListItem>
-						<p>
-							No BigQuery datasets found. BigQuery datasets store structured data optimized for
-							analytical workloads.
-							<ExternalLink href={docURL('/persistence/bigquery')}
-								>Learn more about BigQuery datasets and how to get started.</ExternalLink
-							>
-						</p>
-					</ListItem>
-				{/each}
-			</List>
+					<p>
+						No BigQuery datasets found. BigQuery datasets store structured data optimized for
+						analytical workloads.
+						<ExternalLink href={docURL('/persistence/bigquery')}
+							>Learn more about BigQuery datasets and how to get started.</ExternalLink
+						>
+					</p>
+				{/if}
+			</Collection>
 			<Pagination
 				page={$BigQuery.data.team.bigQueryDatasets.pageInfo}
 				loaders={{
@@ -142,58 +159,14 @@
 		<CollapsibleSidebar bind:open={filtersOpen}>
 			<SurfaceCard title="Filters">
 				<WorkloadListFilters
-					{sortFields}
-					{currentSortField}
-					{currentSortDirection}
 					environments={$BigQuery.data?.team.bigQueryDatasets.facets?.environments ?? []}
 					labels={$BigQuery.data?.team.bigQueryDatasets.facets?.labels ?? []}
 					{selectedEnvironments}
 					{selectedLabels}
-					onSort={(field) => setSort(field as BigQueryOrderFieldOptions)}
 					onEnvironmentsChange={handleEnvironmentsChange}
 					onLabelsChange={handleLabelsChange}
 				/>
 			</SurfaceCard>
 		</CollapsibleSidebar>
 	</div>
-
-	<style>
-		.right {
-			display: flex;
-			gap: var(--ax-space-6);
-			align-items: center;
-		}
-
-		@media (max-width: 767px), (max-height: 500px) {
-			.right {
-				align-self: flex-end;
-				justify-content: flex-end;
-				margin-top: var(--ax-space-6);
-			}
-		}
-
-		.name-group {
-			display: flex;
-			align-items: center;
-			gap: var(--ax-space-8);
-			min-width: 0;
-		}
-		.name-group :global(.aksel-tag) {
-			white-space: nowrap;
-			flex-shrink: 0;
-		}
-		.item-name {
-			color: var(--ax-text-neutral);
-			text-decoration: none;
-			font-weight: 500;
-			white-space: nowrap;
-			overflow: hidden;
-			text-overflow: ellipsis;
-			min-width: 0;
-			flex: 0 1 auto;
-		}
-		.item-name:hover {
-			text-decoration: underline;
-		}
-	</style>
 {/if}

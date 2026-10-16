@@ -29,9 +29,9 @@
 		filter?: string;
 		searchPlaceholder?: string;
 		searchLabel?: string;
-		sortFields: SortField[];
-		currentSortField: string;
-		currentSortDirection: string;
+		sortFields?: SortField[];
+		currentSortField?: string;
+		currentSortDirection?: string;
 		states?: StateFacet[];
 		environments?: EnvironmentFacet[];
 		labels?: LabelFacet[];
@@ -41,7 +41,7 @@
 		onFilterInput?: (value: string) => void;
 		onFilterSubmit?: () => void;
 		onFilterClear?: () => void;
-		onSort: (field: string) => void;
+		onSort?: (field: string) => void;
 		onStatesChange?: (selected: string[]) => void;
 		onEnvironmentsChange?: (selected: string[]) => void;
 		onLabelsChange?: (selected: string[]) => void;

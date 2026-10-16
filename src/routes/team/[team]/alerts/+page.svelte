@@ -9,7 +9,7 @@
 	import { envTagVariant } from '#lib/envTagVariant.js';
 	import CollapsibleSidebar from '#lib/ui/CollapsibleSidebar.svelte';
 	import ExternalLink from '#lib/ui/ExternalLink.svelte';
-	import List from '#lib/ui/List.svelte';
+	import Collection from '#lib/ui/Collection.svelte';
 	import ListFilters from '#lib/ui/ListFilters.svelte';
 	import ListItem from '#lib/ui/ListItem.svelte';
 	import Pagination from '#lib/ui/Pagination.svelte';
@@ -151,7 +151,7 @@
 
 <div class="layout-two-column">
 	<div>
-		<List title="Alerts" count={alerts?.pageInfo.totalCount ?? 0}>
+		<Collection title="Alerts" count={alerts?.pageInfo.totalCount ?? 0}>
 			{#snippet actions()}
 				<button
 					type="button"
@@ -260,7 +260,7 @@
 					<p>No alerts match the current filters. Try adjusting your filters.</p>
 				</ListItem>
 			{/if}
-		</List>
+		</Collection>
 
 		<Pagination
 			page={alerts?.pageInfo}

@@ -8,12 +8,12 @@
 	import CollapsibleSidebar from '#lib/ui/CollapsibleSidebar.svelte';
 	import ExternalLink from '#lib/ui/ExternalLink.svelte';
 	import GraphErrors from '#lib/ui/GraphErrors.svelte';
-	import List from '#lib/ui/List.svelte';
-	import ListItem from '#lib/ui/ListItem.svelte';
+	import Collection from '#lib/ui/Collection.svelte';
+	import ResourceTable from '#lib/ui/ResourceTable.svelte';
 	import Pagination from '#lib/ui/Pagination.svelte';
 	import SurfaceCard from '#lib/ui/SurfaceCard.svelte';
 	import { changeParams } from '#lib/utils/searchparams.js';
-	import { Tag } from '@nais/ds-svelte-community';
+	import { Tag, Td, Th, Tr, type TableSortState } from '@nais/ds-svelte-community';
 	import { FunnelIcon } from '@nais/ds-svelte-community/icons';
 	import type { PageProps } from './$types';
 
@@ -24,11 +24,6 @@
 	let { data }: PageProps = $props();
 	let filtersOpen = $state(false);
 	let { KafkaTopics } = $derived(data);
-
-	const sortFields: { value: KafkaTopicOrderFieldOptions; label: string }[] = [
-		{ value: KafkaTopicOrderField.NAME, label: 'Name' },
-		{ value: KafkaTopicOrderField.ENVIRONMENT, label: 'Environment' }
-	];
 
 	const currentSortField: KafkaTopicOrderFieldOptions = $derived(
 		(Object.values(KafkaTopicOrderField).find((f) =>
@@ -41,7 +36,14 @@
 			OrderDirectionOptions | undefined) ?? OrderDirection.ASC
 	);
 
-	function setSort(field: KafkaTopicOrderFieldOptions) {
+	const tableSort: TableSortState = $derived({
+		orderBy: currentSortField,
+		direction: currentSortDirection === OrderDirection.ASC ? 'ascending' : 'descending'
+	});
+
+	function setSort(key: string) {
+		const field = Object.values(KafkaTopicOrderField).find((field) => field === key);
+		if (!field) throw new Error(`Unsupported Kafka sort field: ${key}`);
 		const direction =
 			field === currentSortField
 				? currentSortDirection === OrderDirection.ASC
@@ -89,7 +91,12 @@
 {#if $KafkaTopics.data}
 	<div class="layout-two-column">
 		<div>
-			<List title="Kafka" count={$KafkaTopics.data.team.kafkaTopics.pageInfo.totalCount}>
+			<Collection
+				title="Kafka"
+				icon={KafkaIcon}
+				headerBorder={false}
+				count={$KafkaTopics.data.team.kafkaTopics.pageInfo.totalCount}
+			>
 				{#snippet actions()}
 					<button
 						type="button"
@@ -101,32 +108,41 @@
 						Filters
 					</button>
 				{/snippet}
-				{#each $KafkaTopics.data.team.kafkaTopics.edges as { node: instance } (instance.id)}
-					<ListItem
-						interactive
-						href="/team/{instance.team.slug}/{instance.teamEnvironment.environment
-							.name}/kafka/{instance.name}"
-					>
-						<div class="name-group">
-							<KafkaIcon style="font-size: 1.25rem; flex-shrink: 0" />
-							<span class="item-name">{instance.name}</span>
-							<Tag size="xsmall" variant={envTagVariant(instance.teamEnvironment.environment.name)}
-								>{instance.teamEnvironment.environment.name}</Tag
-							>
-						</div>
-					</ListItem>
+				{#if $KafkaTopics.data.team.kafkaTopics.pageInfo.totalCount > 0}
+					<ResourceTable label="Kafka topics" sort={tableSort} onsortchange={setSort}>
+						{#snippet header()}
+							<Th sortable sortKey={KafkaTopicOrderField.NAME}>Name</Th>
+							<Th sortable sortKey={KafkaTopicOrderField.ENVIRONMENT}>Env</Th>
+						{/snippet}
+						{#each $KafkaTopics.data.team.kafkaTopics.edges as { node: instance } (instance.id)}
+							<Tr>
+								<Td>
+									<a
+										class="resource-name"
+										href="/team/{instance.team.slug}/{instance.teamEnvironment.environment
+											.name}/kafka/{instance.name}">{instance.name}</a
+									>
+								</Td>
+								<Td>
+									<Tag
+										size="xsmall"
+										variant={envTagVariant(instance.teamEnvironment.environment.name)}
+										>{instance.teamEnvironment.environment.name}</Tag
+									>
+								</Td>
+							</Tr>
+						{/each}
+					</ResourceTable>
 				{:else}
-					<ListItem>
-						<p>
-							No Kafka topics found. Kafka topics are categories where messages are published and
-							consumed, acting as distributed logs for event streaming.
-							<ExternalLink href={docURL('/persistence/kafka')}
-								>Learn more about Kafka and how to get started.</ExternalLink
-							>
-						</p>
-					</ListItem>
-				{/each}
-			</List>
+					<p>
+						No Kafka topics found. Kafka topics are categories where messages are published and
+						consumed, acting as distributed logs for event streaming.
+						<ExternalLink href={docURL('/persistence/kafka')}
+							>Learn more about Kafka and how to get started.</ExternalLink
+						>
+					</p>
+				{/if}
+			</Collection>
 			<Pagination
 				page={$KafkaTopics.data.team.kafkaTopics.pageInfo}
 				loaders={{
@@ -149,14 +165,10 @@
 		<CollapsibleSidebar bind:open={filtersOpen}>
 			<SurfaceCard title="Filters">
 				<WorkloadListFilters
-					{sortFields}
-					{currentSortField}
-					{currentSortDirection}
 					environments={$KafkaTopics.data?.team.kafkaTopics.facets?.environments ?? []}
 					labels={$KafkaTopics.data?.team.kafkaTopics.facets?.labels ?? []}
 					{selectedEnvironments}
 					{selectedLabels}
-					onSort={(field) => setSort(field as KafkaTopicOrderFieldOptions)}
 					onEnvironmentsChange={handleEnvironmentsChange}
 					onLabelsChange={handleLabelsChange}
 				>
@@ -182,30 +194,4 @@
 			</SurfaceCard>
 		</CollapsibleSidebar>
 	</div>
-
-	<style>
-		.name-group {
-			display: flex;
-			align-items: center;
-			gap: var(--ax-space-8);
-			min-width: 0;
-		}
-		.name-group :global(.aksel-tag) {
-			white-space: nowrap;
-			flex-shrink: 0;
-		}
-		.item-name {
-			color: var(--ax-text-neutral);
-			text-decoration: none;
-			font-weight: 500;
-			white-space: nowrap;
-			overflow: hidden;
-			text-overflow: ellipsis;
-			min-width: 0;
-			flex: 0 1 auto;
-		}
-		.item-name:hover {
-			text-decoration: underline;
-		}
-	</style>
 {/if}

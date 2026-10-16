@@ -1,10 +1,12 @@
 <script lang="ts">
-	import type { Snippet } from 'svelte';
+	import type { Component, Snippet } from 'svelte';
 
 	const {
 		title,
+		icon: Icon,
 		count,
 		headerless = false,
+		headerBorder = true,
 		level = 'h2',
 		size = 'medium',
 		children,
@@ -14,8 +16,10 @@
 		actions
 	}: {
 		title?: string;
+		icon?: Component;
 		count?: number;
 		headerless?: boolean;
+		headerBorder?: boolean;
 		level?: 'h1' | 'h2' | 'h3' | 'h4';
 		size?: 'medium' | 'small';
 		children: Snippet;
@@ -26,15 +30,18 @@
 	} = $props();
 </script>
 
-<div class="list" class:headerless>
+<div class="collection" class:headerless>
 	{#if !headerless}
-		<header class="header">
+		<header class={['header', { 'without-border': !headerBorder }]}>
 			<div class="header-row">
 				<div class="header-left">
 					{#if title}
-						<svelte:element this={level} class="title" class:small={size === 'small'}
-							>{title}</svelte:element
-						>
+						<svelte:element this={level} class="title" class:small={size === 'small'}>
+							{#if Icon}
+								<Icon aria-hidden="true" />
+							{/if}
+							{title}
+						</svelte:element>
 					{/if}
 					{#if count !== undefined}
 						<span class="count-badge">{count}</span>
@@ -65,13 +72,13 @@
 			{/if}
 		</header>
 	{/if}
-	<div class="items">
+	<div class="content">
 		{@render children()}
 	</div>
 </div>
 
 <style>
-	.list {
+	.collection {
 		display: flex;
 		flex-direction: column;
 		min-width: 0;
@@ -93,6 +100,10 @@
 		gap: var(--ax-space-16);
 	}
 
+	.header.without-border {
+		border-bottom: none;
+	}
+
 	.header-left {
 		display: flex;
 		align-items: center;
@@ -101,6 +112,9 @@
 	}
 
 	.title {
+		display: flex;
+		align-items: center;
+		gap: var(--ax-space-8);
 		font-size: 1.5rem;
 		font-weight: 600;
 		margin: 0;
@@ -165,13 +179,13 @@
 		flex-shrink: 0;
 	}
 
-	.items {
+	.content {
 		display: flex;
 		flex-direction: column;
 		container-type: inline-size;
 	}
 
-	.list.headerless .items {
+	.collection.headerless .content {
 		border-top: 1px solid var(--ax-border-neutral-subtleA);
 		border-bottom: 1px solid var(--ax-border-neutral-subtleA);
 	}

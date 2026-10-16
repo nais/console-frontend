@@ -5,22 +5,23 @@
 	import IssueSeverityTags from '#lib/domain/issues/IssueSeverityTags.svelte';
 	import WorkloadListFilters from '#lib/domain/workload/WorkloadListFilters.svelte';
 	import { envTagVariant } from '#lib/envTagVariant.js';
+	import ValkeyIcon from '#lib/icons/ValkeyIcon.svelte';
 	import WarningIcon from '#lib/icons/WarningIcon.svelte';
 	import CollapsibleSidebar from '#lib/ui/CollapsibleSidebar.svelte';
 	import ExternalLink from '#lib/ui/ExternalLink.svelte';
 	import GraphErrors from '#lib/ui/GraphErrors.svelte';
-	import List from '#lib/ui/List.svelte';
-	import ListItem from '#lib/ui/ListItem.svelte';
+	import Collection from '#lib/ui/Collection.svelte';
+	import ResourceTable from '#lib/ui/ResourceTable.svelte';
 	import PageModal, { pageModalClick } from '#lib/ui/PageModal.svelte';
 	import Pagination from '#lib/ui/Pagination.svelte';
-	import RunningIndicator from '#lib/ui/RunningIndicator.svelte';
+	import StatusIndicator from '#lib/ui/StatusIndicator.svelte';
 	import SurfaceCard from '#lib/ui/SurfaceCard.svelte';
 	import TooltipAlignHack from '#lib/ui/TooltipAlignHack.svelte';
 	import { capitalizeFirstLetter } from '#lib/utils/formatters.js';
 	import { countIssuesBySeverity } from '#lib/utils/issueCounts.js';
 	import { changeParams } from '#lib/utils/searchparams.js';
-	import { Button, Tag } from '@nais/ds-svelte-community';
-	import { CircleFillIcon, FunnelIcon, PlusIcon } from '@nais/ds-svelte-community/icons';
+	import { Button, Tag, Td, Th, Tr, type TableSortState } from '@nais/ds-svelte-community';
+	import { FunnelIcon, PlusIcon } from '@nais/ds-svelte-community/icons';
 	import type { PageProps } from './$types';
 	import CreatePage from './create/+page.svelte';
 
@@ -30,13 +31,6 @@
 	let { data }: PageProps = $props();
 	let filtersOpen = $state(false);
 	let { Valkeys, viewerIsMember } = $derived(data);
-
-	const sortFields: { value: ValkeyOrderFieldOptions; label: string }[] = [
-		{ value: ValkeyOrderField.ISSUES, label: 'Issues' },
-		{ value: ValkeyOrderField.NAME, label: 'Name' },
-		{ value: ValkeyOrderField.ENVIRONMENT, label: 'Environment' },
-		{ value: ValkeyOrderField.STATE, label: 'State' }
-	];
 
 	const currentSortField: ValkeyOrderFieldOptions = $derived(
 		(Object.values(ValkeyOrderField).find((f) =>
@@ -49,7 +43,14 @@
 			OrderDirectionOptions | undefined) ?? OrderDirection.DESC
 	);
 
-	function setSort(field: ValkeyOrderFieldOptions) {
+	const tableSort: TableSortState = $derived({
+		orderBy: currentSortField,
+		direction: currentSortDirection === OrderDirection.ASC ? 'ascending' : 'descending'
+	});
+
+	function setSort(key: string) {
+		const field = Object.values(ValkeyOrderField).find((field) => field === key);
+		if (!field) throw new Error(`Unsupported Valkey sort field: ${key}`);
 		const defaultDirection =
 			field === ValkeyOrderField.NAME || field === ValkeyOrderField.ENVIRONMENT
 				? OrderDirection.ASC
@@ -113,7 +114,12 @@
 {#if $Valkeys.data}
 	<div class="layout-two-column">
 		<div>
-			<List title="Valkey" count={$Valkeys.data.team.valkeys.pageInfo.totalCount}>
+			<Collection
+				title="Valkey"
+				icon={ValkeyIcon}
+				headerBorder={false}
+				count={$Valkeys.data.team.valkeys.pageInfo.totalCount}
+			>
 				{#snippet actions()}
 					{#if create && create.viewerIsMember}
 						<Button
@@ -137,83 +143,97 @@
 						Filters
 					</button>
 				{/snippet}
-				{#each $Valkeys.data.team.valkeys.edges as { node: instance } (instance.id)}
-					<ListItem
-						interactive
-						href="/team/{instance.team.slug}/{instance.teamEnvironment.environment
-							.name}/valkey/{instance.name}"
-					>
-						<div class="name-group">
-							<TooltipAlignHack
-								content={{
-									RUNNING: 'Instance is running',
-									UNKNOWN: 'Unknown status',
-									POWEROFF: 'Powered off',
-									REBALANCING: 'Rebalancing',
-									REBUILDING: 'Rebuilding'
-								}[instance.state] ?? ''}
-							>
-								{#if instance.state === 'RUNNING'}
-									<RunningIndicator />
-								{:else if instance.state === 'REBALANCING'}
-									<div class="status-indicator rebalancing">
-										<CircleFillIcon />
+				{#if $Valkeys.data.team.valkeys.pageInfo.totalCount > 0}
+					<ResourceTable label="Valkey" sort={tableSort} onsortchange={setSort}>
+						{#snippet header()}
+							<Th sortable sortKey={ValkeyOrderField.STATE}>Status</Th>
+							<Th sortable sortKey={ValkeyOrderField.NAME}>Name</Th>
+							<Th sortable sortKey={ValkeyOrderField.ENVIRONMENT}>Env</Th>
+							<Th sortable sortKey={ValkeyOrderField.ISSUES}>Issues</Th>
+						{/snippet}
+						{#each $Valkeys.data.team.valkeys.edges as { node: instance } (instance.id)}
+							<Tr>
+								<Td>
+									<div class="status-cell">
+										<StatusIndicator
+											label={{
+												RUNNING: 'Instance is running',
+												UNKNOWN: 'Unknown status',
+												POWEROFF: 'Powered off',
+												REBALANCING: 'Rebalancing',
+												REBUILDING: 'Rebuilding'
+											}[instance.state] ?? 'Unknown status'}
+											tone={instance.state === 'RUNNING'
+												? 'success'
+												: instance.state === 'POWEROFF'
+													? 'warning'
+													: instance.state === 'REBALANCING'
+														? 'warning'
+														: instance.state === 'REBUILDING'
+															? 'info'
+															: 'neutral'}
+										/>
 									</div>
-								{:else if instance.state === 'REBUILDING'}
-									<div class="status-indicator rebuilding">
-										<CircleFillIcon />
+								</Td>
+								<Td>
+									<div class="resource-name-group">
+										<a
+											class="resource-name"
+											href="/team/{instance.team.slug}/{instance.teamEnvironment.environment
+												.name}/valkey/{instance.name}">{instance.name}</a
+										>
+										{#if !isManagedByConsole(instance.name)}
+											<TooltipAlignHack
+												content="This instance will be migrated on the 9th of September."
+											>
+												<WarningIcon
+													aria-label="This instance will be migrated on the 9th of September."
+													style="color: var(--ax-text-warning); font-size: var(--ax-font-size-small)"
+												/>
+											</TooltipAlignHack>
+										{/if}
 									</div>
-								{:else if instance.state === 'POWEROFF'}
-									<CircleFillIcon style="color: var(--ax-bg-danger-strong); font-size: 0.7rem" />
-								{:else}
-									<CircleFillIcon
-										style="color: var(--ax-bg-info-moderate-pressed); font-size: 0.7rem"
-									/>
-								{/if}
-							</TooltipAlignHack>
-							{#if !isManagedByConsole(instance.name)}
-								<TooltipAlignHack content="This instance will be migrated on the 9th of September.">
-									<WarningIcon
-										style="color: var(--ax-bg-warning-strong); font-size: 0.7rem; margin-right: var(--ax-space-2)"
-									/>
-								</TooltipAlignHack>
-							{/if}
-							<span class="item-name">{instance.name}</span>
-							<Tag size="xsmall" variant={envTagVariant(instance.teamEnvironment.environment.name)}
-								>{instance.teamEnvironment.environment.name}</Tag
-							>
-						</div>
-						{#if (instance.issues?.pageInfo.totalCount ?? 0) > 0}
-							{const criticalCount = $derived(
-								countIssuesBySeverity(instance.issues?.edges, 'CRITICAL')
-							)}
-							{const warningCount = $derived(
-								countIssuesBySeverity(instance.issues?.edges, 'WARNING')
-							)}
-							{const todoCount = $derived(countIssuesBySeverity(instance.issues?.edges, 'TODO'))}
+								</Td>
+								<Td>
+									<Tag
+										size="xsmall"
+										variant={envTagVariant(instance.teamEnvironment.environment.name)}
+										>{instance.teamEnvironment.environment.name}</Tag
+									>
+								</Td>
+								<Td>
+									{#if (instance.issues?.pageInfo.totalCount ?? 0) > 0}
+										{const criticalCount = $derived(
+											countIssuesBySeverity(instance.issues?.edges, 'CRITICAL')
+										)}
+										{const warningCount = $derived(
+											countIssuesBySeverity(instance.issues?.edges, 'WARNING')
+										)}
+										{const todoCount = $derived(
+											countIssuesBySeverity(instance.issues?.edges, 'TODO')
+										)}
 
-							<div class="right">
-								<IssueSeverityTags
-									critical={criticalCount}
-									warning={warningCount}
-									todo={todoCount}
-								/>
-							</div>
-						{/if}
-					</ListItem>
+										<IssueSeverityTags
+											critical={criticalCount}
+											warning={warningCount}
+											todo={todoCount}
+										/>
+									{/if}
+								</Td>
+							</Tr>
+						{/each}
+					</ResourceTable>
 				{:else}
-					<ListItem>
-						<p>
-							No Valkey instances found. Valkey is a key value database that is used for storing and
-							querying data. It is a good choice for storing data that is not relational in nature
-							and often used for caching.
-							<ExternalLink href={docURL('/persistence/valkey')}
-								>Learn more about Valkey and how to get started.</ExternalLink
-							>
-						</p>
-					</ListItem>
-				{/each}
-			</List>
+					<p>
+						No Valkey instances found. Valkey is a key value database that is used for storing and
+						querying data. It is a good choice for storing data that is not relational in nature and
+						often used for caching.
+						<ExternalLink href={docURL('/persistence/valkey')}
+							>Learn more about Valkey and how to get started.</ExternalLink
+						>
+					</p>
+				{/if}
+			</Collection>
 			<Pagination
 				page={$Valkeys.data.team.valkeys.pageInfo}
 				loaders={{
@@ -236,14 +256,10 @@
 		<CollapsibleSidebar bind:open={filtersOpen}>
 			<SurfaceCard title="Filters">
 				<WorkloadListFilters
-					{sortFields}
-					{currentSortField}
-					{currentSortDirection}
 					environments={$Valkeys.data?.team.valkeys.facets?.environments ?? []}
 					labels={$Valkeys.data?.team.valkeys.facets?.labels ?? []}
 					{selectedEnvironments}
 					{selectedLabels}
-					onSort={(field) => setSort(field as ValkeyOrderFieldOptions)}
 					onEnvironmentsChange={handleEnvironmentsChange}
 					onLabelsChange={handleLabelsChange}
 				>
@@ -275,73 +291,4 @@
 	{#if create}
 		<PageModal content={create.page} header={create.header} />
 	{/if}
-
-	<style>
-		.right {
-			display: flex;
-			gap: var(--ax-space-6);
-			align-items: center;
-		}
-
-		/* Valkey state indicators */
-		.status-indicator {
-			width: 24px;
-			font-size: 0.7rem;
-			display: flex;
-			align-items: center;
-			justify-content: center;
-		}
-
-		.status-indicator.rebalancing {
-			color: var(--ax-bg-warning-moderate-pressed);
-			animation: pulse 2s ease-in-out infinite;
-		}
-
-		.status-indicator.rebuilding {
-			color: var(--ax-bg-info-strong);
-			animation: pulse 2s ease-in-out infinite;
-		}
-
-		@keyframes pulse {
-			0%,
-			100% {
-				opacity: 1;
-			}
-			50% {
-				opacity: 0.4;
-			}
-		}
-
-		/* Mobile responsive layout */
-		@media (max-width: 767px), (max-height: 500px) {
-			.right {
-				align-items: flex-end;
-				margin-top: var(--ax-space-6);
-			}
-		}
-
-		.name-group {
-			display: flex;
-			align-items: center;
-			gap: var(--ax-space-8);
-			min-width: 0;
-		}
-		.name-group :global(.aksel-tag) {
-			white-space: nowrap;
-			flex-shrink: 0;
-		}
-		.item-name {
-			color: var(--ax-text-neutral);
-			text-decoration: none;
-			font-weight: 500;
-			white-space: nowrap;
-			overflow: hidden;
-			text-overflow: ellipsis;
-			min-width: 0;
-			flex: 0 1 auto;
-		}
-		.item-name:hover {
-			text-decoration: underline;
-		}
-	</style>
 {/if}

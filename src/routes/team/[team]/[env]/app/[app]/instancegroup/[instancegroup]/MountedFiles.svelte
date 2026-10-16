@@ -1,6 +1,6 @@
 <script lang="ts">
 	import type { InstanceGroupDetail$result } from '$houdini';
-	import List from '#lib/ui/List.svelte';
+	import Collection from '#lib/ui/Collection.svelte';
 	import { Button } from '@nais/ds-svelte-community';
 	import { DownloadIcon } from '@nais/ds-svelte-community/icons';
 
@@ -30,7 +30,7 @@
 
 {#if files.length > 0}
 	<section class="section">
-		<List title="Mounted Files" count={files.length} level="h3">
+		<Collection title="Mounted Files" count={files.length} level="h3">
 			<ul class="instancegroup-list file-list">
 				{#each files as file (file.path)}
 					<li class="instancegroup-list-item file-item">
@@ -76,7 +76,7 @@
 					</li>
 				{/each}
 			</ul>
-		</List>
+		</Collection>
 	</section>
 {/if}
 

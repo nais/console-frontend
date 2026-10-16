@@ -1,6 +1,6 @@
 <script lang="ts">
 	import type { InstanceGroupDetail$result } from '$houdini';
-	import List from '#lib/ui/List.svelte';
+	import Collection from '#lib/ui/Collection.svelte';
 	import { Button, CopyButton } from '@nais/ds-svelte-community';
 	import { EyeIcon, EyeSlashIcon } from '@nais/ds-svelte-community/icons';
 	import { SvelteMap } from 'svelte/reactivity';
@@ -30,7 +30,7 @@
 
 {#if envVars.length > 0}
 	<section class="section">
-		<List title="Environment Variables" count={envVars.length} level="h3">
+		<Collection title="Environment Variables" count={envVars.length} level="h3">
 			{#snippet actions()}
 				{#if hasSecrets && viewerIsMember && revealedValues.size > 0}
 					<Button size="xsmall" variant="tertiary" icon={EyeSlashIcon} onclick={onHideAll}>
@@ -88,7 +88,7 @@
 					</li>
 				{/each}
 			</ul>
-		</List>
+		</Collection>
 	</section>
 {/if}
 

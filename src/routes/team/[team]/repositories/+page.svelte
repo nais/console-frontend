@@ -6,7 +6,7 @@
 	import CollapsibleSidebar from '#lib/ui/CollapsibleSidebar.svelte';
 	import ExternalLink from '#lib/ui/ExternalLink.svelte';
 	import GraphErrors from '#lib/ui/GraphErrors.svelte';
-	import List from '#lib/ui/List.svelte';
+	import Collection from '#lib/ui/Collection.svelte';
 	import ListFilters from '#lib/ui/ListFilters.svelte';
 	import ListItem from '#lib/ui/ListItem.svelte';
 	import Pagination from '#lib/ui/Pagination.svelte';
@@ -166,7 +166,7 @@
 			{#if $Repositories.data.team}
 				{const team = $derived($Repositories.data.team)}
 
-				<List title="Repositories" count={team.repositories.pageInfo.totalCount}>
+				<Collection title="Repositories" count={team.repositories.pageInfo.totalCount}>
 					{#snippet actions()}
 						{#if viewerIsMember}
 							<Button
@@ -213,7 +213,7 @@
 							</div>
 						</ListItem>
 					{/each}
-				</List>
+				</Collection>
 				<Pagination
 					page={team.repositories.pageInfo}
 					loaders={{

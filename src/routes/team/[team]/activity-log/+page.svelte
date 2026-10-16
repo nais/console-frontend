@@ -4,7 +4,7 @@
 	import ActivityLogFacets from '#lib/domain/activity/ActivityLogFacets.svelte';
 	import ActivityLogItem from '#lib/domain/list-items/ActivityLogListItem.svelte';
 	import CollapsibleSidebar from '#lib/ui/CollapsibleSidebar.svelte';
-	import List from '#lib/ui/List.svelte';
+	import Collection from '#lib/ui/Collection.svelte';
 	import ListFilters from '#lib/ui/ListFilters.svelte';
 	import Pagination from '#lib/ui/Pagination.svelte';
 	import SurfaceCard from '#lib/ui/SurfaceCard.svelte';
@@ -96,7 +96,7 @@
 		{const ae = $derived($ActivityLog.data.team.activityLog)}
 		<div class="layout-two-column">
 			<div bind:this={wrapperEl}>
-				<List title="Activity Log" count={ae.pageInfo.totalCount}>
+				<Collection title="Activity Log" count={ae.pageInfo.totalCount}>
 					{#snippet actions()}
 						{#if ae.facets}
 							<button
@@ -113,7 +113,7 @@
 					{#each ae.edges || [] as { node: item } (item.id)}
 						<ActivityLogItem {item} mode="full" />
 					{/each}
-				</List>
+				</Collection>
 				{#if ae.pageInfo.hasPreviousPage || ae.pageInfo.hasNextPage}
 					<Pagination
 						page={ae.pageInfo}

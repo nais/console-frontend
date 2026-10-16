@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { type IssueFragment } from '$houdini';
 	import IssueListItem from '#lib/domain/list-items/IssueListItem.svelte';
-	import List from '#lib/ui/List.svelte';
+	import Collection from '#lib/ui/Collection.svelte';
 	import SurfaceCard from '#lib/ui/SurfaceCard.svelte';
 
 	interface Props {
@@ -18,11 +18,11 @@
 		<a class="view-all" href={viewAllHref}>View all</a>
 	{/snippet}
 
-	<List>
+	<Collection>
 		{#each issues as edge, index (index)}
 			<IssueListItem item={edge.node} />
 		{/each}
-	</List>
+	</Collection>
 </SurfaceCard>
 
 <style>

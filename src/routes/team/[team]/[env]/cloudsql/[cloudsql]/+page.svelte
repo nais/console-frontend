@@ -6,7 +6,7 @@
 	import IssueListItem from '#lib/domain/list-items/IssueListItem.svelte';
 	import WorkloadLink from '#lib/domain/workload/WorkloadLink.svelte';
 	import ExternalLink from '#lib/ui/ExternalLink.svelte';
-	import List from '#lib/ui/List.svelte';
+	import Collection from '#lib/ui/Collection.svelte';
 	import SurfaceCard from '#lib/ui/SurfaceCard.svelte';
 	import { euroValueFormatter } from '#lib/utils/formatters.js';
 	import { Alert, BodyShort, Heading, HelpText } from '@nais/ds-svelte-community';
@@ -118,13 +118,13 @@
 
 			<section aria-labelledby="issues-heading">
 				<Heading as="h2" id="issues-heading" size="medium" spacing>Issues</Heading>
-				<List>
+				<Collection>
 					{#each $SqlInstance.data?.team.environment.sqlInstance.issues.edges ?? [] as edge (edge.node.id)}
 						<IssueListItem item={edge.node} />
 					{:else}
 						<span>No issues found</span>
 					{/each}
-				</List>
+				</Collection>
 			</section>
 		</div>
 

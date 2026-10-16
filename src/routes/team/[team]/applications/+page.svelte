@@ -1,4 +1,13 @@
 <script lang="ts">
+	import ApplicationTableRow from '#lib/domain/workload/ApplicationTableRow.svelte';
+	import WorkloadListFilters from '#lib/domain/workload/WorkloadListFilters.svelte';
+	import CollapsibleSidebar from '#lib/ui/CollapsibleSidebar.svelte';
+	import GraphErrors from '#lib/ui/GraphErrors.svelte';
+	import Collection from '#lib/ui/Collection.svelte';
+	import Pagination from '#lib/ui/Pagination.svelte';
+	import ResourceTable from '#lib/ui/ResourceTable.svelte';
+	import SurfaceCard from '#lib/ui/SurfaceCard.svelte';
+	import { changeParams } from '#lib/utils/searchparams.js';
 	import { page } from '$app/state';
 	import {
 		ApplicationOrderField,
@@ -6,16 +15,8 @@
 		type ApplicationOrderField$options,
 		type OrderDirection$options
 	} from '$houdini';
-	import AppListItem from '#lib/domain/list-items/AppListItem.svelte';
-	import WorkloadListFilters from '#lib/domain/workload/WorkloadListFilters.svelte';
-	import CollapsibleSidebar from '#lib/ui/CollapsibleSidebar.svelte';
-	import GraphErrors from '#lib/ui/GraphErrors.svelte';
-	import List from '#lib/ui/List.svelte';
-	import Pagination from '#lib/ui/Pagination.svelte';
-	import SurfaceCard from '#lib/ui/SurfaceCard.svelte';
-	import { changeParams } from '#lib/utils/searchparams.js';
-	import { BodyLong } from '@nais/ds-svelte-community';
-	import { FunnelIcon } from '@nais/ds-svelte-community/icons';
+	import { BodyLong, Th, type TableSortState } from '@nais/ds-svelte-community';
+	import { FunnelIcon, PackageIcon } from '@nais/ds-svelte-community/icons';
 	import type { PageProps } from './$types';
 
 	let { data }: PageProps = $props();
@@ -51,14 +52,6 @@
 			selectedLabels.length > 0
 	);
 
-	const sortFields: { value: ApplicationOrderField$options; label: string }[] = [
-		{ value: ApplicationOrderField.ISSUES, label: 'Issues' },
-		{ value: ApplicationOrderField.NAME, label: 'Name' },
-		{ value: ApplicationOrderField.DEPLOYMENT_TIME, label: 'Deploy time' },
-		{ value: ApplicationOrderField.ENVIRONMENT, label: 'Environment' },
-		{ value: ApplicationOrderField.STATE, label: 'State' }
-	];
-
 	const currentSortField: ApplicationOrderField$options = $derived(
 		(Object.values(ApplicationOrderField).find((f) =>
 			page.url.searchParams.get('sort')?.startsWith(f)
@@ -70,7 +63,14 @@
 			OrderDirection$options | undefined) ?? OrderDirection.DESC
 	);
 
-	function setSort(field: ApplicationOrderField$options) {
+	const tableSort: TableSortState = $derived({
+		orderBy: currentSortField,
+		direction: currentSortDirection === OrderDirection.ASC ? 'ascending' : 'descending'
+	});
+
+	function setSort(key: string) {
+		const field = Object.values(ApplicationOrderField).find((field) => field === key);
+		if (!field) throw new Error(`Unsupported application sort field: ${key}`);
 		const defaultDirection =
 			field === ApplicationOrderField.NAME || field === ApplicationOrderField.ENVIRONMENT
 				? OrderDirection.ASC
@@ -136,25 +136,52 @@
 
 <div class="layout-two-column">
 	<div>
-		{#if totalApplications > 0}
-			{const apps = $derived($Applications.data?.team.applications)}
+		{const apps = $derived($Applications.data?.team.applications)}
 
-			<List title="Apps" count={apps?.pageInfo.totalCount ?? 0}>
-				{#snippet actions()}
-					<button
-						type="button"
-						class="sidebar-toggle"
-						aria-expanded={filtersOpen}
-						onclick={() => (filtersOpen = !filtersOpen)}
-					>
-						<FunnelIcon aria-hidden="true" style="font-size: 1rem" />
-						Filters
-					</button>
-				{/snippet}
-				{#each apps?.edges ?? [] as { node: app } (app.id)}
-					<AppListItem {app} />
-				{/each}
-			</List>
+		<Collection
+			title="Apps"
+			icon={PackageIcon}
+			count={apps?.pageInfo.totalCount ?? 0}
+			headerBorder={false}
+		>
+			{#snippet actions()}
+				<button
+					type="button"
+					class="sidebar-toggle"
+					aria-expanded={filtersOpen}
+					onclick={() => (filtersOpen = !filtersOpen)}
+				>
+					<FunnelIcon aria-hidden="true" style="font-size: 1rem" />
+					Filters
+				</button>
+			{/snippet}
+			{#if totalApplications > 0}
+				<ResourceTable label="Applications" sort={tableSort} onsortchange={setSort}>
+					{#snippet header()}
+						<Th sortable sortKey={ApplicationOrderField.STATE}>Status</Th>
+						<Th sortable sortKey={ApplicationOrderField.NAME}>Name</Th>
+						<Th sortable sortKey={ApplicationOrderField.ENVIRONMENT}>Env</Th>
+						<Th sortable sortKey={ApplicationOrderField.ISSUES}>Issues</Th>
+						<Th sortable sortKey={ApplicationOrderField.DEPLOYMENT_TIME}>Deployed</Th>
+						<Th>Instances</Th>
+					{/snippet}
+					{#each apps?.edges ?? [] as { node: app } (app.id)}
+						<ApplicationTableRow {app} />
+					{/each}
+				</ResourceTable>
+			{:else}
+				<BodyLong>
+					<strong>
+						{#if hasActiveFilters}
+							No applications match your filters.
+						{:else}
+							No applications found.
+						{/if}
+					</strong>
+				</BodyLong>
+			{/if}
+		</Collection>
+		{#if totalApplications > 0}
 			<Pagination
 				page={apps?.pageInfo}
 				loaders={{
@@ -166,27 +193,15 @@
 					}
 				}}
 			/>
-		{:else}
-			<BodyLong>
-				<strong>
-					{#if hasActiveFilters}
-						No applications match your filters.
-					{:else}
-						No applications found.
-					{/if}
-				</strong>
-			</BodyLong>
 		{/if}
 	</div>
+
 	<CollapsibleSidebar bind:open={filtersOpen}>
 		<SurfaceCard title="Filters">
 			<WorkloadListFilters
 				{filter}
 				searchPlaceholder="Search apps..."
 				searchLabel="Search applications"
-				{sortFields}
-				{currentSortField}
-				{currentSortDirection}
 				states={$Applications.data?.team.applications.facets?.states ?? []}
 				environments={$Applications.data?.team.applications.facets?.environments ?? []}
 				labels={$Applications.data?.team.applications.facets?.labels ?? []}
@@ -199,7 +214,6 @@
 					filter = '';
 					changeQuery({ newFilter: '' });
 				}}
-				onSort={(field) => setSort(field as ApplicationOrderField$options)}
 				onStatesChange={handleStatesChange}
 				onEnvironmentsChange={handleEnvironmentsChange}
 				onLabelsChange={handleLabelsChange}
@@ -207,6 +221,3 @@
 		</SurfaceCard>
 	</CollapsibleSidebar>
 </div>
-
-<style>
-</style>

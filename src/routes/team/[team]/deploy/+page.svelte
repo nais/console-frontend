@@ -1,7 +1,7 @@
 <script lang="ts">
 	import DeploymentListItem from '#lib/domain/list-items/DeploymentListItem.svelte';
 	import GraphErrors from '#lib/ui/GraphErrors.svelte';
-	import List from '#lib/ui/List.svelte';
+	import Collection from '#lib/ui/Collection.svelte';
 	import Pagination from '#lib/ui/Pagination.svelte';
 	import { changeParams } from '#lib/utils/searchparams.js';
 	import type { PageProps } from './$types';
@@ -29,11 +29,11 @@
 <GraphErrors errors={$Deployments.errors} />
 
 {#if $Deployments.data}
-	<List title="Deployments" count={$Deployments.data.team.deployments.pageInfo.totalCount}>
+	<Collection title="Deployments" count={$Deployments.data.team.deployments.pageInfo.totalCount}>
 		{#each $Deployments.data.team.deployments.edges as { node: deployment } (deployment.id)}
 			<DeploymentListItem {deployment} showEnv />
 		{/each}
-	</List>
+	</Collection>
 
 	<Pagination
 		page={$Deployments.data.team.deployments.pageInfo}

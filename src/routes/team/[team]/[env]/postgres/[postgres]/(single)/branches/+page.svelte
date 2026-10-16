@@ -4,7 +4,7 @@
 	import WorkloadLink from '#lib/domain/workload/WorkloadLink.svelte';
 	import ActionConfirm from '#lib/ui/ActionConfirm.svelte';
 	import GraphErrors from '#lib/ui/GraphErrors.svelte';
-	import List from '#lib/ui/List.svelte';
+	import Collection from '#lib/ui/Collection.svelte';
 	import ListItem from '#lib/ui/ListItem.svelte';
 	import Time from '#lib/ui/Time.svelte';
 	import { exhaustive } from '#lib/utils/houdini.js';
@@ -396,7 +396,7 @@
 			{#if deletionMessage}
 				<Alert variant="success" size="small">{deletionMessage}</Alert>
 			{/if}
-			<List headerless>
+			<Collection headerless>
 				<ul class="branch-list">
 					{#each branches as branch (branch.id)}
 						<li>
@@ -486,7 +486,7 @@
 						<li><ListItem>No branches found.</ListItem></li>
 					{/each}
 				</ul>
-			</List>
+			</Collection>
 			{#if postgres.branches.pageInfo.hasNextPage}
 				<Button variant="tertiary" size="small" onclick={loadMore} loading={loadingMore}>
 					Load more

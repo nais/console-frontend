@@ -5,7 +5,7 @@
 	import IssueListItem from '#lib/domain/list-items/IssueListItem.svelte';
 	import CollapsibleSidebar from '#lib/ui/CollapsibleSidebar.svelte';
 	import GraphErrors from '#lib/ui/GraphErrors.svelte';
-	import List from '#lib/ui/List.svelte';
+	import Collection from '#lib/ui/Collection.svelte';
 	import ListFilters from '#lib/ui/ListFilters.svelte';
 	import ListItem from '#lib/ui/ListItem.svelte';
 	import Pagination from '#lib/ui/Pagination.svelte';
@@ -105,7 +105,7 @@
 
 <div class="layout-two-column">
 	<div>
-		<List title="Issues" count={issues?.pageInfo.totalCount ?? 0}>
+		<Collection title="Issues" count={issues?.pageInfo.totalCount ?? 0}>
 			{#snippet actions()}
 				<button
 					type="button"
@@ -130,7 +130,7 @@
 					{/if}
 				</ListItem>
 			{/each}
-		</List>
+		</Collection>
 		{#if (issues?.pageInfo.totalCount ?? 0) > 0}
 			<Pagination
 				page={issues?.pageInfo}

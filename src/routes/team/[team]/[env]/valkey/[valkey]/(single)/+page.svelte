@@ -11,7 +11,7 @@
 	import WorkloadLink from '#lib/domain/workload/WorkloadLink.svelte';
 	import ExternalLink from '#lib/ui/ExternalLink.svelte';
 	import GraphErrors from '#lib/ui/GraphErrors.svelte';
-	import List from '#lib/ui/List.svelte';
+	import Collection from '#lib/ui/Collection.svelte';
 	import ManifestCard from '#lib/ui/ManifestCard.svelte';
 	import Pagination from '#lib/ui/Pagination.svelte';
 	import { changeParams } from '#lib/utils/searchparams.js';
@@ -274,13 +274,13 @@
 
 			<section aria-labelledby="issues-heading">
 				<Heading as="h2" id="issues-heading" size="medium" spacing>Issues</Heading>
-				<List>
+				<Collection>
 					{#each $Valkey.data.team.environment.valkey.issues.edges as edge (edge.node.id)}
 						<IssueListItem item={edge.node} />
 					{:else}
 						<span>No issues found</span>
 					{/each}
-				</List>
+				</Collection>
 			</section>
 
 			{#if maintenanceError}
@@ -309,7 +309,7 @@
 							</Button>
 						{/if}
 					</div>
-					<List>
+					<Collection>
 						{#each mandatoryServiceMaintenanceUpdates.concat(nonMandatoryServiceMaintenanceUpdates) as u, index (index)}
 							<ServiceMaintenanceListItem
 								title={u?.title ?? 'Missing title'}
@@ -318,7 +318,7 @@
 								deadline={!!u?.deadline}
 							/>
 						{/each}
-					</List>
+					</Collection>
 				</section>
 			{/if}
 		</div>

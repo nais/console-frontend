@@ -6,7 +6,7 @@
 	import ActivityLogItem from '#lib/domain/list-items/ActivityLogListItem.svelte';
 	import CollapsibleSidebar from '#lib/ui/CollapsibleSidebar.svelte';
 	import GraphErrors from '#lib/ui/GraphErrors.svelte';
-	import List from '#lib/ui/List.svelte';
+	import Collection from '#lib/ui/Collection.svelte';
 	import ListFilters from '#lib/ui/ListFilters.svelte';
 	import ListItem from '#lib/ui/ListItem.svelte';
 	import Pagination from '#lib/ui/Pagination.svelte';
@@ -149,7 +149,7 @@
 			{const ae = $derived($TenantActivityLog.data.activityLog)}
 			<div class="layout-two-column">
 				<div>
-					<List title="Activity Log" count={ae.pageInfo.totalCount}>
+					<Collection title="Activity Log" count={ae.pageInfo.totalCount}>
 						{#snippet actions()}
 							{#if ae.facets}
 								<button
@@ -170,7 +170,7 @@
 								<span class="empty-state">No activity log entries found</span>
 							</ListItem>
 						{/each}
-					</List>
+					</Collection>
 					{#if ae.pageInfo.hasPreviousPage || ae.pageInfo.hasNextPage}
 						<Pagination
 							page={ae.pageInfo}

@@ -5,7 +5,7 @@
 	import WorkloadLink from '#lib/domain/workload/WorkloadLink.svelte';
 	import ExternalLink from '#lib/ui/ExternalLink.svelte';
 	import GraphErrors from '#lib/ui/GraphErrors.svelte';
-	import List from '#lib/ui/List.svelte';
+	import Collection from '#lib/ui/Collection.svelte';
 	import ListItem from '#lib/ui/ListItem.svelte';
 	import Pagination from '#lib/ui/Pagination.svelte';
 	import { formatImageRef } from '#lib/utils/image.js';
@@ -164,7 +164,7 @@
 				{:else if $CVEWorkloads.data}
 					{const workloads = $derived($CVEWorkloads.data.cve.workloads)}
 					{#if workloads.nodes.length > 0}
-						<List>
+						<Collection>
 							{#each workloads.nodes as node ([node.workload.name, node.workload.team.slug, node.workload.teamEnvironment.environment.name, node.vulnerability.package].join('|'))}
 								{const workload = $derived(node.workload)}
 								{const vuln = $derived(node.vulnerability)}
@@ -220,7 +220,7 @@
 									</div>
 								</ListItem>
 							{/each}
-						</List>
+						</Collection>
 						<Pagination
 							page={workloads.pageInfo}
 							fetching={$CVEWorkloads.fetching}

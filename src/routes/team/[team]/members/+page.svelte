@@ -5,7 +5,7 @@
 	import CollapsibleSidebar from '#lib/ui/CollapsibleSidebar.svelte';
 	import Confirm from '#lib/ui/Confirm.svelte';
 	import GraphErrors from '#lib/ui/GraphErrors.svelte';
-	import List from '#lib/ui/List.svelte';
+	import Collection from '#lib/ui/Collection.svelte';
 	import ListFilters from '#lib/ui/ListFilters.svelte';
 	import ListItem from '#lib/ui/ListItem.svelte';
 	import Pagination from '#lib/ui/Pagination.svelte';
@@ -101,7 +101,7 @@
 {#if team}
 	<div class="layout-two-column">
 		<div>
-			<List title="Members" count={$Members.data?.team.members.pageInfo.totalCount}>
+			<Collection title="Members" count={$Members.data?.team.members.pageInfo.totalCount}>
 				{#snippet actions()}
 					{#if canEdit}
 						<Button
@@ -176,7 +176,7 @@
 						</ListItem>
 					{/each}
 				{/if}
-			</List>
+			</Collection>
 			<Pagination
 				page={$Members.data?.team.members.pageInfo}
 				loaders={{
