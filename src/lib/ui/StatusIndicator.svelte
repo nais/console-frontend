@@ -17,15 +17,15 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		width: 24px;
-		height: 24px;
+		width: var(--ax-space-24);
+		height: var(--ax-space-24);
 		flex-shrink: 0;
 
 		&::after {
 			content: '';
-			width: 10px;
-			height: 10px;
-			border-radius: 50%;
+			width: calc(var(--ax-space-8) + var(--ax-space-2));
+			height: calc(var(--ax-space-8) + var(--ax-space-2));
+			border-radius: var(--ax-radius-full);
 		}
 	}
 

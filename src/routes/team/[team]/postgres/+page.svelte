@@ -8,12 +8,12 @@
 	import ExternalLink from '#lib/ui/ExternalLink.svelte';
 	import GraphErrors from '#lib/ui/GraphErrors.svelte';
 	import Collection from '#lib/ui/Collection.svelte';
-	import ListItem from '#lib/ui/ListItem.svelte';
+	import ResourceTable from '#lib/ui/ResourceTable.svelte';
 	import Pagination from '#lib/ui/Pagination.svelte';
 	import StatusIndicator from '#lib/ui/StatusIndicator.svelte';
 	import SurfaceCard from '#lib/ui/SurfaceCard.svelte';
 	import { changeParams } from '#lib/utils/searchparams.js';
-	import { Alert, Button, Checkbox, Loader, Tag } from '@nais/ds-svelte-community';
+	import { Alert, Button, Checkbox, Loader, Tag, Td, Th, Tr } from '@nais/ds-svelte-community';
 	import { FunnelIcon } from '@nais/ds-svelte-community/icons';
 	import type { PageProps } from './$types';
 
@@ -62,7 +62,12 @@
 	{const postgreses = $derived($TeamPostgres.data.team.postgreses)}
 	<div class="layout-two-column">
 		<div>
-			<Collection title="Postgres" count={postgreses.pageInfo.totalCount}>
+			<Collection
+				title="Postgres"
+				icon={PostgreSQLIcon}
+				headerBorder={false}
+				count={postgreses.pageInfo.totalCount}
+			>
 				{#snippet actions()}
 					{#if (data.viewerIsMember || data.isAdmin) && hasSupportedEnvironment}
 						<Button
@@ -82,44 +87,60 @@
 						Filters
 					</button>
 				{/snippet}
-				{#each postgreses.edges as { node: postgres } (postgres.id)}
-					{const state = $derived(
-						postgres.desiredActiveBranch &&
-							postgres.desiredActiveBranch !== postgres.activeBranch?.name
-							? 'PROGRESSING'
-							: (postgres.activeBranch?.state ?? 'PROGRESSING')
-					)}
-					<ListItem
-						interactive
-						href="/team/{page.params.team}/{postgres.teamEnvironment.environment
-							.name}/postgres/{postgres.name}"
-					>
-						<div class="name-group">
-							<PostgreSQLIcon
-								aria-hidden="true"
-								style="font-size: var(--ax-font-size-large); flex-shrink: 0"
-							/>
-							<span class="item-name">{postgres.name}</span>
-							<StatusIndicator
-								label={state.toLowerCase()}
-								tone={state === 'AVAILABLE' ? null : state === 'DEGRADED' ? 'danger' : 'warning'}
-							/>
-							<Tag size="xsmall" variant={envTagVariant(postgres.teamEnvironment.environment.name)}
-								>{postgres.teamEnvironment.environment.name}</Tag
-							>
-						</div>
-						<div class="right">Version: <code>{postgres.majorVersion}</code></div>
-					</ListItem>
+				{#if postgreses.pageInfo.totalCount > 0}
+					<ResourceTable label="Postgres">
+						{#snippet header()}
+							<Th class="status-column">Status</Th>
+							<Th>Name</Th>
+							<Th>Env</Th>
+							<Th>Version</Th>
+						{/snippet}
+						{#each postgreses.edges as { node: postgres } (postgres.id)}
+							{const state = $derived(
+								postgres.desiredActiveBranch &&
+									postgres.desiredActiveBranch !== postgres.activeBranch?.name
+									? 'PROGRESSING'
+									: (postgres.activeBranch?.state ?? 'PROGRESSING')
+							)}
+							<Tr>
+								<Td
+									><div class="status-cell">
+										<StatusIndicator
+											label={state.toLowerCase()}
+											tone={state === 'AVAILABLE'
+												? 'success'
+												: state === 'DEGRADED'
+													? 'danger'
+													: 'warning'}
+										/>
+									</div></Td
+								>
+								<Td
+									><a
+										class="resource-name"
+										href="/team/{page.params.team}/{postgres.teamEnvironment.environment
+											.name}/postgres/{postgres.name}">{postgres.name}</a
+									></Td
+								>
+								<Td>
+									<Tag
+										size="xsmall"
+										variant={envTagVariant(postgres.teamEnvironment.environment.name)}
+										>{postgres.teamEnvironment.environment.name}</Tag
+									>
+								</Td>
+								<Td><span class="table-meta">{postgres.majorVersion}</span></Td>
+							</Tr>
+						{/each}
+					</ResourceTable>
 				{:else}
-					<ListItem>
-						<p>
-							No Postgres found. Postgres provides managed relational databases in the cloud.
-							<ExternalLink href={docURL('/persistence/postgresql')}
-								>Learn more about Postgres in Nais and how to get started.</ExternalLink
-							>
-						</p>
-					</ListItem>
-				{/each}
+					<p>
+						No Postgres found. Postgres provides managed relational databases in the cloud.
+						<ExternalLink href={docURL('/persistence/postgresql')}
+							>Learn more about Postgres in Nais and how to get started.</ExternalLink
+						>
+					</p>
+				{/if}
 			</Collection>
 			<Pagination
 				page={postgreses.pageInfo}
@@ -168,33 +189,5 @@
 <style>
 	.deletion-alert {
 		margin-bottom: var(--ax-space-24);
-	}
-	.right {
-		text-align: right;
-	}
-	@container (max-width: 500px) {
-		.right {
-			margin-top: var(--ax-space-6);
-		}
-	}
-	.name-group {
-		display: flex;
-		align-items: center;
-		gap: var(--ax-space-8);
-		min-width: 0;
-	}
-	.name-group :global(.aksel-tag) {
-		white-space: nowrap;
-		flex-shrink: 0;
-	}
-	.item-name {
-		color: var(--ax-text-neutral);
-		font-weight: var(--ax-font-weight-bold);
-		overflow: hidden;
-		text-overflow: ellipsis;
-		min-width: 0;
-	}
-	code {
-		font-size: var(--ax-font-size-small);
 	}
 </style>

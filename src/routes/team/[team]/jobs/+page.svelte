@@ -157,7 +157,7 @@
 			{#if totalJobs > 0}
 				<ResourceTable label="Jobs" sort={tableSort} onsortchange={setSort}>
 					{#snippet header()}
-						<Th sortable sortKey={JobOrderField.STATE}>Status</Th>
+						<Th class="status-column" sortable sortKey={JobOrderField.STATE}>Status</Th>
 						<Th sortable sortKey={JobOrderField.NAME}>Name</Th>
 						<Th sortable sortKey={JobOrderField.ENVIRONMENT}>Env</Th>
 						<Th sortable sortKey={JobOrderField.ISSUES}>Issues</Th>

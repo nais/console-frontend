@@ -27,6 +27,18 @@
 </div>
 
 <style>
+	.resource-table :global(th.status-column) {
+		width: calc(var(--ax-space-64) + var(--ax-space-16));
+		min-width: calc(var(--ax-space-64) + var(--ax-space-16));
+		max-width: calc(var(--ax-space-64) + var(--ax-space-16));
+		box-sizing: border-box;
+	}
+
+	.resource-table :global(th.status-column:not([aria-sort])),
+	.resource-table :global(th.status-column .aksel-table__sort-button) {
+		padding-inline: var(--ax-space-4);
+	}
+
 	.resource-table :global(thead th) {
 		border-bottom-width: 1px;
 		font-size: var(--ax-font-size-small);
@@ -37,6 +49,11 @@
 	.resource-table :global(thead th:not([aria-sort])),
 	.resource-table :global(.aksel-table__sort-button) {
 		padding-block: var(--ax-space-8);
+	}
+
+	.resource-table :global(.aksel-table__sort-button) {
+		font: inherit;
+		color: inherit;
 	}
 
 	.resource-table :global(.resource-name) {

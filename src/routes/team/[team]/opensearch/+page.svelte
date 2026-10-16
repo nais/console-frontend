@@ -147,7 +147,7 @@
 				{#if $OpenSearch.data.team.openSearches.pageInfo.totalCount > 0}
 					<ResourceTable label="OpenSearch" sort={tableSort} onsortchange={setSort}>
 						{#snippet header()}
-							<Th sortable sortKey={OpenSearchOrderField.STATE}>Status</Th>
+							<Th class="status-column" sortable sortKey={OpenSearchOrderField.STATE}>Status</Th>
 							<Th sortable sortKey={OpenSearchOrderField.NAME}>Name</Th>
 							<Th sortable sortKey={OpenSearchOrderField.ENVIRONMENT}>Env</Th>
 							<Th sortable sortKey={OpenSearchOrderField.ISSUES}>Issues</Th>

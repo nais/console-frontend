@@ -79,7 +79,7 @@
 		{#if si.pageInfo.totalCount > 0}
 			<ResourceTable label="Cloud SQL" sort={tableSort} onsortchange={setSort}>
 				{#snippet header()}
-					<Th sortable sortKey={SqlInstanceOrderField.STATE}>Status</Th>
+					<Th class="status-column" sortable sortKey={SqlInstanceOrderField.STATE}>Status</Th>
 					<Th sortable sortKey={SqlInstanceOrderField.NAME}>Name</Th>
 					<Th sortable sortKey={SqlInstanceOrderField.ENVIRONMENT}>Env</Th>
 					<Th sortable sortKey={SqlInstanceOrderField.ISSUES}>Issues</Th>

@@ -158,7 +158,7 @@
 			{#if totalApplications > 0}
 				<ResourceTable label="Applications" sort={tableSort} onsortchange={setSort}>
 					{#snippet header()}
-						<Th sortable sortKey={ApplicationOrderField.STATE}>Status</Th>
+						<Th class="status-column" sortable sortKey={ApplicationOrderField.STATE}>Status</Th>
 						<Th sortable sortKey={ApplicationOrderField.NAME}>Name</Th>
 						<Th sortable sortKey={ApplicationOrderField.ENVIRONMENT}>Env</Th>
 						<Th sortable sortKey={ApplicationOrderField.ISSUES}>Issues</Th>

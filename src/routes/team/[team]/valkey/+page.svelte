@@ -146,7 +146,7 @@
 				{#if $Valkeys.data.team.valkeys.pageInfo.totalCount > 0}
 					<ResourceTable label="Valkey" sort={tableSort} onsortchange={setSort}>
 						{#snippet header()}
-							<Th sortable sortKey={ValkeyOrderField.STATE}>Status</Th>
+							<Th class="status-column" sortable sortKey={ValkeyOrderField.STATE}>Status</Th>
 							<Th sortable sortKey={ValkeyOrderField.NAME}>Name</Th>
 							<Th sortable sortKey={ValkeyOrderField.ENVIRONMENT}>Env</Th>
 							<Th sortable sortKey={ValkeyOrderField.ISSUES}>Issues</Th>

@@ -74,11 +74,13 @@
 	<Td>
 		{#if app.deployments.nodes.length > 0}
 			{const timestamp = $derived(app.deployments.nodes[0].createdAt)}
-			<Time time={timestamp} distance={true} />
+			<span class="table-meta">
+				<Time time={timestamp} distance={true} />
+			</span>
 		{/if}
 	</Td>
 	<Td>
-		<span class="instances">
+		<span class="table-meta">
 			{#if app.instances.pageInfo.totalCount === 0}
 				None
 			{:else}
@@ -89,11 +91,6 @@
 </Tr>
 
 <style>
-	.instances {
-		font-size: var(--ax-font-size-small);
-		color: var(--ax-text-neutral-subtle);
-	}
-
 	.status-cell {
 		display: flex;
 		align-items: center;
