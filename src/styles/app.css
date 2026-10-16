@@ -318,7 +318,7 @@ html {
 	border-bottom: 1px solid var(--ax-border-neutral-subtleA);
 }
 
-.list:not(.headerless) .items > .instancegroup-list {
+.collection:not(.headerless) .content > .instancegroup-list {
 	border-top: none;
 }
 

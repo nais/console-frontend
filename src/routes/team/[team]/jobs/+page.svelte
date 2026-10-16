@@ -6,16 +6,17 @@
 		type JobOrderField$options,
 		type OrderDirection$options
 	} from '$houdini';
-	import JobListItem from '#lib/domain/list-items/JobListItem.svelte';
+	import JobTableRow from '#lib/domain/workload/JobTableRow.svelte';
 	import WorkloadListFilters from '#lib/domain/workload/WorkloadListFilters.svelte';
 	import CollapsibleSidebar from '#lib/ui/CollapsibleSidebar.svelte';
 	import GraphErrors from '#lib/ui/GraphErrors.svelte';
-	import List from '#lib/ui/List.svelte';
+	import Collection from '#lib/ui/Collection.svelte';
 	import Pagination from '#lib/ui/Pagination.svelte';
+	import ResourceTable from '#lib/ui/ResourceTable.svelte';
 	import SurfaceCard from '#lib/ui/SurfaceCard.svelte';
 	import { changeParams } from '#lib/utils/searchparams.js';
-	import { BodyLong } from '@nais/ds-svelte-community';
-	import { FunnelIcon } from '@nais/ds-svelte-community/icons';
+	import { BodyLong, Th, type TableSortState } from '@nais/ds-svelte-community';
+	import { BriefcaseClockIcon, FunnelIcon } from '@nais/ds-svelte-community/icons';
 	import type { PageProps } from './$types';
 
 	let { data }: PageProps = $props();
@@ -49,15 +50,6 @@
 			selectedLabels.length > 0
 	);
 
-	const sortFields: { value: JobOrderField$options; label: string }[] = [
-		{ value: JobOrderField.ISSUES, label: 'Issues' },
-		{ value: JobOrderField.NAME, label: 'Name' },
-		{ value: JobOrderField.NEXT_RUN, label: 'Next run' },
-		{ value: JobOrderField.DEPLOYMENT_TIME, label: 'Deploy time' },
-		{ value: JobOrderField.ENVIRONMENT, label: 'Environment' },
-		{ value: JobOrderField.STATE, label: 'State' }
-	];
-
 	const currentSortField: JobOrderField$options = $derived(
 		(Object.values(JobOrderField).find((f) => page.url.searchParams.get('sort')?.startsWith(f)) as
 			JobOrderField$options | undefined) ?? JobOrderField.ISSUES
@@ -68,7 +60,14 @@
 			OrderDirection$options | undefined) ?? OrderDirection.DESC
 	);
 
-	function setSort(field: JobOrderField$options) {
+	const tableSort: TableSortState = $derived({
+		orderBy: currentSortField,
+		direction: currentSortDirection === OrderDirection.ASC ? 'ascending' : 'descending'
+	});
+
+	function setSort(key: string) {
+		const field = Object.values(JobOrderField).find((field) => field === key);
+		if (!field) throw new Error(`Unsupported job sort field: ${key}`);
 		const defaultDirection =
 			field === JobOrderField.NAME ||
 			field === JobOrderField.ENVIRONMENT ||
@@ -136,25 +135,53 @@
 
 <div class="layout-two-column">
 	<div>
-		{#if totalJobs > 0}
-			{const jobs = $derived($Jobs.data?.team.jobs)}
+		{const jobs = $derived($Jobs.data?.team.jobs)}
 
-			<List title="Jobs" count={jobs?.pageInfo.totalCount ?? 0}>
-				{#snippet actions()}
-					<button
-						type="button"
-						class="sidebar-toggle"
-						aria-expanded={filtersOpen}
-						onclick={() => (filtersOpen = !filtersOpen)}
-					>
-						<FunnelIcon aria-hidden="true" style="font-size: 1rem" />
-						Filters
-					</button>
-				{/snippet}
-				{#each jobs?.edges ?? [] as { node: job } (job.id)}
-					<JobListItem {job} />
-				{/each}
-			</List>
+		<Collection
+			title="Jobs"
+			icon={BriefcaseClockIcon}
+			headerBorder={false}
+			count={jobs?.pageInfo.totalCount ?? 0}
+		>
+			{#snippet actions()}
+				<button
+					type="button"
+					class="sidebar-toggle"
+					aria-expanded={filtersOpen}
+					onclick={() => (filtersOpen = !filtersOpen)}
+				>
+					<FunnelIcon aria-hidden="true" style="font-size: 1rem" />
+					Filters
+				</button>
+			{/snippet}
+			{#if totalJobs > 0}
+				<ResourceTable label="Jobs" sort={tableSort} onsortchange={setSort}>
+					{#snippet header()}
+						<Th class="status-column" sortable sortKey={JobOrderField.STATE}>Status</Th>
+						<Th sortable sortKey={JobOrderField.NAME}>Name</Th>
+						<Th sortable sortKey={JobOrderField.ENVIRONMENT}>Env</Th>
+						<Th sortable sortKey={JobOrderField.ISSUES}>Issues</Th>
+						<Th>Last run</Th>
+						<Th sortable sortKey={JobOrderField.NEXT_RUN}>Next run</Th>
+						<Th sortable sortKey={JobOrderField.DEPLOYMENT_TIME}>Deployed</Th>
+					{/snippet}
+					{#each jobs?.edges ?? [] as { node: job } (job.id)}
+						<JobTableRow {job} />
+					{/each}
+				</ResourceTable>
+			{:else}
+				<BodyLong>
+					<strong>
+						{#if hasActiveFilters}
+							No jobs match your filters.
+						{:else}
+							No jobs found.
+						{/if}
+					</strong>
+				</BodyLong>
+			{/if}
+		</Collection>
+		{#if totalJobs > 0}
 			<Pagination
 				page={jobs?.pageInfo}
 				loaders={{
@@ -166,16 +193,6 @@
 					}
 				}}
 			/>
-		{:else}
-			<BodyLong>
-				<strong>
-					{#if hasActiveFilters}
-						No jobs match your filters.
-					{:else}
-						No jobs found.
-					{/if}
-				</strong>
-			</BodyLong>
 		{/if}
 	</div>
 	<CollapsibleSidebar bind:open={filtersOpen}>
@@ -184,9 +201,6 @@
 				{filter}
 				searchPlaceholder="Search jobs..."
 				searchLabel="Search jobs"
-				{sortFields}
-				{currentSortField}
-				{currentSortDirection}
 				states={$Jobs.data?.team.jobs.facets?.states ?? []}
 				environments={$Jobs.data?.team.jobs.facets?.environments ?? []}
 				labels={$Jobs.data?.team.jobs.facets?.labels ?? []}
@@ -199,7 +213,6 @@
 					filter = '';
 					changeQuery({ newFilter: '' });
 				}}
-				onSort={(field) => setSort(field as JobOrderField$options)}
 				onStatesChange={handleStatesChange}
 				onEnvironmentsChange={handleEnvironmentsChange}
 				onLabelsChange={handleLabelsChange}
@@ -207,6 +220,3 @@
 		</SurfaceCard>
 	</CollapsibleSidebar>
 </div>
-
-<style>
-</style>

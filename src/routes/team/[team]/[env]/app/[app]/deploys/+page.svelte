@@ -5,7 +5,7 @@
 	import DocsLink from '#lib/ui/DocsLink.svelte';
 	import ExternalLink from '#lib/ui/ExternalLink.svelte';
 	import GraphErrors from '#lib/ui/GraphErrors.svelte';
-	import List from '#lib/ui/List.svelte';
+	import Collection from '#lib/ui/Collection.svelte';
 	import Pagination from '#lib/ui/Pagination.svelte';
 	import { extractIdFromUrl } from '#lib/utils/extractIdFromUrl.js';
 	import { changeParams } from '#lib/utils/searchparams.js';
@@ -66,7 +66,7 @@
 
 	<div class="wrapper">
 		{#if deploys.pageInfo.totalCount === 0}
-			<List title="Deployments" count={0}>
+			<Collection title="Deployments" count={0}>
 				<div class="empty-state">
 					<BodyLong>
 						<strong>No deployments found.</strong> Deployments are listed here once a workload has
@@ -76,9 +76,9 @@
 						>
 					</BodyLong>
 				</div>
-			</List>
+			</Collection>
 		{:else}
-			<List title="Deployments" count={deploys.pageInfo.totalCount}>
+			<Collection title="Deployments" count={deploys.pageInfo.totalCount}>
 				{#snippet actions()}
 					<DocsLink path="/build/" />
 				{/snippet}
@@ -88,7 +88,7 @@
 						<DeploymentListItem {deployment} />
 					</div>
 				{/each}
-			</List>
+			</Collection>
 			<Pagination
 				page={deploys.pageInfo}
 				loaders={{

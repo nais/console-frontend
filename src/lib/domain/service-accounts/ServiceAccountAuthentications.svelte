@@ -5,7 +5,7 @@
 	import Confirm from '#lib/ui/Confirm.svelte';
 	import GraphErrors from '#lib/ui/GraphErrors.svelte';
 	import IconLabel from '#lib/ui/IconLabel.svelte';
-	import List from '#lib/ui/List.svelte';
+	import Collection from '#lib/ui/Collection.svelte';
 	import ListItem from '#lib/ui/ListItem.svelte';
 	import Time from '#lib/ui/Time.svelte';
 	import { Button, Detail, Heading } from '@nais/ds-svelte-community';
@@ -127,7 +127,7 @@
 <section aria-label="Authentication methods">
 	<GraphErrors errors={removeErrors} dismissable />
 
-	<List title="Authentication methods" count={totalMethods} level="h3" size="small">
+	<Collection title="Authentication methods" count={totalMethods} level="h3" size="small">
 		{#each $data.workloadBindings.edges as { node: binding } (binding.id)}
 			<ListItem>
 				<IconLabel
@@ -238,7 +238,7 @@
 		{#if totalMethods === 0}
 			<ListItem>No authentication methods configured.</ListItem>
 		{/if}
-	</List>
+	</Collection>
 </section>
 
 <Confirm

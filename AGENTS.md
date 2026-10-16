@@ -414,7 +414,7 @@ Global utility classes defined in `src/styles/app.css` for common page patterns.
 All list pages use `CollapsibleSidebar` (`#lib/ui/CollapsibleSidebar.svelte`) to handle filter visibility across breakpoints:
 
 - **Wide desktop (>1024px):** Filters display in the right sidebar column (`.desktop-only`).
-- **Narrow desktop / tablet (≤1024px):** Sidebar collapses. A "Filters" toggle button appears in the List header. Clicking it opens a right-side drawer overlay (uses `Modal`).
+- **Narrow desktop / tablet (≤1024px):** Sidebar collapses. A "Filters" toggle button appears in the Collection header. Clicking it opens a right-side drawer overlay (uses `Modal`).
 - **Mobile (≤767px):** Same drawer behavior.
 
 #### Usage in list pages:
@@ -429,7 +429,7 @@ All list pages use `CollapsibleSidebar` (`#lib/ui/CollapsibleSidebar.svelte`) to
 
 <div class="layout-two-column">
 	<div>
-		<List title="Items" count={items.length}>
+		<Collection title="Items" count={items.length}>
 			{#snippet actions()}
 				<!-- Other action buttons (Create, Add, etc.) go FIRST -->
 				<button
@@ -443,7 +443,7 @@ All list pages use `CollapsibleSidebar` (`#lib/ui/CollapsibleSidebar.svelte`) to
 				</button>
 			{/snippet}
 			<!-- list items -->
-		</List>
+		</Collection>
 	</div>
 	<CollapsibleSidebar bind:open={filtersOpen}>
 		<SurfaceCard title="Filters">
@@ -461,7 +461,7 @@ All list pages use `CollapsibleSidebar` (`#lib/ui/CollapsibleSidebar.svelte`) to
 1. **Filters button is always last** in the `{#snippet actions()}` — keeps it consistently on the far right
 2. **`extras` snippet** is for content that shows in the sidebar on wide screens but below the list on narrow — never inside the drawer (e.g., TeamActivityCard)
 3. **Do not use `<div class="layout-sidebar">`** for filter sidebars on list pages — use `CollapsibleSidebar` instead
-4. **Container queries**: The `List` component's `.items` div has `container-type: inline-size`. Use `@container (max-width: 500px)` in list item components for reflow
+4. **Container queries**: The `Collection` component's `.content` div has `container-type: inline-size`. Use `@container (max-width: 500px)` in list item components for reflow
 
 ### Surface System
 
@@ -600,7 +600,7 @@ All UI changes and accessibility work must meet this level:
 - **Focus indicators**: All interactive elements must have visible focus states; don't remove or hide native focus outlines without replacing them
 - **Keyboard navigation**: All functionality must be accessible via keyboard; don't trap focus
 - **ARIA labels**: Use `aria-label`, `aria-labelledby`, `aria-describedby` when semantic HTML isn't sufficient; especially for icon-only buttons
-- **Empty states**: Use consistent patterns (see List component with ListItem for empty states)
+- **Empty states**: Use consistent patterns (see Collection component with ListItem for list empty states). For resource tables, render empty-state text outside the table when the total count is zero.
 - **Form fields**: Always associate labels with inputs; use semantic form elements
 - **Icons**: Provide text alternatives; use `aria-label` for icon-only buttons
 - **Link text**: Avoid "click here"; use descriptive link text that makes sense out of context

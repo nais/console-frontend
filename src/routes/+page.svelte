@@ -1,6 +1,6 @@
 <script lang="ts">
 	import TeamListItem from '#lib/domain/list-items/TeamListItem.svelte';
-	import List from '#lib/ui/List.svelte';
+	import Collection from '#lib/ui/Collection.svelte';
 	import PageModal, { pageModalClick } from '#lib/ui/PageModal.svelte';
 	import Pagination from '#lib/ui/Pagination.svelte';
 	import { capitalizeFirstLetter } from '#lib/utils/formatters.js';
@@ -49,7 +49,7 @@
 			</div>
 			{#if $UserTeams.data}
 				{#if $UserTeams.data.me.__typename == 'User'}
-					<List>
+					<Collection>
 						{#each $UserTeams.data.me.teams.edges as { node } (node.team.id)}
 							<TeamListItem team={node.team} />
 						{:else}
@@ -59,7 +59,7 @@
 								in the members list on the team page to request membership.
 							</BodyLong>
 						{/each}
-					</List>
+					</Collection>
 					<Pagination
 						page={$UserTeams.data.me.teams.pageInfo}
 						loaders={{

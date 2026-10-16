@@ -4,7 +4,7 @@
 	import ServiceAccountListItem from '#lib/domain/list-items/ServiceAccountListItem.svelte';
 	import CollapsibleSidebar from '#lib/ui/CollapsibleSidebar.svelte';
 	import GraphErrors from '#lib/ui/GraphErrors.svelte';
-	import List from '#lib/ui/List.svelte';
+	import Collection from '#lib/ui/Collection.svelte';
 	import PageModal, { pageModalClick } from '#lib/ui/PageModal.svelte';
 	import Pagination from '#lib/ui/Pagination.svelte';
 	import { changeParams } from '#lib/utils/searchparams.js';
@@ -41,7 +41,7 @@
 		</BodyLong>
 
 		{#if serviceAccounts && serviceAccounts.edges.length > 0}
-			<List title="Service accounts" count={serviceAccounts.pageInfo.totalCount}>
+			<Collection title="Service accounts" count={serviceAccounts.pageInfo.totalCount}>
 				{#snippet actions()}
 					{#if viewerIsOwner || isAdmin}
 						<Button
@@ -62,7 +62,7 @@
 						href="/team/{teamSlug}/settings/service_accounts/{sa.id}"
 					/>
 				{/each}
-			</List>
+			</Collection>
 			<Pagination
 				page={serviceAccounts.pageInfo}
 				loaders={{

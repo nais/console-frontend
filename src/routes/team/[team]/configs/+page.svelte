@@ -8,15 +8,15 @@
 	import CollapsibleSidebar from '#lib/ui/CollapsibleSidebar.svelte';
 	import ExternalLink from '#lib/ui/ExternalLink.svelte';
 	import GraphErrors from '#lib/ui/GraphErrors.svelte';
-	import List from '#lib/ui/List.svelte';
+	import Collection from '#lib/ui/Collection.svelte';
 	import ListFilters from '#lib/ui/ListFilters.svelte';
-	import ListItem from '#lib/ui/ListItem.svelte';
+	import ResourceTable from '#lib/ui/ResourceTable.svelte';
 	import Pagination from '#lib/ui/Pagination.svelte';
 	import SurfaceCard from '#lib/ui/SurfaceCard.svelte';
 	import Time from '#lib/ui/Time.svelte';
 	import { getConfigPermissions } from '#lib/utils/configPermissions.js';
 	import { changeParams } from '#lib/utils/searchparams.js';
-	import { Button, Detail, Tag } from '@nais/ds-svelte-community';
+	import { Button, Tag, Td, Th, Tr, type TableSortState } from '@nais/ds-svelte-community';
 	import { FileTextIcon, FunnelIcon, PlusIcon } from '@nais/ds-svelte-community/icons';
 	import type { PageProps } from './$types';
 	import CreateConfig, { type EnvironmentType } from './CreateConfig.svelte';
@@ -93,12 +93,6 @@
 		});
 	};
 
-	const sortFields: { value: ConfigOrderFieldOptions; label: string }[] = [
-		{ value: ConfigOrderField.NAME, label: 'Name' },
-		{ value: ConfigOrderField.ENVIRONMENT, label: 'Environment' },
-		{ value: ConfigOrderField.LAST_MODIFIED_AT, label: 'Last modified' }
-	];
-
 	const currentSortField: ConfigOrderFieldOptions = $derived(
 		(Object.values(ConfigOrderField).find((f) =>
 			page.url.searchParams.get('sort')?.startsWith(f)
@@ -110,7 +104,14 @@
 			OrderDirectionOptions | undefined) ?? OrderDirection.ASC
 	);
 
-	function setSort(field: ConfigOrderFieldOptions) {
+	const tableSort: TableSortState = $derived({
+		orderBy: currentSortField,
+		direction: currentSortDirection === OrderDirection.ASC ? 'ascending' : 'descending'
+	});
+
+	function setSort(key: string) {
+		const field = Object.values(ConfigOrderField).find((field) => field === key);
+		if (!field) throw new Error(`Unsupported config sort field: ${key}`);
 		const defaultDirection =
 			field === ConfigOrderField.NAME || field === ConfigOrderField.ENVIRONMENT
 				? OrderDirection.ASC
@@ -161,7 +162,12 @@
 	{const configs = $derived($Configs.data.team.configs)}
 	<div class="layout-two-column">
 		<div>
-			<List title="Configs" count={configs.pageInfo.totalCount}>
+			<Collection
+				title="Configs"
+				icon={FileTextIcon}
+				headerBorder={false}
+				count={configs.pageInfo.totalCount}
+			>
 				{#snippet actions()}
 					{#if canMutate}
 						<Button variant="secondary" size="small" onclick={() => open()} icon={PlusIcon}>
@@ -178,50 +184,63 @@
 						Filters
 					</button>
 				{/snippet}
-				{#each configs.edges as { node: config } (config.id)}
-					<ListItem
-						interactive
-						href="/team/{teamSlug}/{config.teamEnvironment.environment.name}/config/{config.name}"
-					>
-						<div class="name-group">
-							<FileTextIcon style="font-size: 1.25rem; flex-shrink: 0" />
-							<span class="item-name">{config.name}</span>
-							<Tag size="xsmall" variant={envTagVariant(config.teamEnvironment.environment.name)}
-								>{config.teamEnvironment.environment.name}</Tag
-							>
-						</div>
-						<div class="right">
-							{#if config.workloads.pageInfo.totalCount > 0}
-								<Detail
-									>Config is in use by {config.workloads.pageInfo.totalCount} workload{config
-										.workloads.pageInfo.totalCount > 1
-										? 's'
-										: ''}</Detail
-								>
-							{:else}
-								<Detail>Config is not in use</Detail>
-							{/if}
-							<Detail
-								>Last modified:
-								{#if config.lastModifiedAt}
-									<Time time={config.lastModifiedAt} distance />
-								{:else}
-									<code>n/a</code>
-								{/if}
-							</Detail>
-						</div>
-					</ListItem>
+				{#if configs.pageInfo.totalCount > 0}
+					<ResourceTable label="Configs" sort={tableSort} onsortchange={setSort}>
+						{#snippet header()}
+							<Th sortable sortKey={ConfigOrderField.NAME}>Name</Th>
+							<Th sortable sortKey={ConfigOrderField.ENVIRONMENT}>Env</Th>
+							<Th>Usage</Th>
+							<Th sortable sortKey={ConfigOrderField.LAST_MODIFIED_AT}>Last modified</Th>
+						{/snippet}
+						{#each configs.edges as { node: config } (config.id)}
+							<Tr>
+								<Td>
+									<a
+										class="resource-name"
+										href="/team/{teamSlug}/{config.teamEnvironment.environment
+											.name}/config/{config.name}">{config.name}</a
+									>
+								</Td>
+								<Td>
+									<Tag
+										size="xsmall"
+										variant={envTagVariant(config.teamEnvironment.environment.name)}
+										>{config.teamEnvironment.environment.name}</Tag
+									>
+								</Td>
+								<Td>
+									{#if config.workloads.pageInfo.totalCount > 0}
+										<span class="table-meta"
+											>In use by {config.workloads.pageInfo.totalCount} workload{config.workloads
+												.pageInfo.totalCount > 1
+												? 's'
+												: ''}</span
+										>
+									{:else}
+										<span class="table-meta">Not in use</span>
+									{/if}
+								</Td>
+								<Td>
+									<span class="table-meta">
+										{#if config.lastModifiedAt}
+											<Time time={config.lastModifiedAt} distance />
+										{:else}
+											<code>n/a</code>
+										{/if}
+									</span>
+								</Td>
+							</Tr>
+						{/each}
+					</ResourceTable>
 				{:else}
-					<ListItem>
-						<p>
-							No configs found. Configs are used to store configuration data for your applications.
-							<ExternalLink href={docURL('/services/config')}
-								>Learn more about configs in Nais and how to get started.</ExternalLink
-							>
-						</p>
-					</ListItem>
-				{/each}
-			</List>
+					<p>
+						No configs found. Configs are used to store configuration data for your applications.
+						<ExternalLink href={docURL('/services/config')}
+							>Learn more about configs in Nais and how to get started.</ExternalLink
+						>
+					</p>
+				{/if}
+			</Collection>
 			<Pagination
 				page={configs.pageInfo}
 				loaders={{
@@ -253,16 +272,12 @@
 					{filter}
 					searchPlaceholder="Filter by name"
 					searchLabel="Filter configs"
-					{sortFields}
-					{currentSortField}
-					{currentSortDirection}
 					onFilterInput={(v) => (filter = v)}
 					onFilterSubmit={() => changeQuery({ newFilter: filter })}
 					onFilterClear={() => {
 						filter = '';
 						changeQuery({ newFilter: '' });
 					}}
-					onSort={(field) => setSort(field as ConfigOrderFieldOptions)}
 				>
 					{#if displayEnvironmentFacets.length > 0}
 						<details class="filter-section" open>
@@ -318,47 +333,3 @@
 		<CreateConfig team={teamSlug} bind:open={createConfigOpen} {environments} />
 	{/if}
 {/if}
-
-<style>
-	.right {
-		display: flex;
-		flex-direction: column;
-		align-items: end;
-		gap: var(--ax-space-2);
-	}
-
-	.name-group {
-		display: flex;
-		align-items: center;
-		gap: var(--ax-space-8);
-		min-width: 0;
-	}
-	.name-group :global(.aksel-tag) {
-		white-space: nowrap;
-		flex-shrink: 0;
-	}
-	.item-name {
-		color: var(--ax-text-neutral);
-		text-decoration: none;
-		font-weight: 500;
-		white-space: nowrap;
-		overflow: hidden;
-		text-overflow: ellipsis;
-		min-width: 0;
-		flex: 0 1 auto;
-	}
-
-	@media (max-width: 767px), (max-height: 500px) {
-		.right {
-			align-items: flex-end;
-			margin-top: var(--ax-space-6);
-		}
-	}
-
-	@container (max-width: 500px) {
-		.right {
-			align-items: flex-start;
-			margin-top: var(--ax-space-6);
-		}
-	}
-</style>

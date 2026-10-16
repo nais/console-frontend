@@ -8,15 +8,15 @@
 	import CollapsibleSidebar from '#lib/ui/CollapsibleSidebar.svelte';
 	import ExternalLink from '#lib/ui/ExternalLink.svelte';
 	import GraphErrors from '#lib/ui/GraphErrors.svelte';
-	import List from '#lib/ui/List.svelte';
+	import Collection from '#lib/ui/Collection.svelte';
 	import ListFilters from '#lib/ui/ListFilters.svelte';
-	import ListItem from '#lib/ui/ListItem.svelte';
+	import ResourceTable from '#lib/ui/ResourceTable.svelte';
 	import Pagination from '#lib/ui/Pagination.svelte';
 	import SurfaceCard from '#lib/ui/SurfaceCard.svelte';
 	import Time from '#lib/ui/Time.svelte';
 	import { changeParams } from '#lib/utils/searchparams.js';
 	import { getSecretPermissions } from '#lib/utils/secretPermissions.js';
-	import { Button, Detail, Tag } from '@nais/ds-svelte-community';
+	import { Button, Tag, Td, Th, Tr, type TableSortState } from '@nais/ds-svelte-community';
 	import { FunnelIcon, PadlockLockedIcon, PlusIcon } from '@nais/ds-svelte-community/icons';
 	import type { PageProps } from './$types';
 	import CreateSecret, { type EnvironmentType } from './CreateSecret.svelte';
@@ -93,12 +93,6 @@
 		});
 	};
 
-	const sortFields: { value: SecretOrderFieldOptions; label: string }[] = [
-		{ value: SecretOrderField.NAME, label: 'Name' },
-		{ value: SecretOrderField.ENVIRONMENT, label: 'Environment' },
-		{ value: SecretOrderField.LAST_MODIFIED_AT, label: 'Last modified' }
-	];
-
 	const currentSortField: SecretOrderFieldOptions = $derived(
 		(Object.values(SecretOrderField).find((f) =>
 			page.url.searchParams.get('sort')?.startsWith(f)
@@ -110,7 +104,14 @@
 			OrderDirectionOptions | undefined) ?? OrderDirection.ASC
 	);
 
-	function setSort(field: SecretOrderFieldOptions) {
+	const tableSort: TableSortState = $derived({
+		orderBy: currentSortField,
+		direction: currentSortDirection === OrderDirection.ASC ? 'ascending' : 'descending'
+	});
+
+	function setSort(key: string) {
+		const field = Object.values(SecretOrderField).find((field) => field === key);
+		if (!field) throw new Error(`Unsupported secret sort field: ${key}`);
 		const defaultDirection =
 			field === SecretOrderField.NAME || field === SecretOrderField.ENVIRONMENT
 				? OrderDirection.ASC
@@ -161,7 +162,12 @@
 	{const secrets = $derived($Secrets.data.team.secrets)}
 	<div class="layout-two-column">
 		<div>
-			<List title="Secrets" count={secrets.pageInfo.totalCount}>
+			<Collection
+				title="Secrets"
+				icon={PadlockLockedIcon}
+				headerBorder={false}
+				count={secrets.pageInfo.totalCount}
+			>
 				{#snippet actions()}
 					{#if canMutate}
 						<Button variant="secondary" size="small" onclick={() => open()} icon={PlusIcon}>
@@ -178,50 +184,63 @@
 						Filters
 					</button>
 				{/snippet}
-				{#each secrets.edges as { node: secret } (secret.id)}
-					<ListItem
-						interactive
-						href="/team/{teamSlug}/{secret.teamEnvironment.environment.name}/secret/{secret.name}"
-					>
-						<div class="name-group">
-							<PadlockLockedIcon style="font-size: 1.25rem; flex-shrink: 0" />
-							<span class="item-name">{secret.name}</span>
-							<Tag size="xsmall" variant={envTagVariant(secret.teamEnvironment.environment.name)}
-								>{secret.teamEnvironment.environment.name}</Tag
-							>
-						</div>
-						<div class="right">
-							{#if secret.workloads.pageInfo.totalCount > 0}
-								<Detail
-									>Secret is in use by {secret.workloads.pageInfo.totalCount} workload{secret
-										.workloads.pageInfo.totalCount > 1
-										? 's'
-										: ''}</Detail
-								>
-							{:else}
-								<Detail>Secret is not in use</Detail>
-							{/if}
-							<Detail
-								>Last modified:
-								{#if secret.lastModifiedAt}
-									<Time time={secret.lastModifiedAt} distance />
-								{:else}
-									<code>n/a</code>
-								{/if}
-							</Detail>
-						</div>
-					</ListItem>
+				{#if secrets.pageInfo.totalCount > 0}
+					<ResourceTable label="Secrets" sort={tableSort} onsortchange={setSort}>
+						{#snippet header()}
+							<Th sortable sortKey={SecretOrderField.NAME}>Name</Th>
+							<Th sortable sortKey={SecretOrderField.ENVIRONMENT}>Env</Th>
+							<Th>Usage</Th>
+							<Th sortable sortKey={SecretOrderField.LAST_MODIFIED_AT}>Last modified</Th>
+						{/snippet}
+						{#each secrets.edges as { node: secret } (secret.id)}
+							<Tr>
+								<Td>
+									<a
+										class="resource-name"
+										href="/team/{teamSlug}/{secret.teamEnvironment.environment
+											.name}/secret/{secret.name}">{secret.name}</a
+									>
+								</Td>
+								<Td>
+									<Tag
+										size="xsmall"
+										variant={envTagVariant(secret.teamEnvironment.environment.name)}
+										>{secret.teamEnvironment.environment.name}</Tag
+									>
+								</Td>
+								<Td>
+									{#if secret.workloads.pageInfo.totalCount > 0}
+										<span class="table-meta"
+											>In use by {secret.workloads.pageInfo.totalCount} workload{secret.workloads
+												.pageInfo.totalCount > 1
+												? 's'
+												: ''}</span
+										>
+									{:else}
+										<span class="table-meta">Not in use</span>
+									{/if}
+								</Td>
+								<Td>
+									<span class="table-meta">
+										{#if secret.lastModifiedAt}
+											<Time time={secret.lastModifiedAt} distance />
+										{:else}
+											<code>n/a</code>
+										{/if}
+									</span>
+								</Td>
+							</Tr>
+						{/each}
+					</ResourceTable>
 				{:else}
-					<ListItem>
-						<p>
-							No secrets found. Secrets are used to store sensitive data for your applications.
-							<ExternalLink href={docURL('/services/secrets')}
-								>Learn more about secrets in Nais and how to get started.</ExternalLink
-							>
-						</p>
-					</ListItem>
-				{/each}
-			</List>
+					<p>
+						No secrets found. Secrets are used to store sensitive data for your applications.
+						<ExternalLink href={docURL('/services/secrets')}
+							>Learn more about secrets in Nais and how to get started.</ExternalLink
+						>
+					</p>
+				{/if}
+			</Collection>
 			<Pagination
 				page={secrets.pageInfo}
 				loaders={{
@@ -257,16 +276,12 @@
 					{filter}
 					searchPlaceholder="Filter by name"
 					searchLabel="Filter secrets"
-					{sortFields}
-					{currentSortField}
-					{currentSortDirection}
 					onFilterInput={(v) => (filter = v)}
 					onFilterSubmit={() => changeQuery({ newFilter: filter })}
 					onFilterClear={() => {
 						filter = '';
 						changeQuery({ newFilter: '' });
 					}}
-					onSort={(field) => setSort(field as SecretOrderFieldOptions)}
 				>
 					{#if displayEnvironmentFacets.length > 0}
 						<details class="filter-section" open>
@@ -322,47 +337,3 @@
 		<CreateSecret team={teamSlug} bind:open={createSecretOpen} {environments} />
 	{/if}
 {/if}
-
-<style>
-	.right {
-		display: flex;
-		flex-direction: column;
-		align-items: end;
-		gap: var(--ax-space-2);
-	}
-
-	@media (max-width: 767px), (max-height: 500px) {
-		.right {
-			align-items: flex-end;
-			margin-top: var(--ax-space-6);
-		}
-	}
-
-	@container (max-width: 500px) {
-		.right {
-			align-items: flex-start;
-			margin-top: var(--ax-space-6);
-		}
-	}
-
-	.name-group {
-		display: flex;
-		align-items: center;
-		gap: var(--ax-space-8);
-		min-width: 0;
-	}
-	.name-group :global(.aksel-tag) {
-		white-space: nowrap;
-		flex-shrink: 0;
-	}
-	.item-name {
-		color: var(--ax-text-neutral);
-		text-decoration: none;
-		font-weight: 500;
-		white-space: nowrap;
-		overflow: hidden;
-		text-overflow: ellipsis;
-		min-width: 0;
-		flex: 0 1 auto;
-	}
-</style>

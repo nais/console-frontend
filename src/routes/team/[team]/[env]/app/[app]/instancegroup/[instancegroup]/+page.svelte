@@ -5,7 +5,7 @@
 	import { ValueEncoding } from '$houdini';
 	import Resource from '#lib/domain/resources/Resource.svelte';
 	import GraphErrors from '#lib/ui/GraphErrors.svelte';
-	import List from '#lib/ui/List.svelte';
+	import Collection from '#lib/ui/Collection.svelte';
 	import SurfaceCard from '#lib/ui/SurfaceCard.svelte';
 	import Time from '#lib/ui/Time.svelte';
 	import { formatImageRef } from '#lib/utils/image.js';
@@ -323,7 +323,7 @@
 			<div class="main-column">
 				{#if group.instances.length > 0}
 					<section class="section">
-						<List title="Instances" count={group.instances.length} level="h3">
+						<Collection title="Instances" count={group.instances.length} level="h3">
 							<ul class="instancegroup-list instances-list">
 								{#each group.instances as instance (instance.id)}
 									<li class="instancegroup-list-item instances-item">
@@ -380,7 +380,7 @@
 									</li>
 								{/each}
 							</ul>
-						</List>
+						</Collection>
 					</section>
 				{/if}
 

@@ -3,7 +3,7 @@
 	import WorkloadLink from '#lib/domain/workload/WorkloadLink.svelte';
 	import DocsLink from '#lib/ui/DocsLink.svelte';
 	import IconLabel from '#lib/ui/IconLabel.svelte';
-	import List from '#lib/ui/List.svelte';
+	import Collection from '#lib/ui/Collection.svelte';
 	import TooltipAlignHack from '#lib/ui/TooltipAlignHack.svelte';
 	import { BodyLong, Heading, Tag } from '@nais/ds-svelte-community';
 	import {
@@ -145,7 +145,7 @@
 	</div>
 </div>
 
-<List headerless>
+<Collection headerless>
 	{#if hasPolicy}
 		<ul class="rules">
 			{#each flatRules as entry, i (`${entry.direction}-${entry.kind}-${i}`)}
@@ -199,7 +199,7 @@
 			<BodyLong size="small" textColor="subtle">No access policies configured.</BodyLong>
 		</div>
 	{/if}
-</List>
+</Collection>
 
 <style>
 	.heading-row {

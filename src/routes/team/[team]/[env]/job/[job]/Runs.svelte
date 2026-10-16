@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { graphql } from '$houdini';
 	import JobRunListItem from '#lib/domain/list-items/JobRunListItem.svelte';
-	import List from '#lib/ui/List.svelte';
+	import Collection from '#lib/ui/Collection.svelte';
 	import ListItem from '#lib/ui/ListItem.svelte';
 	import { Button } from '@nais/ds-svelte-community';
 	import { onMount } from 'svelte';
@@ -84,7 +84,7 @@
 </script>
 
 {#if runEdges.length > 0 || $runsQuery.fetching}
-	<List title="Job runs" count={totalCount} level="h2">
+	<Collection title="Job runs" count={totalCount} level="h2">
 		{#each runEdges as run (run.node.id)}
 			{#if run.node.instances.pageInfo.totalCount > 0}
 				<JobRunListItem
@@ -100,7 +100,7 @@
 				<span class="empty-state">No runs found</span>
 			</ListItem>
 		{/each}
-	</List>
+	</Collection>
 	{#if hasNextPage}
 		<div class="load-more">
 			<Button variant="tertiary" size="small" onclick={loadMore} loading={loadingMore}
@@ -109,11 +109,11 @@
 		</div>
 	{/if}
 {:else if !$runsQuery.fetching}
-	<List title="Job runs" count={0} level="h2">
+	<Collection title="Job runs" count={0} level="h2">
 		<ListItem>
 			<span class="empty-state">No runs found</span>
 		</ListItem>
-	</List>
+	</Collection>
 {/if}
 
 <style>

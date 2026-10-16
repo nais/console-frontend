@@ -1,7 +1,7 @@
 <script lang="ts">
 	import ServiceAccountListItem from '#lib/domain/list-items/ServiceAccountListItem.svelte';
 	import GraphErrors from '#lib/ui/GraphErrors.svelte';
-	import List from '#lib/ui/List.svelte';
+	import Collection from '#lib/ui/Collection.svelte';
 	import Pagination from '#lib/ui/Pagination.svelte';
 	import { changeParams } from '#lib/utils/searchparams.js';
 	import { BodyLong, Button } from '@nais/ds-svelte-community';
@@ -45,7 +45,7 @@
 	</div>
 
 	{#if serviceAccounts && serviceAccounts.edges.length > 0}
-		<List
+		<Collection
 			title="{serviceAccounts.pageInfo.totalCount} service account{serviceAccounts.pageInfo
 				.totalCount !== 1
 				? 's'
@@ -54,7 +54,7 @@
 			{#each serviceAccounts.edges as { node: sa } (sa.id)}
 				<ServiceAccountListItem serviceAccount={sa} href="/admin/service_accounts/{sa.id}" />
 			{/each}
-		</List>
+		</Collection>
 		<Pagination
 			page={serviceAccounts.pageInfo}
 			loaders={{
