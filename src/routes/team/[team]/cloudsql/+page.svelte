@@ -8,6 +8,7 @@
 	import ExternalLink from '#lib/ui/ExternalLink.svelte';
 	import GraphErrors from '#lib/ui/GraphErrors.svelte';
 	import Collection from '#lib/ui/Collection.svelte';
+	import OrderByMenu from '#lib/ui/OrderByMenu.svelte';
 	import ResourceTable from '#lib/ui/ResourceTable.svelte';
 	import Pagination from '#lib/ui/Pagination.svelte';
 	import StatusIndicator from '#lib/ui/StatusIndicator.svelte';
@@ -75,6 +76,13 @@
 		headerBorder={false}
 		count={si.pageInfo.totalCount}
 	>
+		{#snippet actions()}
+			<OrderByMenu
+				orderField={SqlInstanceOrderField}
+				defaultOrderField={SqlInstanceOrderField.ISSUES}
+				defaultOrderDirection={OrderDirection.DESC}
+			/>
+		{/snippet}
 		{#if si.pageInfo.totalCount > 0}
 			<ResourceTable label="Cloud SQL" sort={tableSort} onsortchange={setSort}>
 				{#snippet header()}
