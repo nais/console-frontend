@@ -13,7 +13,7 @@ export async function load(event) {
 	const team = event.params.team;
 	// Only the initial view is loaded here; the toggle fetches the other one on demand.
 	const view = event.untrack(() =>
-		event.url.searchParams.get('view') === 'severity' ? 'severity' : 'priority'
+		event.url.searchParams.get('view') === 'priority' ? 'priority' : 'severity'
 	);
 
 	return {

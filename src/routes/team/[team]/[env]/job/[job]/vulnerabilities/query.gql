@@ -106,7 +106,7 @@ query JobImageDetails($team: Slug!, $env: String!, $job: String!) @cache(policy:
 						handleFirst: vulnerabilities(
 							first: 50
 							filter: { hasKevEntry: true }
-							orderBy: { field: SEVERITY, direction: DESC }
+							orderBy: { field: SEVERITY_SINCE, direction: DESC }
 						) {
 							pageInfo {
 								totalCount

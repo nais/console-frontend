@@ -123,7 +123,7 @@ query ApplicationImageDetails($team: Slug!, $env: String!, $app: String!)
 						handleFirst: vulnerabilities(
 							first: 50
 							filter: { hasKevEntry: true }
-							orderBy: { field: SEVERITY, direction: DESC }
+							orderBy: { field: SEVERITY_SINCE, direction: DESC }
 						) {
 							pageInfo {
 								totalCount

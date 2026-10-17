@@ -82,6 +82,7 @@ fragment TeamPriorityConnection on TeamConnection {
 				riskScore
 				riskScoreTrend
 				coverage
+				sbomCount
 			}
 		}
 	}

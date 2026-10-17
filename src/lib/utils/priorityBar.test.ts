@@ -11,7 +11,74 @@ describe('PriorityAlertBar guidance', () => {
 
 		expect(body).toMatch(/Use operational priority to decide what to address\s+first\./);
 		expect(body).not.toContain('before anything else');
+		expect(body).toContain('What does known exploited mean?');
+		expect(body).toContain('https://www.cisa.gov/known-exploited-vulnerabilities-catalog');
+		expect(body).toContain('https://github.com/enisaeu/CNW/blob/main/advisories/eukev/README.md');
 	});
+
+	test.each([false, true])(
+		'shows separate concise signals when urgent (compact: %s)',
+		async (compact) => {
+			const { body } = await render(PriorityAlertBar, {
+				props: {
+					knownExploited: 4,
+					urgentCount: 2,
+					high: 6,
+					elevated: 3,
+					monitor: 352,
+					compact
+				}
+			});
+
+			expect(body).toMatch(/4<\/span>.*Known exploited/);
+			expect(body).toMatch(
+				new RegExp(`2</span>.*Urgent · internet-facing ${compact ? 'findings' : 'issues'}`)
+			);
+			expect(body).toContain(
+				compact
+					? 'Urgent findings affect this internet-facing workload.'
+					: 'Urgent issues flag internet-facing workloads.'
+			);
+			expect(body).not.toContain('These known exploited findings include');
+			expect(body).toContain('6</span>');
+			expect(body).toContain('>High</span>');
+			expect(body).toContain('>Elevated</span>');
+			expect(body).toContain('>Monitor</span>');
+		}
+	);
+
+	test.each([
+		{ compact: false, unit: 'issue' },
+		{ compact: true, unit: 'finding' }
+	])('uses singular $unit for one urgent result', async ({ compact, unit }) => {
+		const { body } = await render(PriorityAlertBar, {
+			props: { knownExploited: 1, urgentCount: 1, high: 1, elevated: 0, monitor: 0, compact }
+		});
+
+		expect(body).toContain(`Urgent · internet-facing ${unit}`);
+		expect(body).not.toContain(`Urgent · internet-facing ${unit}s`);
+	});
+
+	test.each([
+		{ count: 1, label: '1 workload with known exploited vulnerabilities' },
+		{ count: 2, label: '2 workloads with known exploited vulnerabilities' }
+	])(
+		'describes $count KEV workloads without implying they are compromised',
+		async ({ count, label }) => {
+			const { body } = await render(PriorityAlertBar, {
+				props: {
+					knownExploited: count,
+					knownExploitedWorkloadCount: count,
+					high: 0,
+					elevated: 0,
+					monitor: 0
+				}
+			});
+
+			expect(body.replace(/\s+/g, ' ')).toContain(label);
+			expect(body).not.toContain('exploited workload');
+		}
+	);
 });
 
 describe('calculateSegmentWidths', () => {
