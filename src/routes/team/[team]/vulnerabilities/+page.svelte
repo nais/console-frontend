@@ -4,6 +4,7 @@
 	import TeamMeanTimeToFixHistoryGraph from '#lib/domain/vulnerability/TeamMeanTimeToFixHistoryGraph.svelte';
 	import TeamVulnerabilityHistoryGraph from '#lib/domain/vulnerability/TeamVulnerabilityHistoryGraph.svelte';
 	import VulnerabilitySummary from '#lib/domain/vulnerability/VulnerabilitySummary.svelte';
+	import WorkloadsWithoutSbom from '#lib/domain/vulnerability/WorkloadsWithoutSbom.svelte';
 	import WorkloadsWithVulnerabilities from '#lib/domain/vulnerability/WorkloadsWithVulnerabilities.svelte';
 	import ExternalLink from '#lib/ui/ExternalLink.svelte';
 	import GraphErrors from '#lib/ui/GraphErrors.svelte';
@@ -45,6 +46,12 @@
 					>Nais documentation</ExternalLink
 				>.
 			</Alert>
+		{/if}
+
+		{#if missingSbomCount > 0}
+			{#key teamSlug}
+				<WorkloadsWithoutSbom team={teamSlug} count={missingSbomCount} />
+			{/key}
 		{/if}
 
 		{#if $TeamVulnerabilities.data.team.vulnerabilitySummary && !noSboms}
