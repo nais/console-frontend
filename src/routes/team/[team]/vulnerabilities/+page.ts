@@ -22,7 +22,8 @@ export async function load(event) {
 
 	const teamVulnerabilities = await load_TeamVulnerabilities({
 		event,
-		variables: { team }
+		variables: { team },
+		blocking: true
 	});
 	const missingSbomCount =
 		get(teamVulnerabilities.TeamVulnerabilities).data?.team.workloadsWithoutSbom.pageInfo

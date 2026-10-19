@@ -2,26 +2,41 @@ import { Kind, parse } from 'graphql';
 import { readFileSync } from 'node:fs';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
-const { loadHigh, loadSeverity, loadNoSbom, missingSbomCount } = vi.hoisted(() => ({
-	loadHigh: vi.fn(async () => ({})),
-	loadSeverity: vi.fn(async () => ({})),
-	loadNoSbom: vi.fn(async () => ({})),
-	missingSbomCount: { value: 0 }
-}));
+const { loadHigh, loadSeverity, loadNoSbom, loadSummary, summary } = vi.hoisted(() => {
+	const summary = {
+		missingSbomCount: 0,
+		wait: undefined as (() => Promise<void>) | undefined
+	};
+
+	return {
+		loadHigh: vi.fn(async () => ({})),
+		loadSeverity: vi.fn(async () => ({})),
+		loadNoSbom: vi.fn(async () => ({})),
+		loadSummary: vi.fn(async (params: { blocking?: boolean }) => {
+			if (params.blocking) await summary.wait?.();
+			return {
+				TeamVulnerabilities: {
+					subscribe(run: (value: unknown) => void) {
+						run({
+							data: {
+								team: {
+									workloadsWithoutSbom: {
+										pageInfo: { totalCount: summary.missingSbomCount }
+									}
+								}
+							}
+						});
+						return () => {};
+					}
+				}
+			};
+		}),
+		summary
+	};
+});
 
 vi.mock('$houdini', () => ({
-	load_TeamVulnerabilities: vi.fn(async () => ({
-		TeamVulnerabilities: {
-			subscribe(run: (value: unknown) => void) {
-				run({
-					data: {
-						team: { workloadsWithoutSbom: { pageInfo: { totalCount: missingSbomCount.value } } }
-					}
-				});
-				return () => {};
-			}
-		}
-	})),
+	load_TeamVulnerabilities: loadSummary,
 	load_TeamPriorityWorkloadsHigh: loadHigh,
 	load_TeamSeverityWorkloads: loadSeverity,
 	load_TeamNoSbomWorkloads: loadNoSbom,
@@ -50,7 +65,8 @@ function event(query = ''): Parameters<typeof load>[0] {
 
 afterEach(() => {
 	vi.clearAllMocks();
-	missingSbomCount.value = 0;
+	summary.missingSbomCount = 0;
+	summary.wait = undefined;
 });
 
 describe('team vulnerability workload view', () => {
@@ -109,10 +125,11 @@ describe('team vulnerability workload view', () => {
 	});
 
 	it('loads the first no-SBOM workload page when the team has missing SBOMs', async () => {
-		missingSbomCount.value = 2;
+		summary.missingSbomCount = 2;
 
 		await load(event());
 
+		expect(loadSummary).toHaveBeenCalledWith(expect.objectContaining({ blocking: true }));
 		expect(loadNoSbom).toHaveBeenCalledOnce();
 		expect(loadNoSbom).toHaveBeenCalledWith(
 			expect.objectContaining({
@@ -124,6 +141,25 @@ describe('team vulnerability workload view', () => {
 				}
 			})
 		);
+	});
+
+	it('waits for the summary before deciding whether to load missing-SBOM workloads', async () => {
+		summary.missingSbomCount = 2;
+		let resolveSummary: () => void = () => {};
+		const summaryPromise = new Promise<void>((resolve) => {
+			resolveSummary = resolve;
+		});
+		summary.wait = () => summaryPromise;
+
+		const result = load(event());
+		await Promise.resolve();
+
+		expect(loadNoSbom).not.toHaveBeenCalled();
+
+		resolveSummary();
+		await result;
+
+		expect(loadNoSbom).toHaveBeenCalledOnce();
 	});
 
 	it('does not load the no-SBOM workload list when there are none', async () => {
