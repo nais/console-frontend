@@ -75,25 +75,6 @@
 							}
 						}
 					}
-					... on ExternalIngressCriticalVulnerabilityIssue {
-						__typename
-						severity
-						message
-						teamEnvironment {
-							environment {
-								name
-							}
-							team {
-								slug
-							}
-						}
-						cvssScore
-						ingresses
-						workload {
-							__typename
-							name
-						}
-					}
 					... on ExternalIngressUrgentVulnerabilityIssue {
 						__typename
 						severity
@@ -472,12 +453,6 @@
 				{#each ingresses as ingress (ingress)}
 					<span class="ingress">{ingress}</span>
 				{/each}
-			</div>
-		{/if}
-		{#if $data?.__typename === 'ExternalIngressCriticalVulnerabilityIssue' && 'cvssScore' in ($data as Record<string, unknown>)}
-			<div class="extra">
-				<strong>CVSS score:</strong>
-				{($data as unknown as { cvssScore: number }).cvssScore}
 			</div>
 		{/if}
 	</div>

@@ -40,14 +40,6 @@
 							}
 						}
 					}
-					... on ExternalIngressCriticalVulnerabilityIssue {
-						cvssScore
-						ingresses
-						workload {
-							__typename
-							name
-						}
-					}
 					... on ExternalIngressUrgentVulnerabilityIssue {
 						priorityUrgent
 						ingresses
@@ -197,7 +189,6 @@
 			LastRunFailedIssue: 'Last run failed',
 			DeprecatedIngressIssue: 'Deprecated ingress',
 			DeprecatedRegistryIssue: 'Deprecated registry',
-			ExternalIngressCriticalVulnerabilityIssue: 'Critical CVE on external ingress',
 			ExternalIngressUrgentVulnerabilityIssue: 'Known exploited vulnerability on external ingress',
 			MissingSbomIssue: 'Missing SBOM',
 			VulnerableImageIssue: 'Vulnerable image',

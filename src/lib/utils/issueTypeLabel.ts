@@ -1,8 +1,4 @@
 export const issueTypeLabel = (type: string) => {
-	if (type === 'EXTERNAL_INGRESS_CRITICAL_VULNERABILITY') {
-		return 'Critical Vulnerability';
-	}
-
 	return type
 		.split('_')
 		.map((part) => {
