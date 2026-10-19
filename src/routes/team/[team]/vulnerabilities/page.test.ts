@@ -52,6 +52,7 @@ vi.mock('$houdini', () => ({
 	WorkloadOrderField: { NAME: 'NAME' },
 	VulnerabilitySummaryOrderByField: {
 		NAME: 'NAME',
+		LABEL: 'LABEL',
 		VULNERABILITY_RISK_SCORE: 'VULNERABILITY_RISK_SCORE',
 		VULNERABILITY_SEVERITY_CRITICAL: 'VULNERABILITY_SEVERITY_CRITICAL'
 	},
@@ -181,6 +182,7 @@ describe('team vulnerability workload view', () => {
 		expect(loadSeverity).toHaveBeenCalledOnce();
 		expect(loadSeverity).toHaveBeenCalledWith(
 			expect.objectContaining({
+				blocking: true,
 				variables: expect.objectContaining({
 					orderBy: { field: 'VULNERABILITY_SEVERITY_CRITICAL', direction: 'DESC' }
 				})
@@ -193,6 +195,7 @@ describe('team vulnerability workload view', () => {
 		await load(event('?view=priority'));
 
 		expect(loadHigh).toHaveBeenCalledOnce();
+		expect(loadHigh).toHaveBeenCalledWith(expect.objectContaining({ blocking: true }));
 		expect(loadSeverity).not.toHaveBeenCalled();
 	});
 
@@ -212,7 +215,9 @@ describe('team vulnerability workload view', () => {
 					after: null,
 					before: null,
 					sbomStatus: 'NO_SBOM',
-					orderBy: { field: 'NAME', direction: 'ASC' }
+					orderBy: { field: 'NAME', direction: 'ASC' },
+					environments: null,
+					labels: []
 				}
 			})
 		);
@@ -434,6 +439,37 @@ describe('team vulnerability workload view', () => {
 		const previous = body.match(/<button\b[^>]*aria-label="Previous page"[^>]*>/)?.[0];
 		expect(previous).toBeDefined();
 		expect(previous).not.toContain('disabled');
+	});
+
+	it('passes the selected environment and labels to both workload lists on the initial render', async () => {
+		summary.missingSbomCount = 2;
+		await load(event('?view=priority&environment=dev&labels=owner%3Ateam&labelKey=owner'));
+
+		const labels = [{ key: 'owner', value: 'team' }];
+		expect(loadNoSbom).toHaveBeenCalledWith(
+			expect.objectContaining({
+				variables: expect.objectContaining({ environments: ['dev'], labels })
+			})
+		);
+		expect(loadHigh).toHaveBeenCalledWith(
+			expect.objectContaining({
+				variables: expect.objectContaining({
+					environmentName: 'dev',
+					labels,
+					orderBy: { field: 'LABEL', direction: 'ASC', labelKey: 'owner' }
+				})
+			})
+		);
+	});
+
+	it('loads severity by default when filters are set without selecting a view', async () => {
+		await load(event('?labels=region'));
+		expect(loadSeverity).toHaveBeenCalledWith(
+			expect.objectContaining({
+				variables: expect.objectContaining({ labels: [{ key: 'region', value: undefined }] })
+			})
+		);
+		expect(loadHigh).not.toHaveBeenCalled();
 	});
 
 	it('waits for the summary before deciding whether to load missing-SBOM workloads', async () => {

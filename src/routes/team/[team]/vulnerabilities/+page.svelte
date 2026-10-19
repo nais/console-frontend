@@ -7,6 +7,7 @@
 	import WorkloadsWithoutSbom from '#lib/domain/vulnerability/WorkloadsWithoutSbom.svelte';
 	import WorkloadsWithVulnerabilities from '#lib/domain/vulnerability/WorkloadsWithVulnerabilities.svelte';
 	import ExternalLink from '#lib/ui/ExternalLink.svelte';
+	import { mergeWorkloadLabelFacets } from '#lib/domain/vulnerability/workloadLabels.js';
 	import GraphErrors from '#lib/ui/GraphErrors.svelte';
 	import { Alert, BodyLong, Heading } from '@nais/ds-svelte-community';
 	import type { PageProps } from './$types';
@@ -17,8 +18,15 @@
 		TeamNoSbomWorkloads,
 		TeamPriorityWorkloadsHigh,
 		TeamSeverityWorkloads,
-		teamSlug
+		teamSlug,
+		selection
 	} = $derived(data);
+	const labelFacets = $derived(
+		mergeWorkloadLabelFacets(
+			$TeamVulnerabilities.data?.team.applications.facets?.labels ?? [],
+			$TeamVulnerabilities.data?.team.jobs.facets?.labels ?? []
+		)
+	);
 </script>
 
 <GraphErrors errors={$TeamVulnerabilities.errors} />
@@ -57,10 +65,11 @@
 		{/if}
 
 		{#if noSboms || missingSbomCount > 0}
-			{#key teamSlug}
+			{#key `${teamSlug}:${JSON.stringify(selection)}`}
 				<WorkloadsWithoutSbom
 					count={noSboms ? workloadCount : missingSbomCount}
 					allWithoutUsableSbom={noSboms}
+					filtered={!!selection.environmentName || selection.labels.length > 0}
 					workloadsWithoutSbom={TeamNoSbomWorkloads}
 				/>
 			{/key}
@@ -95,11 +104,13 @@
 					<TeamCveSearch team={teamSlug} />
 				</div>
 
-				{#key teamSlug}
+				{#key `${teamSlug}:${JSON.stringify(selection)}`}
 					<WorkloadsWithVulnerabilities
 						team={teamSlug}
 						high={TeamPriorityWorkloadsHigh}
 						severity={TeamSeverityWorkloads}
+						{selection}
+						{labelFacets}
 						environmentNames={$TeamVulnerabilities.data.team.environments.map(
 							(env) => env.environment.name
 						)}
