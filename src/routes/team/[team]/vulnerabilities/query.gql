@@ -1,5 +1,23 @@
 query TeamVulnerabilities($team: Slug!) {
 	team(slug: $team) {
+		applications(first: 1) {
+			facets {
+				labels {
+					key
+					value
+					count
+				}
+			}
+		}
+		jobs(first: 1) {
+			facets {
+				labels {
+					key
+					value
+					count
+				}
+			}
+		}
 		urgentVulnerabilityIssues: issues(
 			filter: { issueType: EXTERNAL_INGRESS_URGENT_VULNERABILITY }
 		) {

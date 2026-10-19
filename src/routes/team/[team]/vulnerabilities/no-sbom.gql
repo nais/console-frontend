@@ -6,6 +6,8 @@ query TeamNoSbomWorkloads(
 	$before: Cursor
 	$orderBy: WorkloadOrder
 	$sbomStatus: SBOMStatus
+	$environments: [String!]
+	$labels: [LabelFilter!]
 ) {
 	team(slug: $team) {
 		workloads(
@@ -13,7 +15,7 @@ query TeamNoSbomWorkloads(
 			last: $last
 			after: $after
 			before: $before
-			filter: { sbomStatus: $sbomStatus }
+			filter: { sbomStatus: $sbomStatus, environments: $environments, labels: $labels }
 			orderBy: $orderBy
 		) @paginate(mode: SinglePage) {
 			nodes {
@@ -21,6 +23,10 @@ query TeamNoSbomWorkloads(
 					__typename
 					id
 					name
+					labels {
+						key
+						value
+					}
 					team {
 						slug
 					}
@@ -34,6 +40,10 @@ query TeamNoSbomWorkloads(
 					__typename
 					id
 					name
+					labels {
+						key
+						value
+					}
 					team {
 						slug
 					}
