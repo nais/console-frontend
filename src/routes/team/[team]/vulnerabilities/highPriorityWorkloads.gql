@@ -2,11 +2,12 @@ query TeamPriorityWorkloadsHigh(
 	$team: Slug!
 	$orderBy: VulnerabilitySummaryOrder
 	$environmentName: String
+	$labels: [LabelFilter!]
 ) {
 	team(slug: $team) {
 		vulnerabilitySummaries(
 			first: 20
-			filter: { priorities: [HIGH], environmentName: $environmentName }
+			filter: { priorities: [HIGH], environmentName: $environmentName, labels: $labels }
 			orderBy: $orderBy
 		) @paginate(mode: SinglePage) {
 			pageInfo {
@@ -26,6 +27,10 @@ query TeamPriorityWorkloadsHigh(
 							__typename
 							id
 							name
+							labels {
+								key
+								value
+							}
 							team {
 								slug
 							}
@@ -48,6 +53,10 @@ query TeamPriorityWorkloadsHigh(
 							__typename
 							id
 							name
+							labels {
+								key
+								value
+							}
 							team {
 								slug
 							}
