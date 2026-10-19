@@ -2,21 +2,37 @@ import { Kind, parse } from 'graphql';
 import { readFileSync } from 'node:fs';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
-const { loadHigh, loadSeverity } = vi.hoisted(() => ({
+const { loadHigh, loadSeverity, loadNoSbom, missingSbomCount } = vi.hoisted(() => ({
 	loadHigh: vi.fn(async () => ({})),
-	loadSeverity: vi.fn(async () => ({}))
+	loadSeverity: vi.fn(async () => ({})),
+	loadNoSbom: vi.fn(async () => ({})),
+	missingSbomCount: { value: 0 }
 }));
 
 vi.mock('$houdini', () => ({
-	load_TeamVulnerabilities: vi.fn(async () => ({})),
+	load_TeamVulnerabilities: vi.fn(async () => ({
+		TeamVulnerabilities: {
+			subscribe(run: (value: unknown) => void) {
+				run({
+					data: {
+						team: { workloadsWithoutSbom: { pageInfo: { totalCount: missingSbomCount.value } } }
+					}
+				});
+				return () => {};
+			}
+		}
+	})),
 	load_TeamPriorityWorkloadsHigh: loadHigh,
 	load_TeamSeverityWorkloads: loadSeverity,
+	load_TeamNoSbomWorkloads: loadNoSbom,
 	OrderDirection: { DESC: 'DESC', ASC: 'ASC' },
+	WorkloadOrderField: { NAME: 'NAME' },
 	VulnerabilitySummaryOrderByField: {
 		NAME: 'NAME',
 		VULNERABILITY_RISK_SCORE: 'VULNERABILITY_RISK_SCORE',
 		VULNERABILITY_SEVERITY_CRITICAL: 'VULNERABILITY_SEVERITY_CRITICAL'
 	},
+	TeamNoSbomWorkloadsStore: class {},
 	TeamPriorityWorkloadsHighStore: class {},
 	TeamSeverityWorkloadsStore: class {}
 }));
@@ -32,7 +48,10 @@ function event(query = ''): Parameters<typeof load>[0] {
 	} as Parameters<typeof load>[0];
 }
 
-afterEach(() => vi.clearAllMocks());
+afterEach(() => {
+	vi.clearAllMocks();
+	missingSbomCount.value = 0;
+});
 
 describe('team vulnerability workload view', () => {
 	it('requests the number of workloads with no SBOM', () => {
@@ -87,5 +106,29 @@ describe('team vulnerability workload view', () => {
 
 		expect(loadHigh).toHaveBeenCalledOnce();
 		expect(loadSeverity).not.toHaveBeenCalled();
+	});
+
+	it('loads the first no-SBOM workload page when the team has missing SBOMs', async () => {
+		missingSbomCount.value = 2;
+
+		await load(event());
+
+		expect(loadNoSbom).toHaveBeenCalledOnce();
+		expect(loadNoSbom).toHaveBeenCalledWith(
+			expect.objectContaining({
+				variables: {
+					team: 'example',
+					first: 20,
+					after: null,
+					orderBy: { field: 'NAME', direction: 'ASC' }
+				}
+			})
+		);
+	});
+
+	it('does not load the no-SBOM workload list when there are none', async () => {
+		await load(event());
+
+		expect(loadNoSbom).not.toHaveBeenCalled();
 	});
 });

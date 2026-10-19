@@ -1,13 +1,17 @@
 import {
 	load_TeamPriorityWorkloadsHigh,
 	load_TeamSeverityWorkloads,
+	load_TeamNoSbomWorkloads,
 	load_TeamVulnerabilities,
 	OrderDirection,
 	TeamPriorityWorkloadsHighStore,
+	TeamNoSbomWorkloadsStore,
 	TeamSeverityWorkloadsStore,
-	VulnerabilitySummaryOrderByField
+	VulnerabilitySummaryOrderByField,
+	WorkloadOrderField
 } from '$houdini';
 import { addPageMeta } from '#lib/utils/pageMeta.js';
+import { get } from 'svelte/store';
 
 export async function load(event) {
 	const team = event.params.team;
@@ -16,15 +20,31 @@ export async function load(event) {
 		event.url.searchParams.get('view') === 'priority' ? 'priority' : 'severity'
 	);
 
+	const teamVulnerabilities = await load_TeamVulnerabilities({
+		event,
+		variables: { team }
+	});
+	const missingSbomCount =
+		get(teamVulnerabilities.TeamVulnerabilities).data?.team.workloadsWithoutSbom.pageInfo
+			.totalCount ?? 0;
+
 	return {
 		...(await addPageMeta(event, {
 			title: 'Vulnerabilities',
 			docPath: '/services/vulnerabilities'
 		})),
-		...(await load_TeamVulnerabilities({
-			event,
-			variables: { team }
-		})),
+		...teamVulnerabilities,
+		...(missingSbomCount > 0
+			? await load_TeamNoSbomWorkloads({
+					event,
+					variables: {
+						team,
+						first: 20,
+						after: null,
+						orderBy: { field: WorkloadOrderField.NAME, direction: OrderDirection.ASC }
+					}
+				})
+			: { TeamNoSbomWorkloads: new TeamNoSbomWorkloadsStore() }),
 		...(view === 'priority'
 			? await load_TeamPriorityWorkloadsHigh({
 					event,

@@ -12,8 +12,13 @@
 	import type { PageProps } from './$types';
 
 	let { data }: PageProps = $props();
-	let { TeamVulnerabilities, TeamPriorityWorkloadsHigh, TeamSeverityWorkloads, teamSlug } =
-		$derived(data);
+	let {
+		TeamVulnerabilities,
+		TeamNoSbomWorkloads,
+		TeamPriorityWorkloadsHigh,
+		TeamSeverityWorkloads,
+		teamSlug
+	} = $derived(data);
 </script>
 
 <GraphErrors errors={$TeamVulnerabilities.errors} />
@@ -50,7 +55,7 @@
 
 		{#if missingSbomCount > 0}
 			{#key teamSlug}
-				<WorkloadsWithoutSbom team={teamSlug} count={missingSbomCount} />
+				<WorkloadsWithoutSbom count={missingSbomCount} workloadsWithoutSbom={TeamNoSbomWorkloads} />
 			{/key}
 		{/if}
 
