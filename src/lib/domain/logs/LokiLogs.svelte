@@ -325,7 +325,9 @@
 
 		<div class="controls">
 			<div class="query-controls">
-				<TextField size="small" type="datetime-local" label="From" bind:value={fromDateTime} />
+				<div class="from-control">
+					<TextField size="small" type="datetime-local" label="From" bind:value={fromDateTime} />
+				</div>
 				<TextField
 					size="small"
 					type="search"
@@ -485,12 +487,14 @@
 	}
 	.query-controls {
 		display: grid;
-		grid-template-columns: repeat(2, minmax(0, 1fr)) auto;
-		align-items: end;
+		grid-template-columns: minmax(0, 1fr);
 		gap: var(--ax-space-8);
 	}
+	.from-control {
+		max-width: 32ch;
+	}
 	.history-description {
-		grid-column: 1 / -1;
+		grid-row: 4;
 	}
 	.controls > div:last-child {
 		display: flex;
@@ -547,10 +551,5 @@
 	}
 	.paused {
 		text-align: center;
-	}
-	@media (max-width: 767px) {
-		.query-controls {
-			grid-template-columns: minmax(0, 1fr);
-		}
 	}
 </style>
