@@ -327,21 +327,21 @@
 			<div class="query-controls">
 				<div class="from-control">
 					<TextField size="small" type="datetime-local" label="From" bind:value={fromDateTime} />
-				</div>
-				<TextField
-					size="small"
-					type="search"
-					label="Search"
-					bind:value={searchText}
-					maxlength={256}
-				/>
-				<div class="apply-filters">
-					<Button size="small" variant="primary" onclick={start}>Apply filters</Button>
-				</div>
-				<div class="history-description">
-					<BodyShort>
+					<BodyShort size="small" textColor="subtle">
 						The initial history starts here; the subscription then continues with new logs.
 					</BodyShort>
+				</div>
+				<div class="search-control">
+					<TextField
+						size="small"
+						type="search"
+						label="Search"
+						bind:value={searchText}
+						maxlength={256}
+					/>
+				</div>
+				<div class="apply-filters">
+					<Button size="small" variant="primary" onclick={start}>Apply filters</Button>
 				</div>
 			</div>
 			{#if instances.length > 0}
@@ -493,14 +493,16 @@
 		gap: var(--ax-space-8);
 	}
 	.from-control {
+		display: flex;
+		flex-direction: column;
+		gap: var(--ax-space-4);
 		max-width: 32ch;
+	}
+	.search-control {
+		max-width: 48ch;
 	}
 	.apply-filters {
 		justify-self: start;
-		grid-row: 3;
-	}
-	.history-description {
-		grid-row: 4;
 	}
 	.controls > div:last-child {
 		display: flex;
