@@ -336,7 +336,7 @@
 					maxlength={256}
 				/>
 				<div class="apply-filters">
-					<Button size="medium" variant="primary" onclick={start}>Apply filters</Button>
+					<Button size="small" variant="primary" onclick={start}>Apply filters</Button>
 				</div>
 				<div class="history-description">
 					<BodyShort>
@@ -367,7 +367,7 @@
 				<div class="buttons">
 					{#if isStarted}
 						<Button
-							size="medium"
+							size="small"
 							variant="primary"
 							disabled={!canStart}
 							onclick={() => {
@@ -379,7 +379,7 @@
 							}}>{isPaused ? 'Restart' : 'Stop'}</Button
 						>
 						<Button
-							size="medium"
+							size="small"
 							variant="primary"
 							onclick={() => {
 								logAppender.clear();
@@ -387,7 +387,7 @@
 							}}>Clear logs</Button
 						>
 					{:else}
-						<Button size="medium" variant="primary" onclick={start}>Start</Button>
+						<Button size="small" variant="primary" onclick={start}>Start</Button>
 					{/if}
 				</div>
 				<div class="links">
