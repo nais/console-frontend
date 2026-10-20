@@ -16,6 +16,7 @@ function formatLocalTimestamp(date: Date): string {
 describe('getLogLevel', () => {
 	it('extracts and uppercases the level from JSON logs', () => {
 		expect(getLogLevel('{"level":"warn","message":"hello"}')).toBe('WARN');
+		expect(getLogLevel('{ "level" : "error", "message": "hello" }')).toBe('ERROR');
 	});
 
 	it('defaults to INFO when level is missing', () => {

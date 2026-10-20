@@ -1,0 +1,32 @@
+<script lang="ts">
+	import { apmURL } from '#lib/doc.js';
+	import { exhaustive } from '#lib/utils/houdini.js';
+	import LokiLogs from '#lib/domain/logs/LokiLogs.svelte';
+	import { page } from '$app/state';
+	import type { Instances$result } from '$houdini';
+
+	const { team }: Instances$result = $props();
+	const destinations = $derived(exhaustive(team.environment.application.logDestinations));
+	const instances = $derived(team.environment.application.instances.nodes.map((node) => node.name));
+	const selectedInstance = $derived(page.url.searchParams.get('instance'));
+	const selectedInstances = $derived(selectedInstance ? [selectedInstance] : instances);
+	const hasLoki = $derived(
+		destinations.some((destination) => destination.__typename === 'LogDestinationLoki')
+	);
+	const grafanaURL = $derived(
+		destinations.find((destination) => destination.__typename === 'LogDestinationLoki')?.grafanaURL
+	);
+</script>
+
+<LokiLogs
+	team={team.slug}
+	environment={team.environment.environment.name}
+	workload={team.environment.application.name}
+	container={team.environment.application.name}
+	{instances}
+	initialInstances={selectedInstances}
+	startOnMount={Boolean(selectedInstance)}
+	{hasLoki}
+	{grafanaURL}
+	tracesURL={apmURL(page.params.team!, page.params.app!, 'traces')}
+/>

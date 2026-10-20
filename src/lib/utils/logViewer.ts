@@ -37,7 +37,7 @@ function formatTimestamp(date: Date): string {
 }
 
 export function getLogLevel(message: string): string {
-	const logLevel = message.match(/"level":"(\w+)"/);
+	const logLevel = message.match(/"level"\s*:\s*"(\w+)"/);
 	if (logLevel) {
 		return logLevel[1].toUpperCase();
 	}

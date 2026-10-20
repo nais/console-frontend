@@ -38,6 +38,11 @@
 				'/team/[team]/[env]/postgres/[postgres]/(single)/insights',
 				page.params as never
 			)
+		},
+		{
+			value: '/team/[team]/[env]/postgres/[postgres]/(single)/logs',
+			label: 'Logs',
+			href: resolve('/team/[team]/[env]/postgres/[postgres]/(single)/logs', page.params as never)
 		}
 	]);
 </script>
