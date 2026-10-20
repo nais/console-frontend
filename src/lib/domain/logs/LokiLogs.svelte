@@ -10,6 +10,7 @@
 	import { graphql } from '$houdini';
 	import {
 		Alert,
+		BodyShort,
 		Button,
 		Chips,
 		TextField,
@@ -324,21 +325,20 @@
 
 		<div class="controls">
 			<div class="query-controls">
-				<TextField
-					size="small"
-					type="datetime-local"
-					label="From"
-					description="The initial history starts here; the subscription then continues with new logs."
-					bind:value={fromDateTime}
-				/>
+				<TextField size="small" type="datetime-local" label="From" bind:value={fromDateTime} />
 				<TextField
 					size="small"
 					type="search"
-					label="Search log messages"
+					label="Search"
 					bind:value={searchText}
 					maxlength={256}
 				/>
 				<Button size="medium" variant="primary" onclick={start}>Apply filters</Button>
+				<div class="history-description">
+					<BodyShort>
+						The initial history starts here; the subscription then continues with new logs.
+					</BodyShort>
+				</div>
 			</div>
 			{#if instances.length > 0}
 				<Chips style="flex-grow: 1">
@@ -484,10 +484,13 @@
 		width: 100%;
 	}
 	.query-controls {
-		display: flex;
+		display: grid;
+		grid-template-columns: repeat(2, minmax(0, 1fr)) auto;
 		align-items: end;
-		flex-wrap: wrap;
 		gap: var(--ax-space-8);
+	}
+	.history-description {
+		grid-column: 1 / -1;
 	}
 	.controls > div:last-child {
 		display: flex;
@@ -544,5 +547,10 @@
 	}
 	.paused {
 		text-align: center;
+	}
+	@media (max-width: 767px) {
+		.query-controls {
+			grid-template-columns: minmax(0, 1fr);
+		}
 	}
 </style>
