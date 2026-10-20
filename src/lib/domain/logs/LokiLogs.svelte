@@ -335,7 +335,9 @@
 					bind:value={searchText}
 					maxlength={256}
 				/>
-				<Button size="medium" variant="primary" onclick={start}>Apply filters</Button>
+				<div class="apply-filters">
+					<Button size="medium" variant="primary" onclick={start}>Apply filters</Button>
+				</div>
 				<div class="history-description">
 					<BodyShort>
 						The initial history starts here; the subscription then continues with new logs.
@@ -492,6 +494,10 @@
 	}
 	.from-control {
 		max-width: 32ch;
+	}
+	.apply-filters {
+		justify-self: start;
+		grid-row: 3;
 	}
 	.history-description {
 		grid-row: 4;
