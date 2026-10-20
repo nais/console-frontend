@@ -432,7 +432,7 @@
 				{#each availableLogLevels as level (level)}
 					<ToggleChip
 						value={level}
-						selected={!levelFilterActive || selectedLogLevels.has(level)}
+						selected={levelFilterActive && selectedLogLevels.has(level)}
 						onclick={() => toggleLogLevel(level)}
 					/>
 				{/each}
