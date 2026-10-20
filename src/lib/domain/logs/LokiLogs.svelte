@@ -327,11 +327,6 @@
 			<div class="query-controls">
 				<div class="from-control">
 					<TextField size="small" type="datetime-local" label="From" bind:value={fromDateTime} />
-					<div class="history-description">
-						<BodyShort size="small" textColor="subtle">
-							History starts at this time, then streams live.
-						</BodyShort>
-					</div>
 				</div>
 				<div class="search-control">
 					<TextField
@@ -344,6 +339,11 @@
 				</div>
 				<div class="apply-filters">
 					<Button size="small" variant="primary" onclick={start}>Apply filters</Button>
+				</div>
+				<div class="history-description">
+					<BodyShort size="small" textColor="subtle">
+						History starts at this time, then streams live.
+					</BodyShort>
 				</div>
 			</div>
 			{#if instances.length > 0}
@@ -475,7 +475,7 @@
 	.wrapper {
 		display: flex;
 		flex-direction: column;
-		gap: var(--spacing-layout);
+		gap: var(--ax-space-16);
 	}
 	.controls,
 	.buttons,
@@ -486,26 +486,27 @@
 	}
 	.controls {
 		flex-direction: column;
-		gap: var(--ax-space-32);
+		gap: var(--ax-space-8);
 		width: 100%;
 	}
 	.query-controls {
 		display: grid;
-		grid-template-columns: minmax(0, 1fr);
+		grid-template-columns: minmax(0, 26ch) minmax(0, 36ch) auto;
+		align-items: end;
 		gap: var(--ax-space-8);
 	}
 	.from-control {
 		display: flex;
 		flex-direction: column;
 		gap: var(--ax-space-4);
-		max-width: 32ch;
-	}
-	.history-description {
-		width: max-content;
-		max-width: 48ch;
+		max-width: 26ch;
 	}
 	.search-control {
-		max-width: 48ch;
+		min-width: 0;
+		max-width: 36ch;
+	}
+	.history-description {
+		grid-column: 1 / -1;
 	}
 	.apply-filters {
 		justify-self: start;
@@ -565,5 +566,10 @@
 	}
 	.paused {
 		text-align: center;
+	}
+	@media (max-width: 1024px) {
+		.query-controls {
+			grid-template-columns: minmax(0, 1fr);
+		}
 	}
 </style>
