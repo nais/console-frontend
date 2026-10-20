@@ -327,9 +327,11 @@
 			<div class="query-controls">
 				<div class="from-control">
 					<TextField size="small" type="datetime-local" label="From" bind:value={fromDateTime} />
-					<BodyShort size="small" textColor="subtle">
-						The initial history starts here; the subscription then continues with new logs.
-					</BodyShort>
+					<div class="history-description">
+						<BodyShort size="small" textColor="subtle">
+							History starts at this time, then streams live.
+						</BodyShort>
+					</div>
 				</div>
 				<div class="search-control">
 					<TextField
@@ -497,6 +499,10 @@
 		flex-direction: column;
 		gap: var(--ax-space-4);
 		max-width: 32ch;
+	}
+	.history-description {
+		width: max-content;
+		max-width: 48ch;
 	}
 	.search-control {
 		max-width: 48ch;
