@@ -538,8 +538,8 @@
 		text-align: right;
 	}
 	.instance-color {
-		min-width: 4px;
-		max-width: 4px;
+		min-width: var(--ax-space-1);
+		max-width: var(--ax-space-1);
 		border-radius: var(--ax-radius-4);
 	}
 	.paused {
