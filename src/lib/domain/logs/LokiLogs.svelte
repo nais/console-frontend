@@ -114,7 +114,12 @@
 		return colorRoles[(position * 7) % colorRoles.length];
 	}
 
-	function createStore() {
+	let transitionId = 0;
+	let activeStreamId = 0;
+	let destroyed = false;
+	let subscriptionTransition = Promise.resolve();
+
+	function createStore(streamId: number) {
 		const store = graphql(`
 			subscription LokiLogs($filter: LogSubscriptionFilter!) {
 				log(filter: $filter) {
@@ -129,11 +134,16 @@
 		`);
 
 		store.subscribe((result) => {
+			if (destroyed || streamId !== activeStreamId) {
+				return;
+			}
+
 			if (result.errors?.length) {
 				subscriptionError = result.errors.map((error) => error.message).join(', ');
 				isPaused = true;
 				logAppender.flush();
-				store.unlisten();
+				isStarted = false;
+				scheduleTransition(false);
 				return;
 			}
 
@@ -154,8 +164,8 @@
 				});
 				isPaused = true;
 				logAppender.flush();
-				store.unlisten();
 				isStarted = false;
+				scheduleTransition(false);
 				return;
 			}
 
@@ -180,61 +190,83 @@
 		return store;
 	}
 
-	let store = createStore();
+	let store = createStore(activeStreamId);
 
 	function start() {
-		if (!canStart) {
-			return;
-		}
+		scheduleTransition(true);
+	}
 
-		const startTime = new Date(fromDateTime);
-		if (Number.isNaN(startTime.getTime()) || startTime.getTime() > Date.now()) {
-			subscriptionError = 'Enter a valid start time in the past.';
-			return;
-		}
-		if (levelFilterActive && selectedLogLevels.size === 0) {
-			store.unlisten();
-			logAppender.clear();
-			logs = [];
-			isPaused = true;
-			isStarted = true;
-			return;
-		}
+	function scheduleTransition(shouldStart: boolean) {
+		const currentTransitionId = ++transitionId;
+		activeStreamId += 1;
+		isPaused = true;
 
-		logAppender.clear();
-		logs = [];
-		subscriptionError = '';
-		isPaused = false;
-		isStarted = true;
-		store = createStore();
-		store.listen({
-			filter: {
-				environmentName: environment,
-				query: buildLokiLogQuery({
-					team,
-					workload,
-					container,
-					instances: selectedInstances,
-					podNamePrefix,
-					search: searchText,
-					logLevels: levelFilterActive ? [...selectedLogLevels] : undefined
-				}),
-				initialBatch: {
-					start: startTime,
-					limit: 150
+		subscriptionTransition = subscriptionTransition
+			.then(async () => {
+				await store.unlisten();
+				if (destroyed || currentTransitionId !== transitionId || !shouldStart || !hasLoki) {
+					return;
 				}
-			}
-		});
+				if (!canStart) {
+					return;
+				}
+
+				const startTime = new Date(fromDateTime);
+				if (Number.isNaN(startTime.getTime()) || startTime.getTime() > Date.now()) {
+					subscriptionError = 'Enter a valid start time in the past.';
+					return;
+				}
+				if (levelFilterActive && selectedLogLevels.size === 0) {
+					logAppender.clear();
+					logs = [];
+					isStarted = true;
+					return;
+				}
+
+				logAppender.clear();
+				logs = [];
+				subscriptionError = '';
+				isStarted = true;
+				isPaused = false;
+				store = createStore(activeStreamId);
+				await store.listen({
+					filter: {
+						environmentName: environment,
+						query: buildLokiLogQuery({
+							team,
+							workload,
+							container,
+							instances: selectedInstances,
+							podNamePrefix,
+							search: searchText,
+							logLevels: levelFilterActive ? [...selectedLogLevels] : undefined
+						}),
+						initialBatch: {
+							start: startTime,
+							limit: 150
+						}
+					}
+				});
+			})
+			.catch((error: unknown) => {
+				if (destroyed || currentTransitionId !== transitionId) {
+					return;
+				}
+				subscriptionError =
+					error instanceof Error ? error.message : 'Unable to update the log subscription.';
+				isPaused = true;
+				isStarted = false;
+			});
 	}
 
 	function setInstances(nextInstances: string[]) {
 		selectedInstances = nextInstances;
 		if (!canStart) {
-			store.unlisten();
 			isPaused = true;
+			scheduleTransition(false);
 		}
 		if (!isPaused) {
-			store.unlisten().then(start);
+			start();
 		}
 	}
 
@@ -253,23 +285,32 @@
 		} else {
 			selectedLogLevels.add(level);
 		}
-		store.unlisten().then(start);
+		if (isStarted) start();
 	}
 
 	function selectAllLogLevels() {
 		levelFilterActive = false;
 		selectedLogLevels.clear();
-		store.unlisten().then(start);
+		if (isStarted) start();
 	}
 
 	onMount(() => {
 		selectedInstances = initialInstances;
-		if (startOnMount) start();
+		if (startOnMount && hasLoki) start();
 	});
 
 	onDestroy(() => {
+		destroyed = true;
+		transitionId += 1;
+		activeStreamId += 1;
 		logAppender.clear();
-		store.unlisten();
+		subscriptionTransition = subscriptionTransition
+			.then(async () => {
+				await store.unlisten();
+			})
+			.catch((error: unknown) => {
+				console.error('Failed to clean up the Loki log subscription.', error);
+			});
 	});
 </script>
 
@@ -329,7 +370,7 @@
 								if (isPaused) start();
 								else {
 									isPaused = true;
-									store.unlisten();
+									scheduleTransition(false);
 								}
 							}}>{isPaused ? 'Restart' : 'Stop'}</Button
 						>

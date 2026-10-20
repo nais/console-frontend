@@ -18,15 +18,17 @@
 	);
 </script>
 
-<LokiLogs
-	team={team.slug}
-	environment={team.environment.environment.name}
-	workload={team.environment.application.name}
-	container={team.environment.application.name}
-	{instances}
-	initialInstances={selectedInstances}
-	startOnMount={Boolean(selectedInstance)}
-	{hasLoki}
-	{grafanaURL}
-	tracesURL={apmURL(page.params.team!, page.params.app!, 'traces')}
-/>
+{#key `${team.slug}/${team.environment.environment.name}/${team.environment.application.name}/${selectedInstance ?? ''}`}
+	<LokiLogs
+		team={team.slug}
+		environment={team.environment.environment.name}
+		workload={team.environment.application.name}
+		container={team.environment.application.name}
+		{instances}
+		initialInstances={selectedInstances}
+		startOnMount={Boolean(selectedInstance)}
+		{hasLoki}
+		{grafanaURL}
+		tracesURL={apmURL(page.params.team!, page.params.app!, 'traces')}
+	/>
+{/key}
