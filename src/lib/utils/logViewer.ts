@@ -1,5 +1,18 @@
 import { appendSortedBoundedLog } from '#lib/utils/logStream.js';
 
+export const PINO_LOG_LEVELS: Record<string, number> = {
+	TRACE: 10,
+	DEBUG: 20,
+	INFO: 30,
+	WARN: 40,
+	ERROR: 50,
+	FATAL: 60
+};
+
+const pinoLogLevelNames = Object.fromEntries(
+	Object.entries(PINO_LOG_LEVELS).map(([name, value]) => [String(value), name])
+);
+
 type WorkloadLog = {
 	time: Date | string | number;
 	message: string;
@@ -37,11 +50,10 @@ function formatTimestamp(date: Date): string {
 }
 
 export function getLogLevel(message: string): string {
-	const logLevel = message.match(/"level"\s*:\s*"(\w+)"/);
-	if (logLevel) {
-		return logLevel[1].toUpperCase();
-	}
-	return 'INFO';
+	const logLevel = message.match(/"level"\s*:\s*(?:"([^"]+)"|(\d+))/);
+	const value = logLevel?.[1] ?? logLevel?.[2];
+	if (value === undefined) return 'INFO';
+	return pinoLogLevelNames[value] ?? value.toUpperCase();
 }
 
 export function parseLogMessage(message: string): string {

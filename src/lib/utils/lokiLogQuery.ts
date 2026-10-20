@@ -1,3 +1,5 @@
+import { PINO_LOG_LEVELS } from './logViewer.js';
+
 type LokiLogQueryOptions = {
 	team: string;
 	workload: string;
@@ -44,8 +46,14 @@ export function buildLokiLogQuery({
 	}
 
 	if (logLevels && logLevels.length > 0) {
-		const levels = logLevels.map((level) => escapeRegex(level));
-		if (levels.some((level) => level.toUpperCase() === 'INFO')) {
+		const normalizedLevels = logLevels.map((level) => level.toUpperCase());
+		const levels = normalizedLevels.flatMap((level) => {
+			const numericLevel = PINO_LOG_LEVELS[level];
+			return numericLevel === undefined
+				? [escapeRegex(level)]
+				: [escapeRegex(level), String(numericLevel)];
+		});
+		if (normalizedLevels.includes('INFO')) {
 			levels.push('');
 		}
 		query += ` | json | level=~${JSON.stringify(`(?i)^(?:${levels.join('|')})$`)}`;

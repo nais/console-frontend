@@ -19,6 +19,12 @@ describe('getLogLevel', () => {
 		expect(getLogLevel('{ "level" : "error", "message": "hello" }')).toBe('ERROR');
 	});
 
+	it('maps numeric Pino levels to their display names', () => {
+		expect(getLogLevel('{"level":30,"message":"info"}')).toBe('INFO');
+		expect(getLogLevel('{"level":50,"message":"error"}')).toBe('ERROR');
+		expect(getLogLevel('{"level":"40","message":"warn"}')).toBe('WARN');
+	});
+
 	it('defaults to INFO when level is missing', () => {
 		expect(getLogLevel('{"message":"hello"}')).toBe('INFO');
 		expect(getLogLevel('plain text log line')).toBe('INFO');

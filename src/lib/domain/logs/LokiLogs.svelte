@@ -53,7 +53,6 @@
 	const MAX_LOG_LINES = 200;
 	const MAX_PENDING_LOG_LINES = 5000;
 	const FLUSH_INTERVAL_MS = 100;
-	const viewOptions = ['Time', 'Level', 'Instance'];
 	const commonLogLevels = ['TRACE', 'DEBUG', 'INFO', 'WARN', 'ERROR', 'FATAL'];
 	const colorRoles = [
 		'accent',
@@ -78,22 +77,15 @@
 	let logs: LogLine[] = $state.raw([]);
 	let selectedInstances: string[] = $state.raw([]);
 	let isStarted = $state(false);
+	let shouldStream = $state(false);
 	let isPaused = $state(true);
 	let subscriptionError = $state('');
 	let fromDateTime = $state(toDateTimeLocal(new Date(Date.now() - 60 * 60 * 1000)));
 	let searchText = $state('');
-	let levelFilterActive = $state(false);
+	let allLevelsSelected = $state(true);
 	let logOrder = $state<'newest' | 'oldest'>('newest');
-	let selectedViewOptions = new SvelteSet(viewOptions);
 	let displayedLogs = $derived(logOrder === 'newest' ? logs.toReversed() : logs);
 	let availableLogLevels = $derived([...new Set([...commonLogLevels, ...logLevels])]);
-	let messageWidth = $derived.by(() => {
-		let width = 95;
-		if (!selectedViewOptions.has('Time')) width += 25;
-		if (!selectedViewOptions.has('Instance')) width += 15;
-		if (!selectedViewOptions.has('Level')) width += 7;
-		return `${width}ch`;
-	});
 	let canStart = $derived(podNamePrefix !== undefined || selectedInstances.length > 0);
 
 	let logAppender = createBufferedLogAppender({
@@ -172,12 +164,9 @@
 
 			if (!logLevels.has(level)) {
 				logLevels.add(level);
-				if (!levelFilterActive) {
-					selectedLogLevels.add(level);
-				}
 			}
 
-			if (levelFilterActive && !selectedLogLevels.has(level)) {
+			if (!allLevelsSelected && !selectedLogLevels.has(level)) {
 				return;
 			}
 
@@ -200,6 +189,7 @@
 	function scheduleTransition(shouldStart: boolean) {
 		const currentTransitionId = ++transitionId;
 		activeStreamId += 1;
+		shouldStream = shouldStart;
 		isPaused = true;
 
 		subscriptionTransition = subscriptionTransition
@@ -215,9 +205,10 @@
 				const startTime = new Date(fromDateTime);
 				if (Number.isNaN(startTime.getTime()) || startTime.getTime() > Date.now()) {
 					subscriptionError = 'Enter a valid start time in the past.';
+					shouldStream = false;
 					return;
 				}
-				if (levelFilterActive && selectedLogLevels.size === 0) {
+				if (!allLevelsSelected && selectedLogLevels.size === 0) {
 					logAppender.clear();
 					logs = [];
 					isStarted = true;
@@ -240,7 +231,7 @@
 							instances: selectedInstances,
 							podNamePrefix,
 							search: searchText,
-							logLevels: levelFilterActive ? [...selectedLogLevels] : undefined
+							logLevels: allLevelsSelected ? undefined : [...selectedLogLevels]
 						}),
 						initialBatch: {
 							start: startTime,
@@ -257,6 +248,7 @@
 					error instanceof Error ? error.message : 'Unable to update the log subscription.';
 				isPaused = true;
 				isStarted = false;
+				shouldStream = false;
 			});
 	}
 
@@ -266,7 +258,7 @@
 			isPaused = true;
 			scheduleTransition(false);
 		}
-		if (!isPaused) {
+		if (shouldStream) {
 			start();
 		}
 	}
@@ -277,22 +269,22 @@
 	}
 
 	function toggleLogLevel(level: string) {
-		if (!levelFilterActive) {
+		if (allLevelsSelected) {
+			allLevelsSelected = false;
 			selectedLogLevels.clear();
-		}
-		levelFilterActive = true;
-		if (selectedLogLevels.has(level)) {
-			selectedLogLevels.delete(level);
-		} else {
 			selectedLogLevels.add(level);
+		} else {
+			const isSelected = selectedLogLevels.has(level);
+			if (isSelected) selectedLogLevels.delete(level);
+			else selectedLogLevels.add(level);
 		}
-		if (isStarted) start();
+		if (shouldStream) start();
 	}
 
 	function selectAllLogLevels() {
-		levelFilterActive = false;
+		allLevelsSelected = true;
 		selectedLogLevels.clear();
-		if (isStarted) start();
+		if (shouldStream) start();
 	}
 
 	onMount(() => {
@@ -304,6 +296,7 @@
 		destroyed = true;
 		transitionId += 1;
 		activeStreamId += 1;
+		shouldStream = false;
 		logAppender.clear();
 		subscriptionTransition = subscriptionTransition
 			.then(async () => {
@@ -404,18 +397,6 @@
 		</div>
 
 		<div class="display-controls">
-			<Chips size="small">
-				{#each viewOptions as option (option)}
-					<ToggleChip
-						value={option}
-						selected={selectedViewOptions.has(option)}
-						onclick={() => {
-							if (selectedViewOptions.has(option)) selectedViewOptions.delete(option);
-							else selectedViewOptions.add(option);
-						}}
-					/>
-				{/each}
-			</Chips>
 			<ToggleGroup label="Log order" size="small" bind:value={logOrder}>
 				<ToggleGroupItem value="newest"
 					><SortDownIcon aria-hidden="true" /> Newest first</ToggleGroupItem
@@ -425,18 +406,35 @@
 				>
 			</ToggleGroup>
 		</div>
+		<!-- Capture clicks before ToggleChip's internal toggle so the filter state stays authoritative. -->
 		<div class="level-controls" role="group" aria-label="Filter logs by level">
 			<span>Log level</span>
-			<Chips size="small">
-				<ToggleChip value="All" selected={!levelFilterActive} onclick={selectAllLogLevels} />
-				{#each availableLogLevels as level (level)}
+			<div class="all-levels">
+				<Chips size="small">
 					<ToggleChip
-						value={level}
-						selected={levelFilterActive && selectedLogLevels.has(level)}
-						onclick={() => toggleLogLevel(level)}
+						value="All"
+						selected={allLevelsSelected}
+						onclickcapture={(event: MouseEvent) => {
+							event.stopImmediatePropagation();
+							selectAllLogLevels();
+						}}
 					/>
-				{/each}
-			</Chips>
+				</Chips>
+			</div>
+			<div class="specific-levels">
+				<Chips size="small">
+					{#each availableLogLevels as level (level)}
+						<ToggleChip
+							value={level}
+							selected={allLevelsSelected || selectedLogLevels.has(level)}
+							onclickcapture={(event: MouseEvent) => {
+								event.stopImmediatePropagation();
+								toggleLogLevel(level);
+							}}
+						/>
+					{/each}
+				</Chips>
+			</div>
 		</div>
 
 		{#if isPaused && logs.length === 0}
@@ -450,20 +448,19 @@
 		{/if}
 
 		{#if logs.length > 0}
-			<div class="log-wrapper">
+			<!-- svelte-ignore a11y_no_noninteractive_tabindex (keyboard users must be able to scroll the log region) -->
+			<div class="log-wrapper" role="region" aria-label="Log entries" tabindex="0">
 				{#each displayedLogs as log (log.id)}
 					<div class="log-line">
-						{#if selectedViewOptions.has('Time')}<div class="date">{log.timestamp}</div>{/if}
-						{#if selectedViewOptions.has('Instance')}
-							<div class="instance">{displayInstance(log.instance)}</div>
-						{/if}
+						<div class="date">{log.timestamp}</div>
+						<div class="instance">{displayInstance(log.instance)}</div>
 						<div
 							class="instance-color"
 							data-color={colorForInstance(log.instance)}
 							style:background-color="var(--ax-bg-strong-pressed)"
 						></div>
-						{#if selectedViewOptions.has('Level')}<div class="level">{log.level}</div>{/if}
-						<div class="message" style:max-width={messageWidth}>{log.parsedMessage}</div>
+						<div class="level">{log.level}</div>
+						<div class="message">{log.parsedMessage}</div>
 					</div>
 				{/each}
 			</div>
@@ -538,6 +535,10 @@
 		flex-wrap: wrap;
 		gap: var(--ax-space-8);
 	}
+	.specific-levels {
+		border-inline-start: 1px solid var(--ax-border-neutral-subtleA);
+		padding-inline-start: var(--ax-space-8);
+	}
 	.log-wrapper {
 		display: flex;
 		flex-direction: column;
@@ -551,6 +552,9 @@
 		max-width: fit-content;
 		font-family: monospace;
 		font-size: var(--ax-font-size-small);
+	}
+	.message {
+		max-width: 95ch;
 	}
 	.date,
 	.instance {

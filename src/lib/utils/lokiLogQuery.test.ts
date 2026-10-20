@@ -65,7 +65,7 @@ describe('buildLokiLogQuery', () => {
 		).toContain('|~"(?i)failed \\\\(retry\\\\)"');
 	});
 
-	it('filters selected JSON log levels and includes missing levels as INFO', () => {
+	it('filters selected JSON log levels and includes numeric INFO and missing levels', () => {
 		expect(
 			buildLokiLogQuery({
 				team: 'my-team',
@@ -74,7 +74,7 @@ describe('buildLokiLogQuery', () => {
 				instances: ['my-app-123'],
 				logLevels: ['ERROR', 'INFO']
 			})
-		).toContain('| json | level=~"(?i)^(?:ERROR|INFO|)$"');
+		).toContain('| json | level=~"(?i)^(?:ERROR|50|INFO|30|)$"');
 	});
 
 	it('does not add a level filter when no levels have been discovered', () => {
