@@ -322,6 +322,43 @@ describe('team vulnerability workload view', () => {
 		expect(previous).not.toContain('disabled');
 	});
 
+	it('keeps previous-page navigation when a later SBOM page becomes empty', async () => {
+		const workloadsWithoutSbom = writable({
+			data: {
+				team: {
+					workloads: {
+						nodes: [],
+						pageInfo: {
+							totalCount: 61,
+							pageStart: 41,
+							pageEnd: 40,
+							hasNextPage: false,
+							hasPreviousPage: true,
+							startCursor: null,
+							endCursor: null
+						}
+					}
+				}
+			},
+			errors: null,
+			fetching: false
+		});
+		const { body } = await render(WorkloadsWithoutSbom, {
+			props: {
+				count: 61,
+				workloadsWithoutSbom: workloadsWithoutSbom as unknown as ComponentProps<
+					typeof WorkloadsWithoutSbom
+				>['workloadsWithoutSbom']
+			}
+		});
+
+		expect(body).toContain('No workloads on this page.');
+		expect(body).not.toContain('No workloads without SBOM.');
+		const previous = body.match(/<button\b[^>]*aria-label="Previous page"[^>]*>/)?.[0];
+		expect(previous).toBeDefined();
+		expect(previous).not.toContain('disabled');
+	});
+
 	it('waits for the summary before deciding whether to load missing-SBOM workloads', async () => {
 		summary.missingSbomCount = 2;
 		let resolveSummary: () => void = () => {};
