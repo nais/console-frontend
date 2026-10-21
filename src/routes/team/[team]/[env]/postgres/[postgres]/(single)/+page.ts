@@ -5,7 +5,7 @@ export async function load(event) {
 	return {
 		...(await addPageMeta(event, {
 			title: event.params.postgres,
-			docPath: '/persistence/postgresql/explanations/postgres-cluster/'
+			docPath: '/persistence/postgres/'
 		})),
 		...(await load_PostgresOverview({
 			event,
