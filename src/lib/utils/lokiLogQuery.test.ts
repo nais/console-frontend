@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { buildLokiLogQuery } from './lokiLogQuery';
+import { getLogLevel } from './logViewer';
 
 describe('buildLokiLogQuery', () => {
 	it('filters by team, workload, container and selected instances', () => {
@@ -76,6 +77,21 @@ describe('buildLokiLogQuery', () => {
 			})
 		).toContain('| json | level=~"(?i)^(?:ERROR|50|INFO|30|)$"');
 	});
+
+	it.each(['constructor', '__proto__', 'toString', 'hasOwnProperty'])(
+		'builds a filter for the custom log level %s',
+		(level) => {
+			expect(
+				buildLokiLogQuery({
+					team: 'my-team',
+					workload: 'my-app',
+					container: 'my-app',
+					instances: ['my-app-123'],
+					logLevels: [getLogLevel(JSON.stringify({ level }))]
+				})
+			).toContain(`| json | level=~"(?i)^(?:${level.toUpperCase()})$"`);
+		}
+	);
 
 	it('does not add a level filter when no levels have been discovered', () => {
 		expect(

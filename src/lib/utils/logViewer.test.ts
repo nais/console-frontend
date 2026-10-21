@@ -1,5 +1,11 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { createBufferedLogAppender, getLogLevel, parseLogMessage, type LogLine } from './logViewer';
+import {
+	createBufferedLogAppender,
+	filterLogsByLevel,
+	getLogLevel,
+	parseLogMessage,
+	type LogLine
+} from './logViewer';
 
 function formatLocalTimestamp(date: Date): string {
 	const year = date.getFullYear();
@@ -29,6 +35,13 @@ describe('getLogLevel', () => {
 		expect(getLogLevel('{"message":"hello"}')).toBe('INFO');
 		expect(getLogLevel('plain text log line')).toBe('INFO');
 	});
+
+	it.each(['constructor', '__proto__', 'toString', 'hasOwnProperty'])(
+		'treats %s as a custom level rather than an inherited property',
+		(level) => {
+			expect(getLogLevel(JSON.stringify({ level }))).toBe(level.toUpperCase());
+		}
+	);
 });
 
 describe('parseLogMessage', () => {
@@ -52,6 +65,36 @@ describe('createBufferedLogAppender', () => {
 
 	afterEach(() => {
 		vi.useRealTimers();
+	});
+
+	it('filters buffered logs without discarding them or receiving new entries', () => {
+		let logs: LogLine[] = [];
+		const appender = createBufferedLogAppender({
+			maxEntries: 200,
+			maxPendingEntries: 5000,
+			flushIntervalMs: 100,
+			getLogs: () => logs,
+			setLogs: (nextLogs) => {
+				logs = nextLogs;
+			}
+		});
+		for (const [index, level] of ['INFO', 'ERROR', 'WARN'].entries()) {
+			appender.enqueue({
+				time: `2026-03-05T10:00:0${index}.000Z`,
+				message: JSON.stringify({ level }),
+				instance: 'i-1'
+			});
+		}
+		appender.flush();
+
+		const levels = new Set(['ERROR']);
+		expect(filterLogsByLevel(logs, levels).map((log) => log.level)).toEqual(['ERROR']);
+		levels.add('WARN');
+		expect(filterLogsByLevel(logs, levels).map((log) => log.level)).toEqual(['ERROR', 'WARN']);
+		levels.clear();
+		expect(filterLogsByLevel(logs, levels)).toEqual([]);
+		expect(filterLogsByLevel(logs).map((log) => log.level)).toEqual(['INFO', 'ERROR', 'WARN']);
+		expect(logs).toHaveLength(3);
 	});
 
 	it('flushes pending logs after flush interval', () => {

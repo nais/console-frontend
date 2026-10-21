@@ -1,6 +1,7 @@
 <script lang="ts">
 	import {
 		createBufferedLogAppender,
+		filterLogsByLevel,
 		getLogLevel,
 		parseLogMessage,
 		type LogLine
@@ -84,7 +85,10 @@
 	let searchText = $state('');
 	let allLevelsSelected = $state(true);
 	let logOrder = $state<'newest' | 'oldest'>('newest');
-	let displayedLogs = $derived(logOrder === 'newest' ? logs.toReversed() : logs);
+	let filteredLogs = $derived(
+		filterLogsByLevel(logs, allLevelsSelected ? undefined : selectedLogLevels)
+	);
+	let displayedLogs = $derived(logOrder === 'newest' ? filteredLogs.toReversed() : filteredLogs);
 	let availableLogLevels = $derived([...new Set([...commonLogLevels, ...logLevels])]);
 	let canStart = $derived(podNamePrefix !== undefined || selectedInstances.length > 0);
 

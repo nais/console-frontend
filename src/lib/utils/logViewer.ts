@@ -53,7 +53,11 @@ export function getLogLevel(message: string): string {
 	const logLevel = message.match(/"level"\s*:\s*(?:"([^"]+)"|(\d+))/);
 	const value = logLevel?.[1] ?? logLevel?.[2];
 	if (value === undefined) return 'INFO';
-	return pinoLogLevelNames[value] ?? value.toUpperCase();
+	return Object.hasOwn(pinoLogLevelNames, value) ? pinoLogLevelNames[value] : value.toUpperCase();
+}
+
+export function filterLogsByLevel(logs: LogLine[], levels?: ReadonlySet<string>): LogLine[] {
+	return levels === undefined ? logs : logs.filter((log) => levels.has(log.level));
 }
 
 export function parseLogMessage(message: string): string {
