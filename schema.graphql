@@ -3288,6 +3288,30 @@ enum EnvironmentWorkloadOrderField {
   TEAM_SLUG
 }
 
+"""Deprecated: use ExternalIngressUrgentVulnerabilityIssue."""
+type ExternalIngressCriticalVulnerabilityIssue implements Issue & Node {
+  """The highest CVSS score among vulnerabilities relevant to this issue."""
+  cvssScore: Float! @deprecated(reason: "Use ExternalIngressUrgentVulnerabilityIssue instead.")
+
+  """The globally unique identifier for this issue."""
+  id: ID! @deprecated(reason: "Use ExternalIngressUrgentVulnerabilityIssue instead.")
+
+  """External ingress URLs that expose the workload."""
+  ingresses: [String!]! @deprecated(reason: "Use ExternalIngressUrgentVulnerabilityIssue instead.")
+
+  """A human-readable description of the issue."""
+  message: String! @deprecated(reason: "Use ExternalIngressUrgentVulnerabilityIssue instead.")
+
+  """The severity assigned to this issue."""
+  severity: Severity! @deprecated(reason: "Use ExternalIngressUrgentVulnerabilityIssue instead.")
+
+  """The team environment where the affected workload is deployed."""
+  teamEnvironment: TeamEnvironment! @deprecated(reason: "Use ExternalIngressUrgentVulnerabilityIssue instead.")
+
+  """The workload with critical vulnerabilities and external ingresses."""
+  workload: Workload! @deprecated(reason: "Use ExternalIngressUrgentVulnerabilityIssue instead.")
+}
+
 """
 Raised when a workload with external ingresses has one or more urgent vulnerability-priority findings.
 """
@@ -4049,6 +4073,7 @@ enum IssueType {
   APPLICATION_RESTART_LOOP
   DEPRECATED_INGRESS
   DEPRECATED_REGISTRY
+  EXTERNAL_INGRESS_CRITICAL_VULNERABILITY @deprecated(reason: "Use EXTERNAL_INGRESS_URGENT_VULNERABILITY.")
 
   """
   Raised when a workload has external ingress exposure and urgent vulnerabilities.
