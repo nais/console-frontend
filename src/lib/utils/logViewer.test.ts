@@ -1,5 +1,13 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { createBufferedLogAppender, getLogLevel, parseLogMessage, type LogLine } from './logViewer';
+import {
+	createBufferedLogAppender,
+	filterLogsByLevel,
+	formatPostgresLogInstance,
+	getLogInstanceColor,
+	getLogLevel,
+	parseLogMessage,
+	type LogLine
+} from './logViewer';
 
 function formatLocalTimestamp(date: Date): string {
 	const year = date.getFullYear();
@@ -13,20 +21,83 @@ function formatLocalTimestamp(date: Date): string {
 	return `${year}-${month}-${day} ${hour}:${minute}:${second}.${milliseconds}`;
 }
 
+describe('getLogInstanceColor', () => {
+	it('assigns distinct stable colors to the main and test instances', () => {
+		const pods = [
+			'pg-roger-test-f222277b-1',
+			'pg-roger-test-f222277b-2',
+			'pg-roger-main-bf09717d-1',
+			'pg-roger-main-bf09717d-2'
+		];
+		const color = (pod: string) => getLogInstanceColor(formatPostgresLogInstance(pod, 'roger'));
+		const colors = pods.map(color);
+		expect(new Set(colors).size).toBe(4);
+		expect(pods.toReversed().map(color)).toEqual(colors.toReversed());
+		expect(color('pg-roger-test-abcdef12-1')).toBe(colors[0]);
+	});
+
+	it('preserves the existing color order for known application instances', () => {
+		const instances = ['app-1', 'app-2', 'app-3'];
+		expect(instances.map((instance) => getLogInstanceColor(instance, instances))).toEqual([
+			'accent',
+			'brand-beige',
+			'brand-magenta'
+		]);
+	});
+});
+
 describe('getLogLevel', () => {
 	it('extracts and uppercases the level from JSON logs', () => {
 		expect(getLogLevel('{"level":"warn","message":"hello"}')).toBe('WARN');
+		expect(getLogLevel('{ "level" : "error", "message": "hello" }')).toBe('ERROR');
+	});
+
+	it('maps numeric Pino levels to their display names', () => {
+		expect(getLogLevel('{"level":30,"message":"info"}')).toBe('INFO');
+		expect(getLogLevel('{"level":50,"message":"error"}')).toBe('ERROR');
+		expect(getLogLevel('{"level":"40","message":"warn"}')).toBe('WARN');
 	});
 
 	it('defaults to INFO when level is missing', () => {
 		expect(getLogLevel('{"message":"hello"}')).toBe('INFO');
 		expect(getLogLevel('plain text log line')).toBe('INFO');
 	});
+
+	it.each(['constructor', '__proto__', 'toString', 'hasOwnProperty'])(
+		'treats %s as a custom level rather than an inherited property',
+		(level) => {
+			expect(getLogLevel(JSON.stringify({ level }))).toBe(level.toUpperCase());
+		}
+	);
 });
 
 describe('parseLogMessage', () => {
 	it('returns nested message from JSON payload', () => {
 		expect(parseLogMessage('{"message":"parsed message"}')).toBe('parsed message');
+	});
+
+	describe('formatPostgresLogInstance', () => {
+		it.each([
+			['pg-roger-test-f222277b-1', 'test-1'],
+			['pg-roger-test-f222277b-2', 'test-2'],
+			['pg-roger-main-bf09717d-1', 'main-1'],
+			['pg-roger-feature-test-f222277b-2', 'feature-test-2']
+		])('formats %s as %s', (instance, expected) => {
+			expect(formatPostgresLogInstance(instance, 'roger')).toBe(expected);
+		});
+
+		it('handles database names containing hyphens', () => {
+			expect(formatPostgresLogInstance('pg-my-db-test-f222277b-1', 'my-db')).toBe('test-1');
+		});
+
+		it.each([
+			'unknown',
+			'pg-other-test-f222277b-1',
+			'pg-roger-unexpected',
+			'pg-roger-test-f222277b-pooler-abc'
+		])('preserves unrecognized pod names: %s', (instance) => {
+			expect(formatPostgresLogInstance(instance, 'roger')).toBe(instance);
+		});
 	});
 
 	it('falls back to original message when payload has no message field', () => {
@@ -45,6 +116,36 @@ describe('createBufferedLogAppender', () => {
 
 	afterEach(() => {
 		vi.useRealTimers();
+	});
+
+	it('filters buffered logs without discarding them or receiving new entries', () => {
+		let logs: LogLine[] = [];
+		const appender = createBufferedLogAppender({
+			maxEntries: 200,
+			maxPendingEntries: 5000,
+			flushIntervalMs: 100,
+			getLogs: () => logs,
+			setLogs: (nextLogs) => {
+				logs = nextLogs;
+			}
+		});
+		for (const [index, level] of ['INFO', 'ERROR', 'WARN'].entries()) {
+			appender.enqueue({
+				time: `2026-03-05T10:00:0${index}.000Z`,
+				message: JSON.stringify({ level }),
+				instance: 'i-1'
+			});
+		}
+		appender.flush();
+
+		const levels = new Set(['ERROR']);
+		expect(filterLogsByLevel(logs, levels).map((log) => log.level)).toEqual(['ERROR']);
+		levels.add('WARN');
+		expect(filterLogsByLevel(logs, levels).map((log) => log.level)).toEqual(['ERROR', 'WARN']);
+		levels.clear();
+		expect(filterLogsByLevel(logs, levels)).toEqual([]);
+		expect(filterLogsByLevel(logs).map((log) => log.level)).toEqual(['INFO', 'ERROR', 'WARN']);
+		expect(logs).toHaveLength(3);
 	});
 
 	it('flushes pending logs after flush interval', () => {

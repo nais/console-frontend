@@ -1,5 +1,42 @@
 import { appendSortedBoundedLog } from '#lib/utils/logStream.js';
 
+export const PINO_LOG_LEVELS: Record<string, number> = {
+	TRACE: 10,
+	DEBUG: 20,
+	INFO: 30,
+	WARN: 40,
+	ERROR: 50,
+	FATAL: 60
+};
+
+const pinoLogLevelNames = Object.fromEntries(
+	Object.entries(PINO_LOG_LEVELS).map(([name, value]) => [String(value), name])
+);
+
+const logInstanceColors = [
+	'accent',
+	'success',
+	'warning',
+	'danger',
+	'brand-magenta',
+	'meta-purple',
+	'meta-lime',
+	'brand-beige',
+	'info',
+	'brand-blue'
+] as const;
+
+export function getLogInstanceColor(instance: string, instances: readonly string[] = []) {
+	const position = instances.indexOf(instance);
+	if (position >= 0) return logInstanceColors[(position * 7) % logInstanceColors.length];
+
+	let hash = 0;
+	for (const character of instance) {
+		hash = (Math.imul(hash, 31) + character.charCodeAt(0)) >>> 0;
+	}
+	return logInstanceColors[hash % logInstanceColors.length];
+}
+
 type WorkloadLog = {
 	time: Date | string | number;
 	message: string;
@@ -37,11 +74,21 @@ function formatTimestamp(date: Date): string {
 }
 
 export function getLogLevel(message: string): string {
-	const logLevel = message.match(/"level":"(\w+)"/);
-	if (logLevel) {
-		return logLevel[1].toUpperCase();
-	}
-	return 'INFO';
+	const logLevel = message.match(/"level"\s*:\s*(?:"([^"]+)"|(\d+))/);
+	const value = logLevel?.[1] ?? logLevel?.[2];
+	if (value === undefined) return 'INFO';
+	return Object.hasOwn(pinoLogLevelNames, value) ? pinoLogLevelNames[value] : value.toUpperCase();
+}
+
+export function filterLogsByLevel(logs: LogLine[], levels?: ReadonlySet<string>): LogLine[] {
+	return levels === undefined ? logs : logs.filter((log) => levels.has(log.level));
+}
+
+export function formatPostgresLogInstance(instance: string, postgres: string): string {
+	const prefix = `pg-${postgres}-`;
+	if (!instance.startsWith(prefix)) return instance;
+	const match = instance.slice(prefix.length).match(/^(.+)-[a-f0-9]{8}-(\d+)$/);
+	return match ? `${match[1]}-${match[2]}` : instance;
 }
 
 export function parseLogMessage(message: string): string {
