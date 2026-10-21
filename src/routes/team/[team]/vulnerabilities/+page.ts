@@ -25,9 +25,11 @@ export async function load(event) {
 		variables: { team },
 		blocking: true
 	});
-	const missingSbomCount =
-		get(teamVulnerabilities.TeamVulnerabilities).data?.team.workloadsWithoutSbom.pageInfo
-			.totalCount ?? 0;
+	const teamData = get(teamVulnerabilities.TeamVulnerabilities).data?.team;
+	const missingSbomCount = teamData?.workloadsWithoutSbom.pageInfo.totalCount ?? 0;
+	const noSboms =
+		(teamData?.workloads.pageInfo.totalCount ?? 0) > 0 &&
+		teamData?.vulnerabilitySummary?.sbomCount === 0;
 
 	return {
 		...(await addPageMeta(event, {
@@ -41,12 +43,14 @@ export async function load(event) {
 					variables: {
 						team,
 						first: 20,
+						last: null,
 						after: null,
+						before: null,
 						orderBy: { field: WorkloadOrderField.NAME, direction: OrderDirection.ASC }
 					}
 				})
 			: { TeamNoSbomWorkloads: new TeamNoSbomWorkloadsStore() }),
-		...(view === 'priority'
+		...(view === 'priority' && !noSboms
 			? await load_TeamPriorityWorkloadsHigh({
 					event,
 					variables: {
@@ -58,7 +62,7 @@ export async function load(event) {
 					}
 				})
 			: { TeamPriorityWorkloadsHigh: new TeamPriorityWorkloadsHighStore() }),
-		...(view === 'severity'
+		...(view === 'severity' && !noSboms
 			? await load_TeamSeverityWorkloads({
 					event,
 					variables: {
