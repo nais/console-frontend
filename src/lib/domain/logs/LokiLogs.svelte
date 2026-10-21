@@ -14,6 +14,7 @@
 		BodyShort,
 		Button,
 		Chips,
+		Label,
 		TextField,
 		ToggleChip,
 		ToggleGroup,
@@ -52,6 +53,7 @@
 	}: Props = $props();
 
 	const MAX_LOG_LINES = 200;
+	const logLevelLabelId = $props.id();
 	const MAX_PENDING_LOG_LINES = 5000;
 	const FLUSH_INTERVAL_MS = 100;
 	const commonLogLevels = ['TRACE', 'DEBUG', 'INFO', 'WARN', 'ERROR', 'FATAL'];
@@ -401,6 +403,38 @@
 		</div>
 
 		<div class="display-controls">
+			<div class="level-filter" role="group" aria-labelledby={logLevelLabelId}>
+				<Label as="div" size="small" id={logLevelLabelId}>Log level</Label>
+				<!-- Capture clicks before ToggleChip's internal toggle so the filter state stays authoritative. -->
+				<div class="level-controls">
+					<div class="all-levels">
+						<Chips size="small">
+							<ToggleChip
+								value="All"
+								selected={allLevelsSelected}
+								onclickcapture={(event: MouseEvent) => {
+									event.stopImmediatePropagation();
+									selectAllLogLevels();
+								}}
+							/>
+						</Chips>
+					</div>
+					<div class="specific-levels">
+						<Chips size="small">
+							{#each availableLogLevels as level (level)}
+								<ToggleChip
+									value={level}
+									selected={allLevelsSelected || selectedLogLevels.has(level)}
+									onclickcapture={(event: MouseEvent) => {
+										event.stopImmediatePropagation();
+										toggleLogLevel(level);
+									}}
+								/>
+							{/each}
+						</Chips>
+					</div>
+				</div>
+			</div>
 			<ToggleGroup label="Log order" size="small" bind:value={logOrder}>
 				<ToggleGroupItem value="newest"
 					><SortDownIcon aria-hidden="true" /> Newest first</ToggleGroupItem
@@ -409,36 +443,6 @@
 					><SortUpIcon aria-hidden="true" /> Oldest first</ToggleGroupItem
 				>
 			</ToggleGroup>
-		</div>
-		<!-- Capture clicks before ToggleChip's internal toggle so the filter state stays authoritative. -->
-		<div class="level-controls" role="group" aria-label="Filter logs by level">
-			<span>Log level</span>
-			<div class="all-levels">
-				<Chips size="small">
-					<ToggleChip
-						value="All"
-						selected={allLevelsSelected}
-						onclickcapture={(event: MouseEvent) => {
-							event.stopImmediatePropagation();
-							selectAllLogLevels();
-						}}
-					/>
-				</Chips>
-			</div>
-			<div class="specific-levels">
-				<Chips size="small">
-					{#each availableLogLevels as level (level)}
-						<ToggleChip
-							value={level}
-							selected={allLevelsSelected || selectedLogLevels.has(level)}
-							onclickcapture={(event: MouseEvent) => {
-								event.stopImmediatePropagation();
-								toggleLogLevel(level);
-							}}
-						/>
-					{/each}
-				</Chips>
-			</div>
 		</div>
 
 		{#if isPaused && logs.length === 0}
@@ -529,9 +533,15 @@
 		flex-grow: 1;
 	}
 	.display-controls {
-		align-items: end;
+		align-items: start;
 		justify-content: space-between;
 		flex-wrap: wrap;
+	}
+	.level-filter {
+		display: flex;
+		flex-direction: column;
+		gap: var(--ax-space-8);
+		min-width: 0;
 	}
 	.level-controls {
 		display: flex;
