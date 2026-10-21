@@ -1,7 +1,21 @@
-query TeamNoSbomWorkloads($team: Slug!, $first: Int!, $after: Cursor, $orderBy: WorkloadOrder) {
+query TeamNoSbomWorkloads(
+	$team: Slug!
+	$first: Int
+	$last: Int
+	$after: Cursor
+	$before: Cursor
+	$orderBy: WorkloadOrder
+	$sbomStatus: SBOMStatus
+) {
 	team(slug: $team) {
-		workloads(first: $first, after: $after, filter: { sbomStatus: NO_SBOM }, orderBy: $orderBy)
-			@paginate(mode: Infinite) {
+		workloads(
+			first: $first
+			last: $last
+			after: $after
+			before: $before
+			filter: { sbomStatus: $sbomStatus }
+			orderBy: $orderBy
+		) @paginate(mode: SinglePage) {
 			nodes {
 				... on Application {
 					__typename
@@ -32,6 +46,10 @@ query TeamNoSbomWorkloads($team: Slug!, $first: Int!, $after: Cursor, $orderBy: 
 			}
 			pageInfo {
 				hasNextPage
+				hasPreviousPage
+				pageStart
+				pageEnd
+				startCursor
 				endCursor
 				totalCount
 			}
