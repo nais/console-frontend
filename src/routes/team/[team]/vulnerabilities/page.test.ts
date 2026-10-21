@@ -64,7 +64,7 @@ vi.mock('$app/environment', () => ({ browser: false, building: false }));
 vi.mock('$app/navigation', () => ({ goto: vi.fn(), invalidateAll: vi.fn() }));
 vi.mock('$app/state', () => ({
 	page: {
-		url: new URL('https://console.example.com/team/ptsak/vulnerabilities'),
+		url: new URL('https://console.example.com/team/mango-panda/vulnerabilities'),
 		data: { tenantName: 'nais' }
 	}
 }));
@@ -232,8 +232,9 @@ describe('team vulnerability workload view', () => {
 	it('shows the no-data state and a collapsed list when SBOM counts disagree', async () => {
 		const { body } = await render(TeamVulnerabilityPage, {
 			props: {
+				params: { team: 'mango-panda' },
 				data: {
-					teamSlug: 'ptsak',
+					teamSlug: 'mango-panda',
 					TeamVulnerabilities: writable({
 						data: {
 							team: {
@@ -285,7 +286,7 @@ describe('team vulnerability workload view', () => {
 								__typename: 'Application',
 								id: 'app-21',
 								name: 'app-21',
-								team: { slug: 'ptsak' },
+								team: { slug: 'mango-panda' },
 								teamEnvironment: { environment: { name: 'dev-fss' } }
 							}
 						],
