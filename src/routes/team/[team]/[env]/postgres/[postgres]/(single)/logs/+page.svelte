@@ -62,6 +62,7 @@
 				instances={[]}
 				initialInstances={[]}
 				podNamePrefix={`pg-${page.params.postgres}-${branch ? `${branch}-` : ''}`}
+				exactPostgresBranch={branch !== ''}
 				formatInstanceName={(instance) =>
 					formatPostgresLogInstance(instance, page.params.postgres!)}
 				startOnMount={true}

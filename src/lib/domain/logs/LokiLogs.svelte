@@ -34,6 +34,7 @@
 		instances: string[];
 		initialInstances: string[];
 		podNamePrefix?: string;
+		exactPostgresBranch?: boolean;
 		startOnMount: boolean;
 		hasLoki: boolean;
 		grafanaURL?: string;
@@ -50,6 +51,7 @@
 		instances,
 		initialInstances,
 		podNamePrefix,
+		exactPostgresBranch = false,
 		startOnMount,
 		hasLoki,
 		grafanaURL,
@@ -245,6 +247,7 @@
 							container,
 							instances: selectedInstances,
 							podNamePrefix,
+							exactPostgresBranch,
 							search: searchText,
 							logLevels: allLevelsSelected ? undefined : [...selectedLogLevels]
 						}),

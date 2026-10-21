@@ -6,6 +6,7 @@ type LokiLogQueryOptions = {
 	container: string;
 	instances: string[];
 	podNamePrefix?: string;
+	exactPostgresBranch?: boolean;
 	search?: string;
 	logLevels?: string[];
 };
@@ -24,6 +25,7 @@ export function buildLokiLogQuery({
 	container,
 	instances,
 	podNamePrefix,
+	exactPostgresBranch = false,
 	search,
 	logLevels
 }: LokiLogQueryOptions): string {
@@ -36,7 +38,9 @@ export function buildLokiLogQuery({
 		`k8s_pod_name=~${
 			podNamePrefix === undefined
 				? exactMatch(instances)
-				: JSON.stringify(`^${escapeRegex(podNamePrefix)}.+$`)
+				: JSON.stringify(
+						`^${escapeRegex(podNamePrefix)}${exactPostgresBranch ? '[a-f0-9]{8}-[0-9]+' : '.+'}$`
+					)
 		}`
 	];
 	let query = `{${selectors.join(',')}} | ${labelFilters.join(' | ')}`;
