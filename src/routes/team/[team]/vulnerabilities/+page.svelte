@@ -27,24 +27,23 @@
 	{const missingSbomCount = $derived(
 		$TeamVulnerabilities.data.team.workloadsWithoutSbom.pageInfo.totalCount
 	)}
+	{const workloadCount = $derived($TeamVulnerabilities.data.team.workloads.pageInfo.totalCount)}
 	{const noSboms = $derived(
-		$TeamVulnerabilities.data.team.workloads.pageInfo.totalCount > 0 &&
-			$TeamVulnerabilities.data.team.vulnerabilitySummary?.sbomCount === 0
+		workloadCount > 0 && $TeamVulnerabilities.data.team.vulnerabilitySummary?.sbomCount === 0
 	)}
 	<div class="wrapper">
 		{#if noSboms}
 			<Alert variant="warning">
-				No usable SBOMs found for this team. Vulnerability data is unavailable for its
-				{$TeamVulnerabilities.data.team.workloads.pageInfo.totalCount} workloads.
-				{#if missingSbomCount > 0}
+				No usable SBOMs are available for this team, so vulnerability data is unavailable for
+				{workloadCount}
+				{workloadCount === 1 ? 'workload' : 'workloads'}.
+				{#if missingSbomCount > 0 && missingSbomCount < workloadCount}
 					{missingSbomCount} {missingSbomCount === 1 ? 'workload has' : 'workloads have'} no SBOM.
 				{/if}
 				Learn how to generate SBOMs in the
 				<ExternalLink href={docURL('/services/vulnerabilities/how-to/sbom/')}
 					>Nais documentation</ExternalLink
-				>. Find your workloads under
-				<a href="/team/{teamSlug}/applications">Applications</a>
-				and <a href="/team/{teamSlug}/jobs">Jobs</a>.
+				>.
 			</Alert>
 		{:else if missingSbomCount > 0}
 			<Alert variant="warning">
@@ -57,9 +56,13 @@
 			</Alert>
 		{/if}
 
-		{#if missingSbomCount > 0}
+		{#if noSboms || missingSbomCount > 0}
 			{#key teamSlug}
-				<WorkloadsWithoutSbom count={missingSbomCount} workloadsWithoutSbom={TeamNoSbomWorkloads} />
+				<WorkloadsWithoutSbom
+					count={noSboms ? workloadCount : missingSbomCount}
+					allWithoutUsableSbom={noSboms}
+					workloadsWithoutSbom={TeamNoSbomWorkloads}
+				/>
 			{/key}
 		{/if}
 

@@ -48,6 +48,7 @@ vi.mock('$houdini', () => ({
 	load_TeamSeverityWorkloads: loadSeverity,
 	load_TeamNoSbomWorkloads: loadNoSbom,
 	OrderDirection: { DESC: 'DESC', ASC: 'ASC' },
+	SBOMStatus: { NO_SBOM: 'NO_SBOM' },
 	WorkloadOrderField: { NAME: 'NAME' },
 	VulnerabilitySummaryOrderByField: {
 		NAME: 'NAME',
@@ -210,10 +211,25 @@ describe('team vulnerability workload view', () => {
 					last: null,
 					after: null,
 					before: null,
+					sbomStatus: 'NO_SBOM',
 					orderBy: { field: 'NAME', direction: 'ASC' }
 				}
 			})
 		);
+	});
+
+	it('loads all team workloads when none has a usable SBOM, even if none has NO_SBOM status', async () => {
+		summary.sbomCount = 0;
+		summary.workloadCount = 1;
+
+		await load(event());
+
+		expect(loadNoSbom).toHaveBeenCalledWith(
+			expect.objectContaining({
+				variables: expect.objectContaining({ sbomStatus: null })
+			})
+		);
+		expect(loadSeverity).not.toHaveBeenCalled();
 	});
 
 	it('does not request vulnerability rows when no workloads have usable SBOMs', async () => {
@@ -225,6 +241,11 @@ describe('team vulnerability workload view', () => {
 		await load(event('?view=priority'));
 
 		expect(loadNoSbom).toHaveBeenCalledTimes(2);
+		expect(loadNoSbom).toHaveBeenCalledWith(
+			expect.objectContaining({
+				variables: expect.objectContaining({ sbomStatus: null })
+			})
+		);
 		expect(loadSeverity).not.toHaveBeenCalled();
 		expect(loadHigh).not.toHaveBeenCalled();
 	});
@@ -269,11 +290,67 @@ describe('team vulnerability workload view', () => {
 			}
 		});
 
-		expect(body).toContain('No usable SBOMs found for this team');
+		expect(body).toContain('No usable SBOMs are available for this team');
 		expect(body).toContain('61 workloads have no');
 		expect(body).toContain('<details>');
-		expect(body).toContain('Workloads without SBOM (61)');
+		expect(body).toContain('Workloads without usable SBOM (62)');
 		expect(body).not.toContain('Workload Vulnerabilities');
+	});
+
+	it('identifies a workload when the team has no usable SBOM but no NO_SBOM status', async () => {
+		const { body } = await render(TeamVulnerabilityPage, {
+			props: {
+				params: { team: 'mango-panda' },
+				data: {
+					teamSlug: 'mango-panda',
+					TeamVulnerabilities: writable({
+						data: {
+							team: {
+								workloadsWithoutSbom: { pageInfo: { totalCount: 0 } },
+								workloads: { pageInfo: { totalCount: 1 } },
+								vulnerabilitySummary: { sbomCount: 0 }
+							}
+						},
+						errors: null
+					}),
+					TeamNoSbomWorkloads: writable({
+						data: {
+							team: {
+								workloads: {
+									nodes: [
+										{
+											__typename: 'Application',
+											id: 'polaris',
+											name: 'polaris',
+											team: { slug: 'mango-panda' },
+											teamEnvironment: { environment: { name: 'dev-fss' } }
+										}
+									],
+									pageInfo: {
+										totalCount: 1,
+										hasNextPage: false,
+										hasPreviousPage: false,
+										pageStart: 1,
+										pageEnd: 1,
+										startCursor: 'cursor-1',
+										endCursor: 'cursor-1'
+									}
+								}
+							}
+						},
+						errors: null,
+						fetching: false
+					})
+				} as unknown as ComponentProps<typeof TeamVulnerabilityPage>['data']
+			}
+		});
+
+		expect(body).toContain('Workloads without usable SBOM (1)');
+		expect(body).toMatch(/vulnerability data is unavailable for\s+1\s+workload\./);
+		expect(body).not.toContain('1 workload has no SBOM.');
+		expect(body).not.toContain('documentation .');
+		expect(body).toContain('<details open="">');
+		expect(body).toContain('/team/mango-panda/dev-fss/app/polaris/vulnerabilities');
 	});
 
 	it('shows the current range and enables going back from the second SBOM page', async () => {

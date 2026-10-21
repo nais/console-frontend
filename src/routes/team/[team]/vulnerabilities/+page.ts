@@ -4,6 +4,7 @@ import {
 	load_TeamNoSbomWorkloads,
 	load_TeamVulnerabilities,
 	OrderDirection,
+	SBOMStatus,
 	TeamPriorityWorkloadsHighStore,
 	TeamNoSbomWorkloadsStore,
 	TeamSeverityWorkloadsStore,
@@ -27,9 +28,8 @@ export async function load(event) {
 	});
 	const teamData = get(teamVulnerabilities.TeamVulnerabilities).data?.team;
 	const missingSbomCount = teamData?.workloadsWithoutSbom.pageInfo.totalCount ?? 0;
-	const noSboms =
-		(teamData?.workloads.pageInfo.totalCount ?? 0) > 0 &&
-		teamData?.vulnerabilitySummary?.sbomCount === 0;
+	const workloadCount = teamData?.workloads.pageInfo.totalCount ?? 0;
+	const noSboms = workloadCount > 0 && teamData?.vulnerabilitySummary?.sbomCount === 0;
 
 	return {
 		...(await addPageMeta(event, {
@@ -37,7 +37,7 @@ export async function load(event) {
 			docPath: '/services/vulnerabilities'
 		})),
 		...teamVulnerabilities,
-		...(missingSbomCount > 0
+		...(noSboms || missingSbomCount > 0
 			? await load_TeamNoSbomWorkloads({
 					event,
 					variables: {
@@ -46,6 +46,7 @@ export async function load(event) {
 						last: null,
 						after: null,
 						before: null,
+						sbomStatus: noSboms ? null : SBOMStatus.NO_SBOM,
 						orderBy: { field: WorkloadOrderField.NAME, direction: OrderDirection.ASC }
 					}
 				})
