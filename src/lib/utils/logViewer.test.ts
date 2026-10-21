@@ -2,6 +2,8 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import {
 	createBufferedLogAppender,
 	filterLogsByLevel,
+	formatPostgresLogInstance,
+	getLogInstanceColor,
 	getLogLevel,
 	parseLogMessage,
 	type LogLine
@@ -18,6 +20,31 @@ function formatLocalTimestamp(date: Date): string {
 
 	return `${year}-${month}-${day} ${hour}:${minute}:${second}.${milliseconds}`;
 }
+
+describe('getLogInstanceColor', () => {
+	it('assigns distinct stable colors to the main and test instances', () => {
+		const pods = [
+			'pg-roger-test-f222277b-1',
+			'pg-roger-test-f222277b-2',
+			'pg-roger-main-bf09717d-1',
+			'pg-roger-main-bf09717d-2'
+		];
+		const color = (pod: string) => getLogInstanceColor(formatPostgresLogInstance(pod, 'roger'));
+		const colors = pods.map(color);
+		expect(new Set(colors).size).toBe(4);
+		expect(pods.toReversed().map(color)).toEqual(colors.toReversed());
+		expect(color('pg-roger-test-abcdef12-1')).toBe(colors[0]);
+	});
+
+	it('preserves the existing color order for known application instances', () => {
+		const instances = ['app-1', 'app-2', 'app-3'];
+		expect(instances.map((instance) => getLogInstanceColor(instance, instances))).toEqual([
+			'accent',
+			'brand-beige',
+			'brand-magenta'
+		]);
+	});
+});
 
 describe('getLogLevel', () => {
 	it('extracts and uppercases the level from JSON logs', () => {
@@ -47,6 +74,30 @@ describe('getLogLevel', () => {
 describe('parseLogMessage', () => {
 	it('returns nested message from JSON payload', () => {
 		expect(parseLogMessage('{"message":"parsed message"}')).toBe('parsed message');
+	});
+
+	describe('formatPostgresLogInstance', () => {
+		it.each([
+			['pg-roger-test-f222277b-1', 'test-1'],
+			['pg-roger-test-f222277b-2', 'test-2'],
+			['pg-roger-main-bf09717d-1', 'main-1'],
+			['pg-roger-feature-test-f222277b-2', 'feature-test-2']
+		])('formats %s as %s', (instance, expected) => {
+			expect(formatPostgresLogInstance(instance, 'roger')).toBe(expected);
+		});
+
+		it('handles database names containing hyphens', () => {
+			expect(formatPostgresLogInstance('pg-my-db-test-f222277b-1', 'my-db')).toBe('test-1');
+		});
+
+		it.each([
+			'unknown',
+			'pg-other-test-f222277b-1',
+			'pg-roger-unexpected',
+			'pg-roger-test-f222277b-pooler-abc'
+		])('preserves unrecognized pod names: %s', (instance) => {
+			expect(formatPostgresLogInstance(instance, 'roger')).toBe(instance);
+		});
 	});
 
 	it('falls back to original message when payload has no message field', () => {

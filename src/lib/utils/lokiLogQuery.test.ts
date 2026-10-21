@@ -66,6 +66,23 @@ describe('buildLokiLogQuery', () => {
 		).toContain('|~"(?i)failed \\\\(retry\\\\)"');
 	});
 
+	it('limits Postgres logs to the selected branch pod prefix', () => {
+		const query = buildLokiLogQuery({
+			team: 'my-team',
+			workload: 'roger',
+			container: 'postgres',
+			instances: [],
+			podNamePrefix: 'pg-roger-test-'
+		});
+		expect(query).toContain('k8s_pod_name=~"^pg-roger-test-.+$"');
+		const podFilter = query.split('k8s_pod_name=~')[1];
+		const podPattern = new RegExp(JSON.parse(podFilter));
+		expect(podPattern.test('pg-roger-test-f222277b-1')).toBe(true);
+		expect(podPattern.test('pg-roger-test-f222277b-2')).toBe(true);
+		expect(podPattern.test('pg-roger-main-bf09717d-1')).toBe(false);
+		expect(podPattern.test('pg-roger-testing-f222277b-1')).toBe(false);
+	});
+
 	it('filters selected JSON log levels and includes numeric INFO and missing levels', () => {
 		expect(
 			buildLokiLogQuery({

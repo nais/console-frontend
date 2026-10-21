@@ -1,0 +1,22 @@
+query PostgresLogs($team: Slug!, $env: String!, $name: String!) {
+	team(slug: $team) {
+		environment(name: $env) {
+			postgres(name: $name) {
+				id
+				activeBranch {
+					id
+					name
+				}
+				branches(first: 20) @paginate(mode: Infinite) {
+					pageInfo {
+						hasNextPage
+					}
+					nodes {
+						id
+						name
+					}
+				}
+			}
+		}
+	}
+}

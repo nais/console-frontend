@@ -2,6 +2,7 @@
 	import {
 		createBufferedLogAppender,
 		filterLogsByLevel,
+		getLogInstanceColor,
 		getLogLevel,
 		parseLogMessage,
 		type LogLine
@@ -11,17 +12,18 @@
 	import { graphql } from '$houdini';
 	import {
 		Alert,
-		BodyShort,
 		Button,
 		Chips,
 		Label,
+		Search,
 		TextField,
 		ToggleChip,
 		ToggleGroup,
-		ToggleGroupItem
+		ToggleGroupItem,
+		Tooltip
 	} from '@nais/ds-svelte-community';
 	import { SortDownIcon, SortUpIcon } from '@nais/ds-svelte-community/icons';
-	import { onDestroy, onMount } from 'svelte';
+	import { onDestroy, onMount, type Snippet } from 'svelte';
 	import { SvelteSet } from 'svelte/reactivity';
 
 	type Props = {
@@ -36,6 +38,8 @@
 		hasLoki: boolean;
 		grafanaURL?: string;
 		tracesURL?: string;
+		filters?: Snippet;
+		formatInstanceName?: (instance: string) => string;
 	};
 
 	let {
@@ -49,7 +53,9 @@
 		startOnMount,
 		hasLoki,
 		grafanaURL,
-		tracesURL
+		tracesURL,
+		filters,
+		formatInstanceName
 	}: Props = $props();
 
 	const MAX_LOG_LINES = 200;
@@ -57,18 +63,6 @@
 	const MAX_PENDING_LOG_LINES = 5000;
 	const FLUSH_INTERVAL_MS = 100;
 	const commonLogLevels = ['TRACE', 'DEBUG', 'INFO', 'WARN', 'ERROR', 'FATAL'];
-	const colorRoles = [
-		'accent',
-		'success',
-		'warning',
-		'danger',
-		'brand-magenta',
-		'meta-purple',
-		'meta-lime',
-		'brand-beige',
-		'info',
-		'brand-blue'
-	] as const;
 	const logLevels = new SvelteSet<string>();
 	const selectedLogLevels = new SvelteSet<string>();
 
@@ -85,6 +79,11 @@
 	let subscriptionError = $state('');
 	let fromDateTime = $state(toDateTimeLocal(new Date(Date.now() - 60 * 60 * 1000)));
 	let searchText = $state('');
+	let filterTimeout: ReturnType<typeof setTimeout> | undefined;
+	let fromError = $derived.by(() => {
+		const time = new Date(fromDateTime).getTime();
+		return Number.isNaN(time) || time > Date.now() ? 'Enter a valid start time in the past.' : '';
+	});
 	let allLevelsSelected = $state(true);
 	let logOrder = $state<'newest' | 'oldest'>('newest');
 	let filteredLogs = $derived(
@@ -109,8 +108,9 @@
 	}
 
 	function colorForInstance(instance: string) {
-		const position = Math.max(instances.indexOf(instance), 0);
-		return colorRoles[(position * 7) % colorRoles.length];
+		return formatInstanceName
+			? getLogInstanceColor(formatInstanceName(instance))
+			: getLogInstanceColor(instance, instances);
 	}
 
 	let transitionId = 0;
@@ -189,10 +189,19 @@
 	let store = createStore(activeStreamId);
 
 	function start() {
+		clearTimeout(filterTimeout);
 		scheduleTransition(true);
 	}
 
+	function updateQueryFilters(delay = 0) {
+		clearTimeout(filterTimeout);
+		if (!shouldStream || fromError) return;
+		if (delay === 0) start();
+		else filterTimeout = setTimeout(start, delay);
+	}
+
 	function scheduleTransition(shouldStart: boolean) {
+		clearTimeout(filterTimeout);
 		const currentTransitionId = ++transitionId;
 		activeStreamId += 1;
 		shouldStream = shouldStart;
@@ -270,6 +279,7 @@
 	}
 
 	function displayInstance(instance: string): string {
+		if (formatInstanceName) return formatInstanceName(instance);
 		const prefix = podNamePrefix ?? `${workload}-`;
 		return instance.startsWith(prefix) ? instance.slice(prefix.length) : instance;
 	}
@@ -299,6 +309,7 @@
 	});
 
 	onDestroy(() => {
+		clearTimeout(filterTimeout);
 		destroyed = true;
 		transitionId += 1;
 		activeStreamId += 1;
@@ -323,26 +334,43 @@
 		{/if}
 
 		<div class="controls">
-			<div class="query-controls">
+			<div class={['query-controls', { 'has-additional-filters': Boolean(filters) }]}>
+				{#if filters}
+					<div class="additional-filters">
+						{@render filters()}
+					</div>
+				{/if}
 				<div class="from-control">
-					<TextField size="small" type="datetime-local" label="From" bind:value={fromDateTime} />
-				</div>
-				<div class="search-control">
 					<TextField
 						size="small"
-						type="search"
-						label="Search"
-						bind:value={searchText}
-						maxlength={256}
+						type="datetime-local"
+						label="From"
+						value={fromDateTime}
+						error={fromError}
+						onchange={(event) => {
+							fromDateTime = event.currentTarget.value;
+							updateQueryFilters();
+						}}
 					/>
 				</div>
-				<div class="apply-filters">
-					<Button size="small" variant="primary" onclick={start}>Apply filters</Button>
-				</div>
-				<div class="history-description">
-					<BodyShort size="small" textColor="subtle">
-						History starts at this time, then streams live.
-					</BodyShort>
+				<div class="search-control">
+					<Search
+						size="small"
+						variant="simple"
+						label="Search"
+						hideLabel={false}
+						clearButtonLabel="Clear search"
+						value={searchText}
+						onChange={(value) => {
+							searchText = value;
+							updateQueryFilters(300);
+						}}
+						onclear={() => {
+							searchText = '';
+							updateQueryFilters();
+						}}
+						maxlength={256}
+					/>
 				</div>
 			</div>
 			{#if instances.length > 0}
@@ -461,7 +489,11 @@
 				{#each displayedLogs as log (log.id)}
 					<div class="log-line">
 						<div class="date">{log.timestamp}</div>
-						<div class="instance">{displayInstance(log.instance)}</div>
+						<div class="instance">
+							<Tooltip content={log.instance}>
+								<span>{displayInstance(log.instance)}</span>
+							</Tooltip>
+						</div>
 						<div
 							class="instance-color"
 							data-color={colorForInstance(log.instance)}
@@ -496,9 +528,15 @@
 	}
 	.query-controls {
 		display: grid;
-		grid-template-columns: minmax(0, 26ch) minmax(0, 36ch) auto;
+		grid-template-columns: minmax(0, 26ch) minmax(0, 36ch);
 		align-items: end;
 		gap: var(--ax-space-8);
+	}
+	.query-controls.has-additional-filters {
+		grid-template-columns: minmax(0, 24ch) minmax(0, 26ch) minmax(0, 36ch);
+	}
+	.additional-filters {
+		min-width: 0;
 	}
 	.from-control {
 		display: flex;
@@ -509,12 +547,6 @@
 	.search-control {
 		min-width: 0;
 		max-width: 36ch;
-	}
-	.history-description {
-		grid-column: 1 / -1;
-	}
-	.apply-filters {
-		justify-self: start;
 	}
 	.controls > div:last-child {
 		display: flex;
@@ -578,15 +610,16 @@
 		text-align: right;
 	}
 	.instance-color {
-		min-width: var(--ax-space-1);
-		max-width: var(--ax-space-1);
+		min-width: var(--ax-space-2);
+		max-width: var(--ax-space-2);
 		border-radius: var(--ax-radius-4);
 	}
 	.paused {
 		text-align: center;
 	}
 	@media (max-width: 1024px) {
-		.query-controls {
+		.query-controls,
+		.query-controls.has-additional-filters {
 			grid-template-columns: minmax(0, 1fr);
 		}
 	}
