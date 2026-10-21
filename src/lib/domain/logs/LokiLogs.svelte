@@ -540,7 +540,7 @@
 		gap: var(--ax-space-8);
 	}
 	.specific-levels {
-		border-inline-start: 1px solid var(--ax-border-neutral-subtleA);
+		border-inline-start: var(--ax-space-1) solid var(--ax-border-neutral-subtleA);
 		padding-inline-start: var(--ax-space-8);
 	}
 	.log-wrapper {
