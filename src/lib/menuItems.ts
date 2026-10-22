@@ -1,12 +1,8 @@
 export const menuItems = ({
 	path,
-	features,
-	member,
-	postgresCount
+	features
 }: {
 	path: string;
-	member: boolean;
-	postgresCount: number;
 	features?: {
 		unleash: { enabled: boolean };
 		valkey: { enabled: boolean };
@@ -45,7 +41,7 @@ export const menuItems = ({
 			menuItem('Secrets', 'secrets', 'secret'),
 			menuItem('Configs', 'configs', 'config'),
 			menuItem('Cloud SQL', 'cloudsql', 'cloudsql'),
-			member && postgresCount > 0 && menuItem('Postgres', 'postgres', 'postgres'),
+			menuItem('Postgres', 'postgres', 'postgres'),
 			menuItem('Buckets', 'buckets', 'bucket'),
 			features?.valkey && menuItem('Valkey', 'valkey', 'valkey'),
 			features?.openSearch && menuItem('OpenSearch', 'opensearch', 'opensearch'),

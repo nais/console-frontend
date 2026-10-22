@@ -8,13 +8,8 @@
 	import { getTeamContext } from './teamContext.svelte';
 
 	const {
-		features,
-		member,
-		postgresCount
+		features
 	}: {
-		member: boolean;
-		isAdmin: boolean;
-		postgresCount: number;
 		features?: {
 			unleash: { enabled: boolean };
 			valkey: { enabled: boolean };
@@ -26,9 +21,7 @@
 	const items = $derived(
 		menuItems({
 			path: page.url.pathname,
-			features,
-			member,
-			postgresCount
+			features
 		})
 	);
 

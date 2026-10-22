@@ -8,14 +8,10 @@
 	import { createTeamContext } from './teamContext.svelte';
 
 	let { data, children }: LayoutProps = $props();
-	let { deletionInProgress, lastSuccessfulSync, UserInfo, viewerIsMember } = $derived(data);
+	let { deletionInProgress, lastSuccessfulSync, UserInfo } = $derived(data);
 
 	createTeamContext();
 	createHeaderActionsContext();
-
-	const isAdmin = $derived(
-		$UserInfo.data?.me.__typename === 'User' ? $UserInfo.data?.me.isAdmin : false
-	);
 </script>
 
 <div class="page">
@@ -32,12 +28,7 @@
 	{/if}
 
 	<main class="main">
-		<Menu
-			features={$UserInfo.data?.features}
-			member={viewerIsMember}
-			postgresCount={data.postgreses?.pageInfo.totalCount ?? 0}
-			{isAdmin}
-		/>
+		<Menu features={$UserInfo.data?.features} />
 		<div class="container">
 			<PageHeader>
 				{#snippet beforeBreadcrumbs()}
