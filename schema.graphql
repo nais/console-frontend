@@ -9970,6 +9970,8 @@ type Team implements ActivityLogger & Node {
     """Ordering options for items returned from the connection."""
     orderBy: VulnerabilitySummaryOrder
   ): WorkloadVulnerabilitySummaryConnection!
+
+  """Get the team's vulnerability summary. Label filters are not supported."""
   vulnerabilitySummary(filter: TeamVulnerabilitySummaryFilter): TeamVulnerabilitySummary!
   workloadUtilization(resourceType: UtilizationResourceType!): [WorkloadUtilizationData]!
 
@@ -11035,7 +11037,7 @@ input TeamVulnerabilitySummaryFilter {
   hasKevEntry: Boolean
 
   """
-  Match all user-defined workload label filters; an omitted value matches any value for the key.
+  Match all given workload labels; an omitted value matches any value for the key. Not supported by Team.vulnerabilitySummary.
   """
   labels: [LabelFilter!]
 
@@ -12778,7 +12780,7 @@ input VulnerabilitySummaryOrder {
   field: VulnerabilitySummaryOrderByField!
 
   """
-  Required only when field is LABEL. Missing label values sort last in either direction; ties sort by descending risk score, then workload identity.
+  Required for LABEL and not allowed otherwise. Missing label values sort last in either direction; ties sort by descending risk score, then workload identity.
   """
   labelKey: String
 }
@@ -12788,7 +12790,7 @@ enum VulnerabilitySummaryOrderByField {
   ENVIRONMENT
 
   """
-  Order team workloads alphabetically by the user-defined label selected by labelKey.
+  Order team workload summaries by the label selected by labelKey. Not supported for tenant-wide summaries.
   """
   LABEL
 
