@@ -273,6 +273,8 @@ describe('team vulnerability workload view', () => {
 							team: {
 								workloadsWithoutSbom: { pageInfo: { totalCount: 61 } },
 								workloads: { pageInfo: { totalCount: 62 } },
+								applications: { facets: { labels: [] } },
+								jobs: { facets: { labels: [] } },
 								vulnerabilitySummary: { sbomCount: 0 }
 							}
 						},
@@ -327,6 +329,8 @@ describe('team vulnerability workload view', () => {
 							team: {
 								workloadsWithoutSbom: { pageInfo: { totalCount: 0 } },
 								workloads: { pageInfo: { totalCount: 1 } },
+								applications: { facets: { labels: [] } },
+								jobs: { facets: { labels: [] } },
 								vulnerabilitySummary: { sbomCount: 0 }
 							}
 						},
