@@ -783,6 +783,24 @@ type Application implements ActivityLogger & Node & Workload {
     last: Int
   ): DeploymentConnection!
 
+  """Application events, newest first."""
+  events(
+    """Get items after this cursor."""
+    after: Cursor
+
+    """Get items before this cursor."""
+    before: Cursor
+
+    """Filter events by time."""
+    filter: WorkloadEventFilter
+
+    """Get the first n items, optionally after a cursor."""
+    first: Int
+
+    """Get the last n items before a cursor."""
+    last: Int
+  ): WorkloadEventConnection!
+
   """
   History of previous releases of this application, ordered by most recent first.
   """
@@ -4166,6 +4184,24 @@ type Job implements ActivityLogger & Node & Workload {
     """
     last: Int
   ): DeploymentConnection!
+
+  """Job events, newest first."""
+  events(
+    """Get items after this cursor."""
+    after: Cursor
+
+    """Get items before this cursor."""
+    before: Cursor
+
+    """Filter events by time."""
+    filter: WorkloadEventFilter
+
+    """Get the first n items, optionally after a cursor."""
+    first: Int
+
+    """Get the last n items before a cursor."""
+    last: Int
+  ): WorkloadEventConnection!
 
   """The globally unique ID of the job."""
   id: ID!
@@ -12944,6 +12980,24 @@ interface Workload implements ActivityLogger & Node {
     last: Int
   ): DeploymentConnection!
 
+  """Workload events, newest first."""
+  events(
+    """Get items after this cursor."""
+    after: Cursor
+
+    """Get items before this cursor."""
+    before: Cursor
+
+    """Filter events by time."""
+    filter: WorkloadEventFilter
+
+    """Get the first n items, optionally after a cursor."""
+    first: Int
+
+    """Get the last n items before a cursor."""
+    last: Int
+  ): WorkloadEventConnection!
+
   """The globally unique ID of the workload."""
   id: ID!
 
@@ -13149,6 +13203,66 @@ type WorkloadEdge {
   node: Workload!
 }
 
+"""A workload event."""
+interface WorkloadEvent implements Node {
+  """Unique event identifier."""
+  id: ID!
+
+  """Event summary."""
+  message: String!
+
+  """When the event occurred."""
+  triggeredAt: Time!
+}
+
+"""A paginated collection of events."""
+type WorkloadEventConnection {
+  """Events with their pagination cursors."""
+  edges: [WorkloadEventEdge!]!
+
+  """Events in this page."""
+  nodes: [WorkloadEvent!]!
+
+  """Pagination information."""
+  pageInfo: PageInfo!
+}
+
+"""An event with its pagination cursor."""
+type WorkloadEventEdge {
+  """Pagination cursor for the event."""
+  cursor: Cursor!
+
+  """The event."""
+  node: WorkloadEvent!
+}
+
+"""Event time bounds."""
+input WorkloadEventFilter {
+  """Only include events triggered at or after this timestamp."""
+  from: Time
+
+  """Only include events triggered before this timestamp."""
+  to: Time
+}
+
+"""A container restart."""
+type WorkloadKillingEvent implements Node & WorkloadEvent {
+  """Restarted container."""
+  container: String!
+
+  """Unique event identifier."""
+  id: ID!
+
+  """Event summary."""
+  message: String!
+
+  """Restart reason."""
+  reason: String!
+
+  """When the event occurred."""
+  triggeredAt: Time!
+}
+
 type WorkloadLogLine {
   """The name of the instance that generated the log line."""
   instance: String!
@@ -13322,6 +13436,33 @@ interface WorkloadResources {
 
   """Resources requested by the workload."""
   requests: WorkloadResourceQuantity!
+}
+
+"""A successful replica count change."""
+type WorkloadSuccessfulRescaleEvent implements Node & WorkloadEvent {
+  """Autoscaling direction."""
+  direction: WorkloadSuccessfulRescaleEventDirection!
+
+  """Unique event identifier."""
+  id: ID!
+
+  """Event summary."""
+  message: String!
+
+  """Replica count after an autoscaling event."""
+  newSize: Int!
+
+  """When the event occurred."""
+  triggeredAt: Time!
+}
+
+"""Autoscaling direction."""
+enum WorkloadSuccessfulRescaleEventDirection {
+  """Replica count decreased."""
+  DOWN
+
+  """Replica count increased."""
+  UP
 }
 
 """The type of a workload."""
