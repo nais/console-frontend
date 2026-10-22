@@ -17,7 +17,8 @@ import { readWorkloadLabelSelection } from '#lib/domain/vulnerability/workloadLa
 
 export async function load(event) {
 	const team = event.params.team;
-	const view = event.url.searchParams.get('view') === 'priority' ? 'priority' : 'severity';
+	const view: 'priority' | 'severity' =
+		event.url.searchParams.get('view') === 'priority' ? 'priority' : 'severity';
 	const environmentName = event.url.searchParams.get('environment') || null;
 	const { labels, labelKey, labelDirection } = readWorkloadLabelSelection(event.url.searchParams);
 	const direction = labelDirection === 'DESC' ? OrderDirection.DESC : OrderDirection.ASC;

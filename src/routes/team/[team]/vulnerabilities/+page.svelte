@@ -104,7 +104,7 @@
 					<TeamCveSearch team={teamSlug} />
 				</div>
 
-				{#key `${teamSlug}:${JSON.stringify(selection)}`}
+				{#key teamSlug}
 					<WorkloadsWithVulnerabilities
 						team={teamSlug}
 						high={TeamPriorityWorkloadsHigh}
