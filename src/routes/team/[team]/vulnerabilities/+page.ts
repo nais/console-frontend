@@ -50,9 +50,7 @@ export async function load(event) {
 						after: null,
 						before: null,
 						sbomStatus: noSboms ? null : SBOMStatus.NO_SBOM,
-						orderBy: { field: WorkloadOrderField.NAME, direction: OrderDirection.ASC },
-						environments: environmentName ? [environmentName] : null,
-						labels
+						orderBy: { field: WorkloadOrderField.NAME, direction: OrderDirection.ASC }
 					}
 				})
 			: { TeamNoSbomWorkloads: new TeamNoSbomWorkloadsStore() }),
