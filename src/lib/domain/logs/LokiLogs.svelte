@@ -300,8 +300,8 @@
 		if (shouldStream) start();
 	}
 
-	function selectAllLogLevels() {
-		allLevelsSelected = true;
+	function toggleAllLogLevels() {
+		allLevelsSelected = !allLevelsSelected;
 		selectedLogLevels.clear();
 		if (shouldStream) start();
 	}
@@ -445,7 +445,7 @@
 								selected={allLevelsSelected}
 								onclickcapture={(event: MouseEvent) => {
 									event.stopImmediatePropagation();
-									selectAllLogLevels();
+									toggleAllLogLevels();
 								}}
 							/>
 						</Chips>
