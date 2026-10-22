@@ -1,6 +1,6 @@
 dependencies:
   - allOf:
-      - fqdn-policy
+      - fqdn-policy-crds
       - nais-api
 environmentKinds:
   - management
