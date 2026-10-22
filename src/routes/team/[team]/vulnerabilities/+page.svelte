@@ -78,7 +78,7 @@
 		{/if}
 
 		{#if noSboms || missingSbomCount > 0}
-			{#key `${teamSlug}:${JSON.stringify(selection)}`}
+			{#key JSON.stringify( [teamSlug, noSboms, noSboms ? workloadCount : missingSbomCount, selection.environmentName, selection.labels] )}
 				<WorkloadsWithoutSbom
 					count={noSboms ? workloadCount : missingSbomCount}
 					allWithoutUsableSbom={noSboms}
