@@ -9,9 +9,10 @@
 		labels: LabelFacet[];
 		selectedLabels: string[];
 		onLabelsChange: (selected: string[]) => void;
+		disabled?: boolean;
 	}
 
-	let { labels, selectedLabels, onLabelsChange }: Props = $props();
+	let { labels, selectedLabels, onLabelsChange, disabled = false }: Props = $props();
 
 	function labelId(label: LabelFacet): string {
 		return `${label.key}:${label.value}`;
@@ -38,6 +39,7 @@
 				<input
 					type="checkbox"
 					checked={selectedLabels.includes(labelId(facet))}
+					{disabled}
 					onchange={() => toggleLabel(facet)}
 				/>
 				<span title={display} class="facet-label">{display}</span>
