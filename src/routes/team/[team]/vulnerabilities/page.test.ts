@@ -261,6 +261,13 @@ describe('team vulnerability workload view', () => {
 				params: { team: 'mango-panda' },
 				data: {
 					teamSlug: 'mango-panda',
+					selection: {
+						environmentName: null,
+						labels: [],
+						labelKey: '',
+						labelDirection: 'ASC',
+						view: 'severity'
+					},
 					TeamVulnerabilities: writable({
 						data: {
 							team: {
@@ -308,6 +315,13 @@ describe('team vulnerability workload view', () => {
 				params: { team: 'mango-panda' },
 				data: {
 					teamSlug: 'mango-panda',
+					selection: {
+						environmentName: null,
+						labels: [],
+						labelKey: '',
+						labelDirection: 'ASC',
+						view: 'severity'
+					},
 					TeamVulnerabilities: writable({
 						data: {
 							team: {
