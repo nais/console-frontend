@@ -46,7 +46,12 @@ export default defineConfig((mode) => {
 			})
 		],
 		optimizeDeps: {
-			exclude: ['svelte-highlight']
+			exclude: ['svelte-highlight'],
+			rolldownOptions: {
+				// Vite scans .svelte subpaths before applying optimizeDeps.exclude.
+				// Leave these components to the Svelte plugin instead of the dependency scanner.
+				external: [/^svelte-highlight\/.*\.svelte$/]
+			}
 		},
 		server: {
 			host: '0.0.0.0',
