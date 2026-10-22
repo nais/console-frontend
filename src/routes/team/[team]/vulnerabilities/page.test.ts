@@ -255,15 +255,15 @@ describe('team vulnerability workload view', () => {
 		expect(loadHigh).not.toHaveBeenCalled();
 	});
 
-	it('shows the no-data state and a collapsed list when SBOM counts disagree', async () => {
+	it('offers a reset when filters hide all workloads without usable SBOMs', async () => {
 		const { body } = await render(TeamVulnerabilityPage, {
 			props: {
 				params: { team: 'mango-panda' },
 				data: {
 					teamSlug: 'mango-panda',
 					selection: {
-						environmentName: null,
-						labels: [],
+						environmentName: 'dev-fss',
+						labels: [{ key: 'owner', value: 'retired' }],
 						labelKey: '',
 						labelDirection: 'ASC',
 						view: 'severity'
@@ -286,13 +286,13 @@ describe('team vulnerability workload view', () => {
 								workloads: {
 									nodes: [],
 									pageInfo: {
-										totalCount: 61,
-										hasNextPage: true,
+										totalCount: 0,
+										hasNextPage: false,
 										hasPreviousPage: false,
-										pageStart: 1,
-										pageEnd: 20,
-										startCursor: 'cursor-1',
-										endCursor: 'cursor-20'
+										pageStart: 0,
+										pageEnd: 0,
+										startCursor: null,
+										endCursor: null
 									}
 								}
 							}
@@ -307,8 +307,9 @@ describe('team vulnerability workload view', () => {
 		expect(body).toContain('No usable SBOMs are available for this team');
 		expect(body).toContain('61 workloads have no');
 		expect(body).toContain('<details>');
-		expect(body).toContain('Workloads without usable SBOM (62)');
+		expect(body).toContain('Workloads without usable SBOM (0)');
 		expect(body).not.toContain('Workload Vulnerabilities');
+		expect(body).toContain('Clear workload filters');
 	});
 
 	it('identifies a workload when the team has no usable SBOM but no NO_SBOM status', async () => {
@@ -369,6 +370,7 @@ describe('team vulnerability workload view', () => {
 		});
 
 		expect(body).toContain('Workloads without usable SBOM (1)');
+		expect(body).not.toContain('Clear workload filters');
 		expect(body).toMatch(/vulnerability data is unavailable for\s+1\s+workload\./);
 		expect(body).not.toContain('1 workload has no SBOM.');
 		expect(body).not.toContain('documentation .');

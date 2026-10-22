@@ -8,8 +8,9 @@
 	import WorkloadsWithVulnerabilities from '#lib/domain/vulnerability/WorkloadsWithVulnerabilities.svelte';
 	import ExternalLink from '#lib/ui/ExternalLink.svelte';
 	import { mergeWorkloadLabelFacets } from '#lib/domain/vulnerability/workloadLabels.js';
+	import { changeParams } from '#lib/utils/searchparams.js';
 	import GraphErrors from '#lib/ui/GraphErrors.svelte';
-	import { Alert, BodyLong, Heading } from '@nais/ds-svelte-community';
+	import { Alert, BodyLong, Button, Heading } from '@nais/ds-svelte-community';
 	import type { PageProps } from './$types';
 
 	let { data }: PageProps = $props();
@@ -52,6 +53,18 @@
 				<ExternalLink href={docURL('/services/vulnerabilities/how-to/sbom/')}
 					>Nais documentation</ExternalLink
 				>.
+				{#if selection.environmentName || selection.labels.length > 0}
+					<div>
+						<Button
+							variant="secondary"
+							size="small"
+							onclick={() =>
+								changeParams({ environment: '', labels: '' }, { noScroll: true, keepFocus: true })}
+						>
+							Clear workload filters
+						</Button>
+					</div>
+				{/if}
 			</Alert>
 		{:else if missingSbomCount > 0}
 			<Alert variant="warning">
