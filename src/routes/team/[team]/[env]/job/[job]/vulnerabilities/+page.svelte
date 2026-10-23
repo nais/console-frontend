@@ -20,10 +20,11 @@
 			if (document.hidden || $JobImageDetails.fetching || !$JobImageDetails.variables) return;
 			ticks++;
 			const workload = $JobImageDetails.data?.team.environment.workload;
-			const image = workload && 'image' in workload ? workload.image : undefined;
+			const image = workload?.__typename === 'Job' ? workload.image : undefined;
 			const identity =
-				image &&
-				`${$JobImageDetails.data?.team.slug}/${$JobImageDetails.data?.team.environment.environment.name}/${workload?.name}/${image.id}`;
+				workload?.__typename === 'Job'
+					? `${$JobImageDetails.data?.team.slug}/${$JobImageDetails.data?.team.environment.environment.name}/${workload.name}/${workload.image.id}`
+					: undefined;
 			const previousUpdatedAt = image?.vulnerabilitySummary?.lastUpdated?.getTime();
 			if (identity && refreshedIdentity !== identity) {
 				refreshedIdentity = identity;
@@ -40,16 +41,16 @@
 				});
 				const updatedWorkload = result.data?.team.environment.workload;
 				const updatedImage =
-					updatedWorkload && 'image' in updatedWorkload ? updatedWorkload.image : undefined;
+					updatedWorkload?.__typename === 'Job' ? updatedWorkload.image : undefined;
 				const updatedIdentity =
-					updatedImage &&
-					`${result.data?.team.slug}/${result.data?.team.environment.environment.name}/${updatedWorkload?.name}/${updatedImage.id}`;
+					updatedWorkload?.__typename === 'Job'
+						? `${result.data?.team.slug}/${result.data?.team.environment.environment.name}/${updatedWorkload.name}/${updatedWorkload.image.id}`
+						: undefined;
 				const currentWorkload = $JobImageDetails.data?.team.environment.workload;
-				const currentImage =
-					currentWorkload && 'image' in currentWorkload ? currentWorkload.image : undefined;
 				const currentIdentity =
-					currentImage &&
-					`${$JobImageDetails.data?.team.slug}/${$JobImageDetails.data?.team.environment.environment.name}/${currentWorkload?.name}/${currentImage.id}`;
+					currentWorkload?.__typename === 'Job'
+						? `${$JobImageDetails.data?.team.slug}/${$JobImageDetails.data?.team.environment.environment.name}/${currentWorkload.name}/${currentWorkload.image.id}`
+						: undefined;
 				if (
 					identity &&
 					identity === updatedIdentity &&
