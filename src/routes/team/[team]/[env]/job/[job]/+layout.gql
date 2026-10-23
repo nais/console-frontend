@@ -3,6 +3,12 @@ query JobLayout($job: String!, $team: Slug!, $env: String!) {
 		environment(name: $env) {
 			job(name: $job) {
 				deletionStartedAt
+				image {
+					id
+					vulnerabilitySummary {
+						lastUpdated
+					}
+				}
 				...Manifest
 			}
 		}

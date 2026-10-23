@@ -17,7 +17,7 @@ import { get } from 'svelte/store';
 export async function load(event) {
 	const team = event.params.team;
 	// Only the initial view is loaded here; the toggle fetches the other one on demand.
-	const view = event.untrack(() =>
+	const view = event.untrack((): 'priority' | 'severity' =>
 		event.url.searchParams.get('view') === 'priority' ? 'priority' : 'severity'
 	);
 
@@ -32,6 +32,8 @@ export async function load(event) {
 	const noSboms = workloadCount > 0 && teamData?.vulnerabilitySummary?.sbomCount === 0;
 
 	return {
+		initialView: view,
+		preloadedView: noSboms ? null : view,
 		...(await addPageMeta(event, {
 			title: 'Vulnerabilities',
 			docPath: '/services/vulnerabilities'

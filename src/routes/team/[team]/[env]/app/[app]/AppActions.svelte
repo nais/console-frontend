@@ -2,6 +2,7 @@
 	import { page } from '$app/state';
 	import { graphql, type Manifest as ManifestFragment } from '$houdini';
 	import Manifest from '#lib/domain/resources/Manifest.svelte';
+	import ReanalyzeWorkload from '#lib/domain/vulnerability/ReanalyzeWorkload.svelte';
 	import ActionConfirm from '#lib/ui/ActionConfirm.svelte';
 	import HeaderActions from '#lib/ui/HeaderActions.svelte';
 	import PageModal, { pageModalClick } from '#lib/ui/PageModal.svelte';
@@ -27,7 +28,12 @@
 
 	interface Props {
 		viewerIsMember: boolean;
-		app: (ManifestFragment & { deletionStartedAt: Date | null }) | null;
+		app:
+			| (ManifestFragment & {
+					deletionStartedAt: Date | null;
+					image: { vulnerabilitySummary: { lastUpdated: Date | null } | null };
+			  })
+			| null;
 	}
 
 	let { viewerIsMember, app }: Props = $props();
@@ -66,6 +72,8 @@
 	`);
 
 	let restart = $state(false);
+	let reanalysis: { request: () => Promise<void> } | undefined = $state();
+	let requestingReanalysis = $state(false);
 	let stop = $state(false);
 	let showManifest = $state(false);
 
@@ -120,6 +128,18 @@
 		{#if viewerIsMember}
 			<button
 				class="action-menu-button"
+				onclick={() => void reanalysis?.request()}
+				disabled={!reanalysis || requestingReanalysis || app?.deletionStartedAt !== null}
+			>
+				<ActionMenuItem
+					icon={ArrowCirclepathIcon}
+					disabled={!reanalysis || requestingReanalysis || app?.deletionStartedAt !== null}
+				>
+					Reanalyze vulnerabilities
+				</ActionMenuItem>
+			</button>
+			<button
+				class="action-menu-button"
 				onclick={openRestart}
 				disabled={app?.deletionStartedAt !== null}
 			>
@@ -169,6 +189,18 @@
 		{/if}
 	</ActionMenu>
 </HeaderActions>
+
+{#if viewerIsMember && teamSlug && environment && application}
+	<ReanalyzeWorkload
+		bind:this={reanalysis}
+		bind:requesting={requestingReanalysis}
+		team={teamSlug}
+		{environment}
+		name={application}
+		type="app"
+		lastUpdated={app?.image.vulnerabilitySummary?.lastUpdated ?? null}
+	/>
+{/if}
 
 <ActionConfirm bind:open={restart} onconfirm={submitRestart}>
 	{#snippet header()}

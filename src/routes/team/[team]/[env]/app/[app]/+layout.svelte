@@ -67,7 +67,9 @@
 </script>
 
 {#if app}
-	<AppActions {viewerIsMember} {app} />
+	{#key `${page.params.team}/${page.params.env}/app/${page.params.app}`}
+		<AppActions {viewerIsMember} {app} />
+	{/key}
 {/if}
 
 {#if visibleTabs.length > 0}
