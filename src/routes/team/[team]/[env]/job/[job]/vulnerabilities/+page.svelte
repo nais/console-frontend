@@ -10,6 +10,7 @@
 	let { JobImageDetails, viewerIsMember } = $derived(data);
 
 	let refreshError = $state('');
+	let vulnerabilitiesPage: { refreshLoadedFindings: () => Promise<void> } | undefined = $state();
 
 	onMount(() => {
 		let ticks = 0;
@@ -18,14 +19,26 @@
 			ticks++;
 			const workload = $JobImageDetails.data?.team.environment.workload;
 			const image = workload && 'image' in workload ? workload.image : undefined;
+			const previousImageId = image?.id;
+			const previousUpdatedAt = image?.vulnerabilitySummary?.lastUpdated?.getTime();
 			const processing =
 				image?.sbom.status === 'PROCESSING' || !!image?.vulnerabilitySummary?.staleImageTag;
 			if (!processing && ticks % 3 !== 0) return;
 			try {
-				await JobImageDetails.fetch({
+				const result = await JobImageDetails.fetch({
 					policy: 'NetworkOnly',
 					variables: { ...$JobImageDetails.variables }
 				});
+				const updatedWorkload = result.data?.team.environment.workload;
+				const updatedImage =
+					updatedWorkload && 'image' in updatedWorkload ? updatedWorkload.image : undefined;
+				if (
+					previousImageId === updatedImage?.id &&
+					updatedImage?.vulnerabilitySummary?.lastUpdated &&
+					updatedImage.vulnerabilitySummary.lastUpdated.getTime() !== previousUpdatedAt
+				) {
+					await vulnerabilitiesPage?.refreshLoadedFindings();
+				}
 				refreshError = '';
 			} catch {
 				refreshError = 'Could not refresh vulnerability data. Reload the page to try again.';
@@ -41,5 +54,9 @@
 {#if refreshError}<Alert variant="error">{refreshError}</Alert>{/if}
 
 {#if $JobImageDetails.data}
-	<WorkloadVulnerabilitiesPage data={$JobImageDetails.data} {viewerIsMember} />
+	<WorkloadVulnerabilitiesPage
+		bind:this={vulnerabilitiesPage}
+		data={$JobImageDetails.data}
+		{viewerIsMember}
+	/>
 {/if}

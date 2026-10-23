@@ -10,6 +10,7 @@
 	let { ApplicationImageDetails, viewerIsMember } = $derived(data);
 
 	let refreshError = $state('');
+	let vulnerabilitiesPage: { refreshLoadedFindings: () => Promise<void> } | undefined = $state();
 
 	onMount(() => {
 		let ticks = 0;
@@ -23,14 +24,26 @@
 			ticks++;
 			const workload = $ApplicationImageDetails.data?.team.environment.workload;
 			const image = workload && 'image' in workload ? workload.image : undefined;
+			const previousImageId = image?.id;
+			const previousUpdatedAt = image?.vulnerabilitySummary?.lastUpdated?.getTime();
 			const processing =
 				image?.sbom.status === 'PROCESSING' || !!image?.vulnerabilitySummary?.staleImageTag;
 			if (!processing && ticks % 3 !== 0) return;
 			try {
-				await ApplicationImageDetails.fetch({
+				const result = await ApplicationImageDetails.fetch({
 					policy: 'NetworkOnly',
 					variables: { ...$ApplicationImageDetails.variables }
 				});
+				const updatedWorkload = result.data?.team.environment.workload;
+				const updatedImage =
+					updatedWorkload && 'image' in updatedWorkload ? updatedWorkload.image : undefined;
+				if (
+					previousImageId === updatedImage?.id &&
+					updatedImage?.vulnerabilitySummary?.lastUpdated &&
+					updatedImage.vulnerabilitySummary.lastUpdated.getTime() !== previousUpdatedAt
+				) {
+					await vulnerabilitiesPage?.refreshLoadedFindings();
+				}
 				refreshError = '';
 			} catch {
 				refreshError = 'Could not refresh vulnerability data. Reload the page to try again.';
@@ -47,6 +60,7 @@
 
 {#if $ApplicationImageDetails.data}
 	<WorkloadVulnerabilitiesPage
+		bind:this={vulnerabilitiesPage}
 		data={$ApplicationImageDetails.data}
 		{viewerIsMember}
 		hasPagination

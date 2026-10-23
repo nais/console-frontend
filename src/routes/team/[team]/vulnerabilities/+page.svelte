@@ -6,6 +6,7 @@
 	import ReanalyzeVulnerabilities from '#lib/domain/vulnerability/ReanalyzeVulnerabilities.svelte';
 	import {
 		getReanalysisReceipts,
+		mergeReanalysisReceipts,
 		type ReanalysisReceipt
 	} from '#lib/domain/vulnerability/reanalysisReceipt.js';
 	import TeamVulnerabilityHistoryGraph from '#lib/domain/vulnerability/TeamVulnerabilityHistoryGraph.svelte';
@@ -36,10 +37,7 @@
 		if (team !== teamSlug) return;
 		receiptState = {
 			team: teamSlug,
-			receipts: [
-				...receipts.filter((saved) => saved.environment !== requested.environment),
-				requested
-			]
+			receipts: mergeReanalysisReceipts(receipts, requested)
 		};
 	}
 
