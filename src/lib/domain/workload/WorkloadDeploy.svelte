@@ -1,4 +1,7 @@
 <script lang="ts">
+	import Meta from '#lib/domain/activity/Meta.svelte';
+	import GitHubIcon from '#lib/icons/GitHubIcon.svelte';
+	import SurfaceCard from '#lib/ui/SurfaceCard.svelte';
 	import {
 		DeploymentStatusState,
 		fragment,
@@ -6,9 +9,6 @@
 		type DeploymentStatusState$options,
 		type WorkloadDeploy
 	} from '$houdini';
-	import Meta from '#lib/domain/activity/Meta.svelte';
-	import GitHubIcon from '#lib/icons/GitHubIcon.svelte';
-	import SurfaceCard from '#lib/ui/SurfaceCard.svelte';
 	import { BodyShort, Tag, Tooltip } from '@nais/ds-svelte-community';
 	import { ExternalLinkIcon } from '@nais/ds-svelte-community/icons';
 
@@ -24,11 +24,38 @@
 					workload,
 					graphql(`
 						fragment WorkloadDeploy on Workload {
+							__typename
+							activityLog(
+								first: 1
+								filter: {
+									activityTypes: [
+										DEPLOYMENT
+										APPLICATION_UPDATED
+										JOB_UPDATED
+										GENERIC_KUBERNETES_RESOURCE_CREATED
+									]
+								}
+							) {
+								nodes {
+									__typename
+									createdAt
+									actor
+									gitHubActorClaims {
+										actor
+										repository
+										runID
+									}
+									... on DeploymentActivityLogEntry {
+										data {
+											triggerURL
+										}
+									}
+								}
+							}
 							deployments(first: 1) {
 								nodes {
 									createdAt
 									repository
-									commitSha
 									deployerUsername
 									triggerUrl
 									statuses {
@@ -44,12 +71,28 @@
 			: null
 	);
 
-	let deploymentInfo = $derived(
-		$data?.deployments.nodes.length ? $data.deployments.nodes[0] : null
-	);
+	let deploymentInfo = $derived.by(() => {
+		const deployment = $data?.deployments.nodes[0];
+		const entry = $data?.activityLog.nodes.at(0);
+		if (entry && (!deployment || entry.createdAt > deployment.createdAt)) {
+			const claims = entry.gitHubActorClaims;
+			return {
+				createdAt: entry.createdAt,
+				repository: claims?.repository,
+				deployerUsername: claims?.actor || entry.actor,
+				triggerUrl:
+					(entry.__typename === 'DeploymentActivityLogEntry' && entry.data.triggerURL) ||
+					(claims ? `https://github.com/${claims.repository}/actions/runs/${claims.runID}` : null),
+				status: null
+			};
+		}
+		return deployment
+			? { ...deployment, status: deployment.statuses.nodes[0]?.state ?? ('UNKNOWN' as const) }
+			: null;
+	});
 
-	let deploymentStatus: 'UNKNOWN' | DeploymentStatusState$options = $derived.by(
-		() => deploymentInfo?.statuses.nodes[0]?.state ?? 'UNKNOWN'
+	let deploymentStatus: 'UNKNOWN' | DeploymentStatusState$options = $derived(
+		deploymentInfo?.status ?? 'UNKNOWN'
 	);
 
 	let statusPill: {
@@ -79,17 +122,17 @@
 
 <SurfaceCard title="Latest deployment">
 	{#snippet headerAside()}
-		{#if deploymentInfo}
+		{#if deploymentInfo?.status}
 			<Tag size="xsmall" variant={statusPill.variant}>{statusPill.label}</Tag>
 		{/if}
 	{/snippet}
 
 	{#if deploymentInfo}
 		<div class="details">
-			{#if deploymentInfo.repository}
+			{#if deploymentInfo.repository || workflowUrl}
 				<span class="workflow-row">
 					<GitHubIcon size="14px" />
-					<span class="repo-name">{deploymentInfo.repository}</span>
+					<span class="repo-name">{deploymentInfo.repository ?? 'Deployment workflow'}</span>
 					{#if workflowUrl}
 						<Tooltip content="View workflow on GitHub" placement="top">
 							<a
