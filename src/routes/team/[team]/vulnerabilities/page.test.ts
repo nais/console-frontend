@@ -176,8 +176,9 @@ describe('team vulnerability workload view', () => {
 	});
 
 	it('loads all workloads on first navigation', async () => {
-		await load(event());
+		const result = await load(event());
 
+		expect(result.initialView).toBe('severity');
 		expect(loadSeverity).toHaveBeenCalledOnce();
 		expect(loadSeverity).toHaveBeenCalledWith(
 			expect.objectContaining({
@@ -190,8 +191,9 @@ describe('team vulnerability workload view', () => {
 	});
 
 	it('loads priority groups when the view is selected', async () => {
-		await load(event('?view=priority'));
+		const result = await load(event('?view=priority'));
 
+		expect(result.initialView).toBe('priority');
 		expect(loadHigh).toHaveBeenCalledOnce();
 		expect(loadSeverity).not.toHaveBeenCalled();
 	});

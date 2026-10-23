@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { afterNavigate } from '$app/navigation';
+	import { OrderDirection, SBOMStatus, WorkloadOrderField } from '$houdini';
 	import TeamCveSearch from '#lib/domain/vulnerability/TeamCveSearch.svelte';
 	import TeamMeanTimeToFixHistoryGraph from '#lib/domain/vulnerability/TeamMeanTimeToFixHistoryGraph.svelte';
 	import ReanalyzeVulnerabilities from '#lib/domain/vulnerability/ReanalyzeVulnerabilities.svelte';
@@ -26,10 +28,12 @@
 	} = $derived(data);
 
 	let refreshError = $state('');
+	let receiptError = $state('');
 	let receiptState = $state<{ team: string; receipts: ReanalysisReceipt[] } | null>(null);
 	let receipts = $derived(receiptState?.team === teamSlug ? receiptState.receipts : []);
 
-	function handleReceipt(requested: ReanalysisReceipt) {
+	function handleReceipt(team: string, requested: ReanalysisReceipt) {
+		if (team !== teamSlug) return;
 		receiptState = {
 			team: teamSlug,
 			receipts: [
@@ -39,31 +43,60 @@
 		};
 	}
 
-	onMount(() => {
+	afterNavigate(() => {
+		const currentTeam = teamSlug;
 		try {
-			receiptState = { team: teamSlug, receipts: getReanalysisReceipts(['team', teamSlug]) };
+			receiptState = { team: currentTeam, receipts: getReanalysisReceipts(['team', currentTeam]) };
+			receiptError = '';
 		} catch {
-			refreshError = 'Could not restore the previous reanalysis request.';
+			receiptState = null;
+			receiptError = 'Could not restore the previous reanalysis request.';
 		}
+	});
+
+	onMount(() => {
 		const interval = window.setInterval(async () => {
-			if (document.hidden || $TeamVulnerabilities.fetching || !$TeamVulnerabilities.variables)
+			const currentTeam = teamSlug;
+			if (
+				document.hidden ||
+				$TeamVulnerabilities.fetching ||
+				$TeamVulnerabilities.variables?.team !== currentTeam
+			)
 				return;
 			try {
-				await Promise.all([
-					TeamVulnerabilities.fetch({
+				const result = await TeamVulnerabilities.fetch({
+					policy: 'NetworkOnly',
+					variables: { ...$TeamVulnerabilities.variables }
+				});
+				if (currentTeam !== teamSlug) return;
+				const team = result.data?.team;
+				if (!team) throw new Error('Could not load vulnerability summary.');
+				const missing = team.workloadsWithoutSbom.pageInfo.totalCount;
+				const total = team.workloads.pageInfo.totalCount;
+				const noSboms = total > 0 && team.vulnerabilitySummary?.sbomCount === 0;
+				if ((noSboms || missing > 0) && !$TeamNoSbomWorkloads.fetching) {
+					const previous = $TeamNoSbomWorkloads.variables;
+					const sbomStatus = noSboms ? null : SBOMStatus.NO_SBOM;
+					await TeamNoSbomWorkloads.fetch({
 						policy: 'NetworkOnly',
-						variables: { ...$TeamVulnerabilities.variables }
-					}),
-					$TeamNoSbomWorkloads.variables && !$TeamNoSbomWorkloads.fetching
-						? TeamNoSbomWorkloads.fetch({
-								policy: 'NetworkOnly',
-								variables: { ...$TeamNoSbomWorkloads.variables }
-							})
-						: null
-				]);
-				refreshError = '';
+						variables:
+							previous?.team === currentTeam && previous.sbomStatus === sbomStatus
+								? { ...previous }
+								: {
+										team: currentTeam,
+										first: 20,
+										last: null,
+										after: null,
+										before: null,
+										sbomStatus,
+										orderBy: { field: WorkloadOrderField.NAME, direction: OrderDirection.ASC }
+									}
+					});
+				}
+				if (currentTeam === teamSlug) refreshError = '';
 			} catch {
-				refreshError = 'Could not refresh vulnerability data. Reload the page to try again.';
+				if (currentTeam === teamSlug)
+					refreshError = 'Could not refresh vulnerability data. Reload the page to try again.';
 			}
 		}, 60_000);
 		return () => window.clearInterval(interval);
@@ -71,6 +104,7 @@
 </script>
 
 <GraphErrors errors={$TeamVulnerabilities.errors} />
+{#if receiptError}<Alert variant="error">{receiptError}</Alert>{/if}
 {#if refreshError}<Alert variant="error">{refreshError}</Alert>{/if}
 
 {#if $TeamVulnerabilities.data}
@@ -136,6 +170,7 @@
 				{#key teamSlug}
 					<WorkloadsWithVulnerabilities
 						team={teamSlug}
+						initialView={data.initialView}
 						{receipts}
 						high={TeamPriorityWorkloadsHigh}
 						severity={TeamSeverityWorkloads}

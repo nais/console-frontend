@@ -32,6 +32,7 @@ export async function load(event) {
 	const noSboms = workloadCount > 0 && teamData?.vulnerabilitySummary?.sbomCount === 0;
 
 	return {
+		initialView: view,
 		...(await addPageMeta(event, {
 			title: 'Vulnerabilities',
 			docPath: '/services/vulnerabilities'
