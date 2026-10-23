@@ -168,10 +168,22 @@
 				</div>
 
 				{#key teamSlug}
+					{#snippet reanalysisAction()}
+						{#if $TeamVulnerabilities.data}
+							<ReanalyzeVulnerabilities
+								team={teamSlug}
+								onreceipt={handleReceipt}
+								environments={$TeamVulnerabilities.data.team.environments.map(
+									(env) => env.environment.name
+								)}
+							/>
+						{/if}
+					{/snippet}
 					<WorkloadsWithVulnerabilities
 						team={teamSlug}
 						initialView={data.initialView}
 						{receipts}
+						reanalysis={viewerIsMember ? reanalysisAction : undefined}
 						high={TeamPriorityWorkloadsHigh}
 						severity={TeamSeverityWorkloads}
 						environmentNames={$TeamVulnerabilities.data.team.environments.map(
@@ -183,19 +195,7 @@
 							?.elevatedWorkloadCount}
 						monitorWorkloadCount={$TeamVulnerabilities.data.team.vulnerabilitySummary
 							?.monitorWorkloadCount}
-					>
-						{#snippet reanalysis()}
-							{#if viewerIsMember && $TeamVulnerabilities.data}
-								<ReanalyzeVulnerabilities
-									team={teamSlug}
-									onreceipt={handleReceipt}
-									environments={$TeamVulnerabilities.data.team.environments.map(
-										(env) => env.environment.name
-									)}
-								/>
-							{/if}
-						{/snippet}
-					</WorkloadsWithVulnerabilities>
+					/>
 				{/key}
 			</section>
 
