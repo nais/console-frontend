@@ -13,13 +13,15 @@ import {
 } from '$houdini';
 import { addPageMeta } from '#lib/utils/pageMeta.js';
 import { get } from 'svelte/store';
+import { readWorkloadLabelSelection } from '#lib/domain/vulnerability/workloadLabels.js';
 
 export async function load(event) {
 	const team = event.params.team;
-	// Only the initial view is loaded here; the toggle fetches the other one on demand.
-	const view = event.untrack(() =>
-		event.url.searchParams.get('view') === 'priority' ? 'priority' : 'severity'
-	);
+	const view: 'priority' | 'severity' =
+		event.url.searchParams.get('view') === 'priority' ? 'priority' : 'severity';
+	const environmentName = event.url.searchParams.get('environment') || null;
+	const { labels, labelKey, labelDirection } = readWorkloadLabelSelection(event.url.searchParams);
+	const direction = labelDirection === 'DESC' ? OrderDirection.DESC : OrderDirection.ASC;
 
 	const teamVulnerabilities = await load_TeamVulnerabilities({
 		event,
@@ -32,6 +34,7 @@ export async function load(event) {
 	const noSboms = workloadCount > 0 && teamData?.vulnerabilitySummary?.sbomCount === 0;
 
 	return {
+		selection: { environmentName, labels, labelKey, labelDirection, view },
 		...(await addPageMeta(event, {
 			title: 'Vulnerabilities',
 			docPath: '/services/vulnerabilities'
@@ -54,11 +57,17 @@ export async function load(event) {
 		...(view === 'priority' && !noSboms
 			? await load_TeamPriorityWorkloadsHigh({
 					event,
+					blocking: true,
 					variables: {
 						team,
+						environmentName,
+						labels,
 						orderBy: {
-							field: VulnerabilitySummaryOrderByField.VULNERABILITY_RISK_SCORE,
-							direction: OrderDirection.DESC
+							field: labelKey
+								? VulnerabilitySummaryOrderByField.LABEL
+								: VulnerabilitySummaryOrderByField.VULNERABILITY_RISK_SCORE,
+							direction: labelKey ? direction : OrderDirection.DESC,
+							...(labelKey ? { labelKey } : {})
 						}
 					}
 				})
@@ -66,11 +75,17 @@ export async function load(event) {
 		...(view === 'severity' && !noSboms
 			? await load_TeamSeverityWorkloads({
 					event,
+					blocking: true,
 					variables: {
 						team,
+						environmentName,
+						labels,
 						orderBy: {
-							field: VulnerabilitySummaryOrderByField.VULNERABILITY_SEVERITY_CRITICAL,
-							direction: OrderDirection.DESC
+							field: labelKey
+								? VulnerabilitySummaryOrderByField.LABEL
+								: VulnerabilitySummaryOrderByField.VULNERABILITY_SEVERITY_CRITICAL,
+							direction: labelKey ? direction : OrderDirection.DESC,
+							...(labelKey ? { labelKey } : {})
 						}
 					}
 				})

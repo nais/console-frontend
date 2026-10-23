@@ -7,6 +7,7 @@
 	import WorkloadsWithoutSbom from '#lib/domain/vulnerability/WorkloadsWithoutSbom.svelte';
 	import WorkloadsWithVulnerabilities from '#lib/domain/vulnerability/WorkloadsWithVulnerabilities.svelte';
 	import ExternalLink from '#lib/ui/ExternalLink.svelte';
+	import { mergeWorkloadLabelFacets } from '#lib/domain/vulnerability/workloadLabels.js';
 	import GraphErrors from '#lib/ui/GraphErrors.svelte';
 	import { Alert, BodyLong, Heading } from '@nais/ds-svelte-community';
 	import type { PageProps } from './$types';
@@ -17,8 +18,15 @@
 		TeamNoSbomWorkloads,
 		TeamPriorityWorkloadsHigh,
 		TeamSeverityWorkloads,
-		teamSlug
+		teamSlug,
+		selection
 	} = $derived(data);
+	const labelFacets = $derived(
+		mergeWorkloadLabelFacets(
+			$TeamVulnerabilities.data?.team.applications.facets?.labels ?? [],
+			$TeamVulnerabilities.data?.team.jobs.facets?.labels ?? []
+		)
+	);
 </script>
 
 <GraphErrors errors={$TeamVulnerabilities.errors} />
@@ -47,7 +55,7 @@
 			</Alert>
 		{:else if missingSbomCount > 0}
 			<Alert variant="warning">
-				Vulnerability data is incomplete: {missingSbomCount}
+				Vulnerability data is incomplete for this team: {missingSbomCount}
 				{missingSbomCount === 1 ? 'workload has' : 'workloads have'} no SBOM. The vulnerability counts
 				do not cover these workloads. Learn how to generate SBOMs in the
 				<ExternalLink href={docURL('/services/vulnerabilities/how-to/sbom/')}
@@ -57,7 +65,7 @@
 		{/if}
 
 		{#if noSboms || missingSbomCount > 0}
-			{#key teamSlug}
+			{#key JSON.stringify([teamSlug, noSboms, noSboms ? workloadCount : missingSbomCount])}
 				<WorkloadsWithoutSbom
 					count={noSboms ? workloadCount : missingSbomCount}
 					allWithoutUsableSbom={noSboms}
@@ -100,6 +108,8 @@
 						team={teamSlug}
 						high={TeamPriorityWorkloadsHigh}
 						severity={TeamSeverityWorkloads}
+						{selection}
+						{labelFacets}
 						environmentNames={$TeamVulnerabilities.data.team.environments.map(
 							(env) => env.environment.name
 						)}

@@ -52,6 +52,7 @@ vi.mock('$houdini', () => ({
 	WorkloadOrderField: { NAME: 'NAME' },
 	VulnerabilitySummaryOrderByField: {
 		NAME: 'NAME',
+		LABEL: 'LABEL',
 		VULNERABILITY_RISK_SCORE: 'VULNERABILITY_RISK_SCORE',
 		VULNERABILITY_SEVERITY_CRITICAL: 'VULNERABILITY_SEVERITY_CRITICAL'
 	},
@@ -181,6 +182,7 @@ describe('team vulnerability workload view', () => {
 		expect(loadSeverity).toHaveBeenCalledOnce();
 		expect(loadSeverity).toHaveBeenCalledWith(
 			expect.objectContaining({
+				blocking: true,
 				variables: expect.objectContaining({
 					orderBy: { field: 'VULNERABILITY_SEVERITY_CRITICAL', direction: 'DESC' }
 				})
@@ -193,6 +195,7 @@ describe('team vulnerability workload view', () => {
 		await load(event('?view=priority'));
 
 		expect(loadHigh).toHaveBeenCalledOnce();
+		expect(loadHigh).toHaveBeenCalledWith(expect.objectContaining({ blocking: true }));
 		expect(loadSeverity).not.toHaveBeenCalled();
 	});
 
@@ -250,17 +253,26 @@ describe('team vulnerability workload view', () => {
 		expect(loadHigh).not.toHaveBeenCalled();
 	});
 
-	it('shows the no-data state and a collapsed list when SBOM counts disagree', async () => {
+	it('keeps the team-wide no-SBOM count when vulnerability filters are selected', async () => {
 		const { body } = await render(TeamVulnerabilityPage, {
 			props: {
 				params: { team: 'mango-panda' },
 				data: {
 					teamSlug: 'mango-panda',
+					selection: {
+						environmentName: 'dev-fss',
+						labels: [{ key: 'owner', value: 'retired' }],
+						labelKey: '',
+						labelDirection: 'ASC',
+						view: 'severity'
+					},
 					TeamVulnerabilities: writable({
 						data: {
 							team: {
 								workloadsWithoutSbom: { pageInfo: { totalCount: 61 } },
 								workloads: { pageInfo: { totalCount: 62 } },
+								applications: { facets: { labels: [] } },
+								jobs: { facets: { labels: [] } },
 								vulnerabilitySummary: { sbomCount: 0 }
 							}
 						},
@@ -270,15 +282,23 @@ describe('team vulnerability workload view', () => {
 						data: {
 							team: {
 								workloads: {
-									nodes: [],
+									nodes: [
+										{
+											__typename: 'Application',
+											id: 'polaris',
+											name: 'polaris',
+											team: { slug: 'mango-panda' },
+											teamEnvironment: { environment: { name: 'dev-fss' } }
+										}
+									],
 									pageInfo: {
-										totalCount: 61,
+										totalCount: 62,
 										hasNextPage: true,
 										hasPreviousPage: false,
 										pageStart: 1,
-										pageEnd: 20,
+										pageEnd: 1,
 										startCursor: 'cursor-1',
-										endCursor: 'cursor-20'
+										endCursor: 'cursor-1'
 									}
 								}
 							}
@@ -294,6 +314,7 @@ describe('team vulnerability workload view', () => {
 		expect(body).toContain('61 workloads have no');
 		expect(body).toContain('<details>');
 		expect(body).toContain('Workloads without usable SBOM (62)');
+		expect(body).toContain('/team/mango-panda/dev-fss/app/polaris/vulnerabilities');
 		expect(body).not.toContain('Workload Vulnerabilities');
 	});
 
@@ -303,11 +324,20 @@ describe('team vulnerability workload view', () => {
 				params: { team: 'mango-panda' },
 				data: {
 					teamSlug: 'mango-panda',
+					selection: {
+						environmentName: null,
+						labels: [],
+						labelKey: '',
+						labelDirection: 'ASC',
+						view: 'severity'
+					},
 					TeamVulnerabilities: writable({
 						data: {
 							team: {
 								workloadsWithoutSbom: { pageInfo: { totalCount: 0 } },
 								workloads: { pageInfo: { totalCount: 1 } },
+								applications: { facets: { labels: [] } },
+								jobs: { facets: { labels: [] } },
 								vulnerabilitySummary: { sbomCount: 0 }
 							}
 						},
@@ -434,6 +464,45 @@ describe('team vulnerability workload view', () => {
 		const previous = body.match(/<button\b[^>]*aria-label="Previous page"[^>]*>/)?.[0];
 		expect(previous).toBeDefined();
 		expect(previous).not.toContain('disabled');
+	});
+
+	it('only applies environment and label filters to vulnerability workloads', async () => {
+		summary.missingSbomCount = 2;
+		await load(event('?view=priority&environment=dev&labels=owner%3Ateam&labelKey=owner'));
+
+		const labels = [{ key: 'owner', value: 'team' }];
+		expect(loadNoSbom).toHaveBeenCalledWith(
+			expect.objectContaining({
+				variables: {
+					team: 'example',
+					first: 20,
+					last: null,
+					after: null,
+					before: null,
+					sbomStatus: 'NO_SBOM',
+					orderBy: { field: 'NAME', direction: 'ASC' }
+				}
+			})
+		);
+		expect(loadHigh).toHaveBeenCalledWith(
+			expect.objectContaining({
+				variables: expect.objectContaining({
+					environmentName: 'dev',
+					labels,
+					orderBy: { field: 'LABEL', direction: 'ASC', labelKey: 'owner' }
+				})
+			})
+		);
+	});
+
+	it('loads severity by default when filters are set without selecting a view', async () => {
+		await load(event('?labels=region'));
+		expect(loadSeverity).toHaveBeenCalledWith(
+			expect.objectContaining({
+				variables: expect.objectContaining({ labels: [{ key: 'region', value: undefined }] })
+			})
+		);
+		expect(loadHigh).not.toHaveBeenCalled();
 	});
 
 	it('waits for the summary before deciding whether to load missing-SBOM workloads', async () => {
