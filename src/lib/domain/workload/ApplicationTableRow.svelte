@@ -17,7 +17,7 @@
 			};
 			team: { slug: string };
 			state: string;
-			deployments: { nodes: { createdAt: Date }[] };
+			activityLog: { nodes: { createdAt: Date }[] };
 			instances: {
 				pageInfo: { totalCount: number };
 				edges: { node: { status: { message: string; state: string } } }[];
@@ -72,8 +72,8 @@
 		{/if}
 	</Td>
 	<Td>
-		{#if app.deployments.nodes.length > 0}
-			{const timestamp = $derived(app.deployments.nodes[0].createdAt)}
+		{#if app.activityLog.nodes.length > 0}
+			{const timestamp = $derived(app.activityLog.nodes[0].createdAt)}
 			<span class="table-meta">
 				<Time time={timestamp} distance={true} />
 			</span>
