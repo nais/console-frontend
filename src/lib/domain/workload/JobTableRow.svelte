@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { JobState, type JobRunState$options } from '$houdini';
 	import IssuePills from '#lib/domain/issues/IssuePills.svelte';
 	import { envTagVariant } from '#lib/envTagVariant.js';
 	import ErrorIcon from '#lib/icons/ErrorIcon.svelte';
@@ -7,6 +6,7 @@
 	import StatusIndicator from '#lib/ui/StatusIndicator.svelte';
 	import Time from '#lib/ui/Time.svelte';
 	import { countIssuesBySeverity } from '#lib/utils/issueCounts.js';
+	import { JobState, type JobRunState$options } from '$houdini';
 	import { Loader, Tag, Td, Tr } from '@nais/ds-svelte-community';
 
 	const {
@@ -27,7 +27,7 @@
 				pageInfo: { totalCount: number };
 				edges: { node: { severity: string } }[];
 			};
-			deployments: { nodes: { createdAt: Date }[] };
+			activityLog: { nodes: { createdAt: Date }[] };
 			runs: {
 				pageInfo: { totalCount: number };
 				edges: {
@@ -102,8 +102,8 @@
 		{/if}
 	</Td>
 	<Td>
-		{#if job.deployments.nodes.length > 0}
-			{const timestamp = $derived(job.deployments.nodes[0].createdAt)}
+		{#if job.activityLog.nodes.length > 0}
+			{const timestamp = $derived(job.activityLog.nodes[0].createdAt)}
 			<span class="table-meta">
 				<Time time={timestamp} distance={true} />
 			</span>
