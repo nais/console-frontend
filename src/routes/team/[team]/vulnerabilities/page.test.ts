@@ -62,7 +62,11 @@ vi.mock('$houdini', () => ({
 vi.mock('#lib/utils/pageMeta.js', () => ({ addPageMeta: vi.fn(async () => ({})) }));
 vi.mock('$app/env', () => ({ browser: false, building: false, dev: false }));
 vi.mock('$app/environment', () => ({ browser: false, building: false }));
-vi.mock('$app/navigation', () => ({ goto: vi.fn(), invalidateAll: vi.fn() }));
+vi.mock('$app/navigation', () => ({
+	goto: vi.fn(),
+	invalidateAll: vi.fn(),
+	afterNavigate: vi.fn()
+}));
 vi.mock('$app/state', () => ({
 	page: {
 		url: new URL('https://console.example.com/team/mango-panda/vulnerabilities'),
@@ -179,6 +183,7 @@ describe('team vulnerability workload view', () => {
 		const result = await load(event());
 
 		expect(result.initialView).toBe('severity');
+		expect(result.preloadedView).toBe('severity');
 		expect(loadSeverity).toHaveBeenCalledOnce();
 		expect(loadSeverity).toHaveBeenCalledWith(
 			expect.objectContaining({
@@ -194,6 +199,7 @@ describe('team vulnerability workload view', () => {
 		const result = await load(event('?view=priority'));
 
 		expect(result.initialView).toBe('priority');
+		expect(result.preloadedView).toBe('priority');
 		expect(loadHigh).toHaveBeenCalledOnce();
 		expect(loadSeverity).not.toHaveBeenCalled();
 	});
@@ -224,13 +230,14 @@ describe('team vulnerability workload view', () => {
 		summary.sbomCount = 0;
 		summary.workloadCount = 1;
 
-		await load(event());
+		const result = await load(event());
 
 		expect(loadNoSbom).toHaveBeenCalledWith(
 			expect.objectContaining({
 				variables: expect.objectContaining({ sbomStatus: null })
 			})
 		);
+		expect(result.preloadedView).toBeNull();
 		expect(loadSeverity).not.toHaveBeenCalled();
 	});
 
@@ -239,9 +246,11 @@ describe('team vulnerability workload view', () => {
 		summary.workloadCount = 62;
 		summary.sbomCount = 0;
 
-		await load(event());
-		await load(event('?view=priority'));
+		const severity = await load(event());
+		const priority = await load(event('?view=priority'));
 
+		expect(severity.preloadedView).toBeNull();
+		expect(priority.preloadedView).toBeNull();
 		expect(loadNoSbom).toHaveBeenCalledTimes(2);
 		expect(loadNoSbom).toHaveBeenCalledWith(
 			expect.objectContaining({

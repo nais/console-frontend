@@ -181,7 +181,7 @@
 					{/snippet}
 					<WorkloadsWithVulnerabilities
 						team={teamSlug}
-						initialView={data.initialView}
+						preloadedView={data.preloadedView}
 						{receipts}
 						reanalysis={viewerIsMember ? reanalysisAction : undefined}
 						high={TeamPriorityWorkloadsHigh}

@@ -33,6 +33,7 @@ export async function load(event) {
 
 	return {
 		initialView: view,
+		preloadedView: noSboms ? null : view,
 		...(await addPageMeta(event, {
 			title: 'Vulnerabilities',
 			docPath: '/services/vulnerabilities'

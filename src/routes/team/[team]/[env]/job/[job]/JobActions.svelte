@@ -25,7 +25,12 @@
 
 	interface Props {
 		viewerIsMember: boolean;
-		job: (ManifestFragment & { deletionStartedAt: Date | null }) | null;
+		job:
+			| (ManifestFragment & {
+					deletionStartedAt: Date | null;
+					image: { vulnerabilitySummary: { lastUpdated: Date | null } | null };
+			  })
+			| null;
 	}
 
 	let { viewerIsMember, job }: Props = $props();
@@ -165,6 +170,7 @@
 		{environment}
 		name={jobName}
 		type="job"
+		lastUpdated={job?.image.vulnerabilitySummary?.lastUpdated ?? null}
 	/>
 {/if}
 

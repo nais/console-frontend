@@ -3,6 +3,12 @@ query AppLayout($app: String!, $team: Slug!, $env: String!) {
 		environment(name: $env) {
 			application(name: $app) {
 				deletionStartedAt
+				image {
+					id
+					vulnerabilitySummary {
+						lastUpdated
+					}
+				}
 				...Manifest
 			}
 		}

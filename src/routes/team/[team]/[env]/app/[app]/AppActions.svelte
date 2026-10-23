@@ -28,7 +28,12 @@
 
 	interface Props {
 		viewerIsMember: boolean;
-		app: (ManifestFragment & { deletionStartedAt: Date | null }) | null;
+		app:
+			| (ManifestFragment & {
+					deletionStartedAt: Date | null;
+					image: { vulnerabilitySummary: { lastUpdated: Date | null } | null };
+			  })
+			| null;
 	}
 
 	let { viewerIsMember, app }: Props = $props();
@@ -193,6 +198,7 @@
 		{environment}
 		name={application}
 		type="app"
+		lastUpdated={app?.image.vulnerabilitySummary?.lastUpdated ?? null}
 	/>
 {/if}
 
