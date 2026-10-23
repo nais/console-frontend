@@ -64,7 +64,17 @@ query Applications(
 							}
 						}
 					}
-					deployments(first: 1) {
+					activityLog(
+						first: 1
+						filter: {
+							activityTypes: [
+								DEPLOYMENT
+								APPLICATION_UPDATED
+								JOB_UPDATED
+								GENERIC_KUBERNETES_RESOURCE_CREATED
+							]
+						}
+					) {
 						nodes {
 							createdAt
 						}
