@@ -150,7 +150,7 @@
 							?.monitorWorkloadCount}
 					>
 						{#snippet reanalysis()}
-							{#if viewerIsMember}
+							{#if viewerIsMember && $TeamVulnerabilities.data}
 								<ReanalyzeVulnerabilities
 									team={teamSlug}
 									onreceipt={handleReceipt}

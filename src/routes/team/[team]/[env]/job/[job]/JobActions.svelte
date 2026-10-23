@@ -157,7 +157,7 @@
 	</ActionMenu>
 </HeaderActions>
 
-{#if viewerIsMember}
+{#if viewerIsMember && teamSlug && environment && jobName}
 	<ReanalyzeWorkload
 		bind:this={reanalysis}
 		bind:requesting={requestingReanalysis}
