@@ -290,9 +290,8 @@ describe('team vulnerability workload view', () => {
 			}
 		});
 
-		expect(body).toContain('No usable SBOMs are available for this team');
-		expect(body).toContain('61 workloads have no');
 		expect(body).toContain('<details>');
+		expect(body).not.toContain('<details open="">');
 		expect(body).toContain('Workloads without usable SBOM (62)');
 		expect(body).not.toContain('Workload Vulnerabilities');
 	});
@@ -346,7 +345,6 @@ describe('team vulnerability workload view', () => {
 		});
 
 		expect(body).toContain('Workloads without usable SBOM (1)');
-		expect(body).toMatch(/vulnerability data is unavailable for\s+1\s+workload\./);
 		expect(body).not.toContain('1 workload has no SBOM.');
 		expect(body).not.toContain('documentation .');
 		expect(body).toContain('<details open="">');

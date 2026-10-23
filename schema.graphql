@@ -3306,6 +3306,30 @@ enum EnvironmentWorkloadOrderField {
   TEAM_SLUG
 }
 
+"""Deprecated: use ExternalIngressUrgentVulnerabilityIssue."""
+type ExternalIngressCriticalVulnerabilityIssue implements Issue & Node {
+  """The highest CVSS score among vulnerabilities relevant to this issue."""
+  cvssScore: Float! @deprecated(reason: "Use ExternalIngressUrgentVulnerabilityIssue instead.")
+
+  """The globally unique identifier for this issue."""
+  id: ID! @deprecated(reason: "Use ExternalIngressUrgentVulnerabilityIssue instead.")
+
+  """External ingress URLs that expose the workload."""
+  ingresses: [String!]! @deprecated(reason: "Use ExternalIngressUrgentVulnerabilityIssue instead.")
+
+  """A human-readable description of the issue."""
+  message: String! @deprecated(reason: "Use ExternalIngressUrgentVulnerabilityIssue instead.")
+
+  """The severity assigned to this issue."""
+  severity: Severity! @deprecated(reason: "Use ExternalIngressUrgentVulnerabilityIssue instead.")
+
+  """The team environment where the affected workload is deployed."""
+  teamEnvironment: TeamEnvironment! @deprecated(reason: "Use ExternalIngressUrgentVulnerabilityIssue instead.")
+
+  """The workload with critical vulnerabilities and external ingresses."""
+  workload: Workload! @deprecated(reason: "Use ExternalIngressUrgentVulnerabilityIssue instead.")
+}
+
 """
 Raised when a workload with external ingresses has one or more urgent vulnerability-priority findings.
 """
@@ -4067,6 +4091,7 @@ enum IssueType {
   APPLICATION_RESTART_LOOP
   DEPRECATED_INGRESS
   DEPRECATED_REGISTRY
+  EXTERNAL_INGRESS_CRITICAL_VULNERABILITY @deprecated(reason: "Use EXTERNAL_INGRESS_URGENT_VULNERABILITY.")
 
   """
   Raised when a workload has external ingress exposure and urgent vulnerabilities.
@@ -5462,6 +5487,11 @@ type Mutation {
   A reconciler must be fully configured before it can be enabled.
   """
   enableReconciler(input: EnableReconcilerInput!): Reconciler!
+
+  """
+  Queue vulnerability reanalysis for one workload or all workloads in a team environment.
+  """
+  reanalyzeVulnerabilities(input: ReanalyzeVulnerabilitiesInput!): ReanalyzeVulnerabilitiesPayload!
 
   """Remove a value from a config."""
   removeConfigValue(input: RemoveConfigValueInput!): RemoveConfigValuePayload!
@@ -7239,6 +7269,32 @@ type Query {
 
   """Get the vulnerability summary for the tenant."""
   vulnerabilitySummary: TenantVulnerabilitySummary!
+}
+
+input ReanalyzeVulnerabilitiesInput {
+  """Environment where the workloads run."""
+  environmentName: String!
+
+  """Team that owns the workloads."""
+  teamSlug: Slug!
+
+  """Workload to reanalyze; omit for the whole team environment."""
+  workloadName: String
+
+  """Required when workloadName is set: app or job."""
+  workloadType: String
+}
+
+type ReanalyzeVulnerabilitiesPayload {
+  """
+  Number of eligible image tags submitted for reanalysis; duplicates may already be queued.
+  """
+  numImages: Int!
+
+  """
+  Time the reanalysis request was accepted, if any image tag was eligible. Not an analysis completion time.
+  """
+  requestedAt: Time
 }
 
 """Reconciler type."""
@@ -11055,6 +11111,9 @@ input TeamWorkloadsFilter {
 
   """Filter by user-defined labels. All listed labels must match."""
   labels: [LabelFilter!]
+
+  """Match workloads whose name contains this text, ignoring case."""
+  name: String
 
   """Only return workloads with the given SBOM pipeline status."""
   sbomStatus: SBOMStatus

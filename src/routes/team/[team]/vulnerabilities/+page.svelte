@@ -1,14 +1,18 @@
 <script lang="ts">
-	import { docURL } from '#lib/doc.js';
 	import TeamCveSearch from '#lib/domain/vulnerability/TeamCveSearch.svelte';
 	import TeamMeanTimeToFixHistoryGraph from '#lib/domain/vulnerability/TeamMeanTimeToFixHistoryGraph.svelte';
+	import ReanalyzeVulnerabilities from '#lib/domain/vulnerability/ReanalyzeVulnerabilities.svelte';
+	import {
+		getReanalysisReceipts,
+		type ReanalysisReceipt
+	} from '#lib/domain/vulnerability/reanalysisReceipt.js';
 	import TeamVulnerabilityHistoryGraph from '#lib/domain/vulnerability/TeamVulnerabilityHistoryGraph.svelte';
 	import VulnerabilitySummary from '#lib/domain/vulnerability/VulnerabilitySummary.svelte';
 	import WorkloadsWithoutSbom from '#lib/domain/vulnerability/WorkloadsWithoutSbom.svelte';
 	import WorkloadsWithVulnerabilities from '#lib/domain/vulnerability/WorkloadsWithVulnerabilities.svelte';
-	import ExternalLink from '#lib/ui/ExternalLink.svelte';
 	import GraphErrors from '#lib/ui/GraphErrors.svelte';
 	import { Alert, BodyLong, Heading } from '@nais/ds-svelte-community';
+	import { onMount } from 'svelte';
 	import type { PageProps } from './$types';
 
 	let { data }: PageProps = $props();
@@ -17,11 +21,57 @@
 		TeamNoSbomWorkloads,
 		TeamPriorityWorkloadsHigh,
 		TeamSeverityWorkloads,
-		teamSlug
+		teamSlug,
+		viewerIsMember
 	} = $derived(data);
+
+	let refreshError = $state('');
+	let receiptState = $state<{ team: string; receipts: ReanalysisReceipt[] } | null>(null);
+	let receipts = $derived(receiptState?.team === teamSlug ? receiptState.receipts : []);
+
+	function handleReceipt(requested: ReanalysisReceipt) {
+		receiptState = {
+			team: teamSlug,
+			receipts: [
+				...receipts.filter((saved) => saved.environment !== requested.environment),
+				requested
+			]
+		};
+	}
+
+	onMount(() => {
+		try {
+			receiptState = { team: teamSlug, receipts: getReanalysisReceipts(['team', teamSlug]) };
+		} catch {
+			refreshError = 'Could not restore the previous reanalysis request.';
+		}
+		const interval = window.setInterval(async () => {
+			if (document.hidden || $TeamVulnerabilities.fetching || !$TeamVulnerabilities.variables)
+				return;
+			try {
+				await Promise.all([
+					TeamVulnerabilities.fetch({
+						policy: 'NetworkOnly',
+						variables: { ...$TeamVulnerabilities.variables }
+					}),
+					$TeamNoSbomWorkloads.variables && !$TeamNoSbomWorkloads.fetching
+						? TeamNoSbomWorkloads.fetch({
+								policy: 'NetworkOnly',
+								variables: { ...$TeamNoSbomWorkloads.variables }
+							})
+						: null
+				]);
+				refreshError = '';
+			} catch {
+				refreshError = 'Could not refresh vulnerability data. Reload the page to try again.';
+			}
+		}, 60_000);
+		return () => window.clearInterval(interval);
+	});
 </script>
 
 <GraphErrors errors={$TeamVulnerabilities.errors} />
+{#if refreshError}<Alert variant="error">{refreshError}</Alert>{/if}
 
 {#if $TeamVulnerabilities.data}
 	{const missingSbomCount = $derived(
@@ -32,36 +82,24 @@
 		workloadCount > 0 && $TeamVulnerabilities.data.team.vulnerabilitySummary?.sbomCount === 0
 	)}
 	<div class="wrapper">
-		{#if noSboms}
-			<Alert variant="warning">
-				No usable SBOMs are available for this team, so vulnerability data is unavailable for
-				{workloadCount}
-				{workloadCount === 1 ? 'workload' : 'workloads'}.
-				{#if missingSbomCount > 0 && missingSbomCount < workloadCount}
-					{missingSbomCount} {missingSbomCount === 1 ? 'workload has' : 'workloads have'} no SBOM.
-				{/if}
-				Learn how to generate SBOMs in the
-				<ExternalLink href={docURL('/services/vulnerabilities/how-to/sbom/')}
-					>Nais documentation</ExternalLink
-				>.
-			</Alert>
-		{:else if missingSbomCount > 0}
-			<Alert variant="warning">
-				Vulnerability data is incomplete: {missingSbomCount}
-				{missingSbomCount === 1 ? 'workload has' : 'workloads have'} no SBOM. The vulnerability counts
-				do not cover these workloads. Learn how to generate SBOMs in the
-				<ExternalLink href={docURL('/services/vulnerabilities/how-to/sbom/')}
-					>Nais documentation</ExternalLink
-				>.
-			</Alert>
-		{/if}
-
 		{#if noSboms || missingSbomCount > 0}
 			{#key teamSlug}
 				<WorkloadsWithoutSbom
 					count={noSboms ? workloadCount : missingSbomCount}
 					allWithoutUsableSbom={noSboms}
 					workloadsWithoutSbom={TeamNoSbomWorkloads}
+				/>
+			{/key}
+		{/if}
+
+		{#if noSboms && viewerIsMember}
+			{#key teamSlug}
+				<ReanalyzeVulnerabilities
+					team={teamSlug}
+					onreceipt={handleReceipt}
+					environments={$TeamVulnerabilities.data.team.environments.map(
+						(env) => env.environment.name
+					)}
 				/>
 			{/key}
 		{/if}
@@ -98,6 +136,7 @@
 				{#key teamSlug}
 					<WorkloadsWithVulnerabilities
 						team={teamSlug}
+						{receipts}
 						high={TeamPriorityWorkloadsHigh}
 						severity={TeamSeverityWorkloads}
 						environmentNames={$TeamVulnerabilities.data.team.environments.map(
@@ -109,7 +148,19 @@
 							?.elevatedWorkloadCount}
 						monitorWorkloadCount={$TeamVulnerabilities.data.team.vulnerabilitySummary
 							?.monitorWorkloadCount}
-					/>
+					>
+						{#snippet reanalysis()}
+							{#if viewerIsMember}
+								<ReanalyzeVulnerabilities
+									team={teamSlug}
+									onreceipt={handleReceipt}
+									environments={$TeamVulnerabilities.data.team.environments.map(
+										(env) => env.environment.name
+									)}
+								/>
+							{/if}
+						{/snippet}
+					</WorkloadsWithVulnerabilities>
 				{/key}
 			</section>
 

@@ -16,6 +16,7 @@
 		header?: Snippet;
 		children: Snippet;
 		onconfirm: () => Promise<{ ok: boolean; message: string }>;
+		onclose?: () => void;
 	}
 
 	let {
@@ -24,7 +25,8 @@
 		variant = 'primary',
 		header,
 		children,
-		onconfirm
+		onconfirm,
+		onclose
 	}: Props = $props();
 
 	let status: 'idle' | 'executing' | 'success' | 'error' = $state('idle');
@@ -39,6 +41,7 @@
 	const close = () => {
 		open = false;
 		reset();
+		onclose?.();
 	};
 
 	const confirm = async () => {

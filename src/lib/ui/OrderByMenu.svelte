@@ -108,7 +108,7 @@
 			case 'VULNERABILITY_RISK_SCORE':
 				return 'Risk score';
 			case 'VULNERABILITY_LAST_SCANNED':
-				return 'Last scanned';
+				return 'Last updated';
 			case 'HAS_SBOM':
 				return 'Has SBOM';
 			case 'VULNERABILITY_SEVERITY_CRITICAL':

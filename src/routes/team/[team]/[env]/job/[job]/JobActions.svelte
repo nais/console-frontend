@@ -2,6 +2,7 @@
 	import { page } from '$app/state';
 	import { graphql, type Manifest as ManifestFragment } from '$houdini';
 	import Manifest from '#lib/domain/resources/Manifest.svelte';
+	import ReanalyzeWorkload from '#lib/domain/vulnerability/ReanalyzeWorkload.svelte';
 	import ActionConfirm from '#lib/ui/ActionConfirm.svelte';
 	import HeaderActions from '#lib/ui/HeaderActions.svelte';
 	import PageModal, { pageModalClick } from '#lib/ui/PageModal.svelte';
@@ -14,6 +15,7 @@
 		ActionMenuItem
 	} from '@nais/ds-svelte-community/experimental';
 	import {
+		ArrowCirclepathIcon,
 		FileTextIcon,
 		MenuElipsisVerticalIcon,
 		PencilWritingIcon,
@@ -73,6 +75,8 @@
 	`);
 
 	let triggerOpen = $state(false);
+	let reanalysis: { request: () => Promise<void> } | undefined = $state();
+	let requestingReanalysis = $state(false);
 	let showManifest = $state(false);
 	let runName = $state('');
 
@@ -114,6 +118,18 @@
 		{#if viewerIsMember}
 			<button
 				class="action-menu-button"
+				disabled={!reanalysis || requestingReanalysis || job?.deletionStartedAt !== null}
+				onclick={() => void reanalysis?.request()}
+			>
+				<ActionMenuItem
+					icon={ArrowCirclepathIcon}
+					disabled={!reanalysis || requestingReanalysis || job?.deletionStartedAt !== null}
+				>
+					Reanalyze vulnerabilities
+				</ActionMenuItem>
+			</button>
+			<button
+				class="action-menu-button"
 				disabled={job?.deletionStartedAt !== null}
 				onclick={openTrigger}
 			>
@@ -140,6 +156,17 @@
 		{/if}
 	</ActionMenu>
 </HeaderActions>
+
+{#if viewerIsMember}
+	<ReanalyzeWorkload
+		bind:this={reanalysis}
+		bind:requesting={requestingReanalysis}
+		team={teamSlug}
+		{environment}
+		name={jobName}
+		type="job"
+	/>
+{/if}
 
 <ActionConfirm bind:open={triggerOpen} onconfirm={submitTrigger}>
 	{#snippet header()}
