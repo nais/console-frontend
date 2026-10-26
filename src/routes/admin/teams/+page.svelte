@@ -69,6 +69,7 @@
 		kafkaTopics: { total: number };
 		openSearches: { total: number };
 		sqlInstances: { total: number };
+		postgresBranches: { total: number };
 		valkeys: { total: number };
 	};
 
@@ -101,6 +102,10 @@
 			{
 				total: inventoryCounts.sqlInstances.total,
 				label: 'Cloud SQL instances'
+			},
+			{
+				total: inventoryCounts.postgresBranches.total,
+				label: 'Postgres branches'
 			},
 			{
 				total: inventoryCounts.valkeys.total,
