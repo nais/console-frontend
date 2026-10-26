@@ -12,6 +12,7 @@
 	import ChartBoundary from '#lib/chart/ChartBoundary.svelte';
 	import LegendWrapper, { legendSnippet } from '#lib/chart/LegendWrapper.svelte';
 	import CodeBlockPromQL from '#lib/domain/monitoring/CodeBlockPromQL.svelte';
+	import GraphErrors from '#lib/ui/GraphErrors.svelte';
 	import { intersect } from '#lib/utils/intersectionObserver.js';
 	import { BodyShort, CopyButton, Heading, Loader, Modal } from '@nais/ds-svelte-community';
 	import { InformationIcon } from '@nais/ds-svelte-community/icons';
@@ -214,6 +215,9 @@
 
 	// Determine overlay state
 	const overlayState = $derived.by(() => {
+		if ($q.errors?.length) {
+			return null;
+		}
 		if ($q.fetching || $q.data === null) {
 			return 'loading';
 		}
@@ -299,6 +303,8 @@
 			{/if}
 		</div>
 	{/if}
+
+	<GraphErrors errors={$q.errors} />
 
 	<button
 		class="query-info-button"
