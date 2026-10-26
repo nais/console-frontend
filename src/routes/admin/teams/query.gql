@@ -54,6 +54,9 @@ query Teams(
 					sqlInstances {
 						total
 					}
+					postgresBranches {
+						total
+					}
 					valkeys {
 						total
 					}
