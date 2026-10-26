@@ -2,6 +2,7 @@
 	import { page } from '$app/state';
 	import PrometheusChart from '#lib/chart/PrometheusChart.svelte';
 	import { PrometheusChartQueryInterval } from '#lib/chart/util.js';
+	import { postgresInsightsSections } from '#lib/domain/postgres/insights.js';
 	import GraphErrors from '#lib/ui/GraphErrors.svelte';
 	import { changeParams } from '#lib/utils/searchparams.js';
 	import {
@@ -22,7 +23,6 @@
 	let { PostgresInsights, interval } = $derived(data);
 	let selectedInterval = $derived(interval);
 	let postgres = $derived($PostgresInsights.data?.team.environment.postgres);
-	let namespace = $derived(`namespace="${page.params.team}"`);
 	let branches = $derived.by(() => {
 		const nodes = postgres?.branches.nodes ?? [];
 		const active = postgres?.activeBranch;
@@ -49,39 +49,9 @@
 			loadingBranches = false;
 		}
 	}
-	let selectedPods = $derived(
-		`max by (namespace,pod,k8s_cluster_name) (up{${namespace},team="${page.params.team}",postgres="${page.params.postgres}",branch="${branch}"} == 1)`
+	let sections = $derived(
+		postgresInsightsSections(page.params.team!, page.params.postgres!, branch)
 	);
-	let cpuUsage = $derived(
-		`sum by (namespace,pod,k8s_cluster_name) (rate(container_cpu_usage_seconds_total{${namespace},container="postgres",image!=""}[$__rate_interval]))`
-	);
-	let cpuRequested = $derived(
-		`sum by (namespace,pod,k8s_cluster_name) (kube_pod_container_resource_requests{${namespace},container="postgres",resource="cpu",unit="core"})`
-	);
-	let cpuQuery = $derived(
-		`sum((${cpuUsage}) * on(namespace,pod,k8s_cluster_name) group_left() ${selectedPods}) / clamp_min(sum((${cpuRequested}) * on(namespace,pod,k8s_cluster_name) group_left() ${selectedPods}), 0.001)`
-	);
-	let memoryUsage = $derived(
-		`sum by (namespace,pod,k8s_cluster_name) (container_memory_working_set_bytes{${namespace},container="postgres",image!=""})`
-	);
-	let memoryRequested = $derived(
-		`sum by (namespace,pod,k8s_cluster_name) (kube_pod_container_resource_requests{${namespace},container="postgres",resource="memory",unit="byte"})`
-	);
-	let memoryQuery = $derived(
-		`sum((${memoryUsage}) * on(namespace,pod,k8s_cluster_name) group_left() ${selectedPods}) / clamp_min(sum((${memoryRequested}) * on(namespace,pod,k8s_cluster_name) group_left() ${selectedPods}), 1)`
-	);
-	let branchPvcs = $derived(
-		`max by (namespace,persistentvolumeclaim,k8s_cluster_name) (kube_pod_spec_volumes_persistentvolumeclaims_info{${namespace},volume="pgdata"} and on(namespace,pod,k8s_cluster_name) (${selectedPods}))`
-	);
-	let diskUsed = $derived(
-		`max by (namespace,persistentvolumeclaim,k8s_cluster_name) (kubelet_volume_stats_used_bytes{${namespace}}) and on(namespace,persistentvolumeclaim,k8s_cluster_name) (${branchPvcs})`
-	);
-	let diskCapacity = $derived(
-		`max by (namespace,persistentvolumeclaim,k8s_cluster_name) (kubelet_volume_stats_capacity_bytes{${namespace}}) and on(namespace,persistentvolumeclaim,k8s_cluster_name) (${branchPvcs})`
-	);
-	let diskQuery = $derived(`sum(${diskUsed}) / clamp_min(sum(${diskCapacity}), 1)`);
-
-	const formatPercentage = (value: number) => `${(value * 100).toFixed(1)}%`;
 </script>
 
 <GraphErrors errors={$PostgresInsights.errors} />
@@ -129,45 +99,38 @@
 	</div>
 	{#if branchLoadError}<Alert variant="error" size="small">{branchLoadError}</Alert>{/if}
 
-	<section aria-labelledby={`${uid}-utilization-heading`}>
-		<Heading as="h2" size="medium" spacing id={`${uid}-utilization-heading`}>Utilization</Heading>
-		{#if branch}
-			{#key branch}
-				<PrometheusChart
-					{interval}
-					title="CPU utilization"
-					description={`CPU usage as a percentage of requested CPU for branch ${branch}.`}
-					query={cpuQuery}
-					environmentName={postgres.teamEnvironment.environment.name}
-					labelFormatter={() => 'CPU used'}
-					formatYValue={formatPercentage}
-				/>
-				<PrometheusChart
-					{interval}
-					title="Memory utilization"
-					description={`Memory working set as a percentage of requested memory for branch ${branch}.`}
-					query={memoryQuery}
-					environmentName={postgres.teamEnvironment.environment.name}
-					labelFormatter={() => 'Memory used'}
-					formatYValue={formatPercentage}
-				/>
-				<PrometheusChart
-					{interval}
-					title="Disk utilization"
-					description={`Storage used as a percentage of disk capacity for branch ${branch}.`}
-					query={diskQuery}
-					environmentName={postgres.teamEnvironment.environment.name}
-					labelFormatter={() => 'Disk used'}
-					formatYValue={formatPercentage}
-				/>
-			{/key}
-		{:else}
+	{#if branch}
+		{#key `${page.params.team}/${page.params.env}/${page.params.postgres}/${branch}`}
+			<div class="insights-sections">
+				{#each sections as section (section.id)}
+					<section aria-labelledby={`${uid}-${section.id}-heading`}>
+						<Heading as="h2" size="medium" spacing id={`${uid}-${section.id}-heading`}>
+							{section.title}
+						</Heading>
+						{#each section.charts as chart (chart.title)}
+							<PrometheusChart
+								{interval}
+								{...chart}
+								environmentName={postgres.teamEnvironment.environment.name}
+							/>
+						{/each}
+					</section>
+				{/each}
+			</div>
+		{/key}
+	{:else}
+		<section aria-labelledby={`${uid}-utilization-heading`}>
+			<Heading as="h2" size="medium" spacing id={`${uid}-utilization-heading`}>Utilization</Heading>
 			<BodyShort>Utilization is not yet available.</BodyShort>
-		{/if}
-	</section>
+		</section>
+	{/if}
 {/if}
 
 <style>
+	.insights-sections {
+		display: grid;
+		gap: var(--ax-space-32);
+	}
 	.insights-controls {
 		display: flex;
 		align-items: flex-end;
