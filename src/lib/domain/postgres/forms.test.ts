@@ -69,10 +69,25 @@ describe('Postgres forms', () => {
 		data.set('highAvailability', 'on');
 		expect(resourceInput(postgresConfiguration(data))).toEqual({
 			cpu: '0.1',
-			memory: '0.5Gi',
+			memory: '512Mi',
 			diskSize: '10Gi',
 			highAvailability: true
 		});
+	});
+
+	test.each([
+		['0.6', '615Mi'],
+		['0,6', '615Mi'],
+		['0.5', '512Mi'],
+		['1', '1024Mi'],
+		['32', '32768Mi'],
+		['0.0001', '1Mi'],
+		['0.5000000000000000001', '513Mi'],
+		['0.4999999999999999999', '512Mi']
+	])('converts %s GiB to whole MiB without allocating less memory', (memory, expected) => {
+		const data = new FormData();
+		data.set('memory', memory);
+		expect(resourceInput(postgresConfiguration(data)).memory).toBe(expected);
 	});
 
 	test.each([

@@ -63,14 +63,14 @@
 			{/snippet}
 			<a
 				class="action-menu-button"
-				href="/team/{page.params.team}/{page.params.env}/postgres/{page.params.postgres}/edit"
+				href={resolve('/team/[team]/[env]/postgres/[postgres]/edit', page.params as never)}
 			>
 				<ActionMenuItem icon={PencilWritingIcon}>Edit</ActionMenuItem>
 			</a>
 			<ActionMenuDivider />
 			<a
 				class="action-menu-button"
-				href="/team/{page.params.team}/{page.params.env}/postgres/{page.params.postgres}/delete"
+				href={resolve('/team/[team]/[env]/postgres/[postgres]/delete', page.params as never)}
 			>
 				<ActionMenuItem icon={TrashIcon} variant="danger">Delete</ActionMenuItem>
 			</a>

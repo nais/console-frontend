@@ -26,6 +26,12 @@ query PostgresOverview($team: Slug!, $env: String!, $name: String!) {
 					id
 					name
 					state
+					configuration {
+						parameters {
+							name
+							value
+						}
+					}
 				}
 				workloads(first: 25) {
 					pageInfo {

@@ -7,6 +7,10 @@ import Overview from '../../../routes/team/[team]/[env]/postgres/[postgres]/(sin
 
 const fixture = vi.hoisted(() => ({ overview: {} }));
 
+vi.mock('$app/paths', () => ({
+	resolve: (_route: string, params: { team: string; env: string; postgres: string }) =>
+		`/team/${params.team}/${params.env}/postgres/${params.postgres}/branches`
+}));
 vi.mock('$app/state', () => ({
 	page: { params: { team: 'test', env: 'dev', postgres: 'database' } }
 }));
