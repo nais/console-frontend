@@ -23,10 +23,18 @@ export function postgresConfiguration(data: FormData) {
 export function resourceInput(values: ReturnType<typeof postgresConfiguration>) {
 	return {
 		cpu: values.cpu ? values.cpu.replace(',', '.') : undefined,
-		memory: values.memory ? `${values.memory.replace(',', '.')}Gi` : undefined,
+		memory: values.memory ? memoryInMebibytes(values.memory) : undefined,
 		diskSize: values.diskSize ? `${values.diskSize}Gi` : undefined,
 		highAvailability: values.highAvailability
 	};
+}
+
+function memoryInMebibytes(value: string) {
+	const [whole, fraction = ''] = value.replace(',', '.').split('.');
+	const denominator = 10n ** BigInt(fraction.length);
+	const numerator = BigInt(`${whole}${fraction}`) * 1024n;
+	// Round up to whole MiB so Kubernetes keeps binary units without reducing the request.
+	return `${(numerator + denominator - 1n) / denominator}Mi`;
 }
 
 export type ResourceField = 'cpu' | 'memory' | 'diskSize';

@@ -7,9 +7,24 @@
 	import GraphErrors from '#lib/ui/GraphErrors.svelte';
 	import SectionBoundary from '#lib/ui/SectionBoundary.svelte';
 	import SurfaceCard from '#lib/ui/SurfaceCard.svelte';
+	import { resolve } from '$app/paths';
 	import { page } from '$app/state';
 	import { graphql } from '$houdini';
-	import { Alert, BodyShort, Detail, Heading, Loader } from '@nais/ds-svelte-community';
+	import {
+		Accordion,
+		AccordionItem,
+		Alert,
+		BodyShort,
+		Detail,
+		Heading,
+		Loader,
+		Table,
+		Tbody,
+		Td,
+		Th,
+		Thead,
+		Tr
+	} from '@nais/ds-svelte-community';
 	import { onMount } from 'svelte';
 	import type { PageProps } from './$types';
 	import BranchStateIndicator from './BranchStateIndicator.svelte';
@@ -19,6 +34,10 @@
 	let { PostgresOverview } = $derived(data);
 	let postgres = $derived($PostgresOverview.data?.team.environment.postgres);
 	let activeBranch = $derived(postgres?.activeBranch);
+	// The API currently exposes PostgreSQL parameters only through the observed active branch.
+	let parameters = $derived(activeBranch?.configuration?.parameters);
+	const parametersId = $props.id();
+	let parametersOpen = $state(false);
 	let canManage = $derived(data.viewerIsMember || data.isAdmin);
 	let labelsModalOpen = $state(false);
 	let labelErrors = $state<{ message: string }[] | null>(null);
@@ -133,8 +152,10 @@
 					<dd>
 						{#if activeBranch}
 							<a
-								href="/team/{page.params.team}/{page.params.env}/postgres/{page.params
-									.postgres}/branches"
+								href={resolve(
+									'/team/[team]/[env]/postgres/[postgres]/(single)/branches',
+									page.params as never
+								)}
 							>
 								<strong>{activeBranch.name}</strong>
 							</a>
@@ -161,6 +182,44 @@
 					<dt>Storage</dt>
 					<dd>{postgres.resources.diskSize ?? 'Platform default'}</dd>
 				</dl>
+				<Accordion size="small" indent={false} class="parameters-accordion">
+					<AccordionItem open={parametersOpen} onOpenChange={(open) => (parametersOpen = open)}>
+						{#snippet heading()}
+							<span id="{parametersId}-heading">PostgreSQL parameters</span>
+						{/snippet}
+						<div
+							id="{parametersId}-panel"
+							role="region"
+							aria-labelledby="{parametersId}-heading"
+							hidden={!parametersOpen}
+						>
+							{#if !parameters}
+								<BodyShort>PostgreSQL parameters are unavailable.</BodyShort>
+							{:else if parameters.length === 0}
+								<BodyShort>No PostgreSQL parameters explicitly configured.</BodyShort>
+							{:else}
+								<div class="table-scroll parameters-table">
+									<Table size="small" aria-labelledby="{parametersId}-heading">
+										<Thead>
+											<Tr>
+												<Th scope="col">Parameter</Th>
+												<Th scope="col">Value</Th>
+											</Tr>
+										</Thead>
+										<Tbody>
+											{#each parameters as parameter (parameter.name)}
+												<Tr>
+													<Td><code class="parameter-text">{parameter.name}</code></Td>
+													<Td><code class="parameter-text">{parameter.value}</code></Td>
+												</Tr>
+											{/each}
+										</Tbody>
+									</Table>
+								</div>
+							{/if}
+						</div>
+					</AccordionItem>
+				</Accordion>
 			</section>
 		</div>
 		<div class="layout-sidebar">
@@ -174,8 +233,10 @@
 									<Detail>
 										Branch:
 										<a
-											href="/team/{page.params.team}/{page.params.env}/postgres/{page.params
-												.postgres}/branches">{usage.branch.name}</a
+											href={resolve(
+												'/team/[team]/[env]/postgres/[postgres]/(single)/branches',
+												page.params as never
+											)}>{usage.branch.name}</a
 										>
 									</Detail>
 								</div>
@@ -219,6 +280,17 @@
 {/if}
 
 <style>
+	.content :global(.parameters-accordion) {
+		margin-top: var(--ax-space-24);
+	}
+	.parameters-table :global(table) {
+		width: 100%;
+		table-layout: fixed;
+	}
+	.parameter-text {
+		white-space: pre-wrap;
+		overflow-wrap: anywhere;
+	}
 	.provisioning-alert {
 		margin-bottom: var(--ax-space-24);
 	}

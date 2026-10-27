@@ -10,7 +10,7 @@ directive @defer(
 ) on FRAGMENT_SPREAD | INLINE_FRAGMENT
 
 """
-Request a branch for normal workloads; pgrator activates it once its cluster is ready.
+Request a branch for normal workloads. It becomes active once its database is ready.
 """
 input ActivatePostgresBranchInput {
   """Local name of the branch to activate."""
@@ -27,7 +27,7 @@ input ActivatePostgresBranchInput {
 }
 
 """
-Result of requesting activation; compare desiredActiveBranch to activeBranch while reconciling.
+Result of requesting activation; compare desiredActiveBranch to activeBranch while activation is in progress.
 """
 type ActivatePostgresBranchPayload {
   """Postgres with desired and observed branch selection."""
@@ -124,7 +124,7 @@ enum ActivityLogActivityType {
   """Personal Postgres connection materials were retrieved"""
   POSTGRES_PERSONAL_ACCESS_CONNECTION
 
-  """A personal Postgres access was created through the API broker"""
+  """A personal Postgres access was created"""
   POSTGRES_PERSONAL_ACCESS_CREATED
 
   """A Postgres was updated"""
@@ -1413,6 +1413,40 @@ interface AuthIntegration {
 """Authenticated user type."""
 union AuthenticatedUser = ServiceAccount | User
 
+"""
+Allowed string values and the default selection for a setting in an environment.
+"""
+type AvailableValueOptions implements Node {
+  """
+  The default selection. Null when no default is declared; an empty list means
+  an explicitly empty default. Scalar settings have at most one default value;
+  settings accepting multiple values may have several.
+  """
+  defaultValues: [String!]
+
+  """The globally unique ID of these configuration options."""
+  id: ID!
+
+  """The values accepted for this setting."""
+  values: [String!]!
+}
+
+"""
+Available configuration values for an environment, updated as platform capabilities change.
+"""
+type AvailableValues implements Node {
+  """
+  The globally unique ID of this environment's available configuration values.
+  """
+  id: ID!
+
+  """
+  PostgreSQL major versions accepted when creating a database in this environment.
+  Returns an error if the available versions cannot be determined.
+  """
+  postgresMajorVersions: AvailableValueOptions!
+}
+
 type BigQueryDataset implements Node & Persistence {
   access(after: Cursor, before: Cursor, first: Int, last: Int, orderBy: BigQueryDatasetAccessOrder): BigQueryDatasetAccessConnection!
   cascadingDelete: Boolean!
@@ -2477,7 +2511,9 @@ input CreatePostgresInput {
   """Initial user-defined labels to apply."""
   labels: [ResourceLabelInput!]
 
-  """PostgreSQL major version."""
+  """
+  PostgreSQL major version, selected from the environment's availableValues.postgresMajorVersions.values.
+  """
   majorVersion: String!
 
   """
@@ -3208,6 +3244,9 @@ An environment represents a runtime environment for workloads.
 Learn more in the [official Nais documentation](https://docs.nais.io/workloads/explanations/environment/).
 """
 type Environment implements Node {
+  """Available configuration values accepted in this environment."""
+  availableValues: AvailableValues!
+
   """The globally unique ID of the team."""
   id: ID!
 
@@ -3928,9 +3967,7 @@ enum InstanceGroupValueSourceKind {
   """The value comes from a Config."""
   CONFIG
 
-  """
-  The value was injected by the Nais platform (naiserator), not defined by the user.
-  """
+  """The value was injected by the Nais platform, not defined by the user."""
   NAIS
 
   """The value comes from a Secret."""
@@ -5340,7 +5377,7 @@ type Mutation {
 
   """
   EXPERIMENTAL: DO NOT USE
-  Create time-limited personal access to a NAIS Postgres branch through the brokered PostgresAccess and relay flow.
+  Create time-limited personal access to a Postgres branch.
   When the access is ready, retrieve its connection materials through PostgresAccess.connection.
   """
   createPostgresAccess(input: CreatePostgresAccessInput!): CreatePostgresAccessPayload!
@@ -5372,8 +5409,8 @@ type Mutation {
   The user creating the team will be granted team ownership, unless the user is a service account, in which case the
   team will not get an initial owner. To add one or more owners to the team, refer to the `addTeamOwners` mutation.
   
-  Creation of a team will also create external resources for the team, which will be managed by the Nais API
-  reconcilers. This will be done asynchronously.
+  Creation of a team will also create external resources for the team. These resources are managed by the platform
+  and are created asynchronously.
   
   Refer to the [official Nais documentation](https://docs.nais.io/explanations/team/) for more information regarding
   Nais teams.
@@ -6225,7 +6262,7 @@ type Postgres implements ActivityLogger & Node {
   branches(after: Cursor, before: Cursor, first: Int, last: Int, orderBy: PostgresBranchOrder): PostgresBranchConnection!
 
   """
-  Branch requested for activation; may differ from the observed active branch while reconciliation runs.
+  Branch requested for activation; may differ from the active branch while activation is in progress.
   """
   desiredActiveBranch: String
 
@@ -6297,9 +6334,7 @@ type PostgresAccess implements Node {
   """PostgresBranch selected by this access."""
   postgresBranch: PostgresBranch!
 
-  """
-  Name of the controller-owned relay mapping, once created. Contains no credential.
-  """
+  """Connection routing identifier, once available. Contains no credential."""
   relayAccess: String
 
   """High-level state of the access."""
@@ -6348,15 +6383,15 @@ enum PostgresAccessLevel {
   READWRITECREATE
 }
 
-"""High-level reconciliation state of a personal Postgres access."""
+"""Current state of a personal Postgres access."""
 enum PostgresAccessState {
   """The server-controlled expiry time has passed."""
   EXPIRED
 
-  """The controller cannot provision the requested access."""
+  """The requested access could not be prepared."""
   FAILED
 
-  """The controller has not finished provisioning the access."""
+  """The access is being prepared."""
   PENDING
 
   """The access and its connection materials are ready."""
@@ -6365,6 +6400,11 @@ enum PostgresAccessState {
 
 """A named PostgresBranch belonging to a Postgres."""
 type PostgresBranch implements Node & Persistence {
+  """
+  Configured PostgreSQL settings for this branch. Null until configuration is available.
+  """
+  configuration: PostgresConfiguration
+
   """Time when this branch was created."""
   createdAt: Time!
 
@@ -6526,7 +6566,7 @@ enum PostgresBranchOrderField {
   NAME
 }
 
-"""Reconciliation and observed health of a PostgresBranch."""
+"""Provisioning state and observed health of a PostgresBranch."""
 enum PostgresBranchState {
   """The branch is healthy and ready."""
   AVAILABLE
@@ -6545,6 +6585,14 @@ type PostgresBranchStateFacetItem {
 
   """The Postgres branch state."""
   state: PostgresBranchState!
+}
+
+"""Configured PostgreSQL settings for a branch."""
+type PostgresConfiguration {
+  """
+  Explicitly configured PostgreSQL parameters, sorted by name. Implicit default values are not included.
+  """
+  parameters: [PostgresParameter!]!
 }
 
 """A paginated list of Postgres databases."""
@@ -6670,6 +6718,15 @@ type PostgresGrantAccessActivityLogEntryData {
   until: Time!
 }
 
+"""An explicitly configured PostgreSQL parameter."""
+type PostgresParameter {
+  """PostgreSQL parameter name, including any extension prefix."""
+  name: String!
+
+  """Unmodified configured value, including units when specified."""
+  value: String!
+}
+
 """
 An audit-log entry for retrieval of personal Postgres connection materials.
 """
@@ -6702,9 +6759,7 @@ type PostgresPersonalAccessConnectionActivityLogEntry implements ActivityLogEntr
   teamSlug: Slug!
 }
 
-"""
-An audit-log entry for personal Postgres access created through the API broker.
-"""
+"""An audit-log entry for personal Postgres access creation."""
 type PostgresPersonalAccessCreatedActivityLogEntry implements ActivityLogEntry & Node {
   """The identity of the actor who created the personal access."""
   actor: String!
@@ -9461,7 +9516,7 @@ The team type represents a team on the [Nais platform](https://nais.io/).
 
 Learn more about what Nais teams are and what they can be used for in the [official Nais documentation](https://docs.nais.io/explanations/team/).
 
-External resources (e.g. entraIDGroupID, gitHubTeamSlug) are managed by [Nais API reconcilers](https://github.com/nais/api-reconcilers).
+External resources (e.g. entraIDGroupID, gitHubTeamSlug) are managed by the platform.
 """
 type Team implements ActivityLogger & Node {
   """Activity log associated with the team."""
@@ -11912,9 +11967,7 @@ type User implements Node {
   """The email address of the user."""
   email: String!
 
-  """
-  The external ID of the user. This value is managed by the Nais API user synchronization.
-  """
+  """The external ID of the user. This value is managed by the platform."""
   externalID: String!
 
   """The globally unique ID of the user."""

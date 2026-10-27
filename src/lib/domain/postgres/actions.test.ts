@@ -212,7 +212,7 @@ describe('Postgres management actions', () => {
 					teamSlug: 'test',
 					environmentName: 'dev',
 					cpu: '0.25',
-					memory: '1Gi',
+					memory: '1024Mi',
 					diskSize: '20Gi',
 					highAvailability: false
 				}
@@ -220,6 +220,38 @@ describe('Postgres management actions', () => {
 			expect.any(Object)
 		);
 	});
+
+	test.each(['0.6', '0,6'])(
+		'sends whole MiB when creating and updating with %s GiB',
+		async (memory) => {
+			create.mutate.mockResolvedValue({
+				data: {
+					createPostgres: {
+						postgres: {
+							id: 'pg',
+							name: 'database',
+							teamEnvironment: { environment: { name: 'dev' } }
+						}
+					}
+				}
+			});
+			update.mutate.mockResolvedValue({ data: { updatePostgres: { postgres: { id: 'pg' } } } });
+			await expect(
+				createActions.default(
+					createEvent({ name: 'database', environment: 'dev', majorVersion: '18', memory })
+				)
+			).rejects.toMatchObject({ status: 303 });
+			await expect(updateActions.default(updateEvent({ memory }))).rejects.toMatchObject({
+				status: 303
+			});
+			for (const mutation of [create, update]) {
+				expect(mutation.mutate).toHaveBeenCalledWith(
+					{ input: expect.objectContaining({ memory: '615Mi' }) },
+					expect.any(Object)
+				);
+			}
+		}
+	);
 
 	test('omits unchanged fractional storage while updating CPU and high availability', async () => {
 		currentResources.fetch.mockResolvedValue({
