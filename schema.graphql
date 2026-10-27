@@ -10009,19 +10009,15 @@ type Team implements ActivityLogger & Node {
     """Get items before this cursor."""
     before: Cursor
 
-    """Filter vulnerability summaries by environment."""
+    """
+    Filter workload vulnerability summaries by environment, priority, KEV or user labels.
+    """
     filter: TeamVulnerabilitySummaryFilter
 
     """
     Get the first n items in the connection. This can be used in combination with the after parameter.
     """
     first: Int
-
-    """
-    Match all user-label filters. An omitted value matches any value;
-    an empty string matches only an empty value.
-    """
-    labels: [LabelFilter!]
 
     """
     Get the last n items in the connection. This can be used in combination with the before parameter.
@@ -10031,7 +10027,13 @@ type Team implements ActivityLogger & Node {
     """Ordering options for items returned from the connection."""
     orderBy: VulnerabilitySummaryOrder
   ): WorkloadVulnerabilitySummaryConnection!
-  vulnerabilitySummary(filter: TeamVulnerabilitySummaryFilter): TeamVulnerabilitySummary!
+  vulnerabilitySummary(
+    """
+    Filter the aggregate by environment, priority or KEV.
+    User-label filters are rejected; use vulnerabilitySummaries for label-filtered workloads.
+    """
+    filter: TeamVulnerabilitySummaryFilter
+  ): TeamVulnerabilitySummary!
   workloadUtilization(resourceType: UtilizationResourceType!): [WorkloadUtilizationData]!
 
   """Nais workloads owned by the team."""
@@ -11094,6 +11096,13 @@ input TeamVulnerabilitySummaryFilter {
   one CISA Known Exploited Vulnerabilities (KEV) catalog entry.
   """
   hasKevEntry: Boolean
+
+  """
+  Match all user-label filters for Team.vulnerabilitySummaries.
+  An omitted value matches any value; an empty string matches only an empty value.
+  Team.vulnerabilitySummary rejects nonempty label filters.
+  """
+  labels: [LabelFilter!]
 
   """
   Only return vulnerability summaries whose highest priority is exactly one of
