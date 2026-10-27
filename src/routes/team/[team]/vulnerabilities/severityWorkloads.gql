@@ -7,8 +7,7 @@ query TeamSeverityWorkloads(
 	team(slug: $team) {
 		vulnerabilitySummaries(
 			first: 20
-			filter: { environmentName: $environmentName }
-			labels: $labels
+			filter: { environmentName: $environmentName, labels: $labels }
 			orderBy: $orderBy
 		) @paginate(mode: SinglePage) {
 			pageInfo {

@@ -7,8 +7,7 @@ query TeamPriorityWorkloadsHigh(
 	team(slug: $team) {
 		vulnerabilitySummaries(
 			first: 20
-			filter: { priorities: [HIGH], environmentName: $environmentName }
-			labels: $labels
+			filter: { priorities: [HIGH], environmentName: $environmentName, labels: $labels }
 			orderBy: $orderBy
 		) @paginate(mode: SinglePage) {
 			pageInfo {
