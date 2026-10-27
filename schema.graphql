@@ -6266,6 +6266,9 @@ type Postgres implements ActivityLogger & Node {
   """
   desiredActiveBranch: String
 
+  """Names of PostgreSQL extensions configured for this Postgres."""
+  extensions: [String!]!
+
   """Whether high availability is configured."""
   highAvailability: Boolean!
 
