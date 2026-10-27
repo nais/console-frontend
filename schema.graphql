@@ -10009,15 +10009,19 @@ type Team implements ActivityLogger & Node {
     """Get items before this cursor."""
     before: Cursor
 
-    """
-    Filter workload vulnerability summaries by environment, priority, KEV or user labels.
-    """
+    """Filter vulnerability summaries by environment."""
     filter: TeamVulnerabilitySummaryFilter
 
     """
     Get the first n items in the connection. This can be used in combination with the after parameter.
     """
     first: Int
+
+    """
+    Match all user-label filters. An omitted value matches any value;
+    an empty string matches only an empty value.
+    """
+    labels: [LabelFilter!]
 
     """
     Get the last n items in the connection. This can be used in combination with the before parameter.
@@ -11090,13 +11094,6 @@ input TeamVulnerabilitySummaryFilter {
   one CISA Known Exploited Vulnerabilities (KEV) catalog entry.
   """
   hasKevEntry: Boolean
-
-  """
-  Match all user-label filters. An omitted value matches any value;
-  an empty string matches only an empty value.
-  Not supported by Team.vulnerabilitySummary.
-  """
-  labels: [LabelFilter!]
 
   """
   Only return vulnerability summaries whose highest priority is exactly one of
