@@ -52,7 +52,6 @@ vi.mock('$houdini', () => ({
 	WorkloadOrderField: { NAME: 'NAME' },
 	VulnerabilitySummaryOrderByField: {
 		NAME: 'NAME',
-		LABEL: 'LABEL',
 		VULNERABILITY_RISK_SCORE: 'VULNERABILITY_RISK_SCORE',
 		VULNERABILITY_SEVERITY_CRITICAL: 'VULNERABILITY_SEVERITY_CRITICAL'
 	},
@@ -262,8 +261,6 @@ describe('team vulnerability workload view', () => {
 					selection: {
 						environmentName: 'dev-fss',
 						labels: [{ key: 'owner', value: 'retired' }],
-						labelKey: '',
-						labelDirection: 'ASC',
 						view: 'severity'
 					},
 					TeamVulnerabilities: writable({
@@ -327,8 +324,6 @@ describe('team vulnerability workload view', () => {
 					selection: {
 						environmentName: null,
 						labels: [],
-						labelKey: '',
-						labelDirection: 'ASC',
 						view: 'severity'
 					},
 					TeamVulnerabilities: writable({
@@ -468,7 +463,7 @@ describe('team vulnerability workload view', () => {
 
 	it('only applies environment and label filters to vulnerability workloads', async () => {
 		summary.missingSbomCount = 2;
-		await load(event('?view=priority&environment=dev&labels=owner%3Ateam&labelKey=owner'));
+		await load(event('?view=priority&environment=dev&labels=owner%3Ateam'));
 
 		const labels = [{ key: 'owner', value: 'team' }];
 		expect(loadNoSbom).toHaveBeenCalledWith(
@@ -489,7 +484,7 @@ describe('team vulnerability workload view', () => {
 				variables: expect.objectContaining({
 					environmentName: 'dev',
 					labels,
-					orderBy: { field: 'LABEL', direction: 'ASC', labelKey: 'owner' }
+					orderBy: { field: 'VULNERABILITY_RISK_SCORE', direction: 'DESC' }
 				})
 			})
 		);
@@ -504,6 +499,40 @@ describe('team vulnerability workload view', () => {
 		);
 		expect(loadHigh).not.toHaveBeenCalled();
 	});
+
+	it.each(['severity', 'priority'])(
+		'forwards AND, existence and empty-value filters with standard ordering in %s view',
+		async (view) => {
+			const key = `${'a'.repeat(63)}.example.com/owner`;
+			const params = new URLSearchParams({
+				view,
+				labels: `${key}:team,region,empty:`
+			});
+			await load(event(`?${params}`));
+
+			const loader = view === 'priority' ? loadHigh : loadSeverity;
+			expect(loader).toHaveBeenCalledOnce();
+			expect(loader).toHaveBeenCalledWith(
+				expect.objectContaining({
+					blocking: true,
+					variables: expect.objectContaining({
+						labels: [
+							{ key, value: 'team' },
+							{ key: 'region', value: undefined },
+							{ key: 'empty', value: '' }
+						],
+						orderBy: {
+							field:
+								view === 'priority'
+									? 'VULNERABILITY_RISK_SCORE'
+									: 'VULNERABILITY_SEVERITY_CRITICAL',
+							direction: 'DESC'
+						}
+					})
+				})
+			);
+		}
+	);
 
 	it('waits for the summary before deciding whether to load missing-SBOM workloads', async () => {
 		summary.missingSbomCount = 2;

@@ -13,15 +13,14 @@ import {
 } from '$houdini';
 import { addPageMeta } from '#lib/utils/pageMeta.js';
 import { get } from 'svelte/store';
-import { readWorkloadLabelSelection } from '#lib/domain/vulnerability/workloadLabels.js';
+import { parseLabelsParam } from '#lib/domain/labels/labels.js';
 
 export async function load(event) {
 	const team = event.params.team;
 	const view: 'priority' | 'severity' =
 		event.url.searchParams.get('view') === 'priority' ? 'priority' : 'severity';
 	const environmentName = event.url.searchParams.get('environment') || null;
-	const { labels, labelKey, labelDirection } = readWorkloadLabelSelection(event.url.searchParams);
-	const direction = labelDirection === 'DESC' ? OrderDirection.DESC : OrderDirection.ASC;
+	const labels = parseLabelsParam(event.url.searchParams.get('labels')) ?? [];
 
 	const teamVulnerabilities = await load_TeamVulnerabilities({
 		event,
@@ -34,7 +33,7 @@ export async function load(event) {
 	const noSboms = workloadCount > 0 && teamData?.vulnerabilitySummary?.sbomCount === 0;
 
 	return {
-		selection: { environmentName, labels, labelKey, labelDirection, view },
+		selection: { environmentName, labels, view },
 		...(await addPageMeta(event, {
 			title: 'Vulnerabilities',
 			docPath: '/services/vulnerabilities'
@@ -63,11 +62,8 @@ export async function load(event) {
 						environmentName,
 						labels,
 						orderBy: {
-							field: labelKey
-								? VulnerabilitySummaryOrderByField.LABEL
-								: VulnerabilitySummaryOrderByField.VULNERABILITY_RISK_SCORE,
-							direction: labelKey ? direction : OrderDirection.DESC,
-							...(labelKey ? { labelKey } : {})
+							field: VulnerabilitySummaryOrderByField.VULNERABILITY_RISK_SCORE,
+							direction: OrderDirection.DESC
 						}
 					}
 				})
@@ -81,11 +77,8 @@ export async function load(event) {
 						environmentName,
 						labels,
 						orderBy: {
-							field: labelKey
-								? VulnerabilitySummaryOrderByField.LABEL
-								: VulnerabilitySummaryOrderByField.VULNERABILITY_SEVERITY_CRITICAL,
-							direction: labelKey ? direction : OrderDirection.DESC,
-							...(labelKey ? { labelKey } : {})
+							field: VulnerabilitySummaryOrderByField.VULNERABILITY_SEVERITY_CRITICAL,
+							direction: OrderDirection.DESC
 						}
 					}
 				})
