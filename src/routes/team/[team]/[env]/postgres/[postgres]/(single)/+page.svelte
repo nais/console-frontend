@@ -175,6 +175,14 @@
 					</dd>
 					<dt>Postgres version</dt>
 					<dd>{postgres.majorVersion}</dd>
+					<dt>Extensions</dt>
+					<dd>
+						{#if postgres.extensions.length > 0}
+							<code class="parameter-text">{postgres.extensions.join(', ')}</code>
+						{:else}
+							None
+						{/if}
+					</dd>
 					<dt>CPU</dt>
 					<dd>{postgres.resources.cpu ?? 'Platform default'}</dd>
 					<dt>Memory</dt>

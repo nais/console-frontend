@@ -11,6 +11,7 @@ query PostgresOverview($team: Slug!, $env: String!, $name: String!) {
 					}
 				}
 				majorVersion
+				extensions
 				highAvailability
 				desiredActiveBranch
 				resources {

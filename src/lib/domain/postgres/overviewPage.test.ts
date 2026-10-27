@@ -40,12 +40,14 @@ async function renderPage({
 	},
 	activeBranch = { id: 'main', name: 'main', state: 'AVAILABLE', configuration },
 	desiredActiveBranch = 'main',
+	extensions = [],
 	viewerIsMember = false,
 	isAdmin = false
 }: {
 	configuration?: Configuration;
 	activeBranch?: Branch | null;
 	desiredActiveBranch?: string;
+	extensions?: string[];
 	viewerIsMember?: boolean;
 	isAdmin?: boolean;
 } = {}) {
@@ -62,6 +64,7 @@ async function renderPage({
 						desiredActiveBranch,
 						highAvailability: false,
 						majorVersion: '18',
+						extensions,
 						resources: { cpu: '100m', memory: '512Mi', diskSize: '10Gi' },
 						workloads: { nodes: [], pageInfo: { totalCount: 0 } },
 						labels: []
@@ -96,6 +99,24 @@ function parameterPanel(body: string) {
 }
 
 describe('Postgres overview', () => {
+	test('renders configured extensions after the Postgres version', async () => {
+		const { body } = await renderPage({ extensions: ['pg_stat_statements', 'pgcrypto'] });
+		expect(body).toContain('>pg_stat_statements, pgcrypto</code>');
+		expect(body.indexOf('Postgres version')).toBeLessThan(body.indexOf('<dt>Extensions</dt>'));
+		expect(body.indexOf('<dt>Extensions</dt>')).toBeLessThan(body.indexOf('<dt>CPU</dt>'));
+	});
+
+	test('shows None when no extensions are configured', async () => {
+		const { body } = await renderPage();
+		expect(body).toMatch(/<dt>Extensions<\/dt>\s*<dd>[\s\S]*?None[\s\S]*?<\/dd>/);
+	});
+
+	test('escapes extension names', async () => {
+		const { body } = await renderPage({ extensions: ['<custom&extension>'] });
+		expect(body).toContain('&lt;custom&amp;extension>');
+		expect(body).not.toContain('<custom&extension>');
+	});
+
 	test('preserves resource configuration with collapsed, labelled PostgreSQL parameters', async () => {
 		const { body } = await renderPage();
 		expect(body).not.toContain('<h1');
