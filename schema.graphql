@@ -10065,7 +10065,9 @@ type Team implements ActivityLogger & Node {
     """Get items before this cursor."""
     before: Cursor
 
-    """Filter vulnerability summaries by environment."""
+    """
+    Filter workload vulnerability summaries by environment, priority, KEV or user labels.
+    """
     filter: TeamVulnerabilitySummaryFilter
 
     """
@@ -10081,8 +10083,6 @@ type Team implements ActivityLogger & Node {
     """Ordering options for items returned from the connection."""
     orderBy: VulnerabilitySummaryOrder
   ): WorkloadVulnerabilitySummaryConnection!
-
-  """Get the team's vulnerability summary. Label filters are not supported."""
   vulnerabilitySummary(filter: TeamVulnerabilitySummaryFilter): TeamVulnerabilitySummary!
   workloadUtilization(resourceType: UtilizationResourceType!): [WorkloadUtilizationData]!
 
@@ -11148,7 +11148,9 @@ input TeamVulnerabilitySummaryFilter {
   hasKevEntry: Boolean
 
   """
-  Match all given workload labels; an omitted value matches any value for the key. Not supported by Team.vulnerabilitySummary.
+  Match all user-label filters. An omitted value matches any value;
+  an empty string matches only an empty value.
+  Not supported by Team.vulnerabilitySummary.
   """
   labels: [LabelFilter!]
 
@@ -12887,21 +12889,11 @@ input VulnerabilitySummaryOrder {
 
   """The field to order items by."""
   field: VulnerabilitySummaryOrderByField!
-
-  """
-  Required for LABEL and not allowed otherwise. Missing label values sort last in either direction; ties sort by descending risk score, then workload identity.
-  """
-  labelKey: String
 }
 
 enum VulnerabilitySummaryOrderByField {
   """Order by the name of the environment the workload is deployed in."""
   ENVIRONMENT
-
-  """
-  Order team workload summaries by the label selected by labelKey. Not supported for tenant-wide summaries.
-  """
-  LABEL
 
   """Order by name."""
   NAME
