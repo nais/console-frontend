@@ -42,6 +42,7 @@ describe('Postgres labels', () => {
 							desiredActiveBranch: 'main',
 							highAvailability: false,
 							majorVersion: '18',
+							extensions: [],
 							resources: { cpu: '100m', memory: '512Mi', diskSize: '10Gi' },
 							workloads: { nodes: [], pageInfo: { totalCount: 0 } },
 							labels: [{ key: 'owner', value: 'team' }]
