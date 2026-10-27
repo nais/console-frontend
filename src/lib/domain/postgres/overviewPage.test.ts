@@ -89,7 +89,7 @@ function parameterPanel(body: string) {
 	);
 	expect(panel).not.toBeNull();
 	return {
-		html: panel![3].replaceAll(/<!--[\s\S]*?-->/g, ''),
+		html: panel![3],
 		panelId: panel![1],
 		headingId: panel![2]
 	};
@@ -103,21 +103,22 @@ describe('Postgres overview', () => {
 			expect(body).toContain(value);
 		}
 		const { html, headingId, panelId } = parameterPanel(body);
-		const cleanBody = body.replaceAll(/<!--[\s\S]*?-->/g, '');
-		expect(cleanBody).toMatch(
+		expect(body).toMatch(
 			new RegExp(
 				`<button[^>]*aria-expanded="false"[^>]*>[\\s\\S]*?<span id="${headingId}">PostgreSQL parameters</span>[\\s\\S]*?</button>`
 			)
 		);
-		expect(cleanBody).toContain(
-			`id="${panelId}" role="region" aria-labelledby="${headingId}" hidden`
-		);
-		expect(cleanBody).toContain('aksel-accordion__content--closed');
-		expect(cleanBody.match(/PostgreSQL parameters/g)).toHaveLength(1);
-		expect(cleanBody).not.toContain('aria-expanded="true"');
+		expect(body).toContain(`id="${panelId}" role="region" aria-labelledby="${headingId}" hidden`);
+		expect(body).toContain('aksel-accordion__content--closed');
+		expect(body.match(/PostgreSQL parameters/g)).toHaveLength(1);
+		expect(body).not.toContain('aria-expanded="true"');
 		expect(html).toMatch(new RegExp(`<table\\b[^>]*aria-labelledby="${headingId}"`));
-		expect(html).toMatch(/<th\b[^>]*scope="col"[^>]*>Parameter<\/th>/);
-		expect(html).toMatch(/<th\b[^>]*scope="col"[^>]*>Value<\/th>/);
+		expect(html).toMatch(
+			/<th\b[^>]*scope="col"[^>]*>(?:<!--[\s\S]*?-->)*Parameter(?:<!--[\s\S]*?-->)*<\/th>/
+		);
+		expect(html).toMatch(
+			/<th\b[^>]*scope="col"[^>]*>(?:<!--[\s\S]*?-->)*Value(?:<!--[\s\S]*?-->)*<\/th>/
+		);
 		expect(body.indexOf('id="configuration-heading"')).toBeLessThan(
 			body.indexOf(`id="${headingId}"`)
 		);
