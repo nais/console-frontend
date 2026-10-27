@@ -113,12 +113,13 @@ describe('Postgres overview', () => {
 		expect(body.match(/PostgreSQL parameters/g)).toHaveLength(1);
 		expect(body).not.toContain('aria-expanded="true"');
 		expect(html).toMatch(new RegExp(`<table\\b[^>]*aria-labelledby="${headingId}"`));
-		expect(html).toMatch(
-			/<th\b[^>]*scope="col"[^>]*>(?:<!--[\s\S]*?-->)*Parameter(?:<!--[\s\S]*?-->)*<\/th>/
+		const headers = Array.from(
+			html.matchAll(/<th\b[^>]*scope="col"[^>]*>([\s\S]*?)<\/th>/g),
+			(header) => header[1]
 		);
-		expect(html).toMatch(
-			/<th\b[^>]*scope="col"[^>]*>(?:<!--[\s\S]*?-->)*Value(?:<!--[\s\S]*?-->)*<\/th>/
-		);
+		expect(headers).toHaveLength(2);
+		expect(headers[0]).toContain('>Parameter<');
+		expect(headers[1]).toContain('>Value<');
 		expect(body.indexOf('id="configuration-heading"')).toBeLessThan(
 			body.indexOf(`id="${headingId}"`)
 		);
