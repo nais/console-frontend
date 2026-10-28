@@ -36,6 +36,7 @@
 	import type { PageProps } from './$types';
 
 	let { data }: PageProps = $props();
+	const uid = $props.id();
 	let { CVEDetails, CVEWorkloads } = $derived(data);
 	const orderField = $derived(cveWorkloadOrder(page.url, CVEWorkloadOrderField.TEAM).field);
 
@@ -179,11 +180,11 @@
 					{#if workloadNodes.length > 0}
 						<div class="workload-groups">
 							{#each groupCveWorkloads(workloadNodes, orderField) as group, index (`${index}-${group.value}`)}
-								<section aria-labelledby={`cve-finding-group-${index}`}>
+								<section aria-labelledby={`${uid}-cve-finding-group-${index}`}>
 									<header class="workload-group-header">
 										<div class="workload-group-title">
 											<Detail>{cveWorkloadGroupLabels[orderField]}</Detail>
-											<Heading as="h3" size="small" id={`cve-finding-group-${index}`}>
+											<Heading as="h3" size="small" id={`${uid}-cve-finding-group-${index}`}>
 												{group.value}
 											</Heading>
 										</div>
