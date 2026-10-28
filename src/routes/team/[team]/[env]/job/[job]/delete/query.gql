@@ -30,14 +30,6 @@ query DeleteJobPage($job: String!, $team: Slug!, $env: String!) @cache(policy: N
 						cascadingDelete
 					}
 				}
-				valkeys {
-					nodes {
-						id
-						__typename
-						name
-						terminationProtection
-					}
-				}
 				sqlInstances {
 					nodes {
 						id
