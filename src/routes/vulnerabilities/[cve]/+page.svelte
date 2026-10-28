@@ -4,6 +4,7 @@
 	import { cveWorkloadOrder } from '#lib/domain/vulnerability/cveWorkloadOrder.js';
 	import {
 		cveWorkloadGroupLabels,
+		exhaustiveCveWorkloads,
 		groupCveWorkloads
 	} from '#lib/domain/vulnerability/cveWorkloadGroups.js';
 	import PrioritySignals from '#lib/domain/vulnerability/priority/PrioritySignals.svelte';
@@ -173,10 +174,11 @@
 					</div>
 				{:else if $CVEWorkloads.data}
 					{const workloads = $derived($CVEWorkloads.data.cve.workloads)}
+					{const workloadNodes = $derived(exhaustiveCveWorkloads(workloads.nodes))}
 					<CveImpact impact={workloads.impact} findingCount={workloads.pageInfo.totalCount} />
-					{#if workloads.nodes.length > 0}
+					{#if workloadNodes.length > 0}
 						<div class="workload-groups">
-							{#each groupCveWorkloads(workloads.nodes, orderField) as group, index (`${index}-${group.value}`)}
+							{#each groupCveWorkloads(workloadNodes, orderField) as group, index (`${index}-${group.value}`)}
 								<section aria-labelledby={`cve-finding-group-${index}`}>
 									<header class="workload-group-header">
 										<div class="workload-group-title">

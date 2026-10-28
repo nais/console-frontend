@@ -5,7 +5,11 @@
 	import PriorityBadge from '#lib/domain/vulnerability/priority/PriorityBadge.svelte';
 	import CveImpact from '#lib/domain/vulnerability/CveImpact.svelte';
 	import { cveWorkloadOrder } from '#lib/domain/vulnerability/cveWorkloadOrder.js';
-	import { groupCveWorkloadsByVulnerability } from '#lib/domain/vulnerability/cveWorkloadGroups.js';
+	import {
+		cveVulnerabilitySelection,
+		exhaustiveCveWorkloads,
+		groupCveWorkloadsByVulnerability
+	} from '#lib/domain/vulnerability/cveWorkloadGroups.js';
 	import OrderByMenu from '#lib/ui/OrderByMenu.svelte';
 	import { CVEWorkloadOrderField } from '$houdini';
 	import { page } from '$app/state';
@@ -37,6 +41,11 @@
 
 	let { data }: PageProps = $props();
 	let { TeamCVEPage, TeamCVEWorkloads, teamSlug, cveIdentifier, rows } = $derived(data);
+	const workloadNodes = $derived(
+		exhaustiveCveWorkloads(
+			($TeamCVEWorkloads.data?.cve.workloads.edges ?? []).map(({ node }) => node)
+		)
+	);
 
 	let searchValue = $state('');
 	let selectedIds = new SvelteSet<string>();
@@ -83,21 +92,19 @@
 	}
 
 	const toggleSelect = (vulnId: string) => {
-		const nodes = ($TeamCVEWorkloads.data?.cve.workloads.edges ?? []).map((e) => e.node);
-		const group = nodes.filter((n) => n.vulnerability.id === vulnId);
-		if (group.every((n) => selectedIds.has(n.id))) {
-			group.forEach((n) => selectedIds.delete(n.id));
+		const selection = cveVulnerabilitySelection(workloadNodes, vulnId, selectedIds);
+		if (selection.checked) {
+			selection.nodes.forEach((n) => selectedIds.delete(n.id));
 		} else {
-			group.forEach((n) => selectedIds.add(n.id));
+			selection.nodes.forEach((n) => selectedIds.add(n.id));
 		}
 	};
 
 	const selectableNodes = $derived.by(() => {
-		const nodes = ($TeamCVEWorkloads.data?.cve.workloads.edges ?? []).map((e) => e.node);
 		const suppressedVulnIds = new Set(
-			nodes.filter((n) => n.vulnerability.suppression).map((n) => n.vulnerability.id)
+			workloadNodes.filter((n) => n.vulnerability.suppression).map((n) => n.vulnerability.id)
 		);
-		return nodes.filter((n) => !suppressedVulnIds.has(n.vulnerability.id));
+		return workloadNodes.filter((n) => !suppressedVulnIds.has(n.vulnerability.id));
 	});
 
 	const toggleAll = () => {
@@ -116,11 +123,7 @@
 		return nodes.some((n) => selectedIds.has(rowKey(n)));
 	};
 
-	type WorkloadNode = NonNullable<
-		NonNullable<
-			NonNullable<(typeof $TeamCVEWorkloads)['data']>['cve']['workloads']['edges']
-		>[number]['node']
-	>;
+	type WorkloadNode = (typeof workloadNodes)[number];
 
 	type VulnGroup = {
 		vulnerabilityId: string;
@@ -130,8 +133,7 @@
 	};
 
 	const groupedWorkloads = $derived.by((): VulnGroup[] => {
-		const nodes = ($TeamCVEWorkloads.data?.cve.workloads.edges ?? []).map((e) => e.node);
-		return groupCveWorkloadsByVulnerability(nodes).map(({ value, nodes }) => ({
+		return groupCveWorkloadsByVulnerability(workloadNodes).map(({ value, nodes }) => ({
 			vulnerabilityId: value,
 			package: nodes[0].vulnerability.package,
 			suppression: nodes[0].vulnerability.suppression ?? null,
@@ -139,14 +141,8 @@
 		}));
 	});
 
-	const isGroupSelected = (group: VulnGroup) => group.nodes.every((n) => selectedIds.has(n.id));
-
-	const isGroupPartial = (group: VulnGroup) =>
-		group.nodes.some((n) => selectedIds.has(n.id)) && !isGroupSelected(group);
-
 	const bulkWorkloads = $derived.by((): BulkSuppressWorkload[] => {
-		const nodes = ($TeamCVEWorkloads.data?.cve.workloads.edges ?? []).map((e) => e.node);
-		return nodes
+		return workloadNodes
 			.filter((n) => selectedIds.has(rowKey(n)))
 			.map((n) => ({
 				rowKey: rowKey(n),
@@ -297,7 +293,7 @@
 			{:else if $TeamCVEWorkloads.data}
 				{const workloads = $derived($TeamCVEWorkloads.data.cve.workloads)}
 				<CveImpact impact={workloads.impact} findingCount={workloads.pageInfo.totalCount} />
-				{#if workloads.edges.length > 0}
+				{#if workloadNodes.length > 0}
 					{#if viewerIsMember}
 						<div class="select-all-row">
 							<Checkbox
@@ -316,6 +312,9 @@
 					{/if}
 					<div class="vulnerability-groups">
 						{#each groupedWorkloads as group (group.nodes[0].id)}
+							{const selection = $derived(
+								cveVulnerabilitySelection(workloadNodes, group.vulnerabilityId, selectedIds)
+							)}
 							{const fixVersion = $derived(
 								formatFixVersion(group.nodes[0]?.vulnerability.remediation.fixVersion)
 							)}
@@ -328,8 +327,8 @@
 								<div class="vuln-group-header">
 									{#if viewerIsMember}
 										<Checkbox
-											checked={isGroupSelected(group)}
-											indeterminate={isGroupPartial(group)}
+											checked={selection.checked}
+											indeterminate={selection.indeterminate}
 											onchange={() => {
 												if (!group.suppression) toggleSelect(group.vulnerabilityId);
 											}}
