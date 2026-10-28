@@ -1,5 +1,6 @@
 <script lang="ts">
 	import PriorityBadge from '#lib/domain/vulnerability/priority/PriorityBadge.svelte';
+	import CveImpact from '#lib/domain/vulnerability/CveImpact.svelte';
 	import PrioritySignals from '#lib/domain/vulnerability/priority/PrioritySignals.svelte';
 	import { priorityDetails } from '#lib/domain/vulnerability/priority/priority.js';
 	import WorkloadLink from '#lib/domain/workload/WorkloadLink.svelte';
@@ -8,6 +9,8 @@
 	import Collection from '#lib/ui/Collection.svelte';
 	import ListItem from '#lib/ui/ListItem.svelte';
 	import Pagination from '#lib/ui/Pagination.svelte';
+	import OrderByMenu from '#lib/ui/OrderByMenu.svelte';
+	import { CVEWorkloadOrderField } from '$houdini';
 	import { formatImageRef } from '#lib/utils/image.js';
 	import { changeParams } from '#lib/utils/searchparams.js';
 	import { formatFixVersion, suppressionStateLabels } from '#lib/utils/vulnerabilities.js';
@@ -150,19 +153,20 @@
 		{/if}
 		{#if !isNotFoundError($CVEWorkloads.errors)}
 			<div>
-				<Heading as="h2" size="small" spacing>
-					Affected Workloads
-					{#if ($CVEWorkloads.data?.cve.workloads.pageInfo.totalCount ?? 0) > 0}
-						{const findings = $derived($CVEWorkloads.data?.cve.workloads.pageInfo.totalCount)}
-						<span class="count">({findings} {findings === 1 ? 'finding' : 'findings'})</span>
-					{/if}
-				</Heading>
+				<div class="workloads-header">
+					<Heading as="h2" size="small">Affected Workloads</Heading>
+					<OrderByMenu
+						orderField={CVEWorkloadOrderField}
+						defaultOrderField={CVEWorkloadOrderField.TEAM}
+					/>
+				</div>
 				{#if $CVEWorkloads.fetching}
 					<div class="loading" role="status" aria-label="Loading">
 						<Loader size="3xlarge" />
 					</div>
 				{:else if $CVEWorkloads.data}
 					{const workloads = $derived($CVEWorkloads.data.cve.workloads)}
+					<CveImpact impact={workloads.impact} findingCount={workloads.pageInfo.totalCount} />
 					{#if workloads.nodes.length > 0}
 						<Collection>
 							{#each workloads.nodes as node ([node.workload.name, node.workload.team.slug, node.workload.teamEnvironment.environment.name, node.vulnerability.package].join('|'))}
@@ -454,9 +458,12 @@
 		}
 	}
 
-	.count {
-		font-weight: normal;
-		color: var(--ax-text-neutral);
+	.workloads-header {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		flex-wrap: wrap;
+		gap: var(--ax-space-12);
 	}
 
 	.workload-container {

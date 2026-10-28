@@ -1,7 +1,15 @@
-query TeamCVEWorkloads($identifier: String!, $first: Int!, $filter: CVEWorkloadsFilter) {
+query TeamCVEWorkloads(
+	$identifier: String!
+	$first: Int!
+	$filter: CVEWorkloadsFilter
+	$orderBy: CVEWorkloadOrder
+) {
 	cve(identifier: $identifier) {
 		id
-		workloads(first: $first, filter: $filter) @paginate(mode: Infinite) {
+		workloads(first: $first, filter: $filter, orderBy: $orderBy) @paginate(mode: Infinite) {
+			impact {
+				...CveImpactFragment
+			}
 			pageInfo {
 				totalCount
 				hasNextPage

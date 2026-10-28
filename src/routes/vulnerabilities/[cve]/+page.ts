@@ -1,4 +1,5 @@
-import { load_CVEDetails, load_CVEWorkloads } from '$houdini';
+import { CVEWorkloadOrderField, load_CVEDetails, load_CVEWorkloads } from '$houdini';
+import { cveWorkloadOrder } from '#lib/domain/vulnerability/cveWorkloadOrder.js';
 import { addPageMeta } from '#lib/utils/pageMeta.js';
 
 const rows = 25;
@@ -19,6 +20,7 @@ export async function load(event) {
 			event,
 			variables: {
 				identifier: event.params.cve,
+				orderBy: cveWorkloadOrder(event.url, CVEWorkloadOrderField.TEAM),
 				...(before ? { before, last: rows } : { after, first: rows })
 			}
 		}))

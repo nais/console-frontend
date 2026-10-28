@@ -1,4 +1,5 @@
-import { load_TeamCVEPage, load_TeamCVEWorkloads } from '$houdini';
+import { CVEWorkloadOrderField, load_TeamCVEPage, load_TeamCVEWorkloads } from '$houdini';
+import { cveWorkloadOrder } from '#lib/domain/vulnerability/cveWorkloadOrder.js';
 import { addPageMeta } from '#lib/utils/pageMeta.js';
 
 const ROWS = 25;
@@ -21,7 +22,12 @@ export async function load(event) {
 		})),
 		...(await load_TeamCVEWorkloads({
 			event,
-			variables: { identifier, first: ROWS, filter: { teamSlugs: [team] } }
+			variables: {
+				identifier,
+				first: ROWS,
+				filter: { teamSlugs: [team] },
+				orderBy: cveWorkloadOrder(event.url, CVEWorkloadOrderField.PACKAGE)
+			}
 		}))
 	};
 }

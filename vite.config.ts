@@ -3,6 +3,7 @@ import { sveltekit } from '@sveltejs/kit/vite';
 import tailwindcss from '@tailwindcss/vite';
 import houdini from 'houdini/vite';
 import { defineConfig, loadEnv } from 'vite';
+import './scripts/houdiniCodegenLock.js';
 
 export default defineConfig((mode) => {
 	const env = loadEnv(mode.mode, process.cwd());

@@ -3,6 +3,11 @@
 		type BulkSuppressWorkload
 	} from '#lib/domain/vulnerability/BulkSuppressCVE.svelte';
 	import PriorityBadge from '#lib/domain/vulnerability/priority/PriorityBadge.svelte';
+	import CveImpact from '#lib/domain/vulnerability/CveImpact.svelte';
+	import { cveWorkloadOrder } from '#lib/domain/vulnerability/cveWorkloadOrder.js';
+	import OrderByMenu from '#lib/ui/OrderByMenu.svelte';
+	import { CVEWorkloadOrderField } from '$houdini';
+	import { page } from '$app/state';
 	import PrioritySignals from '#lib/domain/vulnerability/priority/PrioritySignals.svelte';
 	import { priorityDetails } from '#lib/domain/vulnerability/priority/priority.js';
 	import WorkloadLink from '#lib/domain/workload/WorkloadLink.svelte';
@@ -167,7 +172,8 @@
 			variables: {
 				identifier: cveIdentifier,
 				first: Math.max(rows, loadedCount),
-				filter: { teamSlugs: [teamSlug] }
+				filter: { teamSlugs: [teamSlug] },
+				orderBy: cveWorkloadOrder(page.url, CVEWorkloadOrderField.PACKAGE)
 			},
 			policy: 'NetworkOnly'
 		});
@@ -263,13 +269,14 @@
 	{#if !isNotFoundError($TeamCVEPage.errors)}
 		<div>
 			<div class="workloads-header">
-				<Heading as="h2" size="small" spacing>
-					Affected Workloads
-					{#if ($TeamCVEWorkloads.data?.cve.workloads.pageInfo.totalCount ?? 0) > 0}
-						{const findings = $derived($TeamCVEWorkloads.data?.cve.workloads.pageInfo.totalCount)}
-						<span class="count">({findings} {findings === 1 ? 'finding' : 'findings'})</span>
-					{/if}
-				</Heading>
+				<Heading as="h2" size="small" spacing>Affected Workloads</Heading>
+				<OrderByMenu
+					orderField={CVEWorkloadOrderField}
+					defaultOrderField={CVEWorkloadOrderField.PACKAGE}
+					onlyInclude={Object.values(CVEWorkloadOrderField).filter(
+						(field) => field !== CVEWorkloadOrderField.TEAM
+					)}
+				/>
 				{#if viewerIsMember && bulkWorkloads.length > 0}
 					<Button
 						variant="primary"
@@ -296,6 +303,7 @@
 				</div>
 			{:else if $TeamCVEWorkloads.data}
 				{const workloads = $derived($TeamCVEWorkloads.data.cve.workloads)}
+				<CveImpact impact={workloads.impact} findingCount={workloads.pageInfo.totalCount} />
 				{#if workloads.edges.length > 0}
 					{#if viewerIsMember}
 						<div class="select-all-row">
@@ -544,11 +552,6 @@
 		.risk-assessment-content {
 			grid-template-columns: 1fr;
 		}
-	}
-
-	.count {
-		font-weight: normal;
-		color: var(--ax-text-neutral);
 	}
 
 	.workloads-header {
