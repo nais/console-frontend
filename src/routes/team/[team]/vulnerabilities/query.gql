@@ -1,4 +1,9 @@
-query TeamVulnerabilities($team: Slug!) {
+query TeamVulnerabilities(
+	$team: Slug!
+	$environmentName: String
+	$labels: [LabelFilter!]
+	$unfiltered: Boolean! = true
+) {
 	team(slug: $team) {
 		applications(first: 1) {
 			facets {
@@ -18,14 +23,16 @@ query TeamVulnerabilities($team: Slug!) {
 				}
 			}
 		}
-		urgentVulnerabilityIssues: issues(
-			filter: { issueType: EXTERNAL_INGRESS_URGENT_VULNERABILITY }
-		) {
+		urgentVulnerabilityIssues: issues(filter: { issueType: EXTERNAL_INGRESS_URGENT_VULNERABILITY })
+			@include(if: $unfiltered) {
 			pageInfo {
 				totalCount
 			}
 		}
-		exploitedWorkloads: vulnerabilitySummaries(first: 1, filter: { hasKevEntry: true }) {
+		exploitedWorkloads: vulnerabilitySummaries(
+			first: 1
+			filter: { hasKevEntry: true, environmentName: $environmentName, labels: $labels }
+		) {
 			pageInfo {
 				totalCount
 			}
@@ -46,7 +53,10 @@ query TeamVulnerabilities($team: Slug!) {
 				totalCount
 			}
 		}
-		vulnerabilitySummary {
+		teamVulnerabilitySummary: vulnerabilitySummary {
+			sbomCount
+		}
+		vulnerabilitySummary(filter: { environmentName: $environmentName, labels: $labels }) {
 			sbomCount
 			coverage
 			highWorkloadCount
@@ -64,7 +74,7 @@ query TeamVulnerabilities($team: Slug!) {
 			low
 			unassigned
 			riskScore
-			riskScoreTrend
+			riskScoreTrend @include(if: $unfiltered)
 			lastUpdated
 		}
 	}
