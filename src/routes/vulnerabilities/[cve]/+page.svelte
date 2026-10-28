@@ -1,6 +1,11 @@
 <script lang="ts">
 	import PriorityBadge from '#lib/domain/vulnerability/priority/PriorityBadge.svelte';
 	import CveImpact from '#lib/domain/vulnerability/CveImpact.svelte';
+	import { cveWorkloadOrder } from '#lib/domain/vulnerability/cveWorkloadOrder.js';
+	import {
+		cveWorkloadGroupLabels,
+		groupCveWorkloads
+	} from '#lib/domain/vulnerability/cveWorkloadGroups.js';
 	import PrioritySignals from '#lib/domain/vulnerability/priority/PrioritySignals.svelte';
 	import { priorityDetails } from '#lib/domain/vulnerability/priority/priority.js';
 	import WorkloadLink from '#lib/domain/workload/WorkloadLink.svelte';
@@ -15,6 +20,7 @@
 	import { changeParams } from '#lib/utils/searchparams.js';
 	import { formatFixVersion, suppressionStateLabels } from '#lib/utils/vulnerabilities.js';
 	import { goto } from '$app/navigation';
+	import { page } from '$app/state';
 	import {
 		Alert,
 		BodyShort,
@@ -30,6 +36,7 @@
 
 	let { data }: PageProps = $props();
 	let { CVEDetails, CVEWorkloads } = $derived(data);
+	const orderField = $derived(cveWorkloadOrder(page.url, CVEWorkloadOrderField.TEAM).field);
 
 	let searchValue = $state('');
 
@@ -168,63 +175,82 @@
 					{const workloads = $derived($CVEWorkloads.data.cve.workloads)}
 					<CveImpact impact={workloads.impact} findingCount={workloads.pageInfo.totalCount} />
 					{#if workloads.nodes.length > 0}
-						<Collection>
-							{#each workloads.nodes as node ([node.workload.name, node.workload.team.slug, node.workload.teamEnvironment.environment.name, node.vulnerability.package].join('|'))}
-								{const workload = $derived(node.workload)}
-								{const vuln = $derived(node.vulnerability)}
-								{const fixVersion = $derived(formatFixVersion(vuln.remediation.fixVersion))}
-								<ListItem>
-									<div class="workload-container">
-										<WorkloadLink {workload} />
-										<dl class="workload-details">
-											<div class="detail-row">
-												<Detail as="dt">Package</Detail>
-												<BodyShort as="dd"><code>{vuln.package}</code></BodyShort>
-											</div>
-											{#if fixVersion}
-												<div class="detail-row">
-													<Detail as="dt">
-														<span class="fix-version-term">
-															Fixed in
-															<HelpText
-																title="How do I apply the fix?"
-																strategy="fixed"
-																placement="right"
-															>
-																Update the dependency to a version that satisfies the displayed fix
-																requirement, then rebuild and redeploy the image. If it's not
-																relevant here, it can be suppressed instead.
-															</HelpText>
-														</span>
-													</Detail>
-													<BodyShort as="dd"><code>{fixVersion}</code></BodyShort>
+						<div class="workload-groups">
+							{#each groupCveWorkloads(workloads.nodes, orderField) as group, index (`${index}-${group.value}`)}
+								<section aria-labelledby={`cve-finding-group-${index}`}>
+									<header class="workload-group-header">
+										<div class="workload-group-title">
+											<Detail>{cveWorkloadGroupLabels[orderField]}</Detail>
+											<Heading as="h3" size="small" id={`cve-finding-group-${index}`}>
+												{group.value}
+											</Heading>
+										</div>
+										<Detail>
+											{group.nodes.length} finding{group.nodes.length === 1 ? '' : 's'} on this page
+										</Detail>
+									</header>
+									<Collection headerless>
+										{#each group.nodes as node ([node.workload.name, node.workload.team.slug, node.workload.teamEnvironment.environment.name, node.vulnerability.package].join('|'))}
+											{const workload = $derived(node.workload)}
+											{const vuln = $derived(node.vulnerability)}
+											{const fixVersion = $derived(formatFixVersion(vuln.remediation.fixVersion))}
+											<ListItem>
+												<div class="workload-container">
+													<WorkloadLink {workload} />
+													<dl class="workload-details">
+														<div class="detail-row">
+															<Detail as="dt">Package</Detail>
+															<BodyShort as="dd"><code>{vuln.package}</code></BodyShort>
+														</div>
+														{#if fixVersion}
+															<div class="detail-row">
+																<Detail as="dt">
+																	<span class="fix-version-term">
+																		Fixed in
+																		<HelpText
+																			title="How do I apply the fix?"
+																			strategy="fixed"
+																			placement="right"
+																		>
+																			Update the dependency to a version that satisfies the
+																			displayed fix requirement, then rebuild and redeploy the
+																			image. If it's not relevant here, it can be suppressed
+																			instead.
+																		</HelpText>
+																	</span>
+																</Detail>
+																<BodyShort as="dd"><code>{fixVersion}</code></BodyShort>
+															</div>
+														{/if}
+														<div class="detail-row">
+															<Detail as="dt">Image</Detail>
+															{#if workload.image}
+																<BodyShort as="dd">
+																	<code>{formatImageRef(workload.image)}</code>
+																</BodyShort>
+															{:else}
+																<BodyShort as="dd">-</BodyShort>
+															{/if}
+														</div>
+														{#if vuln.suppression}
+															<div class="detail-row">
+																<Detail as="dt">Suppression</Detail>
+																<BodyShort as="dd">
+																	<code
+																		>{suppressionStateLabels[vuln.suppression.state] ??
+																			'Unknown'}</code
+																	>
+																</BodyShort>
+															</div>
+														{/if}
+													</dl>
 												</div>
-											{/if}
-											<div class="detail-row">
-												<Detail as="dt">Image</Detail>
-												{#if workload.image}
-													<BodyShort as="dd">
-														<code>{formatImageRef(workload.image)}</code>
-													</BodyShort>
-												{:else}
-													<BodyShort as="dd">-</BodyShort>
-												{/if}
-											</div>
-											{#if vuln.suppression}
-												<div class="detail-row">
-													<Detail as="dt">Suppression</Detail>
-													<BodyShort as="dd">
-														<code
-															>{suppressionStateLabels[vuln.suppression.state] ?? 'Unknown'}</code
-														>
-													</BodyShort>
-												</div>
-											{/if}
-										</dl>
-									</div>
-								</ListItem>
+											</ListItem>
+										{/each}
+									</Collection>
+								</section>
 							{/each}
-						</Collection>
+						</div>
 						<Pagination
 							page={workloads.pageInfo}
 							fetching={$CVEWorkloads.fetching}
@@ -464,6 +490,29 @@
 		justify-content: space-between;
 		flex-wrap: wrap;
 		gap: var(--ax-space-12);
+	}
+
+	.workload-groups {
+		display: flex;
+		flex-direction: column;
+		gap: var(--ax-space-24);
+	}
+
+	.workload-group-header {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		flex-wrap: wrap;
+		gap: var(--ax-space-12);
+		padding: var(--ax-space-12) var(--ax-space-24);
+		background: var(--ax-bg-neutral-soft);
+		border-radius: var(--ax-radius-8) var(--ax-radius-8) 0 0;
+	}
+
+	.workload-group-title {
+		flex: 1;
+		min-width: 0;
+		overflow-wrap: anywhere;
 	}
 
 	.workload-container {
