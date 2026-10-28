@@ -6,7 +6,7 @@
 	import CveImpact from '#lib/domain/vulnerability/CveImpact.svelte';
 	import { cveWorkloadOrder } from '#lib/domain/vulnerability/cveWorkloadOrder.js';
 	import {
-		cveVulnerabilitySelection,
+		cveVulnerabilitySelections,
 		exhaustiveCveWorkloads,
 		groupCveWorkloadsByVulnerability
 	} from '#lib/domain/vulnerability/cveWorkloadGroups.js';
@@ -49,6 +49,7 @@
 
 	let searchValue = $state('');
 	let selectedIds = new SvelteSet<string>();
+	const vulnerabilitySelections = $derived(cveVulnerabilitySelections(workloadNodes, selectedIds));
 	let bulkOpen = $state(false);
 
 	const rowKey = (node: { id: string }) => node.id;
@@ -91,8 +92,7 @@
 		}
 	}
 
-	const toggleSelect = (vulnId: string) => {
-		const selection = cveVulnerabilitySelection(workloadNodes, vulnId, selectedIds);
+	const toggleSelect = (selection: { nodes: WorkloadNode[]; checked: boolean }) => {
 		if (selection.checked) {
 			selection.nodes.forEach((n) => selectedIds.delete(n.id));
 		} else {
@@ -312,9 +312,7 @@
 					{/if}
 					<div class="vulnerability-groups">
 						{#each groupedWorkloads as group (group.nodes[0].id)}
-							{const selection = $derived(
-								cveVulnerabilitySelection(workloadNodes, group.vulnerabilityId, selectedIds)
-							)}
+							{const selection = $derived(vulnerabilitySelections.get(group.vulnerabilityId)!)}
 							{const fixVersion = $derived(
 								formatFixVersion(group.nodes[0]?.vulnerability.remediation.fixVersion)
 							)}
@@ -330,7 +328,7 @@
 											checked={selection.checked}
 											indeterminate={selection.indeterminate}
 											onchange={() => {
-												if (!group.suppression) toggleSelect(group.vulnerabilityId);
+												if (!group.suppression) toggleSelect(selection);
 											}}
 											disabled={!!group.suppression}
 											readonly={!!group.suppression}
