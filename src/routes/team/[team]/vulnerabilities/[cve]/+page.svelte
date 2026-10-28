@@ -5,6 +5,7 @@
 	import PriorityBadge from '#lib/domain/vulnerability/priority/PriorityBadge.svelte';
 	import CveImpact from '#lib/domain/vulnerability/CveImpact.svelte';
 	import { cveWorkloadOrder } from '#lib/domain/vulnerability/cveWorkloadOrder.js';
+	import { groupCveWorkloadsByVulnerability } from '#lib/domain/vulnerability/cveWorkloadGroups.js';
 	import OrderByMenu from '#lib/ui/OrderByMenu.svelte';
 	import { CVEWorkloadOrderField } from '$houdini';
 	import { page } from '$app/state';
@@ -31,7 +32,7 @@
 		Tag
 	} from '@nais/ds-svelte-community';
 	import { MagnifyingGlassIcon } from '@nais/ds-svelte-community/icons';
-	import { SvelteMap, SvelteSet } from 'svelte/reactivity';
+	import { SvelteSet } from 'svelte/reactivity';
 	import type { PageProps } from './$types';
 
 	let { data }: PageProps = $props();
@@ -130,20 +131,12 @@
 
 	const groupedWorkloads = $derived.by((): VulnGroup[] => {
 		const nodes = ($TeamCVEWorkloads.data?.cve.workloads.edges ?? []).map((e) => e.node);
-		const map = new SvelteMap<string, VulnGroup>();
-		for (const node of nodes) {
-			const vid = node.vulnerability.id;
-			if (!map.has(vid)) {
-				map.set(vid, {
-					vulnerabilityId: vid,
-					package: node.vulnerability.package,
-					suppression: node.vulnerability.suppression ?? null,
-					nodes: []
-				});
-			}
-			map.get(vid)!.nodes.push(node);
-		}
-		return [...map.values()];
+		return groupCveWorkloadsByVulnerability(nodes).map(({ value, nodes }) => ({
+			vulnerabilityId: value,
+			package: nodes[0].vulnerability.package,
+			suppression: nodes[0].vulnerability.suppression ?? null,
+			nodes
+		}));
 	});
 
 	const isGroupSelected = (group: VulnGroup) => group.nodes.every((n) => selectedIds.has(n.id));
@@ -322,7 +315,7 @@
 						</div>
 					{/if}
 					<div class="vulnerability-groups">
-						{#each groupedWorkloads as group (group.vulnerabilityId)}
+						{#each groupedWorkloads as group (group.nodes[0].id)}
 							{const fixVersion = $derived(
 								formatFixVersion(group.nodes[0]?.vulnerability.remediation.fixVersion)
 							)}
