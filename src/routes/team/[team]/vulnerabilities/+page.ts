@@ -24,13 +24,18 @@ export async function load(event) {
 
 	const teamVulnerabilities = await load_TeamVulnerabilities({
 		event,
-		variables: { team },
+		variables: {
+			team,
+			environmentName,
+			labels,
+			unfiltered: !environmentName && labels.length === 0
+		},
 		blocking: true
 	});
 	const teamData = get(teamVulnerabilities.TeamVulnerabilities).data?.team;
 	const missingSbomCount = teamData?.workloadsWithoutSbom.pageInfo.totalCount ?? 0;
 	const workloadCount = teamData?.workloads.pageInfo.totalCount ?? 0;
-	const noSboms = workloadCount > 0 && teamData?.vulnerabilitySummary?.sbomCount === 0;
+	const noSboms = workloadCount > 0 && teamData?.teamVulnerabilitySummary?.sbomCount === 0;
 
 	return {
 		selection: { environmentName, labels, view },

@@ -9,6 +9,7 @@ const { loadHigh, loadSeverity, loadNoSbom, loadSummary, summary } = vi.hoisted(
 	const summary = {
 		missingSbomCount: 0,
 		sbomCount: 1,
+		filteredSbomCount: undefined as number | undefined,
 		workloadCount: 1,
 		wait: undefined as (() => Promise<void>) | undefined
 	};
@@ -29,7 +30,10 @@ const { loadHigh, loadSeverity, loadNoSbom, loadSummary, summary } = vi.hoisted(
 										pageInfo: { totalCount: summary.missingSbomCount }
 									},
 									workloads: { pageInfo: { totalCount: summary.workloadCount } },
-									vulnerabilitySummary: { sbomCount: summary.sbomCount }
+									teamVulnerabilitySummary: { sbomCount: summary.sbomCount },
+									vulnerabilitySummary: {
+										sbomCount: summary.filteredSbomCount ?? summary.sbomCount
+									}
 								}
 							}
 						});
@@ -86,6 +90,7 @@ afterEach(() => {
 	vi.clearAllMocks();
 	summary.missingSbomCount = 0;
 	summary.sbomCount = 1;
+	summary.filteredSbomCount = undefined;
 	summary.workloadCount = 1;
 	summary.wait = undefined;
 });
@@ -123,6 +128,34 @@ describe('team vulnerability workload view', () => {
 		expect(missingSboms.selectionSet?.selections).toMatchObject([
 			{ kind: Kind.FIELD, name: { value: 'pageInfo' } }
 		]);
+		const aggregate = team.selectionSet.selections.find(
+			(selection) =>
+				selection.kind === Kind.FIELD &&
+				selection.name.value === 'vulnerabilitySummary' &&
+				!selection.alias
+		);
+		if (aggregate?.kind !== Kind.FIELD) throw new Error('Missing vulnerability aggregate');
+		expect(
+			aggregate.arguments?.find((argument) => argument.name.value === 'filter')?.value
+		).toMatchObject({
+			kind: Kind.OBJECT,
+			fields: [
+				{
+					name: { value: 'environmentName' },
+					value: { kind: Kind.VARIABLE, name: { value: 'environmentName' } }
+				},
+				{
+					name: { value: 'labels' },
+					value: { kind: Kind.VARIABLE, name: { value: 'labels' } }
+				}
+			]
+		});
+		const teamSummary = team.selectionSet.selections.find(
+			(selection) =>
+				selection.kind === Kind.FIELD && selection.alias?.value === 'teamVulnerabilitySummary'
+		);
+		if (teamSummary?.kind !== Kind.FIELD) throw new Error('Missing team-wide SBOM context');
+		expect(teamSummary.arguments?.length ?? 0).toBe(0);
 	});
 
 	it('requests navigable pages for the missing-SBOM workload list', () => {
@@ -270,6 +303,7 @@ describe('team vulnerability workload view', () => {
 								workloads: { pageInfo: { totalCount: 62 } },
 								applications: { facets: { labels: [] } },
 								jobs: { facets: { labels: [] } },
+								teamVulnerabilitySummary: { sbomCount: 0 },
 								vulnerabilitySummary: { sbomCount: 0 }
 							}
 						},
@@ -333,6 +367,7 @@ describe('team vulnerability workload view', () => {
 								workloads: { pageInfo: { totalCount: 1 } },
 								applications: { facets: { labels: [] } },
 								jobs: { facets: { labels: [] } },
+								teamVulnerabilitySummary: { sbomCount: 0 },
 								vulnerabilitySummary: { sbomCount: 0 }
 							}
 						},
@@ -461,11 +496,16 @@ describe('team vulnerability workload view', () => {
 		expect(previous).not.toContain('disabled');
 	});
 
-	it('only applies environment and label filters to vulnerability workloads', async () => {
+	it('filters both vulnerability totals and rows while keeping missing-SBOM workloads team-wide', async () => {
 		summary.missingSbomCount = 2;
 		await load(event('?view=priority&environment=dev&labels=owner%3Ateam'));
 
 		const labels = [{ key: 'owner', value: 'team' }];
+		expect(loadSummary).toHaveBeenCalledWith(
+			expect.objectContaining({
+				variables: { team: 'example', environmentName: 'dev', labels, unfiltered: false }
+			})
+		);
 		expect(loadNoSbom).toHaveBeenCalledWith(
 			expect.objectContaining({
 				variables: {
@@ -490,6 +530,14 @@ describe('team vulnerability workload view', () => {
 		);
 	});
 
+	it('does not mistake an empty filtered selection for a team without usable SBOMs', async () => {
+		summary.filteredSbomCount = 0;
+		await load(event('?labels=absent'));
+
+		expect(loadSeverity).toHaveBeenCalledOnce();
+		expect(loadNoSbom).not.toHaveBeenCalled();
+	});
+
 	it('loads severity by default when filters are set without selecting a view', async () => {
 		await load(event('?labels=region'));
 		expect(loadSeverity).toHaveBeenCalledWith(
@@ -511,6 +559,18 @@ describe('team vulnerability workload view', () => {
 			await load(event(`?${params}`));
 
 			const loader = view === 'priority' ? loadHigh : loadSeverity;
+			expect(loadSummary).toHaveBeenCalledWith(
+				expect.objectContaining({
+					variables: expect.objectContaining({
+						labels: [
+							{ key, value: 'team' },
+							{ key: 'region', value: undefined },
+							{ key: 'empty', value: '' }
+						],
+						unfiltered: false
+					})
+				})
+			);
 			expect(loader).toHaveBeenCalledOnce();
 			expect(loader).toHaveBeenCalledWith(
 				expect.objectContaining({
