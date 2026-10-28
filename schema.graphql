@@ -1695,6 +1695,11 @@ type CVE implements Node {
     Get the last n items in the connection. This can be used in combination with the before parameter.
     """
     last: Int
+
+    """
+    Order all matching findings before pagination. Defaults to team ascending.
+    """
+    orderBy: CVEWorkloadOrder
   ): WorkloadWithVulnerabilityConnection!
 }
 
@@ -1723,6 +1728,24 @@ input CVEFilter {
   Operational priority. URGENT requires workload context and currently returns no CVEs.
   """
   priority: CVEPriority
+}
+
+"""
+Distinct affected resources across the entire filtered selection, including suppressed findings.
+"""
+type CVEImpact {
+  """
+  Number of distinct container image references, identified by name and tag.
+  """
+  imageCount: Int!
+
+  """Number of distinct affected package identifiers."""
+  packageCount: Int!
+
+  """
+  Number of distinct workloads, regardless of how many packages are affected.
+  """
+  workloadCount: Int!
 }
 
 """Ordering options when fetching CVEs."""
@@ -1770,6 +1793,36 @@ enum CVEPriority {
   Requires immediate action based on workload context, including internet exposure. Not assigned to CVEs at global scope; a KEV entry alone does not imply URGENT.
   """
   URGENT
+}
+
+"""Ordering options for workloads affected by a CVE."""
+input CVEWorkloadOrder {
+  """The direction to order findings by."""
+  direction: OrderDirection!
+
+  """The field to order findings by."""
+  field: CVEWorkloadOrderField!
+}
+
+"""Fields available for ordering workloads affected by a CVE."""
+enum CVEWorkloadOrderField {
+  """Workload environment."""
+  ENVIRONMENT
+
+  """Container image name and tag."""
+  IMAGE
+
+  """Affected package name."""
+  PACKAGE
+
+  """Whether the finding is suppressed."""
+  SUPPRESSED
+
+  """Owning team."""
+  TEAM
+
+  """Workload name."""
+  WORKLOAD
 }
 
 """
@@ -13635,6 +13688,11 @@ type WorkloadWithVulnerability implements Node {
 type WorkloadWithVulnerabilityConnection {
   """List of edges."""
   edges: [WorkloadWithVulnerabilityEdge!]!
+
+  """
+  Distinct affected resource counts across all matching findings, not just this page. Null when the counts are unavailable, such as on a page past the last finding.
+  """
+  impact: CVEImpact
 
   """List of nodes."""
   nodes: [WorkloadWithVulnerability!]!
