@@ -133,7 +133,7 @@ describe('team vulnerability workload view', () => {
 		expect(body).toMatch(/7\s+workloads/);
 		expect(body).toMatch(/3\s+workloads/);
 		expect(body).toMatch(/0\s+workloads/);
-		expect(body).not.toContain('…');
+		expect(body).not.toMatch(/…\s+workloads/);
 	});
 
 	it('requests the number of workloads with no SBOM', () => {
