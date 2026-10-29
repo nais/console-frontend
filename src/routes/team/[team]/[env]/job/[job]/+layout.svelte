@@ -50,7 +50,9 @@
 	let visibleTabs = $derived(tabs.some((tab) => tab.value === routeId) ? tabs : []);
 </script>
 
-<JobActions {viewerIsMember} {job} />
+{#key `${page.params.team}/${page.params.env}/job/${page.params.job}`}
+	<JobActions {viewerIsMember} {job} />
+{/key}
 
 {#if visibleTabs.length > 0}
 	<Tabs value={routeId} size="small">
