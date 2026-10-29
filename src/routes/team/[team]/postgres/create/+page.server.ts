@@ -1,8 +1,10 @@
-import { graphql } from '$houdini';
+import { graphql, PostgresAvailableValuesStore } from '$houdini';
 import { labelRowsHaveErrors, rowsFromArrays, toLabelInput } from '#lib/domain/labels/labels.js';
 import { requirePostgresAccess } from '#lib/domain/postgres/access.server.js';
 import {
 	configurationErrors,
+	extensionSelectionError,
+	formExtensions,
 	formString,
 	postgresConfiguration,
 	resourceInput
@@ -51,6 +53,7 @@ export const actions = {
 			name: formString(data, 'name'),
 			environment: formString(data, 'environment'),
 			majorVersion: formString(data, 'majorVersion'),
+			extensions: formExtensions(data),
 			labelRows,
 			...postgresConfiguration(data)
 		};
@@ -90,6 +93,32 @@ export const actions = {
 				error: 'Postgres is only available in GCP environments.'
 			});
 		}
+		const available = await new PostgresAvailableValuesStore().fetch({
+			event,
+			variables: { team: event.params.team, env: values.environment },
+			policy: 'NetworkOnly'
+		});
+		if (available.errors?.length || !available.data) {
+			return fail(500, {
+				...values,
+				errors,
+				error: available.errors?.length
+					? available.errors.map((item) => item.message).join('. ')
+					: 'Could not load Postgres options for this environment.'
+			});
+		}
+		const options = available.data.team.environment.environment.availableValues;
+		const extensionError = extensionSelectionError(
+			values.extensions,
+			options.postgresExtensions.values
+		);
+		if (!options.postgresMajorVersions.values.includes(values.majorVersion) || extensionError) {
+			return fail(400, {
+				...values,
+				errors,
+				error: extensionError ?? 'Select a PostgreSQL version available in this environment.'
+			});
+		}
 		if (Object.keys(errors).length)
 			return fail(400, { ...values, errors, error: 'Check the resource fields below.' });
 		const result = await mutation.mutate(
@@ -99,6 +128,7 @@ export const actions = {
 					teamSlug: event.params.team,
 					environmentName: values.environment,
 					majorVersion: values.majorVersion,
+					extensions: values.extensions,
 					labels: toLabelInput(labelRows),
 					...resourceInput(values)
 				}
