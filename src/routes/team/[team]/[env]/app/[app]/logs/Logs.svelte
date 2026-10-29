@@ -89,9 +89,18 @@
 	};
 
 	let store = newstore();
+	let transitionId = 0;
+	let destroyed = false;
 
-	function start() {
-		if (selectedInstances.length === 0) {
+	async function start() {
+		const currentTransitionId = ++transitionId;
+		await store.unlisten();
+		if (
+			destroyed ||
+			currentTransitionId !== transitionId ||
+			isPaused ||
+			selectedInstances.length === 0
+		) {
 			return;
 		}
 		logAppender.clear();
@@ -115,20 +124,22 @@
 	let selectedInstances: string[] = $state.raw([]);
 
 	let isStarted: boolean = $state(false);
-	let isPaused: boolean = $state(true);
+	let isPaused: boolean = $state(false);
 
 	onMount(() => {
 		let instance = page.url.searchParams.get('instance');
 
 		if (instance) {
 			selectedInstances = [instance];
-			start();
 		} else {
 			selectedInstances = team.environment.application.instances.nodes.map((node) => node.name);
 		}
+		void start();
 	});
 
 	onDestroy(() => {
+		destroyed = true;
+		transitionId += 1;
 		logAppender.clear();
 		store.unlisten();
 	});
@@ -216,15 +227,8 @@
 								selectedInstances = [...selectedInstances, name];
 							}
 
-							if (selectedInstances.length === 0) {
-								store.unlisten();
-								isPaused = true;
-							}
-
-							if (isPaused) {
-								return;
-							}
-							store.unlisten().then(start);
+							isPaused = false;
+							void start();
 						}}
 					/>
 				{/each}
@@ -239,14 +243,15 @@
 						disabled={selectedInstances.length === 0}
 						onclick={() => {
 							if (isPaused) {
-								start();
+								isPaused = false;
+								void start();
 							} else {
 								isPaused = true;
 								store.unlisten();
 							}
 						}}
 					>
-						{isPaused ? 'Restart' : 'Stop'}
+						{isPaused ? 'Resume' : 'Pause'}
 					</Button>
 					<Button
 						size="medium"
@@ -262,12 +267,13 @@
 					<Button
 						size="medium"
 						variant="primary"
+						disabled={selectedInstances.length === 0}
 						onclick={() => {
-							isStarted = true;
-							start();
+							isPaused = false;
+							void start();
 						}}
 					>
-						Start
+						Resume
 					</Button>
 				{/if}
 			</div>

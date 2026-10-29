@@ -1,4 +1,5 @@
 <script lang="ts">
+	import ExternalLink from '#lib/ui/ExternalLink.svelte';
 	import {
 		createBufferedLogAppender,
 		filterLogsByLevel,
@@ -7,7 +8,6 @@
 		parseLogMessage,
 		type LogLine
 	} from '#lib/utils/logViewer.js';
-	import ExternalLink from '#lib/ui/ExternalLink.svelte';
 	import { buildLokiLogQuery } from '#lib/utils/lokiLogQuery.js';
 	import { graphql } from '$houdini';
 	import {
@@ -272,13 +272,7 @@
 
 	function setInstances(nextInstances: string[]) {
 		selectedInstances = nextInstances;
-		if (!canStart) {
-			isPaused = true;
-			scheduleTransition(false);
-		}
-		if (shouldStream) {
-			start();
-		}
+		start();
 	}
 
 	function displayInstance(instance: string): string {
@@ -408,7 +402,7 @@
 									isPaused = true;
 									scheduleTransition(false);
 								}
-							}}>{isPaused ? 'Restart' : 'Stop'}</Button
+							}}>{isPaused ? 'Resume' : 'Pause'}</Button
 						>
 						<Button
 							size="small"
@@ -419,7 +413,9 @@
 							}}>Clear logs</Button
 						>
 					{:else}
-						<Button size="small" variant="primary" onclick={start}>Start</Button>
+						<Button size="small" variant="primary" disabled={!canStart} onclick={start}
+							>Resume</Button
+						>
 					{/if}
 				</div>
 				<div class="links">

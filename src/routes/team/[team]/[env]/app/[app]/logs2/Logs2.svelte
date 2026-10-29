@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { apmURL } from '#lib/doc.js';
-	import { exhaustive } from '#lib/utils/houdini.js';
 	import LokiLogs from '#lib/domain/logs/LokiLogs.svelte';
+	import { exhaustive } from '#lib/utils/houdini.js';
 	import { page } from '$app/state';
 	import type { Instances$result } from '$houdini';
 	import { Alert } from '@nais/ds-svelte-community';
@@ -35,7 +35,7 @@
 			container={team.environment.application.name}
 			{instances}
 			initialInstances={selectedInstances}
-			startOnMount={Boolean(selectedInstance)}
+			startOnMount={true}
 			{hasLoki}
 			{grafanaURL}
 			tracesURL={apmURL(page.params.team!, page.params.app!, 'traces')}
