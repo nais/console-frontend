@@ -1441,6 +1441,12 @@ type AvailableValues implements Node {
   id: ID!
 
   """
+  PostgreSQL extensions accepted when creating or updating a Postgres in this environment.
+  Returns an error if the available values cannot be determined.
+  """
+  postgresExtensions: AvailableValueOptions!
+
+  """
   PostgreSQL major versions accepted when creating a database in this environment.
   Returns an error if the available versions cannot be determined.
   """
@@ -2555,6 +2561,11 @@ input CreatePostgresInput {
 
   """The environment name that the Postgres belongs to."""
   environmentName: String!
+
+  """
+  Extensions to make available to databases in this Postgres instance. Select values from environment.availableValues.postgresExtensions.
+  """
+  extensions: [String!]
 
   """
   Add a third instance and enable synchronous replication. Defaults to false.
@@ -10065,7 +10076,9 @@ type Team implements ActivityLogger & Node {
     """Get items before this cursor."""
     before: Cursor
 
-    """Filter vulnerability summaries by environment."""
+    """
+    Filter workload vulnerability summaries by environment, priority, KEV or user labels.
+    """
     filter: TeamVulnerabilitySummaryFilter
 
     """
@@ -10081,7 +10094,10 @@ type Team implements ActivityLogger & Node {
     """Ordering options for items returned from the connection."""
     orderBy: VulnerabilitySummaryOrder
   ): WorkloadVulnerabilitySummaryConnection!
-  vulnerabilitySummary(filter: TeamVulnerabilitySummaryFilter): TeamVulnerabilitySummary!
+  vulnerabilitySummary(
+    """Filter the aggregate by environment, priority, KEV or user labels."""
+    filter: TeamVulnerabilitySummaryFilter
+  ): TeamVulnerabilitySummary!
   workloadUtilization(resourceType: UtilizationResourceType!): [WorkloadUtilizationData]!
 
   """Nais workloads owned by the team."""
@@ -11124,7 +11140,9 @@ type TeamVulnerabilitySummary {
   """Risk score of the team."""
   riskScore: Int!
 
-  """Trend of vulnerability status for the team."""
+  """
+  Trend of vulnerability status for the whole team. Not affected by the vulnerabilitySummary filter.
+  """
   riskScoreTrend: TeamVulnerabilityRiskScoreTrend!
 
   """Number of workloads with a software bill of materials (SBOM) attached."""
@@ -11144,6 +11162,12 @@ input TeamVulnerabilitySummaryFilter {
   one CISA Known Exploited Vulnerabilities (KEV) catalog entry.
   """
   hasKevEntry: Boolean
+
+  """
+  Match all user-label filters for team vulnerability summaries and their aggregate.
+  An omitted value matches any value; an empty string matches only an empty value.
+  """
+  labels: [LabelFilter!]
 
   """
   Only return vulnerability summaries whose highest priority is exactly one of
@@ -11788,6 +11812,11 @@ input UpdatePostgresInput {
 
   """The environment name that the Postgres belongs to."""
   environmentName: String!
+
+  """
+  The complete set of extensions to make available to databases in this Postgres instance. Select values from environment.availableValues.postgresExtensions. When omitted or null, existing extensions are left unchanged; use an empty list to remove all configured extensions.
+  """
+  extensions: [String!]
 
   """Add a third instance and enable synchronous replication."""
   highAvailability: Boolean
