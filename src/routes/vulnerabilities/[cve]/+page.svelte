@@ -146,7 +146,7 @@
 						<div class="risk-assessment-signals">
 							<Detail as="p">Threat signals</Detail>
 							<PrioritySignals
-								hasKevEntry={cve.riskAssessment.hasKevEntry}
+								hasKevEntry={cve.riskAssessment.hasKevEntry || !!cve.kevEntry}
 								knownRansomwareUse={cve.riskAssessment.knownRansomwareUse}
 								epssScore={cve.riskAssessment.epssScore}
 								epssPercentile={cve.riskAssessment.epssPercentile}
