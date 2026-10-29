@@ -5,10 +5,18 @@ query CVEWorkloads(
 	$after: Cursor
 	$before: Cursor
 	$orderBy: CVEWorkloadOrder
+	$filter: CVEWorkloadsFilter
 ) {
 	cve(identifier: $identifier) {
 		id
-		workloads(first: $first, last: $last, after: $after, before: $before, orderBy: $orderBy) {
+		workloads(
+			first: $first
+			last: $last
+			after: $after
+			before: $before
+			orderBy: $orderBy
+			filter: $filter
+		) {
 			impact {
 				...CveImpactFragment
 			}

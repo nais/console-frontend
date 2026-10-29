@@ -164,12 +164,28 @@
 			<div>
 				<div class="workloads-header">
 					<Heading as="h2" size="small">Affected Workloads</Heading>
-					<OrderByMenu
-						orderField={CVEWorkloadOrderField}
-						defaultOrderField={CVEWorkloadOrderField.TEAM}
-					/>
+					<div class="workloads-controls">
+						<Button
+							size="small"
+							variant={data.onlyMyTeams ? 'primary' : 'secondary'}
+							aria-pressed={data.onlyMyTeams}
+							onclick={() =>
+								changeParams(
+									{ myTeams: data.onlyMyTeams ? '' : 'true', after: '', before: '' },
+									{ noScroll: true }
+								)}
+						>
+							My teams
+						</Button>
+						<OrderByMenu
+							orderField={CVEWorkloadOrderField}
+							defaultOrderField={CVEWorkloadOrderField.TEAM}
+						/>
+					</div>
 				</div>
-				{#if $CVEWorkloads.fetching}
+				{#if !data.hasViewerTeams}
+					<BodyShort>None of your teams are affected by this vulnerability.</BodyShort>
+				{:else if $CVEWorkloads.fetching}
 					<div class="loading" role="status" aria-label="Loading">
 						<Loader size="3xlarge" />
 					</div>
@@ -277,7 +293,11 @@
 							}}
 						/>
 					{:else}
-						<BodyShort>No workloads are currently affected by this vulnerability.</BodyShort>
+						<BodyShort>
+							{data.onlyMyTeams
+								? 'None of your teams are affected by this vulnerability.'
+								: 'No workloads are currently affected by this vulnerability.'}
+						</BodyShort>
 					{/if}
 				{:else if hasOtherErrors($CVEWorkloads.errors)}
 					<GraphErrors errors={$CVEWorkloads.errors} />
@@ -493,6 +513,13 @@
 		justify-content: space-between;
 		flex-wrap: wrap;
 		gap: var(--ax-space-12);
+	}
+
+	.workloads-controls {
+		display: flex;
+		align-items: center;
+		flex-wrap: wrap;
+		gap: var(--ax-space-16);
 	}
 
 	.workload-groups {
