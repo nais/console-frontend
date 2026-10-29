@@ -184,7 +184,7 @@
 					</div>
 				</div>
 				{#if !data.hasViewerTeams}
-					<BodyShort>None of your teams are affected by this vulnerability.</BodyShort>
+					<BodyShort>You are not a member of any teams.</BodyShort>
 				{:else if $CVEWorkloads.fetching}
 					<div class="loading" role="status" aria-label="Loading">
 						<Loader size="3xlarge" />
