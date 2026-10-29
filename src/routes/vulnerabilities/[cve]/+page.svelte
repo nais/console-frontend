@@ -183,7 +183,7 @@
 						/>
 					</div>
 				</div>
-				{#if !data.hasViewerTeams}
+				{#if $CVEWorkloads.data?.me?.__typename === 'User' && $CVEWorkloads.data.me.teams.pageInfo.totalCount === 0}
 					<BodyShort>You are not a member of any teams.</BodyShort>
 				{:else if $CVEWorkloads.fetching}
 					<div class="loading" role="status" aria-label="Loading">

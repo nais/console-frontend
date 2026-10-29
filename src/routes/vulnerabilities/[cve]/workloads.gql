@@ -6,7 +6,18 @@ query CVEWorkloads(
 	$before: Cursor
 	$orderBy: CVEWorkloadOrder
 	$filter: CVEWorkloadsFilter
+	$onlyMyTeams: Boolean!
 ) {
+	me @include(if: $onlyMyTeams) {
+		__typename
+		... on User {
+			teams(first: 1) {
+				pageInfo {
+					totalCount
+				}
+			}
+		}
+	}
 	cve(identifier: $identifier) {
 		id
 		workloads(
