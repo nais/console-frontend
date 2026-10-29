@@ -95,16 +95,16 @@
 	async function start() {
 		const currentTransitionId = ++transitionId;
 		await store.unlisten();
-		if (
-			destroyed ||
-			currentTransitionId !== transitionId ||
-			isPaused ||
-			selectedInstances.length === 0
-		) {
+		if (destroyed || currentTransitionId !== transitionId || isPaused) {
 			return;
 		}
 		logAppender.clear();
 		logs = [];
+		if (selectedInstances.length === 0) {
+			isPaused = true;
+			isStarted = false;
+			return;
+		}
 		isPaused = false;
 		isStarted = true;
 
@@ -353,20 +353,20 @@
 		</ToggleGroup>
 	</div>
 
-	{#if isPaused && logs.length === 0}
+	{#if selectedInstances.length === 0}
 		{#if team.environment.job.runs.nodes.filter((run) => run.instances.nodes.length > 0).length === 0}
 			<div class="paused">
 				<p>No run instances.</p>
 			</div>
-		{:else if selectedInstances.length === 0}
+		{:else}
 			<div class="paused">
 				<p>No run instances selected. Please select at least one instance to view logs.</p>
 			</div>
-		{:else}
-			<div class="paused">
-				<p>Logs are paused. Click "Start/Restart" to resume.</p>
-			</div>
 		{/if}
+	{:else if isPaused && logs.length === 0}
+		<div class="paused">
+			<p>Logs are paused.</p>
+		</div>
 	{/if}
 
 	{#if logs.length > 0}
