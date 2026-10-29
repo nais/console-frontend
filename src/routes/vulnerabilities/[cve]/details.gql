@@ -5,6 +5,9 @@ query CVEDetails($identifier: String!) {
 		title
 		severity
 		detailsLink
+		kevEntry {
+			...KevGuidanceFragment
+		}
 		riskAssessment {
 			cvssScore
 			priority

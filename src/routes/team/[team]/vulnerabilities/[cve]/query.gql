@@ -6,6 +6,9 @@ query TeamCVEPage($identifier: String!, $team: Slug!) {
 		description
 		severity
 		detailsLink
+		kevEntry {
+			...KevGuidanceFragment
+		}
 		riskAssessment {
 			priority
 			cvssScore
