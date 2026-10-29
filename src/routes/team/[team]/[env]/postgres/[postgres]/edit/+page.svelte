@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
 	import PostgresConfigurationFields from '#lib/domain/postgres/PostgresConfigurationFields.svelte';
+	import PostgresExtensionFields from '#lib/domain/postgres/PostgresExtensionFields.svelte';
 	import { quantityInUnits } from '#lib/domain/postgres/forms.js';
 	import GraphErrors from '#lib/ui/GraphErrors.svelte';
 	import { Alert, BodyShort, Button } from '@nais/ds-svelte-community';
@@ -9,11 +10,14 @@
 	let { data, form }: PageProps = $props();
 	let { EditPostgres } = $derived(data);
 	let postgres = $derived($EditPostgres.data?.team.environment.postgres);
+	let availableExtensions = $derived(
+		$EditPostgres.data?.team.environment.environment.availableValues.postgresExtensions.values
+	);
 	let submitting = $state(false);
 </script>
 
 <GraphErrors errors={$EditPostgres.errors} />
-{#if postgres}
+{#if postgres && availableExtensions && !$EditPostgres.errors?.length}
 	<form
 		method="POST"
 		use:enhance={() => {
@@ -38,6 +42,11 @@
 			diskSize={form?.diskSize ?? quantityInUnits(postgres.resources.diskSize, 'GiB')}
 			currentDiskSize={quantityInUnits(postgres.resources.diskSize, 'GiB')}
 			highAvailability={form?.highAvailability ?? postgres.highAvailability}
+		/>
+		<PostgresExtensionFields
+			available={availableExtensions}
+			selected={form?.extensions ?? postgres.extensions}
+			initial={form?.initialExtensions ?? postgres.extensions}
 		/>
 		{#if form?.error}<Alert variant="error">{form.error}</Alert>{/if}
 		<Button type="submit" loading={submitting}>Save changes</Button>

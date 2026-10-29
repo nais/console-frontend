@@ -3,6 +3,30 @@ export function formString(data: FormData, name: string): string {
 	return typeof value === 'string' ? value.trim() : '';
 }
 
+export function formExtensions(data: FormData, name = 'extensions'): string[] | undefined {
+	if (!data.has(`${name}Present`) && !data.has(name)) return undefined;
+	return [...new Set(data.getAll(name).map((value) => (typeof value === 'string' ? value : '')))];
+}
+
+export function extensionSelectionError(
+	selected: readonly string[] | undefined,
+	available: readonly string[],
+	current: readonly string[] = []
+) {
+	const unsupported = selected?.filter(
+		(extension) => !available.includes(extension) && !current.includes(extension)
+	);
+	if (unsupported?.length) {
+		return `Extensions not available in this environment: ${unsupported.join(', ')}.`;
+	}
+}
+
+export function changedExtensions(selected: string[] | undefined, current: readonly string[]) {
+	return selected?.length === current.length && current.every((value) => selected.includes(value))
+		? undefined
+		: selected;
+}
+
 export function canActivateBranch(
 	branch: { name: string; state: string },
 	activeBranch: string | null | undefined,
