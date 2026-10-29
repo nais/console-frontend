@@ -1,12 +1,11 @@
 <script lang="ts">
-	import { page } from '$app/state';
-	import { graphql, type Manifest as ManifestFragment } from '$houdini';
 	import Manifest from '#lib/domain/resources/Manifest.svelte';
 	import ActionConfirm from '#lib/ui/ActionConfirm.svelte';
 	import HeaderActions from '#lib/ui/HeaderActions.svelte';
 	import PageModal, { pageModalClick } from '#lib/ui/PageModal.svelte';
-	import EnvPage from './env/+page.svelte';
-	import { generateJobRunName } from '#lib/utils/jobRunName.js';
+	import { generateJobRunName, validateJobRunName } from '#lib/utils/jobRunName.js';
+	import { page } from '$app/state';
+	import { graphql, type Manifest as ManifestFragment } from '$houdini';
 	import { Button, Heading, Modal, TextField } from '@nais/ds-svelte-community';
 	import {
 		ActionMenu,
@@ -20,6 +19,7 @@
 		PlayIcon,
 		TrashIcon
 	} from '@nais/ds-svelte-community/icons';
+	import EnvPage from './env/+page.svelte';
 
 	interface Props {
 		viewerIsMember: boolean;
@@ -75,6 +75,7 @@
 	let triggerOpen = $state(false);
 	let showManifest = $state(false);
 	let runName = $state('');
+	let runNameError = $derived(validateJobRunName(runName));
 
 	const openTrigger = () => {
 		runName = generateJobRunName(jobName ?? '');
@@ -82,6 +83,9 @@
 	};
 
 	const submitTrigger = async (): Promise<{ ok: boolean; message: string }> => {
+		if (runNameError) {
+			return { ok: false, message: runNameError };
+		}
 		if (!jobName || !environment || !teamSlug) {
 			return { ok: false, message: 'Job name or environment is not defined.' };
 		}
@@ -141,14 +145,19 @@
 	</ActionMenu>
 </HeaderActions>
 
-<ActionConfirm bind:open={triggerOpen} onconfirm={submitTrigger}>
+<ActionConfirm bind:open={triggerOpen} onconfirm={submitTrigger} confirmDisabled={!!runNameError}>
 	{#snippet header()}
 		<Heading as="h2" size="medium">Trigger run</Heading>
 	{/snippet}
 	This will trigger a new run of
 	<strong>{jobName}</strong> in
 	<strong>{environment}</strong>.
-	<TextField label="Run name" description="Auto-generated name (editable)" bind:value={runName} />
+	<TextField
+		label="Run name"
+		description="Auto-generated name (editable)"
+		bind:value={runName}
+		error={runNameError}
+	/>
 </ActionConfirm>
 
 <Modal bind:open={showManifest} closeButton width="medium">

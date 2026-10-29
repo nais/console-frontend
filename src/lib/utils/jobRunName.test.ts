@@ -1,5 +1,34 @@
 import { describe, expect, it, vi } from 'vitest';
-import { generateJobRunName } from './jobRunName';
+import { generateJobRunName, validateJobRunName } from './jobRunName';
+
+describe('validateJobRunName', () => {
+	it.each(['run', 'my-job-123', '1', 'a'.repeat(63)])('accepts valid name %s', (name) => {
+		expect(validateJobRunName(name)).toBeUndefined();
+	});
+
+	it.each(['te st 1 2 3', ' run', 'run ', 'run\tname', 'run\nname', 'run\n'])(
+		'rejects whitespace in %j',
+		(name) => {
+			expect(validateJobRunName(name)).toBeDefined();
+		}
+	);
+
+	it.each(['Run', 'run_name', 'run.name', '-run', 'run-'])('rejects invalid name %s', (name) => {
+		expect(validateJobRunName(name)).toBeDefined();
+	});
+
+	it('rejects empty names', () => {
+		expect(validateJobRunName('')).toBe('Run name is required.');
+	});
+
+	it('rejects names longer than 63 characters', () => {
+		expect(validateJobRunName('a'.repeat(64))).toBe('Run name must be 63 characters or fewer.');
+	});
+
+	it('accepts generated names', () => {
+		expect(validateJobRunName(generateJobRunName('My job'))).toBeUndefined();
+	});
+});
 
 describe('generateJobRunName', () => {
 	const mockDate = new Date(2026, 1, 12, 14, 30, 15);
