@@ -46,27 +46,40 @@ const { loadHigh, loadSeverity, loadNoSbom, loadSummary, summary } = vi.hoisted(
 	};
 });
 
-vi.mock('$houdini', () => ({
-	load_TeamVulnerabilities: loadSummary,
-	load_TeamPriorityWorkloadsHigh: loadHigh,
-	load_TeamSeverityWorkloads: loadSeverity,
-	load_TeamNoSbomWorkloads: loadNoSbom,
-	OrderDirection: { DESC: 'DESC', ASC: 'ASC' },
-	SBOMStatus: { NO_SBOM: 'NO_SBOM' },
-	WorkloadOrderField: { NAME: 'NAME' },
-	VulnerabilitySummaryOrderByField: {
-		NAME: 'NAME',
-		VULNERABILITY_RISK_SCORE: 'VULNERABILITY_RISK_SCORE',
-		VULNERABILITY_SEVERITY_CRITICAL: 'VULNERABILITY_SEVERITY_CRITICAL'
-	},
-	TeamNoSbomWorkloadsStore: class {},
-	TeamPriorityWorkloadsHighStore: class {},
-	TeamSeverityWorkloadsStore: class {}
-}));
+vi.mock('$houdini', async () => {
+	const { writable } = await import('svelte/store');
+	class EmptyWorkloadStore {
+		subscribe = writable({ data: null, errors: null }).subscribe;
+	}
+	return {
+		graphql: () => new EmptyWorkloadStore(),
+		load_TeamVulnerabilities: loadSummary,
+		load_TeamPriorityWorkloadsHigh: loadHigh,
+		load_TeamSeverityWorkloads: loadSeverity,
+		load_TeamNoSbomWorkloads: loadNoSbom,
+		OrderDirection: { DESC: 'DESC', ASC: 'ASC' },
+		SBOMStatus: { NO_SBOM: 'NO_SBOM' },
+		WorkloadOrderField: { NAME: 'NAME' },
+		VulnerabilitySummaryOrderByField: {
+			NAME: 'NAME',
+			VULNERABILITY_RISK_SCORE: 'VULNERABILITY_RISK_SCORE',
+			VULNERABILITY_SEVERITY_CRITICAL: 'VULNERABILITY_SEVERITY_CRITICAL'
+		},
+		TeamNoSbomWorkloadsStore: class {},
+		TeamPriorityWorkloadsHighStore: EmptyWorkloadStore,
+		TeamPriorityWorkloadsElevatedStore: EmptyWorkloadStore,
+		TeamPriorityWorkloadsMonitorStore: EmptyWorkloadStore,
+		TeamSeverityWorkloadsStore: EmptyWorkloadStore
+	};
+});
 vi.mock('#lib/utils/pageMeta.js', () => ({ addPageMeta: vi.fn(async () => ({})) }));
 vi.mock('$app/env', () => ({ browser: false, building: false, dev: false }));
 vi.mock('$app/environment', () => ({ browser: false, building: false }));
-vi.mock('$app/navigation', () => ({ goto: vi.fn(), invalidateAll: vi.fn() }));
+vi.mock('$app/navigation', () => ({
+	goto: vi.fn(),
+	invalidateAll: vi.fn(),
+	afterNavigate: vi.fn()
+}));
 vi.mock('$app/state', () => ({
 	page: {
 		url: new URL('https://console.example.com/team/mango-panda/vulnerabilities'),
@@ -77,6 +90,8 @@ vi.mock('$app/state', () => ({
 import { load } from './+page';
 import TeamVulnerabilityPage from './+page.svelte';
 import WorkloadsWithoutSbom from '#lib/domain/vulnerability/WorkloadsWithoutSbom.svelte';
+import WorkloadsWithVulnerabilities from '#lib/domain/vulnerability/WorkloadsWithVulnerabilities.svelte';
+import { TeamPriorityWorkloadsHighStore, TeamSeverityWorkloadsStore } from '$houdini';
 
 function event(query = ''): Parameters<typeof load>[0] {
 	return {
@@ -96,6 +111,31 @@ afterEach(() => {
 });
 
 describe('team vulnerability workload view', () => {
+	it.each([
+		{ environmentName: 'dev', labels: [] },
+		{ environmentName: null, labels: [{ key: 'owner', value: 'team' }] },
+		{ environmentName: 'dev', labels: [{ key: 'owner', value: 'team' }] }
+	])('shows filtered priority totals before group rows are loaded: %j', async (filters) => {
+		const { body } = await render(WorkloadsWithVulnerabilities, {
+			props: {
+				team: 'example',
+				high: new TeamPriorityWorkloadsHighStore(),
+				severity: new TeamSeverityWorkloadsStore(),
+				environmentNames: ['dev'],
+				labelFacets: [],
+				selection: { ...filters, view: 'priority' },
+				highWorkloadCount: 7,
+				elevatedWorkloadCount: 3,
+				monitorWorkloadCount: 0
+			}
+		});
+
+		expect(body).toMatch(/7\s+workloads/);
+		expect(body).toMatch(/3\s+workloads/);
+		expect(body).toMatch(/0\s+workloads/);
+		expect(body).not.toContain('…');
+	});
+
 	it('requests the number of workloads with no SBOM', () => {
 		const query = parse(readFileSync(new URL('./query.gql', import.meta.url), 'utf8'));
 		const operation = query.definitions.find(
