@@ -243,7 +243,7 @@
 							epssScore={cve.riskAssessment.epssScore}
 							epssPercentile={cve.riskAssessment.epssPercentile}
 							showEmpty
-							emptyText="No threat signal data available."
+							emptyText="Not listed in KEV. No known ransomware use. EPSS data unavailable."
 						/>
 					</div>
 				</div>
@@ -514,21 +514,11 @@
 		gap: var(--ax-space-4);
 	}
 
-	.risk-assessment-signals :global(ul.signals) {
-		flex-wrap: nowrap;
-	}
-
 	.risk-assessment-values {
 		display: flex;
 		flex-wrap: wrap;
 		align-items: center;
 		gap: var(--ax-space-8);
-	}
-
-	@media (max-width: 767px) {
-		.risk-assessment-signals :global(ul.signals) {
-			flex-wrap: wrap;
-		}
 	}
 
 	.vulnerability-type,
