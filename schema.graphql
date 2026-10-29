@@ -1833,6 +1833,11 @@ input CVEWorkloadsFilter {
   Team identifiers used to limit results to workloads owned by those teams.
   """
   teamSlugs: [Slug!]
+
+  """
+  Only return workloads owned by teams the viewer is a member of. Combined with teamSlugs, only the viewer's teams among those are returned.
+  """
+  viewerIsMember: Boolean
 }
 
 input ChangeDeploymentKeyInput {
