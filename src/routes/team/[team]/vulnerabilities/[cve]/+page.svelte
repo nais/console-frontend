@@ -4,6 +4,7 @@
 	} from '#lib/domain/vulnerability/BulkSuppressCVE.svelte';
 	import PriorityBadge from '#lib/domain/vulnerability/priority/PriorityBadge.svelte';
 	import CveImpact from '#lib/domain/vulnerability/CveImpact.svelte';
+	import KevGuidance from '#lib/domain/vulnerability/KevGuidance.svelte';
 	import { cveWorkloadOrder } from '#lib/domain/vulnerability/cveWorkloadOrder.js';
 	import {
 		cveVulnerabilitySelections,
@@ -217,15 +218,22 @@
 						<BodyShort size="small">{priority.guidance}</BodyShort>
 					</div>
 					<div class="risk-assessment-group">
-						<Detail as="p">Severity and CVSS</Detail>
+						<Detail as="p">Severity</Detail>
 						<div class="risk-assessment-values">
 							<span class="severity-badge {cve.severity}">Severity: {cve.severity}</span>
-							{#if cve.riskAssessment.cvssScore !== null && cve.riskAssessment.cvssScore !== undefined}
+						</div>
+					</div>
+					<div class="risk-assessment-group">
+						<Detail as="p">CVSS</Detail>
+						{#if cve.riskAssessment.cvssScore !== null && cve.riskAssessment.cvssScore !== undefined}
+							<div class="risk-assessment-values">
 								<span class="severity-badge {cve.severity} cvss-score-badge">
 									CVSS: {cve.riskAssessment.cvssScore.toFixed(1)}
 								</span>
-							{/if}
-						</div>
+							</div>
+						{:else}
+							<BodyShort size="small">Not available</BodyShort>
+						{/if}
 					</div>
 					<div class="risk-assessment-signals">
 						<Detail as="p">Threat signals</Detail>
@@ -234,6 +242,8 @@
 							knownRansomwareUse={cve.riskAssessment.knownRansomwareUse}
 							epssScore={cve.riskAssessment.epssScore}
 							epssPercentile={cve.riskAssessment.epssPercentile}
+							showEmpty
+							emptyText="No threat signal data available."
 						/>
 					</div>
 				</div>
@@ -250,6 +260,7 @@
 					</BodyShort>
 				{/if}
 			</section>
+			<KevGuidance entry={cve.kevEntry} detailsLink={cve.detailsLink} />
 		</div>
 	{:else if hasOtherErrors($TeamCVEPage.errors)}
 		<GraphErrors errors={$TeamCVEPage.errors} />
@@ -481,8 +492,8 @@
 
 	.risk-assessment-content {
 		display: grid;
-		grid-template-columns: auto 1fr;
-		align-items: end;
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+		align-items: start;
 		gap: var(--ax-space-24);
 	}
 
