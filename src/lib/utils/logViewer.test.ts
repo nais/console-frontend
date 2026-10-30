@@ -233,6 +233,38 @@ describe('createBufferedLogAppender', () => {
 		expect(logs).toHaveLength(1);
 	});
 
+	it('preserves displayed and pending logs when flushing a stopped stream', () => {
+		let logs: LogLine[] = [];
+		const appender = createBufferedLogAppender({
+			maxEntries: 200,
+			maxPendingEntries: 5000,
+			flushIntervalMs: 100,
+			getLogs: () => logs,
+			setLogs: (nextLogs) => {
+				logs = nextLogs;
+			}
+		});
+
+		appender.enqueue({
+			time: '2026-03-05T10:00:00.000Z',
+			message: 'displayed',
+			instance: 'i-1'
+		});
+		vi.advanceTimersByTime(100);
+		appender.enqueue({
+			time: '2026-03-05T10:00:01.000Z',
+			message: 'pending',
+			instance: 'i-1'
+		});
+
+		appender.flush();
+
+		expect(logs.map((log) => log.message)).toEqual(['displayed', 'pending']);
+		expect(vi.getTimerCount()).toBe(0);
+		vi.advanceTimersByTime(100);
+		expect(logs.map((log) => log.message)).toEqual(['displayed', 'pending']);
+	});
+
 	it('enforces pending queue size limit before flush', () => {
 		let logs: LogLine[] = [];
 		const appender = createBufferedLogAppender({

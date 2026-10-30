@@ -98,13 +98,14 @@
 		if (destroyed || currentTransitionId !== transitionId || isPaused) {
 			return;
 		}
-		logAppender.clear();
-		logs = [];
 		if (selectedInstances.length === 0) {
+			logAppender.flush();
 			isPaused = true;
 			isStarted = false;
 			return;
 		}
+		logAppender.clear();
+		logs = [];
 		isPaused = false;
 		isStarted = true;
 
