@@ -66,7 +66,7 @@ VITE_SCHEMA_ENDPOINT="http://localhost:4242/graphql"
 The **Logs** tab for applications and jobs uses the authenticated nais/api Loki proxy at
 `/api/loki/api/v1/`. Local development forwards this path to `VITE_PROXY_ENDPOINT`, alongside
 GraphQL; both nais/api and the local proxy must support Loki forwarding. The Postgres log
-viewer is unchanged. Old `logs2` links redirect to `logs`, preserving query parameters.
+viewer is unchanged.
 
 - Search, level, instance and label filters run automatically. Text inputs debounce for
   400 ms. Workload scope stays fixed, and historical instances remain searchable.
