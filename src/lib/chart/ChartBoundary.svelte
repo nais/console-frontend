@@ -2,10 +2,10 @@
 	import { Alert, Button } from '@nais/ds-svelte-community';
 	import type { Snippet } from 'svelte';
 
-	let { children }: { children: Snippet } = $props();
+	let { children, fillHeight = true }: { children: Snippet; fillHeight?: boolean } = $props();
 </script>
 
-<div class="chart-boundary">
+<div class={['chart-boundary', { 'fill-height': fillHeight }]}>
 	<svelte:boundary onerror={(e) => console.error('Chart render error:', e)}>
 		{@render children()}
 
@@ -24,8 +24,11 @@
 <style>
 	.chart-boundary {
 		width: 100%;
-		height: 100%;
 		min-width: 0;
+	}
+
+	.fill-height {
+		height: 100%;
 	}
 
 	.fallback {

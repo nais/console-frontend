@@ -7,7 +7,7 @@
 	let { Instances } = $derived(data);
 </script>
 
-<Heading as="h2" size="medium" spacing>Logs</Heading>
+<Heading as="h2" size="medium" class="aksel-sr-only">Logs</Heading>
 
 {#if $Instances.data}
 	<Logs team={$Instances.data.team} />

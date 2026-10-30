@@ -61,6 +61,35 @@ VITE_PROXY_ENDPOINT="http://localhost:4242"
 VITE_SCHEMA_ENDPOINT="http://localhost:4242/graphql"
 ```
 
+### Log explorer
+
+The **Logs** tab for applications and jobs uses the authenticated nais/api Loki proxy at
+`/api/loki/api/v1/`. Local development forwards this path to `VITE_PROXY_ENDPOINT`, alongside
+GraphQL; both nais/api and the local proxy must support Loki forwarding. The Postgres log
+viewer is unchanged. Old `logs2` links redirect to `logs`, preserving query parameters.
+
+- Search, level, instance and label filters run automatically. Text inputs debounce for
+  400 ms. Workload scope stays fixed, and historical instances remain searchable.
+- Time presets range from 15 seconds to 7 days. Previous/next move by one complete window;
+  **Jump to now** preserves its duration and restores a relative range. Times use the
+  browser's time zone.
+- **Settings** contains auto-refresh (off by default), page size, wrapping, sorting,
+  **Show query**, and external links. Relative ranges advance on refresh; fixed ranges do
+  not. Auto-refresh replaces loaded pages.
+- **Show query** reveals the executed LogQL and editor. Advanced edits require **Run query**;
+  time navigation preserves the executed query rather than running an unsaved draft.
+  **Use filters** restores automatic filter-based queries.
+- Expanded entries show the full message, copy action and labels. Include/exclude actions
+  add removable label filters; they are unavailable in advanced mode. Job-run links
+  automatically use pod-name prefixes, while manually selected instances match exactly.
+- The collapsible timeline counts the same matching lines, including non-JSON logs.
+  Selecting a bar zooms into that interval; **Load older logs** stays within the selected
+  range. Pagination preserves nanosecond timestamp boundaries and fails explicitly if a
+  boundary exceeds Loki's 5000-line limit instead of silently skipping lines.
+
+Workloads without a Loki destination show an explanatory message. Secure log destinations
+are not exposed through this viewer. Late-arriving logs may require refreshing the query.
+
 ## Security Hardening
 
 This project implements several security measures to protect against supply chain attacks:

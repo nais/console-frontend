@@ -7,7 +7,7 @@
 	let { RunsWithPodNames } = $derived(data);
 </script>
 
-<Heading as="h2" size="medium" spacing>Logs</Heading>
+<Heading as="h2" size="medium" class="aksel-sr-only">Logs</Heading>
 
 {#if $RunsWithPodNames.data}
 	<JobLogs team={$RunsWithPodNames.data.team} />

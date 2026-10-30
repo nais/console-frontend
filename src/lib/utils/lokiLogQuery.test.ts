@@ -1,8 +1,127 @@
 import { describe, expect, it } from 'vitest';
-import { buildLokiLogQuery } from './lokiLogQuery';
+import {
+	addLokiLabelFilter,
+	buildLokiLogQuery,
+	isFilterableLokiLabel,
+	type LokiLabelFilter
+} from './lokiLogQuery';
 import { getLogLevel } from './logViewer';
 
+describe('addLokiLabelFilter', () => {
+	const include: LokiLabelFilter = { name: 'detected_level', operator: '=', value: 'info' };
+	const exclude: LokiLabelFilter = { ...include, operator: '!=' };
+
+	it('does not duplicate an existing filter or change the array', () => {
+		const filters = [include];
+		expect(addLokiLabelFilter(filters, { ...include })).toBe(filters);
+	});
+
+	it('replaces an inclusion with another value for the same label', () => {
+		const next: LokiLabelFilter = { ...include, value: 'error' };
+		expect(addLokiLabelFilter([include], next)).toEqual([next]);
+	});
+
+	it('replaces the opposite operator for the same value', () => {
+		expect(addLokiLabelFilter([include], exclude)).toEqual([exclude]);
+		expect(addLokiLabelFilter([exclude], include)).toEqual([include]);
+	});
+
+	it('keeps multiple exclusions and filters on other labels', () => {
+		const node: LokiLabelFilter = { name: 'k8s_node_name', operator: '=', value: 'node-1' };
+		const next: LokiLabelFilter = { ...exclude, value: 'debug' };
+		const filters = [exclude, node];
+		expect(addLokiLabelFilter(filters, next)).toEqual([exclude, node, next]);
+		expect(filters).toEqual([exclude, node]);
+	});
+
+	it('preserves exclusions for other values when adding an inclusion', () => {
+		const next: LokiLabelFilter = { ...include, value: 'error' };
+		expect(addLokiLabelFilter([exclude], next)).toEqual([exclude, next]);
+	});
+
+	it('rejects attempts to change workload scope', () => {
+		expect(() =>
+			addLokiLabelFilter([], { name: 'service_namespace', operator: '=', value: 'other-team' })
+		).toThrow('cannot be used as an additional log filter');
+	});
+});
+
 describe('buildLokiLogQuery', () => {
+	it('clears optional JSON parser errors without excluding non-JSON log lines', () => {
+		const query = buildLokiLogQuery({
+			team: 'my-team',
+			workload: 'my-app',
+			container: 'my-app',
+			logLevels: ['INFO']
+		});
+		expect(query).toContain('| json | level=~"(?i)^(?:INFO|30|)$"');
+		expect(query.endsWith(' | drop __error__, __error_details__')).toBe(true);
+		expect(query).not.toContain('| __error__=');
+	});
+
+	it('filters stream labels and structured metadata before parsing JSON fields', () => {
+		const query = buildLokiLogQuery({
+			team: 'my-team',
+			workload: 'my-app',
+			container: 'my-app',
+			cluster: 'dev',
+			labelFilters: [
+				{ name: 'k8s_node_name', operator: '=', value: 'node-1' },
+				{ name: 'detected_level', operator: '!=', value: 'info' }
+			],
+			logLevels: ['ERROR']
+		});
+		expect(query).toContain('| k8s_node_name="node-1" | detected_level!="info" | json | level=~');
+		expect(query).toContain(
+			'{service_namespace="my-team",service_name="my-app",k8s_cluster_name="dev"}'
+		);
+	});
+
+	it('quotes label values literally rather than treating them as LogQL or regex', () => {
+		const value = 'a".*\\\n} | detected_level!="info"';
+		const query = buildLokiLogQuery({
+			team: 'my-team',
+			workload: 'my-app',
+			container: 'my-app',
+			labelFilters: [{ name: 'request_id', operator: '=', value }]
+		});
+		expect(query.endsWith(` | request_id=${JSON.stringify(value)}`)).toBe(true);
+	});
+
+	it.each([
+		'service_namespace',
+		'service_name',
+		'k8s_cluster_name',
+		'k8s_container_name',
+		'bad-name',
+		'name|json',
+		'1name',
+		''
+	])('rejects scoped or invalid additional label %s', (name) => {
+		expect(isFilterableLokiLabel(name)).toBe(false);
+		expect(() =>
+			buildLokiLogQuery({
+				team: 'my-team',
+				workload: 'my-app',
+				container: 'my-app',
+				labelFilters: [{ name, operator: '=', value: 'other' }]
+			})
+		).toThrow('cannot be used as an additional log filter');
+	});
+
+	it('scopes explorer queries by cluster without excluding historical instances', () => {
+		const query = buildLokiLogQuery({
+			team: 'my-team',
+			workload: 'my-app',
+			container: 'my-app',
+			cluster: 'dev'
+		});
+
+		expect(query).toBe(
+			'{service_namespace="my-team",service_name="my-app",k8s_cluster_name="dev"} | k8s_container_name=~"^(?:my-app)$"'
+		);
+	});
+
 	it('filters by team, workload, container and selected instances', () => {
 		expect(
 			buildLokiLogQuery({

@@ -1,18 +1,6 @@
-import { addPageMeta } from '#lib/utils/pageMeta.js';
-import { load_RunsWithPodNames } from '$houdini';
+import { resolve } from '$app/paths';
+import { redirect } from '@sveltejs/kit';
+import type { PageLoad } from './$types';
 
-export const ssr = false;
-
-export async function load(event) {
-	return {
-		...(await addPageMeta(event, { title: 'Logs (Loki test)' })),
-		...(await load_RunsWithPodNames({
-			event,
-			variables: {
-				team: event.params.team,
-				env: event.params.env,
-				job: event.params.job
-			}
-		}))
-	};
-}
+export const load: PageLoad = ({ params, url }) =>
+	redirect(308, `${resolve('/team/[team]/[env]/job/[job]/logs', params)}${url.search}`);
