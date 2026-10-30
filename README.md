@@ -72,12 +72,14 @@ viewer is unchanged.
   400 ms. Workload scope stays fixed, and historical instances remain searchable.
 - Time presets range from 15 seconds to 7 days. Previous/next move by one complete window;
   **Jump to now** preserves its duration and restores a relative range. Times use the
-  browser's time zone.
+  browser's time zone; fixed windows retain their exact UTC instants across daylight-saving
+  transitions. Next-window availability updates as time advances without fetching logs.
 - **Settings** contains auto-refresh (off by default), page size, wrapping, sorting,
   **Show query**, and external links. Relative ranges advance on refresh; fixed ranges do
   not. Auto-refresh replaces loaded pages.
 - **Show query** reveals the executed LogQL and editor. Advanced edits require **Run query**;
-  time navigation preserves the executed query rather than running an unsaved draft.
+  time navigation, custom range and page-size changes preserve the executed query rather
+  than running an unsaved draft.
   **Use filters** restores automatic filter-based queries.
 - Expanded entries show the full message, copy action and labels. Include/exclude actions
   add removable label filters; they are unavailable in advanced mode. Job-run links

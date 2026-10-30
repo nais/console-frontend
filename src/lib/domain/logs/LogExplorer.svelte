@@ -123,6 +123,7 @@
 		| { query: string; range: LogRange; limit: number; relativeMinutes: number | undefined }
 		| undefined = $state.raw();
 	let completedAt = $state<Date>();
+	let now = $state(Date.now());
 	let timer: ReturnType<typeof setInterval> | undefined;
 	let queryTimer: ReturnType<typeof setTimeout> | undefined;
 	let controller: AbortController | undefined;
@@ -156,7 +157,7 @@
 		!!active &&
 			active.relativeMinutes === undefined &&
 			BigInt(active.range.end) + BigInt(active.range.end) - BigInt(active.range.start) <=
-				BigInt(Date.now()) * 1_000_000n
+				BigInt(now) * 1_000_000n
 	);
 
 	function currentDurationLabel(relative = true) {
@@ -233,13 +234,30 @@
 		queryTimer = undefined;
 	}
 
-	function scheduleQuery(delay = 0) {
+	function scheduleQuery(delay = 0, settingsChanged = false) {
 		stopScheduledQuery();
-		if (advanced || !hasLoki) return;
+		if ((advanced && !settingsChanged) || !hasLoki) return;
 		queryTimer = setTimeout(() => {
 			queryTimer = undefined;
-			void run();
+			if (advanced) applyQuerySettings();
+			else void run();
 		}, delay);
+	}
+
+	function selectedQueryRange(): LogRange {
+		if (timeRange === 'absolute') {
+			if (!active) throw new Error('Run a query before selecting a fixed time range.');
+			return active.range;
+		}
+		return resolveLogRange(selectedMinutes, from, to);
+	}
+
+	function applyQuerySettings() {
+		try {
+			void run(false, selectedQueryRange(), selectedMinutes);
+		} catch (cause) {
+			error = cause instanceof Error ? cause.message : 'Unable to apply query settings.';
+		}
 	}
 
 	function submitFilter(event: KeyboardEvent) {
@@ -298,30 +316,21 @@
 
 	function selectBucket(bucket: VolumeBucket) {
 		if (!active) return;
-		const start =
-			BigInt(Math.round(Math.max(bucket.start, logDate(active.range.start).getTime()))) *
-			1_000_000n;
+		const start = BigInt(Math.round(bucket.start)) * 1_000_000n;
 		const end = BigInt(Math.round(bucket.end)) * 1_000_000n;
-		const range = { start: String(start), end: String(end) };
+		const range = {
+			start: String(start < BigInt(active.range.start) ? BigInt(active.range.start) : start),
+			end: String(end > BigInt(active.range.end) ? BigInt(active.range.end) : end)
+		};
 		absoluteRange(range);
-		if (advanced) void run(false, range);
-		else void run();
+		void run(false, range);
 	}
 
 	function setTimeRange() {
 		if (timeRange === 'custom' && !from) {
 			absoluteRange(resolveLogRange(15, '', ''), true);
 		}
-		if (advanced && active && selectedMinutes !== undefined) {
-			try {
-				const relativeMinutes = Number(timeRange);
-				void run(false, resolveLogRange(relativeMinutes, '', ''), relativeMinutes);
-			} catch (cause) {
-				error = cause instanceof Error ? cause.message : 'Unable to change the time range.';
-			}
-		} else {
-			scheduleQuery();
-		}
+		scheduleQuery(0, true);
 	}
 
 	async function loadVolume(query: string, range: LogRange, current: number) {
@@ -360,7 +369,7 @@
 				if (!query) throw new Error('Enter a LogQL query.');
 				next = {
 					query,
-					range: resolveLogRange(selectedMinutes, from, to),
+					range: selectedQueryRange(),
 					limit: Number(limit),
 					relativeMinutes: selectedMinutes
 				};
@@ -448,7 +457,9 @@
 
 	onMount(() => {
 		if (hasLoki) void run();
+		const clock = hasLoki ? setInterval(() => (now = Date.now()), 1000) : undefined;
 		return () => {
+			clearInterval(clock);
 			++requestId;
 			controller?.abort();
 			volumeController?.abort();
@@ -467,7 +478,8 @@
 		<form
 			onsubmit={(event) => {
 				event.preventDefault();
-				void run();
+				if (advanced) applyQuerySettings();
+				else void run();
 			}}
 			aria-label="Log query"
 		>
@@ -563,7 +575,7 @@
 						icon={ArrowCirclepathIcon}
 						aria-label="Refresh"
 						disabled={!active || loading || loadingMore}
-						onclick={() => run(advanced)}
+						onclick={() => (advanced ? applyQuerySettings() : run())}
 					/>
 					<Button
 						type="button"
@@ -598,7 +610,7 @@
 						size="small"
 						step="0.001"
 						bind:value={from}
-						oninput={() => scheduleQuery(400)}
+						oninput={() => scheduleQuery(400, true)}
 						required
 					/>
 					<TextField
@@ -607,7 +619,7 @@
 						size="small"
 						step="0.001"
 						bind:value={to}
-						oninput={() => scheduleQuery(400)}
+						oninput={() => scheduleQuery(400, true)}
 						required
 					/>
 				</div>
@@ -681,8 +693,13 @@
 				<Select
 					label="Lines per page"
 					size="small"
-					bind:value={limit}
-					onchange={() => scheduleQuery()}
+					bind:value={
+						() => limit,
+						(value) => {
+							limit = value;
+							scheduleQuery(0, true);
+						}
+					}
 				>
 					<option value="100">100</option>
 					<option value="500">500</option>

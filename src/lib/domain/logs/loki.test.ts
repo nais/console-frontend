@@ -30,6 +30,37 @@ describe('Loki history', () => {
 		expect(BigInt(range.end) - BigInt(range.start)).toBe(1_001_000_000n);
 	});
 
+	it('keeps the two repeated Oslo daylight-saving windows distinct', async () => {
+		const now = Date.UTC(2026, 9, 25, 3);
+		const summer = resolveLogRange(
+			undefined,
+			'2026-10-25T02:15:00+02:00',
+			'2026-10-25T02:30:00+02:00',
+			now
+		);
+		const winter = resolveLogRange(
+			undefined,
+			'2026-10-25T02:15:00+01:00',
+			'2026-10-25T02:30:00+01:00',
+			now
+		);
+		const localTime = new Intl.DateTimeFormat('en-GB', {
+			timeZone: 'Europe/Oslo',
+			hour: '2-digit',
+			minute: '2-digit'
+		});
+		expect(localTime.format(Number(BigInt(summer.start) / 1_000_000n))).toBe('02:15');
+		expect(localTime.format(Number(BigInt(winter.start) / 1_000_000n))).toBe('02:15');
+		expect(BigInt(winter.start) - BigInt(summer.start)).toBe(3_600_000_000_000n);
+		expect(moveLogRange(moveLogRange(winter, 'previous', now), 'next', now)).toEqual(winter);
+		const mock = vi.fn().mockResolvedValue(respond(streams([])));
+		vi.stubGlobal('fetch', mock);
+		await fetchLogPage({ ...winter, query: '{app="x"} |= "filter"', limit: 100 });
+		const url = new URL(mock.mock.calls[0][0], 'https://console.test');
+		expect(url.searchParams.get('start')).toBe(winter.start);
+		expect(url.searchParams.get('end')).toBe(winter.end);
+	});
+
 	it('moves complete adjacent windows backward and forward without losing nanoseconds', () => {
 		const range = { start: '3000000001', end: '4000000003' };
 		const previous = moveLogRange(range, 'previous', 10_000);
