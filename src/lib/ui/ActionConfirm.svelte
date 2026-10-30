@@ -4,6 +4,7 @@
 
 	interface Props {
 		confirmText?: string;
+		confirmDisabled?: boolean;
 		open?: boolean;
 		variant?:
 			| 'primary'
@@ -20,6 +21,7 @@
 
 	let {
 		confirmText = 'Confirm',
+		confirmDisabled = false,
 		open = $bindable(false),
 		variant = 'primary',
 		header,
@@ -42,6 +44,7 @@
 	};
 
 	const confirm = async () => {
+		if (confirmDisabled) return;
 		status = 'executing';
 		const result = await onconfirm();
 		resultMessage = result.message;
@@ -67,7 +70,9 @@
 
 	{#snippet footer()}
 		{#if status === 'idle'}
-			<Button {variant} size="small" type="submit" onclick={confirm}>{confirmText}</Button>
+			<Button {variant} size="small" type="submit" disabled={confirmDisabled} onclick={confirm}
+				>{confirmText}</Button
+			>
 			<Button variant="tertiary" size="small" type="reset" onclick={close}>Cancel</Button>
 		{:else if status === 'executing'}
 			<Button {variant} size="small" disabled>{confirmText}</Button>

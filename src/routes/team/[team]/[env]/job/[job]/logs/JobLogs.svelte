@@ -4,6 +4,7 @@
 	import { exhaustive } from '#lib/utils/houdini.js';
 	import {
 		createBufferedLogAppender,
+		filterLogsByLevel,
 		getLogLevel,
 		parseLogMessage,
 		type LogLine
@@ -28,12 +29,15 @@
 	const MAX_PENDING_LOG_LINES = 5000;
 	const FLUSH_INTERVAL_MS = 100;
 
+	let logLevels = new SvelteSet<string>();
+	let selectedLogLevels = new SvelteSet<string>();
 	let logs: LogLine[] = $state.raw([]);
 	let logAppender = createBufferedLogAppender({
 		maxEntries: MAX_LOG_LINES,
 		maxPendingEntries: MAX_PENDING_LOG_LINES,
 		flushIntervalMs: FLUSH_INTERVAL_MS,
 		getLogs: () => logs,
+		getSelectedLevels: () => selectedLogLevels,
 		setLogs: (nextLogs) => {
 			logs = nextLogs;
 		}
@@ -78,10 +82,6 @@
 					selectedLogLevels.add(level);
 				}
 
-				if (!selectedLogLevels.has(level)) {
-					return;
-				}
-
 				logAppender.enqueue(workloadLog);
 			}
 		});
@@ -89,9 +89,19 @@
 	};
 
 	let store = newstore();
+	let transitionId = 0;
+	let destroyed = false;
 
-	function start() {
+	async function start() {
+		const currentTransitionId = ++transitionId;
+		await store.unlisten();
+		if (destroyed || currentTransitionId !== transitionId || isPaused) {
+			return;
+		}
 		if (selectedInstances.length === 0) {
+			logAppender.flush();
+			isPaused = true;
+			isStarted = false;
 			return;
 		}
 		logAppender.clear();
@@ -111,11 +121,12 @@
 	}
 
 	let logOrder = $state<'newest' | 'oldest'>('newest');
-	let displayedLogs = $derived(logOrder === 'newest' ? logs.toReversed() : logs);
+	let filteredLogs = $derived(filterLogsByLevel(logs, selectedLogLevels).slice(-MAX_LOG_LINES));
+	let displayedLogs = $derived(logOrder === 'newest' ? filteredLogs.toReversed() : filteredLogs);
 	let selectedInstances: string[] = $state.raw([]);
 
 	let isStarted: boolean = $state(false);
-	let isPaused: boolean = $state(true);
+	let isPaused: boolean = $state(false);
 
 	onMount(() => {
 		let instance = page.url.searchParams.get('instance');
@@ -128,7 +139,6 @@
 					}
 				});
 			});
-			start();
 		} else if (
 			team.environment.job.runs.nodes.filter((run) => run.status.state === JobRunState.RUNNING)
 				.length > 0
@@ -137,15 +147,17 @@
 				.filter((run) => run.status.state === JobRunState.RUNNING)
 				.map((run) => run.instances.nodes.map((node) => node.name))
 				.flat();
-			start();
 		} else {
 			selectedInstances = team.environment.job.runs.nodes
 				.map((run) => run.instances.nodes.map((node) => node.name))
 				.flat();
 		}
+		void start();
 	});
 
 	onDestroy(() => {
+		destroyed = true;
+		transitionId += 1;
 		logAppender.clear();
 		store.unlisten();
 	});
@@ -159,9 +171,6 @@
 			selectedViewOptions.add(option);
 		}
 	}
-
-	let logLevels = new SvelteSet<string>();
-	let selectedLogLevels = new SvelteSet<string>();
 
 	const colorRoles = [
 		'accent',
@@ -240,14 +249,8 @@
 								} else {
 									selectedInstances = [...selectedInstances, instance.name];
 								}
-								if (selectedInstances.length === 0) {
-									store.unlisten();
-									isPaused = true;
-								}
-								if (isPaused) {
-									return;
-								}
-								store.unlisten().then(start);
+								isPaused = false;
+								void start();
 							}}
 						/>
 					{/each}
@@ -256,21 +259,22 @@
 		</Chips>
 		<div>
 			<div class="buttons">
-				{#if isStarted}
+				{#if isStarted || logs.length > 0}
 					<Button
 						size="medium"
 						variant="primary"
 						disabled={selectedInstances.length === 0}
 						onclick={() => {
 							if (isPaused) {
-								start();
+								isPaused = false;
+								void start();
 							} else {
 								isPaused = true;
 								store.unlisten();
 							}
 						}}
 					>
-						{isPaused ? 'Restart' : 'Stop'}
+						{isPaused ? 'Resume' : 'Pause'}
 					</Button>
 					<Button
 						size="medium"
@@ -286,12 +290,13 @@
 					<Button
 						size="medium"
 						variant="primary"
+						disabled={selectedInstances.length === 0}
 						onclick={() => {
-							isStarted = true;
-							start();
+							isPaused = false;
+							void start();
 						}}
 					>
-						Start
+						Resume
 					</Button>
 				{/if}
 			</div>
@@ -332,7 +337,6 @@
 						} else {
 							selectedLogLevels.add(level);
 						}
-						store.unlisten().then(start);
 					}}
 				/>
 			{/each}
@@ -347,26 +351,26 @@
 		</ToggleGroup>
 	</div>
 
-	{#if isPaused && logs.length === 0}
+	{#if selectedInstances.length === 0}
 		{#if team.environment.job.runs.nodes.filter((run) => run.instances.nodes.length > 0).length === 0}
 			<div class="paused">
 				<p>No run instances.</p>
 			</div>
-		{:else if selectedInstances.length === 0}
+		{:else}
 			<div class="paused">
 				<p>No run instances selected. Please select at least one instance to view logs.</p>
 			</div>
-		{:else}
-			<div class="paused">
-				<p>Logs are paused. Click "Start/Restart" to resume.</p>
-			</div>
 		{/if}
+	{:else if isPaused && logs.length === 0}
+		<div class="paused">
+			<p>Logs are paused.</p>
+		</div>
 	{/if}
 
 	{#if logs.length > 0}
 		<div class="log-wrapper">
-			{#if logs.length === 0}
-				<BodyShort size="small">Waiting for logs...</BodyShort>
+			{#if displayedLogs.length === 0}
+				<BodyShort size="small">No logs match the selected levels.</BodyShort>
 			{:else}
 				{#each displayedLogs as log (log.id)}
 					{const color = $derived(colorForInstance(log.instance))}

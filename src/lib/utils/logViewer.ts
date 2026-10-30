@@ -58,6 +58,7 @@ type BufferedLogAppenderOptions = {
 	maxPendingEntries: number;
 	flushIntervalMs: number;
 	getLogs: () => LogLine[];
+	getSelectedLevels?: () => ReadonlySet<string>;
 	setLogs: (logs: LogLine[]) => void;
 };
 
@@ -118,6 +119,11 @@ export function createBufferedLogAppender(options: BufferedLogAppenderOptions) {
 	let pendingLogs: LogLine[] = [];
 	let flushTimeout: ReturnType<typeof setTimeout> | undefined;
 
+	function timestamp(log: LogLine): number {
+		const time = log.time.getTime();
+		return Number.isNaN(time) ? Number.POSITIVE_INFINITY : time;
+	}
+
 	function flushPendingLogs() {
 		flushTimeout = undefined;
 		if (pendingLogs.length === 0) {
@@ -125,8 +131,23 @@ export function createBufferedLogAppender(options: BufferedLogAppenderOptions) {
 		}
 
 		let nextLogs = options.getLogs();
-		for (const pendingLog of pendingLogs) {
-			nextLogs = appendSortedBoundedLog(nextLogs, pendingLog, options.maxEntries);
+		const selectedLevels = options.getSelectedLevels?.();
+		if (selectedLevels === undefined) {
+			for (const pendingLog of pendingLogs) {
+				nextLogs = appendSortedBoundedLog(nextLogs, pendingLog, options.maxEntries);
+			}
+		} else {
+			let matchingCount = 0;
+			let hiddenCount = 0;
+			nextLogs = [...nextLogs, ...pendingLogs]
+				.sort((a, b) => timestamp(a) - timestamp(b))
+				.toReversed()
+				.filter((log) =>
+					selectedLevels.has(log.level)
+						? ++matchingCount <= options.maxEntries
+						: ++hiddenCount <= options.maxEntries
+				)
+				.toReversed();
 		}
 
 		pendingLogs = [];
@@ -141,18 +162,28 @@ export function createBufferedLogAppender(options: BufferedLogAppenderOptions) {
 		flushTimeout = setTimeout(flushPendingLogs, options.flushIntervalMs);
 	}
 
+	function flush() {
+		if (flushTimeout !== undefined) {
+			clearTimeout(flushTimeout);
+		}
+		flushPendingLogs();
+	}
+
 	return {
 		enqueue(log: WorkloadLog) {
 			const line = createLogLine(log, nextId++);
-			pendingLogs = appendSortedBoundedLog(pendingLogs, line, options.maxPendingEntries);
+			if (options.getSelectedLevels !== undefined) {
+				pendingLogs.push(line);
+				if (pendingLogs.length >= options.maxPendingEntries) {
+					flush();
+					return;
+				}
+			} else {
+				pendingLogs = appendSortedBoundedLog(pendingLogs, line, options.maxPendingEntries);
+			}
 			scheduleFlush();
 		},
-		flush() {
-			if (flushTimeout !== undefined) {
-				clearTimeout(flushTimeout);
-			}
-			flushPendingLogs();
-		},
+		flush,
 		clear() {
 			pendingLogs = [];
 			if (flushTimeout !== undefined) {
