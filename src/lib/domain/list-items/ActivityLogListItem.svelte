@@ -2,8 +2,8 @@
 	import { page } from '$app/state';
 	import { fragment, graphql, type ActivityLogEntryFragment } from '$houdini';
 	import ListItem from '#lib/ui/ListItem.svelte';
-	import { BodyLong, Tooltip } from '@nais/ds-svelte-community';
-	import { QuestionmarkIcon } from '@nais/ds-svelte-community/icons';
+	import { BodyLong, Tooltip } from '#lib/shadcn/ui/index.js';
+	import { QuestionmarkIcon } from '#lib/icons/index.js';
 	import { icons } from '../activity/activity-log-icons';
 	import { activityTooltip } from '../activity/activity-log-tooltip';
 	import { activityTextComponent } from '../activity/activityTextComponents';
@@ -583,16 +583,33 @@
 		gap: var(--ax-space-12);
 		font-size: var(--ax-font-size-medium);
 		--surface-icon-size: 2rem;
+		--surface-icon-glyph-size: 1rem;
 	}
 
 	.activity-log-list-item :global(.surface-icon) {
-		background: var(--ax-bg-brand-blue-softA);
-		color: var(--ax-text-brand-blue-decoration);
+		background: var(--secondary);
+		color: var(--muted-foreground);
+		border: 1px solid var(--border);
 	}
 
 	.activity-text {
 		min-width: 0;
 		overflow-wrap: anywhere;
+	}
+
+	.activity-text :global(a:not(.meta a)),
+	.content :global(a:not(.meta a)) {
+		color: var(--foreground);
+		font-weight: 600;
+		text-decoration: underline;
+		text-decoration-color: var(--border-strong);
+		text-underline-offset: 0.18em;
+	}
+
+	.activity-text :global(a:not(.meta a):hover),
+	.content :global(a:not(.meta a):hover) {
+		color: var(--link);
+		text-decoration-color: currentColor;
 	}
 
 	.activity-icon {
@@ -601,13 +618,14 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		width: 2rem;
-		height: 2rem;
-		font-size: 1rem;
+		width: 1.875rem;
+		height: 1.875rem;
+		font-size: 0.9375rem;
 		flex-shrink: 0;
-		border-radius: var(--ax-radius-8);
-		color: var(--ax-text-brand-blue-decoration);
-		background: var(--ax-bg-brand-blue-softA);
+		border-radius: calc(var(--radius) - 2px);
+		color: var(--muted-foreground);
+		background: var(--secondary);
+		border: 1px solid var(--border);
 	}
 
 	.activity-item {

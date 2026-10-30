@@ -8,8 +8,8 @@
 	import '#lib/font.css';
 	import { themeSwitch } from '#lib/stores/theme.svelte.js';
 	import ProgressBar from '#lib/ui/ProgressBar.svelte';
-	import { Alert, BodyShort, Button, Heading, Page, Theme } from '@nais/ds-svelte-community';
-	import { ArrowCirclepathIcon } from '@nais/ds-svelte-community/icons';
+	import { Alert, BodyShort, Button, Heading, Page, Theme } from '#lib/shadcn/ui/index.js';
+	import { ArrowCirclepathIcon } from '#lib/icons/index.js';
 	import { onMount } from 'svelte';
 	import '../styles/app.css';
 	import '../styles/colors.css';
@@ -27,15 +27,14 @@
 		themeSwitch.theme = data.theme;
 	});
 
-	let user = $derived(
-		$UserInfo.data?.me as
-			| {
-					readonly name: string;
-					readonly isAdmin: boolean;
-					readonly __typename: 'User';
-			  }
-			| undefined
-	);
+	$effect(() => {
+		if (browser) {
+			document.documentElement.dataset.theme = themeSwitch.theme;
+			document.documentElement.classList.toggle('dark', themeSwitch.theme === 'dark');
+		}
+	});
+
+	let user = $derived($UserInfo.data?.me?.__typename === 'User' ? $UserInfo.data.me : undefined);
 
 	const refreshCookie = graphql(`
 		query RefreshCookie {
@@ -101,54 +100,52 @@
 				<!-- logged out. We check both to support both  -->
 				<Login {userAgent} />
 			{:else}
-				{#if user?.__typename === 'User'}
-					<PageHeader {user} />
-				{/if}
+				<PageHeader {user} features={$UserInfo.data?.features}>
+					<div role="status" aria-live="polite">
+						{#if updated.current && !updateDismissed && !isNaisdevice()}
+							<div class="update-status">
+								<Alert
+									variant="info"
+									size="small"
+									contentMaxWidth={false}
+									closeButton
+									closeButtonIconText="Dismiss update notification"
+									onclose={() => (updateDismissed = true)}
+								>
+									<div class="update-notice">
+										<span>New version available</span>
+										<Button
+											variant="secondary"
+											size="small"
+											disabled={!!navigating.to}
+											onclick={() => window.location.reload()}
+										>
+											{#snippet icon()}<ArrowCirclepathIcon aria-hidden="true" />{/snippet}
+											Update
+										</Button>
+									</div>
+								</Alert>
+							</div>
+						{/if}
+					</div>
 
-				<div role="status" aria-live="polite">
-					{#if updated.current && !updateDismissed && !isNaisdevice()}
-						<div class="update-status">
-							<Alert
-								variant="info"
-								size="small"
-								contentMaxWidth={false}
-								closeButton
-								closeButtonIconText="Dismiss update notification"
-								onclose={() => (updateDismissed = true)}
-							>
-								<div class="update-notice">
-									<span>New version available</span>
-									<Button
-										variant="secondary"
-										size="small"
-										disabled={!!navigating.to}
-										onclick={() => window.location.reload()}
-									>
-										{#snippet icon()}<ArrowCirclepathIcon aria-hidden="true" />{/snippet}
-										Update
-									</Button>
-								</div>
-							</Alert>
-						</div>
-					{/if}
-				</div>
+					<svelte:boundary onerror={(e) => console.error('Page render error:', e)}>
+						{@render children?.()}
 
-				<svelte:boundary onerror={(e) => console.error('Page render error:', e)}>
-					{@render children?.()}
+						{#snippet failed(error, reset)}
+							{void error}
+							<div class="boundary-error">
+								<Alert variant="error">
+									<Heading size="xsmall" as="h2">Something went wrong</Heading>
+									<BodyShort>An unexpected error occurred while rendering the page.</BodyShort>
+									<Button variant="secondary" size="small" onclick={reset}>Try again</Button>
+								</Alert>
+							</div>
+						{/snippet}
+					</svelte:boundary>
 
-					{#snippet failed(error, reset)}
-						{void error}
-						<div class="boundary-error">
-							<Alert variant="error">
-								<Heading size="xsmall" as="h2">Something went wrong</Heading>
-								<BodyShort>An unexpected error occurred while rendering the page.</BodyShort>
-								<Button variant="secondary" size="small" onclick={reset}>Try again</Button>
-							</Alert>
-						</div>
-					{/snippet}
-				</svelte:boundary>
-
-				<Naisdevice />
+					<Naisdevice />
+				</PageHeader>
 			{/if}
 		</div>
 	</Page>
@@ -161,14 +158,10 @@
 		max-width: 1432px;
 	}
 
-	@media (max-width: 1464px) {
-		:global(.page) {
-			padding: 0 2rem;
-		}
-	}
-
 	.full-wrapper {
-		padding-bottom: 1rem;
+		min-height: 100vh;
+		background-color: var(--background);
+		color: var(--foreground);
 	}
 
 	.update-status {

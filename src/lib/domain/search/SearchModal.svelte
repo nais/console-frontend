@@ -9,16 +9,14 @@
 	import PostgreSQLIcon from '#lib/icons/PostgreSQLIcon.svelte';
 	import ValkeyIcon from '#lib/icons/ValkeyIcon.svelte';
 	import { favorites } from '#lib/stores/favorites.svelte.js';
-	import { Modal } from '@nais/ds-svelte-community';
 	import {
 		BriefcaseClockIcon,
 		BucketIcon,
 		DatabaseIcon,
-		MagnifyingGlassIcon,
 		PackageIcon,
 		PersonGroupIcon,
 		StarFillIcon
-	} from '@nais/ds-svelte-community/icons';
+	} from '#lib/icons/index.js';
 	import Search from './Search.svelte';
 
 	let { open = $bindable() }: { open: boolean } = $props();
@@ -349,57 +347,107 @@
 	});
 </script>
 
-<Modal
-	width="medium"
-	bind:open
-	class="search-modal"
-	header={{ heading: 'Search', icon: MagnifyingGlassIcon }}
->
-	<Search
-		autofocus
-		close={() => (open = false)}
-		bind:query
-		bind:teamFilter
-		{favoriteMode}
-		{showFavorites}
-		{toggleFavorites}
-		exitFavorites={() => (favoriteMode = false)}
-		placeholder={favoriteMode ? 'Search favorites' : undefined}
-		noResultsText={favoriteMode
-			? query
-				? `No favorites matching "${query}"`
-				: 'No favorites yet'
-			: undefined}
-		loading={!favoriteMode && $store.fetching}
-		results={favoriteMode
-			? favoriteResults
-			: exhaustive($store.data?.search.nodes ?? []).map((result) => {
-					const { icon, urlName } = categories[result.__typename];
-					if (result.__typename === 'Team') {
-						const href = `/team/${result.slug}`;
-						return {
-							icon,
-							label: result.slug,
-							description: result.purpose,
-							badge: resultBadge(href, result.slug),
-							teamSlug: result.slug,
-							href,
-							type: 'link'
-						};
-					}
-					const href = `/team/${result.team.slug}/${result.teamEnvironment.environment.name}/${urlName}/${result.name}`;
-					return {
-						icon,
-						label: result.name,
-						description: result.team.slug,
-						tag: {
-							label: result.teamEnvironment.environment.name,
-							variant: envTagVariant(result.teamEnvironment.environment.name)
-						},
-						badge: resultBadge(href, result.team.slug),
-						href,
-						type: 'link'
-					};
-				})}
-	/>
-</Modal>
+<svelte:window
+	onkeydown={(e) => {
+		if (open && e.key === 'Escape') {
+			open = false;
+		}
+	}}
+/>
+
+{#if open}
+	<div class="cmdk-overlay" role="dialog" aria-modal="true" aria-label="Command palette">
+		<button
+			type="button"
+			class="cmdk-backdrop"
+			aria-label="Close command palette"
+			onclick={() => (open = false)}
+		></button>
+		<div class="cmdk-dialog">
+			<Search
+				autofocus
+				close={() => (open = false)}
+				bind:query
+				bind:teamFilter
+				{favoriteMode}
+				{showFavorites}
+				{toggleFavorites}
+				exitFavorites={() => (favoriteMode = false)}
+				placeholder={favoriteMode ? 'Search favorites…' : undefined}
+				noResultsText={favoriteMode
+					? query
+						? `No favorites matching "${query}"`
+						: 'No favorites yet'
+					: undefined}
+				loading={!favoriteMode && $store.fetching}
+				results={favoriteMode
+					? favoriteResults
+					: exhaustive($store.data?.search.nodes ?? []).map((result) => {
+							const { icon, urlName } = categories[result.__typename];
+							if (result.__typename === 'Team') {
+								const href = `/team/${result.slug}`;
+								return {
+									icon,
+									label: result.slug,
+									description: result.purpose,
+									badge: resultBadge(href, result.slug),
+									teamSlug: result.slug,
+									href,
+									type: 'link'
+								};
+							}
+							const href = `/team/${result.team.slug}/${result.teamEnvironment.environment.name}/${urlName}/${result.name}`;
+							return {
+								icon,
+								label: result.name,
+								description: result.team.slug,
+								tag: {
+									label: result.teamEnvironment.environment.name,
+									variant: envTagVariant(result.teamEnvironment.environment.name)
+								},
+								badge: resultBadge(href, result.team.slug),
+								href,
+								type: 'link'
+							};
+						})}
+			/>
+		</div>
+	</div>
+{/if}
+
+<style>
+	.cmdk-overlay {
+		position: fixed;
+		inset: 0;
+		z-index: 100;
+		display: flex;
+		align-items: flex-start;
+		justify-content: center;
+		padding: 10vh 1rem 2rem 1rem;
+	}
+
+	.cmdk-backdrop {
+		position: fixed;
+		inset: 0;
+		background: rgba(9, 9, 11, 0.55);
+		backdrop-filter: blur(2px);
+		border: none;
+		padding: 0;
+		cursor: default;
+	}
+
+	.cmdk-dialog {
+		position: relative;
+		z-index: 1;
+		width: 100%;
+		max-width: 38rem;
+		height: 28rem;
+		max-height: 75vh;
+		background-color: var(--popover);
+		color: var(--popover-foreground);
+		border: 1px solid var(--border-strong);
+		border-radius: var(--radius);
+		box-shadow: var(--sh-shadow-lg);
+		overflow: hidden;
+	}
+</style>

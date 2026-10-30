@@ -7,7 +7,7 @@
 	import GraphErrors from '#lib/ui/GraphErrors.svelte';
 	import SurfaceCard from '#lib/ui/SurfaceCard.svelte';
 	import { changeParams } from '#lib/utils/searchparams.js';
-	import { Detail, Loader, ToggleGroup, ToggleGroupItem } from '@nais/ds-svelte-community';
+	import { Detail, Loader, ToggleGroup, ToggleGroupItem } from '#lib/shadcn/ui/index.js';
 	import { subDays } from 'date-fns';
 
 	interface Props {

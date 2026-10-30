@@ -2,10 +2,10 @@
 	import { resolve } from '$app/paths';
 	import { page } from '$app/state';
 	import type { RouteId } from '$app/types';
+	import { ShBadge } from '#lib/shadcn/ui/index.js';
 	import AddToFavorites from '#lib/ui/AddToFavorites.svelte';
 	import DocsLink from '#lib/ui/DocsLink.svelte';
 	import { getHeaderActionsContext } from '#lib/ui/headerActionsContext.svelte.js';
-	import { Heading, Tag } from '@nais/ds-svelte-community';
 	import type { Snippet } from 'svelte';
 
 	const { beforeBreadcrumbs }: { beforeBreadcrumbs?: Snippet } = $props();
@@ -30,6 +30,7 @@
 	const srOnlyHeading = $derived(!heading ? (page.data?.meta?.title ?? '') : '');
 	const tag = $derived(page.data?.meta?.tag ?? null);
 	const docPath = $derived(page.data?.meta?.docPath ?? null);
+	const isVisuallyEmpty = $derived(!heading && breadcrumbs.length === 0 && !beforeBreadcrumbs);
 	const resolveUnsafe = resolve as unknown as (
 		href: string,
 		params?: Record<string, string>
@@ -38,25 +39,38 @@
 	function resolveRouteHref(href: RouteId) {
 		return resolveUnsafe(href, page.params);
 	}
+
+	function mapTagVariant(
+		variant?: string
+	): 'default' | 'secondary' | 'outline' | 'success' | 'warning' | 'destructive' | 'info' {
+		if (!variant) return 'secondary';
+		if (variant.includes('success')) return 'success';
+		if (variant.includes('warning')) return 'warning';
+		if (variant.includes('error') || variant.includes('danger')) return 'destructive';
+		if (variant.includes('info') || variant.includes('alt')) return 'info';
+		return 'secondary';
+	}
 </script>
 
-<div class="page-header">
+<div class="page-header" class:visually-empty={isVisuallyEmpty}>
 	{#if breadcrumbs.length}
 		<div class="breadcrumbs-wrapper">
 			<div class="breadcrumbs-left">
 				{#if beforeBreadcrumbs}
 					<div class="breadcrumbs-trigger">{@render beforeBreadcrumbs()}</div>
 				{/if}
-				<div class="breadcrumbs">
-					{#each breadcrumbs as breadcrumb (breadcrumb)}
+				<nav class="breadcrumbs" aria-label="Breadcrumb">
+					{#each breadcrumbs as breadcrumb, i (`${breadcrumb.label}-${i}`)}
+						{#if i > 0}
+							<span class="divider" aria-hidden="true">/</span>
+						{/if}
 						{#if breadcrumb.href}
 							<a href={resolveRouteHref(breadcrumb.href)} class="link">{breadcrumb.label}</a>
 						{:else}
-							{breadcrumb.label}
+							<span class="current">{breadcrumb.label}</span>
 						{/if}
-						<span class="divider">/</span>
 					{/each}
-				</div>
+				</nav>
 			</div>
 			<div class="actions">
 				<AddToFavorites path={page.url.pathname} />
@@ -72,9 +86,9 @@
 	{#if heading}
 		<div class="header-row">
 			<div class="heading-wrapper">
-				<Heading as="h1" size="xlarge">{heading}</Heading>
+				<h1 class="page-title">{heading}</h1>
 				{#if tag}
-					<Tag variant={tag.variant}>{tag.label}</Tag>
+					<ShBadge variant={mapTagVariant(tag.variant)} size="sm">{tag.label}</ShBadge>
 				{/if}
 			</div>
 			<div class="actions">
@@ -90,7 +104,7 @@
 			</div>
 		</div>
 	{:else if srOnlyHeading}
-		<Heading as="h1" class="aksel-sr-only">{srOnlyHeading}</Heading>
+		<h1 class="sr-only">{srOnlyHeading}</h1>
 	{/if}
 </div>
 
@@ -98,19 +112,26 @@
 	.page-header {
 		display: flex;
 		flex-direction: column;
-		gap: var(--ax-space-4);
+		gap: 0.375rem;
+		padding-bottom: 1rem;
+		border-bottom: 1px solid var(--border);
+
+		&.visually-empty {
+			padding-bottom: 0;
+			border-bottom: none;
+		}
 
 		.header-row {
 			display: flex;
 			align-items: center;
 			justify-content: space-between;
-			gap: var(--ax-space-8);
+			gap: 0.75rem;
 		}
 
 		.actions {
 			display: flex;
 			align-items: center;
-			gap: var(--ax-space-4);
+			gap: 0.25rem;
 			flex-shrink: 0;
 		}
 
@@ -118,40 +139,60 @@
 			display: flex;
 			justify-content: space-between;
 			align-items: center;
-			gap: var(--ax-space-8);
-			margin-bottom: var(--ax-space-4);
+			gap: 0.5rem;
 
 			.breadcrumbs-left {
 				display: flex;
 				align-items: center;
-				gap: var(--ax-space-8);
+				gap: 0.5rem;
 				min-width: 0;
 			}
 
 			.breadcrumbs {
 				display: flex;
-				gap: var(--ax-space-8);
+				gap: 0.375rem;
 				align-items: center;
 				min-width: 0;
+				font-size: 0.8125rem;
+				color: var(--muted-foreground);
 
 				.link {
+					color: var(--muted-foreground);
 					text-decoration: none;
+					font-weight: 500;
+					transition: color 120ms ease;
 
 					&:hover {
-						text-decoration: underline;
+						color: var(--foreground);
 					}
 				}
 
+				.current {
+					color: var(--foreground);
+					font-weight: 500;
+				}
+
 				.divider {
-					color: var(--ax-text-neutral-subtle);
+					color: var(--muted-foreground);
+					opacity: 0.55;
+					font-size: 0.75rem;
 				}
 			}
 		}
 		.heading-wrapper {
 			display: flex;
-			gap: var(--ax-space-12);
+			gap: 0.625rem;
 			align-items: center;
 			flex-wrap: wrap;
+		}
+
+		.page-title {
+			margin: 0;
+			font-size: 1.5rem;
+			font-weight: 600;
+			letter-spacing: -0.025em;
+			line-height: 1.25;
+			color: var(--foreground);
 		}
 
 		.breadcrumbs-trigger-row {
@@ -177,7 +218,7 @@
 
 			.breadcrumbs-trigger-row {
 				display: flex;
-				margin-bottom: var(--ax-space-4);
+				margin-bottom: 0.25rem;
 			}
 
 			.header-row {

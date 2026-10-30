@@ -10,10 +10,11 @@
 	import ServiceAccountBinding from '#lib/domain/resources/ServiceAccountBinding.svelte';
 	import WorkloadDeploy from '#lib/domain/workload/WorkloadDeploy.svelte';
 	import WorkloadHealth from '#lib/domain/workload/WorkloadHealth.svelte';
+	import { ShAlert, ShSpinner } from '#lib/shadcn/ui/index.js';
+
 	import GraphErrors from '#lib/ui/GraphErrors.svelte';
 	import SectionBoundary from '#lib/ui/SectionBoundary.svelte';
 	import Time from '#lib/ui/Time.svelte';
-	import { Alert, Heading, Loader } from '@nais/ds-svelte-community';
 	import { onMount } from 'svelte';
 	import type { PageProps } from './$types';
 	import InstanceGroups from './InstanceGroups.svelte';
@@ -50,26 +51,41 @@
 
 {#if appFetching}
 	<div
-		style="display: flex; justify-content: center; align-items: center; height: 500px;"
+		style="display: flex; justify-content: center; align-items: center; height: 320px;"
 		role="status"
 		aria-label="Loading"
 	>
-		<Loader size="3xlarge" />
+		<ShSpinner size="lg" />
 	</div>
 {/if}
 {#if app}
-	<div class="wrapper">
-		<div class="app-content">
+	<div class="app-overview-workspace">
+		<h2 class="sr-only">Overview</h2>
+		{#if app?.deletionStartedAt}
+			<ShAlert variant="info" size="sm">
+				This application is being deleted. Deletion started <Time
+					time={app.deletionStartedAt}
+					distance
+				/>. If the deletion is taking too long, contact the Nais team.
+			</ShAlert>
+		{/if}
+
+		<!-- Full-width KPI Health Strip -->
+		<WorkloadHealth
+			{teamSlug}
+			environment={environment ?? ''}
+			workload={app?.name ?? ''}
+			workloadType="app"
+			criticalIssues={app?.criticalIssues.pageInfo.totalCount ?? 0}
+			warningIssues={app?.warningIssues.pageInfo.totalCount ?? 0}
+			todoIssues={app?.todoIssues.pageInfo.totalCount ?? 0}
+			readyInstances={appInstanceGroups.reduce((sum, g) => sum + g.readyInstances, 0) ?? 0}
+			desiredInstances={appInstanceGroups.reduce((sum, g) => sum + g.desiredInstances, 0) ?? 0}
+			loading={appFetching}
+		/>
+
+		<div class="app-bento">
 			<div class="main-section">
-				<Heading as="h2" class="aksel-sr-only">Overview</Heading>
-				{#if app?.deletionStartedAt}
-					<Alert variant="info" size="small" fullWidth={false}>
-						This application is being deleted. Deletion started <Time
-							time={app.deletionStartedAt}
-							distance
-						/>. If the deletion is taking too long, contact the Nais team.
-					</Alert>
-				{/if}
 				{#if criticalEdges.length > 0}
 					<CriticalIssuesCard
 						title={`Critical issues (${criticalEdges.length})`}
@@ -77,18 +93,6 @@
 						issues={criticalEdges}
 					/>
 				{/if}
-				<WorkloadHealth
-					{teamSlug}
-					environment={environment ?? ''}
-					workload={app?.name ?? ''}
-					workloadType="app"
-					criticalIssues={app?.criticalIssues.pageInfo.totalCount ?? 0}
-					warningIssues={app?.warningIssues.pageInfo.totalCount ?? 0}
-					todoIssues={app?.todoIssues.pageInfo.totalCount ?? 0}
-					readyInstances={appInstanceGroups.reduce((sum, g) => sum + g.readyInstances, 0) ?? 0}
-					desiredInstances={appInstanceGroups.reduce((sum, g) => sum + g.desiredInstances, 0) ?? 0}
-					loading={appFetching}
-				/>
 				{#if environment}
 					<InstanceGroups
 						appName={app.name}
@@ -99,7 +103,7 @@
 					<CostOverviewChart workload={app.name} {environment} {teamSlug} />
 				{/if}
 			</div>
-			<div class="layout-sidebar">
+			<div class="side-section">
 				<WorkloadDeploy workload={app} />
 				<Persistence workload={app} />
 				{#if environment}
@@ -127,27 +131,29 @@
 {/if}
 
 <style>
-	.wrapper {
+	.app-overview-workspace {
 		display: flex;
 		flex-direction: column;
-		gap: var(--spacing-layout);
+		gap: 1.25rem;
 	}
 
-	.main-section {
-		display: flex;
-		flex-direction: column;
-		gap: var(--spacing-layout);
-	}
-
-	.app-content {
+	.app-bento {
 		display: grid;
-		grid-template-columns: 1fr 300px;
-		gap: var(--spacing-layout);
+		grid-template-columns: minmax(0, 1.3fr) minmax(0, 0.7fr);
+		gap: 1.25rem;
+		align-items: start;
 	}
 
-	/* Mobile responsive layout */
-	@media (max-width: 767px), (max-height: 500px) {
-		.app-content {
+	.main-section,
+	.side-section {
+		display: flex;
+		flex-direction: column;
+		gap: 1.25rem;
+		min-width: 0;
+	}
+
+	@media (max-width: 1024px) {
+		.app-bento {
 			grid-template-columns: 1fr;
 		}
 	}

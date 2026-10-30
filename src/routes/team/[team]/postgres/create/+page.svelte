@@ -4,7 +4,7 @@
 	import { labelRowsHaveErrors, type LabelRow } from '#lib/domain/labels/labels.js';
 	import PostgresConfigurationFields from '#lib/domain/postgres/PostgresConfigurationFields.svelte';
 	import GraphErrors from '#lib/ui/GraphErrors.svelte';
-	import { Alert, BodyShort, Button, Heading, Select, TextField } from '@nais/ds-svelte-community';
+	import { Alert, BodyShort, Button, Heading, Select, TextField } from '#lib/shadcn/ui/index.js';
 	import { untrack } from 'svelte';
 	import type { PageProps } from './$types';
 

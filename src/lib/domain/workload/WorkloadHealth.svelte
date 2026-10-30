@@ -1,15 +1,17 @@
 <script lang="ts">
 	import IssuePills from '#lib/domain/issues/IssuePills.svelte';
+	import { ShBadge, ShSpinner, Tooltip } from '#lib/shadcn/ui/index.js';
+
 	import SurfaceCard from '#lib/ui/SurfaceCard.svelte';
 	import { graphql } from '$houdini';
-	import { Loader, Tag, Tooltip } from '@nais/ds-svelte-community';
+
 	import {
 		BriefcaseClockIcon,
 		PackageIcon,
 		PiggybankIcon,
 		VirusIcon,
 		VitalsIcon
-	} from '@nais/ds-svelte-community/icons';
+	} from '#lib/icons/index.js';
 	import { subDays } from 'date-fns';
 
 	interface Props {
@@ -245,10 +247,10 @@
 	let title = $derived(workloadType === 'app' ? 'Application health' : 'Job health');
 </script>
 
-<SurfaceCard {title} bordered>
+<SurfaceCard {title}>
 	{#if dataLoading}
 		<div class="loading">
-			<Loader size="xlarge" />
+			<ShSpinner size="lg" />
 		</div>
 	{:else}
 		<div class="metrics">
@@ -294,8 +296,8 @@
 					>
 					{#if showingUrgent}
 						<span class="metric-label">
-							<Tag size="xsmall" variant="error-moderate">Internet-facing</Tag>
-							<Tag size="xsmall" variant="warning-moderate">Known exploited</Tag>
+							<ShBadge size="xs" variant="destructive">Internet-facing</ShBadge>
+							<ShBadge size="xs" variant="warning">Known exploited</ShBadge>
 						</span>
 					{:else}
 						<span class="metric-label">Known exploited</span>
@@ -304,7 +306,7 @@
 				{#if sbomProcessing}
 					<div class="metric-processing">
 						<Tooltip content="Scanning for vulnerabilities…">
-							<Loader size="xsmall" />
+							<ShSpinner size="sm" />
 						</Tooltip>
 					</div>
 				{/if}
@@ -396,33 +398,33 @@
 
 	.metrics {
 		display: grid;
-		grid-template-columns: 1fr 1fr;
-		gap: var(--ax-space-12);
+		grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+		gap: 0.75rem;
 	}
 
 	.metric {
 		position: relative;
 		display: flex;
 		align-items: center;
-		gap: var(--ax-space-12);
-		padding: var(--ax-space-12);
-		border-radius: var(--ax-radius-8);
+		gap: 0.75rem;
+		padding: 0.875rem 1rem;
+		border-radius: var(--radius);
 		text-decoration: none;
 		color: inherit;
-		background: color-mix(in srgb, var(--ax-bg-default) 82%, transparent);
-		box-shadow: 0 0 0 1px var(--ax-border-neutral-subtleA);
+		background-color: var(--card);
+		border: 1px solid var(--border);
+		overflow: hidden;
 		transition:
-			background-color 120ms ease,
-			box-shadow 120ms ease,
-			transform 120ms ease;
+			background-color 140ms ease,
+			border-color 140ms ease,
+			box-shadow 140ms ease;
 	}
 
 	a.metric:hover {
-		background: color-mix(in srgb, var(--surface-accent-color) 8%, var(--ax-bg-default));
-		box-shadow:
-			0 0 0 1px color-mix(in srgb, var(--surface-accent-color) 24%, transparent),
-			0 8px 12px -10px var(--surface-shadow-color);
-		transform: translateY(-1px);
+		background-color: var(--card-hover);
+		border-color: var(--border-strong);
+		box-shadow: var(--sh-shadow-xs);
+		text-decoration: none;
 	}
 
 	.metric-icon {
@@ -432,58 +434,65 @@
 		width: 2rem;
 		height: 2rem;
 		flex-shrink: 0;
-		border-radius: var(--ax-radius-8);
-		font-size: 1.1rem;
-		color: var(--ax-text-neutral-subtle);
-		background: color-mix(in srgb, var(--ax-text-neutral-subtle) 10%, transparent);
+		border-radius: var(--radius-md);
+		font-size: 1rem;
+		color: var(--muted-foreground);
+		background-color: var(--secondary);
+		border: 1px solid var(--border);
 	}
 
 	.metric-icon.danger {
-		color: var(--ax-text-danger);
-		background: var(--ax-bg-danger-moderate);
+		color: var(--destructive);
+		background-color: var(--destructive-muted);
+		border-color: var(--destructive-border);
 	}
 
 	.metric-icon.warning {
-		color: var(--ax-text-warning);
-		background: var(--ax-bg-warning-moderate);
+		color: var(--warning);
+		background-color: var(--warning-muted);
+		border-color: var(--warning-border);
 	}
 
 	.metric-icon.success {
-		color: var(--ax-text-success);
-		background: var(--ax-bg-success-moderate);
+		color: var(--success);
+		background-color: var(--success-muted);
+		border-color: var(--success-border);
 	}
 
 	.metric-body {
 		display: flex;
 		flex-direction: column;
+		gap: 0.125rem;
 		min-width: 0;
 	}
 
 	.metric-value {
-		font-size: var(--ax-font-size-xlarge);
-		font-weight: var(--ax-font-weight-bold);
-		line-height: 1.2;
+		font-size: 1.375rem;
+		font-weight: 700;
+		letter-spacing: -0.025em;
+		line-height: 1.15;
+		font-variant-numeric: tabular-nums;
 	}
 
 	.metric.danger .metric-value {
-		color: var(--ax-text-danger);
+		color: var(--destructive);
 	}
 
 	.metric.warning .metric-value {
-		color: var(--ax-text-warning);
+		color: var(--warning);
 	}
 
 	.metric.success .metric-value {
-		color: var(--ax-text-success);
+		color: var(--success);
 	}
 
 	.metric-label {
-		font-size: var(--ax-font-size-small);
-		color: var(--ax-text-neutral-subtle);
+		font-size: 0.75rem;
+		color: var(--muted-foreground);
 		white-space: nowrap;
 		display: flex;
 		flex-wrap: wrap;
-		gap: var(--ax-space-4);
+		gap: 0.25rem;
 	}
 
 	@media (max-width: 767px), (max-height: 500px) {
@@ -494,7 +503,7 @@
 
 	.metric-processing {
 		position: absolute;
-		top: var(--ax-space-12);
-		right: var(--ax-space-12);
+		top: 0.75rem;
+		right: 0.75rem;
 	}
 </style>

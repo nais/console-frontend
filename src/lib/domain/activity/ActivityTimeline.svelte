@@ -1,7 +1,7 @@
 <script lang="ts">
 	import type { ActivityLogEntryFragment } from '$houdini';
 	import ActivityLogListItem from '#lib/domain/list-items/ActivityLogListItem.svelte';
-	import { Button } from '@nais/ds-svelte-community';
+	import { ShButton } from '#lib/shadcn/ui/index.js';
 	import type { TimelineModes } from './shared/texts/types';
 
 	interface Props {
@@ -23,7 +23,9 @@
 
 		{#if hasNextPage}
 			<div class="load-more">
-				<Button variant="tertiary" size="small" onclick={loadMore} {loading}>Load more</Button>
+				<ShButton variant="outline" size="sm" onclick={loadMore} disabled={loading}>
+					{loading ? 'Loading…' : 'Load more'}
+				</ShButton>
 			</div>
 		{/if}
 	{:else}
@@ -41,14 +43,14 @@
 
 	.empty {
 		text-align: center;
-		color: var(--ax-text-neutral);
+		color: var(--muted-foreground);
 		padding: var(--ax-space-8) var(--ax-space-4);
-		font-style: italic;
+		font-size: 0.8125rem;
 	}
 
 	.load-more {
 		display: flex;
 		justify-content: center;
-		padding-top: var(--ax-space-4);
+		padding-top: var(--ax-space-8);
 	}
 </style>

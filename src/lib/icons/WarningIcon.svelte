@@ -1,5 +1,5 @@
 <script>
-	import { ExclamationmarkTriangleFillIcon } from '@nais/ds-svelte-community/icons';
+	import { ExclamationmarkTriangleFillIcon } from '#lib/icons/index.js';
 
 	const props = $props();
 </script>

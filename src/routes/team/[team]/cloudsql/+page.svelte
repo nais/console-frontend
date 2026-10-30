@@ -14,8 +14,8 @@
 	import StatusIndicator from '#lib/ui/StatusIndicator.svelte';
 	import { countIssuesBySeverity } from '#lib/utils/issueCounts.js';
 	import { changeParams } from '#lib/utils/searchparams.js';
-	import { Loader, Tag, Td, Th, Tr, type TableSortState } from '@nais/ds-svelte-community';
-	import { DatabaseIcon } from '@nais/ds-svelte-community/icons';
+	import { Loader, Tag, Td, Th, Tr, type TableSortState } from '#lib/shadcn/ui/index.js';
+	import { DatabaseIcon } from '#lib/icons/index.js';
 	import type { PageProps } from './$types';
 
 	type SqlOrderFieldOptions = (typeof SqlInstanceOrderField)[keyof typeof SqlInstanceOrderField];

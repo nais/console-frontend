@@ -8,7 +8,7 @@
 	import WorkloadsWithVulnerabilities from '#lib/domain/vulnerability/WorkloadsWithVulnerabilities.svelte';
 	import ExternalLink from '#lib/ui/ExternalLink.svelte';
 	import GraphErrors from '#lib/ui/GraphErrors.svelte';
-	import { Alert, BodyLong, Heading } from '@nais/ds-svelte-community';
+	import { Alert, BodyLong, Heading } from '#lib/shadcn/ui/index.js';
 	import type { PageProps } from './$types';
 
 	let { data }: PageProps = $props();
@@ -135,7 +135,11 @@
 	.cve-search-section {
 		display: flex;
 		flex-direction: column;
-		gap: var(--ax-space-8);
-		padding-bottom: var(--spacing-layout);
+		gap: 0.5rem;
+		padding: 1rem 1.25rem;
+		margin-bottom: 1.25rem;
+		border-radius: var(--radius-lg);
+		border: 1px solid var(--border);
+		background-color: var(--card);
 	}
 </style>

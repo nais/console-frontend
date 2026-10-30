@@ -1,14 +1,9 @@
 <script lang="ts">
 	import IssuePills from '#lib/domain/issues/IssuePills.svelte';
+	import { ShSpinner } from '#lib/shadcn/ui/index.js';
 	import SurfaceCard from '#lib/ui/SurfaceCard.svelte';
 	import type { TeamSummaryCost$result, TeamSummaryVulnerabilities$result } from '$houdini';
-	import { Loader } from '@nais/ds-svelte-community';
-	import {
-		BellDotFillIcon,
-		PiggybankIcon,
-		VirusIcon,
-		VitalsIcon
-	} from '@nais/ds-svelte-community/icons';
+	import { BellDotFillIcon, PiggybankIcon, VirusIcon, VitalsIcon } from '#lib/icons/index.js';
 	import { AreaChart } from 'layerchart';
 
 	interface Props {
@@ -86,10 +81,10 @@
 </script>
 
 <div class="team-health" class:all-success={allSuccess}>
-	<SurfaceCard title="Team health" bordered>
+	<SurfaceCard title="Team health">
 		{#if dataLoading}
 			<div class="loading">
-				<Loader size="xlarge" />
+				<ShSpinner size="lg" />
 			</div>
 		{:else}
 			<div class="metrics">
@@ -100,14 +95,16 @@
 					class:warning={!criticalIssues && warningIssues > 0}
 					class:success={totalIssues === 0}
 				>
-					<span class="metric-category">Issues</span>
-					<div
-						class="metric-icon"
-						class:danger={criticalIssues > 0}
-						class:warning={!criticalIssues && warningIssues > 0}
-						class:success={totalIssues === 0}
-					>
-						<VitalsIcon />
+					<div class="metric-top">
+						<span class="metric-category">Issues</span>
+						<div
+							class="metric-icon"
+							class:danger={criticalIssues > 0}
+							class:warning={!criticalIssues && warningIssues > 0}
+							class:success={totalIssues === 0}
+						>
+							<VitalsIcon />
+						</div>
 					</div>
 					<div class="metric-body">
 						<span class="metric-value">{totalIssues}</span>
@@ -123,13 +120,15 @@
 					class:danger={urgentVulnerabilityIssues > 0}
 					class:success={urgentVulnerabilityIssues === 0}
 				>
-					<span class="metric-category">Vulnerabilities</span>
-					<div
-						class="metric-icon"
-						class:danger={urgentVulnerabilityIssues > 0}
-						class:success={urgentVulnerabilityIssues === 0}
-					>
-						<VirusIcon />
+					<div class="metric-top">
+						<span class="metric-category">Vulnerabilities</span>
+						<div
+							class="metric-icon"
+							class:danger={urgentVulnerabilityIssues > 0}
+							class:success={urgentVulnerabilityIssues === 0}
+						>
+							<VirusIcon />
+						</div>
 					</div>
 					<div class="metric-body">
 						<span class="metric-value">{urgentVulnerabilityIssues}</span>
@@ -143,13 +142,15 @@
 					class:danger={firingAlerts > 0}
 					class:success={firingAlerts === 0}
 				>
-					<span class="metric-category">Alerts</span>
-					<div
-						class="metric-icon"
-						class:danger={firingAlerts > 0}
-						class:success={firingAlerts === 0}
-					>
-						<BellDotFillIcon />
+					<div class="metric-top">
+						<span class="metric-category">Alerts</span>
+						<div
+							class="metric-icon"
+							class:danger={firingAlerts > 0}
+							class:success={firingAlerts === 0}
+						>
+							<BellDotFillIcon />
+						</div>
 					</div>
 					<div class="metric-body">
 						<span class="metric-value">{firingAlerts}</span>
@@ -163,48 +164,52 @@
 					class:warning={costTrend && costTrend.change > 5}
 					class:success={costTrend && costTrend.change <= 5}
 				>
-					<span class="metric-category">Cost</span>
-					<div
-						class="metric-icon"
-						class:warning={costTrend && costTrend.change > 5}
-						class:success={costTrend && costTrend.change <= 5}
-					>
-						<PiggybankIcon />
+					<div class="metric-top">
+						<span class="metric-category">Cost</span>
+						<div
+							class="metric-icon"
+							class:warning={costTrend && costTrend.change > 5}
+							class:success={costTrend && costTrend.change <= 5}
+						>
+							<PiggybankIcon />
+						</div>
 					</div>
-					<div class="metric-body">
-						{#if costLoading}
-							<span class="metric-value">…</span>
-							<span class="metric-label">Loading</span>
-						{:else if costTrend}
-							<span class="metric-value">
-								{costTrend.change > 0
-									? '+' + costTrend.change.toFixed(0)
-									: Math.round(costTrend.change) === 0
-										? '0'
-										: costTrend.change.toFixed(0)}%
-							</span>
-							<span class="metric-label">vs last month</span>
-						{:else}
-							<span class="metric-value">—</span>
-							<span class="metric-label">Trend unavailable</span>
+					<div class="metric-bottom-row">
+						<div class="metric-body">
+							{#if costLoading}
+								<span class="metric-value">…</span>
+								<span class="metric-label">Loading</span>
+							{:else if costTrend}
+								<span class="metric-value">
+									{costTrend.change > 0
+										? '+' + costTrend.change.toFixed(0)
+										: Math.round(costTrend.change) === 0
+											? '0'
+											: costTrend.change.toFixed(0)}%
+								</span>
+								<span class="metric-label">vs last month</span>
+							{:else}
+								<span class="metric-value">—</span>
+								<span class="metric-label">Trend unavailable</span>
+							{/if}
+						</div>
+						{#if !costLoading && costTrend && sparklineData.length > 1}
+							<div class="sparkline">
+								<AreaChart
+									data={sparklineData}
+									x="date"
+									y="value"
+									axis={false}
+									grid={false}
+									padding={{ top: 2, bottom: 2, left: 0, right: 0 }}
+									props={{
+										area: { fillOpacity: 1, class: 'sparkline-area' },
+										spline: { class: 'sparkline-line' }
+									}}
+								/>
+							</div>
 						{/if}
 					</div>
-					{#if !costLoading && costTrend && sparklineData.length > 1}
-						<div class="sparkline">
-							<AreaChart
-								data={sparklineData}
-								x="date"
-								y="value"
-								axis={false}
-								grid={false}
-								padding={{ top: 2, bottom: 2, left: 0, right: 0 }}
-								props={{
-									area: { fillOpacity: 1, class: 'sparkline-area' },
-									spline: { class: 'sparkline-line' }
-								}}
-							/>
-						</div>
-					{/if}
 				</a>
 			</div>
 		{/if}
@@ -213,11 +218,7 @@
 
 <style>
 	.all-success :global(.surface-card) {
-		background: color-mix(
-			in srgb,
-			var(--ax-bg-success-moderate) 15%,
-			color-mix(in srgb, var(--surface-accent-color) 4%, var(--ax-bg-default))
-		);
+		border-color: var(--success-border);
 	}
 
 	.loading {
@@ -229,140 +230,166 @@
 
 	.metrics {
 		display: grid;
-		grid-template-columns: 1fr 1fr;
-		gap: var(--ax-space-12);
+		grid-template-columns: repeat(4, minmax(0, 1fr));
+		gap: 0.75rem;
 	}
 
 	.metric {
 		position: relative;
 		display: flex;
-		align-items: center;
-		gap: var(--ax-space-12);
-		padding: var(--ax-space-12);
-		border-radius: var(--ax-radius-8);
+		flex-direction: column;
+		align-items: stretch;
+		justify-content: space-between;
+		gap: 0.5rem;
+		padding: 0.875rem 1rem;
+		border-radius: var(--radius);
 		text-decoration: none;
 		color: inherit;
-		background: color-mix(in srgb, var(--ax-bg-default) 82%, transparent);
-		box-shadow: 0 0 0 1px var(--ax-border-neutral-subtleA);
+		background-color: var(--card);
+		border: 1px solid var(--border);
+		overflow: hidden;
 		transition:
-			background-color 120ms ease,
-			box-shadow 120ms ease,
-			transform 120ms ease;
-	}
-
-	.metric-category {
-		position: absolute;
-		top: var(--ax-space-6);
-		right: var(--ax-space-8);
-		font-size: var(--ax-font-size-small);
-		color: var(--ax-text-neutral-subtle);
-		text-transform: uppercase;
-		letter-spacing: 0.03em;
+			background-color 140ms ease,
+			border-color 140ms ease,
+			box-shadow 140ms ease;
 	}
 
 	.metric:hover {
-		background: color-mix(in srgb, var(--surface-accent-color) 8%, var(--ax-bg-default));
-		box-shadow:
-			0 0 0 1px color-mix(in srgb, var(--surface-accent-color) 24%, transparent),
-			0 8px 12px -10px var(--surface-shadow-color);
-		transform: translateY(-1px);
+		background-color: var(--card-hover);
+		border-color: var(--border-strong);
+		box-shadow: var(--sh-shadow-xs);
+		text-decoration: none;
+	}
+
+	.metric-top {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: 0.5rem;
+		width: 100%;
+	}
+
+	.metric-category {
+		font-size: 0.8125rem;
+		font-weight: 500;
+		color: var(--muted-foreground);
 	}
 
 	.metric-icon {
 		display: inline-flex;
 		align-items: center;
 		justify-content: center;
-		width: 2rem;
-		height: 2rem;
+		width: 1.75rem;
+		height: 1.75rem;
 		flex-shrink: 0;
-		border-radius: var(--ax-radius-8);
-		font-size: 1.1rem;
-		color: var(--ax-text-neutral-subtle);
-		background: color-mix(in srgb, var(--ax-text-neutral-subtle) 10%, transparent);
+		border-radius: var(--radius-md);
+		font-size: 0.9375rem;
+		color: var(--muted-foreground);
+		background-color: var(--secondary);
+		border: 1px solid var(--border);
 	}
 
 	.metric-icon.danger {
-		color: var(--ax-text-danger);
-		background: var(--ax-bg-danger-moderate);
+		color: var(--destructive);
+		background-color: var(--destructive-muted);
+		border-color: var(--destructive-border);
 	}
 
 	.metric-icon.warning {
-		color: var(--ax-text-warning);
-		background: var(--ax-bg-warning-moderate);
+		color: var(--warning);
+		background-color: var(--warning-muted);
+		border-color: var(--warning-border);
 	}
 
 	.metric-icon.success {
-		color: var(--ax-text-success);
-		background: var(--ax-bg-success-moderate);
+		color: var(--success);
+		background-color: var(--success-muted);
+		border-color: var(--success-border);
+	}
+
+	.metric-bottom-row {
+		display: flex;
+		align-items: flex-end;
+		justify-content: space-between;
+		gap: 0.5rem;
 	}
 
 	.metric-body {
 		display: flex;
 		flex-direction: column;
+		gap: 0.125rem;
 		min-width: 0;
 	}
 
 	.metric-value {
-		font-size: var(--ax-font-size-xlarge);
-		font-weight: var(--ax-font-weight-bold);
-		line-height: 1.2;
+		font-size: 1.5rem;
+		font-weight: 700;
+		letter-spacing: -0.03em;
+		line-height: 1.15;
+		font-variant-numeric: tabular-nums;
 	}
 
 	.metric.danger .metric-value {
-		color: var(--ax-text-danger);
+		color: var(--destructive);
 	}
 
 	.metric.warning .metric-value {
-		color: var(--ax-text-warning);
+		color: var(--warning);
 	}
 
 	.metric.success .metric-value {
-		color: var(--ax-text-success);
+		color: var(--success);
 	}
 
 	.metric-label {
-		font-size: var(--ax-font-size-small);
-		color: var(--ax-text-neutral-subtle);
+		font-size: 0.75rem;
+		color: var(--muted-foreground);
 		white-space: nowrap;
 		display: flex;
 		flex-wrap: wrap;
-		gap: var(--ax-space-4);
+		gap: 0.25rem;
 	}
 
 	.sparkline {
 		flex: 1;
-		align-self: stretch;
-		min-width: 0;
-		margin-right: var(--ax-space-40);
+		height: 36px;
+		min-width: 48px;
+		max-width: 96px;
 	}
 
 	.sparkline :global(.sparkline-line) {
-		stroke: var(--ax-text-success);
+		stroke: var(--success);
 		stroke-width: 1.5;
 		fill: none;
 	}
 
 	.sparkline :global(.sparkline-area) {
-		fill: var(--ax-bg-success-moderate);
+		fill: var(--success-muted);
 	}
 
 	.metric.warning .sparkline :global(.sparkline-line) {
-		stroke: var(--ax-text-warning);
+		stroke: var(--warning);
 	}
 
 	.metric.warning .sparkline :global(.sparkline-area) {
-		fill: var(--ax-bg-warning-moderate);
+		fill: var(--warning-muted);
 	}
 
 	.metric.success .sparkline :global(.sparkline-line) {
-		stroke: var(--ax-text-success);
+		stroke: var(--success);
 	}
 
 	.metric.success .sparkline :global(.sparkline-area) {
-		fill: var(--ax-bg-success-moderate);
+		fill: var(--success-muted);
 	}
 
-	@media (max-width: 767px), (max-height: 500px) {
+	@media (max-width: 960px) {
+		.metrics {
+			grid-template-columns: repeat(2, minmax(0, 1fr));
+		}
+	}
+
+	@media (max-width: 540px) {
 		.metrics {
 			grid-template-columns: 1fr;
 		}

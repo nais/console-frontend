@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Tag } from '@nais/ds-svelte-community';
+	import { Tag } from '#lib/shadcn/ui/index.js';
 
 	interface Props {
 		critical?: number;

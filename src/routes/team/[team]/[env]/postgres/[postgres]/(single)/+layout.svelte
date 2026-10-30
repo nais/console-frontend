@@ -2,17 +2,16 @@
 	import { resolve } from '$app/paths';
 	import { page } from '$app/state';
 	import HeaderActions from '#lib/ui/HeaderActions.svelte';
-	import { Button, Tab, TabList, Tabs } from '@nais/ds-svelte-community';
 	import {
 		ActionMenu,
 		ActionMenuDivider,
-		ActionMenuItem
-	} from '@nais/ds-svelte-community/experimental';
-	import {
-		MenuElipsisVerticalIcon,
-		PencilWritingIcon,
-		TrashIcon
-	} from '@nais/ds-svelte-community/icons';
+		ActionMenuItem,
+		Button,
+		Tab,
+		TabList,
+		Tabs
+	} from '#lib/shadcn/ui/index.js';
+	import { MenuElipsisVerticalIcon, PencilWritingIcon, TrashIcon } from '#lib/icons/index.js';
 	import type { LayoutProps } from './$types';
 
 	let { data, children }: LayoutProps = $props();

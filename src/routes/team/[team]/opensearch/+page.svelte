@@ -20,8 +20,8 @@
 	import { capitalizeFirstLetter } from '#lib/utils/formatters.js';
 	import { countIssuesBySeverity } from '#lib/utils/issueCounts.js';
 	import { changeParams } from '#lib/utils/searchparams.js';
-	import { Button, Tag, Td, Th, Tr, type TableSortState } from '@nais/ds-svelte-community';
-	import { FunnelIcon, PlusIcon } from '@nais/ds-svelte-community/icons';
+	import { Button, Tag, Td, Th, Tr, type TableSortState } from '#lib/shadcn/ui/index.js';
+	import { FunnelIcon, PlusIcon } from '#lib/icons/index.js';
 	import CreatePage from '../opensearch/create/+page.svelte';
 	import type { PageProps } from './$types';
 

@@ -1,5 +1,5 @@
 <script>
-	import { XMarkOctagonFillIcon } from '@nais/ds-svelte-community/icons';
+	import { XMarkOctagonFillIcon } from '#lib/icons/index.js';
 
 	const props = $props();
 </script>

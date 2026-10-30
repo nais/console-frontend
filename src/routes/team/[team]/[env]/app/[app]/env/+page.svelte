@@ -3,8 +3,8 @@
 	import { goto } from '$app/navigation';
 	import { page } from '$app/state';
 	import { isPossiblyInModal } from '#lib/ui/PageModal.svelte';
-	import { Alert, BodyLong, Button, ErrorMessage, TextField } from '@nais/ds-svelte-community';
-	import { PlusIcon, TrashIcon } from '@nais/ds-svelte-community/icons';
+	import { Alert, BodyLong, Button, ErrorMessage, TextField } from '#lib/shadcn/ui/index.js';
+	import { PlusIcon, TrashIcon } from '#lib/icons/index.js';
 	import { tick } from 'svelte';
 	import { SvelteSet } from 'svelte/reactivity';
 
@@ -155,7 +155,7 @@
 		align-items: flex-end;
 	}
 
-	.env-row :global(.aksel-form-field) {
+	.env-row :global(.sh-ui-field) {
 		flex: 1;
 	}
 </style>

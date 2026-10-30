@@ -2,8 +2,8 @@
 	import { enhance } from '$app/forms';
 	import WarningIcon from '#lib/icons/WarningIcon.svelte';
 	import { isPossiblyInModal } from '#lib/ui/PageModal.svelte';
-	import { Button, ErrorSummary, Heading, TextField } from '@nais/ds-svelte-community';
-	import { FloppydiskIcon } from '@nais/ds-svelte-community/icons';
+	import { Button, ErrorSummary, Heading, TextField } from '#lib/shadcn/ui/index.js';
+	import { FloppydiskIcon } from '#lib/icons/index.js';
 	import type { PageProps } from './$types';
 
 	let { form }: PageProps = $props();

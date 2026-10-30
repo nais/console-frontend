@@ -1,6 +1,6 @@
 <script lang="ts">
 	import Resource from '#lib/domain/resources/Resource.svelte';
-	import { Heading } from '@nais/ds-svelte-community';
+	import { Heading } from '#lib/shadcn/ui/index.js';
 	import prettyBytes from 'pretty-bytes';
 
 	interface Props {

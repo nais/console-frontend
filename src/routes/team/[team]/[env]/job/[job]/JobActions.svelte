@@ -7,19 +7,22 @@
 	import PageModal, { pageModalClick } from '#lib/ui/PageModal.svelte';
 	import EnvPage from './env/+page.svelte';
 	import { generateJobRunName } from '#lib/utils/jobRunName.js';
-	import { Button, Heading, Modal, TextField } from '@nais/ds-svelte-community';
 	import {
 		ActionMenu,
 		ActionMenuDivider,
-		ActionMenuItem
-	} from '@nais/ds-svelte-community/experimental';
+		ActionMenuItem,
+		Button,
+		Heading,
+		Modal,
+		TextField
+	} from '#lib/shadcn/ui/index.js';
 	import {
 		FileTextIcon,
 		MenuElipsisVerticalIcon,
 		PencilWritingIcon,
 		PlayIcon,
 		TrashIcon
-	} from '@nais/ds-svelte-community/icons';
+	} from '#lib/icons/index.js';
 
 	interface Props {
 		viewerIsMember: boolean;

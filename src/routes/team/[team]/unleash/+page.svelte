@@ -28,7 +28,7 @@
 		Thead,
 		Tooltip,
 		Tr
-	} from '@nais/ds-svelte-community';
+	} from '#lib/shadcn/ui/index.js';
 	import {
 		CheckmarkIcon,
 		PencilIcon,
@@ -36,7 +36,7 @@
 		PlusIcon,
 		TrashIcon,
 		XMarkIcon
-	} from '@nais/ds-svelte-community/icons';
+	} from '#lib/icons/index.js';
 	import type { GraphQLError } from 'houdini/runtime';
 	import prettyBytes from 'pretty-bytes';
 	import { onMount } from 'svelte';

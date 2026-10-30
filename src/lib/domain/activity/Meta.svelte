@@ -61,9 +61,24 @@
 <style>
 	.meta {
 		display: block;
-		font-size: var(--ax-font-size-small);
-		line-height: var(--ax-font-line-height-large);
-		color: var(--ax-text-neutral-subtle);
-		margin: 0;
+		font-size: 0.75rem;
+		line-height: 1.4;
+		color: var(--muted-foreground);
+		margin: 0.125rem 0 0;
+	}
+
+	.meta a {
+		color: var(--muted-foreground);
+		text-decoration: underline;
+		text-decoration-color: var(--border-strong);
+		text-underline-offset: 0.18em;
+		transition:
+			color 120ms ease,
+			text-decoration-color 120ms ease;
+	}
+
+	.meta a:hover {
+		color: var(--foreground);
+		text-decoration-color: currentColor;
 	}
 </style>

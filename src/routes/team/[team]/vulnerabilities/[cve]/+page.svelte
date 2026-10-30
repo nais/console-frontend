@@ -34,8 +34,8 @@
 		Loader,
 		Search,
 		Tag
-	} from '@nais/ds-svelte-community';
-	import { MagnifyingGlassIcon } from '@nais/ds-svelte-community/icons';
+	} from '#lib/shadcn/ui/index.js';
+	import { MagnifyingGlassIcon } from '#lib/icons/index.js';
 	import { SvelteSet } from 'svelte/reactivity';
 	import type { PageProps } from './$types';
 

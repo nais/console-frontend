@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { resolve } from '$app/paths';
 	import { page } from '$app/state';
-	import { Tab, TabList, Tabs } from '@nais/ds-svelte-community';
+	import { ShTabs } from '#lib/shadcn/ui/index.js';
 	import type { LayoutProps } from './$types';
 	import JobActions from './JobActions.svelte';
 
@@ -46,24 +46,16 @@
 			label: 'Activity Log',
 			href: resolve('/team/[team]/[env]/job/[job]/activity-log', page.params as never)
 		}
-	] as const);
+	]);
 	let visibleTabs = $derived(tabs.some((tab) => tab.value === routeId) ? tabs : []);
 </script>
 
 <JobActions {viewerIsMember} {job} />
 
 {#if visibleTabs.length > 0}
-	<Tabs value={routeId} size="small">
-		<TabList>
-			{#each visibleTabs as tab (tab.value)}
-				<Tab value={tab.value} as="a" href={tab.href}>{tab.label}</Tab>
-			{/each}
-		</TabList>
-
-		<div class="tab-content">
-			{@render children()}
-		</div>
-	</Tabs>
+	<ShTabs items={visibleTabs} activeValue={routeId} variant="line">
+		{@render children()}
+	</ShTabs>
 {:else}
 	{@render children()}
 {/if}

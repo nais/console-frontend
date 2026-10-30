@@ -17,8 +17,8 @@
 		ToggleChip,
 		ToggleGroup,
 		ToggleGroupItem
-	} from '@nais/ds-svelte-community';
-	import { SortDownIcon, SortUpIcon } from '@nais/ds-svelte-community/icons';
+	} from '#lib/shadcn/ui/index.js';
+	import { SortDownIcon, SortUpIcon } from '#lib/icons/index.js';
 	import { onDestroy, onMount } from 'svelte';
 	import { SvelteSet } from 'svelte/reactivity';
 

@@ -9,8 +9,8 @@
 	import GraphErrors from '#lib/ui/GraphErrors.svelte';
 	import TooltipAlignHack from '#lib/ui/TooltipAlignHack.svelte';
 	import { changeParams } from '#lib/utils/searchparams.js';
-	import { Detail, Heading, ToggleGroup, ToggleGroupItem } from '@nais/ds-svelte-community';
-	import { GlobeIcon, HouseIcon, PadlockLockedIcon } from '@nais/ds-svelte-community/icons';
+	import { Detail, Heading, ToggleGroup, ToggleGroupItem } from '#lib/shadcn/ui/index.js';
+	import { GlobeIcon, HouseIcon, PadlockLockedIcon } from '#lib/icons/index.js';
 	import type { PageProps } from './$types';
 
 	let { data }: PageProps = $props();
@@ -41,7 +41,7 @@
 
 <GraphErrors errors={$IngressMetrics.errors} />
 
-<Heading as="h2" class="aksel-sr-only">Network</Heading>
+<Heading as="h2" class="sr-only">Network</Heading>
 
 <div class="wrapper">
 	{#if $IngressMetrics.data}

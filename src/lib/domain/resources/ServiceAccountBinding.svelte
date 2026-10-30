@@ -3,8 +3,8 @@
 	import GraphErrors from '#lib/ui/GraphErrors.svelte';
 	import IconLabel from '#lib/ui/IconLabel.svelte';
 	import SurfaceCard from '#lib/ui/SurfaceCard.svelte';
-	import { Loader } from '@nais/ds-svelte-community';
-	import { RobotIcon } from '@nais/ds-svelte-community/icons';
+	import { Loader } from '#lib/shadcn/ui/index.js';
+	import { RobotIcon } from '#lib/icons/index.js';
 
 	const binding = graphql(`
 		query WorkloadServiceAccount($name: String!, $team: Slug!, $env: String!) {

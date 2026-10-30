@@ -14,8 +14,8 @@
 	import Pagination from '#lib/ui/Pagination.svelte';
 	import SurfaceCard from '#lib/ui/SurfaceCard.svelte';
 	import { changeParams } from '#lib/utils/searchparams.js';
-	import { Tag, Td, Th, Tr, type TableSortState } from '@nais/ds-svelte-community';
-	import { FunnelIcon } from '@nais/ds-svelte-community/icons';
+	import { Tag, Td, Th, Tr, type TableSortState } from '#lib/shadcn/ui/index.js';
+	import { FunnelIcon } from '#lib/icons/index.js';
 	import type { PageProps } from './$types';
 
 	type BigQueryOrderFieldOptions =

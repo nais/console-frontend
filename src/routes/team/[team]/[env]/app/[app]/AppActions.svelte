@@ -5,15 +5,17 @@
 	import ActionConfirm from '#lib/ui/ActionConfirm.svelte';
 	import HeaderActions from '#lib/ui/HeaderActions.svelte';
 	import PageModal, { pageModalClick } from '#lib/ui/PageModal.svelte';
-	import { Button, Heading, Modal } from '@nais/ds-svelte-community';
-	import EnvPage from './env/+page.svelte';
-	import ImagePage from './image/+page.svelte';
-	import ResizePage from './resize/+page.svelte';
 	import {
 		ActionMenu,
 		ActionMenuDivider,
-		ActionMenuItem
-	} from '@nais/ds-svelte-community/experimental';
+		ActionMenuItem,
+		Button,
+		Heading,
+		Modal
+	} from '#lib/shadcn/ui/index.js';
+	import EnvPage from './env/+page.svelte';
+	import ImagePage from './image/+page.svelte';
+	import ResizePage from './resize/+page.svelte';
 	import {
 		ArrowCirclepathIcon,
 		ArrowsUpDownIcon,
@@ -23,7 +25,7 @@
 		PencilWritingIcon,
 		StopIcon,
 		TrashIcon
-	} from '@nais/ds-svelte-community/icons';
+	} from '#lib/icons/index.js';
 
 	interface Props {
 		viewerIsMember: boolean;

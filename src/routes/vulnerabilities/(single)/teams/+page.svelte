@@ -2,7 +2,7 @@
 	import TeamsGroupedByUrgency from '#lib/domain/vulnerability/TeamsGroupedByUrgency.svelte';
 	import GraphErrors from '#lib/ui/GraphErrors.svelte';
 	import { changeParams } from '#lib/utils/searchparams.js';
-	import { BodyLong, Heading, Loader } from '@nais/ds-svelte-community';
+	import { BodyLong, Heading, Loader } from '#lib/shadcn/ui/index.js';
 	import type { PageProps } from './$types';
 
 	let { data }: PageProps = $props();

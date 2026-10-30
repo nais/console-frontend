@@ -34,14 +34,14 @@
 	import { page } from '$app/state';
 	import { OrderDirection, type OrderDirection$options } from '$houdini';
 	import { changeParams } from '#lib/utils/searchparams.js';
-	import { Button } from '@nais/ds-svelte-community';
 	import {
 		ActionMenu,
 		ActionMenuDivider,
 		ActionMenuRadioGroup,
-		ActionMenuRadioItem
-	} from '@nais/ds-svelte-community/experimental';
-	import { ChevronDownIcon, SortDownIcon, SortUpIcon } from '@nais/ds-svelte-community/icons';
+		ActionMenuRadioItem,
+		Button
+	} from '#lib/shadcn/ui/index.js';
+	import { ChevronDownIcon, SortDownIcon, SortUpIcon } from '#lib/icons/index.js';
 
 	interface Props {
 		orderField: T;

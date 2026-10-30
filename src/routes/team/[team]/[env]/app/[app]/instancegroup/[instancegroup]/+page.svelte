@@ -17,7 +17,7 @@
 		Tag,
 		ToggleGroup,
 		ToggleGroupItem
-	} from '@nais/ds-svelte-community';
+	} from '#lib/shadcn/ui/index.js';
 	import prettyBytes from 'pretty-bytes';
 	import { SvelteMap } from 'svelte/reactivity';
 	import ViewSecretModal from '../../../../secret/[secret]/ViewSecretModal.svelte';
@@ -317,7 +317,7 @@
 {:else if !group}
 	<Alert variant="warning">Instance group "{instanceGroupName}" not found.</Alert>
 {:else}
-	<Heading as="h2" class="aksel-sr-only">Instance group</Heading>
+	<Heading as="h2" class="sr-only">Instance group</Heading>
 	<div class="page-content">
 		<div class="page">
 			<div class="main-column">

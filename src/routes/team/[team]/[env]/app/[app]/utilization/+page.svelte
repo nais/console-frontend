@@ -31,7 +31,7 @@
 		ToggleGroup,
 		ToggleGroupItem,
 		Tr
-	} from '@nais/ds-svelte-community';
+	} from '#lib/shadcn/ui/index.js';
 	import { format } from 'date-fns';
 	import { AreaChart, Tooltip, type ChartAnnotations } from 'layerchart';
 	import prettyBytes from 'pretty-bytes';

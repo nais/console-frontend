@@ -1,6 +1,6 @@
 <script lang="ts">
 	import GraphErrors from '#lib/ui/GraphErrors.svelte';
-	import { BodyShort, Button, Heading, Modal } from '@nais/ds-svelte-community';
+	import { BodyShort, Button, Heading, Modal } from '#lib/shadcn/ui/index.js';
 	import { untrack } from 'svelte';
 	import LabelRows from './LabelRows.svelte';
 	import {

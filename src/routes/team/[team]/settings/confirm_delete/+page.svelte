@@ -7,8 +7,8 @@
 	} from '$houdini';
 	import GraphErrors from '#lib/ui/GraphErrors.svelte';
 	import Time from '#lib/ui/Time.svelte';
-	import { Alert, BodyLong, Button, Modal } from '@nais/ds-svelte-community';
-	import { TrashIcon } from '@nais/ds-svelte-community/icons';
+	import { Alert, BodyLong, Button, Modal } from '#lib/shadcn/ui/index.js';
+	import { TrashIcon } from '#lib/icons/index.js';
 	import type { QueryResult } from 'houdini/runtime';
 	import type { PageProps } from './$types';
 

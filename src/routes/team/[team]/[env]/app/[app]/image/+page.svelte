@@ -12,7 +12,7 @@
 		ErrorMessage,
 		Radio,
 		RadioGroup
-	} from '@nais/ds-svelte-community';
+	} from '#lib/shadcn/ui/index.js';
 	import { tick } from 'svelte';
 	import type { PageProps } from './$types';
 

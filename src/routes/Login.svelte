@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { page } from '$app/state';
-	import { Alert, Button, CopyButton, Heading, TextField } from '@nais/ds-svelte-community';
-	import { CheckmarkCircleIcon } from '@nais/ds-svelte-community/icons';
+	import { Alert, Button, CopyButton, Heading, TextField } from '#lib/shadcn/ui/index.js';
+	import { CheckmarkCircleIcon } from '#lib/icons/index.js';
 	import Logo from '../Logo.svelte';
 	import { isNaisdevice } from './Naisdevice.svelte';
 

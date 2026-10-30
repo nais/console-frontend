@@ -3,7 +3,7 @@
 	import GraphErrors from '#lib/ui/GraphErrors.svelte';
 	import { formatPostgresLogInstance } from '#lib/utils/logViewer.js';
 	import { page } from '$app/state';
-	import { Alert, Button, Loader, Select } from '@nais/ds-svelte-community';
+	import { Alert, Button, Loader, Select } from '#lib/shadcn/ui/index.js';
 	import type { PageProps } from './$types';
 
 	let { data }: PageProps = $props();

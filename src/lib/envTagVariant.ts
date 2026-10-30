@@ -1,4 +1,4 @@
-import type { TagProps } from '@nais/ds-svelte-community/components/Tag/type.js';
+import type { TagProps } from '#lib/shadcn/ui/index.js';
 
 export const envTagVariant = (env: string): TagProps['variant'] => {
 	switch (env) {

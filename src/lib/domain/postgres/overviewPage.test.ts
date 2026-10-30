@@ -130,7 +130,7 @@ describe('Postgres overview', () => {
 			)
 		);
 		expect(body).toContain(`id="${panelId}" role="region" aria-labelledby="${headingId}" hidden`);
-		expect(body).toContain('aksel-accordion__content--closed');
+		expect(body).toContain('sh-accordion-content--closed');
 		expect(body.match(/PostgreSQL parameters/g)).toHaveLength(1);
 		expect(body).not.toContain('aria-expanded="true"');
 		expect(html).toMatch(new RegExp(`<table\\b[^>]*aria-labelledby="${headingId}"`));

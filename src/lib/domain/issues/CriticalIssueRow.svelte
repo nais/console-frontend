@@ -1,7 +1,6 @@
 <script lang="ts">
 	import { fragment, graphql, type CriticalIssueRow } from '$houdini';
-	import { BodyLong, Heading, VStack } from '@nais/ds-svelte-community';
-	import { ExclamationmarkTriangleFillIcon } from '@nais/ds-svelte-community/icons';
+	import { ShBadge } from '#lib/shadcn/ui/index.js';
 
 	interface Props {
 		issue: CriticalIssueRow;
@@ -206,30 +205,81 @@
 	let title = $derived(getIssueTitle($data.__typename));
 </script>
 
-<a class="issue-row surface-interactive" href={resource.href}>
-	<div class="surface-icon">
-		<ExclamationmarkTriangleFillIcon />
+<a class="issue-row" href={resource.href}>
+	<span class="issue-status-dot" aria-hidden="true"></span>
+	<div class="issue-body">
+		<div class="issue-title-row">
+			<span class="issue-resource">{resource.name}</span>
+			<ShBadge variant="secondary" mono>{$data.teamEnvironment.environment.name}</ShBadge>
+			<span class="issue-title">{title}</span>
+		</div>
+		<p class="issue-message">{$data.message}</p>
 	</div>
-	<VStack gap="space-1">
-		<Heading size="xsmall" level="2">
-			{title} for {resource.name} in {$data.teamEnvironment.environment.name}
-		</Heading>
-		<BodyLong size="small">
-			{$data.message}
-		</BodyLong>
-	</VStack>
 </a>
 
 <style>
 	.issue-row {
-		--surface-accent-color: var(--ax-text-danger);
-		--surface-icon-size: 2rem;
-		--surface-icon-glyph-size: 1.1rem;
-		--surface-icon-background: color-mix(in srgb, var(--ax-text-danger) 10%, transparent);
-		--surface-icon-shadow: none;
+		display: flex;
+		align-items: flex-start;
+		gap: 0.625rem;
+		padding: 0.625rem 0.75rem;
+		border-radius: calc(var(--radius) - 2px);
+		border: 1px solid var(--border);
+		background-color: var(--card);
+		text-decoration: none;
+		color: var(--foreground);
+		transition:
+			background-color 120ms ease,
+			border-color 120ms ease;
+	}
+
+	.issue-row:hover {
+		background-color: var(--secondary);
+		border-color: var(--border-strong);
+		text-decoration: none;
+	}
+
+	.issue-status-dot {
+		width: 0.5rem;
+		height: 0.5rem;
+		border-radius: 9999px;
+		background-color: var(--destructive);
+		flex-shrink: 0;
+		margin-top: 0.375rem;
+	}
+
+	.issue-body {
+		display: flex;
+		flex-direction: column;
+		gap: 0.15rem;
+		min-width: 0;
+		flex: 1;
+	}
+
+	.issue-title-row {
 		display: flex;
 		align-items: center;
-		gap: var(--ax-space-12);
-		padding: var(--ax-space-12);
+		flex-wrap: wrap;
+		gap: 0.4rem;
+	}
+
+	.issue-resource {
+		font-size: 0.8125rem;
+		font-weight: 600;
+		color: var(--foreground);
+	}
+
+	.issue-title {
+		font-size: 0.75rem;
+		font-weight: 500;
+		color: var(--destructive);
+		margin-left: auto;
+	}
+
+	.issue-message {
+		margin: 0;
+		font-size: 0.75rem;
+		color: var(--muted-foreground);
+		line-height: 1.4;
 	}
 </style>

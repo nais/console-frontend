@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Heading } from '@nais/ds-svelte-community';
+	import { Heading } from '#lib/shadcn/ui/index.js';
 	import type { PageProps } from './$types';
 	import JobLogs from './JobLogs.svelte';
 

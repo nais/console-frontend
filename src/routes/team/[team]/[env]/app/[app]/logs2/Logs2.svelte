@@ -4,7 +4,7 @@
 	import LokiLogs from '#lib/domain/logs/LokiLogs.svelte';
 	import { page } from '$app/state';
 	import type { Instances$result } from '$houdini';
-	import { Alert } from '@nais/ds-svelte-community';
+	import { Alert } from '#lib/shadcn/ui/index.js';
 
 	const { team }: Instances$result = $props();
 	const destinations = $derived(exhaustive(team.environment.application.logDestinations));

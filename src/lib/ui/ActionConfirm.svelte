@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Alert, Button, Loader, Modal } from '@nais/ds-svelte-community';
+	import { Alert, Button, Loader, Modal } from '#lib/shadcn/ui/index.js';
 	import type { Snippet } from 'svelte';
 
 	interface Props {

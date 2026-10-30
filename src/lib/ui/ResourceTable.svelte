@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Table, Tbody, Thead, Tr, type TableSortState } from '@nais/ds-svelte-community';
+	import { Table, Tbody, Thead, Tr, type TableSortState } from '#lib/shadcn/ui/index.js';
 	import type { Snippet } from 'svelte';
 
 	let {
@@ -29,47 +29,76 @@
 
 <style>
 	.resource-table:focus-visible {
-		outline: var(--ax-space-2) solid var(--ax-border-focus);
-		outline-offset: calc(-1 * var(--ax-space-2));
+		outline: 2px solid var(--ring);
+		outline-offset: -2px;
+	}
+
+	.resource-table :global(table) {
+		border-collapse: collapse;
 	}
 
 	.resource-table :global(th.status-column) {
-		width: calc(var(--ax-space-64) + var(--ax-space-16));
-		min-width: calc(var(--ax-space-64) + var(--ax-space-16));
-		max-width: calc(var(--ax-space-64) + var(--ax-space-16));
+		width: 4.5rem;
+		min-width: 4.5rem;
+		max-width: 4.5rem;
 		box-sizing: border-box;
 	}
 
 	.resource-table :global(th.status-column:not([aria-sort])),
-	.resource-table :global(th.status-column .aksel-table__sort-button) {
-		padding-inline: var(--ax-space-4);
+	.resource-table :global(th.status-column .sh-ui-th__sort-btn) {
+		padding-inline: 0.5rem;
+	}
+
+	.resource-table :global(thead tr) {
+		background-color: var(--background-subtle);
+		border-bottom: 1px solid var(--border);
 	}
 
 	.resource-table :global(thead th) {
-		border-bottom-width: 1px;
-		font-size: var(--ax-font-size-small);
+		border-bottom: 1px solid var(--border);
+		font-size: 0.75rem;
 		font-weight: 500;
-		color: var(--ax-text-neutral-subtle);
+		letter-spacing: 0;
+		color: var(--muted-foreground);
 	}
 
 	.resource-table :global(thead th:not([aria-sort])),
-	.resource-table :global(.aksel-table__sort-button) {
-		padding-block: var(--ax-space-8);
+	.resource-table :global(.sh-ui-th__sort-btn) {
+		padding-block: 0.65rem;
 	}
 
-	.resource-table :global(.aksel-table__sort-button) {
+	.resource-table :global(.sh-ui-th__sort-btn) {
 		font: inherit;
 		color: inherit;
 	}
 
+	.resource-table :global(tbody tr) {
+		border-bottom: 1px solid var(--border);
+		transition: background-color 120ms ease;
+	}
+
+	.resource-table :global(tbody tr:last-child) {
+		border-bottom: none;
+	}
+
+	.resource-table :global(tbody tr:hover) {
+		background-color: var(--card-hover);
+	}
+
+	.resource-table :global(tbody td) {
+		padding-block: 0.75rem;
+		border-bottom: none;
+	}
+
 	.resource-table :global(.resource-name) {
-		color: var(--ax-text-neutral);
-		font-weight: var(--ax-font-weight-bold);
+		color: var(--foreground);
+		font-weight: 600;
 		text-decoration: none;
 		overflow-wrap: anywhere;
 	}
 
 	.resource-table :global(.resource-name:hover) {
+		color: var(--primary);
 		text-decoration: underline;
 	}
 
@@ -77,17 +106,18 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		gap: var(--ax-space-4);
+		gap: 0.25rem;
 	}
 
 	.resource-table :global(.resource-name-group) {
 		display: flex;
 		align-items: center;
-		gap: var(--ax-space-8);
+		gap: 0.5rem;
 	}
 
 	.resource-table :global(.table-meta) {
-		font-size: var(--ax-font-size-small);
-		color: var(--ax-text-neutral-subtle);
+		font-size: 0.8125rem;
+		color: var(--muted-foreground);
+		font-variant-numeric: tabular-nums;
 	}
 </style>

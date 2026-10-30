@@ -23,14 +23,14 @@
 		Heading,
 		Modal,
 		TextField
-	} from '@nais/ds-svelte-community';
+	} from '#lib/shadcn/ui/index.js';
 	import {
 		ArrowsCirclepathIcon,
 		EyeIcon,
 		EyeSlashIcon,
 		TokenIcon,
 		TrashIcon
-	} from '@nais/ds-svelte-community/icons';
+	} from '#lib/icons/index.js';
 	import type { QueryResult } from 'houdini/runtime';
 	import type { PageProps } from './$types';
 	import EditText from './EditText.svelte';

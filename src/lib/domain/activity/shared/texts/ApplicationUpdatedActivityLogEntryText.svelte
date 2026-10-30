@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { ReadMore } from '@nais/ds-svelte-community';
+	import { ReadMore } from '#lib/shadcn/ui/index.js';
 	import Meta from '../../Meta.svelte';
 	import { activityLogResourceLink } from '../../utils';
 	import type { ActivityLogEntry, TimelineModes } from './types';

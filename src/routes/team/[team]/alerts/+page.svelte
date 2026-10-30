@@ -15,13 +15,13 @@
 	import Pagination from '#lib/ui/Pagination.svelte';
 	import SurfaceCard from '#lib/ui/SurfaceCard.svelte';
 	import { changeParams } from '#lib/utils/searchparams.js';
-	import { Button, Tag } from '@nais/ds-svelte-community';
+	import { Button, Tag } from '#lib/shadcn/ui/index.js';
 	import {
 		ChevronRightIcon,
 		ClockDashedIcon,
 		ExternalLinkIcon,
 		FunnelIcon
-	} from '@nais/ds-svelte-community/icons';
+	} from '#lib/icons/index.js';
 	import type { PageProps } from './$types';
 	import PrometheusAlarmDetail from './PrometheusAlarmDetail.svelte';
 
@@ -348,7 +348,7 @@
 		gap: var(--ax-space-8);
 		min-width: 0;
 	}
-	.name-group :global(.aksel-tag) {
+	.name-group :global(.sh-ui-tag) {
 		white-space: nowrap;
 		flex-shrink: 0;
 	}

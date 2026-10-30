@@ -2,8 +2,8 @@
 	import { RevealSecretValuesStore } from '$houdini';
 	import GraphErrors from '#lib/ui/GraphErrors.svelte';
 	import Textarea from '#lib/ui/Textarea.svelte';
-	import { Alert, BodyShort, Button, Heading, Modal } from '@nais/ds-svelte-community';
-	import { PadlockLockedIcon } from '@nais/ds-svelte-community/icons';
+	import { Alert, BodyShort, Button, Heading, Modal } from '#lib/shadcn/ui/index.js';
+	import { PadlockLockedIcon } from '#lib/icons/index.js';
 
 	import type { ValueEncoding$options } from '$houdini';
 

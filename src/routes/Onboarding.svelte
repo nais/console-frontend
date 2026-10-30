@@ -3,8 +3,8 @@
 	import TeamListItem from '#lib/domain/list-items/TeamListItem.svelte';
 	import Collection from '#lib/ui/Collection.svelte';
 	import Pagination from '#lib/ui/Pagination.svelte';
-	import { BodyShort, Button, Heading, Loader, Search } from '@nais/ds-svelte-community';
-	import { PlusIcon } from '@nais/ds-svelte-community/icons';
+	import { BodyShort, Button, Heading, Loader, Search } from '#lib/shadcn/ui/index.js';
+	import { PlusIcon } from '#lib/icons/index.js';
 
 	interface Props {
 		tenantName: string;

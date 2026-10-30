@@ -1,13 +1,13 @@
 <script lang="ts">
 	import { type AppInstanceGroups$result } from '$houdini';
+	import { Badge } from '#lib/shadcn/ui/index.js';
 	import CriticalIndicator from '#lib/ui/CriticalIndicator.svelte';
 	import IncomingIndicator from '#lib/ui/IncomingIndicator.svelte';
 	import RunningIndicator from '#lib/ui/RunningIndicator.svelte';
 	import SurfaceCard from '#lib/ui/SurfaceCard.svelte';
 	import Time from '#lib/ui/Time.svelte';
 	import { formatImageVersion } from '#lib/utils/image.js';
-	import { Tag } from '@nais/ds-svelte-community';
-	import { CloudSlashIcon } from '@nais/ds-svelte-community/icons';
+	import { CloudSlashIcon } from '#lib/icons/index.js';
 	import { slide } from 'svelte/transition';
 
 	type InstanceGroups =
@@ -66,18 +66,19 @@
 					>{group.readyInstances}/{group.desiredInstances} running</span
 				>
 				<span class="instance-group-meta">
-					{formatImageVersion(group.image)} &middot; Updated <Time time={group.created} distance />
+					<code>{formatImageVersion(group.image)}</code> &middot; Updated
+					<Time time={group.created} distance />
 				</span>
 			</div>
 			<div class="instance-group-tags">
 				{#if hasFailing}
-					<Tag size="small" variant="error">Failing</Tag>
+					<Badge variant="destructive" dot>Failing</Badge>
 				{/if}
 				{#if incoming}
 					{#if role === 'incoming'}
-						<Tag size="small" variant="alt1">Incoming</Tag>
+						<Badge variant="info" dot>Incoming</Badge>
 					{:else}
-						<Tag size="small" variant="neutral">Current</Tag>
+						<Badge variant="secondary">Current</Badge>
 					{/if}
 				{/if}
 			</div>
@@ -96,30 +97,29 @@
 		display: grid;
 		grid-template-columns: auto minmax(0, 1fr) auto;
 		align-items: center;
-		gap: var(--ax-space-12);
-		padding: var(--ax-space-12);
-		border-radius: var(--ax-radius-8);
+		gap: 0.875rem;
+		padding: 0.875rem 1rem;
+		border-radius: var(--radius-lg);
 		text-decoration: none;
 		color: inherit;
-		background: color-mix(in srgb, var(--ax-bg-default) 82%, transparent);
-		box-shadow: 0 0 0 1px var(--ax-border-neutral-subtleA);
+		background-color: color-mix(in srgb, var(--background) 60%, var(--card));
+		border: 1px solid var(--border);
 		transition:
-			background-color 120ms ease,
-			box-shadow 120ms ease,
-			transform 120ms ease;
+			background-color 140ms ease,
+			border-color 140ms ease,
+			box-shadow 140ms ease,
+			transform 140ms ease;
 	}
 
 	.instance-group-link:hover {
-		background: color-mix(in srgb, var(--surface-accent-color) 8%, var(--ax-bg-default));
-		box-shadow:
-			0 0 0 1px color-mix(in srgb, var(--surface-accent-color) 24%, transparent),
-			0 8px 12px -10px var(--surface-shadow-color);
-		transform: translateY(-1px);
+		background-color: var(--secondary);
+		border-color: var(--border-strong);
+		text-decoration: none;
 	}
 
 	.instance-group-link.incoming {
-		border: 1px dashed var(--ax-border-neutral-subtle);
-		box-shadow: none;
+		border-style: dashed;
+		border-color: var(--info-border);
 	}
 
 	.instance-group-icon {
@@ -129,32 +129,44 @@
 		width: var(--surface-icon-size);
 		height: var(--surface-icon-size);
 		flex-shrink: 0;
-		align-self: start;
+		align-self: center;
 	}
 
 	.instance-group-info {
 		display: flex;
 		flex-direction: column;
-		gap: var(--ax-space-2);
+		gap: 0.25rem;
 		flex: 1;
 		min-width: 0;
 	}
 
 	.instance-group-status {
-		font-weight: var(--ax-font-weight-bold);
+		font-weight: 600;
+		font-size: 0.875rem;
+		color: var(--foreground);
+		font-variant-numeric: tabular-nums;
 	}
 
 	.instance-group-meta {
-		font-size: var(--ax-font-size-small);
-		color: var(--ax-text-neutral-subtle);
+		font-size: 0.75rem;
+		color: var(--muted-foreground);
 		overflow-wrap: anywhere;
+	}
+
+	.instance-group-meta code {
+		font-family: monospace;
+		font-size: 0.75rem;
+		padding: 0.0625rem 0.375rem;
+		border-radius: var(--radius-sm);
+		background-color: var(--secondary);
+		color: var(--foreground);
 	}
 
 	.instance-group-tags {
 		display: flex;
 		flex-wrap: wrap;
 		justify-content: flex-end;
-		gap: var(--ax-space-8);
+		gap: 0.375rem;
 		justify-self: end;
 	}
 
@@ -169,40 +181,30 @@
 			justify-self: start;
 			justify-content: flex-start;
 		}
-
-		:global(.header button) {
-			width: 100%;
-		}
-
-		:global(.header) {
-			flex-direction: column;
-			align-items: flex-start;
-			gap: var(--ax-space-12);
-		}
 	}
 
 	.empty-state {
 		display: flex;
 		flex-direction: column;
 		align-items: center;
-		gap: var(--ax-space-8);
-		padding-bottom: var(--ax-space-24);
-		color: var(--ax-text-neutral-subtle);
+		gap: 0.5rem;
+		padding: 1.5rem 1rem;
+		color: var(--muted-foreground);
 	}
 
 	.empty-state :global(svg) {
-		width: 2.5rem;
-		height: 2.5rem;
-		opacity: 0.4;
+		width: 2.25rem;
+		height: 2.25rem;
+		opacity: 0.45;
 	}
 
 	.empty-title {
-		font-weight: var(--ax-font-weight-bold);
-		font-size: var(--ax-font-size-medium);
-		color: var(--ax-text-neutral);
+		font-weight: 600;
+		font-size: 0.875rem;
+		color: var(--foreground);
 	}
 
 	.empty-description {
-		font-size: var(--ax-font-size-small);
+		font-size: 0.75rem;
 	}
 </style>

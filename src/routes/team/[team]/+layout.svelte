@@ -1,85 +1,86 @@
 <script lang="ts">
 	import PageHeader from '#lib/ui/PageHeader.svelte';
 	import { createHeaderActionsContext } from '#lib/ui/headerActionsContext.svelte.js';
-	import { Alert, BodyShort, Button, Heading } from '@nais/ds-svelte-community';
+	import { Alert, BodyShort, Button, Heading } from '#lib/shadcn/ui/index.js';
 	import type { LayoutProps } from './$types';
-	import Menu from './Menu.svelte';
-	import MenuTrigger from './MenuTrigger.svelte';
 	import { createTeamContext } from './teamContext.svelte';
 
 	let { data, children }: LayoutProps = $props();
-	let { deletionInProgress, lastSuccessfulSync, UserInfo } = $derived(data);
+	let { deletionInProgress, lastSuccessfulSync } = $derived(data);
 
 	createTeamContext();
 	createHeaderActionsContext();
 </script>
 
-<div class="page">
+<div class="team-workspace">
 	{#if deletionInProgress}
-		<Alert variant="warning" style="margin-bottom: 1rem;"
-			>The team and all of its resources is currently being deleted.</Alert
-		>
+		<div class="team-banner warning">
+			The team and all of its resources is currently being deleted.
+		</div>
 	{/if}
 	{#if !lastSuccessfulSync && !deletionInProgress}
-		<Alert variant="info" style="margin-bottom: 1rem;" contentMaxWidth={false}
-			>The team and all of its resources is currently being created. Expected time to completion is
-			about 15 minutes.</Alert
-		>
+		<div class="team-banner info">
+			The team and all of its resources is currently being created. Expected time to completion is
+			about 15 minutes.
+		</div>
 	{/if}
 
-	<main class="main">
-		<Menu features={$UserInfo.data?.features} />
-		<div class="container">
-			<PageHeader>
-				{#snippet beforeBreadcrumbs()}
-					<MenuTrigger />
-				{/snippet}
-			</PageHeader>
-			<div>
-				<svelte:boundary onerror={(e) => console.error('Team page render error:', e)}>
-					{@render children?.()}
+	<main class="team-main">
+		<PageHeader />
+		<div class="team-body">
+			<svelte:boundary onerror={(e) => console.error('Team page render error:', e)}>
+				{@render children?.()}
 
-					{#snippet failed(error, reset)}
-						{void error}
-						<Alert variant="error">
-							<Heading size="xsmall" as="h2">Something went wrong</Heading>
-							<BodyShort>An unexpected error occurred while rendering the page.</BodyShort>
-							<Button variant="secondary" size="small" onclick={reset}>Try again</Button>
-						</Alert>
-					{/snippet}
-				</svelte:boundary>
-			</div>
+				{#snippet failed(error, reset)}
+					{void error}
+					<Alert variant="error">
+						<Heading size="xsmall" as="h2">Something went wrong</Heading>
+						<BodyShort>An unexpected error occurred while rendering the page.</BodyShort>
+						<Button variant="secondary" size="small" onclick={reset}>Try again</Button>
+					</Alert>
+				{/snippet}
+			</svelte:boundary>
 		</div>
 	</main>
 </div>
 
 <style>
-	.page {
-		margin-top: var(--spacing-layout);
-		width: 100%;
-	}
-
-	.main {
-		gap: var(--spacing-layout);
-		display: grid;
-		grid-template-columns: 202px 1fr;
-	}
-
-	@media (max-width: 768px), (max-height: 500px) {
-		.main {
-			grid-template-columns: 1fr;
-		}
-	}
-
-	.container {
-		flex-grow: 1;
+	.team-workspace {
 		display: flex;
 		flex-direction: column;
-		gap: var(--spacing-layout);
+		gap: 1.25rem;
+		width: 100%;
 		min-width: 0;
 	}
 
-	.container > div {
+	.team-banner {
+		padding: 0.75rem 1rem;
+		border-radius: var(--radius);
+		font-size: 0.875rem;
+		font-weight: 500;
+		border: 1px solid var(--border);
+	}
+
+	.team-banner.warning {
+		background-color: var(--warning-muted);
+		border-color: var(--warning-border);
+		color: var(--warning);
+	}
+
+	.team-banner.info {
+		background-color: var(--info-muted);
+		border-color: var(--info-border);
+		color: var(--info);
+	}
+
+	.team-main {
+		display: flex;
+		flex-direction: column;
+		gap: 1.25rem;
+		min-width: 0;
+	}
+
+	.team-body {
 		min-width: 0;
 	}
 </style>

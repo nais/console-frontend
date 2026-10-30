@@ -4,8 +4,8 @@
 	import Collection from '#lib/ui/Collection.svelte';
 	import Pagination from '#lib/ui/Pagination.svelte';
 	import { changeParams } from '#lib/utils/searchparams.js';
-	import { BodyLong, Button } from '@nais/ds-svelte-community';
-	import { PlusIcon } from '@nais/ds-svelte-community/icons';
+	import { BodyLong, Button } from '#lib/shadcn/ui/index.js';
+	import { PlusIcon } from '#lib/icons/index.js';
 	import type { PageProps } from './$types';
 
 	let { data }: PageProps = $props();

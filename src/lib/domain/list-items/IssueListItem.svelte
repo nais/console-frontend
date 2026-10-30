@@ -1,19 +1,18 @@
 <script lang="ts">
 	import { fragment, graphql, type IssueFragment } from '$houdini';
-	import { envTagVariant } from '#lib/envTagVariant.js';
 	import OpenSearchIcon from '#lib/icons/OpenSearchIcon.svelte';
 	import UnleashIcon from '#lib/icons/UnleashIcon.svelte';
 	import ValkeyIcon from '#lib/icons/ValkeyIcon.svelte';
+	import { ShBadge } from '#lib/shadcn/ui/index.js';
 	import CriticalIndicator from '#lib/ui/CriticalIndicator.svelte';
 	import { issueTypeLabel } from '#lib/utils/issueTypeLabel.js';
-	import { Tag } from '@nais/ds-svelte-community';
 	import {
 		BriefcaseClockIcon,
 		ChevronRightIcon,
 		CircleFillIcon,
 		DatabaseIcon,
 		PackageIcon
-	} from '@nais/ds-svelte-community/icons';
+	} from '#lib/icons/index.js';
 
 	interface Props {
 		item: IssueFragment;
@@ -434,9 +433,7 @@
 				<span class="resource-name" title={resourceName}>{resourceName}</span>
 			{/if}
 			{#if $data?.teamEnvironment?.environment?.name}
-				<Tag size="xsmall" variant={envTagVariant($data.teamEnvironment.environment.name)}
-					>{$data.teamEnvironment.environment.name}</Tag
-				>
+				<ShBadge variant="secondary" mono>{$data.teamEnvironment.environment.name}</ShBadge>
 			{/if}
 		</div>
 		<span class="issue-title">{issueTitle}</span>
@@ -467,32 +464,36 @@
 	}
 
 	.item {
-		background: var(--ax-bg-default);
-		border-bottom: 1px solid var(--ax-border-neutral-subtleA);
+		background: var(--card);
+		border-bottom: 1px solid var(--border);
+		font-size: 0.8125rem;
 	}
 
 	.head {
 		display: grid;
-		grid-template-columns: 22px 16px 18px minmax(0, auto) minmax(100px, 1fr);
+		grid-template-columns: 18px 14px 16px minmax(0, auto) minmax(100px, 1fr);
 		align-items: center;
-		gap: var(--ax-space-8);
-		padding: var(--ax-space-12) var(--ax-space-16);
+		gap: 0.5rem;
+		padding: 0.625rem 0.875rem;
 		cursor: pointer;
 		transition: background-color 120ms ease;
 	}
 
 	.item:not([open]) > summary.head:hover {
-		background: color-mix(in srgb, var(--surface-accent-color) 6%, var(--ax-bg-default));
+		background: var(--secondary);
 	}
 
 	.item[open] > summary.head {
-		background: color-mix(in srgb, var(--surface-accent-color) 10%, var(--ax-bg-default));
+		background: var(--background-subtle);
 	}
 
 	.chev {
-		width: 16px;
-		height: 16px;
-		color: var(--ax-text-neutral);
+		width: 14px;
+		height: 14px;
+		color: var(--muted-foreground);
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
 		transition: transform 0.18s ease;
 	}
 	.item[open] .chev {
@@ -508,14 +509,15 @@
 	.resource-group {
 		display: flex;
 		align-items: center;
-		gap: var(--ax-space-6);
+		gap: 0.375rem;
 		min-width: 0;
 		flex-wrap: wrap;
 	}
 
 	.resource-name {
-		color: var(--ax-text-neutral);
-		font-weight: 500;
+		color: var(--foreground);
+		font-size: 0.8125rem;
+		font-weight: 600;
 		white-space: nowrap;
 		overflow: hidden;
 		text-overflow: ellipsis;
@@ -531,13 +533,9 @@
 		text-decoration: underline;
 	}
 
-	.resource-group :global(.aksel-tag) {
-		white-space: nowrap;
-		flex-shrink: 0;
-	}
-
 	.issue-title {
-		color: var(--ax-text-neutral);
+		color: var(--muted-foreground);
+		font-size: 0.75rem;
 		font-weight: 500;
 		white-space: nowrap;
 		overflow: hidden;
@@ -550,41 +548,41 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		color: var(--ax-text-neutral-subtle);
-		font-size: 1rem;
+		color: var(--muted-foreground);
+		font-size: 0.875rem;
 	}
 
 	.detail {
-		padding: 12px 14px 14px calc(14px + 22px + var(--ax-space-8));
-		background: var(--ax-bg-default);
-		border-top: 1px dashed var(--ax-border-neutral-subtle);
+		padding: 0.625rem 0.875rem 0.75rem 2.75rem;
+		background: var(--background-subtle);
+		border-top: 1px solid var(--border);
 	}
 
 	.message {
 		margin: 0;
-		color: var(--ax-text-neutral);
-		font-size: var(--ax-font-size-small);
-		line-height: var(--ax-font-line-height-large);
+		color: var(--muted-foreground);
+		font-size: 0.75rem;
+		line-height: 1.45;
 	}
 
 	.extra {
-		margin-top: var(--ax-space-8);
-		font-size: var(--ax-font-size-small);
-		color: var(--ax-text-neutral);
+		margin-top: 0.5rem;
+		font-size: 0.75rem;
+		color: var(--foreground);
 		display: flex;
 		flex-direction: column;
-		gap: var(--ax-space-2);
+		gap: 0.15rem;
 	}
 
 	.ingress {
 		word-break: break-word;
-		color: var(--ax-text-neutral-subtle);
+		color: var(--muted-foreground);
 	}
 
 	@media (max-width: 767px), (max-height: 500px) {
 		.head {
-			grid-template-columns: 22px 16px 18px 1fr;
-			gap: var(--ax-space-6);
+			grid-template-columns: 18px 14px 16px 1fr;
+			gap: 0.375rem;
 		}
 
 		.issue-title {

@@ -14,8 +14,8 @@
 	import CodeBlockPromQL from '#lib/domain/monitoring/CodeBlockPromQL.svelte';
 	import GraphErrors from '#lib/ui/GraphErrors.svelte';
 	import { intersect } from '#lib/utils/intersectionObserver.js';
-	import { BodyShort, CopyButton, Heading, Loader, Modal } from '@nais/ds-svelte-community';
-	import { InformationIcon } from '@nais/ds-svelte-community/icons';
+	import { BodyShort, CopyButton, Heading, Loader, Modal } from '#lib/shadcn/ui/index.js';
+	import { InformationIcon } from '#lib/icons/index.js';
 	import * as d3 from 'd3-time';
 	import { LineChart, Tooltip } from 'layerchart';
 	import { untrack } from 'svelte';

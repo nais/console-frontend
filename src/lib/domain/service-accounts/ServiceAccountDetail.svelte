@@ -11,12 +11,15 @@
 	import GraphErrors from '#lib/ui/GraphErrors.svelte';
 	import { pageModalClick } from '#lib/ui/PageModal.svelte';
 	import Time from '#lib/ui/Time.svelte';
-	import { Button, Heading, Modal, Textarea } from '@nais/ds-svelte-community';
 	import {
 		ActionMenu,
 		ActionMenuDivider,
-		ActionMenuItem
-	} from '@nais/ds-svelte-community/experimental';
+		ActionMenuItem,
+		Button,
+		Heading,
+		Modal,
+		Textarea
+	} from '#lib/shadcn/ui/index.js';
 	import {
 		LinkIcon,
 		MenuElipsisVerticalIcon,
@@ -24,7 +27,7 @@
 		ShieldLockIcon,
 		TokenIcon,
 		TrashIcon
-	} from '@nais/ds-svelte-community/icons';
+	} from '#lib/icons/index.js';
 	import ServiceAccountAuthentications from './ServiceAccountAuthentications.svelte';
 	import ServiceAccountRoles from './ServiceAccountRoles.svelte';
 

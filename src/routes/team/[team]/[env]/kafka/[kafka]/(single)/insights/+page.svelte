@@ -3,7 +3,7 @@
 	import PrometheusChart from '#lib/chart/PrometheusChart.svelte';
 	import { PrometheusChartQueryInterval } from '#lib/chart/util.js';
 	import { changeParams } from '#lib/utils/searchparams.js';
-	import { ToggleGroup, ToggleGroupItem } from '@nais/ds-svelte-community';
+	import { ToggleGroup, ToggleGroupItem } from '#lib/shadcn/ui/index.js';
 	import prettyBytes from 'pretty-bytes';
 	import type { PageProps } from './$types';
 

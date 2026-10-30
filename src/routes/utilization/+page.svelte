@@ -25,8 +25,8 @@
 		Thead,
 		Tr,
 		type TableSortState
-	} from '@nais/ds-svelte-community';
-	import { PersonGroupIcon } from '@nais/ds-svelte-community/icons';
+	} from '#lib/shadcn/ui/index.js';
+	import { PersonGroupIcon } from '#lib/icons/index.js';
 	import prettyBytes from 'pretty-bytes';
 	import type { PageProps } from './$types';
 

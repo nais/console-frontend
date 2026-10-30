@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { DeploymentStatusState, type DeploymentStatusState$options } from '$houdini';
-	import { Tag } from '@nais/ds-svelte-community';
+	import { Tag } from '#lib/shadcn/ui/index.js';
 	import type { ComponentProps } from 'svelte';
 
 	interface Props {

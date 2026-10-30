@@ -1,9 +1,15 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
+	import { ShBadge, ShButton } from '#lib/shadcn/ui/index.js';
+
 	import IconLabel from '#lib/ui/IconLabel.svelte';
-	import { Button, Tag } from '@nais/ds-svelte-community';
-	import type { TagProps } from '@nais/ds-svelte-community/components/Tag/type.js';
-	import { ArrowDownIcon, ArrowDownRightIcon, ArrowUpIcon } from '@nais/ds-svelte-community/icons';
+	import type { TagProps } from '#lib/shadcn/ui/index.js';
+	import {
+		ArrowDownIcon,
+		ArrowDownRightIcon,
+		ArrowUpIcon,
+		MagnifyingGlassIcon
+	} from '#lib/icons/index.js';
 	import { tick, type Component } from 'svelte';
 	import ResultSkeleton from './ResultSkeleton.svelte';
 	import SearchDocumentShortcuts from './SearchDocumentShortcuts.svelte';
@@ -232,6 +238,9 @@
 	<div class="header">
 		<div class="search-field">
 			<div class="query-input">
+				<span class="search-lead-icon" aria-hidden="true">
+					<MagnifyingGlassIcon />
+				</span>
 				{#if teamFilter}
 					<button
 						type="button"
@@ -240,7 +249,7 @@
 						onclick={removeTeamFilter}
 					>
 						<span>team:{teamFilter}</span>
-						<span aria-hidden="true">x</span>
+						<span aria-hidden="true">&times;</span>
 					</button>
 				{/if}
 				<input
@@ -249,15 +258,15 @@
 					{@attach autofocus && focusWhenEnabled}
 					bind:value={query}
 					oninput={onQueryInput}
-					placeholder={teamFilter ? 'Search within team' : placeholder}
+					placeholder={teamFilter ? 'Search within team…' : placeholder}
 					onkeydown={onQueryKeydown}
 				/>
 			</div>
 		</div>
 		{#if suggestions}
-			<Button variant="tertiary" size="small" aria-expanded={showHelp} onclick={toggleHelp}>
+			<ShButton variant="ghost" size="sm" ariaExpanded={showHelp} onclick={toggleHelp}>
 				Help
-			</Button>
+			</ShButton>
 		{/if}
 	</div>
 	<div class="results" bind:this={res}>
@@ -286,8 +295,8 @@
 							{#snippet description()}
 								{#if result.tag}
 									<div class="description-wrapper">
-										<Tag size="xsmall" variant={result.tag.variant}>{result.tag.label}</Tag>
-										{result.description}
+										<ShBadge variant="secondary" mono>{result.tag.label}</ShBadge>
+										<span>{result.description}</span>
 									</div>
 								{:else}
 									{result.description}
@@ -295,7 +304,7 @@
 							{/snippet}
 						</IconLabel>
 						{#if result.badge}
-							<span class="result-badge">{result.badge}</span>
+							<ShBadge variant="outline">{result.badge}</ShBadge>
 						{/if}
 					</a>
 				{:else}
@@ -307,8 +316,8 @@
 							{#snippet description()}
 								{#if result.tag}
 									<div class="description-wrapper">
-										<Tag size="xsmall" variant={result.tag.variant}>{result.tag.label}</Tag>
-										{result.description}
+										<ShBadge variant="secondary" mono>{result.tag.label}</ShBadge>
+										<span>{result.description}</span>
 									</div>
 								{:else}
 									{result.description}
@@ -317,10 +326,17 @@
 						</IconLabel>
 						<div class="result-actions">
 							{#if result.badge}
-								<span class="result-badge">{result.badge}</span>
+								<ShBadge variant="outline">{result.badge}</ShBadge>
 							{/if}
 							{#if result.type === 'button'}
-								<Button {...result.button} size="small">{result.button.label}</Button>
+								<ShButton
+									variant={result.button.variant === 'danger' ? 'destructive' : 'outline'}
+									size="sm"
+									disabled={result.button.loading}
+									onclick={result.button.onclick}
+								>
+									{result.button.label}
+								</ShButton>
 							{/if}
 						</div>
 					</div>
@@ -336,33 +352,33 @@
 		<div class="helpers">
 			{#if suggestions}
 				<div>
-					<kbd class="question">?</kbd>
+					<kbd class="sh-kbd">?</kbd>
 					<span>Help</span>
 				</div>
 			{/if}
 			<div>
-				<kbd><ArrowDownIcon /></kbd>
-				<kbd><ArrowUpIcon /></kbd>
+				<kbd class="sh-kbd"><ArrowDownIcon /></kbd>
+				<kbd class="sh-kbd"><ArrowUpIcon /></kbd>
 				<span>Move</span>
 			</div>
 			<div>
-				<kbd class="enter"><ArrowDownRightIcon /></kbd>
+				<kbd class="sh-kbd enter"><ArrowDownRightIcon /></kbd>
 				<span>Select</span>
 			</div>
 			{#if canCompleteTeamFilter}
 				<div>
-					<kbd class="tab">tab</kbd>
+					<kbd class="sh-kbd">tab</kbd>
 					<span>Use team</span>
 				</div>
 			{/if}
 			{#if toggleFavorites}
 				<div>
-					<kbd class="shortcut">alt f</kbd>
+					<kbd class="sh-kbd">alt f</kbd>
 					<span>{favoriteMode ? 'Search' : 'Favorites'}</span>
 				</div>
 			{/if}
 			<div>
-				<kbd class="escape"><span>esc</span></kbd>
+				<kbd class="sh-kbd">esc</kbd>
 				<span>Close</span>
 			</div>
 		</div>
@@ -372,32 +388,29 @@
 <style>
 	.description-wrapper {
 		display: flex;
-		gap: var(--ax-space-6);
+		gap: 0.375rem;
 		align-items: center;
 	}
+
 	.result-actions {
 		display: flex;
 		align-items: center;
-		gap: var(--ax-space-8);
+		gap: 0.5rem;
 	}
-	.result-badge {
-		font-size: var(--ax-font-size-small);
-		font-weight: var(--ax-font-weight-bold);
-		color: var(--surface-accent-color);
-		text-transform: uppercase;
-		white-space: nowrap;
-	}
+
 	.helpers {
 		display: flex;
 		flex-wrap: wrap;
-		gap: var(--ax-space-16);
-		padding: var(--ax-space-12) var(--ax-space-24);
-		border-top: 1px solid var(--ax-border-neutral-subtleA);
-		background-color: var(--ax-bg-default);
+		gap: 1rem;
+		padding: 0.625rem 1rem;
+		border-top: 1px solid var(--border);
+		background-color: var(--background-subtle);
+		font-size: 0.75rem;
+		color: var(--muted-foreground);
 
 		> div {
 			display: flex;
-			gap: var(--ax-space-8);
+			gap: 0.35rem;
 			align-items: center;
 
 			&:last-child {
@@ -405,154 +418,121 @@
 			}
 		}
 	}
+
 	.suggestions {
-		padding-bottom: var(--ax-space-12);
+		padding-bottom: 0.625rem;
 	}
 
 	.enter > :global(svg) {
 		transform: scaleX(-1);
 	}
-	kbd {
-		font-size: 1rem;
-		background: linear-gradient(
-			rgb(255, 255, 255, 0.1),
-			rgb(255, 255, 255, 0.1),
-			rgba(18, 43, 68, 0.08)
-		);
-		border: solid 1px rgb(35, 38, 42);
-		border-radius: var(--ax-radius-8);
-		padding: var(--ax-space-4);
-		display: inline-flex;
-		justify-content: center;
-	}
-	.escape {
-		font-size: 0.6rem;
-		width: 26px;
-		padding-inline: 0;
-		line-height: 1rem;
-	}
-	.shortcut,
-	.tab {
-		font-size: 0.6rem;
-		padding-inline: var(--ax-space-4);
-		line-height: 1rem;
-	}
-	.question {
-		width: 26px;
-		padding-inline: 0;
-		line-height: 1rem;
-	}
+
 	.search {
 		height: 100%;
 		display: grid;
 		grid-template-rows: auto 1fr auto;
 		flex-direction: column;
 	}
+
 	.header {
 		display: grid;
 		grid-template-columns: 1fr auto;
 		align-items: center;
-		gap: var(--ax-space-8);
-		padding: var(--ax-space-24);
-		padding-bottom: var(--ax-space-16);
+		gap: 0.5rem;
+		padding: 0.75rem 1rem;
+		border-bottom: 1px solid var(--border);
 	}
+
 	.search-field {
 		display: grid;
-		gap: var(--ax-space-8);
+		gap: 0.5rem;
 	}
+
 	.query-input {
 		display: flex;
 		align-items: center;
-		gap: var(--ax-space-6);
-		min-height: 3rem;
-		padding: var(--ax-space-4) var(--ax-space-8);
-		border: 1px solid var(--ax-border-neutral-subtleA);
-		border-radius: var(--ax-radius-4);
-		background-color: var(--ax-neutral-000);
+		gap: 0.5rem;
+		min-height: 2.25rem;
 	}
-	.query-input:focus-within {
-		outline: 2px solid var(--surface-accent-color);
-		outline-offset: 2px;
+
+	.search-lead-icon {
+		display: inline-flex;
+		align-items: center;
+		color: var(--muted-foreground);
+		font-size: 1rem;
+		flex-shrink: 0;
 	}
+
 	.query-input input {
 		min-width: 8rem;
 		flex: 1;
 		border: 0;
 		outline: 0;
 		background: transparent;
-		color: var(--ax-text-neutral);
+		color: var(--foreground);
 		font: inherit;
+		font-size: 0.875rem;
 	}
+
+	.query-input input::placeholder {
+		color: var(--muted-foreground);
+	}
+
 	.query-token {
 		display: inline-flex;
 		align-items: center;
-		gap: var(--ax-space-6);
+		gap: 0.35rem;
 		flex: none;
-		padding: var(--ax-space-4) var(--ax-space-8);
-		border: 1px solid var(--ax-border-neutral-subtleA);
-		border-color: var(--surface-accent-color);
-		border-radius: var(--ax-radius-4);
-		background-color: var(--ax-neutral-000);
-		color: var(--surface-accent-color);
-		font: inherit;
-		font-family: monospace;
-		font-weight: var(--ax-font-weight-bold);
+		padding: 0.15rem 0.45rem;
+		border: 1px solid var(--primary-border);
+		border-radius: calc(var(--radius) - 4px);
+		background-color: var(--primary-muted);
+		color: var(--primary);
+		font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+		font-size: 0.75rem;
+		font-weight: 600;
 		cursor: pointer;
 	}
-	.query-token:focus-visible {
-		outline: 2px solid var(--surface-accent-color);
-		outline-offset: 2px;
-	}
+
 	.results {
 		display: flex;
-		padding-inline: var(--ax-space-24);
+		padding: 0.5rem;
 		flex-direction: column;
-		gap: var(--ax-space-4);
+		gap: 0.125rem;
 		overflow-y: auto;
 
 		a.result {
 			color: inherit;
 			text-decoration: none;
-			transition:
-				background-color 50ms,
-				color 50ms;
+			transition: background-color 100ms ease;
 
 			&:hover {
-				background-color: var(--ax-bg-brand-blue-moderate-hover);
+				background-color: var(--secondary);
 				text-decoration: none;
-
-				.label {
-					text-decoration: underline;
-				}
-			}
-			&:active,
-			&:focus-visible {
-				background-color: var(--ax-bg-accent-strong);
-				color: var(--ax-text-neutral);
-				box-shadow: none;
-			}
-
-			&:active {
-				background-color: var(--ax-bg-accent-strong-hover);
 			}
 		}
 
 		.result {
 			display: grid;
 			grid-template-columns: 1fr auto;
-			gap: var(--ax-space-16);
+			gap: 0.75rem;
 			align-items: center;
-			border-radius: var(--ax-radius-4);
-			padding: var(--ax-space-4);
+			border-radius: calc(var(--radius) - 3px);
+			padding: 0.45rem 0.625rem;
 
 			&.selected {
-				background-color: var(--ax-bg-accent-moderate-pressed);
+				background-color: var(--secondary);
 			}
 		}
 	}
+
 	.no-results {
 		display: flex;
 		flex-direction: column;
-		gap: var(--ax-space-16);
+		align-items: center;
+		justify-content: center;
+		padding: 2.5rem 1rem;
+		color: var(--muted-foreground);
+		font-size: 0.8125rem;
 	}
 </style>

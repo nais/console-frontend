@@ -1,7 +1,8 @@
 <script lang="ts">
+	import { ShButton, Tooltip } from '#lib/shadcn/ui/index.js';
 	import { favorites } from '#lib/stores/favorites.svelte.js';
-	import { Button, Tooltip } from '@nais/ds-svelte-community';
-	import { StarFillIcon, StarIcon } from '@nais/ds-svelte-community/icons';
+
+	import { StarFillIcon, StarIcon } from '#lib/icons/index.js';
 
 	interface Props {
 		path: string;
@@ -21,10 +22,11 @@
 </script>
 
 <Tooltip placement="bottom" content={isFavorite ? 'Remove from favorites' : 'Add to favorites'}>
-	<Button
-		variant="tertiary-neutral"
+	<ShButton
+		variant="ghost"
+		size="icon-sm"
 		onclick={toggleFavorite}
 		icon={isFavorite ? StarFillIcon : StarIcon}
-		aria-label={isFavorite ? 'Remove from favorites' : 'Add to favorites'}
+		ariaLabel={isFavorite ? 'Remove from favorites' : 'Add to favorites'}
 	/>
 </Tooltip>

@@ -24,7 +24,7 @@
 		ReadMore,
 		Select,
 		TextField
-	} from '@nais/ds-svelte-community';
+	} from '#lib/shadcn/ui/index.js';
 	import type { PageProps } from './$types';
 
 	let { form, data }: PageProps = $props();
@@ -256,7 +256,7 @@ ${notifyKeyspaceEvents ? `notify_keyspace_events = "${notifyKeyspaceEvents}"` : 
 </ReadMore>
 
 <style>
-	form :global(.aksel-form-field) {
+	form :global(.sh-ui-field) {
 		max-width: 400px;
 	}
 

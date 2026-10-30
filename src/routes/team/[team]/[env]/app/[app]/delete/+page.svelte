@@ -5,7 +5,7 @@
 	import WarningIcon from '#lib/icons/WarningIcon.svelte';
 	import GraphErrors from '#lib/ui/GraphErrors.svelte';
 	import Time from '#lib/ui/Time.svelte';
-	import { BodyShort, Button, Heading, TextField } from '@nais/ds-svelte-community';
+	import { BodyShort, Button, Heading, TextField } from '#lib/shadcn/ui/index.js';
 	import { get } from 'svelte/store';
 	import type { PageProps } from './$types';
 

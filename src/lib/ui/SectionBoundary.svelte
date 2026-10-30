@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Alert, Button } from '@nais/ds-svelte-community';
+	import { Alert, Button } from '#lib/shadcn/ui/index.js';
 	import type { Snippet } from 'svelte';
 
 	let {

@@ -1,7 +1,8 @@
 <script lang="ts">
 	import { docURL } from '#lib/doc.js';
-	import { Button, Tooltip } from '@nais/ds-svelte-community';
-	import { BookIcon } from '@nais/ds-svelte-community/icons';
+	import { ShButton, Tooltip } from '#lib/shadcn/ui/index.js';
+
+	import { BookIcon } from '#lib/icons/index.js';
 
 	interface Props {
 		path: string;
@@ -11,14 +12,13 @@
 </script>
 
 <Tooltip placement="bottom" content="Documentation">
-	<Button
-		as="a"
+	<ShButton
 		href={docURL(path)}
 		target="_blank"
 		rel="noopener noreferrer"
-		variant="tertiary-neutral"
-		size="small"
+		variant="ghost"
+		size="icon-sm"
 		icon={BookIcon}
-		aria-label="Documentation"
+		ariaLabel="Documentation"
 	/>
 </Tooltip>

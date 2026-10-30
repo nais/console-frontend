@@ -1,6 +1,5 @@
 <script lang="ts">
-	import { Tooltip } from '@nais/ds-svelte-community';
-	import type { TooltipProps } from '@nais/ds-svelte-community/components/Tooltip/type.js';
+	import { Tooltip, type TooltipProps } from '#lib/shadcn/ui/index.js';
 
 	const props: TooltipProps = $props();
 </script>

@@ -15,8 +15,8 @@
 	import ResourceTable from '#lib/ui/ResourceTable.svelte';
 	import SurfaceCard from '#lib/ui/SurfaceCard.svelte';
 	import { changeParams } from '#lib/utils/searchparams.js';
-	import { BodyLong, Th, type TableSortState } from '@nais/ds-svelte-community';
-	import { BriefcaseClockIcon, FunnelIcon } from '@nais/ds-svelte-community/icons';
+	import { BodyLong, Th, type TableSortState } from '#lib/shadcn/ui/index.js';
+	import { BriefcaseClockIcon, FunnelIcon } from '#lib/icons/index.js';
 	import type { PageProps } from './$types';
 
 	let { data }: PageProps = $props();

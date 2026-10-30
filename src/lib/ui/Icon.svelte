@@ -28,7 +28,7 @@
 		TrashIcon,
 		VirusIcon,
 		VitalsIcon
-	} from '@nais/ds-svelte-community/icons';
+	} from '#lib/icons/index.js';
 
 	const { icon } = $props();
 

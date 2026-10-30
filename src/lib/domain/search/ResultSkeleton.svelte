@@ -1,16 +1,12 @@
-<script>
-	import { BodyShort, Detail, Skeleton } from '@nais/ds-svelte-community';
+<script lang="ts">
+	import { ShSkeleton } from '#lib/shadcn/ui/index.js';
 </script>
 
 <div class="skeleton">
-	<Skeleton variant="circle" height="20px" width="20px" />
-	<div>
-		<Skeleton variant="text">
-			<BodyShort>watsons-brother</BodyShort>
-		</Skeleton>
-		<Skeleton variant="text">
-			<Detail>ibm / dev</Detail>
-		</Skeleton>
+	<ShSkeleton width="1.75rem" height="1.75rem" />
+	<div class="skeleton-lines">
+		<ShSkeleton width="14ch" height="0.875rem" />
+		<ShSkeleton width="9ch" height="0.75rem" />
 	</div>
 </div>
 
@@ -18,8 +14,14 @@
 	.skeleton {
 		display: flex;
 		align-items: center;
-		gap: var(--ax-space-6);
-		border-radius: var(--ax-radius-4);
-		padding: var(--ax-space-4);
+		gap: 0.75rem;
+		border-radius: calc(var(--radius) - 3px);
+		padding: 0.5rem 0.625rem;
+	}
+
+	.skeleton-lines {
+		display: flex;
+		flex-direction: column;
+		gap: 0.25rem;
 	}
 </style>

@@ -1,5 +1,5 @@
 <script>
-	import { CheckmarkCircleFillIcon } from '@nais/ds-svelte-community/icons';
+	import { CheckmarkCircleFillIcon } from '#lib/icons/index.js';
 
 	const props = $props();
 </script>

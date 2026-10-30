@@ -3,8 +3,8 @@
 	import GraphErrors from '#lib/ui/GraphErrors.svelte';
 	import IconLabel from '#lib/ui/IconLabel.svelte';
 	import SurfaceCard from '#lib/ui/SurfaceCard.svelte';
-	import { Loader } from '@nais/ds-svelte-community';
-	import { PadlockLockedIcon } from '@nais/ds-svelte-community/icons';
+	import { Loader } from '#lib/shadcn/ui/index.js';
+	import { PadlockLockedIcon } from '#lib/icons/index.js';
 
 	const secrets = graphql(`
 		query WorkloadSecrets($name: String!, $team: Slug!, $env: String!) {

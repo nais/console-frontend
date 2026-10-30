@@ -3,7 +3,7 @@
 	import WarningIcon from '#lib/icons/WarningIcon.svelte';
 	import IconLabel from '#lib/ui/IconLabel.svelte';
 	import TooltipAlignHack from '#lib/ui/TooltipAlignHack.svelte';
-	import { BriefcaseClockIcon, PackageIcon } from '@nais/ds-svelte-community/icons';
+	import { BriefcaseClockIcon, PackageIcon } from '#lib/icons/index.js';
 
 	interface Props {
 		workload: {
