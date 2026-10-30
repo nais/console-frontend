@@ -156,7 +156,7 @@ describe('createBufferedLogAppender', () => {
 			expect(getLogs().filter((log) => log.level === 'INFO')).toHaveLength(200);
 		});
 
-		it('protects matching lines from hidden traffic before the pending queue flushes', () => {
+		it('flushes full pending batches without letting hidden traffic evict matching history', () => {
 			const { appender, enqueue, getLogs } = setup(3);
 			enqueue('ERROR');
 			for (let i = 0; i < 200; i++) {
@@ -164,8 +164,74 @@ describe('createBufferedLogAppender', () => {
 			}
 			appender.flush();
 
-			expect(getLogs().map((log) => log.level)).toEqual(['ERROR', 'INFO', 'INFO', 'INFO']);
-			expect(getLogs().map((log) => log.time.getTime())).toEqual([0, 198, 199, 200]);
+			expect(getLogs().filter((log) => log.level === 'ERROR')).toHaveLength(1);
+			expect(getLogs().filter((log) => log.level === 'INFO')).toHaveLength(200);
+			expect(getLogs().map((log) => log.time.getTime())).toEqual(
+				Array.from({ length: 201 }, (_, index) => index)
+			);
+		});
+
+		it('classifies a 5000-line burst once per batch instead of rescanning on every enqueue', () => {
+			const { appender, levels, enqueue, getLogs } = setup();
+			const has = vi.spyOn(levels, 'has');
+			for (let i = 0; i < 4999; i++) {
+				enqueue('ERROR');
+			}
+			expect(has).not.toHaveBeenCalled();
+			expect(getLogs()).toHaveLength(0);
+
+			enqueue('ERROR');
+
+			expect(has).toHaveBeenCalledTimes(5000);
+			expect(getLogs()).toHaveLength(200);
+			expect(vi.getTimerCount()).toBe(0);
+			appender.flush();
+			expect(has).toHaveBeenCalledTimes(5000);
+		});
+
+		it('keeps bounded history across repeated full batches of matching and hidden lines', () => {
+			const { appender, levels, enqueue, getLogs } = setup();
+			const has = vi.spyOn(levels, 'has');
+			for (let i = 0; i < 15000; i++) {
+				enqueue(i % 2 === 0 ? 'ERROR' : 'INFO');
+			}
+
+			expect(getLogs()).toHaveLength(400);
+			expect(getLogs().filter((log) => log.level === 'ERROR')).toHaveLength(200);
+			expect(getLogs().filter((log) => log.level === 'INFO')).toHaveLength(200);
+			expect(has).toHaveBeenCalledTimes(15800);
+			expect(vi.getTimerCount()).toBe(0);
+			appender.flush();
+			expect(getLogs()[0].time.getTime()).toBe(14600);
+			expect(getLogs().at(-1)?.time.getTime()).toBe(14999);
+		});
+
+		it('preserves stable timestamp ordering and treats invalid timestamps as newest', () => {
+			const { appender, enqueue, getLogs } = setup();
+			enqueue('ERROR', 20);
+			enqueue('INFO', 10);
+			enqueue('ERROR', 20);
+			enqueue('INFO', Number.NaN);
+			appender.flush();
+
+			expect(getLogs().map((log) => log.id)).toEqual([1, 0, 2, 3]);
+			enqueue('ERROR', 15);
+			appender.flush();
+			expect(getLogs().map((log) => log.id)).toEqual([1, 4, 0, 2, 3]);
+		});
+
+		it('applies the current selection when flushing a pending batch', () => {
+			const { appender, levels, enqueue, getLogs } = setup();
+			enqueue('INFO');
+			for (let i = 0; i < 250; i++) {
+				enqueue('ERROR');
+			}
+			levels.clear();
+			levels.add('INFO');
+			appender.flush();
+
+			expect(filterLogsByLevel(getLogs(), levels)).toHaveLength(1);
+			expect(getLogs().filter((log) => log.level === 'ERROR')).toHaveLength(200);
 		});
 
 		it('bounds matching and hidden history separately and preserves chronological order', () => {

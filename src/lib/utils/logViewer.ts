@@ -119,20 +119,9 @@ export function createBufferedLogAppender(options: BufferedLogAppenderOptions) {
 	let pendingLogs: LogLine[] = [];
 	let flushTimeout: ReturnType<typeof setTimeout> | undefined;
 
-	function appendLog(logs: LogLine[], entry: LogLine, maxEntries: number): LogLine[] {
-		const selectedLevels = options.getSelectedLevels?.();
-		if (selectedLevels === undefined) {
-			return appendSortedBoundedLog(logs, entry, maxEntries);
-		}
-
-		let matchingCount = 0;
-		let hiddenCount = 0;
-		return appendSortedBoundedLog(logs, entry, maxEntries * 2 + 1)
-			.toReversed()
-			.filter((log) =>
-				selectedLevels.has(log.level) ? ++matchingCount <= maxEntries : ++hiddenCount <= maxEntries
-			)
-			.toReversed();
+	function timestamp(log: LogLine): number {
+		const time = log.time.getTime();
+		return Number.isNaN(time) ? Number.POSITIVE_INFINITY : time;
 	}
 
 	function flushPendingLogs() {
@@ -142,8 +131,23 @@ export function createBufferedLogAppender(options: BufferedLogAppenderOptions) {
 		}
 
 		let nextLogs = options.getLogs();
-		for (const pendingLog of pendingLogs) {
-			nextLogs = appendLog(nextLogs, pendingLog, options.maxEntries);
+		const selectedLevels = options.getSelectedLevels?.();
+		if (selectedLevels === undefined) {
+			for (const pendingLog of pendingLogs) {
+				nextLogs = appendSortedBoundedLog(nextLogs, pendingLog, options.maxEntries);
+			}
+		} else {
+			let matchingCount = 0;
+			let hiddenCount = 0;
+			nextLogs = [...nextLogs, ...pendingLogs]
+				.sort((a, b) => timestamp(a) - timestamp(b))
+				.toReversed()
+				.filter((log) =>
+					selectedLevels.has(log.level)
+						? ++matchingCount <= options.maxEntries
+						: ++hiddenCount <= options.maxEntries
+				)
+				.toReversed();
 		}
 
 		pendingLogs = [];
@@ -158,18 +162,28 @@ export function createBufferedLogAppender(options: BufferedLogAppenderOptions) {
 		flushTimeout = setTimeout(flushPendingLogs, options.flushIntervalMs);
 	}
 
+	function flush() {
+		if (flushTimeout !== undefined) {
+			clearTimeout(flushTimeout);
+		}
+		flushPendingLogs();
+	}
+
 	return {
 		enqueue(log: WorkloadLog) {
 			const line = createLogLine(log, nextId++);
-			pendingLogs = appendLog(pendingLogs, line, options.maxPendingEntries);
+			if (options.getSelectedLevels !== undefined) {
+				pendingLogs.push(line);
+				if (pendingLogs.length >= options.maxPendingEntries) {
+					flush();
+					return;
+				}
+			} else {
+				pendingLogs = appendSortedBoundedLog(pendingLogs, line, options.maxPendingEntries);
+			}
 			scheduleFlush();
 		},
-		flush() {
-			if (flushTimeout !== undefined) {
-				clearTimeout(flushTimeout);
-			}
-			flushPendingLogs();
-		},
+		flush,
 		clear() {
 			pendingLogs = [];
 			if (flushTimeout !== undefined) {
