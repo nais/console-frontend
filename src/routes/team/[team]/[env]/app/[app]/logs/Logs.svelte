@@ -4,6 +4,7 @@
 	import { exhaustive } from '#lib/utils/houdini.js';
 	import {
 		createBufferedLogAppender,
+		filterLogsByLevel,
 		getLogLevel,
 		parseLogMessage,
 		type LogLine
@@ -28,6 +29,8 @@
 	const MAX_PENDING_LOG_LINES = 5000;
 	const FLUSH_INTERVAL_MS = 100;
 
+	let logLevels = new SvelteSet<string>();
+	let selectedLogLevels = new SvelteSet<string>();
 	let logs: LogLine[] = $state.raw([]);
 	let logAppender = createBufferedLogAppender({
 		maxEntries: MAX_LOG_LINES,
@@ -78,10 +81,6 @@
 					selectedLogLevels.add(level);
 				}
 
-				if (!selectedLogLevels.has(level)) {
-					return;
-				}
-
 				logAppender.enqueue(workloadLog);
 			}
 		});
@@ -121,7 +120,8 @@
 	}
 
 	let logOrder = $state<'newest' | 'oldest'>('newest');
-	let displayedLogs = $derived(logOrder === 'newest' ? logs.toReversed() : logs);
+	let filteredLogs = $derived(filterLogsByLevel(logs, selectedLogLevels));
+	let displayedLogs = $derived(logOrder === 'newest' ? filteredLogs.toReversed() : filteredLogs);
 	let selectedInstances: string[] = $state.raw([]);
 
 	let isStarted: boolean = $state(false);
@@ -154,9 +154,6 @@
 			selectedViewOptions.add(option);
 		}
 	}
-
-	let logLevels = new SvelteSet<string>();
-	let selectedLogLevels = new SvelteSet<string>();
 
 	const colorRoles = [
 		'accent',
@@ -315,7 +312,6 @@
 						} else {
 							selectedLogLevels.add(level);
 						}
-						store.unlisten().then(start);
 					}}
 				/>
 			{/each}
@@ -342,8 +338,8 @@
 
 	{#if logs.length > 0}
 		<div class="log-wrapper">
-			{#if logs.length === 0}
-				<BodyShort size="small">Waiting for logs...</BodyShort>
+			{#if displayedLogs.length === 0}
+				<BodyShort size="small">No logs match the selected levels.</BodyShort>
 			{:else}
 				{#each displayedLogs as log (log.id)}
 					{const color = $derived(colorForInstance(log.instance))}

@@ -144,8 +144,38 @@ describe('createBufferedLogAppender', () => {
 		expect(filterLogsByLevel(logs, levels).map((log) => log.level)).toEqual(['ERROR', 'WARN']);
 		levels.clear();
 		expect(filterLogsByLevel(logs, levels)).toEqual([]);
+		levels.add('INFO');
+		expect(filterLogsByLevel(logs, levels).map((log) => log.level)).toEqual(['INFO']);
 		expect(filterLogsByLevel(logs).map((log) => log.level)).toEqual(['INFO', 'ERROR', 'WARN']);
 		expect(logs).toHaveLength(3);
+	});
+
+	it('retains incoming logs for deselected levels so they can be shown after stopping', () => {
+		let logs: LogLine[] = [];
+		const levels = new Set(['ERROR']);
+		const appender = createBufferedLogAppender({
+			maxEntries: 200,
+			maxPendingEntries: 5000,
+			flushIntervalMs: 100,
+			getLogs: () => logs,
+			setLogs: (nextLogs) => {
+				logs = nextLogs;
+			}
+		});
+
+		for (const level of ['INFO', 'ERROR']) {
+			appender.enqueue({
+				time: '2026-03-05T10:00:00.000Z',
+				message: JSON.stringify({ level }),
+				instance: 'i-1'
+			});
+		}
+		appender.flush();
+
+		expect(filterLogsByLevel(logs, levels).map((log) => log.level)).toEqual(['ERROR']);
+		levels.add('INFO');
+		expect(filterLogsByLevel(logs, levels).map((log) => log.level)).toEqual(['INFO', 'ERROR']);
+		expect(logs).toHaveLength(2);
 	});
 
 	it('flushes pending logs after flush interval', () => {
