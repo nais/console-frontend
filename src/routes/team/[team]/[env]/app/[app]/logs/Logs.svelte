@@ -237,7 +237,7 @@
 		</Chips>
 		<div>
 			<div class="buttons">
-				{#if isStarted}
+				{#if isStarted || logs.length > 0}
 					<Button
 						size="medium"
 						variant="primary"
