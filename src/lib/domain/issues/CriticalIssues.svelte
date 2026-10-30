@@ -1,6 +1,6 @@
 <script lang="ts">
 	import type { TeamHealthStore } from '$houdini';
-	import { ShButton } from '#lib/shadcn/ui/index.js';
+	import { ShButton, ShSpinner } from '#lib/shadcn/ui/index.js';
 	import SurfaceCard from '#lib/ui/SurfaceCard.svelte';
 	import CriticalIssueRow from './CriticalIssueRow.svelte';
 
@@ -19,7 +19,13 @@
 	}
 </script>
 
-{#if $store.data && hasCriticalIssues}
+{#if $store.fetching && !$store.data}
+	<SurfaceCard title="Critical issues" bordered>
+		<div class="loader">
+			<ShSpinner size="lg" />
+		</div>
+	</SurfaceCard>
+{:else if $store.data && hasCriticalIssues}
 	<SurfaceCard title="Critical issues ({totalCount})" bordered>
 		{#snippet headerAside()}
 			<a class="view-all" href="/team/{teamSlug}/issues">View all</a>
@@ -43,6 +49,13 @@
 		display: flex;
 		flex-direction: column;
 		gap: 0.375rem;
+	}
+
+	.loader {
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		min-height: 160px;
 	}
 
 	.view-all {
