@@ -37,6 +37,7 @@
 		maxPendingEntries: MAX_PENDING_LOG_LINES,
 		flushIntervalMs: FLUSH_INTERVAL_MS,
 		getLogs: () => logs,
+		getSelectedLevels: () => selectedLogLevels,
 		setLogs: (nextLogs) => {
 			logs = nextLogs;
 		}
@@ -120,7 +121,7 @@
 	}
 
 	let logOrder = $state<'newest' | 'oldest'>('newest');
-	let filteredLogs = $derived(filterLogsByLevel(logs, selectedLogLevels));
+	let filteredLogs = $derived(filterLogsByLevel(logs, selectedLogLevels).slice(-MAX_LOG_LINES));
 	let displayedLogs = $derived(logOrder === 'newest' ? filteredLogs.toReversed() : filteredLogs);
 	let selectedInstances: string[] = $state.raw([]);
 

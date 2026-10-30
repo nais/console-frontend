@@ -118,6 +118,117 @@ describe('createBufferedLogAppender', () => {
 		vi.useRealTimers();
 	});
 
+	describe('selected-level retention', () => {
+		function setup(maxPendingEntries = 5000) {
+			let logs: LogLine[] = [];
+			const levels = new Set(['ERROR']);
+			const appender = createBufferedLogAppender({
+				maxEntries: 200,
+				maxPendingEntries,
+				flushIntervalMs: 100,
+				getLogs: () => logs,
+				getSelectedLevels: () => levels,
+				setLogs: (nextLogs) => {
+					logs = nextLogs;
+				}
+			});
+			let sequence = 0;
+			function enqueue(level: string, time?: number) {
+				appender.enqueue({
+					time: time ?? sequence++,
+					message: JSON.stringify({ level }),
+					instance: 'i-1'
+				});
+			}
+			return { appender, levels, enqueue, getLogs: () => logs };
+		}
+
+		it('keeps the last ERROR when 200 newer hidden INFO lines arrive', () => {
+			const { appender, enqueue, getLogs } = setup();
+			enqueue('ERROR');
+			appender.flush();
+			for (let i = 0; i < 200; i++) {
+				enqueue('INFO');
+			}
+			appender.flush();
+
+			expect(getLogs().filter((log) => log.level === 'ERROR')).toHaveLength(1);
+			expect(getLogs().filter((log) => log.level === 'INFO')).toHaveLength(200);
+		});
+
+		it('protects matching lines from hidden traffic before the pending queue flushes', () => {
+			const { appender, enqueue, getLogs } = setup(3);
+			enqueue('ERROR');
+			for (let i = 0; i < 200; i++) {
+				enqueue('INFO');
+			}
+			appender.flush();
+
+			expect(getLogs().map((log) => log.level)).toEqual(['ERROR', 'INFO', 'INFO', 'INFO']);
+			expect(getLogs().map((log) => log.time.getTime())).toEqual([0, 198, 199, 200]);
+		});
+
+		it('bounds matching and hidden history separately and preserves chronological order', () => {
+			const { appender, enqueue, getLogs } = setup();
+			for (let i = 0; i < 250; i++) {
+				enqueue('ERROR');
+				enqueue('INFO');
+			}
+			appender.flush();
+
+			expect(getLogs()).toHaveLength(400);
+			expect(getLogs().filter((log) => log.level === 'ERROR')).toHaveLength(200);
+			expect(getLogs().filter((log) => log.level === 'INFO')).toHaveLength(200);
+			expect(getLogs()[0].time.getTime()).toBe(100);
+			expect(getLogs().at(-1)?.time.getTime()).toBe(499);
+			expect(getLogs().map((log) => log.time.getTime())).toEqual(
+				getLogs()
+					.map((log) => log.time.getTime())
+					.toSorted((a, b) => a - b)
+			);
+		});
+
+		it('protects the newly selected history after the selection changes', () => {
+			const { appender, levels, enqueue, getLogs } = setup();
+			enqueue('INFO');
+			appender.flush();
+			levels.clear();
+			levels.add('INFO');
+			for (let i = 0; i < 250; i++) {
+				enqueue('ERROR');
+			}
+			appender.flush();
+
+			expect(filterLogsByLevel(getLogs(), levels)).toHaveLength(1);
+			expect(getLogs().filter((log) => log.level === 'ERROR')).toHaveLength(200);
+		});
+
+		it('bounds hidden history even when every line has a different level', () => {
+			const { appender, levels, enqueue, getLogs } = setup();
+			levels.clear();
+			for (let i = 0; i < 250; i++) {
+				enqueue(`LEVEL-${i}`);
+			}
+			appender.flush();
+
+			expect(getLogs()).toHaveLength(200);
+			expect(getLogs()[0].level).toBe('LEVEL-50');
+		});
+
+		it('keeps an older matching line even when newer hidden history is full', () => {
+			const { appender, enqueue, getLogs } = setup();
+			for (let i = 0; i < 200; i++) {
+				enqueue('INFO', i + 1);
+			}
+			appender.flush();
+			enqueue('ERROR', 0);
+			appender.flush();
+
+			expect(getLogs()).toHaveLength(201);
+			expect(getLogs()[0].level).toBe('ERROR');
+		});
+	});
+
 	it('filters buffered logs without discarding them or receiving new entries', () => {
 		let logs: LogLine[] = [];
 		const appender = createBufferedLogAppender({

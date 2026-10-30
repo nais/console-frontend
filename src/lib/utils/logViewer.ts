@@ -58,6 +58,7 @@ type BufferedLogAppenderOptions = {
 	maxPendingEntries: number;
 	flushIntervalMs: number;
 	getLogs: () => LogLine[];
+	getSelectedLevels?: () => ReadonlySet<string>;
 	setLogs: (logs: LogLine[]) => void;
 };
 
@@ -118,6 +119,22 @@ export function createBufferedLogAppender(options: BufferedLogAppenderOptions) {
 	let pendingLogs: LogLine[] = [];
 	let flushTimeout: ReturnType<typeof setTimeout> | undefined;
 
+	function appendLog(logs: LogLine[], entry: LogLine, maxEntries: number): LogLine[] {
+		const selectedLevels = options.getSelectedLevels?.();
+		if (selectedLevels === undefined) {
+			return appendSortedBoundedLog(logs, entry, maxEntries);
+		}
+
+		let matchingCount = 0;
+		let hiddenCount = 0;
+		return appendSortedBoundedLog(logs, entry, maxEntries * 2 + 1)
+			.toReversed()
+			.filter((log) =>
+				selectedLevels.has(log.level) ? ++matchingCount <= maxEntries : ++hiddenCount <= maxEntries
+			)
+			.toReversed();
+	}
+
 	function flushPendingLogs() {
 		flushTimeout = undefined;
 		if (pendingLogs.length === 0) {
@@ -126,7 +143,7 @@ export function createBufferedLogAppender(options: BufferedLogAppenderOptions) {
 
 		let nextLogs = options.getLogs();
 		for (const pendingLog of pendingLogs) {
-			nextLogs = appendSortedBoundedLog(nextLogs, pendingLog, options.maxEntries);
+			nextLogs = appendLog(nextLogs, pendingLog, options.maxEntries);
 		}
 
 		pendingLogs = [];
@@ -144,7 +161,7 @@ export function createBufferedLogAppender(options: BufferedLogAppenderOptions) {
 	return {
 		enqueue(log: WorkloadLog) {
 			const line = createLogLine(log, nextId++);
-			pendingLogs = appendSortedBoundedLog(pendingLogs, line, options.maxPendingEntries);
+			pendingLogs = appendLog(pendingLogs, line, options.maxPendingEntries);
 			scheduleFlush();
 		},
 		flush() {
