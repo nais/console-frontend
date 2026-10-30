@@ -46,10 +46,16 @@
 	</SectionBoundary>
 </div>
 
-<div class="overview-bento">
-	<div class="bento-main">
-		<CriticalIssues {teamSlug} store={TeamHealth} />
-	</div>
+<div
+	class="overview-bento"
+	class:no-critical-issues={!$TeamHealth.fetching &&
+		($TeamHealth.data?.team?.issues?.pageInfo?.totalCount ?? 0) === 0}
+>
+	{#if $TeamHealth.fetching || ($TeamHealth.data?.team?.issues?.pageInfo?.totalCount ?? 0) > 0}
+		<div class="bento-main">
+			<CriticalIssues {teamSlug} store={TeamHealth} />
+		</div>
+	{/if}
 	<div class="bento-side">
 		<TeamInventory {teamSlug} />
 		<SectionBoundary message="Latest activity failed to render.">
@@ -78,6 +84,17 @@
 	.overview-bento {
 		display: grid;
 		grid-template-columns: minmax(0, 1.2fr) minmax(0, 0.8fr);
+		gap: 1.25rem;
+		align-items: start;
+	}
+
+	.overview-bento.no-critical-issues {
+		grid-template-columns: 1fr;
+	}
+
+	.overview-bento.no-critical-issues .bento-side {
+		display: grid;
+		grid-template-columns: repeat(2, minmax(0, 1fr));
 		gap: 1.25rem;
 		align-items: start;
 	}
