@@ -37,9 +37,10 @@
 	<Heading as="h3" size="xsmall" class="aksel-sr-only" {id}>Log lines</Heading>
 	<div class="lines">
 		{#each displayed as entry, index (oldestFirst ? entries.length - index - 1 : index)}
+			{let open = $state(false)}
 			{const level = $derived(getLogLevel(entry.message))}
 			{const date = $derived(logDate(entry.timestamp))}
-			<details class="line" data-level={level}>
+			<details class="line" data-level={level} bind:open>
 				<summary>
 					<time datetime={date.toISOString()}>
 						{date.toLocaleString('en-GB', {
@@ -55,90 +56,92 @@
 					<span class="level">{level}</span>
 					<span class="message">{parseLogMessage(entry.message)}</span>
 				</summary>
-				<div class="expanded">
-					<Box
-						background="default"
-						borderColor="neutral-subtleA"
-						borderWidth="1"
-						borderRadius="12"
-						padding="space-16"
-					>
-						<div class="entry-details">
-							<section class="message-section" aria-labelledby={`${id}-${index}-message`}>
-								<div class="message-header">
-									<Heading as="h4" size="xsmall" id={`${id}-${index}-message`}>Message</Heading>
-									<CopyButton copyText={entry.message} size="xsmall" text="Copy log line" />
-								</div>
-								<pre>{formatMessage(entry.message)}</pre>
-							</section>
-							<section class="labels-section" aria-labelledby={`${id}-${index}-labels`}>
-								<div class="labels-header">
-									<Heading as="h4" size="xsmall" id={`${id}-${index}-labels`}>Labels</Heading>
-									<BodyShort size="small">
-										{#if onfilter}
-											Include or exclude a label value. Workload scope labels are fixed.
-										{:else}
-											Use filters to filter by label values.
-										{/if}
-									</BodyShort>
-								</div>
-								<dl class="settings-list">
-									{#each Object.entries(entry.labels) as [key, value] (key)}
-										<dt>{key}</dt>
-										<dd>
-											<span class="label-value">{value}</span>
-											{#if onfilter && isFilterableLokiLabel(key)}
-												<div class="label-actions">
-													<Tooltip
-														content="Include this value"
-														open={focusedAction === `include:${index}:${key}`}
-													>
-														<Button
-															type="button"
-															variant="tertiary-neutral"
-															size="xsmall"
-															icon={PlusIcon}
-															aria-label={`Include ${key} = ${value}`}
-															onfocus={() => (focusedAction = `include:${index}:${key}`)}
-															onblur={() => (focusedAction = undefined)}
-															onkeydown={dismissTooltip}
-															onclick={() => {
-																focusedAction = undefined;
-																onfilter?.({ name: key, operator: '=', value });
-															}}
-														/>
-													</Tooltip>
-													<Tooltip
-														content="Exclude this value"
-														open={focusedAction === `exclude:${index}:${key}`}
-													>
-														<Button
-															type="button"
-															variant="tertiary-neutral"
-															size="xsmall"
-															icon={MinusIcon}
-															aria-label={`Exclude ${key} = ${value}`}
-															onfocus={() => (focusedAction = `exclude:${index}:${key}`)}
-															onblur={() => (focusedAction = undefined)}
-															onkeydown={dismissTooltip}
-															onclick={() => {
-																focusedAction = undefined;
-																onfilter?.({ name: key, operator: '!=', value });
-															}}
-														/>
-													</Tooltip>
-												</div>
+				{#if open}
+					<div class="expanded">
+						<Box
+							background="default"
+							borderColor="neutral-subtleA"
+							borderWidth="1"
+							borderRadius="12"
+							padding="space-16"
+						>
+							<div class="entry-details">
+								<section class="message-section" aria-labelledby={`${id}-${index}-message`}>
+									<div class="message-header">
+										<Heading as="h4" size="xsmall" id={`${id}-${index}-message`}>Message</Heading>
+										<CopyButton copyText={entry.message} size="xsmall" text="Copy log line" />
+									</div>
+									<pre>{formatMessage(entry.message)}</pre>
+								</section>
+								<section class="labels-section" aria-labelledby={`${id}-${index}-labels`}>
+									<div class="labels-header">
+										<Heading as="h4" size="xsmall" id={`${id}-${index}-labels`}>Labels</Heading>
+										<BodyShort size="small">
+											{#if onfilter}
+												Include or exclude a label value. Workload scope labels are fixed.
+											{:else}
+												Use filters to filter by label values.
 											{/if}
-										</dd>
-									{/each}
-								</dl>
-							</section>
-							<div class="timestamp">
-								<BodyShort size="small">Timestamp (ns): <code>{entry.timestamp}</code></BodyShort>
+										</BodyShort>
+									</div>
+									<dl class="settings-list">
+										{#each Object.entries(entry.labels) as [key, value] (key)}
+											<dt>{key}</dt>
+											<dd>
+												<span class="label-value">{value}</span>
+												{#if onfilter && isFilterableLokiLabel(key)}
+													<div class="label-actions">
+														<Tooltip
+															content="Include this value"
+															open={focusedAction === `include:${index}:${key}`}
+														>
+															<Button
+																type="button"
+																variant="tertiary-neutral"
+																size="xsmall"
+																icon={PlusIcon}
+																aria-label={`Include ${key} = ${value}`}
+																onfocus={() => (focusedAction = `include:${index}:${key}`)}
+																onblur={() => (focusedAction = undefined)}
+																onkeydown={dismissTooltip}
+																onclick={() => {
+																	focusedAction = undefined;
+																	onfilter?.({ name: key, operator: '=', value });
+																}}
+															/>
+														</Tooltip>
+														<Tooltip
+															content="Exclude this value"
+															open={focusedAction === `exclude:${index}:${key}`}
+														>
+															<Button
+																type="button"
+																variant="tertiary-neutral"
+																size="xsmall"
+																icon={MinusIcon}
+																aria-label={`Exclude ${key} = ${value}`}
+																onfocus={() => (focusedAction = `exclude:${index}:${key}`)}
+																onblur={() => (focusedAction = undefined)}
+																onkeydown={dismissTooltip}
+																onclick={() => {
+																	focusedAction = undefined;
+																	onfilter?.({ name: key, operator: '!=', value });
+																}}
+															/>
+														</Tooltip>
+													</div>
+												{/if}
+											</dd>
+										{/each}
+									</dl>
+								</section>
+								<div class="timestamp">
+									<BodyShort size="small">Timestamp (ns): <code>{entry.timestamp}</code></BodyShort>
+								</div>
 							</div>
-						</div>
-					</Box>
-				</div>
+						</Box>
+					</div>
+				{/if}
 			</details>
 		{/each}
 	</div>

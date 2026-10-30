@@ -96,20 +96,19 @@ export function buildLokiLogQuery({
 				podNamePrefix === undefined
 					? exactMatch(instances ?? [])
 					: JSON.stringify(
-							`^${escapeRegex(podNamePrefix)}${exactPostgresBranch ? '[a-f0-9]{8}-[0-9]+' : '.+'}$`
+							`^${escapeRegex(podNamePrefix)}${exactPostgresBranch ? '[a-f0-9]{8}-[0-9]+' : '.*'}$`
 						)
 			}`
 		);
-	}
-	for (const filter of additionalFilters) {
-		validateLabelFilter(filter);
-		labelFilters.push(`${filter.name}${filter.operator}${JSON.stringify(filter.value)}`);
 	}
 	let query = `{${selectors.join(',')}} | ${labelFilters.join(' | ')}`;
 
 	if (search?.trim()) {
 		query += ` |~${JSON.stringify(`(?i)${escapeRegex(search.trim())}`)}`;
 	}
+
+	const parseJSON = !!logLevels?.length || additionalFilters.length > 0;
+	if (parseJSON) query += ' | json';
 
 	if (logLevels && logLevels.length > 0) {
 		const normalizedLevels = logLevels.map((level) => level.toUpperCase());
@@ -122,8 +121,14 @@ export function buildLokiLogQuery({
 		if (normalizedLevels.includes('INFO')) {
 			levels.push('');
 		}
-		query += ` | json | level=~${JSON.stringify(`(?i)^(?:${levels.join('|')})$`)} | drop __error__, __error_details__`;
+		query += ` | level=~${JSON.stringify(`(?i)^(?:${levels.join('|')})$`)}`;
 	}
+
+	for (const filter of additionalFilters) {
+		validateLabelFilter(filter);
+		query += ` | ${filter.name}${filter.operator}${JSON.stringify(filter.value)}`;
+	}
+	if (parseJSON) query += ' | drop __error__, __error_details__';
 
 	return query;
 }

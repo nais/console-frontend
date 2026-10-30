@@ -664,8 +664,13 @@
 				<Select
 					label="Auto-refresh"
 					size="small"
-					bind:value={refreshSeconds}
-					onchange={configureRefresh}
+					bind:value={
+						() => refreshSeconds,
+						(value) => {
+							refreshSeconds = value;
+							configureRefresh();
+						}
+					}
 				>
 					<option value="0">Off</option>
 					<option value="30">Every 30 seconds</option>

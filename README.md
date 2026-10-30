@@ -81,7 +81,10 @@ viewer is unchanged.
   **Use filters** restores automatic filter-based queries.
 - Expanded entries show the full message, copy action and labels. Include/exclude actions
   add removable label filters; they are unavailable in advanced mode. Job-run links
-  automatically use pod-name prefixes, while manually selected instances match exactly.
+  automatically use pod-name prefixes (including complete pod names), while manually
+  selected instances match exactly. Expanded details render only while a row is open.
+- Label filters run after JSON parsing, which remains enabled while any label filters
+  are active, even with no log-level filter selected.
 - The collapsible timeline counts the same matching lines, including non-JSON logs.
   Selecting a bar zooms into that interval; **Load older logs** stays within the selected
   range. Pagination preserves nanosecond timestamp boundaries and fails explicitly if a

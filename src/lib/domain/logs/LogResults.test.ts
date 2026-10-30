@@ -23,57 +23,53 @@ const props = {
 };
 
 describe('LogResults label filters', () => {
-	it('offers include and exclude actions for filterable labels only', async () => {
+	it('keeps collapsed rows free of expanded content and actions', async () => {
 		const { body } = await render(LogResults, { props: { ...props, onfilter: () => {} } });
-		expect(body).toContain('aria-label="Include k8s_pod_name = app-123"');
-		expect(body).toContain('aria-label="Exclude detected_level = info"');
-		expect(body.match(/aria-label="Include [^"]* = /g)).toHaveLength(2);
-		expect(body.match(/aria-label="Exclude [^"]* = /g)).toHaveLength(2);
-		expect(body.match(/aksel-button--icon-only/g)).toHaveLength(4);
-		expect(body.match(/aksel-button--xsmall/g)).toHaveLength(5);
-		expect(body).not.toContain('data-variant="secondary"');
-		expect(body).not.toContain('>Include</');
-		expect(body).not.toContain('>Exclude</');
-		for (const name of [
-			'service_namespace',
-			'service_name',
-			'k8s_cluster_name',
-			'k8s_container_name',
-			'bad-label'
-		]) {
-			expect(body).toContain(name);
-			expect(body).not.toContain(`aria-label="Include ${name} =`);
-			expect(body).not.toContain(`aria-label="Exclude ${name} =`);
-		}
+		expect(body).toMatch(/<summary\b/);
+		expect(body).toContain('Test log');
+		expect(body).not.toContain('<pre');
+		expect(body).not.toContain('<dl');
+		expect(body).not.toContain('<button');
+		expect(body).not.toContain('Copy log line');
+		expect(body).not.toContain('Timestamp (ns):');
 	});
 
-	describe('LogResults details', () => {
-		it('labels each message and label section with a unique heading', async () => {
-			const { body } = await render(LogResults, {
-				props: {
-					...props,
-					entries: [...props.entries, { ...props.entries[0], timestamp: '1793360657408654617' }]
-				}
-			});
-			const headings = [...body.matchAll(/<section\b[^>]*aria-labelledby="([^"]+)"/g)].map(
-				(match) => match[1]
-			);
-			expect(headings).toHaveLength(5);
-			expect(new Set(headings).size).toBe(headings.length);
-			for (const id of headings) expect(body).toContain(`id="${id}"`);
-			expect(body.match(/<h4\b/g)).toHaveLength(4);
-			expect(body.match(/Copy log line/g)).toHaveLength(2);
-			expect(body).toContain('Timestamp (ns):');
-			expect(body).toContain('1793360657408654616');
-			expect(body).toContain('1793360657408654617');
+	it('renders all 500 summaries without mounting hidden detail controls', async () => {
+		const { body } = await render(LogResults, {
+			props: {
+				...props,
+				entries: Array.from({ length: 500 }, (_, index) => ({
+					...props.entries[0],
+					timestamp: String(BigInt(props.entries[0].timestamp) + BigInt(index))
+				})),
+				onfilter: () => {}
+			}
 		});
+		expect(body.match(/<summary\b/g)).toHaveLength(500);
+		expect(body).not.toContain('<button');
+		expect(body).not.toContain('<pre');
+		expect(body).not.toContain('<h4');
 	});
 
-	it('keeps labels visible without modifying hand-written advanced queries', async () => {
+	it('also defers details in advanced mode', async () => {
 		const { body } = await render(LogResults, { props });
-		expect(body).toContain('detected_level');
-		expect(body).toContain('Use filters to filter by label values.');
+		expect(body).toContain('Test log');
+		expect(body).not.toContain('detected_level');
 		expect(body).not.toContain('aria-label="Include ');
 		expect(body).not.toContain('aria-label="Exclude ');
+	});
+
+	it.each([false, true])('preserves summary ordering with oldestFirst=%s', async (oldestFirst) => {
+		const { body } = await render(LogResults, {
+			props: {
+				...props,
+				oldestFirst,
+				entries: [
+					{ ...props.entries[0], message: 'Newest log' },
+					{ ...props.entries[0], message: 'Oldest log', timestamp: '1793360657408654615' }
+				]
+			}
+		});
+		expect(body.indexOf('Oldest log') < body.indexOf('Newest log')).toBe(oldestFirst);
 	});
 });

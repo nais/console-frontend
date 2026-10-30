@@ -59,7 +59,7 @@ describe('buildLokiLogQuery', () => {
 		expect(query).not.toContain('| __error__=');
 	});
 
-	it('filters stream labels and structured metadata before parsing JSON fields', () => {
+	it('filters stream labels and structured metadata alongside parsed JSON fields', () => {
 		const query = buildLokiLogQuery({
 			team: 'my-team',
 			workload: 'my-app',
@@ -71,11 +71,37 @@ describe('buildLokiLogQuery', () => {
 			],
 			logLevels: ['ERROR']
 		});
-		expect(query).toContain('| k8s_node_name="node-1" | detected_level!="info" | json | level=~');
+		expect(query).toContain(
+			'| json | level=~"(?i)^(?:ERROR|50)$" | k8s_node_name="node-1" | detected_level!="info" | drop __error__, __error_details__'
+		);
 		expect(query).toContain(
 			'{service_namespace="my-team",service_name="my-app",k8s_cluster_name="dev"}'
 		);
 	});
+
+	it.each(['=', '!='] as const)(
+		'applies JSON-only field filters with %s after parsing, even without a level filter',
+		(operator) => {
+			for (const logLevels of [['INFO'], []]) {
+				const query = buildLokiLogQuery({
+					team: 'my-team',
+					workload: 'my-app',
+					container: 'my-app',
+					logLevels,
+					labelFilters: [
+						{ name: 'request_id', operator, value: 'request-123' },
+						{ name: 'level', operator, value: 'info' }
+					]
+				});
+				expect(query.match(/\| json/g)).toHaveLength(1);
+				const filter = ` | request_id${operator}"request-123" | level${operator}"info"`;
+				expect(query.indexOf(filter)).toBeGreaterThan(query.indexOf(' | json'));
+				expect(query.endsWith(`${filter} | drop __error__, __error_details__`)).toBe(true);
+				expect(query).not.toContain('| __error__=');
+				if (logLevels.length === 0) expect(query).not.toContain('level=~');
+			}
+		}
+	);
 
 	it('quotes label values literally rather than treating them as LogQL or regex', () => {
 		const value = 'a".*\\\n} | detected_level!="info"';
@@ -85,7 +111,9 @@ describe('buildLokiLogQuery', () => {
 			container: 'my-app',
 			labelFilters: [{ name: 'request_id', operator: '=', value }]
 		});
-		expect(query.endsWith(` | request_id=${JSON.stringify(value)}`)).toBe(true);
+		expect(
+			query.endsWith(` | request_id=${JSON.stringify(value)} | drop __error__, __error_details__`)
+		).toBe(true);
 	});
 
 	it.each([
@@ -169,9 +197,25 @@ describe('buildLokiLogQuery', () => {
 				podNamePrefix: 'pg-my.postgres-'
 			})
 		).toBe(
-			'{service_namespace="my-team",service_name="my-postgres"} | k8s_container_name=~"^(?:postgres)$" | k8s_pod_name=~"^pg-my\\\\.postgres-.+$"'
+			'{service_namespace="my-team",service_name="my-postgres"} | k8s_container_name=~"^(?:postgres)$" | k8s_pod_name=~"^pg-my\\\\.postgres-.*$"'
 		);
 	});
+
+	it.each(['job-run-123', 'job-run-123-abcde'])(
+		'matches both the instance value %s and pods with that prefix',
+		(instance) => {
+			const query = buildLokiLogQuery({
+				team: 'my-team',
+				workload: 'my-job',
+				container: 'my-job',
+				podNamePrefix: instance
+			});
+			const podPattern = new RegExp(JSON.parse(query.split('k8s_pod_name=~')[1]));
+			expect(podPattern.test(instance)).toBe(true);
+			expect(podPattern.test(`${instance}-pod`)).toBe(true);
+			expect(podPattern.test(`other-${instance}`)).toBe(false);
+		}
+	);
 
 	it('adds a case-insensitive literal text search', () => {
 		expect(
