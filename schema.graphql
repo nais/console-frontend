@@ -4185,6 +4185,9 @@ enum IssueType {
   MISSING_SBOM
   NO_RUNNING_INSTANCES
   OPENSEARCH
+
+  """Raised when a Postgres branch has reported a failure."""
+  POSTGRES_BRANCH
   SQLINSTANCE_STATE
   SQLINSTANCE_VERSION
   UNLEASH_RELEASE_CHANNEL
@@ -6492,6 +6495,27 @@ type PostgresBranch implements Node & Persistence {
   earliestRestoreTime: Time
   id: ID!
 
+  """Issues affecting this branch."""
+  issues(
+    """Get items after this cursor."""
+    after: Cursor
+
+    """Get items before this cursor."""
+    before: Cursor
+
+    """Filtering options for the issues."""
+    filter: ResourceIssueFilter
+
+    """Get the first n items in the connection."""
+    first: Int
+
+    """Get the last n items in the connection."""
+    last: Int
+
+    """Ordering options for the issues."""
+    orderBy: IssueOrder
+  ): IssueConnection!
+
   """User-defined labels on this branch."""
   labels: [ResourceLabel!]!
 
@@ -6632,6 +6656,24 @@ input PostgresBranchFilter {
 
   """Filter by branch state."""
   states: [PostgresBranchState!]
+}
+
+"""A failure reported by a Postgres branch, including inactive branches."""
+type PostgresBranchIssue implements Issue & Node {
+  """The branch that reported the failure."""
+  branch: PostgresBranch!
+
+  """Unique identifier for this issue."""
+  id: ID!
+
+  """Description of the reported failure."""
+  message: String!
+
+  """Severity of the reported failure."""
+  severity: Severity!
+
+  """Team environment containing the affected branch."""
+  teamEnvironment: TeamEnvironment!
 }
 
 input PostgresBranchOrder {
@@ -7877,6 +7919,9 @@ enum ResourceType {
   APPLICATION
   JOB
   OPENSEARCH
+
+  """A branch of a Postgres database."""
+  POSTGRES_BRANCH
   SQLINSTANCE
   UNLEASH
   VALKEY
