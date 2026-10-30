@@ -1,7 +1,7 @@
 <script lang="ts">
 	import IconLabel from '#lib/ui/IconLabel.svelte';
 	import ListItem from '#lib/ui/ListItem.svelte';
-	import { PersonGroupIcon } from '@nais/ds-svelte-community/icons';
+	import { PersonGroupIcon } from '#lib/icons/index.js';
 
 	const {
 		team

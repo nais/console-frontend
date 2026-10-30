@@ -2,7 +2,7 @@
 	import { page } from '$app/state';
 	import { replacer } from '#lib/replacer.js';
 	import { themeSwitch } from '#lib/stores/theme.svelte.js';
-	import { Button, Checkbox, Heading, Modal, Select, Theme } from '@nais/ds-svelte-community';
+	import { Button, Checkbox, Heading, Modal, Select, Theme } from '#lib/shadcn/ui/index.js';
 	import type { FeedbackType } from './types';
 
 	interface Props {
@@ -111,15 +111,13 @@
 					{/each}
 				</Select>
 				{#if errorType}
-					<p class="aksel-error-message aksel-label aksel-label--small">Feedback type required</p>
+					<p class="field-error">Feedback type required</p>
 				{/if}
 
-				<label class="aksel-form-field__label aksel-label aksel-label--small" for={detailsId}>
-					Details
-				</label>
+				<label class="field-label" for={detailsId}> Details </label>
 				<div class="details">
 					<textarea
-						class="aksel-textarea__input aksel-body-short aksel-body-short--small textarea"
+						class="textarea"
 						id={detailsId}
 						bind:value={details}
 						rows="5"
@@ -134,19 +132,17 @@
 					>
 				</div>
 				<div
-					class="aksel-form-field__error"
+					class="field-error-wrap"
 					id={errorId}
 					aria-relevant="additions removals"
 					aria-live="polite"
 				>
 					{#if errorDetails}
-						<p class="aksel-error-message aksel-label aksel-label--small">
-							Feedback details required
-						</p>
+						<p class="field-error">Feedback details required</p>
 					{/if}
 				</div>
 				{#if errorMessage !== ''}
-					<p class="aksel-error-message aksel-label aksel-label--small">{errorMessage}</p>
+					<p class="field-error">{errorMessage}</p>
 				{/if}
 				<Checkbox bind:checked={anonymous}>Anonymous feedback</Checkbox>
 			</div>
@@ -179,5 +175,33 @@
 		color: var(--ax-text-neutral-subtle);
 		margin: 0;
 		padding-top: 0.2rem;
+	}
+	.field-label {
+		font-size: 0.8125rem;
+		font-weight: 500;
+		color: var(--foreground);
+	}
+	.textarea {
+		width: 100%;
+		padding: 0.5rem 0.75rem;
+		border-radius: calc(var(--radius) - 2px);
+		border: 1px solid var(--input);
+		background-color: var(--background);
+		color: var(--foreground);
+		font: inherit;
+		font-size: 0.875rem;
+		line-height: 1.45;
+		box-sizing: border-box;
+	}
+	.textarea:focus-visible {
+		outline: 2px solid var(--ring);
+		outline-offset: 1px;
+		border-color: var(--ring);
+	}
+	.field-error {
+		margin: 0;
+		font-size: 0.8125rem;
+		font-weight: 500;
+		color: var(--destructive);
 	}
 </style>

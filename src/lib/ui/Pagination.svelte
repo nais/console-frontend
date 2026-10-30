@@ -1,6 +1,7 @@
 <script lang="ts">
-	import { BodyShort, Button, Skeleton } from '@nais/ds-svelte-community';
-	import { ChevronLeftIcon, ChevronRightIcon } from '@nais/ds-svelte-community/icons';
+	import { ShButton, ShSkeleton } from '#lib/shadcn/ui/index.js';
+
+	import { ChevronLeftIcon, ChevronRightIcon } from '#lib/icons/index.js';
 
 	interface Props {
 		page:
@@ -25,57 +26,50 @@
 {#if fetching}
 	<div class="pagination" aria-busy="true" aria-label="Loading page">
 		<div class="fetching">
-			<Skeleton variant="text" style="width: 12ch; height: 1.5rem;" />
+			<ShSkeleton width="12ch" height="1.25rem" />
 		</div>
 
 		<span class="pagination-buttons">
-			<Button
-				size="small"
-				variant="tertiary-neutral"
-				icon={ChevronLeftIcon}
-				disabled={true}
-				aria-label="Previous page"
-			/>
-			<Button
-				size="small"
-				variant="tertiary-neutral"
-				icon={ChevronRightIcon}
-				disabled={true}
-				aria-label="Next page"
-			/>
+			<ShButton size="icon-sm" variant="outline" disabled={true} ariaLabel="Previous page">
+				<ChevronLeftIcon aria-hidden="true" />
+			</ShButton>
+			<ShButton size="icon-sm" variant="outline" disabled={true} ariaLabel="Next page">
+				<ChevronRightIcon aria-hidden="true" />
+			</ShButton>
 		</span>
 	</div>
 {:else if page && (page.hasPreviousPage || page.hasNextPage)}
 	<div class="pagination">
-		<BodyShort size="small">
+		<span>
 			<span class="active-range">
 				{#if page.pageStart !== page.pageEnd}
-					{page.pageStart}-{page.pageEnd}
+					{page.pageStart}–{page.pageEnd}
 				{:else}
 					{page.pageStart}
 				{/if}
 			</span>
-
 			of {page.totalCount}
-		</BodyShort>
+		</span>
 
 		<span class="pagination-buttons">
-			<Button
-				size="small"
-				variant="tertiary-neutral"
-				icon={ChevronLeftIcon}
+			<ShButton
+				size="icon-sm"
+				variant="outline"
 				disabled={!page.hasPreviousPage}
 				onclick={() => loaders.loadPreviousPage()}
-				aria-label="Previous page"
-			/>
-			<Button
-				size="small"
-				variant="tertiary-neutral"
-				icon={ChevronRightIcon}
+				ariaLabel="Previous page"
+			>
+				<ChevronLeftIcon aria-hidden="true" />
+			</ShButton>
+			<ShButton
+				size="icon-sm"
+				variant="outline"
 				disabled={!page.hasNextPage}
 				onclick={() => loaders.loadNextPage()}
-				aria-label="Next page"
-			/>
+				ariaLabel="Next page"
+			>
+				<ChevronRightIcon aria-hidden="true" />
+			</ShButton>
 		</span>
 	</div>
 {/if}
@@ -85,24 +79,27 @@
 		display: flex;
 		justify-content: space-between;
 		align-items: center;
-		color: var(--ax-text-neutral-subtle, --a-text-subtle);
-		font-size: 1rem;
+		color: var(--muted-foreground);
+		font-size: 0.875rem;
 	}
 	.pagination {
 		display: flex;
 		justify-content: flex-end;
 		align-items: center;
-		gap: var(--ax-space-16);
-		color: var(--ax-text-neutral-subtle);
-		padding: var(--ax-space-16);
+		gap: 0.875rem;
+		color: var(--muted-foreground);
+		padding: 0.75rem 1rem;
+		font-size: 0.8125rem;
+		font-variant-numeric: tabular-nums;
 
 		.active-range {
-			font-weight: bold;
+			font-weight: 600;
+			color: var(--foreground);
 		}
 
 		.pagination-buttons {
 			display: flex;
-			gap: var(--ax-space-4);
+			gap: 0.25rem;
 		}
 	}
 </style>

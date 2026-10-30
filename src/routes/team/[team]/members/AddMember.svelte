@@ -9,8 +9,8 @@
 		Modal,
 		Select,
 		TextField
-	} from '@nais/ds-svelte-community';
-	import { PlusIcon } from '@nais/ds-svelte-community/icons';
+	} from '#lib/shadcn/ui/index.js';
+	import { PlusIcon } from '#lib/icons/index.js';
 
 	interface Props {
 		open: boolean;

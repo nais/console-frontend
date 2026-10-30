@@ -8,8 +8,8 @@
 	import Collection from '#lib/ui/Collection.svelte';
 	import ListItem from '#lib/ui/ListItem.svelte';
 	import Time from '#lib/ui/Time.svelte';
-	import { Button, Detail, Heading } from '@nais/ds-svelte-community';
-	import { LinkIcon, TokenIcon, TrashIcon } from '@nais/ds-svelte-community/icons';
+	import { Button, Detail, Heading } from '#lib/shadcn/ui/index.js';
+	import { LinkIcon, TokenIcon, TrashIcon } from '#lib/icons/index.js';
 
 	interface Props {
 		serviceAccount: ServiceAccountAuthenticationFragment;

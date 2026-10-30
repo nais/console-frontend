@@ -1,6 +1,6 @@
 <script>
 	import { page } from '$app/state';
-	import { BodyShort, Heading } from '@nais/ds-svelte-community';
+	import { BodyShort, Heading } from '#lib/shadcn/ui/index.js';
 	import { docURL } from '#lib/doc.js';
 	import ExternalLink from '#lib/ui/ExternalLink.svelte';
 </script>

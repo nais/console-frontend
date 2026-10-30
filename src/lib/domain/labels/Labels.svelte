@@ -1,7 +1,7 @@
 <script lang="ts">
 	import SurfaceCard from '#lib/ui/SurfaceCard.svelte';
-	import { Button } from '@nais/ds-svelte-community';
-	import { NotePencilIcon } from '@nais/ds-svelte-community/icons';
+	import { Button } from '#lib/shadcn/ui/index.js';
+	import { NotePencilIcon } from '#lib/icons/index.js';
 
 	interface Label {
 		key: string;

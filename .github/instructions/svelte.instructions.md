@@ -18,5 +18,5 @@ This project uses Svelte 5 with `forceRunesMode: true`. All components must use 
 - `$effect()` as an escape hatch for other browser-side effects (timers, subscriptions, external I/O)
 - Do not use `$effect()` to trigger GraphQL query fetches or to sync one piece of state with another. If you believe an effect is the only viable solution, add a comment explaining why no derived value or load function applies.
 
-Components should use `@nais/ds-svelte-community` before building custom UI elements.
+Components should use `#lib/shadcn/ui/index.js` and `#lib/icons/index.js` before building custom UI elements.
 Use `--ax-*` CSS tokens for spacing, colors, and typography — never hardcode raw values.

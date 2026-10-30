@@ -2,7 +2,7 @@
 	import { resolve } from '$app/paths';
 	import { page } from '$app/state';
 	import CreateTokenForm from '#lib/domain/service-accounts/CreateTokenForm.svelte';
-	import { Alert } from '@nais/ds-svelte-community';
+	import { Alert } from '#lib/shadcn/ui/index.js';
 	import type { PageProps } from './$types';
 
 	let { data }: PageProps = $props();

@@ -13,8 +13,8 @@
 	import StatusIndicator from '#lib/ui/StatusIndicator.svelte';
 	import SurfaceCard from '#lib/ui/SurfaceCard.svelte';
 	import { changeParams } from '#lib/utils/searchparams.js';
-	import { Alert, Button, Checkbox, Loader, Tag, Td, Th, Tr } from '@nais/ds-svelte-community';
-	import { FunnelIcon } from '@nais/ds-svelte-community/icons';
+	import { Alert, Button, Checkbox, Loader, Tag, Td, Th, Tr } from '#lib/shadcn/ui/index.js';
+	import { FunnelIcon } from '#lib/icons/index.js';
 	import type { PageProps } from './$types';
 
 	let { data }: PageProps = $props();

@@ -1,8 +1,8 @@
 <script lang="ts">
 	import { getLogLevel, parseLogMessage } from '#lib/utils/logViewer.js';
 	import { isFilterableLokiLabel, type LokiLabelFilter } from '#lib/utils/lokiLogQuery.js';
-	import { BodyShort, Box, Button, CopyButton, Heading, Tooltip } from '@nais/ds-svelte-community';
-	import { MinusIcon, PlusIcon } from '@nais/ds-svelte-community/icons';
+	import { BodyShort, Box, Button, CopyButton, Heading, Tooltip } from '#lib/shadcn/ui/index.js';
+	import { MinusIcon, PlusIcon } from '#lib/icons/index.js';
 	import { logDate, type LogEntry } from './loki.js';
 
 	let {

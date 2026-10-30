@@ -1,9 +1,8 @@
 <script lang="ts">
 	import { page } from '$app/state';
 	import { replacer } from '#lib/replacer.js';
+	import { NavTabs } from '#lib/shadcn/ui/index.js';
 	import PageHeader from '#lib/ui/PageHeader.svelte';
-	import Tab from '#lib/ui/Tab.svelte';
-	import Tabs from '#lib/ui/Tabs.svelte';
 	import type { LayoutProps } from './$types';
 
 	let { children }: LayoutProps = $props();
@@ -46,20 +45,25 @@
 		}
 		return false;
 	};
+
+	let activeRoute = $derived(
+		nav.find(({ routeId, withSubRoutes }) => isActive(currentRoute, routeId, withSubRoutes))
+			?.routeId ?? ''
+	);
 </script>
 
 <div class="page">
 	<PageHeader />
 	<div class="tabs-container">
-		<Tabs>
-			{#each nav as { tab, routeId, withSubRoutes } (routeId)}
-				<Tab
-					href={replacer(routeId, {})}
-					active={isActive(currentRoute, routeId, withSubRoutes)}
-					title={tab}
-				/>
-			{/each}
-		</Tabs>
+		<NavTabs
+			items={nav.map(({ tab, routeId }) => ({
+				value: routeId,
+				label: tab,
+				href: replacer(routeId, {})
+			}))}
+			activeValue={activeRoute}
+			ariaLabel="Admin navigation"
+		/>
 	</div>
 	<div class="container">
 		{@render children?.()}
@@ -73,18 +77,9 @@
 	}
 
 	.tabs-container {
+		margin: 0 auto var(--ax-space-24);
 		width: 100%;
-		overflow-x: auto;
-		overscroll-behavior-x: contain;
-		-webkit-overflow-scrolling: touch;
-	}
-
-	.tabs-container :global(.tabs) {
-		min-width: max-content;
-	}
-
-	.tabs-container :global(.tab) {
-		white-space: nowrap;
+		max-width: 1432px;
 	}
 
 	.container {

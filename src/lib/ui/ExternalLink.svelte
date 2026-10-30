@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { ExternalLinkIcon } from '@nais/ds-svelte-community/icons';
+	import { ExternalLinkIcon } from '#lib/icons/index.js';
 	import type { Snippet } from 'svelte';
 
 	const { children, href }: { children: Snippet; href: string } = $props();

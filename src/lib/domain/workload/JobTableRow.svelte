@@ -7,7 +7,7 @@
 	import Time from '#lib/ui/Time.svelte';
 	import { countIssuesBySeverity } from '#lib/utils/issueCounts.js';
 	import { JobState, type JobRunState$options } from '$houdini';
-	import { Loader, Tag, Td, Tr } from '@nais/ds-svelte-community';
+	import { Loader, Tag, Td, Tr } from '#lib/shadcn/ui/index.js';
 
 	const {
 		job
@@ -80,7 +80,7 @@
 	<Td>
 		{#if lastRun}
 			<span class="run-status table-meta">
-				<span class="aksel-sr-only">Last run {lastRun.status.state.toLowerCase()}</span>
+				<span class="sr-only">Last run {lastRun.status.state.toLowerCase()}</span>
 				{#if lastRun.status.state === 'RUNNING' || lastRun.status.state === 'PENDING'}
 					<Loader size="xsmall" variant="interaction" aria-hidden="true" />
 				{:else if lastRun.status.state === 'SUCCEEDED'}

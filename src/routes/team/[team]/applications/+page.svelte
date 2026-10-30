@@ -15,8 +15,8 @@
 		type ApplicationOrderField$options,
 		type OrderDirection$options
 	} from '$houdini';
-	import { BodyLong, Th, type TableSortState } from '@nais/ds-svelte-community';
-	import { FunnelIcon, PackageIcon } from '@nais/ds-svelte-community/icons';
+	import { BodyLong, Th, type TableSortState } from '#lib/shadcn/ui/index.js';
+	import { FunnelIcon, PackageIcon } from '#lib/icons/index.js';
 	import type { PageProps } from './$types';
 
 	let { data }: PageProps = $props();
@@ -145,6 +145,21 @@
 			headerBorder={false}
 		>
 			{#snippet actions()}
+				{#if hasActiveFilters}
+					<button
+						type="button"
+						class="clear-filters-btn"
+						onclick={() => {
+							filter = '';
+							changeParams(
+								{ filter: '', environments: '', states: '', labels: '', after: '', before: '' },
+								{ noScroll: true }
+							);
+						}}
+					>
+						Clear filters
+					</button>
+				{/if}
 				<button
 					type="button"
 					class="sidebar-toggle"
@@ -221,3 +236,26 @@
 		</SurfaceCard>
 	</CollapsibleSidebar>
 </div>
+
+<style>
+	.clear-filters-btn {
+		display: inline-flex;
+		align-items: center;
+		padding: 0.25rem 0.625rem;
+		border-radius: var(--radius-md);
+		border: 1px solid var(--border);
+		background-color: var(--secondary);
+		color: var(--muted-foreground);
+		font-size: 0.75rem;
+		font-weight: 500;
+		cursor: pointer;
+		transition:
+			color 120ms ease,
+			border-color 120ms ease;
+	}
+
+	.clear-filters-btn:hover {
+		color: var(--foreground);
+		border-color: var(--border-strong);
+	}
+</style>

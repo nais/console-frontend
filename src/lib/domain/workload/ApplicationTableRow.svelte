@@ -1,10 +1,9 @@
 <script lang="ts">
 	import IssuePills from '#lib/domain/issues/IssuePills.svelte';
-	import { envTagVariant } from '#lib/envTagVariant.js';
+	import { Badge, Td, Tr } from '#lib/shadcn/ui/index.js';
 	import StatusIndicator from '#lib/ui/StatusIndicator.svelte';
 	import Time from '#lib/ui/Time.svelte';
 	import { countIssuesBySeverity } from '#lib/utils/issueCounts.js';
-	import { Tag, Td, Tr } from '@nais/ds-svelte-community';
 
 	const {
 		app
@@ -36,6 +35,9 @@
 	const runningInstances = $derived(
 		app.instances.edges.filter((s) => s.node.status.state === 'RUNNING').length
 	);
+
+	const totalInstances = $derived(app.instances.pageInfo.totalCount);
+	const isProd = $derived(app.teamEnvironment.environment.name.startsWith('prod'));
 </script>
 
 <Tr>
@@ -59,9 +61,9 @@
 		<a class="app-name" href={appHref}>{app.name}</a>
 	</Td>
 	<Td>
-		<Tag size="xsmall" variant={envTagVariant(app.teamEnvironment.environment.name)}
-			>{app.teamEnvironment.environment.name}</Tag
-		>
+		<Badge variant={isProd ? 'env-prod' : 'env-dev'} size="sm" mono>
+			{app.teamEnvironment.environment.name}
+		</Badge>
 	</Td>
 	<Td>
 		{#if app.issues?.pageInfo.totalCount > 0}
@@ -69,6 +71,8 @@
 			{const warningCount = $derived(countIssuesBySeverity(app.issues.edges, 'WARNING'))}
 			{const todoCount = $derived(countIssuesBySeverity(app.issues.edges, 'TODO'))}
 			<IssuePills critical={criticalCount} warning={warningCount} todo={todoCount} />
+		{:else}
+			<span class="healthy-text">Healthy</span>
 		{/if}
 	</Td>
 	<Td>
@@ -77,16 +81,26 @@
 			<span class="table-meta">
 				<Time time={timestamp} distance={true} />
 			</span>
+		{:else}
+			<span class="table-meta">—</span>
 		{/if}
 	</Td>
 	<Td>
-		<span class="table-meta">
-			{#if app.instances.pageInfo.totalCount === 0}
-				None
+		<div class="instances-cell">
+			{#if totalInstances === 0}
+				<span class="table-meta">0 instances</span>
 			{:else}
-				{runningInstances} / {app.instances.pageInfo.totalCount} running
+				<span class="instances-text">{runningInstances} / {totalInstances} running</span>
+				<div class="instances-bar" aria-hidden="true">
+					<div
+						class="instances-fill"
+						class:all-running={runningInstances === totalInstances}
+						class:none-running={runningInstances === 0}
+						style="width: {Math.min(100, (runningInstances / totalInstances) * 100)}%"
+					></div>
+				</div>
 			{/if}
-		</span>
+		</div>
 	</Td>
 </Tr>
 
@@ -98,13 +112,57 @@
 	}
 
 	.app-name {
-		color: var(--ax-text-neutral);
+		color: var(--foreground);
 		text-decoration: none;
-		font-weight: var(--ax-font-weight-bold);
+		font-weight: 600;
+		font-size: 0.875rem;
 		white-space: nowrap;
+		transition: color 120ms ease;
 	}
 
 	.app-name:hover {
-		text-decoration: underline;
+		color: var(--primary);
+	}
+
+	.healthy-text {
+		font-size: 0.75rem;
+		color: var(--muted-foreground);
+	}
+
+	.instances-cell {
+		display: flex;
+		flex-direction: column;
+		gap: 0.25rem;
+		min-width: 110px;
+	}
+
+	.instances-text {
+		font-size: 0.75rem;
+		color: var(--muted-foreground);
+		font-variant-numeric: tabular-nums;
+	}
+
+	.instances-bar {
+		height: 4px;
+		width: 100%;
+		max-width: 96px;
+		background-color: var(--secondary);
+		border-radius: var(--radius-full);
+		overflow: hidden;
+	}
+
+	.instances-fill {
+		height: 100%;
+		border-radius: var(--radius-full);
+		background-color: var(--warning);
+		transition: width 200ms ease;
+	}
+
+	.instances-fill.all-running {
+		background-color: var(--success);
+	}
+
+	.instances-fill.none-running {
+		background-color: var(--destructive);
 	}
 </style>

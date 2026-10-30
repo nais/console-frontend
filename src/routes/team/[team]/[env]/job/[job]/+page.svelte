@@ -17,7 +17,7 @@
 	import SectionBoundary from '#lib/ui/SectionBoundary.svelte';
 	import SurfaceCard from '#lib/ui/SurfaceCard.svelte';
 	import Time from '#lib/ui/Time.svelte';
-	import { Alert, BodyShort, Heading, Loader } from '@nais/ds-svelte-community';
+	import { Alert, BodyShort, Heading, Loader } from '#lib/shadcn/ui/index.js';
 	import { onMount } from 'svelte';
 	import type { PageProps } from './$types';
 	import Runs from './Runs.svelte';
@@ -102,7 +102,7 @@
 	<div class="wrapper">
 		<div class="job-content">
 			<div class="main-section">
-				<Heading as="h2" class="aksel-sr-only">Overview</Heading>
+				<Heading as="h2" class="sr-only">Overview</Heading>
 				{#if job?.deletionStartedAt}
 					<Alert variant="info" size="small" fullWidth={false}>
 						This job is being deleted. Deletion started <Time

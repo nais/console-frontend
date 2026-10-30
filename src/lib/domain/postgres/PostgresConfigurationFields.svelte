@@ -7,7 +7,7 @@
 		type ResourceErrors,
 		type ResourceField
 	} from './forms.js';
-	import { Checkbox, Heading, ReadMore, TextField } from '@nais/ds-svelte-community';
+	import { Checkbox, Heading, ReadMore, TextField } from '#lib/shadcn/ui/index.js';
 
 	interface Props {
 		cpu?: string | null;

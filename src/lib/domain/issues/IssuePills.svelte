@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Tag } from '@nais/ds-svelte-community';
+	import { Badge } from '#lib/shadcn/ui/index.js';
 
 	interface Props {
 		critical?: number;
@@ -16,16 +16,16 @@
 <div class="pills" class:column={direction === 'column'}>
 	{#if hasIssues}
 		{#if critical > 0}
-			<Tag size="xsmall" variant="error-moderate">{critical} critical</Tag>
+			<Badge size="sm" variant="destructive" dot>{critical} critical</Badge>
 		{/if}
 		{#if warning > 0}
-			<Tag size="xsmall" variant="warning-moderate">{warning} warning</Tag>
+			<Badge size="sm" variant="warning" dot>{warning} warning</Badge>
 		{/if}
 		{#if todo > 0}
-			<Tag size="xsmall" variant="info-moderate">{todo} todo</Tag>
+			<Badge size="sm" variant="info" dot>{todo} todo</Badge>
 		{/if}
 	{:else}
-		<span class="no-issues">No issues</span>
+		<Badge size="sm" variant="success" dot>No issues</Badge>
 	{/if}
 </div>
 
@@ -33,16 +33,11 @@
 	.pills {
 		display: flex;
 		flex-wrap: wrap;
-		gap: var(--ax-space-4);
+		gap: 0.35rem;
 	}
 
 	.pills.column {
 		flex-direction: column;
 		align-items: flex-end;
-	}
-
-	.no-issues {
-		font-size: var(--ax-font-size-small);
-		color: var(--ax-text-success);
 	}
 </style>

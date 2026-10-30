@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { graphql, type TeamMemberRole$options } from '$houdini';
-	import { Alert, Detail, Heading, Label, Modal, Select } from '@nais/ds-svelte-community';
+	import { Alert, Detail, Heading, Label, Modal, Select } from '#lib/shadcn/ui/index.js';
 
 	interface Props {
 		open: boolean;

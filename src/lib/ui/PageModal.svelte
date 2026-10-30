@@ -34,8 +34,7 @@
 
 <script lang="ts">
 	import { goto, preloadData, pushState } from '$app/navigation';
-	import { Loader, Modal } from '@nais/ds-svelte-community';
-	import type { ModalProps } from '@nais/ds-svelte-community/components/Modal/type.js';
+	import { Loader, Modal, type ModalProps } from '#lib/shadcn/ui/index.js';
 	import type { Component, Snippet } from 'svelte';
 
 	let {

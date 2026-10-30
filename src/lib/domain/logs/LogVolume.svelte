@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Button, Heading, Tooltip } from '@nais/ds-svelte-community';
+	import { Button, Heading, Tooltip } from '#lib/shadcn/ui/index.js';
 	import type { VolumeBucket } from './loki.js';
 
 	let {

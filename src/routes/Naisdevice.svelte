@@ -13,7 +13,7 @@
 	import { goto } from '$app/navigation';
 	import { isAuthenticated } from '#lib/authentication.js';
 
-	import { CheckmarkCircleIcon, XMarkIcon } from '@nais/ds-svelte-community/icons';
+	import { CheckmarkCircleIcon, XMarkIcon } from '#lib/icons/index.js';
 	import { fade } from 'svelte/transition';
 </script>
 

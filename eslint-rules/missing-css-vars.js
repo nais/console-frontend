@@ -2,35 +2,6 @@ import fs from 'node:fs';
 import path from 'node:path';
 
 const INCLUDE_EXTENSIONS = new Set(['.svelte', '.ts', '.js', '.css', '.scss']);
-
-function resolveExtraDefDirs(projectRoot) {
-	const pnpmDir = path.join(projectRoot, 'node_modules/.pnpm');
-	const packages = ['@navikt/ds-tokens', '@navikt/ds-css'];
-	const dirs = [];
-
-	if (fs.existsSync(pnpmDir)) {
-		for (const pkg of packages) {
-			const prefix = pkg.replace('/', '+');
-			try {
-				const entries = fs.readdirSync(pnpmDir).filter((e) => e.startsWith(prefix + '@'));
-				for (const entry of entries) {
-					const pkgDir = path.join(pnpmDir, entry, 'node_modules', ...pkg.split('/'));
-					if (fs.existsSync(pkgDir)) dirs.push(pkgDir);
-				}
-			} catch {
-				// directory not readable
-			}
-		}
-	}
-
-	// Fallback: hoisted layout (npm/yarn)
-	if (dirs.length === 0) {
-		const hoisted = path.join(projectRoot, 'node_modules/@navikt');
-		if (fs.existsSync(hoisted)) dirs.push(hoisted);
-	}
-
-	return dirs;
-}
 const USED_VAR_PATTERN = /var\(--([a-zA-Z0-9-_]+)\)/g;
 const DEFINED_VAR_PATTERN = /--([a-zA-Z0-9-_]+)\s*:/g;
 const STYLE_SET_PROP_PATTERN = /style\.setProperty\(\s*['"]--([a-zA-Z0-9-_]+)['"]/g;
@@ -56,7 +27,6 @@ function walkFiles(dir, callback) {
 
 function collectMissingCssVars(projectRoot) {
 	const srcDir = path.join(projectRoot, 'src');
-	const extraDefDirs = resolveExtraDefDirs(projectRoot);
 	const usedVars = new Map();
 	const definedVars = new Set();
 
@@ -93,10 +63,6 @@ function collectMissingCssVars(projectRoot) {
 
 	walkFiles(srcDir, analyzeUsedVars);
 	walkFiles(srcDir, analyzeDefinedVars);
-
-	for (const dir of extraDefDirs) {
-		walkFiles(dir, analyzeDefinedVars);
-	}
 
 	const missingVars = [];
 	for (const [varName, files] of usedVars.entries()) {

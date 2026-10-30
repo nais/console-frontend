@@ -1,7 +1,7 @@
 <script lang="ts">
 	import type { TeamHealthStore } from '$houdini';
+	import { ShButton } from '#lib/shadcn/ui/index.js';
 	import SurfaceCard from '#lib/ui/SurfaceCard.svelte';
-	import { Button } from '@nais/ds-svelte-community';
 	import CriticalIssueRow from './CriticalIssueRow.svelte';
 
 	interface Props {
@@ -32,7 +32,7 @@
 
 		{#if $store.data?.team?.issues?.pageInfo?.hasNextPage}
 			<div class="load-more">
-				<Button variant="tertiary" size="small" onclick={loadMore}>Load more</Button>
+				<ShButton variant="outline" size="sm" onclick={loadMore}>Load more</ShButton>
 			</div>
 		{/if}
 	</SurfaceCard>
@@ -42,23 +42,24 @@
 	.issues-list {
 		display: flex;
 		flex-direction: column;
-		gap: var(--ax-space-8);
+		gap: 0.375rem;
 	}
 
 	.view-all {
-		font-size: var(--ax-font-size-small);
-		font-weight: var(--ax-font-weight-bold);
-		color: var(--ax-text-accent);
+		font-size: 0.75rem;
+		font-weight: 500;
+		color: var(--muted-foreground);
 		text-decoration: none;
 	}
 
 	.view-all:hover {
+		color: var(--foreground);
 		text-decoration: underline;
 	}
 
 	.load-more {
 		display: flex;
 		justify-content: center;
-		padding-top: var(--ax-space-4);
+		padding-top: 0.5rem;
 	}
 </style>

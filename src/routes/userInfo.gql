@@ -4,7 +4,22 @@ query UserInfo {
 		... on User {
 			id
 			name
+			email
 			isAdmin
+			teams(first: 25) {
+				edges {
+					node {
+						team {
+							id
+							slug
+							purpose
+						}
+					}
+				}
+			}
+		}
+		... on ServiceAccount {
+			__typename
 		}
 	}
 	features {

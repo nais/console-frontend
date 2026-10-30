@@ -1,6 +1,6 @@
 <script lang="ts">
 	import RunningIndicator from '#lib/ui/RunningIndicator.svelte';
-	import { Loader } from '@nais/ds-svelte-community';
+	import { Loader } from '#lib/shadcn/ui/index.js';
 
 	let { state }: { state: string } = $props();
 </script>

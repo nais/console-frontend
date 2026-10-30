@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { Button, TextField } from '@nais/ds-svelte-community';
-	import { PencilIcon } from '@nais/ds-svelte-community/icons';
+	import { Button, TextField } from '#lib/shadcn/ui/index.js';
+	import { PencilIcon } from '#lib/icons/index.js';
 
 	interface Props {
 		text: string;
@@ -38,9 +38,7 @@
 		{#if variant === 'textfield'}
 			<TextField label="" size="small" bind:value={newText} hideLabel={true} />
 		{:else}
-			<textarea
-				class="aksel-text-field__input aksel-body-short aksel-body-short--medium"
-				bind:value={newText}></textarea>
+			<textarea class="edit-textarea" bind:value={newText}></textarea>
 		{/if}
 		<Button onclick={save} size="xsmall" disabled={!isMember}>Save</Button>
 		<Button onclick={reset} size="xsmall" variant="secondary-neutral">Cancel</Button>
@@ -76,6 +74,14 @@
 
 	textarea {
 		height: 100%;
+		padding: 0.375rem 0.625rem;
+		border-radius: calc(var(--radius) - 2px);
+		border: 1px solid var(--input);
+		background-color: var(--background);
+		color: var(--foreground);
+		font: inherit;
+		font-size: 0.875rem;
+		box-sizing: border-box;
 	}
 
 	.hidden {

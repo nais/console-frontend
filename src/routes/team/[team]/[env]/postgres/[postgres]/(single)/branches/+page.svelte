@@ -11,6 +11,8 @@
 	import { page } from '$app/state';
 	import { graphql } from '$houdini';
 	import {
+		ActionMenu,
+		ActionMenuItem,
 		Alert,
 		BodyShort,
 		Button,
@@ -20,9 +22,8 @@
 		Modal,
 		Select,
 		TextField
-	} from '@nais/ds-svelte-community';
-	import { ActionMenu, ActionMenuItem } from '@nais/ds-svelte-community/experimental';
-	import { MenuElipsisVerticalIcon } from '@nais/ds-svelte-community/icons';
+	} from '#lib/shadcn/ui/index.js';
+	import { MenuElipsisVerticalIcon } from '#lib/icons/index.js';
 	import { onMount } from 'svelte';
 	import BranchStatus from '../BranchStatus.svelte';
 	import type { PageProps } from './$types';

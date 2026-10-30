@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { CopyButton, Tooltip } from '@nais/ds-svelte-community';
+	import { CopyButton, Tooltip } from '#lib/shadcn/ui/index.js';
 	import type { Snippet } from 'svelte';
 	import SurfaceCard from './SurfaceCard.svelte';
 

@@ -21,7 +21,7 @@
 		ReadMore,
 		Select,
 		TextField
-	} from '@nais/ds-svelte-community';
+	} from '#lib/shadcn/ui/index.js';
 	import type { PageProps } from './$types';
 
 	let { data }: PageProps = $props();
@@ -260,7 +260,7 @@
 		width: 600px;
 	}
 
-	form :global(.aksel-form-field) {
+	form :global(.sh-ui-field) {
 		max-width: 400px;
 	}
 

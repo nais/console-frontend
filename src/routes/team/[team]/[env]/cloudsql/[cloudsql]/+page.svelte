@@ -9,7 +9,7 @@
 	import Collection from '#lib/ui/Collection.svelte';
 	import SurfaceCard from '#lib/ui/SurfaceCard.svelte';
 	import { euroValueFormatter } from '#lib/utils/formatters.js';
-	import { Alert, BodyShort, Heading, HelpText } from '@nais/ds-svelte-community';
+	import { Alert, BodyShort, Heading, HelpText } from '#lib/shadcn/ui/index.js';
 	import prettyBytes from 'pretty-bytes';
 	import type { PageProps } from './$types';
 

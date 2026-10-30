@@ -3,7 +3,7 @@
 	import JobRunListItem from '#lib/domain/list-items/JobRunListItem.svelte';
 	import Collection from '#lib/ui/Collection.svelte';
 	import ListItem from '#lib/ui/ListItem.svelte';
-	import { Button } from '@nais/ds-svelte-community';
+	import { Button } from '#lib/shadcn/ui/index.js';
 	import { onMount } from 'svelte';
 
 	interface Props {

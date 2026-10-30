@@ -24,8 +24,8 @@
 		ToggleGroupItem,
 		Tr,
 		type TableSortState
-	} from '@nais/ds-svelte-community';
-	import { PersonGroupIcon } from '@nais/ds-svelte-community/icons';
+	} from '#lib/shadcn/ui/index.js';
+	import { PersonGroupIcon } from '#lib/icons/index.js';
 	import { sum } from 'd3-array';
 	import { format } from 'date-fns';
 	import { accessor, BarChart, findRelatedData, Tooltip } from 'layerchart';

@@ -31,8 +31,8 @@
 		HelpText,
 		Loader,
 		Search
-	} from '@nais/ds-svelte-community';
-	import { MagnifyingGlassIcon } from '@nais/ds-svelte-community/icons';
+	} from '#lib/shadcn/ui/index.js';
+	import { MagnifyingGlassIcon } from '#lib/icons/index.js';
 	import type { PageProps } from './$types';
 
 	let { data }: PageProps = $props();

@@ -16,8 +16,8 @@
 	import Time from '#lib/ui/Time.svelte';
 	import { getConfigPermissions } from '#lib/utils/configPermissions.js';
 	import { changeParams } from '#lib/utils/searchparams.js';
-	import { Button, Tag, Td, Th, Tr, type TableSortState } from '@nais/ds-svelte-community';
-	import { FileTextIcon, FunnelIcon, PlusIcon } from '@nais/ds-svelte-community/icons';
+	import { Button, Tag, Td, Th, Tr, type TableSortState } from '#lib/shadcn/ui/index.js';
+	import { FileTextIcon, FunnelIcon, PlusIcon } from '#lib/icons/index.js';
 	import type { PageProps } from './$types';
 	import CreateConfig, { type EnvironmentType } from './CreateConfig.svelte';
 

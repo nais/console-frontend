@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Alert, Button } from '@nais/ds-svelte-community';
+	import { ShAlert, ShButton } from '#lib/shadcn/ui/index.js';
 
 	type error = { message: string };
 
@@ -17,14 +17,32 @@
 </script>
 
 {#if errors && errors.length > 0}
-	<div>
-		<Alert variant="error" {size} style="margin-bottom: 1rem;">
-			{#each pick(errors) as error (error)}
-				{error}<br />
-			{/each}
-			{#if dismissable}
-				<Button variant="tertiary" size="small" onclick={() => (errors = [])}>Dismiss</Button>
-			{/if}
-		</Alert>
+	<div class="graph-errors">
+		<ShAlert variant="destructive" size={size === 'small' ? 'sm' : 'default'}>
+			<div class="graph-error-content">
+				<div>
+					{#each pick(errors) as error (error)}
+						<div>{error}</div>
+					{/each}
+				</div>
+				{#if dismissable}
+					<ShButton variant="ghost" size="sm" onclick={() => (errors = [])}>Dismiss</ShButton>
+				{/if}
+			</div>
+		</ShAlert>
 	</div>
 {/if}
+
+<style>
+	.graph-errors {
+		margin-bottom: 1rem;
+	}
+
+	.graph-error-content {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: 0.75rem;
+		flex-wrap: wrap;
+	}
+</style>

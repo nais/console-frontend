@@ -9,8 +9,8 @@
 		type DeploymentStatusState$options,
 		type WorkloadDeploy
 	} from '$houdini';
-	import { BodyShort, Tag, Tooltip } from '@nais/ds-svelte-community';
-	import { ExternalLinkIcon } from '@nais/ds-svelte-community/icons';
+	import { BodyShort, Tag, Tooltip } from '#lib/shadcn/ui/index.js';
+	import { ExternalLinkIcon } from '#lib/icons/index.js';
 
 	interface Props {
 		workload: WorkloadDeploy;
@@ -164,37 +164,45 @@
 	.details {
 		display: flex;
 		flex-direction: column;
-		gap: var(--ax-space-2);
+		gap: 0.375rem;
 		min-width: 0;
 	}
 
 	.workflow-row {
 		display: inline-flex;
 		align-items: center;
-		gap: var(--ax-space-4);
-		font-size: var(--ax-font-size-medium);
-		line-height: var(--ax-font-line-height-large);
+		gap: 0.375rem;
+		font-size: 0.8125rem;
+		line-height: 1.4;
+		padding: 0.375rem 0.625rem;
+		border-radius: var(--radius-md);
+		background-color: color-mix(in srgb, var(--background) 60%, var(--card));
+		border: 1px solid var(--border);
 	}
 
 	.repo-name {
-		font-weight: var(--ax-font-weight-bold);
-		color: var(--ax-text-neutral);
+		font-weight: 600;
+		font-family: monospace;
+		font-size: 0.75rem;
+		color: var(--foreground);
 	}
 
 	.workflow-icon {
 		display: inline-flex;
 		align-items: center;
 		justify-content: center;
-		color: var(--ax-text-neutral-subtle);
+		color: var(--muted-foreground);
 		text-decoration: none;
+		margin-left: auto;
 	}
 
 	.workflow-row :global(.ds-svelte-tooltip-wrapper) {
 		display: inline-flex;
 		align-items: center;
+		margin-left: auto;
 	}
 
 	.workflow-icon:hover {
-		color: var(--ax-text-neutral);
+		color: var(--primary);
 	}
 </style>

@@ -19,7 +19,7 @@
 		Textarea,
 		TextField,
 		Tooltip
-	} from '@nais/ds-svelte-community';
+	} from '#lib/shadcn/ui/index.js';
 	import {
 		ArrowCirclepathIcon,
 		ChevronDownIcon,
@@ -28,7 +28,7 @@
 		ChevronUpIcon,
 		CogIcon,
 		SkipForwardIcon
-	} from '@nais/ds-svelte-community/icons';
+	} from '#lib/icons/index.js';
 	import { onMount, tick, untrack, type Snippet } from 'svelte';
 	import LogResults from './LogResults.svelte';
 	import LogVolume from './LogVolume.svelte';

@@ -3,7 +3,7 @@
 	import { enhance } from '$app/forms';
 	import { page } from '$app/state';
 	import GraphErrors from '#lib/ui/GraphErrors.svelte';
-	import { Alert, BodyShort, Button, TextField } from '@nais/ds-svelte-community';
+	import { Alert, BodyShort, Button, TextField } from '#lib/shadcn/ui/index.js';
 	import type { PageProps } from './$types';
 
 	let { data, form }: PageProps = $props();

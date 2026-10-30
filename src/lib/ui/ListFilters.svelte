@@ -4,7 +4,7 @@
 
 <script lang="ts">
 	import SearchField from '#lib/ui/SearchField.svelte';
-	import { SortDownIcon, SortUpIcon } from '@nais/ds-svelte-community/icons';
+	import { SortDownIcon, SortUpIcon } from '#lib/icons/index.js';
 	import type { Snippet } from 'svelte';
 
 	interface SortField {
@@ -102,13 +102,12 @@
 	}
 
 	.section-heading {
-		font-size: var(--ax-font-size-small);
-		font-weight: 500;
-		color: var(--ax-text-neutral-subtle);
+		font-size: 0.8125rem;
+		font-weight: 600;
+		color: var(--foreground);
 		margin: 0;
-		letter-spacing: 0.01em;
-		border-bottom: 1px solid var(--ax-border-neutral-subtleA);
-		padding-bottom: var(--ax-space-6);
+		border-bottom: 1px solid var(--border);
+		padding-bottom: 0.375rem;
 		cursor: pointer;
 		list-style: none;
 		display: flex;

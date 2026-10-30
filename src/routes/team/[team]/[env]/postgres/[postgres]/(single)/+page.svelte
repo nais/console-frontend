@@ -24,7 +24,7 @@
 		Th,
 		Thead,
 		Tr
-	} from '@nais/ds-svelte-community';
+	} from '#lib/shadcn/ui/index.js';
 	import { onMount } from 'svelte';
 	import type { PageProps } from './$types';
 	import BranchStateIndicator from './BranchStateIndicator.svelte';

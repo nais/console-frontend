@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Tag, Tooltip } from '@nais/ds-svelte-community';
+	import { Tag, Tooltip } from '#lib/shadcn/ui/index.js';
 	import BranchStateIndicator from './BranchStateIndicator.svelte';
 	import { branchStateLabel } from './branchStateLabel.js';
 

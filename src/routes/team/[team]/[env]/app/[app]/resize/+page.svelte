@@ -3,7 +3,7 @@
 	import { goto } from '$app/navigation';
 	import { page } from '$app/state';
 	import { isPossiblyInModal } from '#lib/ui/PageModal.svelte';
-	import { Alert, BodyLong, Button, ErrorMessage, TextField } from '@nais/ds-svelte-community';
+	import { Alert, BodyLong, Button, ErrorMessage, TextField } from '#lib/shadcn/ui/index.js';
 	import { tick } from 'svelte';
 	import type { PageProps } from './$types';
 
@@ -104,7 +104,7 @@
 		width: 600px;
 	}
 
-	form :global(.aksel-form-field) {
+	form :global(.sh-ui-field) {
 		max-width: 400px;
 	}
 

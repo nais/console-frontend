@@ -6,7 +6,7 @@
 		CheckboxGroup,
 		ErrorMessage,
 		Heading
-	} from '@nais/ds-svelte-community';
+	} from '#lib/shadcn/ui/index.js';
 
 	interface Role {
 		name: string;

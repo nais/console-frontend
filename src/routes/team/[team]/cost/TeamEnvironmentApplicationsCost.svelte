@@ -6,13 +6,7 @@
 	import GraphErrors from '#lib/ui/GraphErrors.svelte';
 	import { changeParams } from '#lib/utils/searchparams.js';
 	import { visualizationColors } from '#lib/visualizationColors.js';
-	import {
-		BodyLong,
-		Heading,
-		Loader,
-		ToggleGroup,
-		ToggleGroupItem
-	} from '@nais/ds-svelte-community';
+	import { BodyLong, Heading, Loader, ToggleGroup, ToggleGroupItem } from '#lib/shadcn/ui/index.js';
 	import { LineChart } from 'layerchart';
 
 	const {

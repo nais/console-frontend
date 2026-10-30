@@ -78,9 +78,9 @@ Generates Svelte Playground link. Ask user first, and NEVER if code was written 
 
 ---
 
-## CSS Variables from @nais/ds-svelte-community
+## CSS Variables & Design Tokens
 
-**CRITICAL**: Only use CSS variables that exist in the @nais/ds-svelte-community design system. Never invent CSS variable names.
+**CRITICAL**: Only use CSS variables defined in `src/styles/shadcn.css` and `src/styles/app.css`. Never invent CSS variable names.
 
 ### Available CSS Variable Categories:
 
@@ -116,7 +116,7 @@ Generates Svelte Playground link. Ask user first, and NEVER if code was written 
 
 ### Rules for CSS Variables:
 
-1. **Before using ANY CSS variable**, search the codebase first for existing usage patterns. For new tokens, verify they exist in the @nais/ds-svelte-community design system or rely on the ESLint checks for validation
+1. **Before using ANY CSS variable**, search the codebase first for existing usage patterns. For new tokens, verify they exist in `src/styles/shadcn.css` or `src/styles/app.css` and rely on the ESLint checks for validation
 2. **Never invent** CSS variable names like `--ax-font-family-mono`, `--ax-color-*`, etc.
 3. **For font-family**: Use `font-family: monospace` directly (not a CSS variable)
 4. **For spacing**: Use the predefined spacing scale, not arbitrary values
@@ -385,17 +385,17 @@ export async function load(event) {
 
 ## Component Library
 
-Use `@nais/ds-svelte-community` components, not custom implementations:
+Use `#lib/shadcn/ui/index.js` components, not custom implementations:
 
-- `Button`, `Modal`, `Alert`, `Table`, `Heading`, etc.
-- Icons: Import from `@nais/ds-svelte-community/icons`
+- `Button`, `Modal`, `Alert`, `Table`, `Heading`, `Badge`, `NavTabs`, etc.
+- Icons: Import from `#lib/icons/index.js` (backed by `@lucide/svelte`)
 - Always check existing components before creating new ones
 
 ---
 
 ## Design Guidelines
 
-This project layers project-level design conventions on top of the `@nais/ds-svelte-community` design system. Always prefer design system components and `--ax-*` tokens first; the `--surface-*` variables are project extensions that compose them.
+This project layers project-level design conventions on top of our `shadcn-svelte` design system in `src/lib/shadcn/ui/` and `src/styles/shadcn.css`. Always prefer design system components and tokens first; the `--surface-*` variables are project extensions that compose them.
 
 ### Layout Utility Classes
 
@@ -422,7 +422,7 @@ All list pages use `CollapsibleSidebar` (`#lib/ui/CollapsibleSidebar.svelte`) to
 ```svelte
 <script lang="ts">
 	import CollapsibleSidebar from '#lib/ui/CollapsibleSidebar.svelte';
-	import { FunnelIcon } from '@nais/ds-svelte-community/icons';
+	import { FunnelIcon } from '#lib/icons/index.js';
 
 	let filtersOpen = $state(false);
 </script>
@@ -504,10 +504,8 @@ For content in the main column (left side of `.layout-two-column`):
 
 ### Tab Navigation Pattern
 
-Use `Tabs`, `TabList`, `Tab` from `@nais/ds-svelte-community` for route-based sub-navigation:
+Use `NavTabs` (or `Tabs`, `TabList`, `Tab`) from `#lib/shadcn/ui/index.js` for route-based sub-navigation:
 
-- Size: `"small"`
-- Render tabs as anchor links: `<Tab as="a" href={...}>`
 - Define tabs as a `$derived` array of `{ value, label, href }` where `value` is the SvelteKit route ID
 - Match active tab via `page.route.id`
 - Hide the tab bar when the current route doesn't match any tab (`visibleTabs` pattern)
@@ -534,11 +532,11 @@ When rendering type-specific content from GraphQL unions:
 
 ### Key Rules
 
-1. **Components first**: Use `@nais/ds-svelte-community` components (`Button`, `Tabs`, `Alert`, `Tooltip`, `Table`, etc.) before building custom HTML
-2. **Tokens first**: Use `--ax-*` tokens for spacing, colors, borders, and radii — never hardcode raw values
+1. **Components first**: Use `#lib/shadcn/ui/index.js` components (`Button`, `NavTabs`, `Tabs`, `Alert`, `Tooltip`, `Table`, etc.) before building custom HTML
+2. **Tokens first**: Use `--ax-*` and `shadcn` tokens (`--foreground`, `--muted-foreground`, `--border`, `--card`, etc.) for spacing, colors, borders, and radii — never hardcode raw values
 3. **Utility classes first**: Use the layout utility classes (`.layout-two-column`, `.table-scroll`, etc.) before writing custom layout CSS
 4. **Surface variables compose tokens**: The `--surface-*` variables are project-level abstractions built from `--ax-*` tokens — do not bypass them with raw color values
-5. **Icons**: Import from `@nais/ds-svelte-community/icons` or `#lib/icons/` — never use inline SVGs
+5. **Icons**: Import from `#lib/icons/index.js` — never use inline SVGs
 6. **Dark mode**: The surface system handles dark mode via CSS selectors on the root element; do not add separate dark-mode overrides for surface properties
 7. **No hardcoded values**: Use `gap: var(--ax-space-8)` not `gap: 0.5rem`; use `border-radius: var(--ax-radius-medium)` not `border-radius: 8px`; use `color: var(--ax-text-neutral)` not `color: #333`
 

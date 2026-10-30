@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { resolve } from '$app/paths';
 	import { page } from '$app/state';
-	import { Tab, TabList, Tabs } from '@nais/ds-svelte-community';
+	import { Tab, TabList, Tabs } from '#lib/shadcn/ui/index.js';
 	import type { LayoutProps } from './$types';
 
 	let { children }: LayoutProps = $props();

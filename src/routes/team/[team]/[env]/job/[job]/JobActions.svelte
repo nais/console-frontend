@@ -6,20 +6,23 @@
 	import { generateJobRunName, validateJobRunName } from '#lib/utils/jobRunName.js';
 	import { page } from '$app/state';
 	import { graphql, type Manifest as ManifestFragment } from '$houdini';
-	import { Button, Heading, Modal, TextField } from '@nais/ds-svelte-community';
+	import EnvPage from './env/+page.svelte';
 	import {
 		ActionMenu,
 		ActionMenuDivider,
-		ActionMenuItem
-	} from '@nais/ds-svelte-community/experimental';
+		ActionMenuItem,
+		Button,
+		Heading,
+		Modal,
+		TextField
+	} from '#lib/shadcn/ui/index.js';
 	import {
 		FileTextIcon,
 		MenuElipsisVerticalIcon,
 		PencilWritingIcon,
 		PlayIcon,
 		TrashIcon
-	} from '@nais/ds-svelte-community/icons';
-	import EnvPage from './env/+page.svelte';
+	} from '#lib/icons/index.js';
 
 	interface Props {
 		viewerIsMember: boolean;

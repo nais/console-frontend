@@ -13,12 +13,12 @@
 	let { title, viewAllHref, issues }: Props = $props();
 </script>
 
-<SurfaceCard {title} bordered>
+<SurfaceCard {title}>
 	{#snippet headerAside()}
 		<a class="view-all" href={viewAllHref}>View all</a>
 	{/snippet}
 
-	<Collection>
+	<Collection headerless>
 		{#each issues as edge, index (index)}
 			<IssueListItem item={edge.node} />
 		{/each}
@@ -27,13 +27,14 @@
 
 <style>
 	.view-all {
-		font-size: var(--ax-font-size-small);
-		font-weight: var(--ax-font-weight-bold);
-		color: var(--ax-text-accent);
+		font-size: 0.75rem;
+		font-weight: 500;
+		color: var(--muted-foreground);
 		text-decoration: none;
 	}
 
 	.view-all:hover {
+		color: var(--foreground);
 		text-decoration: underline;
 	}
 </style>

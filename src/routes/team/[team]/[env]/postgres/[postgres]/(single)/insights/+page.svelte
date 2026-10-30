@@ -12,7 +12,7 @@
 		Loader,
 		ToggleGroup,
 		ToggleGroupItem
-	} from '@nais/ds-svelte-community';
+	} from '#lib/shadcn/ui/index.js';
 	import type { PageProps } from './$types';
 
 	const uid = $props.id();
