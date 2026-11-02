@@ -3748,12 +3748,6 @@ input ImageVulnerabilityFilter {
   hasKevEntry: Boolean
 
   """
-  Only return vulnerabilities for this PURL type, for example maven or npm.
-  Omit to include all package types.
-  """
-  packageType: String
-
-  """
   Only return vulnerabilities whose priority is exactly one of the given values.
   URGENT is workload-contextual and cannot be resolved at image scope, so
   including it in this set is rejected as an error.
@@ -6450,6 +6444,11 @@ type PostgresAccessConnectionDetails {
 """Privilege level granted to a personal Postgres database role."""
 enum PostgresAccessLevel {
   """
+  Administer the application database through membership in its owner role, with the same database privileges as workload admin but without PostgreSQL superuser privileges.
+  """
+  ADMIN
+
+  """
   Monitor and maintain the PostgreSQL instance through pg_monitor and pg_maintain, without granting application data access or database ownership.
   """
   MAINTAIN
@@ -6460,8 +6459,10 @@ enum PostgresAccessLevel {
   """Read and modify existing data."""
   READWRITE
 
-  """Read, modify, and create database objects where supported."""
-  READWRITECREATE
+  """
+  Read and modify data and create objects in public, without database ownership.
+  """
+  READWRITECREATE @deprecated(reason: "This level will be removed in a future API change. Until then, it remains available with unchanged privileges. ADMIN grants broader database-owner privileges.")
 }
 
 """Current state of a personal Postgres access."""
