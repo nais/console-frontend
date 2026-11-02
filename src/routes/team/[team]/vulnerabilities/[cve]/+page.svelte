@@ -6,9 +6,10 @@
 	import CveImpact from '#lib/domain/vulnerability/CveImpact.svelte';
 	import { cveWorkloadOrder } from '#lib/domain/vulnerability/cveWorkloadOrder.js';
 	import {
+		cveWorkloadGroupLabels,
 		cveVulnerabilitySelections,
 		exhaustiveCveWorkloads,
-		groupCveWorkloadsByVulnerability
+		groupCveWorkloads
 	} from '#lib/domain/vulnerability/cveWorkloadGroups.js';
 	import OrderByMenu from '#lib/ui/OrderByMenu.svelte';
 	import { CVEWorkloadOrderField } from '$houdini';
@@ -18,6 +19,8 @@
 	import WorkloadLink from '#lib/domain/workload/WorkloadLink.svelte';
 	import ExternalLink from '#lib/ui/ExternalLink.svelte';
 	import GraphErrors from '#lib/ui/GraphErrors.svelte';
+	import Collection from '#lib/ui/Collection.svelte';
+	import ListItem from '#lib/ui/ListItem.svelte';
 	import { formatImageRef } from '#lib/utils/image.js';
 	import { goto } from '$app/navigation';
 
@@ -25,22 +28,22 @@
 	import {
 		Alert,
 		BodyShort,
-		Box,
 		Button,
 		Checkbox,
 		Detail,
 		Heading,
 		HelpText,
 		Loader,
-		Search,
-		Tag
+		Search
 	} from '@nais/ds-svelte-community';
 	import { MagnifyingGlassIcon } from '@nais/ds-svelte-community/icons';
 	import { SvelteSet } from 'svelte/reactivity';
 	import type { PageProps } from './$types';
 
 	let { data }: PageProps = $props();
+	const uid = $props.id();
 	let { TeamCVEPage, TeamCVEWorkloads, teamSlug, cveIdentifier, rows } = $derived(data);
+	const orderField = $derived(cveWorkloadOrder(page.url, CVEWorkloadOrderField.PACKAGE).field);
 	const workloadNodes = $derived(
 		exhaustiveCveWorkloads(
 			($TeamCVEWorkloads.data?.cve.workloads.edges ?? []).map(({ node }) => node)
@@ -124,22 +127,6 @@
 	};
 
 	type WorkloadNode = (typeof workloadNodes)[number];
-
-	type VulnGroup = {
-		vulnerabilityId: string;
-		package: string;
-		suppression: WorkloadNode['vulnerability']['suppression'];
-		nodes: WorkloadNode[];
-	};
-
-	const groupedWorkloads = $derived.by((): VulnGroup[] => {
-		return groupCveWorkloadsByVulnerability(workloadNodes).map(({ value, nodes }) => ({
-			vulnerabilityId: value,
-			package: nodes[0].vulnerability.package,
-			suppression: nodes[0].vulnerability.suppression ?? null,
-			nodes
-		}));
-	});
 
 	const bulkWorkloads = $derived.by((): BulkSuppressWorkload[] => {
 		return workloadNodes
@@ -310,95 +297,107 @@
 							</Checkbox>
 						</div>
 					{/if}
-					<div class="vulnerability-groups">
-						{#each groupedWorkloads as group (group.nodes[0].id)}
-							{const selection = $derived(vulnerabilitySelections.get(group.vulnerabilityId)!)}
-							{const fixVersion = $derived(
-								formatFixVersion(group.nodes[0]?.vulnerability.remediation.fixVersion)
-							)}
-							<Box
-								borderRadius="12"
-								padding="space-16"
-								borderColor="neutral-subtleA"
-								borderWidth="1"
-							>
-								<div class="vuln-group-header">
-									{#if viewerIsMember}
-										<Checkbox
-											checked={selection.checked}
-											indeterminate={selection.indeterminate}
-											onchange={() => {
-												if (!group.suppression) toggleSelect(selection);
-											}}
-											disabled={!!group.suppression}
-											readonly={!!group.suppression}
-											hideLabel
-										>
-											Select all workloads with package {group.package}
-										</Checkbox>
-									{/if}
-									<div class="vuln-group-content">
-										<div class="vuln-group-title">
-											<BodyShort><strong><code>{group.package}</code></strong></BodyShort>
-											{#if group.suppression}
-												<Tag variant="neutral" size="small">
-													{suppressionStateLabels[group.suppression.state] ?? 'Suppressed'}
-												</Tag>
-											{/if}
-										</div>
-										<dl class="vuln-group-meta">
-											{#if group.nodes[0]?.workload.image}
-												<div>
-													<Detail as="dt">Image</Detail>
-													<Detail as="dd"
-														><code>{formatImageRef(group.nodes[0].workload.image)}</code></Detail
-													>
-												</div>
-											{/if}
-											<div>
-												<Detail as="dt">Workloads</Detail>
-												<Detail as="dd">{group.nodes.length} affected</Detail>
-											</div>
-											{#if fixVersion}
-												<div>
-													<Detail as="dt">
-														<span class="fix-version-term">
-															Fixed in
-															<HelpText
-																title="How do I apply the fix?"
-																strategy="fixed"
-																placement="right"
-															>
-																Update the dependency to a version that satisfies the displayed fix
-																requirement, then rebuild and redeploy the image. If it's not
-																relevant here, it can be suppressed instead.
-															</HelpText>
-														</span>
-													</Detail>
-													<Detail as="dd"><code>{fixVersion}</code></Detail>
-												</div>
-											{/if}
-											{#if group.nodes[0]?.vulnerability.remediation.latestVersion}
-												<div>
-													<Detail as="dt">Latest version</Detail>
-													<Detail as="dd"
-														><code>{group.nodes[0].vulnerability.remediation.latestVersion}</code
-														></Detail
-													>
-												</div>
-											{/if}
-										</dl>
+					<div class="workload-groups">
+						{#each groupCveWorkloads(workloadNodes, orderField) as workloadGroup, index (`${index}-${workloadGroup.value}`)}
+							<section aria-labelledby={`${uid}-cve-finding-group-${index}`}>
+								<header class="workload-group-header">
+									<div class="workload-group-title">
+										<Detail>{cveWorkloadGroupLabels[orderField]}</Detail>
+										<Heading as="h3" size="small" id={`${uid}-cve-finding-group-${index}`}>
+											{workloadGroup.value}
+										</Heading>
 									</div>
-								</div>
-								<ul class="vuln-group-workloads">
-									{#each group.nodes as node (node.id)}
+									<Detail>
+										{workloadGroup.nodes.length} finding{workloadGroup.nodes.length === 1
+											? ''
+											: 's'}
+										loaded
+									</Detail>
+								</header>
+								<Collection headerless>
+									{#each workloadGroup.nodes as node (node.id)}
 										{const workload = $derived(node.workload)}
-										<li>
-											<WorkloadLink {workload} />
-										</li>
+										{const vuln = $derived(node.vulnerability)}
+										{const selection = $derived(vulnerabilitySelections.get(vuln.id)!)}
+										{const fixVersion = $derived(formatFixVersion(vuln.remediation.fixVersion))}
+										<ListItem>
+											<div class="workload-container">
+												<div class="workload-identity">
+													{#if viewerIsMember}
+														<Checkbox
+															checked={selection.checked}
+															indeterminate={selection.indeterminate}
+															onchange={() => {
+																if (!vuln.suppression) toggleSelect(selection);
+															}}
+															disabled={!!vuln.suppression}
+															readonly={!!vuln.suppression}
+															hideLabel
+														>
+															Select all workloads with package {vuln.package}
+														</Checkbox>
+													{/if}
+													<WorkloadLink {workload} />
+												</div>
+												<dl class="workload-details">
+													<div class="detail-row">
+														<Detail as="dt">Package</Detail>
+														<BodyShort as="dd"><code>{vuln.package}</code></BodyShort>
+													</div>
+													{#if fixVersion}
+														<div class="detail-row">
+															<Detail as="dt">
+																<span class="fix-version-term">
+																	Fixed in
+																	<HelpText
+																		title="How do I apply the fix?"
+																		strategy="fixed"
+																		placement="right"
+																	>
+																		Update the dependency to a version that satisfies the displayed
+																		fix requirement, then rebuild and redeploy the image. If it's
+																		not relevant here, it can be suppressed instead.
+																	</HelpText>
+																</span>
+															</Detail>
+															<BodyShort as="dd"><code>{fixVersion}</code></BodyShort>
+														</div>
+													{/if}
+													{#if vuln.remediation.latestVersion}
+														<div class="detail-row">
+															<Detail as="dt">Latest version</Detail>
+															<BodyShort as="dd"
+																><code>{vuln.remediation.latestVersion}</code></BodyShort
+															>
+														</div>
+													{/if}
+													<div class="detail-row">
+														<Detail as="dt">Image</Detail>
+														<BodyShort as="dd">
+															{#if workload.image}
+																<code>{formatImageRef(workload.image)}</code>
+															{:else}
+																-
+															{/if}
+														</BodyShort>
+													</div>
+													{#if vuln.suppression}
+														<div class="detail-row">
+															<Detail as="dt">Suppression</Detail>
+															<BodyShort as="dd">
+																<code
+																	>{suppressionStateLabels[vuln.suppression.state] ??
+																		'Suppressed'}</code
+																>
+															</BodyShort>
+														</div>
+													{/if}
+												</dl>
+											</div>
+										</ListItem>
 									{/each}
-								</ul>
-							</Box>
+								</Collection>
+							</section>
 						{/each}
 					</div>
 				{:else}
@@ -557,73 +556,95 @@
 		margin-bottom: var(--ax-space-8);
 	}
 
-	.vulnerability-groups {
+	.workload-groups {
 		display: flex;
 		flex-direction: column;
-		gap: var(--ax-space-16);
+		gap: var(--ax-space-24);
 	}
 
-	.vuln-group-header {
-		display: flex;
-		align-items: flex-start;
-		gap: var(--ax-space-8);
-	}
-
-	.vuln-group-content {
-		display: flex;
-		flex-direction: column;
-		gap: var(--ax-space-8);
-		flex: 1;
-	}
-
-	.vuln-group-title {
+	.workload-group-header {
 		display: flex;
 		align-items: center;
-		gap: var(--ax-space-12);
+		justify-content: space-between;
 		flex-wrap: wrap;
+		gap: var(--ax-space-12);
+		padding: var(--ax-space-12) var(--ax-space-24);
+		background: var(--ax-bg-neutral-soft);
+		border-radius: var(--ax-radius-8) var(--ax-radius-8) 0 0;
 	}
 
-	.vuln-group-meta {
+	.workload-group-title {
+		flex: 1;
+		min-width: 0;
+		overflow-wrap: anywhere;
+	}
+
+	.workload-container {
+		display: grid;
+		grid-template-columns: minmax(0, 1fr) minmax(0, 4fr);
+		gap: var(--ax-space-24);
+		align-items: start;
+	}
+
+	.workload-identity {
+		display: flex;
+		align-items: center;
+		gap: var(--ax-space-8);
+		min-width: 0;
+	}
+
+	.workload-details {
 		display: grid;
 		grid-template-columns: auto 1fr;
-		gap: var(--ax-space-4) var(--ax-space-12);
+		gap: var(--ax-space-8) var(--ax-space-12);
 		margin: 0;
+		padding-left: var(--ax-space-12);
+		border-left: var(--ax-space-2) solid var(--ax-border-subtle);
+	}
 
-		& > div {
-			display: grid;
-			grid-template-columns: subgrid;
-			grid-column: 1 / -1;
-			align-items: baseline;
+	.detail-row {
+		display: grid;
+		grid-template-columns: subgrid;
+		grid-column: 1 / -1;
+		align-items: baseline;
+	}
+
+	@media (max-width: 767px) {
+		.workload-container {
+			grid-template-columns: 1fr;
 		}
 
-		& :global(dt) {
-			font-weight: var(--ax-font-weight-bold);
-			color: var(--ax-text-neutral-subtle);
+		.workload-details {
+			grid-template-columns: 1fr;
+			padding-left: 0;
+			border-left: none;
+			gap: var(--ax-space-8);
 		}
 
-		& :global(dd) {
-			margin: 0;
+		.detail-row {
+			gap: var(--ax-space-4);
 		}
 	}
 
-	.vuln-group-workloads {
-		list-style: none;
-		margin: var(--ax-space-16) 0 0;
-		padding: var(--ax-space-12) 0 0;
-		border-top: var(--ax-space-1) solid var(--ax-border-neutral-subtleA);
-		display: flex;
-		flex-direction: column;
-		gap: var(--ax-space-8);
-	}
+	@container (max-width: 500px) {
+		.workload-container {
+			grid-template-columns: 1fr;
+		}
 
-	.vuln-group-workload {
-		display: flex;
-		flex-direction: column;
-		gap: var(--ax-space-2);
+		.workload-details {
+			grid-template-columns: 1fr;
+			padding-left: 0;
+			border-left: none;
+			gap: var(--ax-space-8);
+		}
+
+		.detail-row {
+			gap: var(--ax-space-4);
+		}
 	}
 
 	code {
-		font-size: 0.9rem;
+		font-size: var(--ax-font-size-small);
 		word-break: break-all;
 	}
 </style>
