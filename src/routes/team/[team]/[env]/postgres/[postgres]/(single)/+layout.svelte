@@ -13,10 +13,20 @@
 		PencilWritingIcon,
 		TrashIcon
 	} from '@nais/ds-svelte-community/icons';
+	import { SvelteURLSearchParams } from 'svelte/reactivity';
 	import type { LayoutProps } from './$types';
 
 	let { data, children }: LayoutProps = $props();
 	let routeId = $derived(page.route.id ?? '');
+	let metricsSearch = $derived.by(() => {
+		const params = new SvelteURLSearchParams(page.url.searchParams);
+		params.delete('database');
+		if (routeId.endsWith('/insights') || routeId.endsWith('/queries')) {
+			params.set('interval', page.data.interval);
+		}
+		const search = params.toString();
+		return search ? `?${search}` : '';
+	});
 	let tabs = $derived([
 		{
 			value: '/team/[team]/[env]/postgres/[postgres]/(single)',
@@ -38,6 +48,11 @@
 				'/team/[team]/[env]/postgres/[postgres]/(single)/insights',
 				page.params as never
 			)
+		},
+		{
+			value: '/team/[team]/[env]/postgres/[postgres]/(single)/queries',
+			label: 'Queries',
+			href: resolve('/team/[team]/[env]/postgres/[postgres]/(single)/queries', page.params as never)
 		},
 		{
 			value: '/team/[team]/[env]/postgres/[postgres]/(single)/logs',
@@ -81,7 +96,15 @@
 <Tabs value={routeId} size="small">
 	<TabList>
 		{#each tabs as tab (tab.value)}
-			<Tab value={tab.value} as="a" href={tab.href}>{tab.label}</Tab>
+			<Tab
+				value={tab.value}
+				as="a"
+				href={tab.value.endsWith('/insights') || tab.value.endsWith('/queries')
+					? `${tab.href}${metricsSearch}`
+					: tab.href}
+			>
+				{tab.label}
+			</Tab>
 		{/each}
 	</TabList>
 	<div class="tab-content">
