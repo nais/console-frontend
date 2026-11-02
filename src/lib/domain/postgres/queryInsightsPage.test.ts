@@ -9,15 +9,17 @@ import PostgresLayout from '../../../routes/team/[team]/[env]/postgres/[postgres
 const fixture = vi.hoisted(() => ({
 	insights: {},
 	statistics: {},
-	navigating: { to: null as object | null }
-}));
-
-vi.mock('$app/state', () => ({
+	navigating: { to: null as object | null },
 	page: {
 		route: { id: '/team/[team]/[env]/postgres/[postgres]/(single)/queries' },
 		params: { team: 'test', env: 'dev', postgres: 'database' },
-		url: new URL('https://console.test/?branch=preview&interval=6h&database=app')
-	},
+		url: new URL('https://console.test/?branch=preview&interval=6h&database=app'),
+		data: { interval: '6h' }
+	}
+}));
+
+vi.mock('$app/state', () => ({
+	page: fixture.page,
 	navigating: fixture.navigating
 }));
 vi.mock('$app/navigation', () => ({ goto: vi.fn() }));
@@ -108,7 +110,7 @@ async function renderPage({
 		fetching,
 		data: { environment: { metrics: { series, warnings } } }
 	};
-	const rendered = await render(Queries, {
+	return render(Queries, {
 		props: {
 			data: {
 				PostgresInsights: new PostgresInsightsStore(),
@@ -120,18 +122,32 @@ async function renderPage({
 			params: { team: 'test', env: 'dev', postgres: 'database' }
 		}
 	});
-	return { ...rendered, body: rendered.body.replace(/<!--[\s\S]*?-->/g, '') };
+}
+
+function renderLayout() {
+	return render(PostgresLayout, {
+		props: {
+			data: { viewerIsMember: false, isAdmin: false } as ComponentProps<
+				typeof PostgresLayout
+			>['data'],
+			params: { team: 'test', env: 'dev', postgres: 'database' },
+			children: createRawSnippet(() => ({ render: () => '<div>Content</div>' }))
+		}
+	});
 }
 
 beforeEach(() => {
 	fixture.navigating.to = null;
+	fixture.page.route.id = '/team/[team]/[env]/postgres/[postgres]/(single)/queries';
+	fixture.page.url = new URL('https://console.test/?branch=preview&interval=6h&database=app');
+	fixture.page.data.interval = '6h';
 });
 
 describe('Postgres Queries page', () => {
 	test('renders app SQL with accessible statistics and no database selector or column', async () => {
 		const { body } = await renderPage();
 		expect(body).not.toContain('<h1');
-		expect(body).toMatch(/<h2\b[^>]*>Query statistics<\/h2>/);
+		expect(body).toMatch(/<h2\b[^>]*>[\s\S]*?Query statistics[\s\S]*?<\/h2>/);
 		expect(body).toContain('class="table-scroll"');
 		expect(body).toContain('sorted by total execution time (highest first)');
 		expect(body).toContain(sql);
@@ -144,7 +160,7 @@ describe('Postgres Queries page', () => {
 		expect(body).toContain('Exported SQL text is limited to 256 characters');
 		expect(body).not.toContain('SQL text unavailable');
 		expect(body).toContain('Calls (estimated)');
-		expect(body).toMatch(/<label[^>]*for="[^"]+"[^>]*>\s*Branch<\/label>/);
+		expect(body).toMatch(/<label[^>]*for="[^"]+"[^>]*>[\s\S]*?Branch[\s\S]*?<\/label>/);
 		expect(body).not.toMatch(/<label[^>]*>\s*Database<\/label>/);
 		expect(body).not.toMatch(/<th\b[^>]*>Database<\/th>/);
 		expect(body).not.toContain('All databases');
@@ -155,7 +171,7 @@ describe('Postgres Queries page', () => {
 
 	test('keeps the deep-linked branch visible before its pagination page is loaded', async () => {
 		const { body } = await renderPage({ branch: 'older' });
-		expect(body).toContain('<option value="older" selected="">older</option>');
+		expect(body).toMatch(/<option value="older" selected="">[\s\S]*?older<\/option>/);
 	});
 
 	test('shows empty activity outside a table', async () => {
@@ -265,16 +281,8 @@ describe('Postgres Queries page', () => {
 	});
 
 	test('includes Queries navigation and preserves branch and time when switching tabs', async () => {
-		const { body } = await render(PostgresLayout, {
-			props: {
-				data: { viewerIsMember: false, isAdmin: false } as ComponentProps<
-					typeof PostgresLayout
-				>['data'],
-				params: { team: 'test', env: 'dev', postgres: 'database' },
-				children: createRawSnippet(() => ({ render: () => '<div>Content</div>' }))
-			}
-		});
-		expect(body.replace(/<!--[\s\S]*?-->/g, '')).toContain('>Queries</span>');
+		const { body } = await renderLayout();
+		expect(body).toContain('>Queries<');
 		expect(body).toContain(
 			'href="/team/test/dev/postgres/database/queries?branch=preview&amp;interval=6h"'
 		);
@@ -283,4 +291,27 @@ describe('Postgres Queries page', () => {
 		);
 		expect(body).not.toContain('database=app');
 	});
+
+	test.each([
+		{ route: 'insights', search: '', interval: '7d' },
+		{ route: 'queries', search: '', interval: '1h' },
+		{ route: 'insights', search: '?interval=invalid', interval: '7d' },
+		{ route: 'queries', search: '?interval=invalid', interval: '1h' }
+	])(
+		'preserves the effective $interval interval from $route with "$search"',
+		async ({ route, search, interval }) => {
+			fixture.page.route.id = `/team/[team]/[env]/postgres/[postgres]/(single)/${route}`;
+			fixture.page.url = new URL(`https://console.test/${search}`);
+			fixture.page.data.interval = interval;
+
+			const { body } = await renderLayout();
+			expect(body).toContain(
+				`href="/team/test/dev/postgres/database/queries?interval=${interval}"`
+			);
+			expect(body).toContain(
+				`href="/team/test/dev/postgres/database/insights?interval=${interval}"`
+			);
+			expect(body).not.toContain('interval=invalid');
+		}
+	);
 });

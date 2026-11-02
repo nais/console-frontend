@@ -21,6 +21,9 @@
 	let metricsSearch = $derived.by(() => {
 		const params = new SvelteURLSearchParams(page.url.searchParams);
 		params.delete('database');
+		if (routeId.endsWith('/insights') || routeId.endsWith('/queries')) {
+			params.set('interval', page.data.interval);
+		}
 		const search = params.toString();
 		return search ? `?${search}` : '';
 	});
