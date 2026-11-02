@@ -180,6 +180,9 @@
 		const milliseconds = Number(
 			(BigInt(active.range.end) - BigInt(active.range.start)) / 1_000_000n
 		);
+		const preset = timePresets.find(({ minutes }) => minutes * 60_000 === milliseconds);
+		if (preset) return relative ? preset.label : `${preset.label.slice('Last '.length)} (fixed)`;
+
 		for (const [size, unit] of [
 			[3_600_000, 'hour'],
 			[60_000, 'minute'],
