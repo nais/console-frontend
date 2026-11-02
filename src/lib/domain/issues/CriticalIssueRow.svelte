@@ -2,6 +2,7 @@
 	import { fragment, graphql, type CriticalIssueRow } from '$houdini';
 	import { BodyLong, Heading, VStack } from '@nais/ds-svelte-community';
 	import { ExclamationmarkTriangleFillIcon } from '@nais/ds-svelte-community/icons';
+	import { issueResource } from './issueResource.js';
 
 	interface Props {
 		issue: CriticalIssueRow;
@@ -96,6 +97,25 @@
 							name
 						}
 					}
+					... on PostgresBranchIssue {
+						__typename
+						severity
+						message
+						teamEnvironment {
+							environment {
+								name
+							}
+							team {
+								slug
+							}
+						}
+						branch {
+							name
+							postgres {
+								name
+							}
+						}
+					}
 					... on SqlInstanceStateIssue {
 						sqlInstance {
 							name
@@ -134,52 +154,6 @@
 		)
 	);
 
-	type IssueData = typeof $data;
-
-	function getResourceInfo(d: IssueData): {
-		name: string;
-		type: 'app' | 'job' | 'database' | 'other';
-		href: string | null;
-	} {
-		const env = d.teamEnvironment.environment.name;
-		const team = d.teamEnvironment.team.slug;
-
-		if ('workload' in d && d.workload) {
-			const w = d.workload as { __typename: string; name: string };
-			const type = w.__typename === 'Application' ? 'app' : 'job';
-			return {
-				name: w.name,
-				type: type === 'app' ? 'app' : 'job',
-				href: `/team/${team}/${env}/${type}/${w.name}`
-			};
-		}
-		if ('application' in d && d.application) {
-			const a = d.application as { name: string };
-			return { name: a.name, type: 'app', href: `/team/${team}/${env}/app/${a.name}` };
-		}
-		if ('job' in d && d.job) {
-			const j = d.job as { name: string };
-			return { name: j.name, type: 'job', href: `/team/${team}/${env}/job/${j.name}` };
-		}
-		if ('sqlInstance' in d && d.sqlInstance) {
-			const s = d.sqlInstance as { name: string };
-			return { name: s.name, type: 'database', href: `/team/${team}/${env}/cloudsql/${s.name}` };
-		}
-		if ('openSearch' in d && d.openSearch) {
-			const o = d.openSearch as { name: string };
-			return { name: o.name, type: 'other', href: `/team/${team}/${env}/opensearch/${o.name}` };
-		}
-		if ('valkey' in d && d.valkey) {
-			const v = d.valkey as { name: string };
-			return { name: v.name, type: 'other', href: `/team/${team}/${env}/valkey/${v.name}` };
-		}
-		if ('unleash' in d && d.unleash) {
-			const u = d.unleash as { name: string };
-			return { name: u.name, type: 'other', href: `/team/${team}/unleash` };
-		}
-		return { name: 'Unknown', type: 'other', href: null };
-	}
-
 	function getIssueTitle(typename: string): string {
 		const map: Record<string, string> = {
 			NoRunningInstancesIssue: 'No running instances',
@@ -193,6 +167,7 @@
 			MissingSbomIssue: 'Missing SBOM',
 			VulnerableImageIssue: 'Vulnerable image',
 			OpenSearchIssue: 'OpenSearch issue',
+			PostgresBranchIssue: 'Postgres branch failure',
 			SqlInstanceStateIssue: 'Database unhealthy',
 			SqlInstanceVersionIssue: 'Outdated database version',
 			ValkeyIssue: 'Valkey issue',
@@ -202,7 +177,7 @@
 		return map[typename] ?? typename;
 	}
 
-	let resource = $derived(getResourceInfo($data));
+	let resource = $derived(issueResource($data));
 	let title = $derived(getIssueTitle($data.__typename));
 </script>
 
