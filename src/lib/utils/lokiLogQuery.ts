@@ -90,16 +90,15 @@ export function buildLokiLogQuery({
 	];
 	if (cluster !== undefined) selectors.push(`k8s_cluster_name=${JSON.stringify(cluster)}`);
 	const labelFilters = [`k8s_container_name=~${exactMatch([container])}`];
-	if (instances !== undefined || podNamePrefix !== undefined) {
+	if (podNamePrefix !== undefined) {
 		labelFilters.push(
-			`k8s_pod_name=~${
-				podNamePrefix === undefined
-					? exactMatch(instances ?? [])
-					: JSON.stringify(
-							`^${escapeRegex(podNamePrefix)}${exactPostgresBranch ? '[a-f0-9]{8}-[0-9]+' : '.*'}$`
-						)
-			}`
+			`k8s_pod_name=~${JSON.stringify(
+				`^${escapeRegex(podNamePrefix)}${exactPostgresBranch ? '[a-f0-9]{8}-[0-9]+' : '.*'}$`
+			)}`
 		);
+	}
+	if (instances !== undefined && (podNamePrefix === undefined || instances.length > 0)) {
+		labelFilters.push(`k8s_pod_name=~${exactMatch(instances)}`);
 	}
 	let query = `{${selectors.join(',')}} | ${labelFilters.join(' | ')}`;
 

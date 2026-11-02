@@ -1,9 +1,9 @@
 <script lang="ts">
-	import LokiLogs from '#lib/domain/logs/LokiLogs.svelte';
+	import LogExplorer from '#lib/domain/logs/LogExplorer.svelte';
 	import GraphErrors from '#lib/ui/GraphErrors.svelte';
 	import { formatPostgresLogInstance } from '#lib/utils/logViewer.js';
 	import { page } from '$app/state';
-	import { Alert, Button, Loader, Select } from '@nais/ds-svelte-community';
+	import { Alert, Button, Heading, Loader, Select } from '@nais/ds-svelte-community';
 	import type { PageProps } from './$types';
 
 	let { data }: PageProps = $props();
@@ -39,6 +39,7 @@
 </script>
 
 <GraphErrors errors={$PostgresLogs.errors} />
+<Heading as="h2" size="small" class="aksel-sr-only">Logs</Heading>
 
 {#if $PostgresLogs.fetching && !postgres}
 	<div class="loading-centered" role="status" aria-label="Loading">
@@ -54,23 +55,23 @@
 		{#if branchLoadError}<Alert variant="error" size="small">{branchLoadError}</Alert>{/if}
 
 		{#key `${page.params.team}/${page.params.env}/${page.params.postgres}/${branch}`}
-			<LokiLogs
+			<LogExplorer
 				team={page.params.team!}
 				environment={page.params.env!}
 				workload={page.params.postgres!}
+				tenant={page.data.tenantName ?? ''}
 				container="postgres"
 				instances={[]}
-				initialInstances={[]}
 				podNamePrefix={`pg-${page.params.postgres}-${branch ? `${branch}-` : ''}`}
 				exactPostgresBranch={branch !== ''}
 				formatInstanceName={(instance) =>
 					formatPostgresLogInstance(instance, page.params.postgres!)}
-				startOnMount={true}
 				hasLoki={true}
 			>
 				{#snippet filters()}
 					<Select
 						label="Branch"
+						hideLabel
 						size="small"
 						value={branch}
 						onchange={(event) => (selectedBranch = event.currentTarget.value)}
@@ -83,7 +84,7 @@
 						{/each}
 					</Select>
 				{/snippet}
-			</LokiLogs>
+			</LogExplorer>
 		{/key}
 	</div>
 {/if}
