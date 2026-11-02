@@ -626,6 +626,23 @@
 		}
 	}
 
+	@container (max-width: 500px) {
+		.workload-container {
+			grid-template-columns: 1fr;
+		}
+
+		.workload-details {
+			grid-template-columns: 1fr;
+			padding-left: 0;
+			border-left: none;
+			gap: var(--ax-space-8);
+		}
+
+		.detail-row {
+			gap: var(--ax-space-4);
+		}
+	}
+
 	code {
 		font-size: var(--ax-font-size-small);
 		word-break: break-all;

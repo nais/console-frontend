@@ -4,16 +4,16 @@ import {
 	TeamCVEWorkloadsStore,
 	type TeamCVEWorkloads$result
 } from '$houdini';
-import { page } from '$app/state';
 import type { ComponentProps } from 'svelte';
 import { render } from 'svelte/server';
 import { get, readable } from 'svelte/store';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import TeamCvePage from './+page.svelte';
 
-const { loadPage, loadWorkloads } = vi.hoisted(() => ({
+const { loadPage, loadWorkloads, pageUrl } = vi.hoisted(() => ({
 	loadPage: vi.fn(async () => ({})),
-	loadWorkloads: vi.fn(async () => ({}))
+	loadWorkloads: vi.fn(async () => ({})),
+	pageUrl: new URL('https://console.example.com/team/example-team/vulnerabilities/CVE-2022-22965')
 }));
 
 vi.mock('$houdini', async (importOriginal) => {
@@ -32,7 +32,7 @@ vi.mock('$app/environment', () => ({ browser: false, building: false }));
 vi.mock('$app/navigation', () => ({ goto: vi.fn() }));
 vi.mock('$app/state', () => ({
 	page: {
-		url: new URL('https://console.example.com/team/isa/vulnerabilities/CVE-2022-22965'),
+		url: pageUrl,
 		data: { tenantName: 'nais' }
 	}
 }));
@@ -48,7 +48,7 @@ function finding(name: string, environment: string, vulnerabilityId = 'shared'):
 			__typename: 'Application',
 			id: name,
 			name,
-			team: { slug: 'isa' },
+			team: { slug: 'example-team' },
 			teamEnvironment: { environment: { name: environment } },
 			image: { name: 'registry.example/app', tag: 'v1', digest: null }
 		},
@@ -66,7 +66,7 @@ function finding(name: string, environment: string, vulnerabilityId = 'shared'):
 afterEach(() => vi.restoreAllMocks());
 
 async function renderFindings(sort: string, nodes: Finding[], viewerIsMember = false) {
-	page.url.search = `?sort=${sort}`;
+	pageUrl.search = `?sort=${sort}`;
 	const details = new TeamCVEPageStore();
 	const initialDetails = get(details);
 	vi.spyOn(details, 'subscribe').mockImplementation(
@@ -118,11 +118,11 @@ async function renderFindings(sort: string, nodes: Finding[], viewerIsMember = f
 	);
 	return render(TeamCvePage, {
 		props: {
-			params: { team: 'isa', cve: 'CVE-2022-22965' },
+			params: { team: 'example-team', cve: 'CVE-2022-22965' },
 			data: {
 				TeamCVEPage: details,
 				TeamCVEWorkloads: workloads,
-				teamSlug: 'isa',
+				teamSlug: 'example-team',
 				cveIdentifier: 'CVE-2022-22965',
 				rows: 25
 			} as ComponentProps<typeof TeamCvePage>['data']
@@ -155,8 +155,8 @@ describe('team CVE grouping', () => {
 		const second = finding('alpha', 'prod', 'second');
 		const { body } = await renderFindings('WORKLOAD-ASC', [first, second]);
 		expect([...body.matchAll(/<h3\b/g)]).toHaveLength(1);
-		expect(body).toContain('/team/isa/dev/app/alpha');
-		expect(body).toContain('/team/isa/prod/app/alpha');
+		expect(body).toContain('/team/example-team/dev/app/alpha');
+		expect(body).toContain('/team/example-team/prod/app/alpha');
 	});
 
 	it('renders one flat row per finding with its own image and remediation', async () => {
@@ -177,10 +177,10 @@ describe('team CVE grouping', () => {
 		const { body } = await renderFindings('PACKAGE-ASC', [first, second]);
 		const rows = body.split(/class="workload-container\b[^"]*"/).slice(1);
 		expect(rows).toHaveLength(2);
-		expect(rows[0]).toContain('/team/isa/dev/app/alpha');
+		expect(rows[0]).toContain('/team/example-team/dev/app/alpha');
 		expect(rows[0]).toContain('registry.example/app:v1');
 		expect(rows[0]).toContain('2.0');
-		expect(rows[1]).toContain('/team/isa/prod/app/beta');
+		expect(rows[1]).toContain('/team/example-team/prod/app/beta');
 		expect(rows[1]).toContain('registry.example/other:v2');
 		expect(rows[1]).toContain('4.0');
 	});
@@ -217,10 +217,10 @@ describe('team CVE grouping', () => {
 		async (field) => {
 			for (const direction of ['ASC', 'DESC']) {
 				const url = new URL(
-					`https://console.example.com/team/isa/vulnerabilities/CVE-2022-22965?sort=${field}-${direction}`
+					`https://console.example.com/team/example-team/vulnerabilities/CVE-2022-22965?sort=${field}-${direction}`
 				);
 				await load({
-					params: { team: 'isa', cve: 'CVE-2022-22965' },
+					params: { team: 'example-team', cve: 'CVE-2022-22965' },
 					url
 				} as Parameters<typeof load>[0]);
 				expect(loadWorkloads).toHaveBeenLastCalledWith({
@@ -228,7 +228,7 @@ describe('team CVE grouping', () => {
 					variables: {
 						identifier: 'CVE-2022-22965',
 						first: 25,
-						filter: { teamSlugs: ['isa'] },
+						filter: { teamSlugs: ['example-team'] },
 						orderBy: { field, direction }
 					}
 				});
