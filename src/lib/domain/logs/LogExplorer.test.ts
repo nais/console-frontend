@@ -1,4 +1,6 @@
 import { render } from 'svelte/server';
+import { createRawSnippet } from 'svelte';
+import { formatPostgresLogInstance } from '#lib/utils/logViewer.js';
 import { describe, expect, it } from 'vitest';
 import LogExplorer from './LogExplorer.svelte';
 
@@ -71,5 +73,32 @@ describe('LogExplorer', () => {
 		expect(body).toContain('placeholder="All instances"');
 		expect(body).not.toContain('Match instance name prefix');
 		expect(body).not.toContain('Instance prefix');
+	});
+
+	it('renders resource-specific filters in the compact filter row', async () => {
+		const { body } = await render(LogExplorer, {
+			props: {
+				...props,
+				filters: createRawSnippet(() => ({ render: () => '<span>Branch controls</span>' }))
+			}
+		});
+		expect(body).toContain('Branch controls');
+		expect(body.indexOf('Branch controls')).toBeLessThan(body.indexOf('Log level'));
+	});
+
+	it('keeps raw Postgres pod values while formatting their instance suggestions', async () => {
+		const { body } = await render(LogExplorer, {
+			props: {
+				...props,
+				workload: 'roger',
+				container: 'postgres',
+				podNamePrefix: 'pg-roger-main-',
+				exactPostgresBranch: true,
+				instances: ['pg-roger-main-f222277b-1'],
+				formatInstanceName: (name) => formatPostgresLogInstance(name, 'roger')
+			}
+		});
+		expect(body).toContain('value="pg-roger-main-f222277b-1"');
+		expect(body).toContain('main-1</option>');
 	});
 });

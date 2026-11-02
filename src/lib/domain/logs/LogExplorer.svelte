@@ -29,7 +29,7 @@
 		CogIcon,
 		SkipForwardIcon
 	} from '@nais/ds-svelte-community/icons';
-	import { onMount, tick, untrack } from 'svelte';
+	import { onMount, tick, untrack, type Snippet } from 'svelte';
 	import LogResults from './LogResults.svelte';
 	import LogVolume from './LogVolume.svelte';
 	import {
@@ -50,7 +50,12 @@
 		environment,
 		tenant,
 		workload,
+		container,
 		instances,
+		podNamePrefix,
+		exactPostgresBranch = false,
+		filters,
+		formatInstanceName,
 		initialInstance = '',
 		initialInstanceIsPrefix = false,
 		hasLoki,
@@ -61,7 +66,12 @@
 		environment: string;
 		tenant: string;
 		workload: string;
+		container?: string;
 		instances: string[];
+		podNamePrefix?: string;
+		exactPostgresBranch?: boolean;
+		filters?: Snippet;
+		formatInstanceName?: (instance: string) => string;
 		initialInstance?: string;
 		initialInstanceIsPrefix?: boolean;
 		hasLoki: boolean;
@@ -136,10 +146,12 @@
 		buildLokiLogQuery({
 			team,
 			workload,
-			container: workload,
+			container: container ?? workload,
 			cluster: environmentCluster(environment, tenant),
 			instances: instance.trim() && !instanceIsPrefix ? [instance.trim()] : undefined,
-			podNamePrefix: instance.trim() && instanceIsPrefix ? instance.trim() : undefined,
+			podNamePrefix:
+				podNamePrefix ?? (instance.trim() && instanceIsPrefix ? instance.trim() : undefined),
+			exactPostgresBranch,
 			search,
 			logLevels: level ? [level] : undefined,
 			labelFilters
@@ -168,6 +180,9 @@
 		const milliseconds = Number(
 			(BigInt(active.range.end) - BigInt(active.range.start)) / 1_000_000n
 		);
+		const preset = timePresets.find(({ minutes }) => minutes * 60_000 === milliseconds);
+		if (preset) return relative ? preset.label : `${preset.label.slice('Last '.length)} (fixed)`;
+
 		for (const [size, unit] of [
 			[3_600_000, 'hour'],
 			[60_000, 'minute'],
@@ -638,35 +653,40 @@
 					/>
 				</div>
 			{/if}
-			{#if !advanced}
+			{#if filters || !advanced}
 				<div class="filters">
-					<Select
-						label="Log level"
-						hideLabel
-						size="small"
-						bind:value={level}
-						onchange={() => scheduleQuery()}
-					>
-						<option value="">All levels</option>
-						{#each ['TRACE', 'DEBUG', 'INFO', 'WARN', 'ERROR', 'FATAL'] as name (name)}
-							<option value={name}>{name}</option>
-						{/each}
-					</Select>
-					<div class="instance-field">
-						<TextField
-							label="Instance"
+					{@render filters?.()}
+					{#if !advanced}
+						<Select
+							label="Log level"
 							hideLabel
-							placeholder="All instances"
 							size="small"
-							list={`${id}-instances`}
-							bind:value={instance}
-							oninput={() => scheduleQuery(400)}
-							onkeydown={submitFilter}
-						/>
-					</div>
-					<datalist id={`${id}-instances`}>
-						{#each availableInstances as name (name)}<option value={name}></option>{/each}
-					</datalist>
+							bind:value={level}
+							onchange={() => scheduleQuery()}
+						>
+							<option value="">All levels</option>
+							{#each ['TRACE', 'DEBUG', 'INFO', 'WARN', 'ERROR', 'FATAL'] as name (name)}
+								<option value={name}>{name}</option>
+							{/each}
+						</Select>
+						<div class="instance-field">
+							<TextField
+								label="Instance"
+								hideLabel
+								placeholder="All instances"
+								size="small"
+								list={`${id}-instances`}
+								bind:value={instance}
+								oninput={() => scheduleQuery(400)}
+								onkeydown={submitFilter}
+							/>
+						</div>
+						<datalist id={`${id}-instances`}>
+							{#each availableInstances as name (name)}
+								<option value={name}>{formatInstanceName?.(name) ?? name}</option>
+							{/each}
+						</datalist>
+					{/if}
 				</div>
 			{/if}
 		</form>

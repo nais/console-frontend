@@ -63,13 +63,15 @@ VITE_SCHEMA_ENDPOINT="http://localhost:4242/graphql"
 
 ### Log explorer
 
-The **Logs** tab for applications and jobs uses the authenticated nais/api Loki proxy at
+The **Logs** tab for applications, jobs and Postgres uses the authenticated nais/api Loki proxy at
 `/api/loki/api/v1/`. Local development forwards this path to `VITE_PROXY_ENDPOINT`, alongside
-GraphQL; both nais/api and the local proxy must support Loki forwarding. The Postgres log
-viewer is unchanged.
+GraphQL; both nais/api and the local proxy must support Loki forwarding.
 
 - Search, level, instance and label filters run automatically. Text inputs debounce for
   400 ms. Workload scope stays fixed, and historical instances remain searchable.
+- Postgres defaults to its active branch and also supports **All branches**. Branch
+  selection excludes similarly named branches and pooler pods; instance filters narrow
+  the selected branch rather than replacing its scope.
 - Time presets range from 15 seconds to 7 days. Previous/next move by one complete window;
   **Jump to now** preserves its duration and restores a relative range. Times use the
   browser's time zone; fixed windows retain their exact UTC instants across daylight-saving
