@@ -34,11 +34,9 @@ export function resolveLogRange(
 	to: string,
 	now = Date.now()
 ): LogRange {
-	const start =
-		relativeMinutes === undefined
-			? new Date(from).getTime()
-			: now - Math.round(relativeMinutes * 60_000);
-	const end = relativeMinutes === undefined ? new Date(to).getTime() : now;
+	if (relativeMinutes === undefined) return resolveCustomLogRange(from, to, {}, now);
+	const start = now - Math.round(relativeMinutes * 60_000);
+	const end = now;
 	if (!Number.isFinite(start) || !Number.isFinite(end) || start < 0 || start >= end || end > now) {
 		throw new Error('Choose a valid time range in the past, with From before To.');
 	}
@@ -46,6 +44,27 @@ export function resolveLogRange(
 		start: String(BigInt(start) * nanosecondsPerMillisecond),
 		end: String(BigInt(end) * nanosecondsPerMillisecond)
 	};
+}
+
+export function resolveCustomLogRange(
+	from: string,
+	to: string,
+	preserved: Partial<LogRange>,
+	now = Date.now()
+): LogRange {
+	const error = 'Choose a valid time range in the past, with From before To.';
+	function endpoint(value: string, timestamp: string | undefined): bigint {
+		if (timestamp !== undefined) return BigInt(timestamp);
+		const milliseconds = new Date(value).getTime();
+		if (!Number.isFinite(milliseconds)) throw new Error(error);
+		return BigInt(milliseconds) * nanosecondsPerMillisecond;
+	}
+	const start = endpoint(from, preserved.start);
+	const end = endpoint(to, preserved.end);
+	if (start < 0n || start >= end || end > BigInt(now) * nanosecondsPerMillisecond) {
+		throw new Error(error);
+	}
+	return { start: String(start), end: String(end) };
 }
 
 export function logDate(timestamp: string): Date {

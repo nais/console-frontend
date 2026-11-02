@@ -1,5 +1,11 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { fetchLogPage, fetchLogVolume, moveLogRange, resolveLogRange } from './loki.js';
+import {
+	fetchLogPage,
+	fetchLogVolume,
+	moveLogRange,
+	resolveCustomLogRange,
+	resolveLogRange
+} from './loki.js';
 
 function streams(values: [string, string][], labels = { service_name: 'app' }) {
 	return {
@@ -15,6 +21,59 @@ function respond(body: unknown, status = 200) {
 afterEach(() => vi.unstubAllGlobals());
 
 describe('Loki history', () => {
+	describe('custom endpoints across a DST overlap', () => {
+		const now = Date.UTC(2026, 9, 25, 3);
+		const fixed = { start: '1792890900000000123', end: '1792891800000000789' };
+
+		it('preserves both UTC instants and nanoseconds before either field is edited', () => {
+			expect(
+				resolveCustomLogRange('2026-10-25T02:15:00.000', '2026-10-25T02:30:00.000', fixed, now)
+			).toEqual(fixed);
+		});
+
+		it('parses an edited From while preserving the untouched To', () => {
+			expect(
+				resolveCustomLogRange(
+					'2026-10-25T00:45:00Z',
+					'2026-10-25T02:30:00.000',
+					{ end: fixed.end },
+					now
+				)
+			).toEqual({ start: '1792889100000000000', end: fixed.end });
+		});
+
+		it('parses an edited To while preserving the untouched From', () => {
+			expect(
+				resolveCustomLogRange(
+					'2026-10-25T02:15:00.000',
+					'2026-10-25T01:45:00Z',
+					{ start: fixed.start },
+					now
+				)
+			).toEqual({ start: fixed.start, end: '1792892700000000000' });
+		});
+
+		it('parses both endpoints after both fields have been edited', () => {
+			expect(
+				resolveCustomLogRange('2026-10-25T02:20:00+02:00', '2026-10-25T02:25:00+02:00', {}, now)
+			).toEqual({ start: '1792887600000000000', end: '1792887900000000000' });
+		});
+
+		it('validates edits against the preserved UTC instant rather than a reparsed local time', () => {
+			expect(() =>
+				resolveCustomLogRange(
+					'2026-10-25T02:15:00.000',
+					'2026-10-25T00:55:00Z',
+					{ start: fixed.start },
+					now
+				)
+			).toThrow('valid time range');
+			expect(() =>
+				resolveCustomLogRange('', '2026-10-25T02:30:00.000', { end: fixed.end }, now)
+			).toThrow('valid time range');
+		});
+	});
+
 	it.each([0.25, 0.5, 1, 5, 10, 15, 30, 45, 60, 180, 360, 720, 1440, 2880, 10080])(
 		'resolves the %s-minute preset precisely',
 		(minutes) => {

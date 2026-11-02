@@ -74,6 +74,8 @@ viewer is unchanged.
   **Jump to now** preserves its duration and restores a relative range. Times use the
   browser's time zone; fixed windows retain their exact UTC instants across daylight-saving
   transitions. Next-window availability updates as time advances without fetching logs.
+  Switching to **Custom range** preserves the UTC instant of each endpoint until that
+  field is edited.
 - **Settings** contains auto-refresh (off by default), page size, wrapping, sorting,
   **Show query**, and external links. Relative ranges advance on refresh; fixed ranges do
   not. Auto-refresh replaces loaded pages.

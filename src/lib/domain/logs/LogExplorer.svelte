@@ -37,6 +37,7 @@
 		fetchLogVolume,
 		logDate,
 		moveLogRange,
+		resolveCustomLogRange,
 		resolveLogRange,
 		toLocalDateTime,
 		type LogEntry,
@@ -93,6 +94,8 @@
 	);
 	let from = $state('');
 	let to = $state('');
+	let fromTimestamp = $state<string>();
+	let toTimestamp = $state<string>();
 	let search = $state('');
 	let level = $state('');
 	let instance = $state(untrack(() => initialInstance));
@@ -249,6 +252,9 @@
 			if (!active) throw new Error('Run a query before selecting a fixed time range.');
 			return active.range;
 		}
+		if (timeRange === 'custom') {
+			return resolveCustomLogRange(from, to, { start: fromTimestamp, end: toTimestamp });
+		}
 		return resolveLogRange(selectedMinutes, from, to);
 	}
 
@@ -312,6 +318,8 @@
 		timeRange = edit ? 'custom' : 'absolute';
 		from = toLocalDateTime(logDate(range.start));
 		to = toLocalDateTime(logDate(range.end));
+		fromTimestamp = range.start;
+		toTimestamp = range.end;
 	}
 
 	function selectBucket(bucket: VolumeBucket) {
@@ -327,8 +335,8 @@
 	}
 
 	function setTimeRange() {
-		if (timeRange === 'custom' && !from) {
-			absoluteRange(resolveLogRange(15, '', ''), true);
+		if (timeRange === 'custom') {
+			absoluteRange(active?.range ?? resolveLogRange(15, '', ''), true);
 		}
 		scheduleQuery(0, true);
 	}
@@ -610,7 +618,10 @@
 						size="small"
 						step="0.001"
 						bind:value={from}
-						oninput={() => scheduleQuery(400, true)}
+						oninput={() => {
+							fromTimestamp = undefined;
+							scheduleQuery(400, true);
+						}}
 						required
 					/>
 					<TextField
@@ -619,7 +630,10 @@
 						size="small"
 						step="0.001"
 						bind:value={to}
-						oninput={() => scheduleQuery(400, true)}
+						oninput={() => {
+							toTimestamp = undefined;
+							scheduleQuery(400, true);
+						}}
 						required
 					/>
 				</div>
