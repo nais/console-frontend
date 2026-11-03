@@ -17,7 +17,10 @@
 	const selectedInstance = $derived(page.url.searchParams.get('instance'));
 	const initialInstances = $derived(
 		selectedInstance
-			? instances.filter((instance) => instance.startsWith(selectedInstance))
+			? (runs
+					.find((run) => run.name === selectedInstance)
+					?.instances.nodes.map((node) => node.name) ??
+					instances.filter((instance) => instance.startsWith(selectedInstance)))
 			: (runs.some((run) => run.status.state === JobRunState.RUNNING)
 					? runs.filter((run) => run.status.state === JobRunState.RUNNING)
 					: runs

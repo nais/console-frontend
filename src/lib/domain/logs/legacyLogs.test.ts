@@ -32,7 +32,7 @@ function application(logDestinations: unknown[] = []) {
 	} as ComponentProps<typeof Logs>;
 }
 
-function job(logDestinations: unknown[] = [], running = true) {
+function job(logDestinations: unknown[] = [], running = true, completedRunName = 'job-run-2') {
 	return {
 		team: {
 			slug: 'team',
@@ -49,9 +49,9 @@ function job(logDestinations: unknown[] = [], running = true) {
 								instances: { nodes: [{ name: 'job-run-1-one' }, { name: 'job-run-1-two' }] }
 							},
 							{
-								name: 'job-run-2',
+								name: completedRunName,
 								status: { state: 'COMPLETED' },
-								instances: { nodes: [{ name: 'job-run-2-one' }] }
+								instances: { nodes: [{ name: `${completedRunName}-one` }] }
 							}
 						]
 					}
@@ -131,6 +131,18 @@ it('selects all instances for a linked job run instead of the running run', asyn
 	page.url.searchParams.set('instance', 'job-run-2');
 	const { body } = await render(JobLogs, { props: job() });
 	expect(selectedInstances(body)).toEqual(['run-2-one']);
+});
+
+it('matches a linked run exactly before matching instance prefixes', async () => {
+	page.url.searchParams.set('instance', 'job-run-1');
+	const { body } = await render(JobLogs, { props: job([], true, 'job-run-10') });
+	expect(selectedInstances(body)).toEqual(['run-1-one', 'run-1-two']);
+});
+
+it('still matches instance prefixes when no run name matches exactly', async () => {
+	page.url.searchParams.set('instance', 'job-run-1-o');
+	const { body } = await render(JobLogs, { props: job() });
+	expect(selectedInstances(body)).toEqual(['run-1-one']);
 });
 
 it('shows an empty state instead of streaming all instances for an unmatched job run', async () => {
