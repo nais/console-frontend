@@ -7,8 +7,11 @@
 	import WorkloadsWithoutSbom from '#lib/domain/vulnerability/WorkloadsWithoutSbom.svelte';
 	import WorkloadsWithVulnerabilities from '#lib/domain/vulnerability/WorkloadsWithVulnerabilities.svelte';
 	import ExternalLink from '#lib/ui/ExternalLink.svelte';
+	import { mergeWorkloadLabelFacets } from '#lib/domain/vulnerability/workloadLabels.js';
 	import GraphErrors from '#lib/ui/GraphErrors.svelte';
 	import { Alert, BodyLong, Heading } from '@nais/ds-svelte-community';
+	import { page } from '$app/state';
+	import { SvelteURLSearchParams } from 'svelte/reactivity';
 	import type { PageProps } from './$types';
 
 	let { data }: PageProps = $props();
@@ -17,8 +20,20 @@
 		TeamNoSbomWorkloads,
 		TeamPriorityWorkloadsHigh,
 		TeamSeverityWorkloads,
-		teamSlug
+		teamSlug,
+		selection
 	} = $derived(data);
+	const labelFacets = $derived(
+		mergeWorkloadLabelFacets(
+			$TeamVulnerabilities.data?.team.applications.facets?.labels ?? [],
+			$TeamVulnerabilities.data?.team.jobs.facets?.labels ?? []
+		)
+	);
+	const priorityHref = $derived.by(() => {
+		const params = new SvelteURLSearchParams(page.url.searchParams);
+		params.set('view', 'priority');
+		return `?${params}#priority-groups`;
+	});
 </script>
 
 <GraphErrors errors={$TeamVulnerabilities.errors} />
@@ -29,7 +44,7 @@
 	)}
 	{const workloadCount = $derived($TeamVulnerabilities.data.team.workloads.pageInfo.totalCount)}
 	{const noSboms = $derived(
-		workloadCount > 0 && $TeamVulnerabilities.data.team.vulnerabilitySummary?.sbomCount === 0
+		workloadCount > 0 && $TeamVulnerabilities.data.team.teamVulnerabilitySummary?.sbomCount === 0
 	)}
 	<div class="wrapper">
 		{#if noSboms}
@@ -47,7 +62,7 @@
 			</Alert>
 		{:else if missingSbomCount > 0}
 			<Alert variant="warning">
-				Vulnerability data is incomplete: {missingSbomCount}
+				Vulnerability data is incomplete for this team: {missingSbomCount}
 				{missingSbomCount === 1 ? 'workload has' : 'workloads have'} no SBOM. The vulnerability counts
 				do not cover these workloads. Learn how to generate SBOMs in the
 				<ExternalLink href={docURL('/services/vulnerabilities/how-to/sbom/')}
@@ -57,7 +72,7 @@
 		{/if}
 
 		{#if noSboms || missingSbomCount > 0}
-			{#key teamSlug}
+			{#key JSON.stringify([teamSlug, noSboms, noSboms ? workloadCount : missingSbomCount])}
 				<WorkloadsWithoutSbom
 					count={noSboms ? workloadCount : missingSbomCount}
 					allWithoutUsableSbom={noSboms}
@@ -68,14 +83,14 @@
 
 		{#if $TeamVulnerabilities.data.team.vulnerabilitySummary && !noSboms}
 			{const urgentCount = $derived(
-				$TeamVulnerabilities.data.team.urgentVulnerabilityIssues.pageInfo.totalCount
+				$TeamVulnerabilities.data.team.urgentVulnerabilityIssues?.pageInfo.totalCount ?? 0
 			)}
 			{const exploitedWorkloadCount = $derived(
 				$TeamVulnerabilities.data.team.exploitedWorkloads.pageInfo.totalCount
 			)}
 			<VulnerabilitySummary
 				vulnerabilitySummary={$TeamVulnerabilities.data.team.vulnerabilitySummary}
-				knownExploitedHref="?view=priority#priority-groups"
+				knownExploitedHref={priorityHref}
 				{urgentCount}
 				knownExploitedWorkloadCount={exploitedWorkloadCount}
 			/>
@@ -100,6 +115,8 @@
 						team={teamSlug}
 						high={TeamPriorityWorkloadsHigh}
 						severity={TeamSeverityWorkloads}
+						{selection}
+						{labelFacets}
 						environmentNames={$TeamVulnerabilities.data.team.environments.map(
 							(env) => env.environment.name
 						)}

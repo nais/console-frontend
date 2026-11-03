@@ -10133,7 +10133,9 @@ type Team implements ActivityLogger & Node {
     """Get items before this cursor."""
     before: Cursor
 
-    """Filter vulnerability summaries by environment."""
+    """
+    Filter workload vulnerability summaries by environment, priority, KEV or user labels.
+    """
     filter: TeamVulnerabilitySummaryFilter
 
     """
@@ -10149,7 +10151,10 @@ type Team implements ActivityLogger & Node {
     """Ordering options for items returned from the connection."""
     orderBy: VulnerabilitySummaryOrder
   ): WorkloadVulnerabilitySummaryConnection!
-  vulnerabilitySummary(filter: TeamVulnerabilitySummaryFilter): TeamVulnerabilitySummary!
+  vulnerabilitySummary(
+    """Filter the aggregate by environment, priority, KEV or user labels."""
+    filter: TeamVulnerabilitySummaryFilter
+  ): TeamVulnerabilitySummary!
   workloadUtilization(resourceType: UtilizationResourceType!): [WorkloadUtilizationData]!
 
   """Nais workloads owned by the team."""
@@ -11192,7 +11197,9 @@ type TeamVulnerabilitySummary {
   """Risk score of the team."""
   riskScore: Int!
 
-  """Trend of vulnerability status for the team."""
+  """
+  Trend of vulnerability status for the whole team. Not affected by the vulnerabilitySummary filter.
+  """
   riskScoreTrend: TeamVulnerabilityRiskScoreTrend!
 
   """Number of workloads with a software bill of materials (SBOM) attached."""
@@ -11212,6 +11219,12 @@ input TeamVulnerabilitySummaryFilter {
   one CISA Known Exploited Vulnerabilities (KEV) catalog entry.
   """
   hasKevEntry: Boolean
+
+  """
+  Match all user-label filters for team vulnerability summaries and their aggregate.
+  An omitted value matches any value; an empty string matches only an empty value.
+  """
+  labels: [LabelFilter!]
 
   """
   Only return vulnerability summaries whose highest priority is exactly one of
