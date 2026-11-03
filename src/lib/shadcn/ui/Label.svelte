@@ -56,15 +56,4 @@
 	.sh-label--spacing {
 		margin-bottom: var(--ax-space-6);
 	}
-	.sr-only {
-		position: absolute;
-		width: var(--ax-space-1);
-		height: var(--ax-space-1);
-		padding: 0;
-		margin: calc(-1 * var(--ax-space-1));
-		overflow: hidden;
-		clip: rect(0, 0, 0, 0);
-		white-space: nowrap;
-		border: 0;
-	}
 </style>

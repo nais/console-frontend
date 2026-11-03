@@ -1,29 +1,25 @@
 <script lang="ts">
 	import { resolve } from '$app/paths';
 	import { page } from '$app/state';
-	import { Tab, TabList, Tabs } from '#lib/shadcn/ui/index.js';
+	import { NavTabs } from '#lib/shadcn/ui/index.js';
 	import type { LayoutProps } from './$types';
 
 	let { children }: LayoutProps = $props();
+	const tabs = $derived([
+		{
+			value: '/team/[team]/[env]/kafka/[kafka]/(single)',
+			label: 'Overview',
+			href: resolve('/team/[team]/[env]/kafka/[kafka]/(single)', page.params as never)
+		},
+		{
+			value: '/team/[team]/[env]/kafka/[kafka]/(single)/insights',
+			label: 'Insights',
+			href: resolve('/team/[team]/[env]/kafka/[kafka]/(single)/insights', page.params as never)
+		}
+	]);
 </script>
 
-<Tabs value={page.route.id ?? ''} size="small">
-	<TabList>
-		<Tab
-			value="/team/[team]/[env]/kafka/[kafka]/(single)"
-			as="a"
-			href={resolve('/team/[team]/[env]/kafka/[kafka]/(single)', page.params as never)}
-			>Overview</Tab
-		>
-		<Tab
-			value="/team/[team]/[env]/kafka/[kafka]/(single)/insights"
-			as="a"
-			href={resolve('/team/[team]/[env]/kafka/[kafka]/(single)/insights', page.params as never)}
-			>Insights</Tab
-		>
-	</TabList>
-
-	<div class="tab-content">
-		{@render children()}
-	</div>
-</Tabs>
+<NavTabs items={tabs} value={page.route.id ?? ''} ariaLabel="Kafka navigation" />
+<div class="tab-content">
+	{@render children()}
+</div>

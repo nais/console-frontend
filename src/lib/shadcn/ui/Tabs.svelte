@@ -1,22 +1,23 @@
 <script lang="ts" module>
-	import { getContext, hasContext } from 'svelte';
+	import { createContext } from 'svelte';
 
 	export interface TabsUiContext {
 		readonly value: string;
 		readonly size: 'small' | 'medium';
 		activate(value: string): void;
+		tabId(value: string): string;
+		panelId(value: string): string;
 	}
 
-	const contextKey = Symbol('TabsUiContext');
+	const [getTabsContext, setTabsContext, hasTabsContext] = createContext<TabsUiContext>();
 
 	export function GetTabsUiContext(): TabsUiContext | undefined {
-		if (!hasContext(contextKey)) return undefined;
-		return getContext<TabsUiContext>(contextKey);
+		return hasTabsContext() ? getTabsContext() : undefined;
 	}
 </script>
 
 <script lang="ts">
-	import { setContext, type Snippet } from 'svelte';
+	import type { Snippet } from 'svelte';
 	import type { HTMLAttributes } from 'svelte/elements';
 
 	interface Props extends HTMLAttributes<HTMLDivElement> {
@@ -40,6 +41,7 @@
 	}: Props = $props();
 
 	let current = $derived(value || defaultValue);
+	const uid = $props.id();
 
 	const ctx: TabsUiContext = {
 		get value() {
@@ -51,10 +53,16 @@
 		activate(next: string) {
 			value = next;
 			onChange?.(next);
+		},
+		tabId(value: string) {
+			return `${uid}-tab-${encodeURIComponent(value)}`;
+		},
+		panelId(value: string) {
+			return `${uid}-panel-${encodeURIComponent(value)}`;
 		}
 	};
 
-	setContext(contextKey, ctx);
+	setTabsContext(ctx);
 </script>
 
 <div class={['sh-ui-tabs', className]} {...rest}>

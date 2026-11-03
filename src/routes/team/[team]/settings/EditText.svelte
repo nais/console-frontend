@@ -74,13 +74,13 @@
 
 	textarea {
 		height: 100%;
-		padding: 0.375rem 0.625rem;
-		border-radius: calc(var(--radius) - 2px);
-		border: 1px solid var(--input);
+		padding: var(--ax-space-6) var(--ax-space-10);
+		border-radius: var(--radius-sm);
+		border: var(--sh-border-width) solid var(--input);
 		background-color: var(--background);
 		color: var(--foreground);
 		font: inherit;
-		font-size: 0.875rem;
+		font-size: var(--sh-font-size-sm);
 		box-sizing: border-box;
 	}
 
@@ -92,6 +92,6 @@
 		margin: 0;
 	}
 	span.tall {
-		margin: 0.5rem 0;
+		margin: var(--ax-space-8) 0;
 	}
 </style>

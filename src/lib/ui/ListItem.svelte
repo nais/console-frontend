@@ -28,13 +28,13 @@
 		grid-template-columns: 1fr;
 		grid-auto-flow: column;
 		align-items: center;
-		column-gap: 1rem;
+		column-gap: var(--ax-space-16);
 		min-width: 0;
 		max-width: 100%;
-		padding: 0.75rem 1.25rem;
+		padding: var(--ax-space-12) var(--ax-space-20);
 		color: var(--card-foreground);
 		text-decoration: none;
-		border-bottom: 1px solid var(--border-subtle);
+		border-bottom: var(--sh-border-width) solid var(--border-subtle);
 		transition: background-color 120ms ease;
 	}
 
@@ -46,14 +46,14 @@
 	@container (max-width: 500px) {
 		.list-item {
 			grid-auto-flow: row;
-			padding: 0.75rem 1rem;
+			padding: var(--ax-space-12) var(--ax-space-16);
 		}
 	}
 
 	@media (max-width: 767px), (max-height: 500px) {
 		.list-item {
 			grid-auto-flow: row;
-			padding: 0.75rem 1rem;
+			padding: var(--ax-space-12) var(--ax-space-16);
 		}
 	}
 
@@ -69,8 +69,8 @@
 	}
 
 	a.list-item:focus-visible {
-		outline: 2px solid var(--ring);
-		outline-offset: -2px;
+		outline: var(--ax-space-2) solid var(--ring);
+		outline-offset: calc(-1 * var(--ax-space-2));
 	}
 
 	.animatable {
@@ -82,7 +82,7 @@
 
 	.highlight {
 		background-color: var(--brand-muted);
-		padding-left: 0.5rem;
+		padding-left: var(--ax-space-8);
 		opacity: 1;
 	}
 </style>

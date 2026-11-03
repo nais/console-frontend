@@ -45,7 +45,7 @@
 		text-align: center;
 		color: var(--muted-foreground);
 		padding: var(--ax-space-8) var(--ax-space-4);
-		font-size: 0.8125rem;
+		font-size: var(--ax-font-size-small);
 	}
 
 	.load-more {

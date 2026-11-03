@@ -260,7 +260,7 @@
 		width: 600px;
 	}
 
-	form :global(.sh-ui-field) {
+	form :global(:is(.sh-form-field, .sh-select-field)) {
 		max-width: 400px;
 	}
 

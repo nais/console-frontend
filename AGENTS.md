@@ -509,12 +509,15 @@ For content in the main column (left side of `.layout-two-column`):
 
 ### Tab Navigation Pattern
 
-Use `NavTabs` (or `Tabs`, `TabList`, `Tab`) from `#lib/shadcn/ui/index.js` for route-based sub-navigation:
+Use `NavTabs` from `#lib/shadcn/ui/index.js` for route-based sub-navigation:
 
 - Define tabs as a `$derived` array of `{ value, label, href }` where `value` is the SvelteKit route ID
 - Match active tab via `page.route.id`
+- Give each navigation landmark an `ariaLabel`
 - Hide the tab bar when the current route doesn't match any tab (`visibleTabs` pattern)
 - See `src/routes/team/[team]/[env]/app/[app]/+layout.svelte` for reference
+
+Use `Tabs`, `TabList`, `Tab`, and `TabPanel` for switching content within a page. Each tab and panel must share the same `value` so their generated IDs and ARIA relationships match.
 
 ### Timeline / Activity Log Pattern
 

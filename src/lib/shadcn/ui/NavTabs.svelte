@@ -94,6 +94,8 @@
 		display: flex;
 		align-items: center;
 		overflow-x: auto;
+		overflow-y: hidden;
+		min-width: 0;
 		scrollbar-width: none;
 	}
 
@@ -122,6 +124,7 @@
 		border: none;
 		border-radius: var(--radius-xs) var(--radius-xs) 0 0;
 		white-space: nowrap;
+		flex-shrink: 0;
 		cursor: pointer;
 		transition:
 			color 130ms ease,
@@ -143,7 +146,7 @@
 		position: absolute;
 		left: var(--ax-space-8);
 		right: var(--ax-space-8);
-		bottom: calc(-1 * var(--ax-space-1));
+		bottom: 0;
 		height: var(--ax-space-2);
 		border-radius: var(--ax-space-2) var(--ax-space-2) 0 0;
 		background: var(--primary);

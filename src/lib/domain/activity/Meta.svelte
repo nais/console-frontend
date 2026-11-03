@@ -61,10 +61,10 @@
 <style>
 	.meta {
 		display: block;
-		font-size: 0.75rem;
+		font-size: var(--sh-font-size-xs);
 		line-height: 1.4;
 		color: var(--muted-foreground);
-		margin: 0.125rem 0 0;
+		margin: var(--ax-space-2) 0 0;
 	}
 
 	.meta a {

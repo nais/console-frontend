@@ -164,26 +164,26 @@
 	.details {
 		display: flex;
 		flex-direction: column;
-		gap: 0.375rem;
+		gap: var(--ax-space-6);
 		min-width: 0;
 	}
 
 	.workflow-row {
 		display: inline-flex;
 		align-items: center;
-		gap: 0.375rem;
-		font-size: 0.8125rem;
+		gap: var(--ax-space-6);
+		font-size: var(--ax-font-size-small);
 		line-height: 1.4;
-		padding: 0.375rem 0.625rem;
+		padding: var(--ax-space-6) var(--ax-space-10);
 		border-radius: var(--radius-md);
 		background-color: color-mix(in srgb, var(--background) 60%, var(--card));
-		border: 1px solid var(--border);
+		border: var(--sh-border-width) solid var(--border);
 	}
 
 	.repo-name {
-		font-weight: 600;
+		font-weight: var(--ax-font-weight-bold);
 		font-family: monospace;
-		font-size: 0.75rem;
+		font-size: var(--sh-font-size-xs);
 		color: var(--foreground);
 	}
 
@@ -196,7 +196,7 @@
 		margin-left: auto;
 	}
 
-	.workflow-row :global(.ds-svelte-tooltip-wrapper) {
+	.workflow-row :global(.sh-tooltip-anchor) {
 		display: inline-flex;
 		align-items: center;
 		margin-left: auto;

@@ -79,12 +79,12 @@
 	.tabs-container {
 		margin: 0 auto var(--ax-space-24);
 		width: 100%;
-		max-width: 1432px;
+		max-width: var(--page-max-width);
 	}
 
 	.container {
 		margin: auto;
 		width: 100%;
-		max-width: 1432px;
+		max-width: var(--page-max-width);
 	}
 </style>

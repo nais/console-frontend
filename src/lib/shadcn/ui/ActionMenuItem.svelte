@@ -1,19 +1,23 @@
 <script lang="ts">
 	import type { Component, Snippet } from 'svelte';
-	import type { HTMLAttributes } from 'svelte/elements';
+	import type { HTMLAnchorAttributes, HTMLAttributes, HTMLButtonAttributes } from 'svelte/elements';
 	import { GetActionMenuContext } from './ActionMenu.svelte';
 
-	interface Props extends HTMLAttributes<HTMLElement> {
+	interface CommonProps extends Omit<HTMLAttributes<HTMLElement>, 'onselect'> {
 		variant?: 'default' | 'danger';
 		disabled?: boolean;
-		onselect?: () => void;
-		href?: string;
 		icon?: Snippet | Component<Record<string, unknown>>;
 		children: Snippet;
 		[key: string]: unknown;
 	}
 
-	let {
+	type Props = CommonProps &
+		(
+			| { href: string; onselect?: HTMLAnchorAttributes['onclick'] }
+			| { href?: undefined; onselect?: HTMLButtonAttributes['onclick'] }
+		);
+
+	const {
 		variant = 'default',
 		disabled = false,
 		onselect,
@@ -39,7 +43,7 @@
 	{/if}
 {/snippet}
 
-{#if href}
+{#if href !== undefined}
 	<a
 		{href}
 		role="menuitem"
@@ -51,7 +55,7 @@
 				event.preventDefault();
 				return;
 			}
-			onselect?.();
+			onselect?.(event);
 			ctx?.close();
 		}}
 		{...rest}
@@ -66,9 +70,9 @@
 		tabindex="-1"
 		{disabled}
 		class={['sh-action-menu-item', `variant-${variant}`, { disabled }, className]}
-		onclick={() => {
+		onclick={(event) => {
 			if (disabled) return;
-			onselect?.();
+			onselect?.(event);
 			ctx?.close();
 		}}
 		{...rest}

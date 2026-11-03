@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { resolve } from '$app/paths';
 	import { page } from '$app/state';
-	import { Tab, TabList, Tabs } from '#lib/shadcn/ui/index.js';
+	import { NavTabs } from '#lib/shadcn/ui/index.js';
 	import type { Snippet } from 'svelte';
 
 	interface Props {
@@ -9,27 +9,24 @@
 	}
 
 	let { children }: Props = $props();
-</script>
-
-<Tabs value={page.route.id ?? ''} size="small">
-	<TabList>
-		<Tab
-			value="/team/[team]/[env]/opensearch/[opensearch]/(single)"
-			as="a"
-			href={resolve('/team/[team]/[env]/opensearch/[opensearch]/(single)', page.params as never)}
-			>Overview</Tab
-		>
-		<Tab
-			value="/team/[team]/[env]/opensearch/[opensearch]/(single)/insights"
-			as="a"
-			href={resolve(
+	const tabs = $derived([
+		{
+			value: '/team/[team]/[env]/opensearch/[opensearch]/(single)',
+			label: 'Overview',
+			href: resolve('/team/[team]/[env]/opensearch/[opensearch]/(single)', page.params as never)
+		},
+		{
+			value: '/team/[team]/[env]/opensearch/[opensearch]/(single)/insights',
+			label: 'Insights',
+			href: resolve(
 				'/team/[team]/[env]/opensearch/[opensearch]/(single)/insights',
 				page.params as never
-			)}>Insights</Tab
-		>
-	</TabList>
+			)
+		}
+	]);
+</script>
 
-	<div class="tab-content">
-		{@render children()}
-	</div>
-</Tabs>
+<NavTabs items={tabs} value={page.route.id ?? ''} ariaLabel="OpenSearch navigation" />
+<div class="tab-content">
+	{@render children()}
+</div>

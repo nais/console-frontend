@@ -35,14 +35,14 @@
 
 <style>
 	.graph-errors {
-		margin-bottom: 1rem;
+		margin-bottom: var(--ax-space-16);
 	}
 
 	.graph-error-content {
 		display: flex;
 		align-items: center;
 		justify-content: space-between;
-		gap: 0.75rem;
+		gap: var(--ax-space-12);
 		flex-wrap: wrap;
 	}
 </style>

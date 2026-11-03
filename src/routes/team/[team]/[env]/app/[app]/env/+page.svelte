@@ -155,7 +155,7 @@
 		align-items: flex-end;
 	}
 
-	.env-row :global(.sh-ui-field) {
+	.env-row :global(:is(.sh-form-field, .sh-select-field)) {
 		flex: 1;
 	}
 </style>

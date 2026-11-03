@@ -100,7 +100,13 @@
 				<!-- logged out. We check both to support both  -->
 				<Login {userAgent} />
 			{:else}
-				<PageHeader {user} features={$UserInfo.data?.features}>
+				<PageHeader
+					{user}
+					features={$UserInfo.data?.features}
+					loadMoreTeams={() => UserInfo.loadNextPage()}
+					teamsFetching={$UserInfo.fetching}
+					teamErrors={$UserInfo.errors}
+				>
 					<div role="status" aria-live="polite">
 						{#if updated.current && !updateDismissed && !isNaisdevice()}
 							<div class="update-status">
@@ -155,7 +161,7 @@
 	:global(.page) {
 		margin: 0 auto 0 auto;
 		width: 100%;
-		max-width: 1432px;
+		max-width: var(--page-max-width);
 	}
 
 	.full-wrapper {

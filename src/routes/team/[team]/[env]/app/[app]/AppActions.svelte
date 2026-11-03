@@ -120,54 +120,52 @@
 			</Button>
 		{/snippet}
 		{#if viewerIsMember}
-			<button
-				class="action-menu-button"
-				onclick={openRestart}
+			<ActionMenuItem
+				icon={ArrowCirclepathIcon}
+				onselect={openRestart}
 				disabled={app?.deletionStartedAt !== null}
 			>
-				<ActionMenuItem icon={ArrowCirclepathIcon} disabled={app?.deletionStartedAt !== null}>
-					Restart
-				</ActionMenuItem>
-			</button>
-			<button
-				class="action-menu-button"
-				onclick={openStop}
+				Restart
+			</ActionMenuItem>
+			<ActionMenuItem
+				icon={StopIcon}
+				onselect={openStop}
 				disabled={app?.deletionStartedAt !== null}
 			>
-				<ActionMenuItem icon={StopIcon} disabled={app?.deletionStartedAt !== null}>
-					Stop
-				</ActionMenuItem>
-			</button>
-			<a
-				class="action-menu-button"
+				Stop
+			</ActionMenuItem>
+			<ActionMenuItem
+				icon={ArrowsUpDownIcon}
 				href="/team/{teamSlug}/{environment}/app/{application}/resize"
-				onclick={pageModalClick}
+				onselect={pageModalClick}
 			>
-				<ActionMenuItem icon={ArrowsUpDownIcon}>Resize</ActionMenuItem>
-			</a>
-			<a
-				class="action-menu-button"
+				Resize
+			</ActionMenuItem>
+			<ActionMenuItem
+				icon={PencilWritingIcon}
 				href="/team/{teamSlug}/{environment}/app/{application}/env"
-				onclick={pageModalClick}
+				onselect={pageModalClick}
 			>
-				<ActionMenuItem icon={PencilWritingIcon}>Set environment variables</ActionMenuItem>
-			</a>
-			<a
-				class="action-menu-button"
+				Set environment variables
+			</ActionMenuItem>
+			<ActionMenuItem
+				icon={PackageIcon}
 				href="/team/{teamSlug}/{environment}/app/{application}/image"
-				onclick={pageModalClick}
+				onselect={pageModalClick}
 			>
-				<ActionMenuItem icon={PackageIcon}>Set image version</ActionMenuItem>
-			</a>
+				Set image version
+			</ActionMenuItem>
 		{/if}
-		<button class="action-menu-button" onclick={() => (showManifest = true)}>
-			<ActionMenuItem icon={FileTextIcon}>View manifest</ActionMenuItem>
-		</button>
+		<ActionMenuItem icon={FileTextIcon} onselect={() => (showManifest = true)}>
+			View manifest
+		</ActionMenuItem>
 		{#if viewerIsMember}
 			<ActionMenuDivider />
-			<a class="action-menu-button" href="/team/{teamSlug}/{environment}/app/{application}/delete">
-				<ActionMenuItem icon={TrashIcon} variant="danger">Delete</ActionMenuItem>
-			</a>
+			<ActionMenuItem
+				href="/team/{teamSlug}/{environment}/app/{application}/delete"
+				icon={TrashIcon}
+				variant="danger">Delete</ActionMenuItem
+			>
 		{/if}
 	</ActionMenu>
 </HeaderActions>
@@ -212,14 +210,3 @@
 {:else if page.state.modalHref?.includes('/image')}
 	<PageModal content={ImagePage} header="Set image version" />
 {/if}
-
-<style>
-	.action-menu-button {
-		all: unset;
-		display: contents;
-
-		:global(*) {
-			cursor: pointer;
-		}
-	}
-</style>

@@ -38,6 +38,5 @@
 	.sh-theme-root.has-bg {
 		background-color: var(--background);
 		color: var(--foreground);
-		min-height: 100vh;
 	}
 </style>

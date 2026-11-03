@@ -17,41 +17,41 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		width: 1.5rem;
-		height: 1.5rem;
+		width: var(--ax-space-24);
+		height: var(--ax-space-24);
 		flex-shrink: 0;
 
 		&::after {
 			content: '';
-			width: 0.55rem;
-			height: 0.55rem;
-			border-radius: 9999px;
+			width: var(--ax-space-8);
+			height: var(--ax-space-8);
+			border-radius: var(--radius-full);
 			transition: box-shadow 150ms ease;
 		}
 	}
 
 	.success::after {
 		background-color: var(--success);
-		box-shadow: 0 0 0 3px var(--success-muted);
+		box-shadow: 0 0 0 var(--ax-space-2) var(--success-muted);
 	}
 
 	.danger::after {
 		background-color: var(--destructive);
-		box-shadow: 0 0 0 3px var(--destructive-muted);
+		box-shadow: 0 0 0 var(--ax-space-2) var(--destructive-muted);
 	}
 
 	.warning::after {
 		background-color: var(--warning);
-		box-shadow: 0 0 0 3px var(--warning-muted);
+		box-shadow: 0 0 0 var(--ax-space-2) var(--warning-muted);
 	}
 
 	.info::after {
 		background-color: var(--info);
-		box-shadow: 0 0 0 3px var(--info-muted);
+		box-shadow: 0 0 0 var(--ax-space-2) var(--info-muted);
 	}
 
 	.neutral::after {
 		background-color: var(--muted-foreground);
-		box-shadow: 0 0 0 3px var(--secondary);
+		box-shadow: 0 0 0 var(--ax-space-2) var(--secondary);
 	}
 </style>

@@ -444,38 +444,32 @@
 														{...props}
 													/>
 												{/snippet}
-												<button
-													class="action-menu-button"
-													onclick={() => openCreation(branch.name)}
-												>
-													<ActionMenuItem>Create child branch</ActionMenuItem>
-												</button>
+												<ActionMenuItem onselect={() => openCreation(branch.name)}>
+													Create child branch
+												</ActionMenuItem>
 												{#if canActivateBranch(branch, postgres.activeBranch?.name, postgres.desiredActiveBranch)}
-													<button
-														class="action-menu-button"
-														onclick={() => {
+													<ActionMenuItem
+														onselect={() => {
 															activationTarget = branch.name;
 															confirmActivation = true;
 														}}
 													>
-														<ActionMenuItem>Use as active</ActionMenuItem>
-													</button>
+														Use as active
+													</ActionMenuItem>
 												{/if}
 												{#if canDeleteBranch(branch.name, postgres.activeBranch?.name, postgres.desiredActiveBranch)}
-													<button
-														class="action-menu-button"
+													<ActionMenuItem
+														variant="danger"
 														disabled={deleting}
-														onclick={() => {
+														onselect={() => {
 															deletionTarget = branch.name;
 															deletionConfirmation = '';
 															deletionError = '';
 															deletionOpen = true;
 														}}
 													>
-														<ActionMenuItem variant="danger" disabled={deleting}
-															>Delete branch</ActionMenuItem
-														>
-													</button>
+														Delete branch
+													</ActionMenuItem>
 												{/if}
 											</ActionMenu>
 										</div>
@@ -674,13 +668,6 @@
 	}
 	.branch-actions {
 		justify-content: flex-end;
-	}
-	.action-menu-button {
-		all: unset;
-		display: contents;
-		:global(*) {
-			cursor: pointer;
-		}
 	}
 	.recovery-form {
 		display: grid;

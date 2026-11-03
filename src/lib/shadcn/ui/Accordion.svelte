@@ -1,21 +1,21 @@
 <script lang="ts" module>
-	import { getContext, hasContext } from 'svelte';
+	import { createContext } from 'svelte';
 
 	export interface AccordionContext {
 		readonly size: 'large' | 'medium' | 'small';
 		readonly mounted: boolean;
 	}
 
-	const contextKey = Symbol('AccordionContext');
+	const [getAccordionContext, setAccordionContext, hasAccordionContext] =
+		createContext<AccordionContext>();
 
 	export function GetAccordionContext(): AccordionContext | undefined {
-		if (!hasContext(contextKey)) return undefined;
-		return getContext<AccordionContext>(contextKey);
+		return hasAccordionContext() ? getAccordionContext() : undefined;
 	}
 </script>
 
 <script lang="ts">
-	import { setContext, type Snippet } from 'svelte';
+	import type { Snippet } from 'svelte';
 	import type { HTMLAttributes } from 'svelte/elements';
 
 	interface Props extends HTMLAttributes<HTMLDivElement> {
@@ -35,7 +35,7 @@
 		mounted: true
 	};
 
-	setContext(contextKey, ctx);
+	setAccordionContext(ctx);
 </script>
 
 <svelte:element this={as} class={['sh-accordion', className]} {...rest}>

@@ -102,12 +102,12 @@
 	}
 
 	.section-heading {
-		font-size: 0.8125rem;
-		font-weight: 600;
+		font-size: var(--ax-font-size-small);
+		font-weight: var(--ax-font-weight-bold);
 		color: var(--foreground);
 		margin: 0;
-		border-bottom: 1px solid var(--border);
-		padding-bottom: 0.375rem;
+		border-bottom: var(--sh-border-width) solid var(--border);
+		padding-bottom: var(--ax-space-6);
 		cursor: pointer;
 		list-style: none;
 		display: flex;
@@ -123,8 +123,8 @@
 		content: '';
 		width: 0.4em;
 		height: 0.4em;
-		border-right: 2px solid currentColor;
-		border-bottom: 2px solid currentColor;
+		border-right: var(--ax-space-2) solid currentColor;
+		border-bottom: var(--ax-space-2) solid currentColor;
 		transform: rotate(45deg);
 		transition: transform 150ms ease;
 		flex-shrink: 0;
@@ -160,12 +160,12 @@
 	}
 
 	.sort-option.active {
-		font-weight: 600;
+		font-weight: var(--ax-font-weight-bold);
 		color: var(--ax-text-accent);
 	}
 
 	.sort-direction {
 		font-size: var(--ax-font-size-small);
-		font-weight: 600;
+		font-weight: var(--ax-font-weight-bold);
 	}
 </style>

@@ -15,7 +15,7 @@
 		type ApplicationOrderField$options,
 		type OrderDirection$options
 	} from '$houdini';
-	import { BodyLong, Th, type TableSortState } from '#lib/shadcn/ui/index.js';
+	import { BodyLong, Button, Th, type TableSortState } from '#lib/shadcn/ui/index.js';
 	import { FunnelIcon, PackageIcon } from '#lib/icons/index.js';
 	import type { PageProps } from './$types';
 
@@ -146,9 +146,9 @@
 		>
 			{#snippet actions()}
 				{#if hasActiveFilters}
-					<button
-						type="button"
-						class="clear-filters-btn"
+					<Button
+						variant="outline"
+						size="small"
 						onclick={() => {
 							filter = '';
 							changeParams(
@@ -158,7 +158,7 @@
 						}}
 					>
 						Clear filters
-					</button>
+					</Button>
 				{/if}
 				<button
 					type="button"
@@ -236,26 +236,3 @@
 		</SurfaceCard>
 	</CollapsibleSidebar>
 </div>
-
-<style>
-	.clear-filters-btn {
-		display: inline-flex;
-		align-items: center;
-		padding: 0.25rem 0.625rem;
-		border-radius: var(--radius-md);
-		border: 1px solid var(--border);
-		background-color: var(--secondary);
-		color: var(--muted-foreground);
-		font-size: 0.75rem;
-		font-weight: 500;
-		cursor: pointer;
-		transition:
-			color 120ms ease,
-			border-color 120ms ease;
-	}
-
-	.clear-filters-btn:hover {
-		color: var(--foreground);
-		border-color: var(--border-strong);
-	}
-</style>

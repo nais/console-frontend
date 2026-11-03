@@ -32,6 +32,6 @@
 	.wrapper {
 		display: flex;
 		flex-direction: column;
-		gap: 1.5rem;
+		gap: var(--ax-space-24);
 	}
 </style>

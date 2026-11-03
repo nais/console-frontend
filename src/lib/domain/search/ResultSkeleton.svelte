@@ -3,10 +3,10 @@
 </script>
 
 <div class="skeleton">
-	<ShSkeleton width="1.75rem" height="1.75rem" />
+	<ShSkeleton width="var(--ax-space-28)" height="var(--ax-space-28)" />
 	<div class="skeleton-lines">
-		<ShSkeleton width="14ch" height="0.875rem" />
-		<ShSkeleton width="9ch" height="0.75rem" />
+		<ShSkeleton width="14ch" height="var(--ax-space-14)" />
+		<ShSkeleton width="9ch" height="var(--ax-space-12)" />
 	</div>
 </div>
 
@@ -14,14 +14,14 @@
 	.skeleton {
 		display: flex;
 		align-items: center;
-		gap: 0.75rem;
-		border-radius: calc(var(--radius) - 3px);
-		padding: 0.5rem 0.625rem;
+		gap: var(--ax-space-12);
+		border-radius: var(--radius-xs);
+		padding: var(--ax-space-8) var(--ax-space-10);
 	}
 
 	.skeleton-lines {
 		display: flex;
 		flex-direction: column;
-		gap: 0.25rem;
+		gap: var(--ax-space-4);
 	}
 </style>

@@ -1,5 +1,6 @@
 <script lang="ts">
 	import type { SVGAttributes } from 'svelte/elements';
+	import { LoaderCircle } from '#lib/icons/index.js';
 
 	interface Props extends SVGAttributes<SVGElement> {
 		size?: '3xlarge' | '2xlarge' | 'xlarge' | 'large' | 'medium' | 'small' | 'xsmall';
@@ -9,7 +10,13 @@
 		[key: string]: unknown;
 	}
 
-	let { size = 'medium', title = 'Loading...', class: className = '', ...rest }: Props = $props();
+	let {
+		size = 'medium',
+		title = 'Loading...',
+		color,
+		class: className = '',
+		...rest
+	}: Props = $props();
 
 	const sizePx: Record<string, number> = {
 		'3xlarge': 48,
@@ -24,27 +31,20 @@
 	let dim = $derived(sizePx[size] ?? 18);
 </script>
 
-<svg
+<LoaderCircle
 	class={['sh-loader', className]}
 	width={dim}
 	height={dim}
-	viewBox="0 0 24 24"
-	fill="none"
-	stroke="currentColor"
-	stroke-width="2.25"
-	stroke-linecap="round"
-	stroke-linejoin="round"
+	strokeWidth={2.25}
 	role="status"
+	aria-label={title}
+	aria-hidden={false}
+	color={color ?? undefined}
 	{...rest}
->
-	{#if title}
-		<title>{title}</title>
-	{/if}
-	<path d="M21 12a9 9 0 1 1-6.219-8.56" />
-</svg>
+/>
 
 <style>
-	.sh-loader {
+	:global(.sh-loader) {
 		display: inline-block;
 		animation: sh-loader-spin 0.75s linear infinite;
 		flex-shrink: 0;

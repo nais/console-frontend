@@ -1,21 +1,21 @@
 <script lang="ts" module>
-	import { getContext, hasContext } from 'svelte';
+	import { createContext } from 'svelte';
 
 	export interface ActionMenuRadioContext {
 		readonly value: unknown;
 		select(val: unknown): void;
 	}
 
-	const contextKey = Symbol('ActionMenuRadioContext');
+	const [getRadioContext, setRadioContext, hasRadioContext] =
+		createContext<ActionMenuRadioContext>();
 
 	export function GetActionMenuRadioContext(): ActionMenuRadioContext | undefined {
-		if (!hasContext(contextKey)) return undefined;
-		return getContext<ActionMenuRadioContext>(contextKey);
+		return hasRadioContext() ? getRadioContext() : undefined;
 	}
 </script>
 
 <script lang="ts">
-	import { setContext, type Snippet } from 'svelte';
+	import type { Snippet } from 'svelte';
 
 	interface Props {
 		value?: unknown;
@@ -37,7 +37,7 @@
 		}
 	};
 
-	setContext(contextKey, ctx);
+	setRadioContext(ctx);
 </script>
 
 <div role="group" aria-label={label} class="sh-action-menu-radiogroup">

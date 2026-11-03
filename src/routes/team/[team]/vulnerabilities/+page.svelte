@@ -135,11 +135,11 @@
 	.cve-search-section {
 		display: flex;
 		flex-direction: column;
-		gap: 0.5rem;
-		padding: 1rem 1.25rem;
-		margin-bottom: 1.25rem;
+		gap: var(--ax-space-8);
+		padding: var(--ax-space-16) var(--ax-space-20);
+		margin-bottom: var(--ax-space-20);
 		border-radius: var(--radius-lg);
-		border: 1px solid var(--border);
+		border: var(--sh-border-width) solid var(--border);
 		background-color: var(--card);
 	}
 </style>

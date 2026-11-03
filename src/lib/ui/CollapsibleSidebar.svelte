@@ -66,7 +66,7 @@
 		}
 	}
 
-	:global(dialog.filter-drawer.sh-ui-modal) {
+	:global(dialog.filter-drawer.sh-modal) {
 		inset: 0 0 0 auto;
 		margin: 0;
 		display: flex;
@@ -88,12 +88,12 @@
 		animation: filter-backdrop-enter 160ms ease-out;
 	}
 
-	:global(dialog.filter-drawer .sh-ui-modal__header) {
+	:global(dialog.filter-drawer .sh-modal__header) {
 		padding: var(--ax-space-16);
 		border-bottom: 1px solid var(--ax-border-neutral-subtleA);
 	}
 
-	:global(dialog.filter-drawer .sh-ui-modal__body) {
+	:global(dialog.filter-drawer .sh-modal__body) {
 		flex: 1;
 		min-height: 0;
 		padding: 0;
@@ -128,7 +128,7 @@
 	}
 
 	@media (prefers-reduced-motion: reduce) {
-		:global(dialog.filter-drawer.sh-ui-modal) {
+		:global(dialog.filter-drawer.sh-modal) {
 			animation: none;
 		}
 		:global(dialog.filter-drawer::backdrop) {
@@ -137,7 +137,7 @@
 	}
 
 	@media (min-width: 1025px) {
-		:global(dialog.filter-drawer.sh-ui-modal) {
+		:global(dialog.filter-drawer.sh-modal) {
 			display: none;
 		}
 	}

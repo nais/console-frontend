@@ -7,7 +7,8 @@
 	import Feedback from '#lib/feedback/Feedback.svelte';
 	import GrafanaIcon from '#lib/icons/GrafanaIcon.svelte';
 	import AppSidebar from '#lib/shadcn/ui/AppSidebar.svelte';
-	import { Theme } from '#lib/shadcn/ui/index.js';
+	import { Button, Theme } from '#lib/shadcn/ui/index.js';
+	import GraphErrors from '#lib/ui/GraphErrors.svelte';
 	import { themeSwitch } from '#lib/stores/theme.svelte.js';
 
 	import {
@@ -32,6 +33,7 @@
 					readonly email?: string;
 					readonly isAdmin: boolean;
 					readonly teams?: {
+						readonly pageInfo?: { readonly hasNextPage: boolean };
 						readonly edges: readonly {
 							readonly node: {
 								readonly team: {
@@ -51,9 +53,19 @@
 			openSearch: { enabled: boolean };
 		};
 		children?: Snippet;
+		loadMoreTeams?: () => Promise<unknown>;
+		teamsFetching?: boolean;
+		teamErrors?: { message: string }[] | null;
 	}
 
-	let { user, features, children }: Props = $props();
+	let {
+		user,
+		features,
+		children,
+		loadMoreTeams,
+		teamsFetching = false,
+		teamErrors
+	}: Props = $props();
 
 	let sidebarCollapsed = $state(false);
 	let mobileSidebarOpen = $state(false);
@@ -66,6 +78,7 @@
 
 	const currentTeamSlug = $derived(page.params.team);
 	const userTeams = $derived((user?.teams?.edges ?? []).map((e) => e.node.team));
+	const hasMoreTeams = $derived(user?.teams?.pageInfo?.hasNextPage ?? false);
 
 	const filteredUserTeams = $derived(
 		teamQuery.trim()
@@ -230,8 +243,22 @@
 									{/if}
 								</a>
 							{:else}
-								<div class="popover-empty">No teams found</div>
+								<div class="popover-empty">
+									{hasMoreTeams
+										? 'No matches in loaded teams. Load more teams to continue searching.'
+										: 'No teams found'}
+								</div>
 							{/each}
+							{#if hasMoreTeams && loadMoreTeams}
+								<Button
+									variant="tertiary"
+									size="small"
+									loading={teamsFetching}
+									disabled={teamsFetching}
+									onclick={loadMoreTeams}>Load more teams</Button
+								>
+							{/if}
+							<GraphErrors errors={teamErrors} size="small" />
 						</div>
 						<div class="popover-footer">
 							<a href="/" class="popover-footer-link">All teams</a>

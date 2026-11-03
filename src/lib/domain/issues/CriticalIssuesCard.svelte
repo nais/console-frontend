@@ -27,8 +27,8 @@
 
 <style>
 	.view-all {
-		font-size: 0.75rem;
-		font-weight: 500;
+		font-size: var(--sh-font-size-xs);
+		font-weight: var(--sh-font-weight-medium);
 		color: var(--muted-foreground);
 		text-decoration: none;
 	}

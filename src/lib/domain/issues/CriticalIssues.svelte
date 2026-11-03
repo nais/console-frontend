@@ -48,19 +48,19 @@
 	.issues-list {
 		display: flex;
 		flex-direction: column;
-		gap: 0.375rem;
+		gap: var(--ax-space-6);
 	}
 
 	.loader {
 		display: flex;
 		justify-content: center;
 		align-items: center;
-		min-height: 160px;
+		min-height: calc(4 * var(--ax-space-40));
 	}
 
 	.view-all {
-		font-size: 0.75rem;
-		font-weight: 500;
+		font-size: var(--sh-font-size-xs);
+		font-weight: var(--sh-font-weight-medium);
 		color: var(--muted-foreground);
 		text-decoration: none;
 	}
@@ -73,6 +73,6 @@
 	.load-more {
 		display: flex;
 		justify-content: center;
-		padding-top: 0.5rem;
+		padding-top: var(--ax-space-8);
 	}
 </style>

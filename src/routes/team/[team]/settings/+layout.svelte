@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { resolve } from '$app/paths';
 	import { page } from '$app/state';
-	import { Tab, TabList, Tabs } from '#lib/shadcn/ui/index.js';
+	import { NavTabs } from '#lib/shadcn/ui/index.js';
 	import type { LayoutProps } from './$types';
 
 	let { children }: LayoutProps = $props();
@@ -13,27 +13,21 @@
 		}
 		return '/team/[team]/settings';
 	});
+	const tabs = $derived([
+		{
+			value: '/team/[team]/settings',
+			label: 'Overview',
+			href: resolve('/team/[team]/settings', page.params as never)
+		},
+		{
+			value: '/team/[team]/settings/service_accounts',
+			label: 'Service Accounts',
+			href: resolve('/team/[team]/settings/service_accounts', page.params as never)
+		}
+	]);
 </script>
 
-<Tabs value={activeTab} size="small">
-	<TabList>
-		<Tab
-			value="/team/[team]/settings"
-			as="a"
-			href={resolve('/team/[team]/settings', page.params as never)}
-		>
-			Overview
-		</Tab>
-		<Tab
-			value="/team/[team]/settings/service_accounts"
-			as="a"
-			href={resolve('/team/[team]/settings/service_accounts', page.params as never)}
-		>
-			Service Accounts
-		</Tab>
-	</TabList>
-
-	<div class="tab-content">
-		{@render children()}
-	</div>
-</Tabs>
+<NavTabs items={tabs} value={activeTab} ariaLabel="Team settings navigation" />
+<div class="tab-content">
+	{@render children()}
+</div>

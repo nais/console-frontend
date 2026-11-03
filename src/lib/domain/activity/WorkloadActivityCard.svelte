@@ -143,8 +143,8 @@
 
 <style>
 	.view-all {
-		font-size: 0.75rem;
-		font-weight: 500;
+		font-size: var(--sh-font-size-xs);
+		font-weight: var(--sh-font-weight-medium);
 		color: var(--muted-foreground);
 		text-decoration: none;
 	}
@@ -159,6 +159,6 @@
 		justify-content: center;
 		align-items: center;
 		min-width: 100%;
-		min-height: 200px;
+		min-height: calc(5 * var(--ax-space-40));
 	}
 </style>

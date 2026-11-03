@@ -582,14 +582,14 @@
 		align-items: center;
 		gap: var(--ax-space-12);
 		font-size: var(--ax-font-size-medium);
-		--surface-icon-size: 2rem;
-		--surface-icon-glyph-size: 1rem;
+		--surface-icon-size: var(--ax-space-32);
+		--surface-icon-glyph-size: var(--ax-space-16);
 	}
 
 	.activity-log-list-item :global(.surface-icon) {
 		background: var(--secondary);
 		color: var(--muted-foreground);
-		border: 1px solid var(--border);
+		border: var(--sh-border-width) solid var(--border);
 	}
 
 	.activity-text {
@@ -600,7 +600,7 @@
 	.activity-text :global(a:not(.meta a)),
 	.content :global(a:not(.meta a)) {
 		color: var(--foreground);
-		font-weight: 600;
+		font-weight: var(--ax-font-weight-bold);
 		text-decoration: underline;
 		text-decoration-color: var(--border-strong);
 		text-underline-offset: 0.18em;
@@ -613,25 +613,27 @@
 	}
 
 	.activity-icon {
+		--surface-icon-size: calc(var(--ax-space-28) + var(--ax-space-2));
+		--surface-icon-glyph-size: var(--ax-font-size-medium);
 		position: relative;
 		z-index: 1;
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		width: 1.875rem;
-		height: 1.875rem;
-		font-size: 0.9375rem;
+		width: var(--surface-icon-size);
+		height: var(--surface-icon-size);
+		font-size: var(--surface-icon-glyph-size);
 		flex-shrink: 0;
-		border-radius: calc(var(--radius) - 2px);
+		border-radius: var(--radius-sm);
 		color: var(--muted-foreground);
 		background: var(--secondary);
-		border: 1px solid var(--border);
+		border: var(--sh-border-width) solid var(--border);
 	}
 
 	.activity-item {
 		display: flex;
 		position: relative;
-		padding-bottom: 0.75rem;
+		padding-bottom: var(--ax-space-12);
 	}
 
 	.content {
@@ -644,11 +646,11 @@
 	.activity-item:not(:last-child)::before {
 		background: var(--ax-border-neutral-subtleA);
 		content: '';
-		top: 2rem;
+		top: var(--ax-space-32);
 		bottom: calc(-1 * var(--ax-space-4));
-		left: calc(1rem - 1px);
+		left: calc(var(--ax-space-16) - var(--ax-space-1));
 		position: absolute;
-		width: 2px;
+		width: var(--ax-space-2);
 	}
 
 	@media (max-width: 767px) {

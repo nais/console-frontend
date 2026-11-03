@@ -50,6 +50,7 @@ export {
 	ChartLine as LineGraphIcon,
 	ChartArea as LineGraphStackedIcon,
 	Link as LinkIcon,
+	LoaderCircle,
 	Search as MagnifyingGlassIcon,
 	EllipsisVertical as MenuElipsisVerticalIcon,
 	Menu as MenuHamburgerIcon,

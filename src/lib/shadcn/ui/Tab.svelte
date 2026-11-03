@@ -24,6 +24,8 @@
 	<a
 		{href}
 		role="tab"
+		id={ctx?.tabId(value)}
+		aria-controls={ctx?.panelId(value)}
 		aria-selected={isActive}
 		tabindex={isActive ? 0 : -1}
 		class={['sh-ui-tab', { active: isActive }, className]}
@@ -37,6 +39,8 @@
 	<button
 		type="button"
 		role="tab"
+		id={ctx?.tabId(value)}
+		aria-controls={ctx?.panelId(value)}
 		aria-selected={isActive}
 		tabindex={isActive ? 0 : -1}
 		class={['sh-ui-tab', { active: isActive }, className]}

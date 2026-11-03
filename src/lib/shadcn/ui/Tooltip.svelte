@@ -53,9 +53,19 @@
 			}
 			function describe() {
 				const children = [...element.querySelectorAll<HTMLElement>(selector)];
-				interactiveChild = children.length > 0;
-				if (!children.length) element.tabIndex = 0;
-				else if (rest.tabindex === undefined) element.removeAttribute('tabindex');
+				const hasEnabledChild = children.some(
+					(child) => !child.matches(':disabled, [aria-disabled="true"]')
+				);
+				interactiveChild = hasEnabledChild;
+				if (!hasEnabledChild && rest.tabindex === undefined && element.tabIndex !== 0) {
+					element.tabIndex = 0;
+				} else if (
+					hasEnabledChild &&
+					rest.tabindex === undefined &&
+					element.hasAttribute('tabindex')
+				) {
+					element.removeAttribute('tabindex');
+				}
 				for (const target of children) {
 					if (!targets.includes(target)) targets.push(target);
 					removeDescription(target);
@@ -67,7 +77,12 @@
 			}
 			describe();
 			const observer = new MutationObserver(describe);
-			observer.observe(element, { childList: true, subtree: true });
+			observer.observe(element, {
+				childList: true,
+				subtree: true,
+				attributes: true,
+				attributeFilter: ['disabled', 'aria-disabled', 'href', 'tabindex']
+			});
 			return () => {
 				observer.disconnect();
 				for (const target of targets) removeDescription(target);

@@ -140,10 +140,11 @@ describe('team CVE grouping', () => {
 		'groups %s by the selected field while preserving API order',
 		async (sort, nodes, expected) => {
 			const { body } = await renderFindings(sort, [...nodes]);
-			const headings = [...body.matchAll(/<h3\b[^>]*>([\s\S]*?)<\/h3>/g)].map(([, text]) =>
-				text.replace(/<!--[\s\S]*?-->/g, '').trim()
-			);
-			expect(headings).toEqual(expected);
+			const headings = [...body.matchAll(/<h3\b[^>]*>[\s\S]*?<\/h3>/g)].map(([html]) => html);
+			expect(headings).toHaveLength(expected.length);
+			expected.forEach((heading, index) => {
+				expect(headings[index]).toContain(`>${heading}<`);
+			});
 			expect(body).toContain('alpha');
 			expect(body).toContain('beta');
 			expect(body).toContain('pkg:maven/example@1.0');
