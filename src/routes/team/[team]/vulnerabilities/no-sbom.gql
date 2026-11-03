@@ -21,6 +21,10 @@ query TeamNoSbomWorkloads(
 					__typename
 					id
 					name
+					labels {
+						key
+						value
+					}
 					team {
 						slug
 					}
@@ -34,6 +38,10 @@ query TeamNoSbomWorkloads(
 					__typename
 					id
 					name
+					labels {
+						key
+						value
+					}
 					team {
 						slug
 					}

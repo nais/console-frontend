@@ -1,8 +1,11 @@
 import {
 	duplicateLabelKeys,
+	formatLabelFilter,
+	labelFilterId,
 	labelKeyError,
 	labelRowsHaveErrors,
 	labelValueError,
+	parseLabelsParam,
 	rowKeyError,
 	rowValueError,
 	rowsFromArrays,
@@ -165,5 +168,66 @@ describe('toLabelRows', () => {
 			{ key: 'team', value: 'platform' },
 			{ key: 'env', value: 'prod' }
 		]);
+	});
+});
+
+describe('parseLabelsParam', () => {
+	test('returns undefined without filters', () => {
+		expect(parseLabelsParam(null)).toBeUndefined();
+		expect(parseLabelsParam(',')).toBeUndefined();
+	});
+
+	test('reads key-only filters without silently dropping invalid keys', () => {
+		expect(parseLabelsParam('owner:a,region,bad key:x')).toEqual([
+			{ key: 'owner', value: 'a' },
+			{ key: 'region', value: undefined },
+			{ key: 'bad key', value: 'x' }
+		]);
+	});
+
+	test('deduplicates repeated filters', () => {
+		expect(parseLabelsParam('region,region,owner:a,owner:a')).toEqual([
+			{ key: 'region', value: undefined },
+			{ key: 'owner', value: 'a' }
+		]);
+	});
+
+	test('accepts qualified keys longer than 63 characters', () => {
+		const key = `${'a'.repeat(63)}.example.com/owner`;
+		expect(parseLabelsParam(`${key}:team`)).toEqual([{ key, value: 'team' }]);
+	});
+
+	test('preserves reserved keys and invalid values for backend validation', () => {
+		expect(
+			parseLabelsParam('team:example,app.kubernetes.io/managed-by:console,owner: value ')
+		).toEqual([
+			{ key: 'team', value: 'example' },
+			{ key: 'app.kubernetes.io/managed-by', value: 'console' },
+			{ key: 'owner', value: ' value ' }
+		]);
+	});
+
+	test('keeps key-only and empty-value filters distinct', () => {
+		expect(parseLabelsParam('region,region:')).toEqual([
+			{ key: 'region', value: undefined },
+			{ key: 'region', value: '' }
+		]);
+	});
+});
+
+describe('labelFilterId', () => {
+	test('round-trips through parseLabelsParam', () => {
+		const filters = [{ key: 'region' }, { key: 'region', value: '' }, { key: 'owner', value: 'a' }];
+		expect(parseLabelsParam(filters.map(labelFilterId).join(','))).toEqual(
+			filters.map(({ key, value }) => ({ key, value }))
+		);
+	});
+});
+
+describe('formatLabelFilter', () => {
+	test('shows key-only filters without a value', () => {
+		expect(formatLabelFilter({ key: 'region' })).toBe('region');
+		expect(formatLabelFilter({ key: 'region', value: '' })).toBe('region=');
+		expect(formatLabelFilter({ key: 'owner', value: 'a' })).toBe('owner=a');
 	});
 });

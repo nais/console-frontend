@@ -32,6 +32,39 @@ test('ArrowUp opens at the last enabled item', async ({ page }) => {
 	await expect(page.getByRole('menuitemradio', { name: 'Risk', exact: true })).toBeFocused();
 });
 
+test('checkbox groups support keyboard multiselection, disabled items and persistent state', async ({
+	page
+}) => {
+	const trigger = page.getByRole('button', { name: 'Label filters', exact: true });
+	await trigger.focus();
+	await page.keyboard.press('ArrowDown');
+	const group = page.getByRole('group', { name: 'Labels to include' });
+	await expect(group).toBeVisible();
+	const first = group.getByRole('menuitemcheckbox', { name: 'First label', exact: true });
+	const second = group.getByRole('menuitemcheckbox', { name: 'Second label', exact: true });
+	await expect(first).toBeFocused();
+	await expect(first).not.toBeChecked();
+	await page.keyboard.press('Space');
+	await expect(first).toBeChecked();
+	await expect(page.getByRole('menu')).toBeVisible();
+	await page.keyboard.press('ArrowDown');
+	await expect(second).toBeFocused();
+	await page.keyboard.press('Enter');
+	await expect(second).toBeChecked();
+	await expect(first).toBeChecked();
+	await first.click();
+	await expect(first).not.toBeChecked();
+	const disabled = group.getByRole('menuitemcheckbox', { name: 'Disabled label', exact: true });
+	await expect(disabled).toHaveAttribute('aria-disabled', 'true');
+	await disabled.click({ force: true });
+	await expect(page.getByRole('status', { name: 'Selected action' })).toBeEmpty();
+	await page.keyboard.press('Escape');
+	await expect(trigger).toBeFocused();
+	await trigger.click();
+	await expect(first).not.toBeChecked();
+	await expect(second).toBeChecked();
+});
+
 test('activates native buttons with Enter and Space and updates controlled state', async ({
 	page
 }) => {

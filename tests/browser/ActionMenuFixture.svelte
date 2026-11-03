@@ -4,6 +4,8 @@
 	import ActionMenuRadioGroup from '../../src/lib/shadcn/ui/ActionMenuRadioGroup.svelte';
 	import ActionMenuRadioItem from '../../src/lib/shadcn/ui/ActionMenuRadioItem.svelte';
 	import ActionMenuDivider from '../../src/lib/shadcn/ui/ActionMenuDivider.svelte';
+	import ActionMenuGroup from '../../src/lib/shadcn/ui/ActionMenuGroup.svelte';
+	import ActionMenuCheckboxItem from '../../src/lib/shadcn/ui/ActionMenuCheckboxItem.svelte';
 	import Button from '../../src/lib/shadcn/ui/Button.svelte';
 	import Modal from '../../src/lib/shadcn/ui/Modal.svelte';
 	import Theme from '../../src/lib/shadcn/ui/Theme.svelte';
@@ -15,6 +17,8 @@
 	let linkEvent = $state('');
 	let modalOpen = $state(false);
 	let dark = $state(false);
+	let firstLabel = $state(false);
+	let secondLabel = $state(false);
 </script>
 
 <main>
@@ -75,6 +79,16 @@
 				<ActionMenuItem onselect={() => (selected = 'nested')}>Nested action</ActionMenuItem>
 			</ActionMenu>
 		</Modal>
+		<ActionMenu>
+			{#snippet trigger(props)}<Button {...props}>Label filters</Button>{/snippet}
+			<ActionMenuGroup label="Labels to include">
+				<ActionMenuCheckboxItem bind:checked={firstLabel}>First label</ActionMenuCheckboxItem>
+				<ActionMenuCheckboxItem disabled oncheckedchange={() => (selected = 'disabled-checkbox')}
+					>Disabled label</ActionMenuCheckboxItem
+				>
+				<ActionMenuCheckboxItem bind:checked={secondLabel}>Second label</ActionMenuCheckboxItem>
+			</ActionMenuGroup>
+		</ActionMenu>
 	</Theme>
 </main>
 
