@@ -13,13 +13,12 @@
 		Checkbox,
 		Chips,
 		Heading,
-		Popover,
-		RemovableChip,
 		Select,
 		Textarea,
 		TextField,
 		Tooltip
 	} from '#lib/shadcn/ui/index.js';
+	import { Popover, RemovableChip } from '@nais/ds-svelte-community';
 	import {
 		ArrowCirclepathIcon,
 		ChevronDownIcon,

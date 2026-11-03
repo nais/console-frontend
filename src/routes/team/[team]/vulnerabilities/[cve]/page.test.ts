@@ -203,9 +203,8 @@ describe('team CVE grouping', () => {
 			expect(checkboxes).toHaveLength(member ? 3 : 0);
 			if (member) {
 				const rows = body.split(/class="workload-container\b[^"]*"/).slice(1);
-				expect(rows[0]).not.toContain('aksel-checkbox--readonly');
-				expect(rows[1]).toContain('aksel-checkbox--readonly');
-				expect(rows[1]).toContain('aksel-checkbox--disabled');
+				expect(rows[0]).not.toMatch(/<input\b[^>]*type="checkbox"[^>]*\sdisabled(?:\s|=|>)/);
+				expect(rows[1]).toMatch(/<input\b[^>]*type="checkbox"[^>]*\sdisabled(?:\s|=|>)/);
 				expect(body).toContain('Select all for this team');
 				expect(body).toContain('Select all workloads with package');
 			}
