@@ -56,7 +56,7 @@
 	.sh-switch-wrapper {
 		display: inline-flex;
 		align-items: center;
-		gap: 0.55rem;
+		gap: var(--ax-space-8);
 	}
 	.sh-switch-wrapper.position-right {
 		flex-direction: row-reverse;
@@ -65,45 +65,45 @@
 	.sh-switch-input {
 		appearance: none;
 		position: relative;
-		width: 2.25rem;
-		height: 1.25rem;
-		border-radius: 9999px;
+		width: var(--ax-space-36);
+		height: var(--ax-space-20);
+		border-radius: var(--radius-full);
 		background-color: var(--input);
-		border: 1px solid var(--border-strong);
+		border: var(--sh-border-width) solid var(--border-strong);
 		cursor: pointer;
 		flex-shrink: 0;
 		transition: background-color 140ms ease;
 	}
 	.sh-switch-input.size-small {
-		width: 1.875rem;
-		height: 1.0625rem;
+		width: var(--ax-space-28);
+		height: var(--ax-space-16);
 	}
 	.sh-switch-input::after {
 		content: '';
 		position: absolute;
-		top: 1px;
-		left: 1px;
-		width: calc(1.25rem - 4px);
-		height: calc(1.25rem - 4px);
-		border-radius: 9999px;
+		top: var(--ax-space-1);
+		left: var(--ax-space-1);
+		width: calc(var(--ax-space-20) - var(--ax-space-4));
+		height: calc(var(--ax-space-20) - var(--ax-space-4));
+		border-radius: var(--radius-full);
 		background-color: var(--card);
 		box-shadow: var(--sh-shadow-xs);
 		transition: transform 140ms ease;
 	}
 	.sh-switch-input.size-small::after {
-		width: calc(1.0625rem - 4px);
-		height: calc(1.0625rem - 4px);
+		width: calc(var(--ax-space-16) - var(--ax-space-4));
+		height: calc(var(--ax-space-16) - var(--ax-space-4));
 	}
 	.sh-switch-input:checked {
 		background-color: var(--primary);
 		border-color: var(--primary);
 	}
 	.sh-switch-input:checked::after {
-		transform: translateX(1rem);
+		transform: translateX(var(--ax-space-16));
 		background-color: var(--primary-foreground);
 	}
 	.sh-switch-input.size-small:checked::after {
-		transform: translateX(0.8125rem);
+		transform: translateX(calc(var(--ax-space-12) + var(--ax-space-1)));
 	}
 	.sh-switch-input:disabled {
 		opacity: 0.5;
@@ -112,24 +112,24 @@
 	.sh-switch-text {
 		display: flex;
 		flex-direction: column;
-		gap: 0.1rem;
+		gap: var(--ax-space-2);
 	}
 	.sh-switch-label {
-		font-size: 0.875rem;
-		font-weight: 500;
+		font-size: var(--sh-font-size-sm);
+		font-weight: var(--sh-font-weight-medium);
 		color: var(--foreground);
 		cursor: pointer;
 	}
 	.sh-switch-desc {
-		font-size: 0.75rem;
+		font-size: var(--sh-font-size-xs);
 		color: var(--muted-foreground);
 	}
 	.sr-only {
 		position: absolute;
-		width: 1px;
-		height: 1px;
+		width: var(--ax-space-1);
+		height: var(--ax-space-1);
 		padding: 0;
-		margin: -1px;
+		margin: calc(-1 * var(--ax-space-1));
 		overflow: hidden;
 		clip: rect(0, 0, 0, 0);
 		white-space: nowrap;

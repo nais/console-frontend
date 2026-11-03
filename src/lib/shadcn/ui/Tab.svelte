@@ -25,6 +25,7 @@
 		{href}
 		role="tab"
 		aria-selected={isActive}
+		tabindex={isActive ? 0 : -1}
 		class={['sh-ui-tab', { active: isActive }, className]}
 		onclick={() => ctx?.activate(value)}
 		{...rest}
@@ -37,6 +38,7 @@
 		type="button"
 		role="tab"
 		aria-selected={isActive}
+		tabindex={isActive ? 0 : -1}
 		class={['sh-ui-tab', { active: isActive }, className]}
 		onclick={() => ctx?.activate(value)}
 		{...rest}
@@ -50,16 +52,17 @@
 	.sh-ui-tab {
 		position: relative;
 		display: inline-flex;
+		flex-shrink: 0;
 		align-items: center;
-		gap: 0.4rem;
-		padding: 0.55rem 0.875rem;
-		font-size: 0.84375rem;
-		font-weight: 500;
+		gap: var(--ax-space-6);
+		padding: var(--ax-space-8) var(--ax-space-14);
+		font-size: var(--sh-font-size-body);
+		font-weight: var(--sh-font-weight-medium);
 		color: var(--muted-foreground);
 		text-decoration: none;
 		background: transparent;
 		border: none;
-		border-radius: calc(var(--radius) - 3px) calc(var(--radius) - 3px) 0 0;
+		border-radius: var(--radius-xs) var(--radius-xs) 0 0;
 		white-space: nowrap;
 		cursor: pointer;
 	}
@@ -69,15 +72,15 @@
 	}
 	.sh-ui-tab.active {
 		color: var(--foreground);
-		font-weight: 600;
+		font-weight: var(--sh-font-weight-semibold);
 	}
 	.sh-ui-tab.active::after {
 		content: '';
 		position: absolute;
-		left: 0.5rem;
-		right: 0.5rem;
-		bottom: -1px;
-		height: 2px;
+		left: var(--ax-space-8);
+		right: var(--ax-space-8);
+		bottom: 0;
+		height: var(--ax-space-2);
 		background: var(--primary);
 	}
 </style>

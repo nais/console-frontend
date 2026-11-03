@@ -68,22 +68,22 @@
 	.sh-readmore {
 		display: flex;
 		flex-direction: column;
-		gap: 0.35rem;
+		gap: var(--ax-space-6);
 	}
 	.sh-readmore-btn {
 		display: inline-flex;
 		align-items: center;
-		gap: 0.35rem;
-		padding: 0.25rem 0.4rem;
-		margin-left: -0.4rem;
+		gap: var(--ax-space-6);
+		padding: var(--ax-space-4) var(--ax-space-6);
+		margin-left: calc(-1 * var(--ax-space-6));
 		width: fit-content;
 		border: none;
-		border-radius: calc(var(--radius) - 3px);
+		border-radius: var(--radius-xs);
 		background: transparent;
 		color: var(--primary);
 		font-family: inherit;
-		font-size: 0.8125rem;
-		font-weight: 500;
+		font-size: var(--ax-font-size-small);
+		font-weight: var(--sh-font-weight-medium);
 		cursor: pointer;
 	}
 	.sh-readmore-btn:hover {
@@ -98,9 +98,9 @@
 		transform: rotate(180deg);
 	}
 	.sh-readmore-content {
-		padding-left: 1.25rem;
-		border-left: 2px solid var(--border);
-		font-size: 0.84375rem;
+		padding-left: var(--ax-space-20);
+		border-left: var(--ax-space-2) solid var(--border);
+		font-size: var(--sh-font-size-body);
 		color: var(--muted-foreground);
 	}
 	.sh-readmore-content.closed {

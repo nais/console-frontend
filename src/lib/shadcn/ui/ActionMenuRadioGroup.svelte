@@ -49,9 +49,9 @@
 
 <style>
 	.sh-action-menu-group-label {
-		padding: 0.25rem 0.625rem;
-		font-size: 0.6875rem;
-		font-weight: 600;
+		padding: var(--ax-space-4) var(--ax-space-10);
+		font-size: var(--sh-font-size-caption);
+		font-weight: var(--sh-font-weight-semibold);
 		text-transform: uppercase;
 		letter-spacing: 0.04em;
 		color: var(--muted-foreground);

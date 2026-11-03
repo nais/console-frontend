@@ -51,19 +51,19 @@
 		line-height: 1.45;
 	}
 	.sh-body-short--large {
-		font-size: 1rem;
+		font-size: var(--sh-font-size-base);
 	}
 	.sh-body-short--medium {
-		font-size: 0.875rem;
+		font-size: var(--sh-font-size-sm);
 	}
 	.sh-body-short--small {
-		font-size: 0.8125rem;
+		font-size: var(--ax-font-size-small);
 	}
 	.sh-body-short--spacing {
-		margin-bottom: 0.75rem;
+		margin-bottom: var(--ax-space-12);
 	}
 	.sh-body-short--semibold {
-		font-weight: 600;
+		font-weight: var(--sh-font-weight-semibold);
 	}
 	.sh-body-short--truncate {
 		overflow: hidden;

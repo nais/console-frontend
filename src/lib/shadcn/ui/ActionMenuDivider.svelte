@@ -2,8 +2,8 @@
 
 <style>
 	.sh-action-menu-divider {
-		margin: 0.25rem -0.25rem;
+		margin: var(--ax-space-4) calc(-1 * var(--ax-space-4));
 		border: none;
-		border-top: 1px solid var(--border);
+		border-top: var(--sh-border-width) solid var(--border);
 	}
 </style>

@@ -83,10 +83,10 @@
 	.sh-table {
 		width: 100%;
 		border-collapse: collapse;
-		font-size: 0.84375rem;
+		font-size: var(--sh-font-size-body);
 		color: var(--foreground);
 	}
 	.sh-table--small {
-		font-size: 0.8125rem;
+		font-size: var(--ax-font-size-small);
 	}
 </style>

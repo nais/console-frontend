@@ -44,7 +44,7 @@
 <style>
 	.sh-detail {
 		margin: 0;
-		font-size: 0.75rem;
+		font-size: var(--sh-font-size-xs);
 		line-height: 1.35;
 		color: var(--muted-foreground);
 	}
@@ -53,10 +53,10 @@
 		letter-spacing: 0.04em;
 	}
 	.sh-detail--spacing {
-		margin-bottom: 0.375rem;
+		margin-bottom: var(--ax-space-6);
 	}
 	.sh-detail--semibold {
-		font-weight: 600;
+		font-weight: var(--sh-font-weight-semibold);
 	}
 	.sh-detail--subtle {
 		color: var(--muted-foreground);

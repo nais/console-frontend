@@ -13,7 +13,7 @@
 <style>
 	.sh-skeleton {
 		display: inline-block;
-		border-radius: calc(var(--radius) - 4px);
+		border-radius: var(--radius-2xs);
 		background-color: var(--muted);
 		animation: sh-pulse 1.5s ease-in-out infinite;
 	}

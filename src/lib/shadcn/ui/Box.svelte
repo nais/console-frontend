@@ -23,8 +23,8 @@
 
 <style>
 	.sh-box {
-		padding: 1rem;
-		border: 1px solid var(--border);
+		padding: var(--ax-space-16);
+		border: var(--sh-border-width) solid var(--border);
 		border-radius: var(--radius);
 		background-color: var(--card);
 		color: var(--card-foreground);

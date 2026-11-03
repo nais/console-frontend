@@ -16,7 +16,7 @@
 
 <style>
 	.sh-thead {
-		border-bottom: 1px solid var(--border);
+		border-bottom: var(--sh-border-width) solid var(--border);
 		background-color: color-mix(in srgb, var(--secondary) 55%, var(--card));
 	}
 </style>

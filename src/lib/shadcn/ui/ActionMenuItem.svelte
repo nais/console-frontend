@@ -43,9 +43,14 @@
 	<a
 		{href}
 		role="menuitem"
+		aria-disabled={disabled || undefined}
+		tabindex="-1"
 		class={['sh-action-menu-item', `variant-${variant}`, { disabled }, className]}
-		onclick={() => {
-			if (disabled) return;
+		onclick={(event) => {
+			if (disabled) {
+				event.preventDefault();
+				return;
+			}
 			onselect?.();
 			ctx?.close();
 		}}
@@ -58,6 +63,7 @@
 	<button
 		type="button"
 		role="menuitem"
+		tabindex="-1"
 		{disabled}
 		class={['sh-action-menu-item', `variant-${variant}`, { disabled }, className]}
 		onclick={() => {
@@ -77,14 +83,14 @@
 		width: 100%;
 		display: flex;
 		align-items: center;
-		gap: 0.5rem;
-		padding: 0.375rem 0.625rem;
+		gap: var(--ax-space-8);
+		padding: var(--ax-space-6) var(--ax-space-10);
 		border: none;
-		border-radius: calc(var(--radius) - 4px);
+		border-radius: var(--radius-2xs);
 		background: transparent;
 		color: var(--popover-foreground);
 		font-family: inherit;
-		font-size: 0.8125rem;
+		font-size: var(--ax-font-size-small);
 		text-align: left;
 		text-decoration: none;
 		cursor: pointer;

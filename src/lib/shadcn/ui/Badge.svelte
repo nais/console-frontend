@@ -44,10 +44,10 @@
 	.sh-badge-comp {
 		display: inline-flex;
 		align-items: center;
-		gap: 0.35rem;
-		border-radius: 9999px;
-		font-weight: 600;
-		border: 1px solid transparent;
+		gap: var(--ax-space-6);
+		border-radius: var(--radius-full);
+		font-weight: var(--sh-font-weight-semibold);
+		border: var(--sh-border-width) solid transparent;
 		white-space: nowrap;
 		line-height: 1.2;
 		letter-spacing: 0.01em;
@@ -56,23 +56,23 @@
 
 	.sh-badge-comp.mono {
 		font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-		border-radius: calc(var(--radius) - 4px);
-		font-weight: 500;
+		border-radius: var(--radius-2xs);
+		font-weight: var(--sh-font-weight-medium);
 	}
 
 	.size-default {
-		padding: 0.2rem 0.625rem;
-		font-size: 0.75rem;
+		padding: var(--ax-space-4) var(--ax-space-10);
+		font-size: var(--sh-font-size-xs);
 	}
 
 	.size-sm {
-		padding: 0.125rem 0.5rem;
-		font-size: 0.6875rem;
+		padding: var(--ax-space-2) var(--ax-space-8);
+		font-size: var(--sh-font-size-caption);
 	}
 
 	.size-xs {
-		padding: 0.075rem 0.4rem;
-		font-size: 0.65rem;
+		padding: var(--ax-space-1) var(--ax-space-6);
+		font-size: var(--sh-font-size-micro);
 	}
 
 	.variant-default {
@@ -121,25 +121,25 @@
 		background-color: var(--primary-muted);
 		color: var(--primary);
 		border-color: var(--primary-border);
-		border-radius: calc(var(--radius) - 4px);
+		border-radius: var(--radius-2xs);
 	}
 
 	.variant-env-dev {
 		background-color: var(--secondary);
 		color: var(--muted-foreground);
 		border-color: var(--border);
-		border-radius: calc(var(--radius) - 4px);
+		border-radius: var(--radius-2xs);
 	}
 
 	.dot {
-		width: 0.425rem;
-		height: 0.425rem;
-		border-radius: 9999px;
+		width: var(--ax-space-6);
+		height: var(--ax-space-6);
+		border-radius: var(--radius-full);
 		background-color: currentColor;
 		flex-shrink: 0;
 	}
 
 	.dot.pulse {
-		box-shadow: 0 0 0 2px color-mix(in srgb, currentColor 28%, transparent);
+		box-shadow: 0 0 0 var(--ax-space-2) color-mix(in srgb, currentColor 28%, transparent);
 	}
 </style>

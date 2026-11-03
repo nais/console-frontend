@@ -63,7 +63,19 @@
 	{#if label}
 		<Label {size} as="div" spacing>{label}</Label>
 	{/if}
-	<div role="radiogroup" aria-label={label} class={['sh-toggle-group', `size-${size}`, { fill }]}>
+	<div
+		role="radiogroup"
+		aria-label={label}
+		tabindex={value ? undefined : 0}
+		onfocus={(event) => {
+			if (event.target === event.currentTarget) {
+				event.currentTarget
+					.querySelector<HTMLElement>('[role="radio"]:not([disabled]):not([aria-disabled="true"])')
+					?.focus();
+			}
+		}}
+		class={['sh-toggle-group', `size-${size}`, { fill }]}
+	>
 		{@render children()}
 	</div>
 </div>
@@ -76,11 +88,11 @@
 	.sh-toggle-group {
 		display: inline-flex;
 		align-items: center;
-		gap: 0.15rem;
-		padding: 0.1875rem;
+		gap: var(--ax-space-2);
+		padding: var(--ax-space-2);
 		background-color: var(--muted);
-		border: 1px solid var(--border);
-		border-radius: calc(var(--radius) - 2px);
+		border: var(--sh-border-width) solid var(--border);
+		border-radius: var(--radius-sm);
 	}
 	.sh-toggle-group.fill {
 		display: flex;

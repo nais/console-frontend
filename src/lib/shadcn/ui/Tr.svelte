@@ -35,7 +35,7 @@
 
 <style>
 	.sh-tr {
-		border-bottom: 1px solid var(--border);
+		border-bottom: var(--sh-border-width) solid var(--border);
 		transition: background-color 110ms ease;
 	}
 	:global(.sh-tbody) .sh-tr:last-child {

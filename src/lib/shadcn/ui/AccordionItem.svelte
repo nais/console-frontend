@@ -75,14 +75,14 @@
 
 <style>
 	.sh-accordion-item {
-		border-bottom: 1px solid var(--border);
+		border-bottom: var(--sh-border-width) solid var(--border);
 	}
 	.sh-accordion-header {
 		width: 100%;
 		display: flex;
 		align-items: center;
-		gap: 0.5rem;
-		padding: 0.75rem 0.25rem;
+		gap: var(--ax-space-8);
+		padding: var(--ax-space-12) var(--ax-space-4);
 		border: none;
 		background: transparent;
 		color: var(--foreground);
@@ -102,6 +102,6 @@
 		display: none;
 	}
 	.sh-accordion-content {
-		padding: 0.25rem 0 0.875rem;
+		padding: var(--ax-space-4) 0 var(--ax-space-14);
 	}
 </style>

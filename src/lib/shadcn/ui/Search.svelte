@@ -87,7 +87,7 @@
 	.sh-search-field {
 		display: flex;
 		flex-direction: column;
-		gap: 0.35rem;
+		gap: var(--ax-space-6);
 		width: 100%;
 	}
 	.sh-search-wrapper {
@@ -98,45 +98,45 @@
 	}
 	.sh-search-icon {
 		position: absolute;
-		left: 0.65rem;
+		left: var(--ax-space-10);
 		display: inline-flex;
 		align-items: center;
 		color: var(--muted-foreground);
-		font-size: 0.875rem;
+		font-size: var(--sh-font-size-sm);
 		pointer-events: none;
 	}
 	.sh-search-input {
 		width: 100%;
 		box-sizing: border-box;
-		height: 2.25rem;
-		padding: 0 2rem 0 2.1rem;
-		border-radius: calc(var(--radius) - 2px);
-		border: 1px solid var(--input);
+		height: var(--ax-space-36);
+		padding: 0 var(--ax-space-32) 0 var(--ax-space-32);
+		border-radius: var(--radius-sm);
+		border: var(--sh-border-width) solid var(--input);
 		background-color: var(--card);
 		color: var(--foreground);
 		font-family: inherit;
-		font-size: 0.875rem;
+		font-size: var(--sh-font-size-sm);
 		box-shadow: var(--sh-shadow-xs);
 	}
 	.sh-search-input--small {
-		height: 2rem;
-		font-size: 0.8125rem;
+		height: var(--ax-space-32);
+		font-size: var(--ax-font-size-small);
 	}
 	.sh-search-input:focus-visible {
 		outline: none;
 		border-color: var(--ring);
-		box-shadow: 0 0 0 2px color-mix(in srgb, var(--ring) 22%, transparent);
+		box-shadow: 0 0 0 var(--ax-space-2) color-mix(in srgb, var(--ring) 22%, transparent);
 	}
 	.sh-search-clear {
 		position: absolute;
-		right: 0.375rem;
+		right: var(--ax-space-6);
 		display: inline-flex;
 		align-items: center;
 		justify-content: center;
-		width: 1.5rem;
-		height: 1.5rem;
+		width: var(--ax-space-24);
+		height: var(--ax-space-24);
 		border: none;
-		border-radius: calc(var(--radius) - 4px);
+		border-radius: var(--radius-2xs);
 		background: transparent;
 		color: var(--muted-foreground);
 		cursor: pointer;

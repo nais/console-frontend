@@ -17,11 +17,11 @@
 
 <style>
 	.sh-td {
-		padding: 0.625rem 0.875rem;
+		padding: var(--ax-space-10) var(--ax-space-14);
 		vertical-align: middle;
 	}
 	:global(.sh-table--small) .sh-td {
-		padding: 0.5rem 0.75rem;
+		padding: var(--ax-space-8) var(--ax-space-12);
 	}
 	.sh-td.align-center {
 		text-align: center;

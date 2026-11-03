@@ -21,6 +21,7 @@
 <button
 	type="button"
 	role="menuitemradio"
+	tabindex="-1"
 	aria-checked={checked}
 	class="sh-action-menu-radioitem"
 	onclick={() => {
@@ -40,14 +41,14 @@
 		width: 100%;
 		display: flex;
 		align-items: center;
-		gap: 0.45rem;
-		padding: 0.375rem 0.625rem;
+		gap: var(--ax-space-8);
+		padding: var(--ax-space-6) var(--ax-space-10);
 		border: none;
-		border-radius: calc(var(--radius) - 4px);
+		border-radius: var(--radius-2xs);
 		background: transparent;
 		color: var(--popover-foreground);
 		font-family: inherit;
-		font-size: 0.8125rem;
+		font-size: var(--ax-font-size-small);
 		text-align: left;
 		cursor: pointer;
 	}
@@ -55,7 +56,7 @@
 		background-color: var(--secondary);
 	}
 	.sh-radio-indicator {
-		width: 1rem;
+		width: var(--ax-space-16);
 		display: inline-flex;
 		align-items: center;
 		justify-content: center;

@@ -57,15 +57,15 @@
 
 <style>
 	.sh-th {
-		padding: 0.625rem 0.875rem;
-		font-size: 0.75rem;
-		font-weight: 600;
+		padding: var(--ax-space-10) var(--ax-space-14);
+		font-size: var(--sh-font-size-xs);
+		font-weight: var(--sh-font-weight-semibold);
 		color: var(--muted-foreground);
 		text-align: left;
 		vertical-align: middle;
 	}
 	:global(.sh-table--small) .sh-th {
-		padding: 0.5rem 0.75rem;
+		padding: var(--ax-space-8) var(--ax-space-12);
 	}
 	.sh-th.align-center {
 		text-align: center;
@@ -76,11 +76,11 @@
 	.sh-th__sort-btn {
 		display: inline-flex;
 		align-items: center;
-		gap: 0.35rem;
-		padding: 0.15rem 0.35rem;
-		margin: -0.15rem -0.35rem;
+		gap: var(--ax-space-6);
+		padding: var(--ax-space-2) var(--ax-space-6);
+		margin: calc(-1 * var(--ax-space-2)) calc(-1 * var(--ax-space-6));
 		border: none;
-		border-radius: calc(var(--radius) - 4px);
+		border-radius: var(--radius-2xs);
 		background: transparent;
 		color: inherit;
 		font: inherit;

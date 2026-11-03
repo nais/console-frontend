@@ -59,29 +59,29 @@
 	.sh-radio {
 		display: flex;
 		flex-direction: column;
-		gap: 0.15rem;
+		gap: var(--ax-space-2);
 	}
 	.sh-radio__row {
 		display: flex;
 		align-items: center;
-		gap: 0.5rem;
+		gap: var(--ax-space-8);
 	}
 	.sh-radio__input {
 		accent-color: var(--primary);
-		width: 1rem;
-		height: 1rem;
+		width: var(--ax-space-16);
+		height: var(--ax-space-16);
 		margin: 0;
 		cursor: pointer;
 	}
 	.sh-radio__label {
-		font-size: 0.875rem;
-		font-weight: 500;
+		font-size: var(--sh-font-size-sm);
+		font-weight: var(--sh-font-weight-medium);
 		color: var(--foreground);
 		cursor: pointer;
 	}
 	.sh-radio__desc {
-		padding-left: 1.5rem;
-		font-size: 0.75rem;
+		padding-left: var(--ax-space-24);
+		font-size: var(--sh-font-size-xs);
 		color: var(--muted-foreground);
 	}
 </style>

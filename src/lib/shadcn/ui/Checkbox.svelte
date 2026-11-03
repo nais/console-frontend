@@ -87,20 +87,20 @@
 	.sh-checkbox {
 		display: flex;
 		flex-direction: column;
-		gap: 0.15rem;
+		gap: var(--ax-space-2);
 	}
 	.sh-checkbox__row {
 		display: flex;
 		align-items: center;
-		gap: 0.5rem;
+		gap: var(--ax-space-8);
 	}
 	.sh-checkbox__input {
 		appearance: none;
-		width: 1rem;
-		height: 1rem;
+		width: var(--ax-space-16);
+		height: var(--ax-space-16);
 		margin: 0;
-		border-radius: 0.25rem;
-		border: 1px solid var(--border-strong);
+		border-radius: var(--ax-space-4);
+		border: var(--sh-border-width) solid var(--border-strong);
 		background-color: var(--card);
 		display: inline-grid;
 		place-content: center;
@@ -112,11 +112,11 @@
 	}
 	.sh-checkbox__input::before {
 		content: '';
-		width: 0.55rem;
-		height: 0.32rem;
-		border-left: 1.75px solid var(--primary-foreground);
-		border-bottom: 1.75px solid var(--primary-foreground);
-		transform: translateY(-0.5px) rotate(-45deg) scale(0);
+		width: var(--ax-space-8);
+		height: var(--ax-space-6);
+		border-left: var(--ax-space-2) solid var(--primary-foreground);
+		border-bottom: var(--ax-space-2) solid var(--primary-foreground);
+		transform: translateY(calc(var(--ax-space-1) / -2)) rotate(-45deg) scale(0);
 		transition: transform 100ms ease;
 	}
 	.sh-checkbox__input:checked {
@@ -124,47 +124,47 @@
 		border-color: var(--primary);
 	}
 	.sh-checkbox__input:checked::before {
-		transform: translateY(-0.5px) rotate(-45deg) scale(1);
+		transform: translateY(calc(var(--ax-space-1) / -2)) rotate(-45deg) scale(1);
 	}
 	.sh-checkbox__input:indeterminate {
 		background-color: var(--primary);
 		border-color: var(--primary);
 	}
 	.sh-checkbox__input:indeterminate::before {
-		width: 0.5rem;
+		width: var(--ax-space-8);
 		height: 0;
 		border-left: none;
-		border-bottom: 2px solid var(--primary-foreground);
+		border-bottom: var(--ax-space-2) solid var(--primary-foreground);
 		transform: scale(1);
 	}
 	.sh-checkbox__input:focus-visible {
-		outline: 2px solid var(--ring);
-		outline-offset: 2px;
+		outline: var(--ax-space-2) solid var(--ring);
+		outline-offset: var(--ax-space-2);
 	}
 	.sh-checkbox__input:disabled {
 		opacity: 0.5;
 		cursor: not-allowed;
 	}
 	.sh-checkbox__label {
-		font-size: 0.875rem;
-		font-weight: 500;
+		font-size: var(--sh-font-size-sm);
+		font-weight: var(--sh-font-weight-medium);
 		color: var(--foreground);
 		cursor: pointer;
 	}
 	.sh-checkbox--small .sh-checkbox__label {
-		font-size: 0.8125rem;
+		font-size: var(--ax-font-size-small);
 	}
 	.sh-checkbox__description {
-		padding-left: 1.5rem;
-		font-size: 0.75rem;
+		padding-left: var(--ax-space-24);
+		font-size: var(--sh-font-size-xs);
 		color: var(--muted-foreground);
 	}
 	.sr-only {
 		position: absolute;
-		width: 1px;
-		height: 1px;
+		width: var(--ax-space-1);
+		height: var(--ax-space-1);
 		padding: 0;
-		margin: -1px;
+		margin: calc(-1 * var(--ax-space-1));
 		overflow: hidden;
 		clip: rect(0, 0, 0, 0);
 		white-space: nowrap;

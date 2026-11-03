@@ -93,8 +93,11 @@ Generates Svelte Playground link. Ask user first, and NEVER if code was written 
 
 - Font sizes: `--ax-font-size-small`, `--ax-font-size-medium`, `--ax-font-size-large`, `--ax-font-size-xlarge`
 - Font weights: `--ax-font-weight-regular`, `--ax-font-weight-bold`
+- Primitive typography uses the `--sh-font-size-*` and `--sh-font-weight-*` tokens defined in `src/styles/shadcn.css`; keep exact font sizes and weights when replacing raw values.
 - Line heights: `--ax-font-line-height-large`, `--ax-font-line-height-heading-medium`
 - **Font family**: Use `monospace` directly, NOT a CSS variable (there is no `--ax-font-family-mono`)
+
+Primitive radii, borders, and overlay dimensions use the shared `--radius-*`, `--sh-border-width`, and `--sh-modal-*` / `--sh-menu-*` / `--sh-popover-*` tokens in `src/styles/shadcn.css`.
 
 #### Colors - Text
 

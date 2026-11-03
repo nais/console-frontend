@@ -44,18 +44,18 @@
 		margin: 0;
 		display: inline-flex;
 		align-items: center;
-		gap: 0.35rem;
+		gap: var(--ax-space-6);
 		color: var(--destructive);
-		font-weight: 500;
+		font-weight: var(--sh-font-weight-medium);
 		line-height: 1.4;
 	}
 	.sh-error-message--medium {
-		font-size: 0.8125rem;
+		font-size: var(--ax-font-size-small);
 	}
 	.sh-error-message--small {
-		font-size: 0.75rem;
+		font-size: var(--sh-font-size-xs);
 	}
 	.sh-error-message--spacing {
-		margin-bottom: 0.5rem;
+		margin-bottom: var(--ax-space-8);
 	}
 </style>

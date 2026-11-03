@@ -90,20 +90,20 @@
 		position: relative;
 		width: 100%;
 		border-radius: var(--radius);
-		border: 1px solid var(--border);
+		border: var(--sh-border-width) solid var(--border);
 		background-color: var(--card);
 		color: var(--foreground);
-		padding: 0.75rem 1rem;
+		padding: var(--ax-space-12) var(--ax-space-16);
 		display: flex;
 		align-items: flex-start;
-		gap: 0.65rem;
-		font-size: 0.84375rem;
+		gap: var(--ax-space-10);
+		font-size: var(--sh-font-size-body);
 		line-height: 1.45;
 		box-sizing: border-box;
 	}
 	.sh-ui-alert.size-sm {
-		padding: 0.55rem 0.75rem;
-		font-size: 0.8125rem;
+		padding: var(--ax-space-8) var(--ax-space-12);
+		font-size: var(--ax-font-size-small);
 	}
 	.sh-ui-alert.full-width {
 		border-radius: 0;
@@ -111,14 +111,14 @@
 	.sh-ui-alert.inline {
 		background-color: transparent;
 		border: none;
-		padding: 0.25rem 0;
+		padding: var(--ax-space-4) 0;
 	}
 	.sh-ui-alert__icon {
 		display: inline-flex;
 		align-items: center;
 		justify-content: center;
-		font-size: 1rem;
-		margin-top: 0.125rem;
+		font-size: var(--sh-font-size-base);
+		margin-top: var(--ax-space-2);
 		flex-shrink: 0;
 	}
 	.sh-ui-alert__content {
@@ -127,19 +127,19 @@
 		overflow-wrap: anywhere;
 	}
 	.sh-ui-alert__title {
-		margin: 0 0 0.25rem;
-		font-weight: 600;
-		font-size: 0.875rem;
+		margin: 0 0 var(--ax-space-4);
+		font-weight: var(--sh-font-weight-semibold);
+		font-size: var(--sh-font-size-sm);
 		line-height: 1.3;
 	}
 	.sh-ui-alert__close {
 		display: inline-flex;
 		align-items: center;
 		justify-content: center;
-		width: 1.5rem;
-		height: 1.5rem;
+		width: var(--ax-space-24);
+		height: var(--ax-space-24);
 		border: none;
-		border-radius: calc(var(--radius) - 4px);
+		border-radius: var(--radius-2xs);
 		background: transparent;
 		color: currentColor;
 		opacity: 0.7;

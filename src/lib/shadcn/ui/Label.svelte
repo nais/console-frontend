@@ -42,26 +42,26 @@
 	.sh-label {
 		display: inline-flex;
 		align-items: center;
-		gap: 0.25rem;
-		font-weight: 500;
+		gap: var(--ax-space-4);
+		font-weight: var(--sh-font-weight-medium);
 		color: var(--foreground);
 		line-height: 1.35;
 	}
 	.sh-label--medium {
-		font-size: 0.875rem;
+		font-size: var(--sh-font-size-sm);
 	}
 	.sh-label--small {
-		font-size: 0.8125rem;
+		font-size: var(--ax-font-size-small);
 	}
 	.sh-label--spacing {
-		margin-bottom: 0.35rem;
+		margin-bottom: var(--ax-space-6);
 	}
 	.sr-only {
 		position: absolute;
-		width: 1px;
-		height: 1px;
+		width: var(--ax-space-1);
+		height: var(--ax-space-1);
 		padding: 0;
-		margin: -1px;
+		margin: calc(-1 * var(--ax-space-1));
 		overflow: hidden;
 		clip: rect(0, 0, 0, 0);
 		white-space: nowrap;

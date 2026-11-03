@@ -48,19 +48,19 @@
 		line-height: 1.6;
 	}
 	.sh-body-long--large {
-		font-size: 1rem;
+		font-size: var(--sh-font-size-base);
 	}
 	.sh-body-long--medium {
-		font-size: 0.875rem;
+		font-size: var(--sh-font-size-sm);
 	}
 	.sh-body-long--small {
-		font-size: 0.8125rem;
+		font-size: var(--ax-font-size-small);
 	}
 	.sh-body-long--spacing {
-		margin-bottom: 0.875rem;
+		margin-bottom: var(--ax-space-14);
 	}
 	.sh-body-long--semibold {
-		font-weight: 600;
+		font-weight: var(--sh-font-weight-semibold);
 	}
 	.sh-body-long--subtle {
 		color: var(--muted-foreground);

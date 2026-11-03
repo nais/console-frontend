@@ -26,15 +26,15 @@
 	.sh-internal-header-btn {
 		display: inline-flex;
 		align-items: center;
-		gap: 0.375rem;
-		padding: 0.375rem 0.625rem;
-		border: 1px solid transparent;
-		border-radius: calc(var(--radius) - 2px);
+		gap: var(--ax-space-6);
+		padding: var(--ax-space-6) var(--ax-space-10);
+		border: var(--sh-border-width) solid transparent;
+		border-radius: var(--radius-sm);
 		background: transparent;
 		color: var(--foreground);
 		font-family: inherit;
-		font-size: 0.8125rem;
-		font-weight: 500;
+		font-size: var(--ax-font-size-small);
+		font-weight: var(--sh-font-weight-medium);
 		text-decoration: none;
 		cursor: pointer;
 	}

@@ -55,9 +55,9 @@
 		display: inline-flex;
 		align-items: center;
 		justify-content: center;
-		padding: 0.125rem;
+		padding: var(--ax-space-2);
 		border: none;
-		border-radius: 9999px;
+		border-radius: var(--radius-full);
 		background: transparent;
 		color: var(--muted-foreground);
 		cursor: pointer;
@@ -67,18 +67,18 @@
 	}
 	.sh-helptext-popover {
 		position: absolute;
-		top: calc(100% + 6px);
+		top: calc(100% + var(--ax-space-6));
 		left: 0;
 		z-index: 50;
-		min-width: 14rem;
-		max-width: 20rem;
-		padding: 0.625rem 0.75rem;
-		border: 1px solid var(--border);
+		min-width: var(--sh-popover-min-width);
+		max-width: var(--sh-popover-max-width);
+		padding: var(--ax-space-10) var(--ax-space-12);
+		border: var(--sh-border-width) solid var(--border);
 		border-radius: var(--radius);
 		background-color: var(--popover);
 		color: var(--popover-foreground);
 		box-shadow: var(--sh-shadow-md);
-		font-size: 0.8125rem;
+		font-size: var(--ax-font-size-small);
 		line-height: 1.45;
 	}
 </style>

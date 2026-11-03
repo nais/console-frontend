@@ -110,15 +110,15 @@
 <style>
 	.sh-sidebar {
 		position: sticky;
-		top: 3.5rem;
-		height: calc(100vh - 3.5rem);
-		width: 14.5rem;
+		top: var(--ax-space-56);
+		height: calc(100vh - var(--ax-space-56));
+		width: var(--sh-sidebar-menu-width);
 		flex-shrink: 0;
 		display: flex;
 		flex-direction: column;
 		background-color: var(--sidebar-background);
 		color: var(--sidebar-foreground);
-		border-right: 1px solid var(--sidebar-border);
+		border-right: var(--sh-border-width) solid var(--sidebar-border);
 		z-index: 30;
 		transition: width 160ms cubic-bezier(0.16, 1, 0.3, 1);
 		user-select: none;
@@ -133,8 +133,8 @@
 	}
 
 	.sidebar-bottom {
-		padding: 0.5rem;
-		border-top: 1px solid var(--sidebar-border);
+		padding: var(--ax-space-8);
+		border-top: var(--sh-border-width) solid var(--sidebar-border);
 		display: flex;
 		justify-content: flex-end;
 	}
@@ -146,15 +146,15 @@
 	.collapse-btn {
 		display: inline-flex;
 		align-items: center;
-		gap: 0.35rem;
-		height: 1.75rem;
-		padding: 0 0.5rem;
-		border-radius: calc(var(--radius) - 3px);
-		border: 1px solid transparent;
+		gap: var(--ax-space-6);
+		height: var(--ax-space-28);
+		padding: 0 var(--ax-space-8);
+		border-radius: var(--radius-xs);
+		border: var(--sh-border-width) solid transparent;
 		background: transparent;
 		color: var(--sidebar-muted);
-		font-size: 0.75rem;
-		font-weight: 500;
+		font-size: var(--sh-font-size-xs);
+		font-weight: var(--sh-font-weight-medium);
 		cursor: pointer;
 		flex-shrink: 0;
 		transition:
@@ -170,23 +170,23 @@
 	.sidebar-scroll {
 		flex: 1;
 		overflow-y: auto;
-		padding: 0.625rem 0.5rem 1rem 0.5rem;
+		padding: var(--ax-space-10) var(--ax-space-8) var(--ax-space-16) var(--ax-space-8);
 		display: flex;
 		flex-direction: column;
-		gap: 0.875rem;
+		gap: var(--ax-space-14);
 		scrollbar-width: thin;
 	}
 
 	.nav-group {
 		display: flex;
 		flex-direction: column;
-		gap: 0.125rem;
+		gap: var(--ax-space-2);
 	}
 
 	.nav-group-label {
-		padding: 0.125rem 0.5rem;
-		font-size: 0.75rem;
-		font-weight: 500;
+		padding: var(--ax-space-2) var(--ax-space-8);
+		font-size: var(--sh-font-size-xs);
+		font-weight: var(--sh-font-weight-medium);
 		color: var(--sidebar-muted);
 	}
 
@@ -196,19 +196,19 @@
 		padding: 0;
 		display: flex;
 		flex-direction: column;
-		gap: 0.0625rem;
+		gap: var(--ax-space-1);
 	}
 
 	.nav-item {
 		display: flex;
 		align-items: center;
-		gap: 0.55rem;
-		padding: 0.375rem 0.5rem;
-		border-radius: calc(var(--radius) - 3px);
+		gap: var(--ax-space-8);
+		padding: var(--ax-space-6) var(--ax-space-8);
+		border-radius: var(--radius-xs);
 		color: var(--sidebar-foreground);
 		text-decoration: none;
-		font-size: 0.8125rem;
-		font-weight: 500;
+		font-size: var(--ax-font-size-small);
+		font-weight: var(--sh-font-weight-medium);
 		transition:
 			background-color 110ms ease,
 			color 110ms ease;
@@ -216,7 +216,7 @@
 
 	.sh-sidebar.collapsed .nav-item {
 		justify-content: center;
-		padding: 0.5rem;
+		padding: var(--ax-space-8);
 	}
 
 	.nav-item:hover {
@@ -228,16 +228,16 @@
 	.nav-item.active {
 		background-color: var(--sidebar-accent);
 		color: var(--sidebar-accent-foreground);
-		font-weight: 600;
+		font-weight: var(--sh-font-weight-semibold);
 	}
 
 	.nav-icon {
 		display: inline-flex;
 		align-items: center;
 		justify-content: center;
-		width: 1.15rem;
-		height: 1.15rem;
-		font-size: 1rem;
+		width: var(--ax-space-18);
+		height: var(--ax-space-18);
+		font-size: var(--sh-font-size-base);
 		color: var(--sidebar-muted);
 		flex-shrink: 0;
 	}
@@ -261,10 +261,10 @@
 		.sh-sidebar {
 			position: fixed;
 			left: 0;
-			top: 3.5rem;
+			top: var(--ax-space-56);
 			bottom: 0;
-			height: calc(100vh - 3.5rem);
-			width: 15.5rem !important;
+			height: calc(100vh - var(--ax-space-56));
+			width: var(--sh-sidebar-menu-wide-width) !important;
 			transform: translateX(-100%);
 			transition: transform 200ms cubic-bezier(0.16, 1, 0.3, 1);
 			box-shadow: var(--sh-shadow-lg);
@@ -278,9 +278,9 @@
 		.sidebar-backdrop {
 			display: block;
 			position: fixed;
-			inset: 3.5rem 0 0 0;
+			inset: var(--ax-space-56) 0 0 0;
 			background: rgba(5, 9, 19, 0.5);
-			backdrop-filter: blur(2px);
+			backdrop-filter: blur(var(--ax-space-2));
 			border: none;
 			z-index: 40;
 		}

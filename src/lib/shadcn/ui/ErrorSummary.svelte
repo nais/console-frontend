@@ -29,21 +29,21 @@
 
 <style>
 	.sh-error-summary {
-		padding: 1rem;
+		padding: var(--ax-space-16);
 		border-radius: var(--radius);
-		border: 1px solid var(--destructive-border);
+		border: var(--sh-border-width) solid var(--destructive-border);
 		background-color: var(--destructive-muted);
 		color: var(--destructive);
 		display: flex;
 		flex-direction: column;
-		gap: 0.5rem;
+		gap: var(--ax-space-8);
 	}
 	.sh-error-summary__heading {
 		margin: 0;
-		font-size: 0.9375rem;
-		font-weight: 600;
+		font-size: var(--ax-font-size-medium);
+		font-weight: var(--sh-font-weight-semibold);
 	}
 	.sh-error-summary__body {
-		font-size: 0.875rem;
+		font-size: var(--sh-font-size-sm);
 	}
 </style>

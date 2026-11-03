@@ -36,29 +36,29 @@
 	.sh-heading {
 		margin: 0;
 		color: var(--foreground);
-		font-weight: 600;
+		font-weight: var(--sh-font-weight-semibold);
 		letter-spacing: -0.02em;
 	}
 	.sh-heading--xlarge {
-		font-size: 1.75rem;
+		font-size: var(--sh-font-size-title);
 		line-height: 1.2;
-		font-weight: 700;
+		font-weight: var(--sh-font-weight-bold);
 	}
 	.sh-heading--large {
-		font-size: 1.375rem;
+		font-size: var(--ax-font-size-xlarge);
 		line-height: 1.25;
 		font-weight: 650;
 	}
 	.sh-heading--medium {
-		font-size: 1.125rem;
+		font-size: var(--ax-font-size-large);
 		line-height: 1.35;
 	}
 	.sh-heading--small {
-		font-size: 0.9375rem;
+		font-size: var(--ax-font-size-medium);
 		line-height: 1.4;
 	}
 	.sh-heading--xsmall {
-		font-size: 0.84375rem;
+		font-size: var(--sh-font-size-body);
 		line-height: 1.4;
 	}
 	.sh-heading--spacing {

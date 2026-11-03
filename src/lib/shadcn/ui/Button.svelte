@@ -163,15 +163,15 @@
 		display: inline-flex;
 		align-items: center;
 		justify-content: center;
-		gap: 0.4rem;
+		gap: var(--ax-space-6);
 		white-space: nowrap;
-		border-radius: calc(var(--radius) - 2px);
+		border-radius: var(--radius-sm);
 		font-family: inherit;
-		font-weight: 500;
-		font-size: 0.8125rem;
-		line-height: 1.25rem;
+		font-weight: var(--sh-font-weight-medium);
+		font-size: var(--ax-font-size-small);
+		line-height: var(--ax-space-20);
 		text-decoration: none;
-		border: 1px solid transparent;
+		border: var(--sh-border-width) solid transparent;
 		cursor: pointer;
 		transition:
 			background-color 120ms ease,
@@ -181,8 +181,8 @@
 	}
 
 	.sh-ui-btn:focus-visible {
-		outline: 2px solid var(--ring);
-		outline-offset: 2px;
+		outline: var(--ax-space-2) solid var(--ring);
+		outline-offset: var(--ax-space-2);
 	}
 
 	.sh-ui-btn:disabled,
@@ -241,39 +241,39 @@
 	}
 
 	.size-default {
-		height: 2.25rem;
-		padding: 0 0.875rem;
-		font-size: 0.875rem;
+		height: var(--ax-space-36);
+		padding: 0 var(--ax-space-14);
+		font-size: var(--sh-font-size-sm);
 	}
 	.size-sm {
-		height: 2rem;
-		padding: 0 0.6875rem;
-		font-size: 0.8125rem;
+		height: var(--ax-space-32);
+		padding: 0 var(--ax-space-10);
+		font-size: var(--ax-font-size-small);
 	}
 	.size-xs {
-		height: 1.625rem;
-		padding: 0 0.5rem;
-		font-size: 0.75rem;
-		border-radius: calc(var(--radius) - 3px);
+		height: var(--ax-space-24);
+		padding: 0 var(--ax-space-8);
+		font-size: var(--sh-font-size-xs);
+		border-radius: var(--radius-xs);
 	}
 	.size-lg {
-		height: 2.5rem;
-		padding: 0 1.25rem;
-		font-size: 0.9375rem;
+		height: var(--ax-space-40);
+		padding: 0 var(--ax-space-20);
+		font-size: var(--ax-font-size-medium);
 	}
 	.size-icon {
-		width: 2.125rem;
-		height: 2.125rem;
+		width: var(--ax-space-32);
+		height: var(--ax-space-32);
 		padding: 0;
 	}
 	.size-icon-sm {
-		width: 1.875rem;
-		height: 1.875rem;
+		width: var(--ax-space-28);
+		height: var(--ax-space-28);
 		padding: 0;
 	}
 	.size-icon-xs {
-		width: 1.5rem;
-		height: 1.5rem;
+		width: var(--ax-space-24);
+		height: var(--ax-space-24);
 		padding: 0;
 	}
 
@@ -281,13 +281,13 @@
 		display: inline-flex;
 		align-items: center;
 		justify-content: center;
-		font-size: 1rem;
+		font-size: var(--sh-font-size-base);
 		flex-shrink: 0;
 	}
 
 	.sh-ui-btn__label {
 		display: inline-flex;
 		align-items: center;
-		gap: 0.35rem;
+		gap: var(--ax-space-6);
 	}
 </style>

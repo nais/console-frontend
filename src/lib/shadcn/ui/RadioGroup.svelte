@@ -101,29 +101,29 @@
 		border: none;
 		display: flex;
 		flex-direction: column;
-		gap: 0.5rem;
+		gap: var(--ax-space-8);
 	}
 	.sh-radio-group__legend {
-		font-size: 0.875rem;
-		font-weight: 600;
+		font-size: var(--sh-font-size-sm);
+		font-weight: var(--sh-font-weight-semibold);
 		color: var(--foreground);
-		margin-bottom: 0.25rem;
+		margin-bottom: var(--ax-space-4);
 	}
 	.sh-radio-group__desc {
-		font-size: 0.75rem;
+		font-size: var(--sh-font-size-xs);
 		color: var(--muted-foreground);
 	}
 	.sh-radio-group__items {
 		display: flex;
 		flex-direction: column;
-		gap: 0.375rem;
+		gap: var(--ax-space-6);
 	}
 	.sr-only {
 		position: absolute;
-		width: 1px;
-		height: 1px;
+		width: var(--ax-space-1);
+		height: var(--ax-space-1);
 		padding: 0;
-		margin: -1px;
+		margin: calc(-1 * var(--ax-space-1));
 		overflow: hidden;
 		clip: rect(0, 0, 0, 0);
 		white-space: nowrap;

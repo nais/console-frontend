@@ -77,45 +77,45 @@
 	.sh-form-field {
 		display: flex;
 		flex-direction: column;
-		gap: 0.35rem;
+		gap: var(--ax-space-6);
 	}
 	.sh-form-field__description {
-		font-size: 0.75rem;
+		font-size: var(--sh-font-size-xs);
 		color: var(--muted-foreground);
 		line-height: 1.4;
 	}
 	.sh-textarea-control {
 		width: 100%;
 		box-sizing: border-box;
-		border-radius: calc(var(--radius) - 2px);
-		border: 1px solid var(--input);
+		border-radius: var(--radius-sm);
+		border: var(--sh-border-width) solid var(--input);
 		background-color: var(--card);
 		color: var(--foreground);
-		padding: 0.5rem 0.75rem;
+		padding: var(--ax-space-8) var(--ax-space-12);
 		font-family: inherit;
-		font-size: 0.875rem;
+		font-size: var(--sh-font-size-sm);
 		line-height: 1.45;
 		resize: vertical;
 		box-shadow: var(--sh-shadow-xs);
 	}
 	.sh-textarea-control--small {
-		font-size: 0.8125rem;
-		padding: 0.375rem 0.625rem;
+		font-size: var(--ax-font-size-small);
+		padding: var(--ax-space-6) var(--ax-space-10);
 	}
 	.sh-textarea-control:focus-visible {
 		outline: none;
 		border-color: var(--ring);
-		box-shadow: 0 0 0 2px color-mix(in srgb, var(--ring) 22%, transparent);
+		box-shadow: 0 0 0 var(--ax-space-2) color-mix(in srgb, var(--ring) 22%, transparent);
 	}
 	.sh-textarea-control.has-error {
 		border-color: var(--destructive);
 	}
 	.sr-only {
 		position: absolute;
-		width: 1px;
-		height: 1px;
+		width: var(--ax-space-1);
+		height: var(--ax-space-1);
 		padding: 0;
-		margin: -1px;
+		margin: calc(-1 * var(--ax-space-1));
 		overflow: hidden;
 		clip: rect(0, 0, 0, 0);
 		white-space: nowrap;

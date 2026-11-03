@@ -20,26 +20,26 @@
 
 	.sh-spinner-ring {
 		display: inline-block;
-		border-radius: 9999px;
-		border: 2px solid var(--border);
+		border-radius: var(--radius-full);
+		border: var(--ax-space-2) solid var(--border);
 		border-top-color: var(--muted-foreground);
 		animation: sh-spin 650ms linear infinite;
 	}
 
 	.size-sm .sh-spinner-ring {
-		width: 0.875rem;
-		height: 0.875rem;
-		border-width: 1.5px;
+		width: var(--ax-space-14);
+		height: var(--ax-space-14);
+		border-width: var(--sh-border-width);
 	}
 
 	.size-md .sh-spinner-ring {
-		width: 1.25rem;
-		height: 1.25rem;
+		width: var(--ax-space-20);
+		height: var(--ax-space-20);
 	}
 
 	.size-lg .sh-spinner-ring {
-		width: 1.5rem;
-		height: 1.5rem;
+		width: var(--ax-space-24);
+		height: var(--ax-space-24);
 	}
 
 	@keyframes sh-spin {

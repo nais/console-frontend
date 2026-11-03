@@ -46,6 +46,6 @@
 	.sh-accordion {
 		display: flex;
 		flex-direction: column;
-		border-top: 1px solid var(--border);
+		border-top: var(--sh-border-width) solid var(--border);
 	}
 </style>

@@ -11,6 +11,30 @@
 	--radius-lg: calc(var(--radius) + 2px);
 	--radius-xl: calc(var(--radius) + 4px);
 	--radius-full: 9999px;
+	--radius-xs: calc(var(--radius) - 3px);
+	--radius-2xs: calc(var(--radius) - 4px);
+	--sh-border-width: 1px;
+	--sh-font-size-caption: 0.6875rem;
+	--sh-font-size-micro: 0.65rem;
+	--sh-font-size-xs: 0.75rem;
+	--sh-font-size-label: 0.78125rem;
+	--sh-font-size-body: 0.84375rem;
+	--sh-font-size-sm: 0.875rem;
+	--sh-font-size-base: 1rem;
+	--sh-font-size-title: 1.75rem;
+	--sh-font-weight-medium: 500;
+	--sh-font-weight-semibold: 600;
+	--sh-menu-min-width: 11rem;
+	--sh-popover-min-width: 14rem;
+	--sh-popover-max-width: 20rem;
+	--sh-modal-max-width: 42rem;
+	--sh-modal-small-max-width: 28rem;
+	--sh-modal-medium-max-width: 40rem;
+	--sh-modal-top-offset: 8vh;
+	--sh-modal-backdrop: rgba(2, 6, 23, 0.55);
+	--sh-font-weight-bold: 700;
+	--sh-sidebar-menu-width: 14.5rem;
+	--sh-sidebar-menu-wide-width: 15.5rem;
 
 	/* Core shadcn-svelte semantic tokens (Light) */
 	--background: #f8fafc;
@@ -104,12 +128,19 @@
 	--ax-space-4: 0.25rem;
 	--ax-space-6: 0.375rem;
 	--ax-space-8: 0.5rem;
+	--ax-space-10: 0.625rem;
 	--ax-space-12: 0.75rem;
+	--ax-space-14: 0.875rem;
 	--ax-space-16: 1rem;
+	--ax-space-18: 1.125rem;
 	--ax-space-20: 1.25rem;
 	--ax-space-24: 1.5rem;
+	--ax-space-28: 1.75rem;
 	--ax-space-32: 2rem;
+	--ax-space-36: 2.25rem;
 	--ax-space-40: 2.5rem;
+	--ax-space-48: 3rem;
+	--ax-space-56: 3.5rem;
 	--ax-space-64: 4rem;
 
 	--ax-radius-4: 0.25rem;

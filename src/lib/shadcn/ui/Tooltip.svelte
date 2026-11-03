@@ -2,7 +2,7 @@
 	import type { Snippet } from 'svelte';
 	import type { HTMLAttributes } from 'svelte/elements';
 
-	export interface TooltipProps extends Omit<HTMLAttributes<HTMLDivElement>, 'children'> {
+	export interface TooltipProps extends Omit<HTMLAttributes<HTMLSpanElement>, 'children'> {
 		content: string;
 		open?: boolean;
 		defaultOpen?: boolean;
@@ -25,12 +25,55 @@
 		defaultOpen = false,
 		placement = 'top',
 		keys,
-		children
+		children,
+		class: className = '',
+		'aria-describedby': descriptionId,
+		...rest
 	}: TooltipProps = $props();
 
 	const uid = $props.id();
 	let hovered = $state(false);
-	let isOpen = $derived(open !== undefined ? open : hovered || defaultOpen);
+	let focused = $state(false);
+	let dismissed = $state(false);
+	let interactiveChild = $state<boolean>();
+	let isOpen = $derived(
+		open !== undefined ? open : !dismissed && (hovered || focused || defaultOpen)
+	);
+
+	function describeChildren(element: HTMLSpanElement) {
+		const selector = 'button, a[href], input, select, textarea, [tabindex]';
+		$effect(() => {
+			const visible = isOpen;
+			const targets: HTMLElement[] = [];
+			function removeDescription(target: HTMLElement) {
+				const ids = (target.getAttribute('aria-describedby') ?? '').split(/\s+/).filter(Boolean);
+				const next = ids.filter((id) => id !== uid);
+				if (next.length) target.setAttribute('aria-describedby', next.join(' '));
+				else target.removeAttribute('aria-describedby');
+			}
+			function describe() {
+				const children = [...element.querySelectorAll<HTMLElement>(selector)];
+				interactiveChild = children.length > 0;
+				if (!children.length) element.tabIndex = 0;
+				else if (rest.tabindex === undefined) element.removeAttribute('tabindex');
+				for (const target of children) {
+					if (!targets.includes(target)) targets.push(target);
+					removeDescription(target);
+					if (visible) {
+						const ids = target.getAttribute('aria-describedby');
+						target.setAttribute('aria-describedby', ids ? `${ids} ${uid}` : uid);
+					}
+				}
+			}
+			describe();
+			const observer = new MutationObserver(describe);
+			observer.observe(element, { childList: true, subtree: true });
+			return () => {
+				observer.disconnect();
+				for (const target of targets) removeDescription(target);
+			};
+		});
+	}
 
 	let triggerProps = $derived({
 		title: content,
@@ -50,7 +93,51 @@
 	});
 </script>
 
-<span class="sh-tooltip-anchor" data-placement={placement}>
+<svelte:window
+	onkeydown={(event) => {
+		if (event.key === 'Escape' && isOpen) {
+			dismissed = true;
+			if (open !== undefined) open = false;
+		}
+	}}
+/>
+
+<span
+	{...rest}
+	class={['sh-tooltip-anchor', className]}
+	data-placement={placement}
+	{@attach describeChildren}
+	role={interactiveChild === false ? 'button' : undefined}
+	aria-label={interactiveChild === false ? content : undefined}
+	aria-describedby={[descriptionId, isOpen ? uid : undefined].filter(Boolean).join(' ') ||
+		undefined}
+	onmouseenter={() => {
+		hovered = true;
+		dismissed = false;
+	}}
+	onmouseleave={() => (hovered = false)}
+	onfocusin={() => {
+		focused = true;
+		dismissed = false;
+	}}
+	onfocusout={(event) => {
+		if (
+			!(event.relatedTarget instanceof Node) ||
+			!event.currentTarget.contains(event.relatedTarget)
+		) {
+			focused = false;
+		}
+	}}
+	onclick={() => {
+		if (!interactiveChild) dismissed = isOpen;
+	}}
+	onkeydown={(event) => {
+		if (!interactiveChild && (event.key === 'Enter' || event.key === ' ')) {
+			event.preventDefault();
+			dismissed = isOpen;
+		}
+	}}
+>
 	{@render children({ props: triggerProps })}
 	{#if isOpen}
 		<span id={uid} role="tooltip" class={['sh-tooltip-bubble', `placement-${placement}`]}>
@@ -75,36 +162,36 @@
 	.sh-tooltip-bubble {
 		position: absolute;
 		z-index: 60;
-		bottom: calc(100% + 6px);
+		bottom: calc(100% + var(--ax-space-6));
 		left: 50%;
 		transform: translateX(-50%);
 		display: inline-flex;
 		align-items: center;
-		gap: 0.35rem;
-		padding: 0.3rem 0.55rem;
-		border-radius: calc(var(--radius) - 3px);
+		gap: var(--ax-space-6);
+		padding: var(--ax-space-4) var(--ax-space-8);
+		border-radius: var(--radius-xs);
 		background-color: var(--popover);
 		color: var(--popover-foreground);
-		border: 1px solid var(--border);
+		border: var(--sh-border-width) solid var(--border);
 		box-shadow: var(--sh-shadow-md);
-		font-size: 0.75rem;
-		font-weight: 500;
+		font-size: var(--sh-font-size-xs);
+		font-weight: var(--sh-font-weight-medium);
 		white-space: nowrap;
-		pointer-events: none;
+		pointer-events: auto;
 	}
 	.sh-tooltip-bubble.placement-bottom {
 		bottom: auto;
-		top: calc(100% + 6px);
+		top: calc(100% + var(--ax-space-6));
 	}
 	.sh-tooltip-keys {
 		display: inline-flex;
-		gap: 0.15rem;
+		gap: var(--ax-space-2);
 	}
 	.sh-tooltip-keys kbd {
-		padding: 0.05rem 0.25rem;
-		border: 1px solid var(--border);
-		border-radius: 3px;
-		font-size: 0.6875rem;
+		padding: var(--ax-space-1) var(--ax-space-4);
+		border: var(--sh-border-width) solid var(--border);
+		border-radius: var(--ax-space-2);
+		font-size: var(--sh-font-size-caption);
 		font-family: var(--font-mono);
 	}
 </style>

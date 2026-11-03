@@ -86,7 +86,7 @@
 	.sh-tabs-root {
 		display: flex;
 		flex-direction: column;
-		gap: 1.25rem;
+		gap: var(--ax-space-20);
 		min-width: 0;
 	}
 
@@ -103,8 +103,8 @@
 
 	/* Line variant (modern Vercel/Linear style) */
 	.sh-tabs-list.variant-line {
-		gap: 0.25rem;
-		border-bottom: 1px solid var(--border);
+		gap: var(--ax-space-4);
+		border-bottom: var(--sh-border-width) solid var(--border);
 		padding-bottom: 0;
 	}
 
@@ -112,15 +112,15 @@
 		position: relative;
 		display: inline-flex;
 		align-items: center;
-		gap: 0.45rem;
-		padding: 0.625rem 0.875rem;
-		font-size: 0.84375rem;
-		font-weight: 500;
+		gap: var(--ax-space-8);
+		padding: var(--ax-space-10) var(--ax-space-14);
+		font-size: var(--sh-font-size-body);
+		font-weight: var(--sh-font-weight-medium);
 		color: var(--muted-foreground);
 		text-decoration: none;
 		background: transparent;
 		border: none;
-		border-radius: calc(var(--radius) - 3px) calc(var(--radius) - 3px) 0 0;
+		border-radius: var(--radius-xs) var(--radius-xs) 0 0;
 		white-space: nowrap;
 		cursor: pointer;
 		transition:
@@ -135,17 +135,17 @@
 
 	.variant-line .sh-tab-trigger.active {
 		color: var(--foreground);
-		font-weight: 600;
+		font-weight: var(--sh-font-weight-semibold);
 	}
 
 	.variant-line .sh-tab-trigger.active::after {
 		content: '';
 		position: absolute;
-		left: 0.5rem;
-		right: 0.5rem;
-		bottom: -1px;
-		height: 2px;
-		border-radius: 2px 2px 0 0;
+		left: var(--ax-space-8);
+		right: var(--ax-space-8);
+		bottom: calc(-1 * var(--ax-space-1));
+		height: var(--ax-space-2);
+		border-radius: var(--ax-space-2) var(--ax-space-2) 0 0;
 		background: var(--primary);
 	}
 
@@ -154,25 +154,25 @@
 		display: inline-flex;
 		width: fit-content;
 		max-width: 100%;
-		padding: 0.25rem;
-		gap: 0.2rem;
+		padding: var(--ax-space-4);
+		gap: var(--ax-space-4);
 		background-color: var(--secondary);
-		border: 1px solid var(--border);
+		border: var(--sh-border-width) solid var(--border);
 		border-radius: var(--radius);
 	}
 
 	.variant-pill .sh-tab-trigger {
 		display: inline-flex;
 		align-items: center;
-		gap: 0.4rem;
-		padding: 0.375rem 0.75rem;
-		font-size: 0.8125rem;
-		font-weight: 500;
+		gap: var(--ax-space-6);
+		padding: var(--ax-space-6) var(--ax-space-12);
+		font-size: var(--ax-font-size-small);
+		font-weight: var(--sh-font-weight-medium);
 		color: var(--muted-foreground);
 		text-decoration: none;
 		background: transparent;
 		border: none;
-		border-radius: calc(var(--radius) - 3px);
+		border-radius: var(--radius-xs);
 		white-space: nowrap;
 		cursor: pointer;
 		transition:
@@ -188,7 +188,7 @@
 	.variant-pill .sh-tab-trigger.active {
 		background-color: var(--card);
 		color: var(--foreground);
-		font-weight: 600;
+		font-weight: var(--sh-font-weight-semibold);
 		box-shadow: var(--sh-shadow-xs);
 	}
 
@@ -208,12 +208,12 @@
 		display: inline-flex;
 		align-items: center;
 		justify-content: center;
-		min-width: 1.25rem;
-		height: 1.125rem;
-		padding: 0 0.35rem;
-		font-size: 0.6875rem;
-		font-weight: 600;
-		border-radius: 9999px;
+		min-width: var(--ax-space-20);
+		height: var(--ax-space-18);
+		padding: 0 var(--ax-space-6);
+		font-size: var(--sh-font-size-caption);
+		font-weight: var(--sh-font-weight-semibold);
+		border-radius: var(--radius-full);
 		background-color: var(--secondary);
 		color: var(--muted-foreground);
 		font-variant-numeric: tabular-nums;

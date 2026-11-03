@@ -59,26 +59,26 @@
 
 	.sh-input-icon {
 		position: absolute;
-		left: 0.625rem;
+		left: var(--ax-space-10);
 		display: inline-flex;
 		align-items: center;
 		justify-content: center;
 		color: var(--muted-foreground);
-		font-size: 0.875rem;
+		font-size: var(--sh-font-size-sm);
 		pointer-events: none;
 	}
 
 	.sh-input {
 		width: 100%;
-		height: 2.25rem;
-		padding: 0 0.75rem;
-		border-radius: calc(var(--radius) - 2px);
-		border: 1px solid var(--input);
+		height: var(--ax-space-36);
+		padding: 0 var(--ax-space-12);
+		border-radius: var(--radius-sm);
+		border: var(--sh-border-width) solid var(--input);
 		background-color: var(--card);
 		color: var(--foreground);
 		font-family: inherit;
-		font-size: 0.8125rem;
-		line-height: 1.25rem;
+		font-size: var(--ax-font-size-small);
+		line-height: var(--ax-space-20);
 		box-shadow: var(--sh-shadow-xs);
 		transition:
 			border-color 120ms ease,
@@ -87,11 +87,11 @@
 	}
 
 	.sh-input-wrap.size-sm .sh-input {
-		height: 2rem;
+		height: var(--ax-space-32);
 	}
 
 	.sh-input-wrap.has-icon .sh-input {
-		padding-left: 2rem;
+		padding-left: var(--ax-space-32);
 	}
 
 	.sh-input::placeholder {
@@ -101,6 +101,6 @@
 	.sh-input:focus {
 		outline: none;
 		border-color: var(--ring);
-		box-shadow: 0 0 0 2px color-mix(in srgb, var(--ring) 18%, transparent);
+		box-shadow: 0 0 0 var(--ax-space-2) color-mix(in srgb, var(--ring) 18%, transparent);
 	}
 </style>

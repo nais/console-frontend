@@ -169,34 +169,34 @@
 <style>
 	.sh-modal {
 		padding: 0;
-		border: 1px solid var(--border);
+		border: var(--sh-border-width) solid var(--border);
 		border-radius: var(--radius-lg);
 		background-color: var(--popover);
 		color: var(--popover-foreground);
 		box-shadow: var(--sh-shadow-lg);
-		max-width: min(42rem, calc(100vw - 2rem));
+		max-width: min(var(--sh-modal-max-width), calc(100vw - var(--ax-space-32)));
 		width: 100%;
 	}
 	.sh-modal--small {
-		max-width: min(28rem, calc(100vw - 2rem));
+		max-width: min(var(--sh-modal-small-max-width), calc(100vw - var(--ax-space-32)));
 	}
 	.sh-modal--medium {
-		max-width: min(40rem, calc(100vw - 2rem));
+		max-width: min(var(--sh-modal-medium-max-width), calc(100vw - var(--ax-space-32)));
 	}
 	.sh-modal--top {
-		margin-top: 8vh;
+		margin-top: var(--sh-modal-top-offset);
 	}
 	.sh-modal::backdrop {
-		background-color: rgba(2, 6, 23, 0.55);
-		backdrop-filter: blur(2px);
+		background-color: var(--sh-modal-backdrop);
+		backdrop-filter: blur(var(--ax-space-2));
 	}
 	.sh-modal__header {
 		display: flex;
 		align-items: flex-start;
 		justify-content: space-between;
-		gap: 0.75rem;
-		padding: 1rem 1.25rem 0.75rem;
-		border-bottom: 1px solid var(--border);
+		gap: var(--ax-space-12);
+		padding: var(--ax-space-16) var(--ax-space-20) var(--ax-space-12);
+		border-bottom: var(--sh-border-width) solid var(--border);
 	}
 	.sh-modal__header-content {
 		min-width: 0;
@@ -206,10 +206,10 @@
 		display: inline-flex;
 		align-items: center;
 		justify-content: center;
-		width: 1.75rem;
-		height: 1.75rem;
+		width: var(--ax-space-28);
+		height: var(--ax-space-28);
 		border: none;
-		border-radius: calc(var(--radius) - 3px);
+		border-radius: var(--radius-xs);
 		background: transparent;
 		color: var(--muted-foreground);
 		cursor: pointer;
@@ -220,15 +220,15 @@
 		color: var(--foreground);
 	}
 	.sh-modal__body {
-		padding: 1.25rem;
+		padding: var(--ax-space-20);
 	}
 	.sh-modal__footer {
 		display: flex;
 		align-items: center;
 		justify-content: flex-end;
-		gap: 0.5rem;
-		padding: 0.875rem 1.25rem;
-		border-top: 1px solid var(--border);
+		gap: var(--ax-space-8);
+		padding: var(--ax-space-14) var(--ax-space-20);
+		border-top: var(--sh-border-width) solid var(--border);
 		background-color: color-mix(in srgb, var(--secondary) 35%, var(--popover));
 	}
 </style>

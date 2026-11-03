@@ -56,15 +56,15 @@
 	.sh-toggle-chip {
 		display: inline-flex;
 		align-items: center;
-		gap: 0.3rem;
-		padding: 0.25rem 0.625rem;
-		border: 1px solid var(--border);
-		border-radius: 9999px;
+		gap: var(--ax-space-4);
+		padding: var(--ax-space-4) var(--ax-space-10);
+		border: var(--sh-border-width) solid var(--border);
+		border-radius: var(--radius-full);
 		background-color: var(--card);
 		color: var(--muted-foreground);
 		font-family: inherit;
-		font-size: 0.78125rem;
-		font-weight: 500;
+		font-size: var(--sh-font-size-label);
+		font-weight: var(--sh-font-weight-medium);
 		cursor: pointer;
 		transition:
 			background-color 110ms ease,
@@ -79,6 +79,6 @@
 		background-color: var(--accent);
 		border-color: var(--primary);
 		color: var(--accent-foreground);
-		font-weight: 600;
+		font-weight: var(--sh-font-weight-semibold);
 	}
 </style>

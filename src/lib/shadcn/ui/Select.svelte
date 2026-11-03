@@ -29,6 +29,7 @@
 		size = 'medium',
 		disabled = false,
 		error,
+		'aria-describedby': externalDescription,
 		value = $bindable(),
 		children,
 		description,
@@ -37,6 +38,13 @@
 		class: className = '',
 		...rest
 	}: Props = $props();
+	let descriptionId = $derived(`${id}-description`);
+	let errorId = $derived(`${id}-error`);
+	let describedBy = $derived(
+		[externalDescription, description ? descriptionId : undefined, error ? errorId : undefined]
+			.filter(Boolean)
+			.join(' ') || undefined
+	);
 </script>
 
 <div class={['sh-select-field', className]} {style}>
@@ -49,7 +57,7 @@
 	</Label>
 
 	{#if description}
-		<div class="sh-select-field__description" class:sr-only={hideLabel}>
+		<div id={descriptionId} class={['sh-select-field__description', { 'sr-only': hideLabel }]}>
 			{#if typeof description === 'string'}
 				{description}
 			{:else}
@@ -64,12 +72,14 @@
 		bind:value
 		class={['sh-select-control', `sh-select-control--${size}`, { 'has-error': Boolean(error) }]}
 		{...rest}
+		aria-invalid={error ? 'true' : undefined}
+		aria-describedby={describedBy}
 	>
 		{@render children()}
 	</select>
 
 	{#if error}
-		<ErrorMessage {size} showIcon>{error}</ErrorMessage>
+		<div id={errorId} aria-live="polite"><ErrorMessage {size} showIcon>{error}</ErrorMessage></div>
 	{/if}
 </div>
 
@@ -77,35 +87,35 @@
 	.sh-select-field {
 		display: flex;
 		flex-direction: column;
-		gap: 0.35rem;
+		gap: var(--ax-space-6);
 	}
 	.sh-select-field__description {
-		font-size: 0.75rem;
+		font-size: var(--sh-font-size-xs);
 		color: var(--muted-foreground);
 	}
 	.sh-select-control {
 		width: 100%;
 		box-sizing: border-box;
-		border-radius: calc(var(--radius) - 2px);
-		border: 1px solid var(--input);
+		border-radius: var(--radius-sm);
+		border: var(--sh-border-width) solid var(--input);
 		background-color: var(--card);
 		color: var(--foreground);
-		padding: 0 2rem 0 0.75rem;
+		padding: 0 var(--ax-space-32) 0 var(--ax-space-12);
 		font-family: inherit;
-		font-size: 0.875rem;
-		height: 2.25rem;
+		font-size: var(--sh-font-size-sm);
+		height: var(--ax-space-36);
 		box-shadow: var(--sh-shadow-xs);
 		cursor: pointer;
 	}
 	.sh-select-control--small {
-		height: 2rem;
-		padding: 0 1.75rem 0 0.625rem;
-		font-size: 0.8125rem;
+		height: var(--ax-space-32);
+		padding: 0 var(--ax-space-28) 0 var(--ax-space-10);
+		font-size: var(--ax-font-size-small);
 	}
 	.sh-select-control:focus-visible {
 		outline: none;
 		border-color: var(--ring);
-		box-shadow: 0 0 0 2px color-mix(in srgb, var(--ring) 22%, transparent);
+		box-shadow: 0 0 0 var(--ax-space-2) color-mix(in srgb, var(--ring) 22%, transparent);
 	}
 	.sh-select-control:disabled {
 		opacity: 0.6;
@@ -114,10 +124,10 @@
 	}
 	.sr-only {
 		position: absolute;
-		width: 1px;
-		height: 1px;
+		width: var(--ax-space-1);
+		height: var(--ax-space-1);
 		padding: 0;
-		margin: -1px;
+		margin: calc(-1 * var(--ax-space-1));
 		overflow: hidden;
 		clip: rect(0, 0, 0, 0);
 		white-space: nowrap;

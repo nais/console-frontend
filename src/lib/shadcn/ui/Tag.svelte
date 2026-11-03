@@ -92,25 +92,25 @@
 	.sh-ui-tag {
 		display: inline-flex;
 		align-items: center;
-		gap: 0.3rem;
-		border-radius: calc(var(--radius) - 3px);
-		font-weight: 500;
-		border: 1px solid transparent;
+		gap: var(--ax-space-4);
+		border-radius: var(--radius-xs);
+		font-weight: var(--sh-font-weight-medium);
+		border: var(--sh-border-width) solid transparent;
 		white-space: nowrap;
 		line-height: 1.25;
 		font-variant-numeric: tabular-nums;
 	}
 	.size-medium {
-		padding: 0.15rem 0.5rem;
-		font-size: 0.75rem;
+		padding: var(--ax-space-2) var(--ax-space-8);
+		font-size: var(--sh-font-size-xs);
 	}
 	.size-small {
-		padding: 0.1rem 0.425rem;
-		font-size: 0.6875rem;
+		padding: var(--ax-space-2) var(--ax-space-6);
+		font-size: var(--sh-font-size-caption);
 	}
 	.size-xsmall {
-		padding: 0.05rem 0.35rem;
-		font-size: 0.65rem;
+		padding: var(--ax-space-1) var(--ax-space-6);
+		font-size: var(--sh-font-size-micro);
 	}
 	.tone-secondary {
 		background-color: var(--secondary);
