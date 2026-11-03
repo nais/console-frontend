@@ -6,7 +6,14 @@ const USED_VAR_PATTERN = /var\(--([a-zA-Z0-9-_]+)\)/g;
 const DEFINED_VAR_PATTERN = /--([a-zA-Z0-9-_]+)\s*:/g;
 const STYLE_SET_PROP_PATTERN = /style\.setProperty\(\s*['"]--([a-zA-Z0-9-_]+)['"]/g;
 const SVELTE_STYLE_BINDING_PATTERN = /style:--([a-zA-Z0-9-_]+)=/g;
-const KNOWN_DYNAMIC_VARS = new Set(['bg-color', 'background', 'size', 'chat-panel-width']);
+const KNOWN_DYNAMIC_VARS = new Set([
+	'bg-color',
+	'background',
+	'size',
+	'chat-panel-width',
+	'bits-dropdown-menu-content-available-width',
+	'bits-dropdown-menu-content-available-height'
+]);
 
 function walkFiles(dir, callback) {
 	if (!fs.existsSync(dir)) return;

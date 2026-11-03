@@ -1,7 +1,6 @@
 <script lang="ts">
 	import ActionMenu from './ActionMenu.svelte';
 	import ActionMenuItem from './ActionMenuItem.svelte';
-	import { GetActionMenuRadioContext } from './ActionMenuRadioGroup.svelte';
 	import { GetAccordionContext } from './Accordion.svelte';
 	import Box from './Box.svelte';
 	import Button from './Button.svelte';
@@ -21,11 +20,9 @@
 
 	let selected = $state('');
 	let drawerOpen = $state(false);
-	const missingContexts = [
-		GetAccordionContext(),
-		GetActionMenuRadioContext(),
-		GetTabsUiContext()
-	].every((context) => context === undefined);
+	const missingContexts = [GetAccordionContext(), GetTabsUiContext()].every(
+		(context) => context === undefined
+	);
 	let { period = $bindable('one'), tab = $bindable('one') }: { period?: string; tab?: string } =
 		$props();
 </script>

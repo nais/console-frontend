@@ -1,43 +1,36 @@
-<script lang="ts" generics="T = unknown">
+<script lang="ts" generics="T extends string = string">
+	import { DropdownMenu } from 'bits-ui';
 	import { CheckmarkIcon } from '#lib/icons/index.js';
 	import type { Snippet } from 'svelte';
-	import { GetActionMenuContext } from './ActionMenu.svelte';
-	import { GetActionMenuRadioContext } from './ActionMenuRadioGroup.svelte';
 
 	interface Props {
 		value: T;
+		disabled?: boolean;
 		onselect?: (value: T) => void;
 		children: Snippet;
 		[key: string]: unknown;
 	}
 
-	let { value, onselect, children }: Props = $props();
-
-	const radioCtx = GetActionMenuRadioContext();
-	const menuCtx = GetActionMenuContext();
-	let checked = $derived(radioCtx?.value === value);
+	let { value, disabled = false, onselect, children: content, ...rest }: Props = $props();
 </script>
 
-<button
-	type="button"
-	role="menuitemradio"
-	tabindex="-1"
-	aria-checked={checked}
+<DropdownMenu.RadioItem
+	{...rest}
+	{value}
+	{disabled}
+	onSelect={() => onselect?.(value)}
 	class="sh-action-menu-radioitem"
-	onclick={() => {
-		onselect?.(value);
-		radioCtx?.select(value);
-		menuCtx?.close();
-	}}
 >
-	<span class="sh-radio-indicator" aria-hidden="true">
-		{#if checked}<CheckmarkIcon />{/if}
-	</span>
-	<span>{@render children()}</span>
-</button>
+	{#snippet children({ checked })}
+		<span class="sh-radio-indicator" aria-hidden="true">
+			{#if checked}<CheckmarkIcon />{/if}
+		</span>
+		<span>{@render content()}</span>
+	{/snippet}
+</DropdownMenu.RadioItem>
 
 <style>
-	.sh-action-menu-radioitem {
+	:global(.sh-action-menu-radioitem) {
 		width: 100%;
 		display: flex;
 		align-items: center;
@@ -52,8 +45,13 @@
 		text-align: left;
 		cursor: pointer;
 	}
-	.sh-action-menu-radioitem:hover {
+	:global(.sh-action-menu-radioitem:not([data-disabled]):hover),
+	:global(.sh-action-menu-radioitem[data-highlighted]) {
 		background-color: var(--secondary);
+	}
+	:global(.sh-action-menu-radioitem[data-disabled]) {
+		opacity: 0.5;
+		cursor: not-allowed;
 	}
 	.sh-radio-indicator {
 		width: var(--ax-space-16);

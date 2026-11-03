@@ -14,7 +14,14 @@ pnpm run check # Check for various issues
 pnpm run lint # Lint the code
 pnpm run format # Format the code (Or use a Prettier extension in  your editor)
 pnpm run test # Run tests with Vitest
+pnpm exec playwright install chromium # Install the browser for interaction tests
+pnpm run test:browser # Run Playwright interaction tests
 ```
+
+Browser tests start an isolated Vite server on port 4175 and do not require the API proxy.
+ActionMenu uses Bits UI for menu behavior while the local wrappers own its styling and
+native link/action callbacks. Its browser tests cover keyboard navigation, focus,
+disabled items, radio groups, dialogs, themes and constrained viewports.
 
 ### Mobile responsiveness
 

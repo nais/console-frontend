@@ -1,54 +1,34 @@
-<script lang="ts" module>
-	import { createContext } from 'svelte';
-
-	export interface ActionMenuRadioContext {
-		readonly value: unknown;
-		select(val: unknown): void;
-	}
-
-	const [getRadioContext, setRadioContext, hasRadioContext] =
-		createContext<ActionMenuRadioContext>();
-
-	export function GetActionMenuRadioContext(): ActionMenuRadioContext | undefined {
-		return hasRadioContext() ? getRadioContext() : undefined;
-	}
-</script>
-
 <script lang="ts">
+	import { DropdownMenu } from 'bits-ui';
 	import type { Snippet } from 'svelte';
 
 	interface Props {
-		value?: unknown;
+		value?: string;
 		label?: string;
-		onvaluechange?: (value: unknown) => void;
+		onvaluechange?: (value: string) => void;
 		children: Snippet;
 		[key: string]: unknown;
 	}
 
-	let { value = $bindable(), label, onvaluechange, children }: Props = $props();
-
-	const ctx: ActionMenuRadioContext = {
-		get value() {
-			return value;
-		},
-		select(next: unknown) {
-			value = next;
-			onvaluechange?.(next);
-		}
-	};
-
-	setRadioContext(ctx);
+	let { value = $bindable(''), label, onvaluechange, children, ...rest }: Props = $props();
 </script>
 
-<div role="group" aria-label={label} class="sh-action-menu-radiogroup">
+<DropdownMenu.RadioGroup
+	{...rest}
+	bind:value
+	onValueChange={onvaluechange}
+	class="sh-action-menu-radiogroup"
+>
 	{#if label}
-		<div class="sh-action-menu-group-label">{label}</div>
+		<DropdownMenu.GroupHeading class="sh-action-menu-group-label">
+			{label}
+		</DropdownMenu.GroupHeading>
 	{/if}
 	{@render children()}
-</div>
+</DropdownMenu.RadioGroup>
 
 <style>
-	.sh-action-menu-group-label {
+	:global(.sh-action-menu-group-label) {
 		padding: var(--ax-space-4) var(--ax-space-10);
 		font-size: var(--sh-font-size-caption);
 		font-weight: var(--sh-font-weight-semibold);

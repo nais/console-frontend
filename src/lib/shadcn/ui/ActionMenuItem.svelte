@@ -1,7 +1,7 @@
 <script lang="ts">
+	import { DropdownMenu, mergeProps } from 'bits-ui';
 	import type { Component, Snippet } from 'svelte';
 	import type { HTMLAnchorAttributes, HTMLAttributes, HTMLButtonAttributes } from 'svelte/elements';
-	import { GetActionMenuContext } from './ActionMenu.svelte';
 
 	interface CommonProps extends Omit<HTMLAttributes<HTMLElement>, 'onselect'> {
 		variant?: 'default' | 'danger';
@@ -22,13 +22,13 @@
 		disabled = false,
 		onselect,
 		href,
+		id,
 		icon: IconOrSnippet,
 		class: className = '',
 		children,
 		...rest
 	}: Props = $props();
-
-	const ctx = GetActionMenuContext();
+	const attributes: Record<string, unknown> = $derived(rest);
 </script>
 
 {#snippet renderIcon()}
@@ -43,44 +43,42 @@
 	{/if}
 {/snippet}
 
-{#if href !== undefined}
-	<a
-		{href}
-		role="menuitem"
-		aria-disabled={disabled || undefined}
-		tabindex="-1"
-		class={['sh-action-menu-item', `variant-${variant}`, { disabled }, className]}
-		onclick={(event) => {
-			if (disabled) {
-				event.preventDefault();
-				return;
-			}
-			onselect?.(event);
-			ctx?.close();
-		}}
-		{...rest}
-	>
-		{@render renderIcon()}
-		<span>{@render children()}</span>
-	</a>
-{:else}
-	<button
-		type="button"
-		role="menuitem"
-		tabindex="-1"
-		{disabled}
-		class={['sh-action-menu-item', `variant-${variant}`, { disabled }, className]}
-		onclick={(event) => {
-			if (disabled) return;
-			onselect?.(event);
-			ctx?.close();
-		}}
-		{...rest}
-	>
-		{@render renderIcon()}
-		<span>{@render children()}</span>
-	</button>
-{/if}
+<DropdownMenu.Item {disabled} id={id ?? undefined}>
+	{#snippet child({ props })}
+		{#if href !== undefined}
+			<a
+				{...mergeProps(attributes, props, {
+					onclick: (event: MouseEvent & { currentTarget: HTMLAnchorElement }) => {
+						if (disabled) {
+							event.preventDefault();
+							return;
+						}
+						onselect?.(event);
+					}
+				})}
+				href={disabled ? undefined : href}
+				class={['sh-action-menu-item', `variant-${variant}`, { disabled }, className]}
+			>
+				{@render renderIcon()}
+				<span>{@render children()}</span>
+			</a>
+		{:else}
+			<button
+				{...mergeProps(attributes, props, {
+					onclick: (event: MouseEvent & { currentTarget: HTMLButtonElement }) => {
+						if (!disabled) onselect?.(event);
+					}
+				})}
+				type="button"
+				{disabled}
+				class={['sh-action-menu-item', `variant-${variant}`, { disabled }, className]}
+			>
+				{@render renderIcon()}
+				<span>{@render children()}</span>
+			</button>
+		{/if}
+	{/snippet}
+</DropdownMenu.Item>
 
 <style>
 	.sh-action-menu-item {
@@ -99,7 +97,8 @@
 		text-decoration: none;
 		cursor: pointer;
 	}
-	.sh-action-menu-item:hover:not(.disabled) {
+	.sh-action-menu-item:hover:not(.disabled),
+	.sh-action-menu-item[data-highlighted]:not(.disabled) {
 		background-color: var(--secondary);
 	}
 	.sh-action-menu-item.variant-danger {
