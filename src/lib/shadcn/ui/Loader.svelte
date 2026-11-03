@@ -14,6 +14,7 @@
 		size = 'medium',
 		title = 'Loading...',
 		color,
+		style,
 		class: className = '',
 		...rest
 	}: Props = $props();
@@ -35,6 +36,7 @@
 	class={['sh-loader', className]}
 	width={dim}
 	height={dim}
+	style={`width: ${dim}px; height: ${dim}px; ${style ?? ''}`}
 	strokeWidth={2.25}
 	role="status"
 	aria-label={title}

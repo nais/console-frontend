@@ -25,6 +25,8 @@
 	--sh-font-size-title: 1.75rem;
 	--sh-font-weight-medium: 500;
 	--sh-font-weight-semibold: 600;
+	--sh-font-weight-heading-large: 650;
+	--sh-heading-spacing: 0.5em;
 	--sh-menu-min-width: 11rem;
 	--sh-popover-min-width: 14rem;
 	--sh-popover-max-width: 20rem;

@@ -2,7 +2,7 @@
 	import { ShButton, Tooltip } from '#lib/shadcn/ui/index.js';
 	import { favorites } from '#lib/stores/favorites.svelte.js';
 
-	import { StarFillIcon, StarIcon } from '#lib/icons/index.js';
+	import { StarIcon } from '#lib/icons/index.js';
 
 	interface Props {
 		path: string;
@@ -26,7 +26,10 @@
 		variant="ghost"
 		size="icon-sm"
 		onclick={toggleFavorite}
-		icon={isFavorite ? StarFillIcon : StarIcon}
 		ariaLabel={isFavorite ? 'Remove from favorites' : 'Add to favorites'}
-	/>
+	>
+		{#snippet icon()}
+			<StarIcon fill={isFavorite ? 'currentColor' : 'none'} aria-hidden="true" />
+		{/snippet}
+	</ShButton>
 </Tooltip>

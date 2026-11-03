@@ -209,7 +209,7 @@
 			</p>
 		{/if}
 		<br />
-		<Button loading={saving} {disabled} icon={FloppydiskIcon}>Create team</Button>
+		<Button type="submit" loading={saving} {disabled} icon={FloppydiskIcon}>Create team</Button>
 	</form>
 </div>
 

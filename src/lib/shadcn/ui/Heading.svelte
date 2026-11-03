@@ -47,7 +47,7 @@
 	.sh-heading--large {
 		font-size: var(--ax-font-size-xlarge);
 		line-height: 1.25;
-		font-weight: 650;
+		font-weight: var(--sh-font-weight-heading-large);
 	}
 	.sh-heading--medium {
 		font-size: var(--ax-font-size-large);
@@ -62,6 +62,6 @@
 		line-height: 1.4;
 	}
 	.sh-heading--spacing {
-		margin-bottom: 0.5em;
+		margin-bottom: var(--sh-heading-spacing);
 	}
 </style>

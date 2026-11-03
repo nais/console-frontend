@@ -143,6 +143,7 @@
 						<TextField label="" hideLabel bind:value={confirmation} style="width: 100%;" />
 					</div>
 					<Button
+						type="submit"
 						disabled={confirmation !== expected}
 						variant="danger"
 						loading={$DeleteAppPage.fetching}
