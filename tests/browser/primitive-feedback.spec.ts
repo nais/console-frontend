@@ -34,7 +34,7 @@ test('Loader sizes override global Lucide sizing and preserve supplied styles', 
 		xlarge: 28,
 		large: 24,
 		medium: 18,
-		small: 15,
+		small: 16,
 		xsmall: 12
 	};
 	for (const [size, pixels] of Object.entries(sizes)) {
@@ -44,6 +44,35 @@ test('Loader sizes override global Lucide sizing and preserve supplied styles', 
 	}
 	const styled = page.getByRole('status', { name: 'Styled loading' });
 	await expect(styled).toHaveCSS('width', '24px');
+	await expect(styled).toHaveAttribute('style', /color: var\(--ax-text-accent\)/);
+});
+
+test('Loader follows rem scaling and scoped spacing token overrides', async ({ page }) => {
+	await page.locator('html').evaluate((element) => {
+		element.style.fontSize = '20px';
+	});
+	const sizes = {
+		'3xlarge': 60,
+		'2xlarge': 45,
+		xlarge: 35,
+		large: 30,
+		medium: 22.5,
+		small: 20,
+		xsmall: 15
+	};
+	for (const [size, pixels] of Object.entries(sizes)) {
+		const loader = page.getByRole('status', { name: `Loading ${size}`, exact: true });
+		await expect(loader).toHaveCSS('width', `${pixels}px`);
+		await expect(loader).toHaveCSS('height', `${pixels}px`);
+	}
+	await page.locator('main').evaluate((element) => {
+		element.style.setProperty('--ax-space-48', '4rem');
+	});
+	const largest = page.getByRole('status', { name: 'Loading 3xlarge', exact: true });
+	await expect(largest).toHaveCSS('width', '80px');
+	await expect(largest).toHaveCSS('height', '80px');
+	const styled = page.getByRole('status', { name: 'Styled loading' });
+	await expect(styled).toHaveCSS('width', '30px');
 	await expect(styled).toHaveAttribute('style', /color: var\(--ax-text-accent\)/);
 });
 

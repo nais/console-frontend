@@ -185,7 +185,7 @@
 							{/snippet}
 						</TextField>
 					{/each}
-					<Button loading={configLoading} disabled={configLoading}>Save</Button>
+					<Button type="submit" loading={configLoading} disabled={configLoading}>Save</Button>
 				</form>
 			</AccordionItem>
 		</Accordion>

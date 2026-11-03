@@ -19,24 +19,22 @@
 		...rest
 	}: Props = $props();
 
-	const sizePx: Record<string, number> = {
-		'3xlarge': 48,
-		'2xlarge': 36,
-		xlarge: 28,
-		large: 24,
-		medium: 18,
-		small: 15,
-		xsmall: 12
+	const sizeTokens: Record<NonNullable<Props['size']>, string> = {
+		'3xlarge': 'var(--ax-space-48)',
+		'2xlarge': 'var(--ax-space-36)',
+		xlarge: 'var(--ax-space-28)',
+		large: 'var(--ax-space-24)',
+		medium: 'var(--ax-space-18)',
+		small: 'var(--ax-space-16)',
+		xsmall: 'var(--ax-space-12)'
 	};
 
-	let dim = $derived(sizePx[size] ?? 18);
+	let dim = $derived(sizeTokens[size] ?? sizeTokens.medium);
 </script>
 
 <LoaderCircle
 	class={['sh-loader', className]}
-	width={dim}
-	height={dim}
-	style={`width: ${dim}px; height: ${dim}px; ${style ?? ''}`}
+	style={`width: ${dim}; height: ${dim}; ${style ?? ''}`}
 	strokeWidth={2.25}
 	role="status"
 	aria-label={title}
