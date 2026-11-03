@@ -141,7 +141,7 @@ test('modified link activation preserves native new-tab behavior', async ({ page
 	await newPage.close();
 });
 
-test('menus inside native dialogs stay in the top layer', async ({ page }) => {
+test('menus inside dialogs stay above the overlay and preserve dialog focus', async ({ page }) => {
 	await page.getByRole('button', { name: 'Test actions', exact: true }).click();
 	await page.getByRole('menuitem', { name: 'Open dialog', exact: true }).click();
 	const dialog = page.getByRole('dialog', { name: 'Action dialog' });

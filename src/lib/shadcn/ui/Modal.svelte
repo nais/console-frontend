@@ -1,7 +1,8 @@
 <script lang="ts">
+	import { Dialog, mergeProps } from 'bits-ui';
 	import { XMarkIcon } from '#lib/icons/index.js';
 	import type { Component, Snippet } from 'svelte';
-	import type { HTMLDialogAttributes } from 'svelte/elements';
+	import type { HTMLAttributes } from 'svelte/elements';
 	import Detail from './Detail.svelte';
 	import Heading from './Heading.svelte';
 
@@ -13,10 +14,11 @@
 		closeButton?: boolean;
 	}
 
-	export interface ModalProps extends HTMLDialogAttributes {
+	export interface ModalProps extends HTMLAttributes<HTMLDivElement> {
 		open: boolean;
 		isModal?: boolean;
 		closeButton?: boolean;
+		backdropClass?: string;
 		width?: 'small' | 'medium' | number | `${number}${string}`;
 		closeIconText?: string;
 		header?: ModalHeaderProps | Snippet | string;
@@ -26,6 +28,7 @@
 		placement?: 'top' | 'center';
 		onBeforeClose?: () => boolean;
 		onclose?: (e: Event) => void;
+		oncancel?: (e: Event) => void;
 		[key: string]: unknown;
 	}
 
@@ -34,6 +37,7 @@
 	let {
 		open = $bindable(false),
 		closeButton = true,
+		backdropClass,
 		isModal = true,
 		width,
 		closeIconText = 'Close',
@@ -44,11 +48,15 @@
 		placement = 'center',
 		onBeforeClose,
 		onclose,
+		oncancel,
+		id,
+		style,
 		class: className = '',
 		...rest
 	}: ModalProps = $props();
 
-	let dialog: HTMLDialogElement | undefined = $state();
+	let portalAnchor = $state<HTMLSpanElement | null>(null);
+	const portalTarget = $derived(portalAnchor?.closest('.sh-theme-root') ?? undefined);
 	const ariaLabelId = `modal-heading-${uid}`;
 
 	function isHeaderObject(h: unknown): h is ModalHeaderProps {
@@ -70,104 +78,163 @@
 		return true;
 	}
 
-	$effect(() => {
-		if (!dialog) return;
-		if (open && !dialog.open) {
-			if (isModal && dialog.showModal) {
-				dialog.showModal();
-			} else if (dialog.show) {
-				dialog.show();
-			}
-		} else if (!open && dialog.open) {
-			dialog.close();
-		}
-	});
-
 	let widthStyle = $derived.by(() => {
-		if (typeof width === 'number') return `max-width: ${width}px; width: 100%;`;
+		if (typeof width === 'number') {
+			return `max-width: min(${width}px, calc(100vw - var(--ax-space-32)));`;
+		}
 		if (typeof width === 'string' && width !== 'small' && width !== 'medium') {
-			return `max-width: ${width}; width: 100%;`;
+			return `max-width: min(${width}, calc(100vw - var(--ax-space-32)));`;
 		}
 		return undefined;
 	});
 </script>
 
-<dialog
-	bind:this={dialog}
-	aria-labelledby={(rest['aria-labelledby'] as string | undefined) ??
-		(headerObj ? ariaLabelId : undefined)}
-	class={[
-		'sh-modal',
-		{
-			'sh-modal--small': width === 'small',
-			'sh-modal--medium': width === 'medium',
-			'sh-modal--top': placement === 'top'
-		},
-		className
-	]}
-	style={widthStyle}
-	onclose={(e) => {
-		open = false;
-		onclose?.(e);
+<span
+	hidden
+	{@attach (element) => {
+		portalAnchor = element;
+		return () => {
+			portalAnchor = null;
+		};
 	}}
-	oncancel={(e) => {
-		if (onBeforeClose && onBeforeClose() === false) {
-			e.preventDefault();
-		}
+></span>
+<Dialog.Root
+	bind:open
+	onOpenChangeComplete={(isOpen) => {
+		if (!isOpen) onclose?.(new Event('close'));
 	}}
-	onclick={closeOnBackdropClick
-		? (e) => {
-				if (e.target === dialog) {
-					tryClose();
-				}
-			}
-		: undefined}
-	{...rest}
 >
-	{#if header || showCloseButton}
-		<div class="sh-modal__header">
-			<div class="sh-modal__header-content">
-				{#if headerObj}
-					{#if headerObj.label}
-						<Detail>{headerObj.label}</Detail>
-					{/if}
-					<Heading size={headerObj.size ?? 'medium'} level="2" id={ariaLabelId}>
-						{#if headerObj.icon}
-							{const IconComp = $derived(headerObj.icon)}
-							<IconComp aria-hidden="true" />
-						{/if}
-						{headerObj.heading}
-					</Heading>
-				{:else if typeof header === 'string'}
-					<Heading level="2" size="medium">{header}</Heading>
-				{:else if isHeaderSnippet(header)}
-					{@render header()}
+	{#if portalAnchor}
+		<Dialog.Portal to={portalTarget}>
+			<div
+				class={['sh-modal-layer', { 'sh-modal-layer--top': placement === 'top' }]}
+				hidden={!open}
+			>
+				{#if isModal}
+					<Dialog.Overlay class={['sh-modal-backdrop', backdropClass]} />
 				{/if}
-			</div>
-			{#if showCloseButton}
-				<button
-					type="button"
-					class="sh-modal__close"
-					aria-label={closeIconText}
-					onclick={() => tryClose()}
+				<Dialog.Content
+					id={id ?? undefined}
+					forceMount
+					trapFocus={isModal}
+					preventScroll={isModal}
+					onEscapeKeydown={(event) => {
+						const cancelEvent = new Event('cancel', { cancelable: true });
+						oncancel?.(cancelEvent);
+						if (cancelEvent.defaultPrevented || onBeforeClose?.() === false) event.preventDefault();
+					}}
+					onInteractOutside={(event) => {
+						if (!isModal || !closeOnBackdropClick || onBeforeClose?.() === false) {
+							event.preventDefault();
+						}
+					}}
 				>
-					<XMarkIcon aria-hidden="true" />
-				</button>
-			{/if}
-		</div>
+					{#snippet child({ props })}
+						<div
+							{...mergeProps(props, rest)}
+							aria-modal={isModal ? 'true' : undefined}
+							class={[
+								'sh-modal',
+								{
+									'sh-modal--small': width === 'small',
+									'sh-modal--medium': width === 'medium'
+								},
+								className
+							]}
+							style={[widthStyle, style].filter(Boolean).join(';')}
+						>
+							{#if header || showCloseButton}
+								<div class="sh-modal__header">
+									<div class="sh-modal__header-content">
+										{#if headerObj}
+											{#if headerObj.label}
+												<Detail>{headerObj.label}</Detail>
+											{/if}
+											<Dialog.Title id={ariaLabelId} level={2}>
+												{#snippet child({ props })}
+													<Heading {...props} size={headerObj.size ?? 'medium'} level="2">
+														{#if headerObj.icon}
+															{const IconComp = $derived(headerObj.icon)}
+															<IconComp aria-hidden="true" />
+														{/if}
+														{headerObj.heading}
+													</Heading>
+												{/snippet}
+											</Dialog.Title>
+										{:else if typeof header === 'string'}
+											<Dialog.Title id={ariaLabelId} level={2}>
+												{#snippet child({ props })}
+													<Heading {...props} level="2" size="medium">{header}</Heading>
+												{/snippet}
+											</Dialog.Title>
+										{:else if isHeaderSnippet(header)}
+											<Dialog.Title id={ariaLabelId} level={2}>
+												{#snippet child({ props })}
+													<div {...props} role={undefined} aria-level={undefined}>
+														{@render header()}
+													</div>
+												{/snippet}
+											</Dialog.Title>
+										{/if}
+									</div>
+									{#if showCloseButton}
+										<button
+											type="button"
+											class="sh-modal__close"
+											aria-label={closeIconText}
+											onclick={() => tryClose()}
+										>
+											<XMarkIcon aria-hidden="true" />
+										</button>
+									{/if}
+								</div>
+							{/if}
+							<div class="sh-modal__body">
+								{@render children()}
+							</div>
+							{#if footer}
+								<div class="sh-modal__footer">
+									{@render footer()}
+								</div>
+							{/if}
+						</div>
+					{/snippet}
+				</Dialog.Content>
+			</div>
+		</Dialog.Portal>
 	{/if}
-	<div class="sh-modal__body">
-		{@render children()}
-	</div>
-	{#if footer}
-		<div class="sh-modal__footer">
-			{@render footer()}
-		</div>
-	{/if}
-</dialog>
+</Dialog.Root>
 
 <style>
-	.sh-modal {
+	.sh-modal-layer {
+		position: fixed;
+		inset: 0;
+		z-index: 1100;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		padding: var(--ax-space-16);
+		pointer-events: none;
+	}
+	.sh-modal-layer[hidden] {
+		display: none;
+	}
+	.sh-modal-layer--top {
+		align-items: flex-start;
+		padding-top: var(--sh-modal-top-offset);
+	}
+	.sh-modal-layer--top :global(.sh-modal) {
+		max-height: calc(100dvh - var(--sh-modal-top-offset) - var(--ax-space-16));
+	}
+	:global(.sh-modal-backdrop) {
+		position: fixed;
+		inset: 0;
+		background-color: var(--sh-modal-backdrop);
+		backdrop-filter: blur(var(--ax-space-2));
+	}
+	:global(.sh-modal) {
+		position: relative;
+		pointer-events: auto;
 		padding: 0;
 		border: var(--sh-border-width) solid var(--border);
 		border-radius: var(--radius-lg);
@@ -176,19 +243,14 @@
 		box-shadow: var(--sh-shadow-lg);
 		max-width: min(var(--sh-modal-max-width), calc(100vw - var(--ax-space-32)));
 		width: 100%;
+		max-height: calc(100dvh - var(--ax-space-32));
+		overflow-y: auto;
 	}
-	.sh-modal--small {
+	:global(.sh-modal--small) {
 		max-width: min(var(--sh-modal-small-max-width), calc(100vw - var(--ax-space-32)));
 	}
-	.sh-modal--medium {
+	:global(.sh-modal--medium) {
 		max-width: min(var(--sh-modal-medium-max-width), calc(100vw - var(--ax-space-32)));
-	}
-	.sh-modal--top {
-		margin-top: var(--sh-modal-top-offset);
-	}
-	.sh-modal::backdrop {
-		background-color: var(--sh-modal-backdrop);
-		backdrop-filter: blur(var(--ax-space-2));
 	}
 	.sh-modal__header {
 		display: flex;
@@ -218,6 +280,10 @@
 	.sh-modal__close:hover {
 		background-color: var(--secondary);
 		color: var(--foreground);
+	}
+	.sh-modal__close:focus-visible {
+		outline: var(--ax-space-2) solid var(--ring);
+		outline-offset: var(--ax-space-2);
 	}
 	.sh-modal__body {
 		padding: var(--ax-space-20);

@@ -22,6 +22,12 @@ Browser tests start an isolated Vite server on port 4175 and do not require the 
 ActionMenu uses Bits UI for menu behavior while the local wrappers own its styling and
 native link/action callbacks. Its browser tests cover keyboard navigation, focus,
 disabled items, radio groups, dialogs, themes and constrained viewports.
+Modal and the filter drawer use Bits UI Dialog for focus, dismissal and scroll locking.
+Modal renders a portaled element with `role="dialog"`, not a native `<dialog>`. Its
+content stays mounted while closed, and `onBeforeClose` guards user dismissal without
+blocking programmatic changes to `open`. Select stays native to preserve browser and
+mobile selection, form submission and typed value bindings. Browser tests cover these
+contracts, nested dialogs, guarded dismissal and drawer breakpoints.
 
 ### Mobile responsiveness
 

@@ -13,7 +13,9 @@
 	let triggerElement = $state<HTMLElement | null>(null);
 	let menuElement = $state<HTMLElement | null>(null);
 	let openFromEnd = $state(false);
-	const portalTarget = $derived(triggerElement?.closest('dialog, .sh-theme-root') ?? undefined);
+	const portalTarget = $derived(
+		triggerElement?.closest('[data-dialog-content], dialog, .sh-theme-root') ?? undefined
+	);
 </script>
 
 <DropdownMenu.Root
