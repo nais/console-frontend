@@ -893,6 +893,56 @@
 		grid-template-columns: minmax(0, 1fr);
 	}
 
+	.explorer :global(.aksel-popover) {
+		z-index: 1000;
+		max-width: calc(100vw - var(--ax-space-24));
+		border: var(--ax-space-1) solid var(--border);
+		border-radius: var(--ax-radius-12);
+		background: var(--popover);
+		color: var(--popover-foreground);
+		box-shadow: var(--sh-shadow-lg);
+	}
+
+	.explorer :global(.aksel-popover--hidden) {
+		display: none;
+	}
+
+	.explorer :global(.aksel-popover__content) {
+		padding: var(--ax-space-16);
+	}
+
+	.explorer :global(.aksel-chips__chip) {
+		display: inline-flex;
+		align-items: center;
+		gap: var(--ax-space-4);
+		padding: var(--ax-space-4) var(--ax-space-8);
+		border: var(--ax-space-1) solid var(--border);
+		border-radius: var(--ax-radius-full);
+		background: var(--secondary);
+		color: var(--secondary-foreground);
+		font: inherit;
+		cursor: pointer;
+	}
+
+	.explorer :global(.aksel-chips__chip:hover) {
+		background: var(--accent);
+		color: var(--accent-foreground);
+	}
+
+	.explorer :global(.aksel-chips__chip:focus-visible) {
+		outline: var(--ax-space-2) solid var(--ring);
+		outline-offset: var(--ax-space-2);
+	}
+
+	.explorer :global(.aksel-chips__removable-icon) {
+		display: inline-flex;
+	}
+
+	.explorer :global(.aksel-chips__removable-icon svg) {
+		width: var(--ax-space-16);
+		height: var(--ax-space-16);
+	}
+
 	.query-toolbar,
 	.time-controls,
 	.custom-range,

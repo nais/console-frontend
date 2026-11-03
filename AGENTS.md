@@ -391,7 +391,7 @@ Use `#lib/shadcn/ui/index.js` components, not custom implementations:
 - Icons: Import from `#lib/icons/index.js` (backed by `@lucide/svelte`)
 - Always check existing components before creating new ones
 
-`LogExplorer` temporarily uses `Popover` and `RemovableChip` from `@nais/ds-svelte-community` until equivalents are available in the new component library. Keep that dependency while these imports remain.
+`LogExplorer` temporarily uses `Popover` and `RemovableChip` from `@nais/ds-svelte-community` until equivalents are available in the new component library. Keep that dependency while these imports remain. Their compatibility styles are scoped to `LogExplorer`; do not restore the old global stylesheet.
 
 ---
 
