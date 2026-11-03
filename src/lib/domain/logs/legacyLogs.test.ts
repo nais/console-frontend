@@ -63,7 +63,13 @@ function job(logDestinations: unknown[] = [], running = true) {
 
 function selectedInstances(body: string) {
 	return [...body.matchAll(/<button\b[^>]*aria-pressed="true"[^>]*>([\s\S]*?)<\/button>/g)]
-		.map(([, content]) => content.replace(/<[^>]*>/g, '').trim())
+		.map(([, content]) => {
+			const label = content.match(
+				/<span class="aksel-chips__chip-text">(?:\s|<!--[\s\S]*?-->)*([^<]*)/
+			);
+			expect(label).not.toBeNull();
+			return label![1].trim();
+		})
 		.filter((value) => !['Time', 'Level', 'Instance'].includes(value));
 }
 
