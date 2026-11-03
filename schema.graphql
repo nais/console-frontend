@@ -4179,6 +4179,9 @@ enum IssueType {
   MISSING_SBOM
   NO_RUNNING_INSTANCES
   OPENSEARCH
+
+  """Raised when a Postgres branch has reported a failure."""
+  POSTGRES_BRANCH
   SQLINSTANCE_STATE
   SQLINSTANCE_VERSION
   UNLEASH_RELEASE_CHANNEL
@@ -6440,14 +6443,26 @@ type PostgresAccessConnectionDetails {
 
 """Privilege level granted to a personal Postgres database role."""
 enum PostgresAccessLevel {
+  """
+  Administer the application database through membership in its owner role, with the same database privileges as workload admin but without PostgreSQL superuser privileges.
+  """
+  ADMIN
+
+  """
+  Monitor and maintain the PostgreSQL instance through pg_monitor and pg_maintain, without granting application data access or database ownership.
+  """
+  MAINTAIN
+
   """Read data without modifying it."""
   READ
 
   """Read and modify existing data."""
   READWRITE
 
-  """Read, modify, and create database objects where supported."""
-  READWRITECREATE
+  """
+  Read and modify data and create objects in public, without database ownership.
+  """
+  READWRITECREATE @deprecated(reason: "This level will be removed in a future API change. Until then, it remains available with unchanged privileges. ADMIN grants broader database-owner privileges.")
 }
 
 """Current state of a personal Postgres access."""
@@ -6480,6 +6495,27 @@ type PostgresBranch implements Node & Persistence {
   """
   earliestRestoreTime: Time
   id: ID!
+
+  """Issues affecting this branch."""
+  issues(
+    """Get items after this cursor."""
+    after: Cursor
+
+    """Get items before this cursor."""
+    before: Cursor
+
+    """Filtering options for the issues."""
+    filter: ResourceIssueFilter
+
+    """Get the first n items in the connection."""
+    first: Int
+
+    """Get the last n items in the connection."""
+    last: Int
+
+    """Ordering options for the issues."""
+    orderBy: IssueOrder
+  ): IssueConnection!
 
   """User-defined labels on this branch."""
   labels: [ResourceLabel!]!
@@ -6621,6 +6657,24 @@ input PostgresBranchFilter {
 
   """Filter by branch state."""
   states: [PostgresBranchState!]
+}
+
+"""A failure reported by a Postgres branch, including inactive branches."""
+type PostgresBranchIssue implements Issue & Node {
+  """The branch that reported the failure."""
+  branch: PostgresBranch!
+
+  """Unique identifier for this issue."""
+  id: ID!
+
+  """Description of the reported failure."""
+  message: String!
+
+  """Severity of the reported failure."""
+  severity: Severity!
+
+  """Team environment containing the affected branch."""
+  teamEnvironment: TeamEnvironment!
 }
 
 input PostgresBranchOrder {
@@ -7866,6 +7920,9 @@ enum ResourceType {
   APPLICATION
   JOB
   OPENSEARCH
+
+  """A branch of a Postgres database."""
+  POSTGRES_BRANCH
   SQLINSTANCE
   UNLEASH
   VALKEY

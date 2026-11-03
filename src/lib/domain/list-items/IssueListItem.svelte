@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { fragment, graphql, type IssueFragment } from '$houdini';
 	import { envTagVariant } from '#lib/envTagVariant.js';
+	import { issueResource } from '#lib/domain/issues/issueResource.js';
 	import OpenSearchIcon from '#lib/icons/OpenSearchIcon.svelte';
 	import UnleashIcon from '#lib/icons/UnleashIcon.svelte';
 	import ValkeyIcon from '#lib/icons/ValkeyIcon.svelte';
@@ -227,6 +228,25 @@
 						}
 						state
 					}
+					... on PostgresBranchIssue {
+						__typename
+						severity
+						message
+						teamEnvironment {
+							environment {
+								name
+							}
+							team {
+								slug
+							}
+						}
+						branch {
+							name
+							postgres {
+								name
+							}
+						}
+					}
 					... on SqlInstanceVersionIssue {
 						__typename
 						severity
@@ -314,66 +334,7 @@
 		)
 	);
 
-	// Houdini interface fragments generate type-keyed TS properties but runtime data is flat
-	const resourceName = $derived.by(() => {
-		const d = $data as Record<string, unknown>;
-		if (!d) return '';
-		if ('workload' in d && d.workload) {
-			return (d.workload as { name: string }).name;
-		}
-		if ('application' in d && d.application) {
-			return (d.application as { name: string }).name;
-		}
-		if ('job' in d && d.job) {
-			return (d.job as { name: string }).name;
-		}
-		if ('openSearch' in d && d.openSearch) {
-			return (d.openSearch as { name: string }).name;
-		}
-		if ('sqlInstance' in d && d.sqlInstance) {
-			return (d.sqlInstance as { name: string }).name;
-		}
-		if ('unleash' in d && d.unleash) {
-			return (d.unleash as { name: string }).name;
-		}
-		if ('valkey' in d && d.valkey) {
-			return (d.valkey as { name: string }).name;
-		}
-		return 'Unknown';
-	});
-
-	const resourceHref = $derived.by(() => {
-		const d = $data as Record<string, unknown>;
-		if (!d) return '';
-		const env = $data?.teamEnvironment?.environment?.name;
-		const team = $data?.teamEnvironment?.team?.slug;
-		if (!env || !team) return '';
-
-		if ('workload' in d && d.workload) {
-			const w = d.workload as { __typename: string; name: string };
-			const type = w.__typename === 'Application' ? 'app' : 'job';
-			return `/team/${team}/${env}/${type}/${w.name}`;
-		}
-		if ('application' in d && d.application) {
-			return `/team/${team}/${env}/app/${(d.application as { name: string }).name}`;
-		}
-		if ('job' in d && d.job) {
-			return `/team/${team}/${env}/job/${(d.job as { name: string }).name}`;
-		}
-		if ('openSearch' in d && d.openSearch) {
-			return `/team/${team}/${env}/opensearch/${(d.openSearch as { name: string }).name}`;
-		}
-		if ('sqlInstance' in d && d.sqlInstance) {
-			return `/team/${team}/${env}/cloudsql/${(d.sqlInstance as { name: string }).name}`;
-		}
-		if ('unleash' in d && d.unleash) {
-			return `/team/${team}/unleash`;
-		}
-		if ('valkey' in d && d.valkey) {
-			return `/team/${team}/${env}/valkey/${(d.valkey as { name: string }).name}`;
-		}
-		return '';
-	});
+	const resource = $derived(issueResource($data));
 
 	const ResourceIcon = $derived.by(() => {
 		const d = $data as Record<string, unknown>;
@@ -381,7 +342,11 @@
 		const typename = $data?.__typename;
 		if (typename === 'LastRunFailedIssue') return BriefcaseClockIcon;
 		if (typename === 'OpenSearchIssue') return OpenSearchIcon;
-		if (typename === 'SqlInstanceStateIssue' || typename === 'SqlInstanceVersionIssue')
+		if (
+			typename === 'SqlInstanceStateIssue' ||
+			typename === 'SqlInstanceVersionIssue' ||
+			typename === 'PostgresBranchIssue'
+		)
 			return DatabaseIcon;
 		if (typename === 'UnleashReleaseChannelIssue') return UnleashIcon;
 		if (typename === 'ValkeyIssue') return ValkeyIcon;
@@ -423,15 +388,15 @@
 			<ResourceIcon />
 		</div>
 		<div class="resource-group">
-			{#if resourceHref}
+			{#if resource.href}
 				<a
 					class="resource-name"
-					href={resourceHref}
-					title={resourceName}
-					onclick={(e) => e.stopPropagation()}>{resourceName}</a
+					href={resource.href}
+					title={resource.name}
+					onclick={(e) => e.stopPropagation()}>{resource.name}</a
 				>
 			{:else}
-				<span class="resource-name" title={resourceName}>{resourceName}</span>
+				<span class="resource-name" title={resource.name}>{resource.name}</span>
 			{/if}
 			{#if $data?.teamEnvironment?.environment?.name}
 				<Tag size="xsmall" variant={envTagVariant($data.teamEnvironment.environment.name)}

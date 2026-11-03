@@ -56,6 +56,11 @@ export default defineConfig((mode) => {
 		server: {
 			host: '0.0.0.0',
 			proxy: {
+				'/api/loki': {
+					target: targetProxy,
+					headers: headers(),
+					changeOrigin: targetProxy.indexOf('127.0.0.1') < 0
+				},
 				'/graphql': {
 					target: targetProxy,
 					headers: headers(),

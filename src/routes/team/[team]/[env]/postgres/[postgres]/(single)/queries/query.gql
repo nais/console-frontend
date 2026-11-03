@@ -1,0 +1,17 @@
+query PostgresQueryStatistics($environmentName: String!, $input: MetricsQueryInput!) {
+	environment(name: $environmentName) {
+		metrics(input: $input) {
+			series {
+				labels {
+					name
+					value
+				}
+				values {
+					timestamp
+					value
+				}
+			}
+			warnings
+		}
+	}
+}
