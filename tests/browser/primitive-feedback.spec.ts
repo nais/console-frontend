@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test';
+import { expect, test, type Locator } from '@playwright/test';
 
 test.beforeEach(async ({ page }) => {
 	await page.goto('/tests/browser/primitive-feedback.html');
@@ -66,3 +66,67 @@ test('shared heading tokens preserve the large weight and font-relative spacing'
 		expect(metrics.marginBottom).toBeCloseTo(metrics.fontSize / 2);
 	}
 });
+
+async function themeTokens(locator: Locator, properties?: string[]) {
+	return locator.evaluate((element, names) => {
+		const style = getComputedStyle(element);
+		const tokens = names ?? Array.from(style).filter((name) => name.startsWith('--'));
+		return Object.fromEntries(tokens.map((name) => [name, style.getPropertyValue(name).trim()]));
+	}, properties);
+}
+
+for (const rootTheme of ['light', 'dark']) {
+	test(`explicit light themes reset nested palettes and portals with a ${rootTheme} root`, async ({
+		page
+	}) => {
+		await page.locator('html').evaluate((element, theme) => {
+			element.dataset.theme = theme;
+		}, rootTheme);
+		await expect(page.locator('body')).toHaveCSS(
+			'background-color',
+			rootTheme === 'dark' ? 'rgb(9, 13, 22)' : 'rgb(248, 250, 252)'
+		);
+		const reference = page.getByTestId('light-reference');
+		await expect(reference).toHaveCSS('background-color', 'rgb(248, 250, 252)');
+		const light = await themeTokens(reference);
+		const properties = Object.keys(light);
+		const parent = page.getByTestId('dark-parent');
+		await expect(parent).toHaveCSS('background-color', 'rgb(9, 13, 22)');
+		const dark = await themeTokens(parent, properties);
+		expect(dark['--ax-bg-default']).not.toBe(light['--ax-bg-default']);
+		expect(dark['--ax-text-neutral']).not.toBe(light['--ax-text-neutral']);
+		expect(await themeTokens(page.getByTestId('inherited-dark'), properties)).toEqual(dark);
+		expect(await themeTokens(page.getByTestId('nested-theme'), properties)).toEqual(light);
+		expect(await themeTokens(page.getByTestId('inherited-theme'), properties)).toEqual(light);
+		expect(await themeTokens(page.getByTestId('nested-dark'), properties)).toEqual(dark);
+
+		await page.getByRole('button', { name: 'Nested theme actions', exact: true }).click();
+		const menu = page.getByRole('menu');
+		await expect(menu).toBeVisible();
+		await expect(menu).toHaveCSS('background-color', 'rgb(255, 255, 255)');
+		expect(await themeTokens(menu, properties)).toEqual(light);
+		expect(
+			await menu.evaluate((element) =>
+				element.closest('.sh-theme-root')?.getAttribute('data-testid')
+			)
+		).toBe('nested-theme');
+		await page.keyboard.press('Escape');
+
+		await page.getByRole('button', { name: 'Open themed dialog' }).click();
+		const dialog = page.getByRole('dialog', { name: 'Themed dialog' });
+		await expect(dialog).toBeVisible();
+		await expect(dialog).toHaveCSS('background-color', 'rgb(255, 255, 255)');
+		expect(await themeTokens(dialog, properties)).toEqual(light);
+		expect(
+			await dialog.evaluate((element) =>
+				element.closest('.sh-theme-root')?.getAttribute('data-testid')
+			)
+		).toBe('nested-theme');
+		await dialog.getByRole('button', { name: 'Toggle dialog theme' }).click();
+		await expect(dialog).toHaveCSS('background-color', 'rgb(15, 23, 42)');
+		expect(await themeTokens(dialog, properties)).toEqual(dark);
+		await dialog.getByRole('button', { name: 'Toggle dialog theme' }).click();
+		await expect(dialog).toHaveCSS('background-color', 'rgb(255, 255, 255)');
+		expect(await themeTokens(dialog, properties)).toEqual(light);
+	});
+}
