@@ -17,12 +17,7 @@
 		onfilter?: (filter: LokiLabelFilter) => void;
 	} = $props();
 	const id = $props.id();
-	let focusedAction = $state<string>();
 	const displayed = $derived(oldestFirst ? entries.toReversed() : entries);
-
-	function dismissTooltip(event: KeyboardEvent) {
-		if (event.key === 'Escape') focusedAction = undefined;
-	}
 
 	function formatMessage(message: string): string {
 		try {
@@ -91,40 +86,26 @@
 												<span class="label-value">{value}</span>
 												{#if onfilter && isFilterableLokiLabel(key)}
 													<div class="label-actions">
-														<Tooltip
-															content="Include this value"
-															open={focusedAction === `include:${index}:${key}`}
-														>
+														<Tooltip content="Include this value">
 															<Button
 																type="button"
 																variant="tertiary-neutral"
 																size="xsmall"
 																icon={PlusIcon}
 																aria-label={`Include ${key} = ${value}`}
-																onfocus={() => (focusedAction = `include:${index}:${key}`)}
-																onblur={() => (focusedAction = undefined)}
-																onkeydown={dismissTooltip}
 																onclick={() => {
-																	focusedAction = undefined;
 																	onfilter?.({ name: key, operator: '=', value });
 																}}
 															/>
 														</Tooltip>
-														<Tooltip
-															content="Exclude this value"
-															open={focusedAction === `exclude:${index}:${key}`}
-														>
+														<Tooltip content="Exclude this value">
 															<Button
 																type="button"
 																variant="tertiary-neutral"
 																size="xsmall"
 																icon={MinusIcon}
 																aria-label={`Exclude ${key} = ${value}`}
-																onfocus={() => (focusedAction = `exclude:${index}:${key}`)}
-																onblur={() => (focusedAction = undefined)}
-																onkeydown={dismissTooltip}
 																onclick={() => {
-																	focusedAction = undefined;
 																	onfilter?.({ name: key, operator: '!=', value });
 																}}
 															/>

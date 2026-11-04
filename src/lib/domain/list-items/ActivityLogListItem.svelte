@@ -561,9 +561,11 @@
 	</ListItem>
 {:else}
 	<div class="activity-item">
-		<div class="activity-icon">
-			<Icon width="75%" height="75%" />
-		</div>
+		<Tooltip content={activityTooltip($data.__typename)} class="activity-icon-tooltip">
+			<div class="activity-icon">
+				<Icon width="75%" height="75%" />
+			</div>
+		</Tooltip>
 		<div class="content">
 			{#if mode === 'sidebar'}
 				<BodyLong size="small" as="div">
@@ -610,6 +612,11 @@
 	.content :global(a:not(.meta a):hover) {
 		color: var(--link);
 		text-decoration-color: currentColor;
+	}
+
+	.activity-item :global(.activity-icon-tooltip) {
+		align-self: flex-start;
+		flex-shrink: 0;
 	}
 
 	.activity-icon {

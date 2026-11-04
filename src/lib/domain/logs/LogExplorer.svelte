@@ -96,7 +96,6 @@
 		{ minutes: 2880, label: 'Last 2 days' },
 		{ minutes: 10080, label: 'Last 7 days' }
 	];
-	let focusedTimeControl = $state<string>();
 	let timeRange = $state('15');
 	const selectedMinutes = $derived(
 		timeRange === 'custom' || timeRange === 'absolute' ? undefined : Number(timeRange)
@@ -196,10 +195,6 @@
 		}
 	}
 
-	function dismissTimeTooltip(event: KeyboardEvent) {
-		if (event.key === 'Escape') focusedTimeControl = undefined;
-	}
-
 	function moveTime(direction: 'previous' | 'next' | 'now') {
 		if (!active) return;
 		try {
@@ -210,7 +205,6 @@
 					: undefined;
 			if (relativeMinutes === undefined) absoluteRange(range);
 			else timeRange = String(relativeMinutes);
-			focusedTimeControl = undefined;
 			void run(false, range, relativeMinutes);
 		} catch (cause) {
 			error = cause instanceof Error ? cause.message : 'Unable to change the time range.';
@@ -523,7 +517,7 @@
 					{/if}
 				</div>
 				<div class="time-controls" role="group" aria-label="Time navigation">
-					<Tooltip content="Previous time range" open={focusedTimeControl === 'previous'}>
+					<Tooltip content="Previous time range">
 						<Button
 							type="button"
 							variant="secondary-neutral"
@@ -532,9 +526,6 @@
 							aria-label="Previous time range"
 							disabled={!canShiftPrevious}
 							onclick={() => moveTime('previous')}
-							onfocus={() => (focusedTimeControl = 'previous')}
-							onblur={() => (focusedTimeControl = undefined)}
-							onkeydown={dismissTimeTooltip}
 						/>
 					</Tooltip>
 					<Select
@@ -560,7 +551,7 @@
 						{/if}
 						<option value="custom">Custom range</option>
 					</Select>
-					<Tooltip content="Next time range" open={focusedTimeControl === 'next'}>
+					<Tooltip content="Next time range">
 						<Button
 							type="button"
 							variant="secondary-neutral"
@@ -569,12 +560,9 @@
 							aria-label="Next time range"
 							disabled={!canShiftNext}
 							onclick={() => moveTime('next')}
-							onfocus={() => (focusedTimeControl = 'next')}
-							onblur={() => (focusedTimeControl = undefined)}
-							onkeydown={dismissTimeTooltip}
 						/>
 					</Tooltip>
-					<Tooltip content="Jump to now" open={focusedTimeControl === 'now'}>
+					<Tooltip content="Jump to now">
 						<Button
 							type="button"
 							variant="secondary-neutral"
@@ -583,9 +571,6 @@
 							aria-label="Jump to now"
 							disabled={!active}
 							onclick={() => moveTime('now')}
-							onfocus={() => (focusedTimeControl = 'now')}
-							onblur={() => (focusedTimeControl = undefined)}
-							onkeydown={dismissTimeTooltip}
 						/>
 					</Tooltip>
 				</div>

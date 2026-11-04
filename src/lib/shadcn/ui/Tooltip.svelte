@@ -19,6 +19,8 @@
 </script>
 
 <script lang="ts">
+	import { Tooltip as BitsTooltip } from 'bits-ui';
+
 	let {
 		content,
 		open = $bindable(undefined),
@@ -32,6 +34,10 @@
 	}: TooltipProps = $props();
 
 	const uid = $props.id();
+	let anchorElement = $state<HTMLSpanElement | null>(null);
+	const portalTarget = $derived(
+		anchorElement?.closest('[data-dialog-content], dialog, .sh-theme-root') ?? undefined
+	);
 	let hovered = $state(false);
 	let focused = $state(false);
 	let dismissed = $state(false);
@@ -41,6 +47,7 @@
 	);
 
 	function describeChildren(element: HTMLSpanElement) {
+		anchorElement = element;
 		const selector = 'button, a[href], input, select, textarea, [tabindex]';
 		$effect(() => {
 			const visible = isOpen;
@@ -88,6 +95,9 @@
 				for (const target of targets) removeDescription(target);
 			};
 		});
+		return () => {
+			anchorElement = null;
+		};
 	}
 
 	let triggerProps = $derived({
@@ -117,56 +127,78 @@
 	}}
 />
 
-<span
-	{...rest}
-	class={['sh-tooltip-anchor', className]}
-	data-placement={placement}
-	{@attach describeChildren}
-	role={interactiveChild === false ? 'button' : undefined}
-	aria-label={interactiveChild === false ? content : undefined}
-	aria-describedby={[descriptionId, isOpen ? uid : undefined].filter(Boolean).join(' ') ||
-		undefined}
-	onmouseenter={() => {
-		hovered = true;
-		dismissed = false;
-	}}
-	onmouseleave={() => (hovered = false)}
-	onfocusin={() => {
-		focused = true;
-		dismissed = false;
-	}}
-	onfocusout={(event) => {
-		if (
-			!(event.relatedTarget instanceof Node) ||
-			!event.currentTarget.contains(event.relatedTarget)
-		) {
-			focused = false;
-		}
-	}}
-	onclick={() => {
-		if (!interactiveChild) dismissed = isOpen;
-	}}
-	onkeydown={(event) => {
-		if (!interactiveChild && (event.key === 'Enter' || event.key === ' ')) {
-			event.preventDefault();
-			dismissed = isOpen;
-		}
-	}}
->
-	{@render children({ props: triggerProps })}
-	{#if isOpen}
-		<span id={uid} role="tooltip" class={['sh-tooltip-bubble', `placement-${placement}`]}>
-			<span>{content}</span>
-			{#if keys?.length}
-				<span class="sh-tooltip-keys">
-					{#each keys as k (k)}
-						<kbd>{k}</kbd>
-					{/each}
-				</span>
-			{/if}
+<BitsTooltip.Provider>
+	<BitsTooltip.Root
+		open={isOpen}
+		onOpenChange={(value) => {
+			if (!value) {
+				dismissed = true;
+				if (open !== undefined) open = false;
+			}
+		}}
+	>
+		<span
+			{...rest}
+			class={['sh-tooltip-anchor', className]}
+			data-placement={placement}
+			{@attach describeChildren}
+			role={interactiveChild === false ? 'button' : undefined}
+			aria-label={interactiveChild === false ? content : undefined}
+			aria-describedby={[descriptionId, isOpen ? uid : undefined].filter(Boolean).join(' ') ||
+				undefined}
+			onmouseenter={() => {
+				hovered = true;
+				dismissed = false;
+			}}
+			onmouseleave={() => (hovered = false)}
+			onfocusin={() => {
+				focused = true;
+				dismissed = false;
+			}}
+			onfocusout={(event) => {
+				if (
+					!(event.relatedTarget instanceof Node) ||
+					!event.currentTarget.contains(event.relatedTarget)
+				) {
+					focused = false;
+				}
+			}}
+			onclick={() => {
+				if (!interactiveChild) dismissed = isOpen;
+			}}
+			onkeydown={(event) => {
+				if (!interactiveChild && (event.key === 'Enter' || event.key === ' ')) {
+					event.preventDefault();
+					dismissed = isOpen;
+				}
+			}}
+		>
+			{@render children({ props: triggerProps })}
 		</span>
-	{/if}
-</span>
+		<BitsTooltip.Portal to={portalTarget}>
+			<BitsTooltip.Content
+				id={uid}
+				role="tooltip"
+				class="sh-tooltip-bubble"
+				customAnchor={anchorElement}
+				side={placement}
+				sideOffset={6}
+				collisionPadding={8}
+				onmouseenter={() => (hovered = true)}
+				onmouseleave={() => (hovered = false)}
+			>
+				<span>{content}</span>
+				{#if keys?.length}
+					<span class="sh-tooltip-keys">
+						{#each keys as k (k)}
+							<kbd>{k}</kbd>
+						{/each}
+					</span>
+				{/if}
+			</BitsTooltip.Content>
+		</BitsTooltip.Portal>
+	</BitsTooltip.Root>
+</BitsTooltip.Provider>
 
 <style>
 	.sh-tooltip-anchor {
@@ -174,12 +206,9 @@
 		display: inline-flex;
 		align-items: center;
 	}
-	.sh-tooltip-bubble {
-		position: absolute;
+	:global(.sh-tooltip-bubble) {
 		z-index: 60;
-		bottom: calc(100% + var(--ax-space-6));
-		left: 50%;
-		transform: translateX(-50%);
+		max-width: var(--bits-tooltip-content-available-width);
 		display: inline-flex;
 		align-items: center;
 		gap: var(--ax-space-6);
@@ -191,12 +220,8 @@
 		box-shadow: var(--sh-shadow-md);
 		font-size: var(--sh-font-size-xs);
 		font-weight: var(--sh-font-weight-medium);
-		white-space: nowrap;
+		overflow-wrap: anywhere;
 		pointer-events: auto;
-	}
-	.sh-tooltip-bubble.placement-bottom {
-		bottom: auto;
-		top: calc(100% + var(--ax-space-6));
 	}
 	.sh-tooltip-keys {
 		display: inline-flex;

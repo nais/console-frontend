@@ -10,7 +10,6 @@
 		onselect: (bucket: VolumeBucket) => void;
 	} = $props();
 	const id = $props.id();
-	let focusedBucket = $state<number>();
 	const maximum = $derived(Math.max(1, ...buckets.map((bucket) => bucket.count)));
 	const hasVolume = $derived(buckets.some((bucket) => bucket.count > 0));
 </script>
@@ -24,18 +23,13 @@
 				`${new Date(bucket.start).toLocaleTimeString('en-GB')} – ${new Date(bucket.end).toLocaleTimeString('en-GB')}: ${bucket.count.toLocaleString()} log lines`
 			)}
 			<div class="bucket">
-				<Tooltip content={label} open={focusedBucket === bucket.end}>
+				<Tooltip content={label}>
 					<Button
 						type="button"
 						variant="tertiary"
 						size="small"
 						aria-label={`Search ${label}`}
 						onclick={() => onselect(bucket)}
-						onfocus={() => (focusedBucket = bucket.end)}
-						onblur={() => (focusedBucket = undefined)}
-						onkeydown={(event: KeyboardEvent) => {
-							if (event.key === 'Escape') focusedBucket = undefined;
-						}}
 						style={`--bar-height: ${(bucket.count / maximum) * 100}%`}
 					>
 						<span class="bar" aria-hidden="true"></span>
