@@ -1,15 +1,20 @@
 import { vi } from 'vitest';
 
-const { access, create, update, remove, environmentCheck, currentResources } = vi.hoisted(() => ({
-	access: { fetch: vi.fn() },
-	create: { mutate: vi.fn() },
-	update: { mutate: vi.fn() },
-	remove: { mutate: vi.fn() },
-	environmentCheck: { fetch: vi.fn() },
-	currentResources: { fetch: vi.fn() }
-}));
+const { access, create, update, remove, environmentCheck, currentResources, availableValues } =
+	vi.hoisted(() => ({
+		access: { fetch: vi.fn() },
+		create: { mutate: vi.fn() },
+		update: { mutate: vi.fn() },
+		remove: { mutate: vi.fn() },
+		environmentCheck: { fetch: vi.fn() },
+		currentResources: { fetch: vi.fn() },
+		availableValues: { fetch: vi.fn() }
+	}));
 
 vi.mock('$houdini', () => ({
+	PostgresAvailableValuesStore: class {
+		fetch = availableValues.fetch;
+	},
 	graphql: (query: string) => {
 		if (query.includes('query PostgresManagementAccess')) return access;
 		if (query.includes('query PostgresCreationEnvironments')) return environmentCheck;
@@ -40,7 +45,7 @@ function createEvent(fields: Record<string, string | string[]>) {
 	} as Parameters<typeof createActions.default>[0];
 }
 
-function updateEvent(fields: Record<string, string>) {
+function updateEvent(fields: Record<string, string | string[]>) {
 	return {
 		params: { team: 'test', env: 'dev', postgres: 'database' },
 		request: request(fields)
@@ -57,7 +62,30 @@ function deleteEvent(fields: Record<string, string>) {
 beforeEach(() => {
 	vi.resetAllMocks();
 	currentResources.fetch.mockResolvedValue({
-		data: { team: { environment: { postgres: { resources: { diskSize: '10Gi' } } } } }
+		data: {
+			team: {
+				environment: {
+					environment: {
+						availableValues: { postgresExtensions: { values: ['pgcrypto', 'vector'] } }
+					},
+					postgres: { extensions: ['pgcrypto'], resources: { diskSize: '10Gi' } }
+				}
+			}
+		}
+	});
+	availableValues.fetch.mockResolvedValue({
+		data: {
+			team: {
+				environment: {
+					environment: {
+						availableValues: {
+							postgresMajorVersions: { values: ['17', '18'], defaultValues: ['18'] },
+							postgresExtensions: { values: ['pgcrypto', 'vector'], defaultValues: ['pgcrypto'] }
+						}
+					}
+				}
+			}
+		}
 	});
 	access.fetch.mockResolvedValue({
 		data: { me: { __typename: 'User', isAdmin: false }, team: { viewerIsMember: true } }
@@ -96,6 +124,7 @@ describe('Postgres management actions', () => {
 					teamSlug: 'test',
 					environmentName: 'dev',
 					majorVersion: '18',
+					extensions: undefined,
 					labels: [],
 					cpu: undefined,
 					memory: undefined,
@@ -214,6 +243,7 @@ describe('Postgres management actions', () => {
 					cpu: '0.25',
 					memory: '1024Mi',
 					diskSize: '20Gi',
+					extensions: undefined,
 					highAvailability: false
 				}
 			},
@@ -255,7 +285,14 @@ describe('Postgres management actions', () => {
 
 	test('omits unchanged fractional storage while updating CPU and high availability', async () => {
 		currentResources.fetch.mockResolvedValue({
-			data: { team: { environment: { postgres: { resources: { diskSize: '20G' } } } } }
+			data: {
+				team: {
+					environment: {
+						environment: { availableValues: { postgresExtensions: { values: [] } } },
+						postgres: { extensions: [], resources: { diskSize: '20G' } }
+					}
+				}
+			}
 		});
 		update.mutate.mockResolvedValue({ data: { updatePostgres: { postgres: { id: 'pg' } } } });
 		await expect(
@@ -269,6 +306,155 @@ describe('Postgres management actions', () => {
 			},
 			expect.any(Object)
 		);
+	});
+
+	describe('Postgres extension and version selection', () => {
+		const creationFields = { name: 'database', environment: 'dev', majorVersion: '18' };
+
+		test.each([{ extensions: ['pgcrypto', 'vector'] }, { extensions: [] }])(
+			'creates with the explicit extension selection: %s',
+			async ({ extensions }) => {
+				create.mutate.mockResolvedValue({
+					data: {
+						createPostgres: {
+							postgres: {
+								id: 'pg',
+								name: 'database',
+								teamEnvironment: { environment: { name: 'dev' } }
+							}
+						}
+					}
+				});
+				await expect(
+					createActions.default(
+						createEvent({
+							...creationFields,
+							extensionsPresent: 'true',
+							extensions
+						})
+					)
+				).rejects.toMatchObject({ status: 303 });
+				expect(create.mutate).toHaveBeenCalledWith(
+					{ input: expect.objectContaining({ extensions }) },
+					expect.any(Object)
+				);
+			}
+		);
+
+		test.each<Record<string, string | string[]>>([
+			{ majorVersion: '99' },
+			{ extensions: ['unsupported'] }
+		])('rejects selections unavailable in the selected environment: %s', async (fields) => {
+			expect(
+				await createActions.default(
+					createEvent({
+						...creationFields,
+						...fields
+					})
+				)
+			).toMatchObject({ status: 400, data: { ...fields, error: expect.any(String) } });
+			expect(create.mutate).not.toHaveBeenCalled();
+		});
+
+		test('blocks creation when available values cannot be determined', async () => {
+			availableValues.fetch.mockResolvedValue({ errors: [{ message: 'Options unavailable.' }] });
+			expect(
+				await createActions.default(
+					createEvent({
+						...creationFields,
+						extensions: ['vector']
+					})
+				)
+			).toMatchObject({
+				status: 500,
+				data: { extensions: ['vector'], error: 'Options unavailable.' }
+			});
+			expect(create.mutate).not.toHaveBeenCalled();
+		});
+
+		test.each([
+			{ extensions: ['pgcrypto'], expected: undefined },
+			{ extensions: ['vector'], expected: ['vector'] },
+			{ extensions: [], expected: [] }
+		])('updates with replacement semantics: %s', async ({ extensions, expected }) => {
+			update.mutate.mockResolvedValue({ data: { updatePostgres: { postgres: { id: 'pg' } } } });
+			await expect(
+				updateActions.default(
+					updateEvent({
+						extensionsPresent: 'true',
+						extensions
+					})
+				)
+			).rejects.toMatchObject({ status: 303 });
+			expect(update.mutate).toHaveBeenCalledWith(
+				{ input: expect.objectContaining({ extensions: expected }) },
+				expect.any(Object)
+			);
+		});
+
+		test('retains existing extensions that are no longer available', async () => {
+			const current = await currentResources.fetch();
+			current.data.team.environment.postgres.extensions = ['legacy'];
+			update.mutate.mockResolvedValue({ data: { updatePostgres: { postgres: { id: 'pg' } } } });
+			await expect(
+				updateActions.default(
+					updateEvent({
+						extensionsPresent: 'true',
+						extensions: ['legacy', 'vector']
+					})
+				)
+			).rejects.toMatchObject({ status: 303 });
+			expect(update.mutate).toHaveBeenCalledWith(
+				{ input: expect.objectContaining({ extensions: ['legacy', 'vector'] }) },
+				expect.any(Object)
+			);
+		});
+
+		test('does not overwrite concurrent extension changes when the selection is untouched', async () => {
+			const current = await currentResources.fetch();
+			current.data.team.environment.postgres.extensions = ['pgcrypto', 'vector'];
+			update.mutate.mockResolvedValue({ data: { updatePostgres: { postgres: { id: 'pg' } } } });
+			await expect(
+				updateActions.default(
+					updateEvent({
+						extensionsPresent: 'true',
+						extensions: ['pgcrypto'],
+						initialExtensionsPresent: 'true',
+						initialExtensions: ['pgcrypto'],
+						cpu: '0.5'
+					})
+				)
+			).rejects.toMatchObject({ status: 303 });
+			expect(update.mutate).toHaveBeenCalledWith(
+				{ input: expect.objectContaining({ extensions: undefined, cpu: '0.5' }) },
+				expect.any(Object)
+			);
+		});
+
+		test('rejects adding unavailable extensions and retains the selection', async () => {
+			expect(
+				await updateActions.default(
+					updateEvent({
+						extensionsPresent: 'true',
+						extensions: ['unsupported']
+					})
+				)
+			).toMatchObject({
+				status: 400,
+				data: { extensions: ['unsupported'], error: expect.any(String) }
+			});
+			expect(update.mutate).not.toHaveBeenCalled();
+		});
+
+		test('retains an explicitly empty selection when the update fails', async () => {
+			update.mutate.mockResolvedValue({ errors: [{ message: 'Update failed.' }] });
+			expect(await updateActions.default(updateEvent({ extensionsPresent: 'true' }))).toMatchObject(
+				{
+					status: 400,
+					data: { extensions: [], error: 'Update failed.' }
+				}
+			);
+		});
 	});
 
 	test('does not update when current storage cannot be verified', async () => {

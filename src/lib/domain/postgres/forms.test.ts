@@ -1,9 +1,11 @@
 import {
 	canActivateBranch,
 	canDeleteBranch,
+	changedExtensions,
 	configurationError,
 	configurationErrors,
 	formString,
+	formExtensions,
 	postgresConfiguration,
 	quantityInUnits,
 	resourceInput,
@@ -11,6 +13,26 @@ import {
 } from './forms';
 
 describe('Postgres forms', () => {
+	test('distinguishes omitted extensions from an explicitly empty selection', () => {
+		const data = new FormData();
+		expect(formExtensions(data)).toBeUndefined();
+		data.set('extensionsPresent', 'true');
+		expect(formExtensions(data)).toEqual([]);
+		data.append('extensions', 'vector');
+		data.append('extensions', 'vector');
+		expect(formExtensions(data)).toEqual(['vector']);
+		expect(formExtensions(data, 'initialExtensions')).toBeUndefined();
+		data.set('initialExtensionsPresent', 'true');
+		expect(formExtensions(data, 'initialExtensions')).toEqual([]);
+	});
+
+	test('compares extension sets without treating ordering as an update', () => {
+		expect(changedExtensions(['vector', 'pgcrypto'], ['pgcrypto', 'vector'])).toBeUndefined();
+		expect(changedExtensions(undefined, ['pgcrypto'])).toBeUndefined();
+		expect(changedExtensions([], [])).toBeUndefined();
+		expect(changedExtensions([], ['pgcrypto'])).toEqual([]);
+	});
+
 	test('only excludes storage matching the current value from validation and input', () => {
 		const current = quantityInUnits('20G', 'GiB');
 		const values = { cpu: '0.25', memory: '', diskSize: current, highAvailability: true };
