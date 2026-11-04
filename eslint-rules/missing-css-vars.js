@@ -12,7 +12,8 @@ const KNOWN_DYNAMIC_VARS = new Set([
 	'size',
 	'chat-panel-width',
 	'bits-dropdown-menu-content-available-width',
-	'bits-dropdown-menu-content-available-height'
+	'bits-dropdown-menu-content-available-height',
+	'bits-tooltip-content-available-width'
 ]);
 
 function walkFiles(dir, callback) {

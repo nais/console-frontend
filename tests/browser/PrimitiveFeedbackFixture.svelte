@@ -7,6 +7,11 @@
 	import ActionMenu from '../../src/lib/shadcn/ui/ActionMenu.svelte';
 	import ActionMenuItem from '../../src/lib/shadcn/ui/ActionMenuItem.svelte';
 	import Modal from '../../src/lib/shadcn/ui/Modal.svelte';
+	import Tooltip from '../../src/lib/shadcn/ui/Tooltip.svelte';
+	import JobRunListItem from '../../src/lib/domain/list-items/JobRunListItem.svelte';
+	import FavoritesListItem from '../../src/lib/domain/list-items/FavoritesListItem.svelte';
+	import LogResults from '../../src/lib/domain/logs/LogResults.svelte';
+	import LogVolume from '../../src/lib/domain/logs/LogVolume.svelte';
 	import Badge from '../../src/lib/shadcn/ui/Badge.svelte';
 	import Input from '../../src/lib/shadcn/ui/Input.svelte';
 	import Tag from '../../src/lib/shadcn/ui/Tag.svelte';
@@ -26,6 +31,9 @@
 	const statusVariants = ['success', 'warning', 'destructive', 'info'] as const;
 	let nestedTheme = $state<'light' | 'dark'>('light');
 	let dialogOpen = $state(false);
+	let deletedRun = $state('');
+	let selectedLogFilter = $state('');
+	const showFavoriteDrag = new URLSearchParams(window.location.search).has('favorite-drag');
 
 	const costCases = [
 		{ key: 'decreasing', sum: 96 },
@@ -51,6 +59,48 @@
 </script>
 
 <main>
+	{#if showFavoriteDrag}
+		<FavoritesListItem path="/team/drag-fixture" />
+	{/if}
+	<LogResults
+		entries={[
+			{
+				timestamp: '1793360657408654616',
+				message: 'Tooltip regression log',
+				labels: {
+					detected_level: 'info',
+					k8s_node_name: 'node-with-a-long-name-for-horizontal-scrolling-regression',
+					service_name: 'fixture-app'
+				}
+			}
+		]}
+		wrap={false}
+		oldestFirst={false}
+		onfilter={(filter) => (selectedLogFilter = `${filter.name}${filter.operator}${filter.value}`)}
+	/>
+	<output aria-label="Selected log filter">{selectedLogFilter}</output>
+	<LogVolume
+		buckets={[{ start: 1793360600000, end: 1793360660000, count: 42 }]}
+		onselect={() => {}}
+	/>
+	<Collection title="Job runs" count={1}>
+		<JobRunListItem
+			run={{
+				name: 'fixture-run',
+				startTime: null,
+				duration: 82,
+				status: { state: 'SUCCEEDED', message: 'Succeeded' },
+				trigger: { type: 'AUTOMATIC', actor: null }
+			}}
+			ondelete={(name) => (deletedRun = name)}
+		/>
+	</Collection>
+	<output aria-label="Run selected for deletion">{deletedRun}</output>
+	<Collection title="Activity tooltip regression">
+		<Tooltip content="Kubernetes audit">
+			<span>Audit event</span>
+		</Tooltip>
+	</Collection>
 	<AddToFavorites path="/team/feedback-fixture" />
 	{#each sizes as size (size)}
 		<Loader {size} title={`Loading ${size}`} />
@@ -89,6 +139,9 @@
 				<Button onclick={() => (nestedTheme = nestedTheme === 'light' ? 'dark' : 'light')}>
 					Toggle dialog theme
 				</Button>
+				<Tooltip content="Dialog tooltip">
+					<Button>Dialog tooltip target</Button>
+				</Tooltip>
 			</Modal>
 		</Theme>
 	</Theme>

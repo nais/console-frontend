@@ -171,9 +171,11 @@
 					aria-label="Remove from favorites"
 				/>
 			</Tooltip>
-			<div class="drag-handle" aria-label="Drag to reorder" title="Drag to reorder">
-				<DragVerticalIcon />
-			</div>
+			<Tooltip placement="bottom" content="Drag to reorder">
+				<div class="drag-handle">
+					<DragVerticalIcon aria-hidden="true" />
+				</div>
+			</Tooltip>
 		</div>
 	</div>
 </ListItem>

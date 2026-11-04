@@ -34,8 +34,7 @@
 		PencilIcon,
 		PlusCircleFillIcon,
 		PlusIcon,
-		TrashIcon,
-		XMarkIcon
+		TrashIcon
 	} from '#lib/icons/index.js';
 	import type { GraphQLError } from 'houdini/runtime';
 	import prettyBytes from 'pretty-bytes';
@@ -135,7 +134,6 @@
 	let releaseChannelLoading = $state(false);
 	let editingReleaseChannel = $state(false);
 	let creatingUnleash = $state(false);
-	let pollingInterval: number | undefined = $state(undefined);
 
 	// Helper functions
 	/**
@@ -172,43 +170,25 @@
 
 	const createNewUnleash = async () => {
 		creatingUnleash = true;
-		await createUnleashForTeam.mutate({
-			team: teamSlug
-		});
-
-		if ($createUnleashForTeam.errors) {
+		try {
+			await createUnleashForTeam.mutate({
+				team: teamSlug
+			});
+			if ($createUnleashForTeam.errors) return;
+			await Unleash.fetch({ policy: 'CacheAndNetwork' });
+		} finally {
 			creatingUnleash = false;
-			return;
 		}
-
-		Unleash.fetch({ policy: 'CacheAndNetwork' });
-		// Start polling until Unleash is ready
-		startPolling();
 	};
 
-	const startPolling = () => {
-		if (pollingInterval) return; // Already polling
-		pollingInterval = window.setInterval(() => {
-			Unleash.fetch({ policy: 'NetworkOnly' });
-		}, 3000); // Poll every 3 seconds
-	};
-
-	const stopPolling = () => {
-		if (pollingInterval) {
-			window.clearInterval(pollingInterval);
-			pollingInterval = undefined;
-		}
-		creatingUnleash = false;
-	};
-
-	// Watch for when unleash becomes ready
-	$effect(() => {
-		if (unleash?.ready && (creatingUnleash || pollingInterval)) {
-			stopPolling();
-		}
+	onMount(() => {
+		const interval = window.setInterval(() => {
+			if (unleash && !unleash.ready && !$Unleash.fetching) {
+				void Unleash.fetch({ policy: 'NetworkOnly' });
+			}
+		}, 3000);
+		return () => window.clearInterval(interval);
 	});
-
-	onMount(() => () => stopPolling());
 
 	// Both mutations return the resulting allowed-team list so the response can
 	// be checked against what was asked for. A backend that accepts the request
@@ -427,7 +407,8 @@
 {:else if unleash}
 	{#if !unleash.ready}
 		<Alert variant="info" size="small">
-			<Loader size="small" /> Your Unleash instance is being created. This usually takes about a minute...
+			<Loader size="small" /> The Unleash instance is not ready. It may be starting or applying changes.
+			Status is refreshed automatically.
 		</Alert>
 	{/if}
 	{#if !unleash.releaseChannelName}
@@ -537,10 +518,10 @@
 							<CheckmarkIcon style="color: var(--ax-text-success-decoration); font-size: 1.2rem" />
 						{:else}
 							<Tooltip
-								content="Unleash is not ready, new instances will be online after a minute."
+								content="Unleash is not ready. It may be starting or applying changes."
 								placement="right"
 							>
-								<XMarkIcon style="color: var(--ax-text-danger-decoration); font-size: 1.2rem" />
+								<Loader size="small" title="Unleash is not ready" />
 							</Tooltip>
 						{/if}
 					</dd>

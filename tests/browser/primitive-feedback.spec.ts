@@ -5,6 +5,135 @@ test.beforeEach(async ({ page }) => {
 	await expect(page.locator('html')).toHaveAttribute('data-ready', 'true');
 });
 
+test('favorite drag handles use a tooltip instead of a native title', async ({ page }) => {
+	await page.goto('/tests/browser/primitive-feedback.html?favorite-drag');
+	await expect(page.locator('html')).toHaveAttribute('data-ready', 'true');
+	const handle = page.locator('.drag-handle');
+	await expect(handle).not.toHaveAttribute('title');
+	await handle.hover();
+	const tooltip = page.getByRole('tooltip', { name: 'Drag to reorder', exact: true });
+	await expect(tooltip).toBeVisible();
+	const trigger = page.getByRole('button', { name: 'Drag to reorder', exact: true });
+	await trigger.focus();
+	await page.mouse.move(0, 0);
+	await expect(tooltip).toBeVisible();
+	await page.keyboard.press('Escape');
+	await expect(tooltip).toHaveCount(0);
+});
+
+for (const width of [320, 1200]) {
+	test(`log label filters show tooltips on hover and focus at ${width}px`, async ({ page }) => {
+		await page.setViewportSize({ width, height: 900 });
+		await page.locator('summary').filter({ hasText: 'Tooltip regression log' }).click();
+		for (const { action, content, operator } of [
+			{ action: 'Include', content: 'Include this value', operator: '=' },
+			{ action: 'Exclude', content: 'Exclude this value', operator: '!=' }
+		]) {
+			const button = page.getByRole('button', {
+				name: `${action} detected_level = info`,
+				exact: true
+			});
+			const tooltip = page.getByRole('tooltip', { name: content, exact: true });
+			await button.hover();
+			await expect(tooltip).toBeVisible();
+			expect(await tooltip.evaluate((element) => element.closest('.lines'))).toBeNull();
+			const box = await tooltip.boundingBox();
+			if (!box) throw new Error('Tooltip has no visible bounding box');
+			expect(box.x).toBeGreaterThanOrEqual(0);
+			expect(box.x + box.width).toBeLessThanOrEqual(width);
+			await page.mouse.move(0, 0);
+			await expect(tooltip).toHaveCount(0);
+			await button.focus();
+			await expect(tooltip).toBeVisible();
+			await page.keyboard.press('Escape');
+			await expect(tooltip).toHaveCount(0);
+			await button.click();
+			await expect(page.getByRole('status', { name: 'Selected log filter' })).toHaveText(
+				`detected_level${operator}info`
+			);
+			await button.blur();
+			await page.mouse.move(0, 0);
+		}
+		await expect(page.getByRole('button', { name: /Include service_name/ })).toHaveCount(0);
+	});
+}
+
+test('log volume tooltips support both hover and keyboard focus', async ({ page }) => {
+	const button = page.getByRole('button', { name: /Search .*42 log lines/ });
+	const tooltip = page.getByRole('tooltip', { name: /42 log lines/ });
+	await button.hover();
+	await expect(tooltip).toBeVisible();
+	await page.mouse.move(0, 0);
+	await expect(tooltip).toHaveCount(0);
+	await button.focus();
+	await expect(tooltip).toBeVisible();
+	await page.keyboard.press('Escape');
+	await expect(tooltip).toHaveCount(0);
+});
+
+test('job run delete buttons show a tooltip on hover and focus without changing the action', async ({
+	page
+}) => {
+	const button = page.getByRole('button', { name: 'Delete run fixture-run', exact: true });
+	const tooltip = page.getByRole('tooltip', { name: 'Delete run', exact: true });
+	await button.hover();
+	await expect(tooltip).toBeVisible();
+	await page.mouse.move(0, 0);
+	await expect(tooltip).toHaveCount(0);
+	await button.focus();
+	await expect(tooltip).toBeVisible();
+	await page.keyboard.press('Escape');
+	await expect(tooltip).toHaveCount(0);
+	await expect(button).toBeFocused();
+	await button.click();
+	await expect(page.getByRole('status', { name: 'Run selected for deletion' })).toHaveText(
+		'fixture-run'
+	);
+});
+
+for (const width of [320, 1200]) {
+	test(`activity tooltips escape collection clipping at ${width}px`, async ({ page }) => {
+		await page.setViewportSize({ width, height: 900 });
+		const trigger = page.getByRole('button', { name: 'Kubernetes audit', exact: true });
+		await trigger.hover();
+		const tooltip = page.getByRole('tooltip', { name: 'Kubernetes audit', exact: true });
+		await expect(tooltip).toBeVisible();
+		expect(await tooltip.evaluate((element) => element.closest('.collection'))).toBeNull();
+		const box = await tooltip.boundingBox();
+		expect(box).not.toBeNull();
+		expect(box!.x).toBeGreaterThanOrEqual(0);
+		expect(box!.x + box!.width).toBeLessThanOrEqual(width);
+		await trigger.focus();
+		const tooltipId = await tooltip.getAttribute('id');
+		if (!tooltipId) throw new Error('Tooltip is missing its description ID');
+		await expect(trigger).toHaveAttribute('aria-describedby', tooltipId);
+		await page.keyboard.press('Escape');
+		await expect(tooltip).toHaveCount(0);
+	});
+}
+
+test('tooltips preserve dialog layering, themes and interactive child descriptions', async ({
+	page
+}) => {
+	await page.getByRole('button', { name: 'Open themed dialog' }).click();
+	const dialog = page.getByRole('dialog', { name: 'Themed dialog' });
+	const trigger = dialog.getByRole('button', { name: 'Dialog tooltip target' });
+	await trigger.focus();
+	const tooltip = dialog.getByRole('tooltip', { name: 'Dialog tooltip', exact: true });
+	await expect(tooltip).toBeVisible();
+	const tooltipId = await tooltip.getAttribute('id');
+	if (!tooltipId) throw new Error('Tooltip is missing its description ID');
+	await expect(trigger).toHaveAttribute('aria-describedby', tooltipId);
+	const background = await tooltip.evaluate((element) => getComputedStyle(element).backgroundColor);
+	await dialog.getByRole('button', { name: 'Toggle dialog theme' }).click();
+	await trigger.focus();
+	await expect(tooltip).toBeVisible();
+	await expect(tooltip).not.toHaveCSS('background-color', background);
+	await page.keyboard.press('Escape');
+	await expect(tooltip).toHaveCount(0);
+	await expect(dialog).toBeVisible();
+});
+
 for (const theme of ['light', 'dark']) {
 	test(`cost sparklines and hover indicators follow the trend colour in ${theme} mode`, async ({
 		page
