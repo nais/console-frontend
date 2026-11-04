@@ -8,6 +8,7 @@
 	import BigQueryIcon from '#lib/icons/BigQueryIcon.svelte';
 	import CollapsibleSidebar from '#lib/ui/CollapsibleSidebar.svelte';
 	import ExternalLink from '#lib/ui/ExternalLink.svelte';
+	import EmptyState from '#lib/ui/EmptyState.svelte';
 	import GraphErrors from '#lib/ui/GraphErrors.svelte';
 	import Collection from '#lib/ui/Collection.svelte';
 	import ResourceTable from '#lib/ui/ResourceTable.svelte';
@@ -125,13 +126,14 @@
 						{/each}
 					</ResourceTable>
 				{:else}
-					<p>
-						No BigQuery datasets found. BigQuery datasets store structured data optimized for
-						analytical workloads.
+					<EmptyState
+						title="No BigQuery datasets found."
+						description="BigQuery datasets store structured data optimized for analytical workloads."
+					>
 						<ExternalLink href={docURL('/persistence/bigquery')}
 							>Learn more about BigQuery datasets and how to get started.</ExternalLink
 						>
-					</p>
+					</EmptyState>
 				{/if}
 			</Collection>
 			<Pagination

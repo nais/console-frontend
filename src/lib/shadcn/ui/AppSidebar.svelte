@@ -2,8 +2,12 @@
 	import { afterNavigate } from '$app/navigation';
 	import { page } from '$app/state';
 	import { menuItems } from '#lib/menuItems.js';
+	import type { TenantNavigationItem } from '#lib/tenantNavigation.js';
 	import Icon from '#lib/ui/Icon.svelte';
 	import { ChevronLeftIcon, ChevronRightIcon } from '#lib/icons/index.js';
+	import { onMount } from 'svelte';
+	import Heading from './Heading.svelte';
+	import Modal from './Modal.svelte';
 
 	interface Props {
 		features?: {
@@ -14,9 +18,17 @@
 		};
 		collapsed?: boolean;
 		mobileOpen?: boolean;
+		tenantItems: TenantNavigationItem[];
 	}
 
-	let { features, collapsed = $bindable(false), mobileOpen = $bindable(false) }: Props = $props();
+	const uid = $props.id();
+
+	let {
+		features,
+		tenantItems,
+		collapsed = $bindable(false),
+		mobileOpen = $bindable(false)
+	}: Props = $props();
 
 	const currentTeamSlug = $derived(page.params.team);
 
@@ -42,53 +54,52 @@
 	afterNavigate(() => {
 		mobileOpen = false;
 	});
+
+	onMount(() => {
+		const mobileViewport = window.matchMedia('(max-width: 960px)');
+		const closeOnDesktop = () => {
+			if (!mobileViewport.matches) mobileOpen = false;
+		};
+		closeOnDesktop();
+		mobileViewport.addEventListener('change', closeOnDesktop);
+		return () => mobileViewport.removeEventListener('change', closeOnDesktop);
+	});
 </script>
 
-{#if currentTeamSlug}
-	{#if mobileOpen}
-		<button
-			type="button"
-			class="sidebar-backdrop"
-			aria-label="Close team navigation"
-			onclick={() => (mobileOpen = false)}
-		></button>
-	{/if}
-
-	<aside
-		class="sh-sidebar"
-		class:collapsed
-		class:mobile-open={mobileOpen}
-		aria-label="Team navigation"
-	>
-		<div class="sidebar-scroll">
-			{#each teamGroups as group (group.title)}
-				<div class="nav-group">
-					{#if !collapsed}
-						<div class="nav-group-label">{group.title}</div>
-					{/if}
-					<ul class="nav-list">
-						{#each group.items as item (item.href)}
-							<li>
-								<a
-									href={item.href}
-									class="nav-item"
-									class:active={item.active}
-									aria-current={item.active ? 'page' : undefined}
-									title={collapsed ? item.label : undefined}
-								>
-									<span class="nav-icon"><Icon icon={item.label} /></span>
-									{#if !collapsed}
-										<span class="nav-label">{item.label}</span>
-									{/if}
-								</a>
-							</li>
-						{/each}
-					</ul>
-				</div>
-			{/each}
+{#snippet teamLinks(compact: boolean)}
+	{#each teamGroups as group (group.title)}
+		<div class="nav-group">
+			{#if !compact}
+				<div class="nav-group-label">{group.title}</div>
+			{/if}
+			<ul class="nav-list">
+				{#each group.items as item (item.href)}
+					<li>
+						<a
+							href={item.href}
+							class={['nav-item', { active: item.active }]}
+							aria-current={item.active ? 'page' : undefined}
+							title={compact ? item.label : undefined}
+						>
+							<span class="nav-icon"><Icon icon={item.label} /></span>
+							{#if !compact}
+								<span class="nav-label">{item.label}</span>
+							{/if}
+						</a>
+					</li>
+				{/each}
+			</ul>
 		</div>
+	{/each}
+{/snippet}
 
-		<div class="sidebar-bottom desktop-only">
+{#if currentTeamSlug}
+	<aside class={['sh-sidebar', { collapsed }]} aria-label="Team navigation">
+		<nav class="sidebar-scroll" aria-label={`Team: ${currentTeamSlug}`}>
+			{@render teamLinks(collapsed)}
+		</nav>
+
+		<div class="sidebar-bottom">
 			<button
 				type="button"
 				class="collapse-btn"
@@ -106,6 +117,37 @@
 		</div>
 	</aside>
 {/if}
+
+<Modal
+	bind:open={mobileOpen}
+	header={{ heading: 'Navigation', size: 'small' }}
+	class="navigation-drawer"
+>
+	<div class="mobile-navigation-content">
+		<nav class="navigation-section tenant-navigation" aria-labelledby={`${uid}-tenant`}>
+			<Heading as="h3" size="small" id={`${uid}-tenant`}>Tenant</Heading>
+			<ul class="nav-list">
+				{#each tenantItems as item (item.href)}
+					<li>
+						<a
+							href={item.href}
+							class={['nav-item', { active: item.active }]}
+							aria-current={item.active ? 'page' : undefined}
+						>
+							{item.label}
+						</a>
+					</li>
+				{/each}
+			</ul>
+		</nav>
+		{#if currentTeamSlug}
+			<nav class="navigation-section" aria-labelledby={`${uid}-team`}>
+				<Heading as="h3" size="small" id={`${uid}-team`}>Team: {currentTeamSlug}</Heading>
+				{@render teamLinks(false)}
+			</nav>
+		{/if}
+	</div>
+</Modal>
 
 <style>
 	.sh-sidebar {
@@ -126,10 +168,6 @@
 
 	.sh-sidebar.collapsed {
 		width: var(--sidebar-width-collapsed);
-	}
-
-	.sidebar-backdrop {
-		display: none;
 	}
 
 	.sidebar-bottom {
@@ -254,35 +292,58 @@
 	}
 
 	@media (max-width: 960px) {
-		.desktop-only {
+		.sh-sidebar {
 			display: none;
 		}
+	}
 
-		.sh-sidebar {
-			position: fixed;
-			left: 0;
-			top: var(--ax-space-56);
-			bottom: 0;
-			height: calc(100vh - var(--ax-space-56));
-			width: var(--sh-sidebar-menu-wide-width) !important;
-			transform: translateX(-100%);
-			transition: transform 200ms cubic-bezier(0.16, 1, 0.3, 1);
-			box-shadow: var(--sh-shadow-lg);
-			z-index: 45;
-		}
+	:global(.navigation-drawer.sh-modal) {
+		position: fixed;
+		inset: 0 auto 0 0;
+		margin: 0;
+		display: flex;
+		width: var(--sh-sidebar-menu-wide-width);
+		max-width: calc(100vw - var(--ax-space-16));
+		height: 100dvh;
+		max-height: 100dvh;
+		flex-direction: column;
+		border: none;
+		border-radius: 0;
+		background-color: var(--sidebar-background);
+		color: var(--sidebar-foreground);
+	}
 
-		.sh-sidebar.mobile-open {
-			transform: translateX(0);
-		}
+	:global(.navigation-drawer .sh-modal__body) {
+		flex: 1;
+		min-height: 0;
+		padding: var(--ax-space-16);
+		overflow-y: auto;
+	}
 
-		.sidebar-backdrop {
-			display: block;
-			position: fixed;
-			inset: var(--ax-space-56) 0 0 0;
-			background: rgba(5, 9, 19, 0.5);
-			backdrop-filter: blur(var(--ax-space-2));
-			border: none;
-			z-index: 40;
+	.mobile-navigation-content {
+		display: grid;
+		gap: var(--ax-space-24);
+	}
+
+	.navigation-section {
+		display: flex;
+		flex-direction: column;
+		gap: var(--ax-space-14);
+		min-width: 0;
+	}
+
+	:global(.navigation-drawer .sh-heading) {
+		overflow-wrap: anywhere;
+	}
+
+	.tenant-navigation {
+		padding-bottom: var(--ax-space-24);
+		border-bottom: var(--sh-border-width) solid var(--sidebar-border);
+	}
+
+	@media (min-width: 961px) {
+		:global(.navigation-drawer.sh-modal) {
+			display: none;
 		}
 	}
 </style>

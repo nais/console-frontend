@@ -199,12 +199,19 @@
 									data={sparklineData}
 									x="date"
 									y="value"
+									series={[
+										{
+											key: 'value',
+											label: 'Cost',
+											color: costTrend.change > 5 ? 'var(--warning)' : 'var(--success)'
+										}
+									]}
 									axis={false}
 									grid={false}
 									padding={{ top: 2, bottom: 2, left: 0, right: 0 }}
 									props={{
 										area: { fillOpacity: 1, class: 'sparkline-area' },
-										spline: { class: 'sparkline-line' }
+										line: { class: 'sparkline-line' }
 									}}
 								/>
 							</div>

@@ -7,6 +7,7 @@
 	import Feedback from '#lib/feedback/Feedback.svelte';
 	import GrafanaIcon from '#lib/icons/GrafanaIcon.svelte';
 	import AppSidebar from '#lib/shadcn/ui/AppSidebar.svelte';
+	import { tenantNavigation } from '#lib/tenantNavigation.js';
 	import { Button, Theme } from '#lib/shadcn/ui/index.js';
 	import GraphErrors from '#lib/ui/GraphErrors.svelte';
 	import { themeSwitch } from '#lib/stores/theme.svelte.js';
@@ -86,18 +87,7 @@
 			: userTeams
 	);
 
-	const platformNav = [
-		{ href: '/', label: 'Teams', exact: true },
-		{ href: '/vulnerabilities', label: 'Vulnerabilities' },
-		{ href: '/cost', label: 'Cost' },
-		{ href: '/utilization', label: 'Utilization' },
-		{ href: '/activity-log', label: 'Activity Log' }
-	];
-
-	function isPlatformActive(href: string, exact = false) {
-		if (exact) return page.url.pathname === href;
-		return page.url.pathname === href || page.url.pathname.startsWith(href + '/');
-	}
+	const tenantItems = $derived(tenantNavigation(page.url.pathname, user?.isAdmin));
 
 	function teamSwitchHref(targetSlug: string) {
 		const path = page.url.pathname;
@@ -166,17 +156,16 @@
 <div class="sh-shell">
 	<header class="sh-topnav">
 		<div class="topnav-left">
-			{#if currentTeamSlug}
-				<button
-					type="button"
-					class="mobile-menu-btn"
-					aria-label="Open team menu"
-					aria-expanded={mobileSidebarOpen}
-					onclick={() => (mobileSidebarOpen = !mobileSidebarOpen)}
-				>
-					<MenuHamburgerIcon aria-hidden="true" />
-				</button>
-			{/if}
+			<button
+				type="button"
+				class="mobile-menu-btn"
+				aria-label="Open navigation"
+				aria-haspopup="dialog"
+				aria-expanded={mobileSidebarOpen}
+				onclick={() => (mobileSidebarOpen = !mobileSidebarOpen)}
+			>
+				<MenuHamburgerIcon aria-hidden="true" />
+			</button>
 
 			<a href="/" class="brand-link" title="Nais Console">
 				<Logo height="22px" />
@@ -268,30 +257,16 @@
 				{/if}
 			</div>
 
-			<!-- Platform Navigation -->
-			<nav class="platform-nav" aria-label="Platform">
-				{#each platformNav as item (item.href)}
-					{const active = $derived(isPlatformActive(item.href, item.exact))}
+			<nav class="tenant-nav" aria-label="Tenant">
+				{#each tenantItems as item (item.href)}
 					<a
 						href={item.href}
-						class="platform-nav-link"
-						class:active
-						aria-current={active ? 'page' : undefined}
+						class={['tenant-nav-link', { active: item.active }]}
+						aria-current={item.active ? 'page' : undefined}
 					>
 						{item.label}
 					</a>
 				{/each}
-				{#if user?.isAdmin}
-					{const adminActive = $derived(isPlatformActive('/admin'))}
-					<a
-						href="/admin"
-						class="platform-nav-link"
-						class:active={adminActive}
-						aria-current={adminActive ? 'page' : undefined}
-					>
-						Admin
-					</a>
-				{/if}
 			</nav>
 		</div>
 
@@ -384,7 +359,12 @@
 	</header>
 
 	<div class="sh-body">
-		<AppSidebar {features} bind:collapsed={sidebarCollapsed} bind:mobileOpen={mobileSidebarOpen} />
+		<AppSidebar
+			{features}
+			{tenantItems}
+			bind:collapsed={sidebarCollapsed}
+			bind:mobileOpen={mobileSidebarOpen}
+		/>
 
 		<div class="sh-workspace">
 			<div class="sh-content-area">
@@ -670,14 +650,14 @@
 	}
 
 	/* Platform Nav Links */
-	.platform-nav {
+	.tenant-nav {
 		display: flex;
 		align-items: center;
 		gap: 0.125rem;
 		margin-left: 0.5rem;
 	}
 
-	.platform-nav-link {
+	.tenant-nav-link {
 		display: inline-flex;
 		align-items: center;
 		height: 2rem;
@@ -693,13 +673,13 @@
 			background-color 120ms ease;
 	}
 
-	.platform-nav-link:hover {
+	.tenant-nav-link:hover {
 		color: var(--foreground);
 		background-color: var(--secondary);
 		text-decoration: none;
 	}
 
-	.platform-nav-link.active {
+	.tenant-nav-link.active {
 		color: var(--foreground);
 		background-color: var(--secondary);
 		font-weight: 600;
@@ -898,7 +878,7 @@
 			display: inline-flex;
 		}
 
-		.platform-nav {
+		.tenant-nav {
 			display: none;
 		}
 

@@ -7,6 +7,7 @@
 	import KafkaIcon from '#lib/icons/KafkaIcon.svelte';
 	import CollapsibleSidebar from '#lib/ui/CollapsibleSidebar.svelte';
 	import ExternalLink from '#lib/ui/ExternalLink.svelte';
+	import EmptyState from '#lib/ui/EmptyState.svelte';
 	import GraphErrors from '#lib/ui/GraphErrors.svelte';
 	import Collection from '#lib/ui/Collection.svelte';
 	import ResourceTable from '#lib/ui/ResourceTable.svelte';
@@ -134,13 +135,14 @@
 						{/each}
 					</ResourceTable>
 				{:else}
-					<p>
-						No Kafka topics found. Kafka topics are categories where messages are published and
-						consumed, acting as distributed logs for event streaming.
+					<EmptyState
+						title="No Kafka topics found."
+						description="Kafka topics are categories where messages are published and consumed, acting as distributed logs for event streaming."
+					>
 						<ExternalLink href={docURL('/persistence/kafka')}
 							>Learn more about Kafka and how to get started.</ExternalLink
 						>
-					</p>
+					</EmptyState>
 				{/if}
 			</Collection>
 			<Pagination

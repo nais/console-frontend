@@ -111,5 +111,9 @@
 		.overview-bento {
 			grid-template-columns: 1fr;
 		}
+
+		.overview-bento.no-critical-issues .bento-side {
+			grid-template-columns: minmax(0, 1fr);
+		}
 	}
 </style>

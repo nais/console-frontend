@@ -5,6 +5,104 @@ test.beforeEach(async ({ page }) => {
 	await expect(page.locator('html')).toHaveAttribute('data-ready', 'true');
 });
 
+for (const theme of ['light', 'dark']) {
+	test(`cost sparklines and hover indicators follow the trend colour in ${theme} mode`, async ({
+		page
+	}) => {
+		await page.evaluate((theme) => {
+			document.documentElement.classList.toggle('dark', theme === 'dark');
+		}, theme);
+		for (const { key, variant, label } of [
+			{ key: 'decreasing', variant: 'success', label: '-4%' },
+			{ key: 'threshold', variant: 'success', label: '+5%' },
+			{ key: 'increasing', variant: 'warning', label: '+6%' }
+		]) {
+			const metric = page.getByTestId(`cost-${key}`).locator('a[href="/team/cost-fixture/cost"]');
+			await expect(metric).toHaveClass(new RegExp(`\\b${variant}\\b`));
+			const value = metric.locator('.metric-value');
+			await expect(value).toHaveText(label);
+			const colour = await value.evaluate((element) => getComputedStyle(element).color);
+			await expect(metric.locator('.lc-area-line.sparkline-line')).toHaveCSS('stroke', colour);
+			await metric.locator('.sparkline').hover();
+			await expect(metric.locator('.lc-highlight-point')).toHaveCSS('fill', colour);
+			const tooltip = page.locator('.lc-tooltip-container:visible');
+			await expect(tooltip).toBeVisible();
+			await expect(tooltip.locator('.lc-tooltip-item-color')).toHaveCSS('background-color', colour);
+			await expect(tooltip.locator('.lc-tooltip-item-label')).toHaveText('Cost');
+			await page.mouse.move(0, 0);
+			await expect(page.locator('.lc-tooltip-container')).toHaveCount(0);
+		}
+	});
+}
+
+for (const theme of ['light', 'dark']) {
+	test(`Monitor uses the same blue-grey colour in bars and legends in ${theme} mode`, async ({
+		page
+	}) => {
+		await page.evaluate((theme) => {
+			document.documentElement.classList.toggle('dark', theme === 'dark');
+		}, theme);
+		const summaries = page.getByRole('region', { name: 'Priority colours' });
+		const expectedColour = theme === 'light' ? 'rgb(203, 213, 225)' : 'rgb(51, 65, 85)';
+		const bars = summaries.getByRole('img', {
+			name: 'High: 162, Elevated: 99, Monitor: 1092',
+			exact: true
+		});
+		await expect(bars).toHaveCount(2);
+		for (let index = 0; index < 2; index++) {
+			await expect(summaries.locator('.segment.monitor').nth(index)).toHaveCSS(
+				'background-color',
+				expectedColour
+			);
+			await expect(summaries.locator('.swatch.monitor').nth(index)).toHaveCSS(
+				'background-color',
+				expectedColour
+			);
+		}
+	});
+}
+
+for (const width of [320, 1200]) {
+	for (const theme of ['light', 'dark']) {
+		test(`${width}px ${theme} empty collections have spacing, clear headings and no overflow`, async ({
+			page
+		}) => {
+			await page.setViewportSize({ width, height: 900 });
+			await page.evaluate((theme) => {
+				document.documentElement.classList.toggle('dark', theme === 'dark');
+			}, theme);
+			const collection = page.locator('.collection').filter({
+				has: page.getByRole('heading', { name: 'Cloud SQL', exact: true })
+			});
+			const empty = collection.locator('.empty-state');
+			await expect(
+				empty.getByRole('heading', { level: 3, name: 'No Cloud SQL instances found.' })
+			).toBeVisible();
+			await expect(empty).toHaveCSS('padding-top', '40px');
+			await expect(empty).toHaveCSS('padding-inline-start', '24px');
+			await expect(
+				empty.getByText('Cloud SQL instances provide managed relational databases in the cloud.')
+			).toBeVisible();
+			const documentation = empty.getByRole('link');
+			await expect(documentation).toHaveAttribute(
+				'href',
+				'https://docs.nais.io/persistence/cloudsql'
+			);
+			await expect(documentation).toHaveAttribute('target', '_blank');
+			await expect(collection.locator('table')).toHaveCount(0);
+			expect(
+				await collection.evaluate((element) => element.scrollWidth <= element.clientWidth)
+			).toBe(true);
+			await expect(page.getByRole('heading', { name: 'No applications found.' })).toBeVisible();
+			await expect(
+				page.getByRole('heading', { name: 'No jobs match your filters.' })
+			).toBeVisible();
+			await documentation.focus();
+			await expect(documentation).toBeFocused();
+		});
+	}
+}
+
 test('favorites visibly fill and unfill the star, including after reload', async ({ page }) => {
 	const add = page.getByRole('button', { name: 'Add to favorites', exact: true });
 	await expect(add.locator('svg')).toHaveCSS('fill', 'none');

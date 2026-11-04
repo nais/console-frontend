@@ -10,6 +10,7 @@
 	import CollapsibleSidebar from '#lib/ui/CollapsibleSidebar.svelte';
 	import ExternalLink from '#lib/ui/ExternalLink.svelte';
 	import Collection from '#lib/ui/Collection.svelte';
+	import EmptyState from '#lib/ui/EmptyState.svelte';
 	import ListFilters from '#lib/ui/ListFilters.svelte';
 	import ListItem from '#lib/ui/ListItem.svelte';
 	import Pagination from '#lib/ui/Pagination.svelte';
@@ -247,14 +248,14 @@
 					</details>
 				{/each}
 			{:else if totalAlerts === 0}
-				<ListItem>
-					<p>
-						No alerts found. Alerts notify you when something needs your attention.
-						<ExternalLink href={docURL('/observability/alerting')}
-							>Learn more about alerts and how to get started.</ExternalLink
-						>
-					</p>
-				</ListItem>
+				<EmptyState
+					title="No alerts found."
+					description="Alerts notify you when something needs your attention."
+				>
+					<ExternalLink href={docURL('/observability/alerting')}
+						>Learn more about alerts and how to get started.</ExternalLink
+					>
+				</EmptyState>
 			{:else}
 				<ListItem>
 					<p>No alerts match the current filters. Try adjusting your filters.</p>

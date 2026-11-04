@@ -294,15 +294,16 @@
 		display: flex;
 		flex-direction: column;
 		gap: 1rem;
+		container-type: inline-size;
 	}
 
 	.workloads {
 		display: grid;
-		grid-template-columns: 1fr 1fr;
-		gap: 0.75rem;
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+		gap: var(--ax-space-12);
 	}
 
-	@media (max-width: 500px) {
+	@container (max-width: 500px) {
 		.workloads {
 			grid-template-columns: 1fr;
 		}

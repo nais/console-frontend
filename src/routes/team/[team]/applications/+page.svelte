@@ -4,6 +4,7 @@
 	import CollapsibleSidebar from '#lib/ui/CollapsibleSidebar.svelte';
 	import GraphErrors from '#lib/ui/GraphErrors.svelte';
 	import Collection from '#lib/ui/Collection.svelte';
+	import EmptyState from '#lib/ui/EmptyState.svelte';
 	import Pagination from '#lib/ui/Pagination.svelte';
 	import ResourceTable from '#lib/ui/ResourceTable.svelte';
 	import SurfaceCard from '#lib/ui/SurfaceCard.svelte';
@@ -15,7 +16,7 @@
 		type ApplicationOrderField$options,
 		type OrderDirection$options
 	} from '$houdini';
-	import { BodyLong, Button, Th, type TableSortState } from '#lib/shadcn/ui/index.js';
+	import { Button, Th, type TableSortState } from '#lib/shadcn/ui/index.js';
 	import { FunnelIcon, PackageIcon } from '#lib/icons/index.js';
 	import type { PageProps } from './$types';
 
@@ -185,15 +186,11 @@
 					{/each}
 				</ResourceTable>
 			{:else}
-				<BodyLong>
-					<strong>
-						{#if hasActiveFilters}
-							No applications match your filters.
-						{:else}
-							No applications found.
-						{/if}
-					</strong>
-				</BodyLong>
+				<EmptyState
+					title={hasActiveFilters
+						? 'No applications match your filters.'
+						: 'No applications found.'}
+				/>
 			{/if}
 		</Collection>
 		{#if totalApplications > 0}

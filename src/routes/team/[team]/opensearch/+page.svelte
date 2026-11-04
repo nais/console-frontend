@@ -9,6 +9,7 @@
 	import WarningIcon from '#lib/icons/WarningIcon.svelte';
 	import CollapsibleSidebar from '#lib/ui/CollapsibleSidebar.svelte';
 	import ExternalLink from '#lib/ui/ExternalLink.svelte';
+	import EmptyState from '#lib/ui/EmptyState.svelte';
 	import GraphErrors from '#lib/ui/GraphErrors.svelte';
 	import Collection from '#lib/ui/Collection.svelte';
 	import ResourceTable from '#lib/ui/ResourceTable.svelte';
@@ -225,12 +226,14 @@
 						{/each}
 					</ResourceTable>
 				{:else}
-					<p>
-						No OpenSearch instances found. OpenSearch is a distributed search and analytics engine.
+					<EmptyState
+						title="No OpenSearch instances found."
+						description="OpenSearch is a distributed search and analytics engine."
+					>
 						<ExternalLink href={docURL('/persistence/opensearch')}
 							>Learn more about OpenSearch and how to get started.</ExternalLink
 						>
-					</p>
+					</EmptyState>
 				{/if}
 			</Collection>
 			<Pagination

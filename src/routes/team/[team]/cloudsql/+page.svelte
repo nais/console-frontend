@@ -6,6 +6,7 @@
 	import WorkloadLink from '#lib/domain/workload/WorkloadLink.svelte';
 	import { envTagVariant } from '#lib/envTagVariant.js';
 	import ExternalLink from '#lib/ui/ExternalLink.svelte';
+	import EmptyState from '#lib/ui/EmptyState.svelte';
 	import GraphErrors from '#lib/ui/GraphErrors.svelte';
 	import Collection from '#lib/ui/Collection.svelte';
 	import OrderByMenu from '#lib/ui/OrderByMenu.svelte';
@@ -150,13 +151,14 @@
 				{/each}
 			</ResourceTable>
 		{:else}
-			<p>
-				No Cloud SQL instances found. Cloud SQL instances provide managed relational databases in
-				the cloud.
+			<EmptyState
+				title="No Cloud SQL instances found."
+				description="Cloud SQL instances provide managed relational databases in the cloud."
+			>
 				<ExternalLink href={docURL('/persistence/cloudsql')}
 					>Learn more about Cloud SQL in Nais and how to get started.</ExternalLink
 				>
-			</p>
+			</EmptyState>
 		{/if}
 	</Collection>
 

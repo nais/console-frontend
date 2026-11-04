@@ -9,6 +9,7 @@
 	import WarningIcon from '#lib/icons/WarningIcon.svelte';
 	import CollapsibleSidebar from '#lib/ui/CollapsibleSidebar.svelte';
 	import ExternalLink from '#lib/ui/ExternalLink.svelte';
+	import EmptyState from '#lib/ui/EmptyState.svelte';
 	import GraphErrors from '#lib/ui/GraphErrors.svelte';
 	import Collection from '#lib/ui/Collection.svelte';
 	import ResourceTable from '#lib/ui/ResourceTable.svelte';
@@ -224,14 +225,14 @@
 						{/each}
 					</ResourceTable>
 				{:else}
-					<p>
-						No Valkey instances found. Valkey is a key value database that is used for storing and
-						querying data. It is a good choice for storing data that is not relational in nature and
-						often used for caching.
+					<EmptyState
+						title="No Valkey instances found."
+						description="Valkey is a key value database that is used for storing and querying data. It is a good choice for storing data that is not relational in nature and often used for caching."
+					>
 						<ExternalLink href={docURL('/persistence/valkey')}
 							>Learn more about Valkey and how to get started.</ExternalLink
 						>
-					</p>
+					</EmptyState>
 				{/if}
 			</Collection>
 			<Pagination

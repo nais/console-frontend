@@ -7,6 +7,7 @@
 	import { envTagVariant } from '#lib/envTagVariant.js';
 	import CollapsibleSidebar from '#lib/ui/CollapsibleSidebar.svelte';
 	import ExternalLink from '#lib/ui/ExternalLink.svelte';
+	import EmptyState from '#lib/ui/EmptyState.svelte';
 	import GraphErrors from '#lib/ui/GraphErrors.svelte';
 	import Collection from '#lib/ui/Collection.svelte';
 	import ListFilters from '#lib/ui/ListFilters.svelte';
@@ -233,12 +234,14 @@
 						{/each}
 					</ResourceTable>
 				{:else}
-					<p>
-						No configs found. Configs are used to store configuration data for your applications.
+					<EmptyState
+						title="No configs found."
+						description="Configs are used to store configuration data for your applications."
+					>
 						<ExternalLink href={docURL('/services/config')}
 							>Learn more about configs in Nais and how to get started.</ExternalLink
 						>
-					</p>
+					</EmptyState>
 				{/if}
 			</Collection>
 			<Pagination
