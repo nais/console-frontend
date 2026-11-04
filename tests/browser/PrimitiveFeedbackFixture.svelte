@@ -63,6 +63,30 @@
 
 <main>
 	{#if showCostFormatting}
+		<div data-testid="cost-area-legend">
+			<CostAreaChart
+				data={[
+					{
+						date: new Date(2026, 9, 1),
+						'Compute Engine': 20,
+						'Cloud Storage': 0.0002,
+						'Secret Manager': -0.000002
+					},
+					{
+						date: new Date(2026, 9, 2),
+						'Compute Engine': 80,
+						'Cloud Storage': 0.0008,
+						'Secret Manager': -0.000008
+					},
+					{
+						date: new Date(2026, 9, 3),
+						'Compute Engine': 100,
+						'Cloud Storage': 0.001,
+						'Secret Manager': -0.00001
+					}
+				]}
+			/>
+		</div>
 		{#each [1, 1000, 1000000, 0.001, 0.00001] as maximum (maximum)}
 			<div data-testid="cost-area-{maximum}">
 				<CostAreaChart

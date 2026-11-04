@@ -2,6 +2,7 @@
 	import { graphql } from '$houdini';
 	import ChartBoundary from '#lib/chart/ChartBoundary.svelte';
 	import LegendWrapper, { legendSnippet } from '#lib/chart/LegendWrapper.svelte';
+	import type { LegendContext } from '#lib/chart/LegendWrapperData.svelte';
 	import { createEuroAxis } from '#lib/chart/util.js';
 	import GraphErrors from '#lib/ui/GraphErrors.svelte';
 	import { changeParams } from '#lib/utils/searchparams.js';
@@ -9,6 +10,7 @@
 	import { visualizationColors } from '#lib/visualizationColors.js';
 	import { BodyLong, Heading, Loader, ToggleGroup, ToggleGroupItem } from '#lib/shadcn/ui/index.js';
 	import { LineChart } from 'layerchart';
+	import { SvelteMap } from 'svelte/reactivity';
 
 	const {
 		teamSlug,
@@ -21,6 +23,8 @@
 		to: Date;
 		interval: string;
 	} = $props();
+
+	const legendContexts = new SvelteMap<string, LegendContext>();
 
 	const costQuery = graphql(`
 		query TeamEnvironmentApplicationsCost($teamSlug: Slug!, $from: Date!, $to: Date!) {
@@ -122,18 +126,22 @@
 		{#each appsByEnv as env (env.id)}
 			{const euroAxis = $derived(
 				createEuroAxis(
-					env.series.reduce(
-						(max, series) =>
-							series.data.reduce((max, [, cost]) => Math.max(max, Math.abs(cost ?? 0)), max),
-						0
-					)
+					env.series
+						.filter(
+							(series) => !series.name || !legendContexts.get(env.id)?.hiddenKeys.has(series.name)
+						)
+						.reduce(
+							(max, series) =>
+								series.data.reduce((max, [, cost]) => Math.max(max, Math.abs(cost ?? 0)), max),
+							0
+						)
 				)
 			)}
 			<div class="env-section">
 				<Heading as="h3" size="small">{env.environment.name}</Heading>
 				<div class="chart">
 					<ChartBoundary>
-						<LegendWrapper height="400px">
+						<LegendWrapper height="400px" onContextReady={(ctx) => legendContexts.set(env.id, ctx)}>
 							<LineChart
 								padding={{ left: euroAxis.paddingLeft }}
 								legend={legendSnippet}

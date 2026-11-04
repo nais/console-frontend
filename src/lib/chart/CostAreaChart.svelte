@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { AreaChart } from 'layerchart';
 	import LegendWrapper, { legendSnippet } from './LegendWrapper.svelte';
+	import type { LegendContext } from './LegendWrapperData.svelte';
 	import { createEuroAxis, serviceColor } from './util';
 	import { euroTooltipFormatter } from '#lib/utils/formatters.js';
 
@@ -14,6 +15,8 @@
 		}[];
 		height?: `${number}px`;
 	} = $props();
+
+	let legendContext = $state<LegendContext>();
 
 	const series = $derived.by(() => {
 		if (data.length == 0) return [];
@@ -52,7 +55,9 @@
 				(max, item) =>
 					Math.max(
 						max,
-						series.reduce((total, s) => total + Math.abs(Number(item[s.key])), 0)
+						series
+							.filter((s) => !legendContext?.hiddenKeys.has(s.key))
+							.reduce((total, s) => total + Math.abs(Number(item[s.key])), 0)
 					),
 				0
 			)
@@ -61,7 +66,7 @@
 </script>
 
 {#if data.length > 0}
-	<LegendWrapper {height}>
+	<LegendWrapper {height} onContextReady={(ctx) => (legendContext = ctx)}>
 		<AreaChart
 			padding={{ left: euroAxis.paddingLeft }}
 			data={fixedData}

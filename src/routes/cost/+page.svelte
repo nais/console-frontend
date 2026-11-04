@@ -3,6 +3,7 @@
 	import { OrderDirection, TeamOrderField } from '$houdini';
 	import ChartBoundary from '#lib/chart/ChartBoundary.svelte';
 	import LegendWrapper, { legendSnippet } from '#lib/chart/LegendWrapper.svelte';
+	import type { LegendContext } from '#lib/chart/LegendWrapperData.svelte';
 	import { createEuroAxis, serviceColor } from '#lib/chart/util.js';
 	import GraphErrors from '#lib/ui/GraphErrors.svelte';
 	import IconLabel from '#lib/ui/IconLabel.svelte';
@@ -33,6 +34,7 @@
 
 	let { data }: PageProps = $props();
 	let { TenantCost, CostMonthly, interval } = $derived(data);
+	let legendContext = $state<LegendContext>();
 
 	const currentOrderField = $derived(
 		urlToOrderField(TeamOrderField, TeamOrderField.ACCUMULATED_COST, page.url)
@@ -100,7 +102,9 @@
 				(max, item) =>
 					Math.max(
 						max,
-						item.services.reduce((total, service) => total + Math.abs(service.cost), 0)
+						item.services
+							.filter((service) => !legendContext?.hiddenKeys.has(service.service))
+							.reduce((total, service) => total + Math.abs(service.cost), 0)
 					),
 				0
 			) ?? 0
@@ -171,7 +175,7 @@
 					</div>
 				{:else if $CostMonthly.data}
 					<ChartBoundary>
-						<LegendWrapper height="500px">
+						<LegendWrapper height="500px" onContextReady={(ctx) => (legendContext = ctx)}>
 							<BarChart
 								legend={legendSnippet}
 								padding={{ top: 24, bottom: 24, left: euroAxis.paddingLeft, right: 40 }}

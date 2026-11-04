@@ -6,6 +6,53 @@ test.beforeEach(async ({ page }) => {
 });
 
 for (const width of [375, 1200]) {
+	test(`cost axis follows visible legend series at ${width}px`, async ({ page }) => {
+		await page.setViewportSize({ width, height: 900 });
+		await page.goto('/tests/browser/primitive-feedback.html?cost-formatting');
+		await expect(page.locator('html')).toHaveAttribute('data-ready', 'true');
+		const chart = page.getByTestId('cost-area-legend');
+		const labels = chart.locator('.lc-axis.placement-left .lc-axis-tick-group text');
+		const large = chart.getByRole('button', { name: 'Compute Engine', exact: true });
+		const small = chart.getByRole('button', { name: 'Cloud Storage', exact: true });
+		const credit = chart.getByRole('button', { name: 'Secret Manager', exact: true });
+
+		async function expectAxis(precision: number) {
+			await expect
+				.poll(async () => {
+					const texts = await labels.allTextContents();
+					return (
+						texts.length > 2 &&
+						new Set(texts).size === texts.length &&
+						texts.every((text) => text.split(',')[1]?.split(/\s/)[0].length === precision)
+					);
+				})
+				.toBe(true);
+			for (const label of await labels.all()) {
+				const box = await label.boundingBox();
+				if (!box) throw new Error('Cost axis label has no bounding box');
+				expect(box.x).toBeGreaterThanOrEqual(0);
+				expect(box.x + box.width).toBeLessThanOrEqual(width);
+			}
+		}
+
+		await expectAxis(2);
+		await small.click();
+		await expectAxis(4);
+		await expect(labels.last()).toContainText('0,0010');
+		await small.click();
+		await expectAxis(2);
+		await large.click();
+		await expectAxis(2);
+		await small.click();
+		await expectAxis(2);
+		await large.click();
+		await expectAxis(4);
+		await small.click();
+		await credit.click();
+		await expectAxis(6);
+		await expect(labels.first()).toContainText('−0,000010');
+	});
+
 	test(`cost charts use readable decimal euros at ${width}px`, async ({ page }) => {
 		await page.setViewportSize({ width, height: 900 });
 		await page.goto('/tests/browser/primitive-feedback.html?cost-formatting');
