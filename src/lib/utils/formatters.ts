@@ -50,12 +50,26 @@ export function euroValueFormatter(
 		return '';
 	}
 
+	if (value === 0) return '0 €';
+	if (maximumFractionDigits <= 2 && Math.abs(value) < 0.01) {
+		const cent = euroValueFormatter(value < 0 ? -0.01 : 0.01);
+		return `${value < 0 ? '>' : '<'} ${cent}`;
+	}
+
 	return value.toLocaleString('nb-NO', {
 		style: 'currency',
 		currency: 'EUR',
-		maximumFractionDigits,
-		maximumSignificantDigits: 2,
-		roundingPriority: 'morePrecision'
+		maximumFractionDigits
+	});
+}
+
+export function euroTooltipFormatter(value?: number): string {
+	if (value === undefined) return '';
+	if (value === 0) return '0 €';
+	return value.toLocaleString('nb-NO', {
+		style: 'currency',
+		currency: 'EUR',
+		maximumFractionDigits: Math.min(20, Math.max(2, 1 - Math.floor(Math.log10(Math.abs(value)))))
 	});
 }
 

@@ -5,6 +5,36 @@ test.beforeEach(async ({ page }) => {
 	await expect(page.locator('html')).toHaveAttribute('data-ready', 'true');
 });
 
+for (const width of [375, 1200]) {
+	test(`cost charts use readable decimal euros at ${width}px`, async ({ page }) => {
+		await page.setViewportSize({ width, height: 900 });
+		await page.goto('/tests/browser/primitive-feedback.html?cost-formatting');
+		await expect(page.locator('html')).toHaveAttribute('data-ready', 'true');
+		for (const maximum of [1, 1000, 1000000, 0.001, 0.00001]) {
+			const chart = page.getByTestId(`cost-area-${maximum}`);
+			const labels = chart.locator('.lc-axis.placement-left .lc-axis-tick-group text');
+			await expect(labels.first()).toBeVisible();
+			const texts = await labels.allTextContents();
+			expect(texts.length).toBeGreaterThan(2);
+			expect(new Set(texts).size).toBe(texts.length);
+			expect(texts.every((text) => text.includes('€') && !/[mµK]/.test(text))).toBe(true);
+			const precision = texts.map((text) => text.split(',')[1].split(/\s/)[0].length);
+			expect(new Set(precision).size).toBe(1);
+			for (const label of await labels.all()) {
+				const box = await label.boundingBox();
+				if (!box) throw new Error('Cost axis label has no bounding box');
+				expect(box.x).toBeGreaterThanOrEqual(0);
+				expect(box.x + box.width).toBeLessThanOrEqual(width);
+			}
+		}
+		const chart = page.getByTestId('cost-line');
+		await chart.hover();
+		await expect(
+			page.locator('.lc-tooltip-item-value').filter({ hasText: '0,0024' })
+		).toBeVisible();
+	});
+}
+
 test('favorite drag handles use a tooltip instead of a native title', async ({ page }) => {
 	await page.goto('/tests/browser/primitive-feedback.html?favorite-drag');
 	await expect(page.locator('html')).toHaveAttribute('data-ready', 'true');
@@ -226,6 +256,17 @@ for (const width of [320, 1200]) {
 			await expect(
 				page.getByRole('heading', { name: 'No jobs match your filters.' })
 			).toBeVisible();
+			const issues = page.getByRole('region', { name: 'Issues', exact: true });
+			const issueCollection = issues.locator('.collection');
+			await expect(issueCollection.locator('header')).toHaveCount(0);
+			await expect(
+				issues.getByRole('heading', { level: 3, name: 'No issues found', exact: true })
+			).toBeVisible();
+			await expect(issueCollection.locator('.empty-state')).toHaveCSS('padding-top', '40px');
+			await expect(issueCollection.locator('.empty-state')).toHaveCSS('text-align', 'center');
+			expect(
+				await issueCollection.evaluate((element) => element.scrollWidth <= element.clientWidth)
+			).toBe(true);
 			await documentation.focus();
 			await expect(documentation).toBeFocused();
 		});

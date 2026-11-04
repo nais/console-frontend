@@ -1,7 +1,8 @@
 <script lang="ts">
 	import { AreaChart } from 'layerchart';
 	import LegendWrapper, { legendSnippet } from './LegendWrapper.svelte';
-	import { euroAxisFormatter, serviceColor } from './util';
+	import { createEuroAxis, serviceColor } from './util';
+	import { euroTooltipFormatter } from '#lib/utils/formatters.js';
 
 	let {
 		data,
@@ -41,16 +42,28 @@
 					item[s.key] = 0;
 				}
 			});
-
 			return item;
 		});
 	});
+
+	const euroAxis = $derived(
+		createEuroAxis(
+			fixedData.reduce(
+				(max, item) =>
+					Math.max(
+						max,
+						series.reduce((total, s) => total + Math.abs(Number(item[s.key])), 0)
+					),
+				0
+			)
+		)
+	);
 </script>
 
 {#if data.length > 0}
 	<LegendWrapper {height}>
 		<AreaChart
-			padding={{ left: 40 }}
+			padding={{ left: euroAxis.paddingLeft }}
 			data={fixedData}
 			{series}
 			seriesLayout="stack"
@@ -64,17 +77,11 @@
 					fillOpacity: 0.6
 				},
 				yAxis: {
-					format: euroAxisFormatter
+					format: euroAxis.format
 				},
 				tooltip: {
 					item: {
-						format: {
-							type: 'currency',
-							options: {
-								currency: 'EUR',
-								style: 'currency'
-							}
-						}
+						format: euroTooltipFormatter
 					}
 				},
 				xAxis: {

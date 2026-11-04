@@ -5,6 +5,7 @@
 	import type { TeamSummaryCost$result, TeamSummaryVulnerabilities$result } from '$houdini';
 	import { BellDotFillIcon, PiggybankIcon, VirusIcon, VitalsIcon } from '#lib/icons/index.js';
 	import { AreaChart } from 'layerchart';
+	import { euroTooltipFormatter } from '#lib/utils/formatters.js';
 
 	interface Props {
 		teamSlug: string;
@@ -211,7 +212,8 @@
 									padding={{ top: 2, bottom: 2, left: 0, right: 0 }}
 									props={{
 										area: { fillOpacity: 1, class: 'sparkline-area' },
-										line: { class: 'sparkline-line' }
+										line: { class: 'sparkline-line' },
+										tooltip: { item: { format: euroTooltipFormatter } }
 									}}
 								/>
 							</div>

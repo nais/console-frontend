@@ -24,6 +24,8 @@
 	import PriorityAlertBar from '../../src/lib/domain/vulnerability/PriorityAlertBar.svelte';
 	import TeamSummary from '../../src/lib/domain/team/TeamSummary.svelte';
 	import ResourceTable from '../../src/lib/ui/ResourceTable.svelte';
+	import CostChart from '../../src/lib/chart/CostChart.svelte';
+	import CostAreaChart from '../../src/lib/chart/CostAreaChart.svelte';
 	import type { TeamSummaryCost$result } from '$houdini';
 
 	const sizes = ['3xlarge', '2xlarge', 'xlarge', 'large', 'medium', 'small', 'xsmall'] as const;
@@ -34,6 +36,7 @@
 	let deletedRun = $state('');
 	let selectedLogFilter = $state('');
 	const showFavoriteDrag = new URLSearchParams(window.location.search).has('favorite-drag');
+	const showCostFormatting = new URLSearchParams(window.location.search).has('cost-formatting');
 
 	const costCases = [
 		{ key: 'decreasing', sum: 96 },
@@ -59,6 +62,31 @@
 </script>
 
 <main>
+	{#if showCostFormatting}
+		{#each [1, 1000, 1000000, 0.001, 0.00001] as maximum (maximum)}
+			<div data-testid="cost-area-{maximum}">
+				<CostAreaChart
+					data={[
+						{ date: new Date(2026, 9, 1), Service: maximum * 0.2 },
+						{ date: new Date(2026, 9, 2), Service: maximum * 0.8 },
+						{ date: new Date(2026, 9, 3), Service: maximum }
+					]}
+				/>
+			</div>
+		{/each}
+		<div class="cost-line-fixture" data-testid="cost-line" style="height: 300px">
+			<CostChart
+				class="cost-line-inner"
+				data={[
+					{ date: new Date(2026, 9, 1), cost: 0.0024 },
+					{ date: new Date(2026, 9, 2), cost: 0.0024 },
+					{ date: new Date(2026, 9, 3), cost: 0.0024 }
+				]}
+				dateField="date"
+				valueField="cost"
+			/>
+		</div>
+	{/if}
 	{#if showFavoriteDrag}
 		<FavoritesListItem path="/team/drag-fixture" />
 	{/if}
@@ -172,4 +200,16 @@
 	<Collection title="Jobs" count={0}>
 		<EmptyState title="No jobs match your filters." />
 	</Collection>
+	<section aria-labelledby="resource-issues-heading">
+		<Heading as="h2" id="resource-issues-heading">Issues</Heading>
+		<Collection headerless>
+			<EmptyState title="No issues found" />
+		</Collection>
+	</section>
 </main>
+
+<style>
+	.cost-line-fixture :global(.cost-line-inner) {
+		height: 100%;
+	}
+</style>

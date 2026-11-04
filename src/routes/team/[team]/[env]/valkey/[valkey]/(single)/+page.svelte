@@ -12,6 +12,7 @@
 	import ExternalLink from '#lib/ui/ExternalLink.svelte';
 	import GraphErrors from '#lib/ui/GraphErrors.svelte';
 	import Collection from '#lib/ui/Collection.svelte';
+	import EmptyState from '#lib/ui/EmptyState.svelte';
 	import ManifestCard from '#lib/ui/ManifestCard.svelte';
 	import Pagination from '#lib/ui/Pagination.svelte';
 	import { changeParams } from '#lib/utils/searchparams.js';
@@ -264,11 +265,11 @@
 
 			<section aria-labelledby="issues-heading">
 				<Heading as="h2" id="issues-heading" size="medium" spacing>Issues</Heading>
-				<Collection>
+				<Collection headerless>
 					{#each $Valkey.data.team.environment.valkey.issues.edges as edge (edge.node.id)}
 						<IssueListItem item={edge.node} />
 					{:else}
-						<span>No issues found</span>
+						<EmptyState title="No issues found" />
 					{/each}
 				</Collection>
 			</section>

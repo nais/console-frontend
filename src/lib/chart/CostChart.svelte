@@ -10,11 +10,11 @@
 </script>
 
 <script lang="ts" generics="T">
-	import { euroValueFormatter } from '#lib/utils/formatters.js';
+	import { euroTooltipFormatter } from '#lib/utils/formatters.js';
 
 	import { LineChart, Tooltip } from 'layerchart';
 	import { SvelteDate } from 'svelte/reactivity';
-	import { euroAxisFormatter } from './util';
+	import { createEuroAxis } from './util';
 
 	let {
 		data,
@@ -66,11 +66,13 @@
 			return v > max ? v : max;
 		}, -Infinity)
 	);
+	const euroAxis = $derived(createEuroAxis(Math.max(minScale, maxValue)));
 </script>
 
 {#if chartData.length > 0}
 	<div class={klass}>
 		<LineChart
+			padding={{ left: euroAxis.paddingLeft }}
 			data={chartData}
 			x="date"
 			y="value"
@@ -92,7 +94,7 @@
 					motion: 'none'
 				},
 				yAxis: {
-					format: euroAxisFormatter
+					format: euroAxis.format
 				},
 				xAxis: {
 					format(value: Date) {
@@ -114,7 +116,7 @@
 									month: 'long',
 									day: daily ? 'numeric' : undefined
 								}) ?? ''}
-								value={euroValueFormatter(data?.value)}
+								value={euroTooltipFormatter(data?.value)}
 							/>
 						</Tooltip.List>
 					{/snippet}
