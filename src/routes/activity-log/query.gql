@@ -3,7 +3,7 @@ query TenantActivityLog(
 	$last: Int
 	$before: Cursor
 	$after: Cursor
-	$filter: ActivityLogFilter
+	$filter: TenantActivityLogFilter
 ) {
 	activityLog(first: $first, last: $last, before: $before, after: $after, filter: $filter)
 		@paginate(mode: SinglePage) {

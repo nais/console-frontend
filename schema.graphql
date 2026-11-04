@@ -424,6 +424,7 @@ type ActivityLogFacets {
   resourceTypes: [ActivityLogResourceTypeFacetItem!]!
 }
 
+"""Filtering options for activity log entries."""
 input ActivityLogFilter {
   """
   Only include entries whose activity type matches one of these values.
@@ -1679,7 +1680,9 @@ type CVE implements Node {
   """Title of the CVE"""
   title: String!
 
-  """Affected workloads"""
+  """
+  Affected workloads within the team selection of the CVE list, when applicable.
+  """
   workloads(
     """Get items after this cursor."""
     after: Cursor
@@ -1687,9 +1690,7 @@ type CVE implements Node {
     """Get items before this cursor."""
     before: Cursor
 
-    """
-    Filter workloads. When teamSlugs is set only workloads belonging to those teams are returned.
-    """
+    """Further filter affected workloads."""
     filter: CVEWorkloadsFilter
 
     """
@@ -1728,12 +1729,15 @@ type CVEEdge {
   node: CVE!
 }
 
-"""Filter active CVEs by their calculated risk assessment."""
+"""Filter active CVEs."""
 input CVEFilter {
   """
   Operational priority. URGENT requires workload context and currently returns no CVEs.
   """
   priority: CVEPriority
+
+  """Only include CVEs affecting the selected teams."""
+  teamScope: TeamScopeInput
 }
 
 """
@@ -1831,13 +1835,17 @@ enum CVEWorkloadOrderField {
   WORKLOAD
 }
 
-"""
-Filter for workloads affected by a CVE. When teamSlugs is provided only workloads belonging to those teams are returned.
-"""
+"""Filter workloads affected by a CVE."""
 input CVEWorkloadsFilter {
+  """Only include workloads in this environment."""
+  environmentName: String
+
   """
-  Team identifiers used to limit results to workloads owned by those teams.
+  Filter by team selection. Combined with teamSlugs, only teams matching both are included.
   """
+  teamScope: TeamScopeInput
+
+  """Only include workloads owned by these teams."""
   teamSlugs: [Slug!]
 }
 
@@ -4101,8 +4109,14 @@ type IssueFacets {
 
   """Distribution of issues by severity."""
   severities: [IssueSeverityFacetItem!]!
+
+  """
+  Up to 25 teams with matching issues, ordered by count descending, then team slug.
+  """
+  teams: [IssueTeamFacetItem!]!
 }
 
+"""Filtering options for issues."""
 input IssueFilter {
   """Filter by environment."""
   environments: [String!]
@@ -4161,6 +4175,15 @@ type IssueSeverityFacetItem {
 
   """The severity."""
   severity: Severity!
+}
+
+"""A single facet item for teams."""
+type IssueTeamFacetItem {
+  """Number of matching issues."""
+  count: Int!
+
+  """The team."""
+  team: Team!
 }
 
 enum IssueType {
@@ -7110,7 +7133,7 @@ type Query {
     before: Cursor
 
     """Filter items."""
-    filter: ActivityLogFilter
+    filter: TenantActivityLogFilter
 
     """
     Get the first n items in the connection. This can be used in combination with the after parameter.
@@ -7210,6 +7233,33 @@ type Query {
     """Get vulnerability summary from given date until today."""
     from: Date!
   ): ImageVulnerabilityHistory!
+
+  """
+  Issues across teams in the tenant, ordered by severity unless otherwise specified.
+  """
+  issues(
+    """Get items after this cursor."""
+    after: Cursor
+
+    """Get items before this cursor."""
+    before: Cursor
+
+    """Filtering options for items returned from the connection."""
+    filter: TenantIssueFilter
+
+    """
+    Get the first n items in the connection. This can be used in combination with the after parameter.
+    """
+    first: Int
+
+    """
+    Get the last n items in the connection. This can be used in combination with the before parameter.
+    """
+    last: Int
+
+    """Ordering options for items returned from the connection."""
+    orderBy: IssueOrder
+  ): IssueConnection!
 
   """The currently authenticated user."""
   me: AuthenticatedUser!
@@ -7414,7 +7464,10 @@ type Query {
   ): WorkloadVulnerabilitySummaryConnection!
 
   """Get the vulnerability summary for the tenant."""
-  vulnerabilitySummary: TenantVulnerabilitySummary!
+  vulnerabilitySummary(
+    """Filter the aggregate."""
+    filter: TenantVulnerabilitySummaryFilter
+  ): TenantVulnerabilitySummary!
 }
 
 """Reconciler type."""
@@ -8157,6 +8210,11 @@ union ScalingStrategy = CPUScalingStrategy | KafkaLagScalingStrategy
 input SearchFilter {
   """The query string."""
   query: String!
+
+  """
+  Team selection. An empty query defaults to memberships when no selection is supplied.
+  """
+  teamScope: TeamScopeInput
 
   """Teams to search in. If not specified, all teams will be searched."""
   teams: [Slug!]
@@ -10620,6 +10678,9 @@ input TeamFilter {
   """Filter teams by the existence of workloads."""
   hasWorkloads: Boolean
 
+  """Filter by team selection."""
+  teamScope: TeamScopeInput
+
   """
   Filter by the team's highest operational vulnerability priority across all environments.
   Groups are mutually exclusive. Without orderBy, teams are ordered by the group's
@@ -11015,6 +11076,19 @@ input TeamRepositoryFilter {
   name: String
 }
 
+"""
+Combine explicit teams and viewer memberships without changing access permissions. Omit both to select any team.
+"""
+input TeamScopeInput {
+  """
+  Add the authenticated user's memberships when true. Identities without memberships add none.
+  """
+  memberOfViewer: Boolean
+
+  """Add these teams to the selection. An empty list adds none."""
+  teamSlugs: [Slug!]
+}
+
 type TeamServiceUtilization {
   sqlInstances: TeamServiceUtilizationSqlInstances!
 }
@@ -11252,6 +11326,48 @@ input TeamWorkloadsFilter {
   sbomStatus: SBOMStatus
 }
 
+"""Filtering options for activity log entries across teams."""
+input TenantActivityLogFilter {
+  """Only include entries matching these activity types."""
+  activityTypes: [ActivityLogActivityType!]
+
+  """Only include entries in these environments."""
+  environments: [String!]
+
+  """Only include entries created at or after this timestamp."""
+  from: Time
+
+  """Only include entries matching these resource types."""
+  resourceTypes: [ActivityLogEntryResourceType!]
+
+  """Filter by team selection. Excludes entries without a team."""
+  teamScope: TeamScopeInput
+
+  """Only include entries created before this timestamp."""
+  to: Time
+}
+
+"""Filtering options for issues across teams."""
+input TenantIssueFilter {
+  """Filter by environment."""
+  environments: [String!]
+
+  """Filter by issue type."""
+  issueType: IssueType
+
+  """Filter by resource name."""
+  resourceName: String
+
+  """Filter by resource type."""
+  resourceType: ResourceType
+
+  """Filter by severity."""
+  severity: Severity
+
+  """Filter by team selection."""
+  teamScope: TeamScopeInput
+}
+
 type TenantVulnerabilitySummary {
   """Vulnerability counts grouped by operational priority."""
   countsByPriority: ImageVulnerabilitySummaryCountsByPriority!
@@ -11289,6 +11405,9 @@ type TenantVulnerabilitySummary {
 
 """Input for filtering vulnerability summaries across all teams."""
 input TenantVulnerabilitySummaryFilter {
+  """Only include workloads in this environment."""
+  environmentName: String
+
   """
   Only return vulnerability summaries with (true) or without (false) at least
   one CISA Known Exploited Vulnerabilities (KEV) catalog entry.
@@ -11301,6 +11420,9 @@ input TenantVulnerabilitySummaryFilter {
   summary scope, so including it in this set is rejected as an error.
   """
   priorities: [CVEPriority!]
+
+  """Filter by team selection."""
+  teamScope: TeamScopeInput
 }
 
 """

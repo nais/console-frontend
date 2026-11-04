@@ -1,6 +1,6 @@
-import { load_TenantActivityLog } from '$houdini';
-import type { ActivityLogFilter } from '$houdini/graphql/inputs';
 import { addPageMeta } from '#lib/utils/pageMeta.js';
+import { load_TenantActivityLog } from '$houdini';
+import type { TenantActivityLogFilter } from '$houdini/graphql/inputs';
 import { error } from '@sveltejs/kit';
 import { addDays, differenceInCalendarDays, format, isValid, parseISO, subDays } from 'date-fns';
 import { formatOslo, parseOslo } from './osloTime';
@@ -73,7 +73,7 @@ export async function load(event) {
 					environments,
 					from: fromTime,
 					to: toExclusive
-				} as ActivityLogFilter
+				} as TenantActivityLogFilter
 			}
 		}))
 	};
