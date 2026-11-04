@@ -113,7 +113,7 @@
 										<a href="/team/{team.slug}/issues" class="team-quick-link">Issues</a>
 										<span class="dot-sep" aria-hidden="true">·</span>
 										<a href="/team/{team.slug}/vulnerabilities" class="team-quick-link"
-											>Vulnerability</a
+											>Vulnerabilities</a
 										>
 										<span class="dot-sep" aria-hidden="true">·</span>
 										<a href="/team/{team.slug}/postgres" class="team-quick-link">Postgres</a>
