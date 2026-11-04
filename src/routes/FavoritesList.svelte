@@ -88,7 +88,7 @@
 
 	.favorites-sub {
 		margin: 0;
-		font-size: 0.75rem;
+		font-size: var(--ax-font-size-small);
 		color: var(--muted-foreground);
 	}
 
@@ -120,14 +120,14 @@
 
 	.empty-title {
 		margin: 0;
-		font-size: 0.8125rem;
+		font-size: var(--ax-font-size-small);
 		font-weight: 600;
 		color: var(--foreground);
 	}
 
 	.empty-desc {
 		margin: 0;
-		font-size: 0.75rem;
+		font-size: var(--ax-font-size-small);
 		color: var(--muted-foreground);
 		max-width: 240px;
 		line-height: 1.45;

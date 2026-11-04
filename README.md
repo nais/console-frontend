@@ -28,6 +28,7 @@ content stays mounted while closed, and `onBeforeClose` guards user dismissal wi
 blocking programmatic changes to `open`. Select stays native to preserve browser and
 mobile selection, form submission and typed value bindings. Browser tests cover these
 contracts, nested dialogs, guarded dismissal and drawer breakpoints.
+The application shell provides a keyboard-visible **Skip to content** link to its single main landmark.
 
 ### Mobile responsiveness
 
@@ -45,6 +46,7 @@ When changing layouts, lists, tables, or chart-heavy pages, validate in responsi
 Styles use `@layer` ordering and design tokens from `@nais/ds-svelte-community`:
 
 - **Tokens**: Use `--ax-space-*`, `--ax-radius-*`, `--ax-text-*` variables — never hardcode spacing, radii, or colors
+- **Readability**: Use shared typography tokens instead of page-specific small sizes. Body/table text is 15–16px, secondary text and controls 14px, and compact labels 12–13px. Keep text contrast at least 4.5:1 on its actual surface in both themes; `tests/browser/readability.spec.ts` covers shared status colours, tables, inputs, and navigation.
 - **Utility classes**: `src/styles/app.css` provides `.layout-two-column`, `.layout-sidebar`, `.table-scroll`, `.detail-actions`, `.loading-centered` for common patterns
 - **LayerChart theming**: `src/styles/layerchart.css` maps chart library variables to design tokens. The `.dark` block must mirror the `:root` declarations (tokens resolve differently per scope)
 - **Validation**: Run `pnpm run lint` — ESLint includes custom rules for missing CSS variables and unused GraphQL files

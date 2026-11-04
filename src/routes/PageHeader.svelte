@@ -59,6 +59,8 @@
 		teamErrors?: { message: string }[] | null;
 	}
 
+	const uid = $props.id();
+
 	let {
 		user,
 		features,
@@ -154,6 +156,7 @@
 {/if}
 
 <div class="sh-shell">
+	<a href={`#${uid}-main`} class="skip-link">Skip to content</a>
 	<header class="sh-topnav">
 		<div class="topnav-left">
 			<button
@@ -271,17 +274,20 @@
 		</div>
 
 		<div class="topnav-right">
-			<button
-				type="button"
-				class="jump-to-btn"
-				onclick={() => (searchOpen = true)}
-				aria-label="Jump to team or workload"
-				title="Jump to team or workload (⌘K or /)"
-			>
-				<MagnifyingGlassIcon aria-hidden="true" />
-				<span class="jump-to-text">Jump to…</span>
-				<kbd class="sh-kbd">{isMac ? '⌘K' : 'Ctrl+K'}</kbd>
-			</button>
+			<div class="jump-to-control">
+				<button
+					type="button"
+					class="jump-to-btn"
+					onclick={() => (searchOpen = true)}
+					aria-label="Jump to team or workload"
+					aria-keyshortcuts={isMac ? 'Meta+K /' : 'Control+K /'}
+					title={`Jump to team or workload (${isMac ? '⌘K' : 'Ctrl+K'} or /)`}
+				>
+					<MagnifyingGlassIcon aria-hidden="true" />
+					<span class="jump-to-text">Jump to</span>
+				</button>
+				<kbd class="sh-kbd" aria-hidden="true">{isMac ? '⌘K' : 'Ctrl+K'}</kbd>
+			</div>
 
 			<div class="external-links-group">
 				<a
@@ -367,9 +373,9 @@
 		/>
 
 		<div class="sh-workspace">
-			<div class="sh-content-area">
+			<main id={`${uid}-main`} class="sh-content-area" tabindex="-1">
 				{@render children?.()}
-			</div>
+			</main>
 		</div>
 	</div>
 </div>
@@ -385,6 +391,26 @@
 {/if}
 
 <style>
+	.skip-link {
+		position: fixed;
+		inset-block-start: var(--ax-space-8);
+		inset-inline-start: var(--ax-space-8);
+		z-index: 100;
+		padding: var(--ax-space-8) var(--ax-space-16);
+		border-radius: var(--radius-sm);
+		background-color: var(--primary);
+		color: var(--primary-foreground);
+		font-size: var(--ax-font-size-small);
+		font-weight: var(--ax-font-weight-bold);
+		transform: translateY(calc(-100% - var(--ax-space-16)));
+	}
+
+	.skip-link:focus {
+		transform: translateY(0);
+		outline: var(--ax-space-2) solid var(--ring);
+		outline-offset: var(--ax-space-2);
+	}
+
 	.sh-shell {
 		display: flex;
 		flex-direction: column;
@@ -432,7 +458,7 @@
 	}
 
 	.topnav-slash {
-		color: var(--border-strong);
+		color: var(--muted-foreground);
 		font-size: 1rem;
 		user-select: none;
 		padding: 0 0.125rem;
@@ -454,7 +480,7 @@
 		border: 1px solid var(--border);
 		background-color: var(--background);
 		color: var(--foreground);
-		font-size: 0.8125rem;
+		font-size: var(--ax-font-size-small);
 		font-weight: 600;
 		cursor: pointer;
 		transition:
@@ -476,7 +502,7 @@
 		border-radius: 0.25rem;
 		background: var(--secondary);
 		color: var(--muted-foreground);
-		font-size: 0.625rem;
+		font-size: var(--sh-font-size-micro);
 		font-weight: 700;
 		flex-shrink: 0;
 	}
@@ -541,7 +567,7 @@
 		background: transparent;
 		color: var(--foreground);
 		font-family: inherit;
-		font-size: 0.8125rem;
+		font-size: var(--ax-font-size-small);
 		outline: none;
 	}
 
@@ -586,7 +612,7 @@
 		border-radius: 0.3rem;
 		background-color: var(--secondary);
 		color: var(--foreground);
-		font-size: 0.625rem;
+		font-size: var(--sh-font-size-micro);
 		font-weight: 700;
 		flex-shrink: 0;
 	}
@@ -599,7 +625,7 @@
 	}
 
 	.popover-team-name {
-		font-size: 0.8125rem;
+		font-size: var(--ax-font-size-small);
 		font-weight: 600;
 		white-space: nowrap;
 		overflow: hidden;
@@ -607,7 +633,7 @@
 	}
 
 	.popover-team-purpose {
-		font-size: 0.6875rem;
+		font-size: var(--sh-font-size-xs);
 		color: var(--muted-foreground);
 		white-space: nowrap;
 		overflow: hidden;
@@ -625,7 +651,7 @@
 	.popover-empty {
 		padding: 0.875rem;
 		text-align: center;
-		font-size: 0.8125rem;
+		font-size: var(--ax-font-size-small);
 		color: var(--muted-foreground);
 	}
 
@@ -639,7 +665,7 @@
 	}
 
 	.popover-footer-link {
-		font-size: 0.75rem;
+		font-size: var(--ax-font-size-small);
 		font-weight: 500;
 		color: var(--primary);
 		text-decoration: none;
@@ -663,7 +689,7 @@
 		height: 2rem;
 		padding: 0 0.65rem;
 		border-radius: calc(var(--radius) - 2px);
-		font-size: 0.8125rem;
+		font-size: var(--ax-font-size-small);
 		font-weight: 500;
 		color: var(--muted-foreground);
 		text-decoration: none;
@@ -693,18 +719,30 @@
 		flex-shrink: 0;
 	}
 
+	.jump-to-control {
+		position: relative;
+		display: inline-flex;
+		align-items: center;
+	}
+
+	.jump-to-control > .sh-kbd {
+		position: absolute;
+		inset-inline-end: var(--ax-space-8);
+		pointer-events: none;
+	}
+
 	.jump-to-btn {
 		display: inline-flex;
 		align-items: center;
 		gap: 0.5rem;
 		height: 2rem;
 		min-width: 11.5rem;
-		padding: 0 0.55rem 0 0.65rem;
+		padding: 0 var(--ax-space-64) 0 var(--ax-space-10);
 		border-radius: calc(var(--radius) - 2px);
 		border: 1px solid var(--border);
 		background-color: var(--background);
 		color: var(--muted-foreground);
-		font-size: 0.8125rem;
+		font-size: var(--ax-font-size-small);
 		cursor: pointer;
 		transition:
 			border-color 120ms ease,
@@ -736,7 +774,7 @@
 		padding: 0 0.5rem;
 		border-radius: calc(var(--radius) - 2px);
 		color: var(--muted-foreground);
-		font-size: 0.75rem;
+		font-size: var(--sh-font-size-xs);
 		font-weight: 500;
 		text-decoration: none;
 		white-space: nowrap;
@@ -792,13 +830,13 @@
 		border-radius: 9999px;
 		background: var(--primary-muted);
 		color: var(--primary);
-		font-size: 0.65rem;
+		font-size: var(--sh-font-size-micro);
 		font-weight: 700;
 		flex-shrink: 0;
 	}
 
 	.user-name {
-		font-size: 0.75rem;
+		font-size: var(--sh-font-size-xs);
 		font-weight: 500;
 		color: var(--foreground);
 		max-width: 8rem;
@@ -860,9 +898,10 @@
 		margin: 0 auto;
 		padding: 1.5rem 2rem 3rem 2rem;
 		box-sizing: border-box;
+		scroll-margin-top: var(--ax-space-64);
 	}
 
-	@media (max-width: 1120px) {
+	@media (max-width: 1600px) {
 		.external-links-group,
 		.user-name {
 			display: none;
@@ -870,6 +909,12 @@
 
 		.jump-to-btn {
 			min-width: auto;
+		}
+	}
+
+	@media (max-width: 1120px) {
+		.brand-title {
+			display: none;
 		}
 	}
 
@@ -892,9 +937,47 @@
 	}
 
 	@media (max-width: 640px) {
+		.sh-topnav {
+			gap: var(--ax-space-8);
+		}
+
+		.topnav-left,
+		.topnav-right {
+			gap: var(--ax-space-4);
+		}
+
+		.topnav-slash,
+		.switcher-avatar,
+		.user-avatar,
 		.jump-to-text,
-		.jump-to-btn .sh-kbd {
+		.jump-to-control .sh-kbd {
 			display: none;
+		}
+
+		.jump-to-btn {
+			padding-inline: var(--ax-space-10);
+		}
+
+		.team-switcher-container {
+			min-width: 0;
+			flex-shrink: 1;
+		}
+
+		.team-switcher-trigger {
+			max-width: 100%;
+		}
+
+		.switcher-label {
+			min-width: 0;
+		}
+
+		.user-pill {
+			padding: 0;
+		}
+
+		.logout-link {
+			width: var(--ax-space-32);
+			height: var(--ax-space-32);
 		}
 	}
 </style>

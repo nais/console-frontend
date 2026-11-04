@@ -222,7 +222,7 @@
 
 	.facet-count {
 		flex-shrink: 0;
-		font-size: 0.6875rem;
+		font-size: var(--sh-font-size-xs);
 		color: var(--ax-text-neutral-subtle);
 	}
 </style>
