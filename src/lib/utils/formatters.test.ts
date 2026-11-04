@@ -183,6 +183,28 @@ describe('formatters', () => {
 		test('preserves explicitly requested sub-cent precision', () => {
 			expect(normSep(euroValueFormatter(0.0024, { maximumFractionDigits: 4 }))).toBe('0,0024 €');
 		});
+
+		test.each([
+			[0.001, 0, '< 1 €'],
+			[0.01, 0, '< 1 €'],
+			[0.49, 0, '< 1 €'],
+			[0.99, 0, '< 1 €'],
+			[-0.49, 0, '> −1 €'],
+			[0, 0, '0 €'],
+			[1, 0, '1 €'],
+			[123.456, 0, '123 €'],
+			[0.01, 1, '< 0,1 €'],
+			[-0.01, 1, '> −0,1 €'],
+			[0.1, 1, '0,1 €'],
+			[0.001, 2, '< 0,01 €'],
+			[0.0001, 3, '< 0,001 €'],
+			[0.00001, 4, '< 0,0001 €']
+		])(
+			'formats %s euro with %s fraction digits as %s',
+			(value, maximumFractionDigits, expected) => {
+				expect(normSep(euroValueFormatter(value, { maximumFractionDigits }))).toBe(expected);
+			}
+		);
 	});
 
 	describe('euroTooltipFormatter', () => {

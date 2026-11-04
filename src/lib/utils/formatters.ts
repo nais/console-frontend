@@ -51,9 +51,12 @@ export function euroValueFormatter(
 	}
 
 	if (value === 0) return '0 €';
-	if (maximumFractionDigits <= 2 && Math.abs(value) < 0.01) {
-		const cent = euroValueFormatter(value < 0 ? -0.01 : 0.01);
-		return `${value < 0 ? '>' : '<'} ${cent}`;
+	const minimumAmount = 10 ** -maximumFractionDigits;
+	if (Math.abs(value) < minimumAmount) {
+		const threshold = euroValueFormatter(value < 0 ? -minimumAmount : minimumAmount, {
+			maximumFractionDigits
+		});
+		return `${value < 0 ? '>' : '<'} ${threshold}`;
 	}
 
 	return value.toLocaleString('nb-NO', {
