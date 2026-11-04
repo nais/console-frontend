@@ -7,7 +7,8 @@
 	import ValkeyIcon from '#lib/icons/ValkeyIcon.svelte';
 	import CriticalIndicator from '#lib/ui/CriticalIndicator.svelte';
 	import { issueTypeLabel } from '#lib/utils/issueTypeLabel.js';
-	import { Tag } from '#lib/shadcn/ui/index.js';
+	import { capitalizeFirstLetter } from '#lib/utils/formatters.js';
+	import { Tag, Tooltip } from '#lib/shadcn/ui/index.js';
 	import {
 		BriefcaseClockIcon,
 		ChevronRightIcon,
@@ -372,17 +373,25 @@
 			<ChevronRightIcon />
 		</div>
 		<div class="severity-dot">
-			{#if $data?.severity === 'CRITICAL'}
-				<CriticalIndicator />
-			{:else}
-				<CircleFillIcon
-					style="color: light-dark({{
-						TODO: 'var(--ax-bg-info-strong), var(--ax-bg-info-strong)',
-						WARNING: 'var(--ax-bg-warning-moderate-pressed), var(--ax-bg-warning-strong-pressed)'
-					}[$data?.severity] ??
-						'var(--ax-bg-info-strong), var(--ax-bg-info-strong)'}); font-size: 0.7rem"
-				/>
-			{/if}
+			<Tooltip
+				content="Severity: {capitalizeFirstLetter($data?.severity?.toLowerCase() ?? 'unknown')}"
+			>
+				<span class="sr-only"
+					>Severity: {capitalizeFirstLetter($data?.severity?.toLowerCase() ?? 'unknown')}</span
+				>
+				<span aria-hidden="true">
+					{#if $data?.severity === 'CRITICAL'}
+						<CriticalIndicator />
+					{:else}
+						<CircleFillIcon
+							fill="currentColor"
+							style="color: {$data?.severity === 'WARNING'
+								? 'var(--ax-bg-warning-strong)'
+								: 'var(--ax-bg-info-strong)'}; font-size: var(--ax-space-12)"
+						/>
+					{/if}
+				</span>
+			</Tooltip>
 		</div>
 		<div class="resource-icon">
 			<ResourceIcon />

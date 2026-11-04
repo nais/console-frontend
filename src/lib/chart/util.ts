@@ -1,4 +1,3 @@
-import { euroValueFormatter } from '#lib/utils/formatters.js';
 import { createLocaleSettings, DateToken, DayOfWeek, defaultLocale } from '@layerstack/utils';
 
 export function getBrushDateDomain(domain: unknown): [Date, Date] | undefined {
@@ -103,25 +102,22 @@ export function serviceColor(serviceName: ServiceName | string): string {
 	}
 }
 
-export function euroAxisFormatter(value: number) {
-	if (value === 0) return '0 €';
-	if (value < 0.001) {
-		const micro = value * 1_000_000;
-		return (micro % 1 === 0 ? micro.toFixed(0) : micro.toFixed(1)) + ' µ€';
-	}
-	if (value < 1) {
-		const milli = value * 1000;
-		return (milli % 1 === 0 ? milli.toFixed(0) : milli.toFixed(1)) + ' m€';
-	}
-	if (value < 1000) {
-		return euroValueFormatter(value);
-	}
-	const kValue = value / 1000;
-	if (kValue % 1 === 0) {
-		return kValue.toFixed(0) + 'K' + ' €';
-	} else {
-		return kValue.toFixed(1) + 'K' + ' €';
-	}
+export function createEuroAxis(maximumValue: number) {
+	const fractionDigits =
+		maximumValue === 0
+			? 2
+			: Math.min(20, Math.max(2, Math.ceil(-Math.log10(Math.abs(maximumValue) / 10))));
+	const formatter = new Intl.NumberFormat('nb-NO', {
+		style: 'currency',
+		currency: 'EUR',
+		minimumFractionDigits: fractionDigits,
+		maximumFractionDigits: fractionDigits
+	});
+	const labelLength = Math.max(formatter.format(0).length, formatter.format(maximumValue).length);
+	return {
+		format: formatter.format,
+		paddingLeft: Math.max(40, labelLength * 8 + 16)
+	};
 }
 
 export const PrometheusChartQueryInterval = {

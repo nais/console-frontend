@@ -3,13 +3,14 @@
 	import { OrderDirection, TeamOrderField } from '$houdini';
 	import ChartBoundary from '#lib/chart/ChartBoundary.svelte';
 	import LegendWrapper, { legendSnippet } from '#lib/chart/LegendWrapper.svelte';
-	import { euroAxisFormatter, serviceColor } from '#lib/chart/util.js';
+	import type { LegendContext } from '#lib/chart/LegendWrapperData.svelte';
+	import { createEuroAxis, serviceColor } from '#lib/chart/util.js';
 	import GraphErrors from '#lib/ui/GraphErrors.svelte';
 	import IconLabel from '#lib/ui/IconLabel.svelte';
 	import { urlToOrderDirection, urlToOrderField } from '#lib/ui/OrderByMenu.svelte';
 	import Pagination from '#lib/ui/Pagination.svelte';
 	import Time from '#lib/ui/Time.svelte';
-	import { euroValueFormatter } from '#lib/utils/formatters.js';
+	import { euroTooltipFormatter, euroValueFormatter } from '#lib/utils/formatters.js';
 	import { changeParams } from '#lib/utils/searchparams.js';
 	import {
 		BodyLong,
@@ -33,6 +34,7 @@
 
 	let { data }: PageProps = $props();
 	let { TenantCost, CostMonthly, interval } = $derived(data);
+	let legendContext = $state<LegendContext>();
 
 	const currentOrderField = $derived(
 		urlToOrderField(TeamOrderField, TeamOrderField.ACCUMULATED_COST, page.url)
@@ -94,6 +96,20 @@
 			...Object.fromEntries(item.services.map((s) => [s.service, s.cost]))
 		}));
 	});
+	const euroAxis = $derived(
+		createEuroAxis(
+			$CostMonthly.data?.costMonthlySummary.series.reduce(
+				(max, item) =>
+					Math.max(
+						max,
+						item.services
+							.filter((service) => !legendContext?.hiddenKeys.has(service.service))
+							.reduce((total, service) => total + Math.abs(service.cost), 0)
+					),
+				0
+			) ?? 0
+		)
+	);
 
 	function formatDate(value: Date): string {
 		if (!value) return '';
@@ -159,10 +175,10 @@
 					</div>
 				{:else if $CostMonthly.data}
 					<ChartBoundary>
-						<LegendWrapper height="500px">
+						<LegendWrapper height="500px" onContextReady={(ctx) => (legendContext = ctx)}>
 							<BarChart
 								legend={legendSnippet}
-								padding={{ top: 24, bottom: 24, left: 40, right: 40 }}
+								padding={{ top: 24, bottom: 24, left: euroAxis.paddingLeft, right: 40 }}
 								data={tenantCostData}
 								x="date"
 								series={allServicesSeries}
@@ -171,7 +187,7 @@
 									xAxis: {
 										format: formatDate
 									},
-									yAxis: { format: euroAxisFormatter }
+									yAxis: { format: euroAxis.format }
 								}}
 							>
 								{#snippet tooltip({ context })}
@@ -200,7 +216,7 @@
 												{#each sortedPayload(payload) as p, i (p.key ?? i)}
 													<Tooltip.Item label={p.name} color={p.color} valueAlign="right">
 														{#if p.value && p.value > 0}
-															{euroValueFormatter(p.value)}
+															{euroTooltipFormatter(p.value)}
 															({((p.value / total) * 100).toFixed(1)}%)
 														{:else}
 															<span style="opacity:0.5;">{euroValueFormatter(0)}</span>
@@ -212,7 +228,7 @@
 													<Tooltip.Item
 														label="total"
 														value={total}
-														format="currency"
+														format={euroTooltipFormatter}
 														valueAlign="right"
 													/>
 												{/if}

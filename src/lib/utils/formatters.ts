@@ -50,12 +50,29 @@ export function euroValueFormatter(
 		return '';
 	}
 
+	if (value === 0) return '0 €';
+	const minimumAmount = 10 ** -maximumFractionDigits;
+	if (Math.abs(value) < minimumAmount) {
+		const threshold = euroValueFormatter(value < 0 ? -minimumAmount : minimumAmount, {
+			maximumFractionDigits
+		});
+		return `${value < 0 ? '>' : '<'} ${threshold}`;
+	}
+
 	return value.toLocaleString('nb-NO', {
 		style: 'currency',
 		currency: 'EUR',
-		maximumFractionDigits,
-		maximumSignificantDigits: 2,
-		roundingPriority: 'morePrecision'
+		maximumFractionDigits
+	});
+}
+
+export function euroTooltipFormatter(value?: number): string {
+	if (value === undefined) return '';
+	if (value === 0) return '0 €';
+	return value.toLocaleString('nb-NO', {
+		style: 'currency',
+		currency: 'EUR',
+		maximumFractionDigits: Math.min(20, Math.max(2, 1 - Math.floor(Math.log10(Math.abs(value)))))
 	});
 }
 
