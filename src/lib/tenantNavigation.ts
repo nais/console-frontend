@@ -5,7 +5,6 @@ export interface TenantNavigationItem {
 }
 
 const links = [
-	{ href: '/', label: 'Teams' },
 	{ href: '/vulnerabilities', label: 'Vulnerabilities' },
 	{ href: '/cost', label: 'Cost' },
 	{ href: '/utilization', label: 'Utilization' },

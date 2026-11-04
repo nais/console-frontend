@@ -7,15 +7,23 @@
 	import ActionMenu from '../../src/lib/shadcn/ui/ActionMenu.svelte';
 	import ActionMenuItem from '../../src/lib/shadcn/ui/ActionMenuItem.svelte';
 	import Modal from '../../src/lib/shadcn/ui/Modal.svelte';
+	import Badge from '../../src/lib/shadcn/ui/Badge.svelte';
+	import Input from '../../src/lib/shadcn/ui/Input.svelte';
+	import Tag from '../../src/lib/shadcn/ui/Tag.svelte';
+	import Td from '../../src/lib/shadcn/ui/Td.svelte';
+	import Th from '../../src/lib/shadcn/ui/Th.svelte';
+	import Tr from '../../src/lib/shadcn/ui/Tr.svelte';
 	import Collection from '../../src/lib/ui/Collection.svelte';
 	import EmptyState from '../../src/lib/ui/EmptyState.svelte';
 	import ExternalLink from '../../src/lib/ui/ExternalLink.svelte';
 	import PriorityAlertBar from '../../src/lib/domain/vulnerability/PriorityAlertBar.svelte';
 	import TeamSummary from '../../src/lib/domain/team/TeamSummary.svelte';
+	import ResourceTable from '../../src/lib/ui/ResourceTable.svelte';
 	import type { TeamSummaryCost$result } from '$houdini';
 
 	const sizes = ['3xlarge', '2xlarge', 'xlarge', 'large', 'medium', 'small', 'xsmall'] as const;
 	const headingSizes = ['xlarge', 'large', 'medium', 'small', 'xsmall'] as const;
+	const statusVariants = ['success', 'warning', 'destructive', 'info'] as const;
 	let nestedTheme = $state<'light' | 'dark'>('light');
 	let dialogOpen = $state(false);
 
@@ -48,6 +56,21 @@
 		<Loader {size} title={`Loading ${size}`} />
 	{/each}
 	<Loader title="Styled loading" size="large" style="color: var(--ax-text-accent)" />
+	<section aria-label="Readable controls">
+		<Input ariaLabel="Readability search" placeholder="Search resources" />
+		{#each statusVariants as variant (variant)}
+			<Badge {variant} size="sm">{variant} badge</Badge>
+			<Tag variant={variant === 'destructive' ? 'error' : variant} size="small">{variant} tag</Tag>
+		{/each}
+		<Badge variant="env-dev" size="sm" mono>dev-gcp</Badge>
+		<ResourceTable label="Readability table">
+			{#snippet header()}<Th>Resource</Th><Th>Last updated</Th>{/snippet}
+			<Tr>
+				<Td>Example resource</Td>
+				<Td><span class="table-meta">Recently updated</span></Td>
+			</Tr>
+		</ResourceTable>
+	</section>
 	{#each headingSizes as size (size)}
 		<Heading as="h2" {size} spacing>{size} heading</Heading>
 	{/each}

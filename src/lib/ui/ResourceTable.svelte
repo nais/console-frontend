@@ -56,7 +56,7 @@
 
 	.resource-table :global(thead th) {
 		border-bottom: 1px solid var(--border);
-		font-size: 0.75rem;
+		font-size: var(--ax-font-size-small);
 		font-weight: 500;
 		letter-spacing: 0;
 		color: var(--muted-foreground);
@@ -116,7 +116,7 @@
 	}
 
 	.resource-table :global(.table-meta) {
-		font-size: 0.8125rem;
+		font-size: var(--ax-font-size-small);
 		color: var(--muted-foreground);
 		font-variant-numeric: tabular-nums;
 	}

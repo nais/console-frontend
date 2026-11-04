@@ -25,7 +25,7 @@
 		</div>
 	{/if}
 
-	<main class="team-main">
+	<div class="team-main">
 		<PageHeader />
 		<div class="team-body">
 			<svelte:boundary onerror={(e) => console.error('Team page render error:', e)}>
@@ -41,7 +41,7 @@
 				{/snippet}
 			</svelte:boundary>
 		</div>
-	</main>
+	</div>
 </div>
 
 <style>

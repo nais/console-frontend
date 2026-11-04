@@ -32,7 +32,7 @@
 
 .lc-text {
 	font-family: sans-serif;
-	font-size: 12px;
+	font-size: var(--ax-font-size-small);
 }
 
 /* svg {

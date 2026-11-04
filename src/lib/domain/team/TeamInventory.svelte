@@ -398,7 +398,7 @@
 		display: inline-flex;
 		align-items: center;
 		gap: 0.375rem;
-		font-size: 0.75rem;
+		font-size: var(--ax-font-size-small);
 		color: var(--muted-foreground);
 		font-variant-numeric: tabular-nums;
 	}
@@ -447,7 +447,7 @@
 		color: var(--foreground);
 		background-color: color-mix(in srgb, var(--background) 60%, var(--card));
 		border: 1px solid var(--border);
-		font-size: 0.8125rem;
+		font-size: var(--ax-font-size-small);
 		transition:
 			background-color 120ms ease,
 			border-color 120ms ease;
@@ -466,7 +466,7 @@
 	.resource-count {
 		font-weight: 700;
 		font-family: monospace;
-		font-size: 0.75rem;
+		font-size: var(--sh-font-size-xs);
 		padding: 0.0625rem 0.4375rem;
 		border-radius: var(--radius-full);
 		background-color: var(--secondary);

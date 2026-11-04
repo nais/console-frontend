@@ -4,7 +4,6 @@ import { tenantNavigation } from './tenantNavigation.js';
 describe('tenantNavigation', () => {
 	it('includes all tenant destinations and only shows Admin to administrators', () => {
 		expect(tenantNavigation('/').map(({ href }) => href)).toEqual([
-			'/',
 			'/vulnerabilities',
 			'/cost',
 			'/utilization',
@@ -19,7 +18,6 @@ describe('tenantNavigation', () => {
 	});
 
 	it.each([
-		['/', '/'],
 		['/vulnerabilities', '/vulnerabilities'],
 		['/vulnerabilities/CVE-2026-1234', '/vulnerabilities'],
 		['/cost/teams', '/cost'],

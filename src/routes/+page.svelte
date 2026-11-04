@@ -314,7 +314,7 @@
 
 	.team-purpose {
 		margin: 0;
-		font-size: 0.8125rem;
+		font-size: var(--ax-font-size-small);
 		color: var(--muted-foreground);
 		line-height: 1.45;
 		text-align: left;
@@ -332,7 +332,7 @@
 		padding: 0.5rem 1.125rem;
 		background-color: var(--background-subtle);
 		border-top: 1px solid var(--border);
-		font-size: 0.75rem;
+		font-size: var(--ax-font-size-small);
 	}
 
 	.team-quick-link {
@@ -348,7 +348,7 @@
 	}
 
 	.dot-sep {
-		color: var(--border-strong);
+		color: var(--muted-foreground);
 	}
 
 	.empty-card {

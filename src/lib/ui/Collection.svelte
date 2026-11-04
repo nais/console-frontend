@@ -145,7 +145,7 @@
 		background: var(--secondary);
 		border: 1px solid var(--border);
 		color: var(--muted-foreground);
-		font-size: 0.75rem;
+		font-size: var(--sh-font-size-xs);
 		font-weight: 600;
 		font-variant-numeric: tabular-nums;
 	}

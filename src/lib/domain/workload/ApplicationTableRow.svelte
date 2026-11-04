@@ -125,7 +125,7 @@
 	}
 
 	.healthy-text {
-		font-size: 0.75rem;
+		font-size: var(--ax-font-size-small);
 		color: var(--muted-foreground);
 	}
 
@@ -137,7 +137,7 @@
 	}
 
 	.instances-text {
-		font-size: 0.75rem;
+		font-size: var(--ax-font-size-small);
 		color: var(--muted-foreground);
 		font-variant-numeric: tabular-nums;
 	}

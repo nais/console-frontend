@@ -148,14 +148,14 @@
 	}
 
 	.instance-group-meta {
-		font-size: 0.75rem;
+		font-size: var(--ax-font-size-small);
 		color: var(--muted-foreground);
 		overflow-wrap: anywhere;
 	}
 
 	.instance-group-meta code {
 		font-family: monospace;
-		font-size: 0.75rem;
+		font-size: var(--sh-font-size-xs);
 		padding: 0.0625rem 0.375rem;
 		border-radius: var(--radius-sm);
 		background-color: var(--secondary);
@@ -205,6 +205,6 @@
 	}
 
 	.empty-description {
-		font-size: 0.75rem;
+		font-size: var(--ax-font-size-small);
 	}
 </style>

@@ -153,7 +153,7 @@
 				gap: 0.375rem;
 				align-items: center;
 				min-width: 0;
-				font-size: 0.8125rem;
+				font-size: var(--ax-font-size-small);
 				color: var(--muted-foreground);
 
 				.link {

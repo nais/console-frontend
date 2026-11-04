@@ -16,7 +16,6 @@ test('narrow team navigation shows Tenant first and keeps team links distinct', 
 	const tenant = dialog.getByRole('navigation', { name: 'Tenant', exact: true });
 	const team = dialog.getByRole('navigation', { name: 'Team: nais', exact: true });
 	await expect(tenant.getByRole('link')).toHaveText([
-		'Teams',
 		'Vulnerabilities',
 		'Cost',
 		'Utilization',
@@ -51,9 +50,6 @@ test('tenant pages have navigation without a selected team, with admin gating', 
 	await expect(dialog.getByRole('link', { name: 'Vulnerabilities' })).toHaveAttribute(
 		'aria-current',
 		'page'
-	);
-	await expect(dialog.getByRole('link', { name: 'Teams', exact: true })).not.toHaveAttribute(
-		'aria-current'
 	);
 	await expect(dialog.getByRole('link', { name: 'Admin', exact: true })).toHaveCount(0);
 
@@ -115,8 +111,15 @@ test('desktop collapse survives resizing while mobile links retain their text', 
 	const sidebar = page.getByRole('complementary', { name: 'Team navigation' });
 	await expect(sidebar).toBeVisible();
 	await expect(sidebar.getByRole('link', { name: 'Valkey', exact: true })).toBeVisible();
+	await expect(sidebar.getByRole('img')).toHaveCount(0);
 	await page.getByRole('button', { name: 'Collapse team sidebar' }).click();
 	await expect(page.getByRole('button', { name: 'Expand team sidebar' })).toBeVisible();
+	await expect(sidebar.getByRole('link', { name: 'OpenSearch', exact: true })).toBeVisible();
+	await expect(sidebar.getByRole('link', { name: 'OpenSearch', exact: true })).toHaveAttribute(
+		'aria-label',
+		'OpenSearch'
+	);
+	await expect(sidebar.getByRole('img')).toHaveCount(0);
 	await page.setViewportSize({ width: 800, height: 900 });
 	await expect(sidebar).not.toBeVisible();
 	await page.getByRole('button', { name: 'Open navigation' }).click();
@@ -125,6 +128,7 @@ test('desktop collapse survives resizing while mobile links retain their text', 
 		'Applications'
 	);
 	await expect(dialog.getByRole('link', { name: 'Valkey', exact: true })).toBeVisible();
+	await expect(dialog.getByRole('img')).toHaveCount(0);
 	await page.setViewportSize({ width: 1200, height: 900 });
 	await expect(dialog).not.toBeVisible();
 	await expect(sidebar).toBeVisible();

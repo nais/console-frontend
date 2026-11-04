@@ -277,7 +277,7 @@
 	}
 
 	.metric-category {
-		font-size: 0.8125rem;
+		font-size: var(--ax-font-size-small);
 		font-weight: 500;
 		color: var(--muted-foreground);
 	}
@@ -349,7 +349,7 @@
 	}
 
 	.metric-label {
-		font-size: 0.75rem;
+		font-size: var(--ax-font-size-small);
 		color: var(--muted-foreground);
 		white-space: nowrap;
 		display: flex;

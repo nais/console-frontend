@@ -79,9 +79,10 @@
 							href={item.href}
 							class={['nav-item', { active: item.active }]}
 							aria-current={item.active ? 'page' : undefined}
+							aria-label={compact ? item.label : undefined}
 							title={compact ? item.label : undefined}
 						>
-							<span class="nav-icon"><Icon icon={item.label} /></span>
+							<span class="nav-icon" aria-hidden="true"><Icon icon={item.label} /></span>
 							{#if !compact}
 								<span class="nav-label">{item.label}</span>
 							{/if}
