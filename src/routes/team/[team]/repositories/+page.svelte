@@ -12,8 +12,8 @@
 	import Pagination from '#lib/ui/Pagination.svelte';
 	import SurfaceCard from '#lib/ui/SurfaceCard.svelte';
 	import { changeParams } from '#lib/utils/searchparams.js';
-	import { Alert, Button, Detail, Heading, Modal, TextField } from '@nais/ds-svelte-community';
-	import { FunnelIcon, PlusIcon, TrashIcon } from '@nais/ds-svelte-community/icons';
+	import { Alert, Button, Detail, Heading, Modal, TextField } from '#lib/shadcn/ui/index.js';
+	import { FunnelIcon, PlusIcon, TrashIcon } from '#lib/icons/index.js';
 	import type { PageProps } from './$types';
 
 	let { data }: PageProps = $props();

@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { Box, Heading } from '@nais/ds-svelte-community';
 	import type { Snippet } from 'svelte';
 
 	interface Props {
@@ -21,20 +20,18 @@
 	}: Props = $props();
 </script>
 
-<Box
-	borderRadius="12"
-	padding="space-16"
-	class="surface-card {bordered ? 'surface-card-bordered' : ''}"
->
+<div class="surface-card {bordered ? 'surface-card-bordered' : ''}">
 	{#if title || headerAside}
 		<div class="header">
 			{#if title}
-				<Heading as={level} size={eyebrow ? 'xsmall' : 'medium'} class={eyebrow ? 'eyebrow' : ''}
-					>{title}</Heading
+				<svelte:element this={level} class={eyebrow ? 'card-eyebrow' : 'card-title'}
+					>{title}</svelte:element
 				>
 			{/if}
 			{#if headerAside}
-				{@render headerAside()}
+				<div class="header-aside">
+					{@render headerAside()}
+				</div>
 			{/if}
 		</div>
 	{/if}
@@ -42,40 +39,69 @@
 	<div class="content">
 		{@render children()}
 	</div>
-</Box>
+</div>
 
 <style>
-	:global(.surface-card) {
+	.surface-card {
 		display: flex;
 		flex-direction: column;
-		gap: var(--ax-space-12);
+		gap: 0.875rem;
 		width: 100%;
 		min-width: 0;
+		padding: 1.125rem 1.25rem;
+		background-color: var(--card);
+		color: var(--card-foreground);
+		border: 1px solid var(--border);
+		border-radius: var(--radius);
+		box-shadow: var(--sh-shadow-xs);
 	}
 
-	:global(.surface-card-bordered) {
-		background: color-mix(in srgb, var(--surface-accent-color) 4%, var(--ax-bg-default));
-		box-shadow: 0 8px 8px -8px var(--ax-border-neutral-subtleA);
+	.surface-card-bordered {
+		background-color: var(--background-subtle);
+		border-color: var(--border);
+		box-shadow: var(--sh-shadow-xs);
 	}
 
 	.header {
 		display: flex;
 		justify-content: space-between;
 		align-items: center;
-		gap: var(--ax-space-8);
+		gap: 0.5rem;
+	}
+
+	.card-eyebrow {
+		margin: 0;
+		font-size: 0.875rem;
+		font-weight: 600;
+		letter-spacing: -0.01em;
+		color: var(--foreground);
+	}
+
+	.card-title {
+		margin: 0;
+		font-size: 0.9375rem;
+		font-weight: 600;
+		letter-spacing: -0.01em;
+		color: var(--foreground);
+	}
+
+	.header-aside {
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
 	}
 
 	.content {
 		display: flex;
 		flex-direction: column;
-		gap: var(--ax-space-16);
+		gap: 0.875rem;
 		width: 100%;
 		min-width: 0;
 	}
 
 	@media (max-width: 767px), (max-height: 500px) {
-		:global(.surface-card) {
-			padding: var(--ax-space-12);
+		.surface-card {
+			padding: 0.875rem 1rem;
 		}
 	}
 </style>

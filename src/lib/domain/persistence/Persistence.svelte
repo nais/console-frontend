@@ -1,5 +1,6 @@
 <script lang="ts">
-	import IconLabel from '#lib/ui/IconLabel.svelte';
+	import { ShBadge } from '#lib/shadcn/ui/index.js';
+	import Icon from '#lib/ui/Icon.svelte';
 	import SurfaceCard from '#lib/ui/SurfaceCard.svelte';
 	import { fragment, graphql, type Persistence } from '$houdini';
 
@@ -137,7 +138,8 @@
 			label: persistence.node.name,
 			href: `/team/${$data.team.slug}/${$data.teamEnvironment.environment.name}/${urlName}/${persistence.node.name}`,
 			icon: urlName,
-			tooltip
+			tooltip,
+			description: undefined as string | undefined
 		});
 
 	type KafkaNode = {
@@ -207,8 +209,16 @@
 	<SurfaceCard title="Persistence">
 		<div class="content">
 			{#each Object.entries(persistence) as [type, list] (type)}
-				{#each list as persistence (persistence.id)}
-					<IconLabel {...persistence} />
+				{#each list as item (item.id)}
+					<a href={item.href} class="persistence-row" title="{item.tooltip}: {item.label}">
+						<span class="persistence-icon">
+							<Icon icon={item.icon} />
+						</span>
+						<span class="persistence-label">{item.label}</span>
+						{#if item.description}
+							<ShBadge variant="secondary" mono>{item.description}</ShBadge>
+						{/if}
+					</a>
 				{/each}
 			{/each}
 		</div>
@@ -217,12 +227,44 @@
 
 <style>
 	.content {
-		display: grid;
-		grid-template-columns: 1fr;
-		gap: var(--ax-space-4);
+		display: flex;
+		flex-direction: column;
+		gap: 0.25rem;
+	}
 
-		:global(.icon-label.icon-label--with-desc) {
-			font-size: 1.25rem;
-		}
+	.persistence-row {
+		display: flex;
+		align-items: center;
+		gap: 0.55rem;
+		padding: 0.375rem 0.5rem;
+		margin: 0 -0.5rem;
+		border-radius: calc(var(--radius) - 3px);
+		color: var(--foreground);
+		text-decoration: none;
+		font-size: 0.8125rem;
+		transition: background-color 110ms ease;
+	}
+
+	.persistence-row:hover {
+		background-color: var(--secondary);
+		text-decoration: none;
+	}
+
+	.persistence-icon {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		color: var(--muted-foreground);
+		font-size: 0.9375rem;
+		flex-shrink: 0;
+	}
+
+	.persistence-label {
+		flex: 1;
+		min-width: 0;
+		font-weight: 500;
+		white-space: nowrap;
+		overflow: hidden;
+		text-overflow: ellipsis;
 	}
 </style>

@@ -1,0 +1,99 @@
+<script lang="ts">
+	import Loader from '../../src/lib/shadcn/ui/Loader.svelte';
+	import Heading from '../../src/lib/shadcn/ui/Heading.svelte';
+	import AddToFavorites from '../../src/lib/ui/AddToFavorites.svelte';
+	import Theme from '../../src/lib/shadcn/ui/Theme.svelte';
+	import Button from '../../src/lib/shadcn/ui/Button.svelte';
+	import ActionMenu from '../../src/lib/shadcn/ui/ActionMenu.svelte';
+	import ActionMenuItem from '../../src/lib/shadcn/ui/ActionMenuItem.svelte';
+	import Modal from '../../src/lib/shadcn/ui/Modal.svelte';
+	import Collection from '../../src/lib/ui/Collection.svelte';
+	import EmptyState from '../../src/lib/ui/EmptyState.svelte';
+	import ExternalLink from '../../src/lib/ui/ExternalLink.svelte';
+	import PriorityAlertBar from '../../src/lib/domain/vulnerability/PriorityAlertBar.svelte';
+	import TeamSummary from '../../src/lib/domain/team/TeamSummary.svelte';
+	import type { TeamSummaryCost$result } from '$houdini';
+
+	const sizes = ['3xlarge', '2xlarge', 'xlarge', 'large', 'medium', 'small', 'xsmall'] as const;
+	const headingSizes = ['xlarge', 'large', 'medium', 'small', 'xsmall'] as const;
+	let nestedTheme = $state<'light' | 'dark'>('light');
+	let dialogOpen = $state(false);
+
+	const costCases = [
+		{ key: 'decreasing', sum: 96 },
+		{ key: 'threshold', sum: 105 },
+		{ key: 'increasing', sum: 106 }
+	];
+
+	function costData(currentSum: number): TeamSummaryCost$result {
+		const now = new Date();
+		return {
+			team: {
+				cost: {
+					daily: {
+						series: [
+							{ date: new Date(now.getFullYear(), now.getMonth() - 1, 1), sum: 100 },
+							{ date: new Date(now.getFullYear(), now.getMonth(), 1), sum: currentSum }
+						]
+					}
+				}
+			}
+		};
+	}
+</script>
+
+<main>
+	<AddToFavorites path="/team/feedback-fixture" />
+	{#each sizes as size (size)}
+		<Loader {size} title={`Loading ${size}`} />
+	{/each}
+	<Loader title="Styled loading" size="large" style="color: var(--ax-text-accent)" />
+	{#each headingSizes as size (size)}
+		<Heading as="h2" {size} spacing>{size} heading</Heading>
+	{/each}
+	<Theme theme="light" data-testid="light-reference">Light reference</Theme>
+	<Theme theme="dark" data-testid="dark-parent">
+		<Theme data-testid="inherited-dark">Inherited dark theme</Theme>
+		<Theme theme={nestedTheme} data-testid="nested-theme">
+			<Theme data-testid="inherited-theme">Inherited nested theme</Theme>
+			<Theme theme="dark" data-testid="nested-dark">Explicit dark descendant</Theme>
+			<ActionMenu>
+				{#snippet trigger(props)}<Button {...props}>Nested theme actions</Button>{/snippet}
+				<ActionMenuItem>Nested theme action</ActionMenuItem>
+			</ActionMenu>
+			<Button onclick={() => (dialogOpen = true)}>Open themed dialog</Button>
+			<Modal bind:open={dialogOpen} header="Themed dialog">
+				<Button onclick={() => (nestedTheme = nestedTheme === 'light' ? 'dark' : 'light')}>
+					Toggle dialog theme
+				</Button>
+			</Modal>
+		</Theme>
+	</Theme>
+	<section aria-label="Cost sparklines">
+		{#each costCases as costCase (costCase.key)}
+			<div data-testid={`cost-${costCase.key}`}>
+				<TeamSummary teamSlug="cost-fixture" costData={costData(costCase.sum)} />
+			</div>
+		{/each}
+	</section>
+	<section aria-label="Priority colours">
+		<PriorityAlertBar knownExploited={31} high={162} elevated={99} monitor={1092} />
+		<PriorityAlertBar knownExploited={31} high={162} elevated={99} monitor={1092} compact />
+	</section>
+	<Collection title="Cloud SQL" count={0}>
+		<EmptyState
+			title="No Cloud SQL instances found."
+			description="Cloud SQL instances provide managed relational databases in the cloud."
+		>
+			<ExternalLink href="https://docs.nais.io/persistence/cloudsql">
+				Learn more about Cloud SQL in Nais and how to get started.
+			</ExternalLink>
+		</EmptyState>
+	</Collection>
+	<Collection title="Applications" count={0}>
+		<EmptyState title="No applications found." />
+	</Collection>
+	<Collection title="Jobs" count={0}>
+		<EmptyState title="No jobs match your filters." />
+	</Collection>
+</main>

@@ -18,7 +18,7 @@
 		ToggleChip,
 		ToggleGroup,
 		ToggleGroupItem
-	} from '@nais/ds-svelte-community';
+	} from '#lib/shadcn/ui/index.js';
 	import { onMount, untrack } from 'svelte';
 	import { SvelteSet } from 'svelte/reactivity';
 
@@ -305,7 +305,7 @@
 	}
 
 	.instance {
-		color: var(--ax-text-decoration);
+		color: var(--ax-text-neutral);
 	}
 
 	.message {

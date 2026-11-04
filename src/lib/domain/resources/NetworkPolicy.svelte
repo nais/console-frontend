@@ -5,13 +5,8 @@
 	import IconLabel from '#lib/ui/IconLabel.svelte';
 	import Collection from '#lib/ui/Collection.svelte';
 	import TooltipAlignHack from '#lib/ui/TooltipAlignHack.svelte';
-	import { BodyLong, Heading, Tag } from '@nais/ds-svelte-community';
-	import {
-		ArrowLeftIcon,
-		ArrowRightIcon,
-		GlobeIcon,
-		PackageIcon
-	} from '@nais/ds-svelte-community/icons';
+	import { BodyLong, Heading, Tag } from '#lib/shadcn/ui/index.js';
+	import { ArrowLeftIcon, ArrowRightIcon, GlobeIcon, PackageIcon } from '#lib/icons/index.js';
 
 	interface Props {
 		workload: NetworkPolicy;

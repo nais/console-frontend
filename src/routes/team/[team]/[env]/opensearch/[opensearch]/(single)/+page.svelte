@@ -15,18 +15,8 @@
 	import ManifestCard from '#lib/ui/ManifestCard.svelte';
 	import Pagination from '#lib/ui/Pagination.svelte';
 	import { changeParams } from '#lib/utils/searchparams.js';
-	import {
-		Alert,
-		Button,
-		Heading,
-		Table,
-		Tbody,
-		Td,
-		Th,
-		Thead,
-		Tr
-	} from '@nais/ds-svelte-community';
-	import { CogRotationIcon, NotePencilIcon, TrashIcon } from '@nais/ds-svelte-community/icons';
+	import { Alert, Button, Heading, Table, Tbody, Td, Th, Thead, Tr } from '#lib/shadcn/ui/index.js';
+	import { CogRotationIcon, NotePencilIcon, TrashIcon } from '#lib/icons/index.js';
 	import type { PageProps } from './$types';
 
 	const runServiceMaintenance = graphql(`

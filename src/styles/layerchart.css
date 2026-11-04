@@ -1,4 +1,4 @@
-:root {
+:where(:root, [data-theme='light'], .light, .light-theme) {
 	--color-primary: var(--ax-text-accent);
 	--color-primary-content: var(--ax-text-neutral);
 	--color-secondary: var(--ax-text-accent);

@@ -1,7 +1,7 @@
 <script lang="ts">
 	import Pagination from '#lib/ui/Pagination.svelte';
 	import Time from '#lib/ui/Time.svelte';
-	import { Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte-community';
+	import { Table, Tbody, Td, Th, Thead, Tr } from '#lib/shadcn/ui/index.js';
 	import type { PageProps } from './$types';
 
 	let { data }: PageProps = $props();

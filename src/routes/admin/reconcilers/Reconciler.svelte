@@ -9,8 +9,8 @@
 		Heading,
 		Switch,
 		TextField
-	} from '@nais/ds-svelte-community';
-	import { InformationSquareFillIcon } from '@nais/ds-svelte-community/icons';
+	} from '#lib/shadcn/ui/index.js';
+	import { InformationSquareFillIcon } from '#lib/icons/index.js';
 	import { untrack } from 'svelte';
 
 	interface Props {
@@ -185,7 +185,7 @@
 							{/snippet}
 						</TextField>
 					{/each}
-					<Button loading={configLoading} disabled={configLoading}>Save</Button>
+					<Button type="submit" loading={configLoading} disabled={configLoading}>Save</Button>
 				</form>
 			</AccordionItem>
 		</Accordion>

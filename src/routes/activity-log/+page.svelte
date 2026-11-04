@@ -12,8 +12,8 @@
 	import Pagination from '#lib/ui/Pagination.svelte';
 	import SurfaceCard from '#lib/ui/SurfaceCard.svelte';
 	import { changeParams } from '#lib/utils/searchparams.js';
-	import { BodyShort, TextField, ToggleGroup, ToggleGroupItem } from '@nais/ds-svelte-community';
-	import { FunnelIcon } from '@nais/ds-svelte-community/icons';
+	import { BodyShort, TextField, ToggleGroup, ToggleGroupItem } from '#lib/shadcn/ui/index.js';
+	import { FunnelIcon } from '#lib/icons/index.js';
 	import type { PageProps } from './$types';
 	import { parseOslo } from './osloTime';
 

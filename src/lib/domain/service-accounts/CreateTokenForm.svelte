@@ -9,7 +9,7 @@
 		ErrorMessage,
 		Select,
 		TextField
-	} from '@nais/ds-svelte-community';
+	} from '#lib/shadcn/ui/index.js';
 	import { DEFAULT_EXPIRY, EXPIRY_OPTIONS } from './tokenExpiry';
 
 	const {

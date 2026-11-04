@@ -1,6 +1,6 @@
 <script lang="ts">
 	import type { PostgresInsightsStore } from '$houdini';
-	import { Alert, Button, Select } from '@nais/ds-svelte-community';
+	import { Alert, Button, Select } from '#lib/shadcn/ui/index.js';
 
 	let {
 		store,

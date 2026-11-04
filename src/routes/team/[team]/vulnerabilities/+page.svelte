@@ -9,7 +9,7 @@
 	import ExternalLink from '#lib/ui/ExternalLink.svelte';
 	import { mergeWorkloadLabelFacets } from '#lib/domain/vulnerability/workloadLabels.js';
 	import GraphErrors from '#lib/ui/GraphErrors.svelte';
-	import { Alert, BodyLong, Heading } from '@nais/ds-svelte-community';
+	import { Alert, BodyLong, Heading } from '#lib/shadcn/ui/index.js';
 	import { page } from '$app/state';
 	import { SvelteURLSearchParams } from 'svelte/reactivity';
 	import type { PageProps } from './$types';
@@ -153,6 +153,10 @@
 		display: flex;
 		flex-direction: column;
 		gap: var(--ax-space-8);
-		padding-bottom: var(--spacing-layout);
+		padding: var(--ax-space-16) var(--ax-space-20);
+		margin-bottom: var(--ax-space-20);
+		border-radius: var(--radius-lg);
+		border: var(--sh-border-width) solid var(--border);
+		background-color: var(--card);
 	}
 </style>

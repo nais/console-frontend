@@ -11,6 +11,8 @@
 	import { page } from '$app/state';
 	import { graphql } from '$houdini';
 	import {
+		ActionMenu,
+		ActionMenuItem,
 		Alert,
 		BodyShort,
 		Button,
@@ -20,9 +22,8 @@
 		Modal,
 		Select,
 		TextField
-	} from '@nais/ds-svelte-community';
-	import { ActionMenu, ActionMenuItem } from '@nais/ds-svelte-community/experimental';
-	import { MenuElipsisVerticalIcon } from '@nais/ds-svelte-community/icons';
+	} from '#lib/shadcn/ui/index.js';
+	import { MenuElipsisVerticalIcon } from '#lib/icons/index.js';
 	import { onMount } from 'svelte';
 	import BranchStatus from '../BranchStatus.svelte';
 	import type { PageProps } from './$types';
@@ -443,38 +444,32 @@
 														{...props}
 													/>
 												{/snippet}
-												<button
-													class="action-menu-button"
-													onclick={() => openCreation(branch.name)}
-												>
-													<ActionMenuItem>Create child branch</ActionMenuItem>
-												</button>
+												<ActionMenuItem onselect={() => openCreation(branch.name)}>
+													Create child branch
+												</ActionMenuItem>
 												{#if canActivateBranch(branch, postgres.activeBranch?.name, postgres.desiredActiveBranch)}
-													<button
-														class="action-menu-button"
-														onclick={() => {
+													<ActionMenuItem
+														onselect={() => {
 															activationTarget = branch.name;
 															confirmActivation = true;
 														}}
 													>
-														<ActionMenuItem>Use as active</ActionMenuItem>
-													</button>
+														Use as active
+													</ActionMenuItem>
 												{/if}
 												{#if canDeleteBranch(branch.name, postgres.activeBranch?.name, postgres.desiredActiveBranch)}
-													<button
-														class="action-menu-button"
+													<ActionMenuItem
+														variant="danger"
 														disabled={deleting}
-														onclick={() => {
+														onselect={() => {
 															deletionTarget = branch.name;
 															deletionConfirmation = '';
 															deletionError = '';
 															deletionOpen = true;
 														}}
 													>
-														<ActionMenuItem variant="danger" disabled={deleting}
-															>Delete branch</ActionMenuItem
-														>
-													</button>
+														Delete branch
+													</ActionMenuItem>
 												{/if}
 											</ActionMenu>
 										</div>
@@ -673,13 +668,6 @@
 	}
 	.branch-actions {
 		justify-content: flex-end;
-	}
-	.action-menu-button {
-		all: unset;
-		display: contents;
-		:global(*) {
-			cursor: pointer;
-		}
 	}
 	.recovery-form {
 		display: grid;

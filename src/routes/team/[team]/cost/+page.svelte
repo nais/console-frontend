@@ -4,13 +4,7 @@
 	import CostAreaChart from '#lib/chart/CostAreaChart.svelte';
 	import GraphErrors from '#lib/ui/GraphErrors.svelte';
 	import { changeParams } from '#lib/utils/searchparams.js';
-	import {
-		BodyLong,
-		Heading,
-		Loader,
-		ToggleGroup,
-		ToggleGroupItem
-	} from '@nais/ds-svelte-community';
+	import { BodyLong, Heading, Loader, ToggleGroup, ToggleGroupItem } from '#lib/shadcn/ui/index.js';
 	import type { PageProps } from './$types';
 	import TeamEnvironmentApplicationsCost from './TeamEnvironmentApplicationsCost.svelte';
 

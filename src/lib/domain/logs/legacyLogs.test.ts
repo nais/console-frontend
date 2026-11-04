@@ -64,9 +64,7 @@ function job(logDestinations: unknown[] = [], running = true, completedRunName =
 function selectedInstances(body: string) {
 	return [...body.matchAll(/<button\b[^>]*aria-pressed="true"[^>]*>([\s\S]*?)<\/button>/g)]
 		.map(([, content]) => {
-			const label = content.match(
-				/<span class="aksel-chips__chip-text">(?:\s|<!--[\s\S]*?-->)*([^<]*)/
-			);
+			const label = content.match(/<span\b[^>]*>(?:\s|<!--[\s\S]*?-->)*([^<]*)/);
 			expect(label).not.toBeNull();
 			return label![1].trim();
 		})

@@ -6,6 +6,7 @@
 	import WorkloadLink from '#lib/domain/workload/WorkloadLink.svelte';
 	import { envTagVariant } from '#lib/envTagVariant.js';
 	import ExternalLink from '#lib/ui/ExternalLink.svelte';
+	import EmptyState from '#lib/ui/EmptyState.svelte';
 	import GraphErrors from '#lib/ui/GraphErrors.svelte';
 	import Collection from '#lib/ui/Collection.svelte';
 	import OrderByMenu from '#lib/ui/OrderByMenu.svelte';
@@ -14,8 +15,8 @@
 	import StatusIndicator from '#lib/ui/StatusIndicator.svelte';
 	import { countIssuesBySeverity } from '#lib/utils/issueCounts.js';
 	import { changeParams } from '#lib/utils/searchparams.js';
-	import { Loader, Tag, Td, Th, Tr, type TableSortState } from '@nais/ds-svelte-community';
-	import { DatabaseIcon } from '@nais/ds-svelte-community/icons';
+	import { Loader, Tag, Td, Th, Tr, type TableSortState } from '#lib/shadcn/ui/index.js';
+	import { DatabaseIcon } from '#lib/icons/index.js';
 	import type { PageProps } from './$types';
 
 	type SqlOrderFieldOptions = (typeof SqlInstanceOrderField)[keyof typeof SqlInstanceOrderField];
@@ -150,13 +151,14 @@
 				{/each}
 			</ResourceTable>
 		{:else}
-			<p>
-				No Cloud SQL instances found. Cloud SQL instances provide managed relational databases in
-				the cloud.
+			<EmptyState
+				title="No Cloud SQL instances found."
+				description="Cloud SQL instances provide managed relational databases in the cloud."
+			>
 				<ExternalLink href={docURL('/persistence/cloudsql')}
 					>Learn more about Cloud SQL in Nais and how to get started.</ExternalLink
 				>
-			</p>
+			</EmptyState>
 		{/if}
 	</Collection>
 

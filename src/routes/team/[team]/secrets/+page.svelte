@@ -7,6 +7,7 @@
 	import { envTagVariant } from '#lib/envTagVariant.js';
 	import CollapsibleSidebar from '#lib/ui/CollapsibleSidebar.svelte';
 	import ExternalLink from '#lib/ui/ExternalLink.svelte';
+	import EmptyState from '#lib/ui/EmptyState.svelte';
 	import GraphErrors from '#lib/ui/GraphErrors.svelte';
 	import Collection from '#lib/ui/Collection.svelte';
 	import ListFilters from '#lib/ui/ListFilters.svelte';
@@ -16,8 +17,8 @@
 	import Time from '#lib/ui/Time.svelte';
 	import { changeParams } from '#lib/utils/searchparams.js';
 	import { getSecretPermissions } from '#lib/utils/secretPermissions.js';
-	import { Button, Tag, Td, Th, Tr, type TableSortState } from '@nais/ds-svelte-community';
-	import { FunnelIcon, PadlockLockedIcon, PlusIcon } from '@nais/ds-svelte-community/icons';
+	import { Button, Tag, Td, Th, Tr, type TableSortState } from '#lib/shadcn/ui/index.js';
+	import { FunnelIcon, PadlockLockedIcon, PlusIcon } from '#lib/icons/index.js';
 	import type { PageProps } from './$types';
 	import CreateSecret, { type EnvironmentType } from './CreateSecret.svelte';
 
@@ -233,12 +234,14 @@
 						{/each}
 					</ResourceTable>
 				{:else}
-					<p>
-						No secrets found. Secrets are used to store sensitive data for your applications.
+					<EmptyState
+						title="No secrets found."
+						description="Secrets are used to store sensitive data for your applications."
+					>
 						<ExternalLink href={docURL('/services/secrets')}
 							>Learn more about secrets in Nais and how to get started.</ExternalLink
 						>
-					</p>
+					</EmptyState>
 				{/if}
 			</Collection>
 			<Pagination

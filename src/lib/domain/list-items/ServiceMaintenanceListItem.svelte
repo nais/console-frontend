@@ -2,7 +2,7 @@
 	import ListItem from '#lib/ui/ListItem.svelte';
 	import ServiceMaintenanceStatus from '#lib/ui/ServiceMaintenanceStatus.svelte';
 	import Time from '#lib/ui/Time.svelte';
-	import { BodyShort, Heading } from '@nais/ds-svelte-community';
+	import { BodyShort, Heading } from '#lib/shadcn/ui/index.js';
 	interface Props {
 		title: string;
 		description: string;

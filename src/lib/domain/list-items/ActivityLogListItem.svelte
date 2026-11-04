@@ -2,8 +2,8 @@
 	import { page } from '$app/state';
 	import { fragment, graphql, type ActivityLogEntryFragment } from '$houdini';
 	import ListItem from '#lib/ui/ListItem.svelte';
-	import { BodyLong, Tooltip } from '@nais/ds-svelte-community';
-	import { QuestionmarkIcon } from '@nais/ds-svelte-community/icons';
+	import { BodyLong, Tooltip } from '#lib/shadcn/ui/index.js';
+	import { QuestionmarkIcon } from '#lib/icons/index.js';
 	import { icons } from '../activity/activity-log-icons';
 	import { activityTooltip } from '../activity/activity-log-tooltip';
 	import { activityTextComponent } from '../activity/activityTextComponents';
@@ -582,12 +582,14 @@
 		align-items: center;
 		gap: var(--ax-space-12);
 		font-size: var(--ax-font-size-medium);
-		--surface-icon-size: 2rem;
+		--surface-icon-size: var(--ax-space-32);
+		--surface-icon-glyph-size: var(--ax-space-16);
 	}
 
 	.activity-log-list-item :global(.surface-icon) {
-		background: var(--ax-bg-brand-blue-softA);
-		color: var(--ax-text-brand-blue-decoration);
+		background: var(--secondary);
+		color: var(--muted-foreground);
+		border: var(--sh-border-width) solid var(--border);
 	}
 
 	.activity-text {
@@ -595,25 +597,43 @@
 		overflow-wrap: anywhere;
 	}
 
+	.activity-text :global(a:not(.meta a)),
+	.content :global(a:not(.meta a)) {
+		color: var(--foreground);
+		font-weight: var(--ax-font-weight-bold);
+		text-decoration: underline;
+		text-decoration-color: var(--border-strong);
+		text-underline-offset: 0.18em;
+	}
+
+	.activity-text :global(a:not(.meta a):hover),
+	.content :global(a:not(.meta a):hover) {
+		color: var(--link);
+		text-decoration-color: currentColor;
+	}
+
 	.activity-icon {
+		--surface-icon-size: calc(var(--ax-space-28) + var(--ax-space-2));
+		--surface-icon-glyph-size: var(--ax-font-size-medium);
 		position: relative;
 		z-index: 1;
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		width: 2rem;
-		height: 2rem;
-		font-size: 1rem;
+		width: var(--surface-icon-size);
+		height: var(--surface-icon-size);
+		font-size: var(--surface-icon-glyph-size);
 		flex-shrink: 0;
-		border-radius: var(--ax-radius-8);
-		color: var(--ax-text-brand-blue-decoration);
-		background: var(--ax-bg-brand-blue-softA);
+		border-radius: var(--radius-sm);
+		color: var(--muted-foreground);
+		background: var(--secondary);
+		border: var(--sh-border-width) solid var(--border);
 	}
 
 	.activity-item {
 		display: flex;
 		position: relative;
-		padding-bottom: 0.75rem;
+		padding-bottom: var(--ax-space-12);
 	}
 
 	.content {
@@ -626,11 +646,11 @@
 	.activity-item:not(:last-child)::before {
 		background: var(--ax-border-neutral-subtleA);
 		content: '';
-		top: 2rem;
+		top: var(--ax-space-32);
 		bottom: calc(-1 * var(--ax-space-4));
-		left: calc(1rem - 1px);
+		left: calc(var(--ax-space-16) - var(--ax-space-1));
 		position: absolute;
-		width: 2px;
+		width: var(--ax-space-2);
 	}
 
 	@media (max-width: 767px) {

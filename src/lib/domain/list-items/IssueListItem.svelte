@@ -7,14 +7,14 @@
 	import ValkeyIcon from '#lib/icons/ValkeyIcon.svelte';
 	import CriticalIndicator from '#lib/ui/CriticalIndicator.svelte';
 	import { issueTypeLabel } from '#lib/utils/issueTypeLabel.js';
-	import { Tag } from '@nais/ds-svelte-community';
+	import { Tag } from '#lib/shadcn/ui/index.js';
 	import {
 		BriefcaseClockIcon,
 		ChevronRightIcon,
 		CircleFillIcon,
 		DatabaseIcon,
 		PackageIcon
-	} from '@nais/ds-svelte-community/icons';
+	} from '#lib/icons/index.js';
 
 	interface Props {
 		item: IssueFragment;

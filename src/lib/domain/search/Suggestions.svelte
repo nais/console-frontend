@@ -61,81 +61,89 @@
 <style>
 	.suggestions-panel {
 		display: grid;
-		gap: var(--ax-space-12);
-		padding: var(--ax-space-12);
-		border: 1px solid var(--ax-border-neutral-subtleA);
-		border-radius: var(--ax-radius-4);
-		background-color: var(--ax-neutral-000);
+		gap: 0.65rem;
+		padding: 0.75rem;
+		border: 1px solid var(--border);
+		border-radius: calc(var(--radius) - 2px);
+		background-color: var(--background-subtle);
+		font-size: 0.8125rem;
 	}
 
 	.intro {
 		display: flex;
 		align-items: baseline;
-		gap: var(--ax-space-8);
+		gap: 0.5rem;
 		flex-wrap: wrap;
 	}
 
 	p {
 		margin: 0;
-		color: var(--ax-text-neutral);
+		color: var(--muted-foreground);
 	}
 
 	.prefixes {
 		display: flex;
 		flex-wrap: wrap;
-		gap: var(--ax-space-6);
+		gap: 0.375rem;
 	}
 
 	.scope {
 		display: flex;
 		align-items: center;
-		gap: var(--ax-space-8);
-		padding-top: var(--ax-space-8);
-		border-top: 1px solid var(--ax-border-neutral-subtleA);
-		color: var(--ax-text-neutral);
+		gap: 0.5rem;
+		padding-top: 0.5rem;
+		border-top: 1px solid var(--border);
+		color: var(--foreground);
 	}
 
 	.scope > span {
-		font-weight: var(--ax-font-weight-bold);
+		font-weight: 600;
+		font-size: 0.75rem;
+		color: var(--muted-foreground);
 	}
 
 	.prefix {
 		display: inline-flex;
 		align-items: center;
-		gap: var(--ax-space-6);
-		padding: var(--ax-space-4) var(--ax-space-8);
-		border: 1px solid var(--ax-border-neutral-subtleA);
-		border-radius: var(--ax-radius-4);
-		background-color: transparent;
-		color: var(--ax-text-neutral);
-		font: inherit;
+		gap: 0.35rem;
+		padding: 0.25rem 0.5rem;
+		border: 1px solid var(--border);
+		border-radius: calc(var(--radius) - 4px);
+		background-color: var(--card);
+		color: var(--foreground);
+		font-size: 0.75rem;
 		text-align: left;
 		cursor: pointer;
+		transition:
+			border-color 120ms ease,
+			background-color 120ms ease;
 	}
 
 	.prefix:hover {
-		border-color: var(--surface-accent-color);
-		background-color: var(--ax-neutral-100);
+		border-color: var(--primary-border);
+		background-color: var(--secondary);
 	}
 
 	.prefix:focus-visible {
-		outline: 2px solid var(--surface-accent-color);
+		outline: 2px solid var(--ring);
 		outline-offset: 2px;
 	}
 
 	.hint {
 		display: inline-flex;
 		align-items: center;
-		gap: var(--ax-space-6);
-		padding: var(--ax-space-4) var(--ax-space-8);
-		border: 1px solid var(--ax-border-neutral-subtleA);
-		border-radius: var(--ax-radius-4);
-		color: var(--ax-text-neutral);
+		gap: 0.35rem;
+		padding: 0.2rem 0.5rem;
+		border: 1px solid var(--border);
+		border-radius: calc(var(--radius) - 4px);
+		background-color: var(--card);
+		color: var(--muted-foreground);
+		font-size: 0.75rem;
 	}
 
 	code {
-		font-family: monospace;
-		font-weight: var(--ax-font-weight-bold);
-		color: var(--surface-accent-color);
+		font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+		font-weight: 600;
+		color: var(--primary);
 	}
 </style>

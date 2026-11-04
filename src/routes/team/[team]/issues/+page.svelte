@@ -11,7 +11,7 @@
 	import Pagination from '#lib/ui/Pagination.svelte';
 	import SurfaceCard from '#lib/ui/SurfaceCard.svelte';
 	import { changeParams } from '#lib/utils/searchparams.js';
-	import { FunnelIcon } from '@nais/ds-svelte-community/icons';
+	import { FunnelIcon } from '#lib/icons/index.js';
 	import type { PageProps } from './$types';
 
 	let { data }: PageProps = $props();

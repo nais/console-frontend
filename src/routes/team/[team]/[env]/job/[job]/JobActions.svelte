@@ -6,20 +6,23 @@
 	import { generateJobRunName, validateJobRunName } from '#lib/utils/jobRunName.js';
 	import { page } from '$app/state';
 	import { graphql, type Manifest as ManifestFragment } from '$houdini';
-	import { Button, Heading, Modal, TextField } from '@nais/ds-svelte-community';
+	import EnvPage from './env/+page.svelte';
 	import {
 		ActionMenu,
 		ActionMenuDivider,
-		ActionMenuItem
-	} from '@nais/ds-svelte-community/experimental';
+		ActionMenuItem,
+		Button,
+		Heading,
+		Modal,
+		TextField
+	} from '#lib/shadcn/ui/index.js';
 	import {
 		FileTextIcon,
 		MenuElipsisVerticalIcon,
 		PencilWritingIcon,
 		PlayIcon,
 		TrashIcon
-	} from '@nais/ds-svelte-community/icons';
-	import EnvPage from './env/+page.svelte';
+	} from '#lib/icons/index.js';
 
 	interface Props {
 		viewerIsMember: boolean;
@@ -116,31 +119,31 @@
 			</Button>
 		{/snippet}
 		{#if viewerIsMember}
-			<button
-				class="action-menu-button"
+			<ActionMenuItem
+				icon={PlayIcon}
 				disabled={job?.deletionStartedAt !== null}
-				onclick={openTrigger}
+				onselect={openTrigger}
 			>
-				<ActionMenuItem icon={PlayIcon} disabled={job?.deletionStartedAt !== null}>
-					Trigger run
-				</ActionMenuItem>
-			</button>
-			<a
-				class="action-menu-button"
+				Trigger run
+			</ActionMenuItem>
+			<ActionMenuItem
+				icon={PencilWritingIcon}
 				href="/team/{teamSlug}/{environment}/job/{jobName}/env"
-				onclick={pageModalClick}
+				onselect={pageModalClick}
 			>
-				<ActionMenuItem icon={PencilWritingIcon}>Set environment variables</ActionMenuItem>
-			</a>
+				Set environment variables
+			</ActionMenuItem>
 		{/if}
-		<button class="action-menu-button" onclick={() => (showManifest = true)}>
-			<ActionMenuItem icon={FileTextIcon}>View manifest</ActionMenuItem>
-		</button>
+		<ActionMenuItem icon={FileTextIcon} onselect={() => (showManifest = true)}>
+			View manifest
+		</ActionMenuItem>
 		{#if viewerIsMember}
 			<ActionMenuDivider />
-			<a class="action-menu-button" href="/team/{teamSlug}/{environment}/job/{jobName}/delete">
-				<ActionMenuItem icon={TrashIcon} variant="danger">Delete job</ActionMenuItem>
-			</a>
+			<ActionMenuItem
+				href="/team/{teamSlug}/{environment}/job/{jobName}/delete"
+				icon={TrashIcon}
+				variant="danger">Delete job</ActionMenuItem
+			>
 		{/if}
 	</ActionMenu>
 </HeaderActions>
@@ -172,14 +175,3 @@
 {#if page.state.modalHref?.includes('/env')}
 	<PageModal content={EnvPage} header="Set environment variables" />
 {/if}
-
-<style>
-	.action-menu-button {
-		all: unset;
-		display: contents;
-
-		:global(*) {
-			cursor: pointer;
-		}
-	}
-</style>

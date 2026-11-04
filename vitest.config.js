@@ -12,7 +12,7 @@ export default defineConfig({
 				extends: true,
 				test: {
 					name: 'server',
-					exclude: [...configDefaults.exclude, '**/*.client.test.ts']
+					exclude: [...configDefaults.exclude, 'tests/browser/**', '**/*.client.test.ts']
 				}
 			},
 			{

@@ -11,8 +11,8 @@
 	import Pagination from '#lib/ui/Pagination.svelte';
 	import SurfaceCard from '#lib/ui/SurfaceCard.svelte';
 	import { changeParams } from '#lib/utils/searchparams.js';
-	import { BodyShort, Button, Heading } from '@nais/ds-svelte-community';
-	import { FunnelIcon, PencilIcon, PlusIcon, TrashIcon } from '@nais/ds-svelte-community/icons';
+	import { BodyShort, Button, Heading } from '#lib/shadcn/ui/index.js';
+	import { FunnelIcon, PencilIcon, PlusIcon, TrashIcon } from '#lib/icons/index.js';
 	import type { PageProps } from './$types';
 	import AddMember from './AddMember.svelte';
 	import EditMember from './EditMember.svelte';

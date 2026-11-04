@@ -1,8 +1,8 @@
 <script lang="ts">
 	import type { InstanceGroupDetail$result } from '$houdini';
 	import Collection from '#lib/ui/Collection.svelte';
-	import { Button, CopyButton } from '@nais/ds-svelte-community';
-	import { EyeIcon, EyeSlashIcon } from '@nais/ds-svelte-community/icons';
+	import { Button, CopyButton } from '#lib/shadcn/ui/index.js';
+	import { EyeIcon, EyeSlashIcon } from '#lib/icons/index.js';
 	import { SvelteMap } from 'svelte/reactivity';
 
 	type EnvironmentVariable =

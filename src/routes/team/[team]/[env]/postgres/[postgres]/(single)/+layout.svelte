@@ -2,17 +2,14 @@
 	import { resolve } from '$app/paths';
 	import { page } from '$app/state';
 	import HeaderActions from '#lib/ui/HeaderActions.svelte';
-	import { Button, Tab, TabList, Tabs } from '@nais/ds-svelte-community';
 	import {
 		ActionMenu,
 		ActionMenuDivider,
-		ActionMenuItem
-	} from '@nais/ds-svelte-community/experimental';
-	import {
-		MenuElipsisVerticalIcon,
-		PencilWritingIcon,
-		TrashIcon
-	} from '@nais/ds-svelte-community/icons';
+		ActionMenuItem,
+		Button,
+		NavTabs
+	} from '#lib/shadcn/ui/index.js';
+	import { MenuElipsisVerticalIcon, PencilWritingIcon, TrashIcon } from '#lib/icons/index.js';
 	import { SvelteURLSearchParams } from 'svelte/reactivity';
 	import type { LayoutProps } from './$types';
 
@@ -44,15 +41,15 @@
 		{
 			value: '/team/[team]/[env]/postgres/[postgres]/(single)/insights',
 			label: 'Insights',
-			href: resolve(
+			href: `${resolve(
 				'/team/[team]/[env]/postgres/[postgres]/(single)/insights',
 				page.params as never
-			)
+			)}${metricsSearch}`
 		},
 		{
 			value: '/team/[team]/[env]/postgres/[postgres]/(single)/queries',
 			label: 'Queries',
-			href: resolve('/team/[team]/[env]/postgres/[postgres]/(single)/queries', page.params as never)
+			href: `${resolve('/team/[team]/[env]/postgres/[postgres]/(single)/queries', page.params as never)}${metricsSearch}`
 		},
 		{
 			value: '/team/[team]/[env]/postgres/[postgres]/(single)/logs',
@@ -76,49 +73,25 @@
 					Actions
 				</Button>
 			{/snippet}
-			<a
-				class="action-menu-button"
+			<ActionMenuItem
+				icon={PencilWritingIcon}
 				href={resolve('/team/[team]/[env]/postgres/[postgres]/edit', page.params as never)}
 			>
-				<ActionMenuItem icon={PencilWritingIcon}>Edit</ActionMenuItem>
-			</a>
+				Edit
+			</ActionMenuItem>
 			<ActionMenuDivider />
-			<a
-				class="action-menu-button"
+			<ActionMenuItem
+				icon={TrashIcon}
+				variant="danger"
 				href={resolve('/team/[team]/[env]/postgres/[postgres]/delete', page.params as never)}
 			>
-				<ActionMenuItem icon={TrashIcon} variant="danger">Delete</ActionMenuItem>
-			</a>
+				Delete
+			</ActionMenuItem>
 		</ActionMenu>
 	</HeaderActions>
 {/if}
 
-<Tabs value={routeId} size="small">
-	<TabList>
-		{#each tabs as tab (tab.value)}
-			<Tab
-				value={tab.value}
-				as="a"
-				href={tab.value.endsWith('/insights') || tab.value.endsWith('/queries')
-					? `${tab.href}${metricsSearch}`
-					: tab.href}
-			>
-				{tab.label}
-			</Tab>
-		{/each}
-	</TabList>
-	<div class="tab-content">
-		{@render children()}
-	</div>
-</Tabs>
-
-<style>
-	.action-menu-button {
-		all: unset;
-		display: contents;
-
-		:global(*) {
-			cursor: pointer;
-		}
-	}
-</style>
+<NavTabs items={tabs} value={routeId} ariaLabel="Postgres navigation" />
+<div class="tab-content">
+	{@render children()}
+</div>

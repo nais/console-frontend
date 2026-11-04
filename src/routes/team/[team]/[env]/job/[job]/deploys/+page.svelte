@@ -9,7 +9,7 @@
 	import Pagination from '#lib/ui/Pagination.svelte';
 	import { extractIdFromUrl } from '#lib/utils/extractIdFromUrl.js';
 	import { changeParams } from '#lib/utils/searchparams.js';
-	import { BodyLong } from '@nais/ds-svelte-community';
+	import { BodyLong } from '#lib/shadcn/ui/index.js';
 	import { tick } from 'svelte';
 	import type { PageProps } from './$types';
 

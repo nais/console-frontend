@@ -11,12 +11,15 @@
 	import GraphErrors from '#lib/ui/GraphErrors.svelte';
 	import { pageModalClick } from '#lib/ui/PageModal.svelte';
 	import Time from '#lib/ui/Time.svelte';
-	import { Button, Heading, Modal, Textarea } from '@nais/ds-svelte-community';
 	import {
 		ActionMenu,
 		ActionMenuDivider,
-		ActionMenuItem
-	} from '@nais/ds-svelte-community/experimental';
+		ActionMenuItem,
+		Button,
+		Heading,
+		Modal,
+		Textarea
+	} from '#lib/shadcn/ui/index.js';
 	import {
 		LinkIcon,
 		MenuElipsisVerticalIcon,
@@ -24,7 +27,7 @@
 		ShieldLockIcon,
 		TokenIcon,
 		TrashIcon
-	} from '@nais/ds-svelte-community/icons';
+	} from '#lib/icons/index.js';
 	import ServiceAccountAuthentications from './ServiceAccountAuthentications.svelte';
 	import ServiceAccountRoles from './ServiceAccountRoles.svelte';
 
@@ -81,13 +84,7 @@
 	let editingDescription = $state(false);
 	let newDescription = $state('');
 
-	function closeMenu(e: Event) {
-		const popover = (e.currentTarget as HTMLElement)?.closest('[popover]') as HTMLElement | null;
-		popover?.hidePopover();
-	}
-
-	function startEditDescription(e: Event) {
-		closeMenu(e);
+	function startEditDescription() {
 		newDescription = serviceAccount.description;
 		editingDescription = true;
 	}
@@ -137,32 +134,34 @@
 								Actions
 							</Button>
 						{/snippet}
-						<button class="action-menu-button" onclick={startEditDescription}>
-							<ActionMenuItem icon={PencilIcon}>Edit description</ActionMenuItem>
-						</button>
-						<button class="action-menu-button" onclick={() => (editRolesOpen = true)}>
-							<ActionMenuItem icon={ShieldLockIcon}>Edit roles</ActionMenuItem>
-						</button>
-						<a
-							class="action-menu-button"
+						<ActionMenuItem icon={PencilIcon} onselect={startEditDescription}>
+							Edit description
+						</ActionMenuItem>
+						<ActionMenuItem icon={ShieldLockIcon} onselect={() => (editRolesOpen = true)}>
+							Edit roles
+						</ActionMenuItem>
+						<ActionMenuItem
+							icon={TokenIcon}
 							href="{basePath}/{serviceAccount.id}/token/create"
-							onclick={pageModalClick}
+							onselect={pageModalClick}
 						>
-							<ActionMenuItem icon={TokenIcon}>Create API token</ActionMenuItem>
-						</a>
-						<a
-							class="action-menu-button"
+							Create API token
+						</ActionMenuItem>
+						<ActionMenuItem
+							icon={LinkIcon}
 							href="{basePath}/{serviceAccount.id}/binding/add"
-							onclick={pageModalClick}
+							onselect={pageModalClick}
 						>
-							<ActionMenuItem icon={LinkIcon}>Add workload binding</ActionMenuItem>
-						</a>
+							Add workload binding
+						</ActionMenuItem>
 						<ActionMenuDivider />
-						<button class="action-menu-button" onclick={() => (deleteServiceAccountOpen = true)}>
-							<ActionMenuItem icon={TrashIcon} variant="danger">
-								Delete service account
-							</ActionMenuItem>
-						</button>
+						<ActionMenuItem
+							icon={TrashIcon}
+							variant="danger"
+							onselect={() => (deleteServiceAccountOpen = true)}
+						>
+							Delete service account
+						</ActionMenuItem>
 					</ActionMenu>
 				{/if}
 			</div>
@@ -268,14 +267,5 @@
 	.edit-actions {
 		display: flex;
 		gap: var(--ax-space-8);
-	}
-
-	.action-menu-button {
-		all: unset;
-		display: contents;
-
-		:global(*) {
-			cursor: pointer;
-		}
 	}
 </style>

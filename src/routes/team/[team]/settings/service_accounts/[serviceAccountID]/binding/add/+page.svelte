@@ -14,8 +14,8 @@
 		ErrorMessage,
 		Tag,
 		TextField
-	} from '@nais/ds-svelte-community';
-	import { BriefcaseClockIcon, CheckmarkIcon, PackageIcon } from '@nais/ds-svelte-community/icons';
+	} from '#lib/shadcn/ui/index.js';
+	import { BriefcaseClockIcon, CheckmarkIcon, PackageIcon } from '#lib/icons/index.js';
 	import type { PageProps } from './$types';
 
 	let { data }: PageProps = $props();
