@@ -16,7 +16,6 @@ test('narrow team navigation shows Tenant first and keeps team links distinct', 
 	const tenant = dialog.getByRole('navigation', { name: 'Tenant', exact: true });
 	const team = dialog.getByRole('navigation', { name: 'Team: nais', exact: true });
 	await expect(tenant.getByRole('link')).toHaveText([
-		'Teams',
 		'Vulnerabilities',
 		'Cost',
 		'Utilization',
@@ -51,9 +50,6 @@ test('tenant pages have navigation without a selected team, with admin gating', 
 	await expect(dialog.getByRole('link', { name: 'Vulnerabilities' })).toHaveAttribute(
 		'aria-current',
 		'page'
-	);
-	await expect(dialog.getByRole('link', { name: 'Teams', exact: true })).not.toHaveAttribute(
-		'aria-current'
 	);
 	await expect(dialog.getByRole('link', { name: 'Admin', exact: true })).toHaveCount(0);
 
