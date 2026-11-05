@@ -201,6 +201,6 @@
 		margin-right: var(--ax-space-2);
 		display: flex;
 		align-items: center;
-		font-size: 1.2rem;
+		font-size: var(--ax-font-size-large);
 	}
 </style>

@@ -393,21 +393,21 @@
 		display: flex;
 		justify-content: center;
 		align-items: center;
-		min-height: 6rem;
+		min-height: var(--loading-card-min-height);
 	}
 
 	.metrics {
 		display: grid;
 		grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
-		gap: 0.75rem;
+		gap: var(--ax-space-12);
 	}
 
 	.metric {
 		position: relative;
 		display: flex;
 		align-items: center;
-		gap: 0.75rem;
-		padding: 0.875rem 1rem;
+		gap: var(--ax-space-12);
+		padding: var(--ax-space-14) var(--ax-space-16);
 		border-radius: var(--radius);
 		text-decoration: none;
 		color: inherit;
@@ -431,11 +431,11 @@
 		display: inline-flex;
 		align-items: center;
 		justify-content: center;
-		width: 2rem;
-		height: 2rem;
+		width: var(--ax-space-32);
+		height: var(--ax-space-32);
 		flex-shrink: 0;
 		border-radius: var(--radius-md);
-		font-size: 1rem;
+		font-size: var(--ax-font-size-medium);
 		color: var(--muted-foreground);
 		background-color: var(--secondary);
 		border: 1px solid var(--border);
@@ -462,12 +462,12 @@
 	.metric-body {
 		display: flex;
 		flex-direction: column;
-		gap: 0.125rem;
+		gap: var(--ax-space-2);
 		min-width: 0;
 	}
 
 	.metric-value {
-		font-size: 1.375rem;
+		font-size: var(--ax-font-size-xlarge);
 		font-weight: 700;
 		letter-spacing: -0.025em;
 		line-height: 1.15;
@@ -492,7 +492,7 @@
 		white-space: nowrap;
 		display: flex;
 		flex-wrap: wrap;
-		gap: 0.25rem;
+		gap: var(--ax-space-4);
 	}
 
 	@media (max-width: 767px), (max-height: 500px) {
@@ -503,7 +503,7 @@
 
 	.metric-processing {
 		position: absolute;
-		top: 0.75rem;
-		right: 0.75rem;
+		top: var(--ax-space-12);
+		right: var(--ax-space-12);
 	}
 </style>

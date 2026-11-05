@@ -45,10 +45,10 @@
 	.surface-card {
 		display: flex;
 		flex-direction: column;
-		gap: 0.875rem;
+		gap: var(--ax-space-14);
 		width: 100%;
 		min-width: 0;
-		padding: 1.125rem 1.25rem;
+		padding: var(--ax-space-18) var(--ax-space-20);
 		background-color: var(--card);
 		color: var(--card-foreground);
 		border: 1px solid var(--border);
@@ -66,12 +66,12 @@
 		display: flex;
 		justify-content: space-between;
 		align-items: center;
-		gap: 0.5rem;
+		gap: var(--ax-space-8);
 	}
 
 	.card-eyebrow {
 		margin: 0;
-		font-size: 0.875rem;
+		font-size: var(--ax-font-size-small);
 		font-weight: 600;
 		letter-spacing: -0.01em;
 		color: var(--foreground);
@@ -79,7 +79,7 @@
 
 	.card-title {
 		margin: 0;
-		font-size: 0.9375rem;
+		font-size: var(--sh-font-size-body);
 		font-weight: 600;
 		letter-spacing: -0.01em;
 		color: var(--foreground);
@@ -88,20 +88,20 @@
 	.header-aside {
 		display: flex;
 		align-items: center;
-		gap: 0.5rem;
+		gap: var(--ax-space-8);
 	}
 
 	.content {
 		display: flex;
 		flex-direction: column;
-		gap: 0.875rem;
+		gap: var(--ax-space-14);
 		width: 100%;
 		min-width: 0;
 	}
 
 	@media (max-width: 767px), (max-height: 500px) {
 		.surface-card {
-			padding: 0.875rem 1rem;
+			padding: var(--ax-space-14) var(--ax-space-16);
 		}
 	}
 </style>

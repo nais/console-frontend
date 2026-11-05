@@ -287,13 +287,13 @@
 		display: flex;
 		justify-content: center;
 		align-items: center;
-		min-height: 6rem;
+		min-height: var(--loading-card-min-height);
 	}
 
 	.inventory {
 		display: flex;
 		flex-direction: column;
-		gap: 1rem;
+		gap: var(--ax-space-16);
 		container-type: inline-size;
 	}
 
@@ -313,8 +313,8 @@
 		display: flex;
 		flex-direction: column;
 		align-items: stretch;
-		gap: 0.625rem;
-		padding: 1rem;
+		gap: var(--ax-space-10);
+		padding: var(--ax-space-16);
 		border-radius: var(--radius);
 		text-decoration: none;
 		color: inherit;
@@ -336,18 +336,18 @@
 	.workload-header {
 		display: flex;
 		align-items: center;
-		gap: 0.5rem;
+		gap: var(--ax-space-8);
 		color: var(--foreground);
 	}
 
 	.workload-label {
 		font-weight: 600;
-		font-size: 0.875rem;
+		font-size: var(--ax-font-size-small);
 	}
 
 	.workload-total {
 		margin-left: auto;
-		font-size: 1.375rem;
+		font-size: var(--ax-font-size-xlarge);
 		font-weight: 700;
 		font-variant-numeric: tabular-nums;
 		letter-spacing: -0.02em;
@@ -391,13 +391,13 @@
 	.state-legend {
 		display: flex;
 		flex-wrap: wrap;
-		gap: 0.375rem 0.75rem;
+		gap: var(--ax-space-6) var(--ax-space-12);
 	}
 
 	.legend-item {
 		display: inline-flex;
 		align-items: center;
-		gap: 0.375rem;
+		gap: var(--ax-space-6);
 		font-size: var(--ax-font-size-small);
 		color: var(--muted-foreground);
 		font-variant-numeric: tabular-nums;
@@ -433,15 +433,15 @@
 	.resources {
 		display: grid;
 		grid-template-columns: repeat(auto-fill, minmax(135px, 1fr));
-		gap: 0.5rem;
+		gap: var(--ax-space-8);
 	}
 
 	.resource-item {
 		display: flex;
 		align-items: center;
 		justify-content: space-between;
-		gap: 0.5rem;
-		padding: 0.5rem 0.75rem;
+		gap: var(--ax-space-8);
+		padding: var(--ax-space-8) var(--ax-space-12);
 		border-radius: var(--radius-md);
 		text-decoration: none;
 		color: var(--foreground);
@@ -467,7 +467,7 @@
 		font-weight: 700;
 		font-family: monospace;
 		font-size: var(--sh-font-size-xs);
-		padding: 0.0625rem 0.4375rem;
+		padding: var(--ax-space-1) var(--ax-space-8);
 		border-radius: var(--radius-full);
 		background-color: var(--secondary);
 		color: var(--foreground);

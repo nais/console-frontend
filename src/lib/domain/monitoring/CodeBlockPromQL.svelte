@@ -61,7 +61,7 @@
 		border: 1px solid var(--ax-border-neutral-subtle);
 		background: var(--ax-bg-neutral-moderate);
 		font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-		font-size: 0.9rem;
+		font-size: var(--ax-font-size-small);
 	}
 	.cm-host :global(.cm-editor.cm-focused) {
 		outline: 2px solid var(--ax-border-focus);

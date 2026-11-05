@@ -40,9 +40,9 @@
 
 <style>
 	.icon {
-		font-size: 2rem;
-		width: 2rem;
-		height: 2rem;
+		font-size: var(--sh-font-size-title);
+		width: var(--ax-space-32);
+		height: var(--ax-space-32);
 	}
 
 	.persistence {
@@ -52,7 +52,7 @@
 		border-bottom: 1px solid var(--ax-border-neutral-subtle);
 		align-items: center;
 		gap: var(--ax-space-8);
-		padding: 0.2rem;
+		padding: var(--ax-space-4);
 	}
 
 	.persistence:last-child {
@@ -66,7 +66,7 @@
 	}
 
 	.content {
-		margin: 0.5rem;
+		margin: var(--ax-space-8);
 		max-width: 80ch;
 	}
 </style>

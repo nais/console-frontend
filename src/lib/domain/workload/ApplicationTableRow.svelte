@@ -115,7 +115,7 @@
 		color: var(--foreground);
 		text-decoration: none;
 		font-weight: 600;
-		font-size: 0.875rem;
+		font-size: var(--ax-font-size-small);
 		white-space: nowrap;
 		transition: color 120ms ease;
 	}
@@ -132,7 +132,7 @@
 	.instances-cell {
 		display: flex;
 		flex-direction: column;
-		gap: 0.25rem;
+		gap: var(--ax-space-4);
 		min-width: 110px;
 	}
 

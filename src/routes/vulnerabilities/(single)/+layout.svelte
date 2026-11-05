@@ -53,26 +53,26 @@
 	.vuln-layout {
 		display: flex;
 		flex-direction: column;
-		gap: 1.25rem;
+		gap: var(--ax-space-20);
 	}
 
 	.vuln-header {
 		display: flex;
 		align-items: flex-end;
 		justify-content: space-between;
-		gap: 1.5rem;
+		gap: var(--ax-space-24);
 		flex-wrap: wrap;
 	}
 
 	.vuln-header-left {
 		display: flex;
 		flex-direction: column;
-		gap: 0.25rem;
+		gap: var(--ax-space-4);
 	}
 
 	.vuln-title {
 		margin: 0;
-		font-size: 1.5rem;
+		font-size: var(--sh-font-size-title);
 		font-weight: 600;
 		letter-spacing: -0.025em;
 		line-height: 1.25;
@@ -81,7 +81,7 @@
 
 	.vuln-subtitle {
 		margin: 0;
-		font-size: 0.875rem;
+		font-size: var(--ax-font-size-small);
 		color: var(--muted-foreground);
 		line-height: 1.45;
 	}

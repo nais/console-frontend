@@ -388,29 +388,29 @@
 <style>
 	.description-wrapper {
 		display: flex;
-		gap: 0.375rem;
+		gap: var(--ax-space-6);
 		align-items: center;
 	}
 
 	.result-actions {
 		display: flex;
 		align-items: center;
-		gap: 0.5rem;
+		gap: var(--ax-space-8);
 	}
 
 	.helpers {
 		display: flex;
 		flex-wrap: wrap;
-		gap: 1rem;
-		padding: 0.625rem 1rem;
+		gap: var(--ax-space-16);
+		padding: var(--ax-space-10) var(--ax-space-16);
 		border-top: 1px solid var(--border);
 		background-color: var(--background-subtle);
-		font-size: 0.75rem;
+		font-size: var(--sh-font-size-micro);
 		color: var(--muted-foreground);
 
 		> div {
 			display: flex;
-			gap: 0.35rem;
+			gap: var(--ax-space-6);
 			align-items: center;
 
 			&:last-child {
@@ -420,7 +420,7 @@
 	}
 
 	.suggestions {
-		padding-bottom: 0.625rem;
+		padding-bottom: var(--ax-space-10);
 	}
 
 	.enter > :global(svg) {
@@ -438,28 +438,28 @@
 		display: grid;
 		grid-template-columns: 1fr auto;
 		align-items: center;
-		gap: 0.5rem;
-		padding: 0.75rem 1rem;
+		gap: var(--ax-space-8);
+		padding: var(--ax-space-12) var(--ax-space-16);
 		border-bottom: 1px solid var(--border);
 	}
 
 	.search-field {
 		display: grid;
-		gap: 0.5rem;
+		gap: var(--ax-space-8);
 	}
 
 	.query-input {
 		display: flex;
 		align-items: center;
-		gap: 0.5rem;
-		min-height: 2.25rem;
+		gap: var(--ax-space-8);
+		min-height: var(--ax-space-36);
 	}
 
 	.search-lead-icon {
 		display: inline-flex;
 		align-items: center;
 		color: var(--muted-foreground);
-		font-size: 1rem;
+		font-size: var(--ax-font-size-medium);
 		flex-shrink: 0;
 	}
 
@@ -471,7 +471,7 @@
 		background: transparent;
 		color: var(--foreground);
 		font: inherit;
-		font-size: 0.875rem;
+		font-size: var(--ax-font-size-small);
 	}
 
 	.query-input input::placeholder {
@@ -481,24 +481,24 @@
 	.query-token {
 		display: inline-flex;
 		align-items: center;
-		gap: 0.35rem;
+		gap: var(--ax-space-6);
 		flex: none;
-		padding: 0.15rem 0.45rem;
+		padding: var(--ax-space-2) var(--ax-space-8);
 		border: 1px solid var(--primary-border);
 		border-radius: calc(var(--radius) - 4px);
 		background-color: var(--primary-muted);
 		color: var(--primary);
 		font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-		font-size: 0.75rem;
+		font-size: var(--sh-font-size-micro);
 		font-weight: 600;
 		cursor: pointer;
 	}
 
 	.results {
 		display: flex;
-		padding: 0.5rem;
+		padding: var(--ax-space-8);
 		flex-direction: column;
-		gap: 0.125rem;
+		gap: var(--ax-space-2);
 		overflow-y: auto;
 
 		a.result {
@@ -515,10 +515,10 @@
 		.result {
 			display: grid;
 			grid-template-columns: 1fr auto;
-			gap: 0.75rem;
+			gap: var(--ax-space-12);
 			align-items: center;
 			border-radius: calc(var(--radius) - 3px);
-			padding: 0.45rem 0.625rem;
+			padding: var(--ax-space-8) var(--ax-space-10);
 
 			&.selected {
 				background-color: var(--secondary);
@@ -531,8 +531,8 @@
 		flex-direction: column;
 		align-items: center;
 		justify-content: center;
-		padding: 2.5rem 1rem;
+		padding: var(--ax-space-40) var(--ax-space-16);
 		color: var(--muted-foreground);
-		font-size: 0.8125rem;
+		font-size: var(--sh-font-size-caption);
 	}
 </style>

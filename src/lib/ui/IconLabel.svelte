@@ -133,7 +133,7 @@
 		display: flex;
 		align-items: center;
 		gap: var(--ax-space-8);
-		font-size: 1.25rem;
+		font-size: var(--ax-font-size-large);
 
 		> * {
 			flex: 1 1 0;
@@ -164,7 +164,7 @@
 		gap: var(--ax-space-8);
 	}
 	.icon-label--with-desc {
-		font-size: 1.5rem;
+		font-size: var(--ax-font-size-xlarge);
 	}
 	.icon-label--large.icon-label--with-desc {
 		gap: var(--ax-space-12);

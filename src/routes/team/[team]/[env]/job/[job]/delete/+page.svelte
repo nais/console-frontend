@@ -156,7 +156,7 @@
 
 <style>
 	code {
-		font-size: 1rem;
+		font-size: var(--ax-font-size-medium);
 	}
 
 	form {

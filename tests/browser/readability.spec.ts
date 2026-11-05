@@ -1,4 +1,24 @@
-import { expect, test, type Locator } from '@playwright/test';
+import { expect, test, type Locator, type Page } from '@playwright/test';
+
+async function expectSquare(locator: Locator, size: number) {
+	await expect(locator).toHaveCSS('width', `${size}px`);
+	await expect(locator).toHaveCSS('height', `${size}px`);
+}
+
+async function expectTokenSizes(page: Page, rootFontSize = 16) {
+	const scale = rootFontSize / 16;
+	await expectSquare(page.getByTestId('sbom-size').locator('svg'), 22 * scale);
+	const persistence = page.getByTestId('persistence-size');
+	await expectSquare(persistence.locator('.icon'), 32 * scale);
+	await expectSquare(persistence.locator('svg'), 28 * scale);
+	await expectSquare(page.getByRole('button', { name: 'Clear search', exact: true }), 24 * scale);
+	await expectSquare(page.locator('.known-exploited .icon').first(), 36 * scale);
+	await expect(page.locator('.count-badge').first()).toHaveCSS('height', `${20 * scale + 2}px`);
+	await expect(page.getByTestId('loading-card').locator('.loading')).toHaveCSS(
+		'min-height',
+		`${96 * scale}px`
+	);
+}
 
 async function contrast(
 	locator: Locator,
@@ -118,7 +138,16 @@ for (const theme of ['light', 'dark']) {
 			await page.locator('html').evaluate((element, theme) => {
 				element.dataset.theme = theme;
 			}, theme);
+			await expectTokenSizes(page);
 			const controls = page.getByRole('region', { name: 'Readable controls' });
+			await expect(page.getByRole('heading', { name: 'Cloud SQL', exact: true })).toHaveCSS(
+				'font-size',
+				'18px'
+			);
+			await expect(page.getByTestId('cost-decreasing').locator('.metric-value').first()).toHaveCSS(
+				'font-size',
+				width <= 767 ? '22px' : '28px'
+			);
 			await expect(controls.getByRole('columnheader').first()).toHaveCSS('font-size', '14px');
 			await expect(controls.getByRole('cell').first()).toHaveCSS('font-size', '15px');
 			await expect(controls.getByText('Recently updated')).toHaveCSS('font-size', '14px');
@@ -145,6 +174,9 @@ for (const theme of ['light', 'dark']) {
 			}
 			const input = controls.getByRole('textbox', { name: 'Readability search' });
 			await expect(input).toHaveCSS('font-size', '14px');
+			const criticalDot = controls.getByTestId('critical-dot').locator('svg');
+			await expect(criticalDot).toHaveCSS('width', '12px');
+			await expect(criticalDot).toHaveCSS('height', '12px');
 			expect(await contrast(input, 'borderTopColor')).toBeGreaterThanOrEqual(3);
 			expect(await contrast(input, 'color', '::placeholder')).toBeGreaterThanOrEqual(4.5);
 			expect(await controls.evaluate((element) => element.scrollWidth <= element.clientWidth)).toBe(
@@ -155,6 +187,41 @@ for (const theme of ['light', 'dark']) {
 }
 
 for (const theme of ['light', 'dark']) {
+	test(`${theme} metric figures follow compact viewport boundaries`, async ({ page }) => {
+		await page.goto('/tests/browser/primitive-feedback.html');
+		await expect(page.locator('html')).toHaveAttribute('data-ready', 'true');
+		await page.locator('html').evaluate((element, theme) => {
+			element.dataset.theme = theme;
+		}, theme);
+		const metric = page.getByTestId('cost-decreasing').locator('.metric-value').first();
+		for (const [width, height, size] of [
+			[768, 501, '28px'],
+			[767, 501, '22px'],
+			[1440, 500, '22px'],
+			[1440, 501, '28px']
+		] as const) {
+			await page.setViewportSize({ width, height });
+			await expect(metric).toHaveCSS('font-size', size);
+		}
+	});
+
+	test(`${theme} approved token sizes scale with a larger root font`, async ({ page }) => {
+		await page.goto('/tests/browser/primitive-feedback.html');
+		await expect(page.locator('html')).toHaveAttribute('data-ready', 'true');
+		await page.locator('html').evaluate((element, theme) => {
+			element.dataset.theme = theme;
+			element.style.fontSize = '20px';
+		}, theme);
+		for (const width of [375, 1440]) {
+			await page.setViewportSize({ width, height: 900 });
+			await expectTokenSizes(page, 20);
+			await expect(page.getByTestId('cost-decreasing').locator('.metric-value').first()).toHaveCSS(
+				'font-size',
+				width <= 767 ? '27.5px' : '35px'
+			);
+		}
+	});
+
 	test(`${theme} sidebar group labels remain legible`, async ({ page }) => {
 		await page.setViewportSize({ width: 1440, height: 1000 });
 		await page.goto(

@@ -26,7 +26,7 @@
 {#if fetching}
 	<div class="pagination" aria-busy="true" aria-label="Loading page">
 		<div class="fetching">
-			<ShSkeleton width="12ch" height="1.25rem" />
+			<ShSkeleton width="12ch" height="var(--ax-space-20)" />
 		</div>
 
 		<span class="pagination-buttons">
@@ -80,16 +80,16 @@
 		justify-content: space-between;
 		align-items: center;
 		color: var(--muted-foreground);
-		font-size: 0.875rem;
+		font-size: var(--ax-font-size-small);
 	}
 	.pagination {
 		display: flex;
 		justify-content: flex-end;
 		align-items: center;
-		gap: 0.875rem;
+		gap: var(--ax-space-14);
 		color: var(--muted-foreground);
-		padding: 0.75rem 1rem;
-		font-size: 0.8125rem;
+		padding: var(--ax-space-12) var(--ax-space-16);
+		font-size: var(--sh-font-size-caption);
 		font-variant-numeric: tabular-nums;
 
 		.active-range {
@@ -99,7 +99,7 @@
 
 		.pagination-buttons {
 			display: flex;
-			gap: 0.25rem;
+			gap: var(--ax-space-4);
 		}
 	}
 </style>

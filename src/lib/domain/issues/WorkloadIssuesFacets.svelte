@@ -129,8 +129,8 @@
 	}
 
 	.facet-item input[type='radio'] {
-		width: 1rem;
-		height: 1rem;
+		width: var(--ax-space-16);
+		height: var(--ax-space-16);
 		margin: 0;
 		flex-shrink: 0;
 		cursor: pointer;

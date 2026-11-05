@@ -316,7 +316,7 @@
 </script>
 
 {#if $Unleash.errors}
-	<Alert variant="error" size="small" style="margin-bottom: 1rem;">
+	<Alert variant="error" size="small" style="margin-bottom: var(--ax-space-16);">
 		{#each new Set(extractErrorMessages($Unleash.errors)) as error (error)}
 			{error}<br />
 		{/each}
@@ -324,7 +324,7 @@
 {/if}
 
 {#if $UnleashReleaseChannels.errors}
-	<Alert variant="error" size="small" style="margin-bottom: 1rem;">
+	<Alert variant="error" size="small" style="margin-bottom: var(--ax-space-16);">
 		{#each new Set(extractErrorMessages($UnleashReleaseChannels.errors)) as error (error)}
 			{error}<br />
 		{/each}
@@ -332,7 +332,7 @@
 {/if}
 
 {#if $createUnleashForTeam.errors}
-	<Alert variant="error" size="small" style="margin-bottom: 1rem;">
+	<Alert variant="error" size="small" style="margin-bottom: var(--ax-space-16);">
 		{#each new Set(extractErrorMessages($createUnleashForTeam.errors)) as error (error)}
 			{error}<br />
 		{/each}
@@ -343,7 +343,7 @@
 {/if}
 
 {#if $updateUnleashInstance.errors}
-	<Alert variant="error" size="small" style="margin-bottom: 1rem;">
+	<Alert variant="error" size="small" style="margin-bottom: var(--ax-space-16);">
 		{#each new Set(extractErrorMessages($updateUnleashInstance.errors)) as error (error)}
 			{error}<br />
 		{/each}
@@ -354,7 +354,7 @@
 {/if}
 
 {#if $allowTeamAccess.errors}
-	<Alert variant="error" size="small" style="margin-bottom: 1rem;">
+	<Alert variant="error" size="small" style="margin-bottom: var(--ax-space-16);">
 		{#each new Set(extractErrorMessages($allowTeamAccess.errors)) as error (error)}
 			{error}<br />
 		{/each}
@@ -365,7 +365,7 @@
 {/if}
 
 {#if $revokeTeamAccess.errors}
-	<Alert variant="error" size="small" style="margin-bottom: 1rem;">
+	<Alert variant="error" size="small" style="margin-bottom: var(--ax-space-16);">
 		{#each new Set(extractErrorMessages($revokeTeamAccess.errors)) as error (error)}
 			{error}<br />
 		{/each}
@@ -376,7 +376,7 @@
 {/if}
 
 {#if $deleteUnleashInstance.errors}
-	<Alert variant="error" size="small" style="margin-bottom: 1rem;">
+	<Alert variant="error" size="small" style="margin-bottom: var(--ax-space-16);">
 		{#each new Set(extractErrorMessages($deleteUnleashInstance.errors)) as error (error)}
 			{error}<br />
 		{/each}
@@ -387,21 +387,21 @@
 {/if}
 
 {#if deleteError}
-	<Alert variant="error" size="small" style="margin-bottom: 1rem;">
+	<Alert variant="error" size="small" style="margin-bottom: var(--ax-space-16);">
 		{deleteError}
 		<Button variant="tertiary" size="small" onclick={() => (deleteError = '')}>Dismiss</Button>
 	</Alert>
 {/if}
 
 {#if accessError}
-	<Alert variant="error" size="small" style="margin-bottom: 1rem;">
+	<Alert variant="error" size="small" style="margin-bottom: var(--ax-space-16);">
 		{accessError}
 		<Button variant="tertiary" size="small" onclick={() => (accessError = '')}>Dismiss</Button>
 	</Alert>
 {/if}
 
 {#if !enabled}
-	<Alert style="margin-bottom: 1rem;" variant="info">
+	<Alert style="margin-bottom: var(--ax-space-16);" variant="info">
 		Unleash is not enabled for this tenant. Contact your administrator.
 	</Alert>
 {:else if unleash}
@@ -515,7 +515,9 @@
 					<dt>Status</dt>
 					<dd>
 						{#if unleash.ready}
-							<CheckmarkIcon style="color: var(--ax-text-success-decoration); font-size: 1.2rem" />
+							<CheckmarkIcon
+								style="color: var(--ax-text-success-decoration); font-size: var(--ax-font-size-large)"
+							/>
 						{:else}
 							<Tooltip
 								content="Unleash is not ready. It may be starting or applying changes."

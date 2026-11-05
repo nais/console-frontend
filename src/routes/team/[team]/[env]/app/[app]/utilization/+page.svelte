@@ -803,8 +803,8 @@
 
 	.cost-amount {
 		background-color: var(--ax-bg-raised);
-		font-size: 1.5rem;
-		border-radius: 0.375rem;
+		font-size: var(--metric-value-font-size);
+		border-radius: var(--radius-sm);
 		display: inline-block;
 		align-items: center;
 		padding: var(--ax-space-8) var(--ax-space-32);
@@ -838,10 +838,6 @@
 			flex-direction: column;
 			align-items: flex-start;
 			gap: var(--ax-space-8);
-		}
-
-		.cost-amount {
-			font-size: 1.25rem;
 		}
 	}
 </style>

@@ -97,8 +97,8 @@
 		display: grid;
 		grid-template-columns: auto minmax(0, 1fr) auto;
 		align-items: center;
-		gap: 0.875rem;
-		padding: 0.875rem 1rem;
+		gap: var(--ax-space-14);
+		padding: var(--ax-space-14) var(--ax-space-16);
 		border-radius: var(--radius-lg);
 		text-decoration: none;
 		color: inherit;
@@ -135,14 +135,14 @@
 	.instance-group-info {
 		display: flex;
 		flex-direction: column;
-		gap: 0.25rem;
+		gap: var(--ax-space-4);
 		flex: 1;
 		min-width: 0;
 	}
 
 	.instance-group-status {
 		font-weight: 600;
-		font-size: 0.875rem;
+		font-size: var(--ax-font-size-small);
 		color: var(--foreground);
 		font-variant-numeric: tabular-nums;
 	}
@@ -156,7 +156,7 @@
 	.instance-group-meta code {
 		font-family: monospace;
 		font-size: var(--sh-font-size-xs);
-		padding: 0.0625rem 0.375rem;
+		padding: var(--ax-space-1) var(--ax-space-6);
 		border-radius: var(--radius-sm);
 		background-color: var(--secondary);
 		color: var(--foreground);
@@ -166,7 +166,7 @@
 		display: flex;
 		flex-wrap: wrap;
 		justify-content: flex-end;
-		gap: 0.375rem;
+		gap: var(--ax-space-6);
 		justify-self: end;
 	}
 
@@ -187,20 +187,20 @@
 		display: flex;
 		flex-direction: column;
 		align-items: center;
-		gap: 0.5rem;
-		padding: 1.5rem 1rem;
+		gap: var(--ax-space-8);
+		padding: var(--ax-space-24) var(--ax-space-16);
 		color: var(--muted-foreground);
 	}
 
 	.empty-state :global(svg) {
-		width: 2.25rem;
-		height: 2.25rem;
+		width: var(--ax-space-36);
+		height: var(--ax-space-36);
 		opacity: 0.45;
 	}
 
 	.empty-title {
 		font-weight: 600;
-		font-size: 0.875rem;
+		font-size: var(--ax-font-size-small);
 		color: var(--foreground);
 	}
 

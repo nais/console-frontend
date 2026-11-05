@@ -234,13 +234,13 @@
 		display: flex;
 		justify-content: center;
 		align-items: center;
-		min-height: 6rem;
+		min-height: var(--loading-card-min-height);
 	}
 
 	.metrics {
 		display: grid;
 		grid-template-columns: repeat(4, minmax(0, 1fr));
-		gap: 0.75rem;
+		gap: var(--ax-space-12);
 	}
 
 	.metric {
@@ -249,8 +249,8 @@
 		flex-direction: column;
 		align-items: stretch;
 		justify-content: space-between;
-		gap: 0.5rem;
-		padding: 0.875rem 1rem;
+		gap: var(--ax-space-8);
+		padding: var(--ax-space-14) var(--ax-space-16);
 		border-radius: var(--radius);
 		text-decoration: none;
 		color: inherit;
@@ -274,7 +274,7 @@
 		display: flex;
 		align-items: center;
 		justify-content: space-between;
-		gap: 0.5rem;
+		gap: var(--ax-space-8);
 		width: 100%;
 	}
 
@@ -288,11 +288,11 @@
 		display: inline-flex;
 		align-items: center;
 		justify-content: center;
-		width: 1.75rem;
-		height: 1.75rem;
+		width: var(--ax-space-28);
+		height: var(--ax-space-28);
 		flex-shrink: 0;
 		border-radius: var(--radius-md);
-		font-size: 0.9375rem;
+		font-size: var(--sh-font-size-body);
 		color: var(--muted-foreground);
 		background-color: var(--secondary);
 		border: 1px solid var(--border);
@@ -320,18 +320,18 @@
 		display: flex;
 		align-items: flex-end;
 		justify-content: space-between;
-		gap: 0.5rem;
+		gap: var(--ax-space-8);
 	}
 
 	.metric-body {
 		display: flex;
 		flex-direction: column;
-		gap: 0.125rem;
+		gap: var(--ax-space-2);
 		min-width: 0;
 	}
 
 	.metric-value {
-		font-size: 1.5rem;
+		font-size: var(--metric-value-font-size);
 		font-weight: 700;
 		letter-spacing: -0.03em;
 		line-height: 1.15;
@@ -356,7 +356,7 @@
 		white-space: nowrap;
 		display: flex;
 		flex-wrap: wrap;
-		gap: 0.25rem;
+		gap: var(--ax-space-4);
 	}
 
 	.sparkline {

@@ -2,6 +2,7 @@
 	import Loader from '../../src/lib/shadcn/ui/Loader.svelte';
 	import Heading from '../../src/lib/shadcn/ui/Heading.svelte';
 	import AddToFavorites from '../../src/lib/ui/AddToFavorites.svelte';
+	import CriticalIndicator from '../../src/lib/ui/CriticalIndicator.svelte';
 	import Theme from '../../src/lib/shadcn/ui/Theme.svelte';
 	import Button from '../../src/lib/shadcn/ui/Button.svelte';
 	import ActionMenu from '../../src/lib/shadcn/ui/ActionMenu.svelte';
@@ -26,6 +27,9 @@
 	import ResourceTable from '../../src/lib/ui/ResourceTable.svelte';
 	import CostChart from '../../src/lib/chart/CostChart.svelte';
 	import CostAreaChart from '../../src/lib/chart/CostAreaChart.svelte';
+	import SearchField from '../../src/lib/ui/SearchField.svelte';
+	import SbomStatusIcon from '../../src/lib/domain/vulnerability/SbomStatusIcon.svelte';
+	import PersistenceItem from '../../src/lib/domain/persistence/PersistenceItem.svelte';
 	import StaticUtilizationDonut from '../../src/lib/chart/StaticUtilizationDonut.svelte';
 	import type { TeamSummaryCost$result } from '$houdini';
 
@@ -180,6 +184,7 @@
 	<Loader title="Styled loading" size="large" style="color: var(--ax-text-accent)" />
 	<section aria-label="Readable controls">
 		<Input ariaLabel="Readability search" placeholder="Search resources" />
+		<span data-testid="critical-dot" aria-hidden="true"><CriticalIndicator /></span>
 		{#each statusVariants as variant (variant)}
 			<Badge {variant} size="sm">{variant} badge</Badge>
 			<Tag variant={variant === 'destructive' ? 'error' : variant} size="small">{variant} tag</Tag>
@@ -192,6 +197,18 @@
 				<Td><span class="table-meta">Recently updated</span></Td>
 			</Tr>
 		</ResourceTable>
+	</section>
+	<section aria-label="Token sizing">
+		<SearchField label="Token search" value="cache" />
+		<span data-testid="sbom-size">
+			<SbomStatusIcon indicator="no-sbom" label="No SBOM available" />
+		</span>
+		<div class="table-scroll" data-testid="persistence-size">
+			<PersistenceItem persistence={{ __typename: 'Valkey', name: 'Example cache' }} />
+		</div>
+		<div data-testid="loading-card">
+			<TeamSummary teamSlug="token-fixture" loading />
+		</div>
 	</section>
 	{#each headingSizes as size (size)}
 		<Heading as="h2" {size} spacing>{size} heading</Heading>
