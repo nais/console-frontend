@@ -1,5 +1,4 @@
 <script lang="ts">
-	import type { HomeActivityStore } from '$houdini';
 	import { icons } from '#lib/domain/activity/activity-log-icons.js';
 	import { envTagVariant } from '#lib/envTagVariant.js';
 	import { QuestionmarkIcon } from '#lib/icons/index.js';
@@ -10,6 +9,7 @@
 	import SectionBoundary from '#lib/ui/SectionBoundary.svelte';
 	import Time from '#lib/ui/Time.svelte';
 	import { exhaustive } from '#lib/utils/houdini.js';
+	import type { HomeActivityStore } from '$houdini';
 	import { homeActivityHref, homeActivityTeam } from './homeOverview.js';
 
 	let { store, loadError }: { store: HomeActivityStore | null; loadError: string | null } =
@@ -20,7 +20,7 @@
 
 <section class="activity-section" aria-labelledby="{uid}-activity">
 	<div class="section-heading activity-heading">
-		<Heading as="h2" size="small" id="{uid}-activity">Recent activity</Heading>
+		<Heading as="h2" size="small" id="{uid}-activity">Recent activity across your teams</Heading>
 		<ShButton variant="ghost" size="sm" href="/activity-log?myTeams=true">
 			View activity log
 		</ShButton>
