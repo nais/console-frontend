@@ -48,6 +48,7 @@ export async function load(event) {
 	const resourceTypes =
 		event.url.searchParams.get('resourceTypes')?.split(',').filter(Boolean) || [];
 	const environments = event.url.searchParams.get('environments')?.split(',').filter(Boolean) || [];
+	const myTeams = event.url.searchParams.get('myTeams') === 'true';
 
 	const rows = 20;
 
@@ -71,6 +72,7 @@ export async function load(event) {
 					activityTypes,
 					resourceTypes,
 					environments,
+					...(myTeams ? { teamScope: { memberOfViewer: true } } : {}),
 					from: fromTime,
 					to: toExclusive
 				} as TenantActivityLogFilter

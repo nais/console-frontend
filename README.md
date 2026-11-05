@@ -30,6 +30,10 @@ mobile selection, form submission and typed value bindings. Browser tests cover 
 contracts, nested dialogs, guarded dismissal and drawer breakpoints.
 The application shell provides a keyboard-visible **Skip to content** link to its single main landmark.
 
+To run the home SSR/hydration network regression against an already-running console and API proxy,
+use `CONSOLE_E2E_URL=http://127.0.0.1:5173 pnpm run test:browser home-network`. This runs only the live
+home test, without starting the isolated fixture server, and requires a user with team memberships.
+
 ### Mobile responsiveness
 
 The console should remain usable at small viewport widths, with `375px` as the baseline mobile target.
