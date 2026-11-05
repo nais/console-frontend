@@ -91,7 +91,7 @@
 	{/if}
 	{#if showCostFormatting}
 		<!-- Same stacked chart and custom tooltip primitives as /cost. -->
-		<div data-testid="cost-bar" style="height: 300px">
+		<div data-testid="cost-bar" style="height: var(--utilization-chart-height)">
 			<BarChart
 				data={[
 					{ date: new Date(2026, 9, 1), compute: 100, storage: 0.1 },
