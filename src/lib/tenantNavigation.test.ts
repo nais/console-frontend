@@ -2,6 +2,14 @@ import { describe, expect, it } from 'vitest';
 import { tenantNavigation } from './tenantNavigation.js';
 
 describe('tenantNavigation', () => {
+	it('attaches reconciler errors only to the administrator link', () => {
+		expect(tenantNavigation('/', true, true).filter((item) => item.error)).toEqual([
+			{ href: '/admin', label: 'Admin', active: false, error: 'Reconcilers have errors' }
+		]);
+		expect(tenantNavigation('/', false, true).some((item) => item.error)).toBe(false);
+		expect(tenantNavigation('/', true, false).some((item) => item.error)).toBe(false);
+	});
+
 	it('includes all tenant destinations and only shows Admin to administrators', () => {
 		expect(tenantNavigation('/').map(({ href }) => href)).toEqual([
 			'/vulnerabilities',

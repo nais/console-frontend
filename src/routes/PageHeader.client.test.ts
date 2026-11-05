@@ -1,6 +1,7 @@
 import { flushSync, mount, unmount } from 'svelte';
 import { afterEach, beforeEach, expect, it, vi } from 'vitest';
 import PageHeader from './PageHeader.svelte';
+import { fromStore, writable } from 'svelte/store';
 
 const { page } = vi.hoisted(() => ({
 	page: {
@@ -88,4 +89,26 @@ it('matches the visible search label and exposes the keyboard shortcuts separate
 	expect(shortcut.getAttribute('aria-hidden')).toBe('true');
 	expect(search.contains(shortcut)).toBe(false);
 	expect(search.getAttribute('aria-keyshortcuts')).toBe('Control+K /');
+});
+
+it('updates the Admin error indicator without hiding the link when errors clear', () => {
+	const errors = writable(true);
+	const status = fromStore(errors);
+	components.push(
+		mount(PageHeader, {
+			target: document.body,
+			props: {
+				user: { name: 'Admin', isAdmin: true },
+				get reconcilerErrors() {
+					return status.current;
+				}
+			}
+		})
+	);
+	flushSync();
+	const admin = element<HTMLAnchorElement>('.tenant-nav a[href="/admin"]');
+	expect(admin.querySelector('[aria-label="Reconcilers have errors"]')).not.toBeNull();
+	flushSync(() => errors.set(false));
+	expect(admin.querySelector('[aria-label="Reconcilers have errors"]')).toBeNull();
+	expect(admin.textContent?.trim()).toBe('Admin');
 });

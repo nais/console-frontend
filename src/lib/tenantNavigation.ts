@@ -2,6 +2,7 @@ export interface TenantNavigationItem {
 	href: string;
 	label: string;
 	active: boolean;
+	error?: string;
 }
 
 const links = [
@@ -11,8 +12,23 @@ const links = [
 	{ href: '/activity-log', label: 'Activity Log' }
 ];
 
-export function tenantNavigation(pathname: string, isAdmin = false): TenantNavigationItem[] {
-	return [...links, ...(isAdmin ? [{ href: '/admin', label: 'Admin' }] : [])].map((item) => ({
+export function tenantNavigation(
+	pathname: string,
+	isAdmin = false,
+	reconcilerErrors = false
+): TenantNavigationItem[] {
+	return [
+		...links,
+		...(isAdmin
+			? [
+					{
+						href: '/admin',
+						label: 'Admin',
+						...(reconcilerErrors ? { error: 'Reconcilers have errors' } : {})
+					}
+				]
+			: [])
+	].map((item) => ({
 		...item,
 		active: pathname === item.href || (item.href !== '/' && pathname.startsWith(`${item.href}/`))
 	}));

@@ -10,6 +10,7 @@
 	import { tenantNavigation } from '#lib/tenantNavigation.js';
 	import { Button, Theme } from '#lib/shadcn/ui/index.js';
 	import GraphErrors from '#lib/ui/GraphErrors.svelte';
+	import ErrorIndicator from '#lib/ui/ErrorIndicator.svelte';
 	import { themeSwitch } from '#lib/stores/theme.svelte.js';
 
 	import {
@@ -57,6 +58,7 @@
 		loadMoreTeams?: () => Promise<unknown>;
 		teamsFetching?: boolean;
 		teamErrors?: { message: string }[] | null;
+		reconcilerErrors?: boolean;
 	}
 
 	const uid = $props.id();
@@ -67,7 +69,8 @@
 		children,
 		loadMoreTeams,
 		teamsFetching = false,
-		teamErrors
+		teamErrors,
+		reconcilerErrors = false
 	}: Props = $props();
 
 	let sidebarCollapsed = $state(false);
@@ -89,7 +92,9 @@
 			: userTeams
 	);
 
-	const tenantItems = $derived(tenantNavigation(page.url.pathname, user?.isAdmin));
+	const tenantItems = $derived(
+		tenantNavigation(page.url.pathname, user?.isAdmin, reconcilerErrors)
+	);
 
 	function teamSwitchHref(targetSlug: string) {
 		const path = page.url.pathname;
@@ -268,6 +273,9 @@
 						aria-current={item.active ? 'page' : undefined}
 					>
 						{item.label}
+						{#if item.error}
+							<ErrorIndicator label={item.error} />
+						{/if}
 					</a>
 				{/each}
 			</nav>
@@ -686,6 +694,7 @@
 	.tenant-nav-link {
 		display: inline-flex;
 		align-items: center;
+		gap: var(--ax-space-6);
 		height: var(--ax-space-32);
 		padding: 0 var(--ax-space-10);
 		border-radius: calc(var(--radius) - 2px);
