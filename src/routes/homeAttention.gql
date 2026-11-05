@@ -1,0 +1,332 @@
+query HomeAttention {
+	issues(first: 5, filter: { severity: CRITICAL, teamScope: { memberOfViewer: true } }) {
+		pageInfo {
+			totalCount
+			hasNextPage
+		}
+		nodes {
+			__typename
+			... on ApplicationRestartLoopIssue {
+				id
+				message
+				teamEnvironment {
+					team {
+						slug
+					}
+					environment {
+						name
+					}
+				}
+				workload {
+					... on Application {
+						__typename
+						name
+					}
+					... on Job {
+						__typename
+						name
+					}
+				}
+			}
+			... on DeprecatedIngressIssue {
+				id
+				message
+				teamEnvironment {
+					team {
+						slug
+					}
+					environment {
+						name
+					}
+				}
+				application {
+					name
+				}
+			}
+			... on DeprecatedRegistryIssue {
+				id
+				message
+				teamEnvironment {
+					team {
+						slug
+					}
+					environment {
+						name
+					}
+				}
+				workload {
+					... on Application {
+						__typename
+						name
+					}
+					... on Job {
+						__typename
+						name
+					}
+				}
+			}
+			... on ExternalIngressUrgentVulnerabilityIssue {
+				id
+				message
+				teamEnvironment {
+					team {
+						slug
+					}
+					environment {
+						name
+					}
+				}
+				workload {
+					... on Application {
+						__typename
+						name
+					}
+					... on Job {
+						__typename
+						name
+					}
+				}
+			}
+			... on FailedSynchronizationIssue {
+				id
+				message
+				teamEnvironment {
+					team {
+						slug
+					}
+					environment {
+						name
+					}
+				}
+				workload {
+					... on Application {
+						__typename
+						name
+					}
+					... on Job {
+						__typename
+						name
+					}
+				}
+			}
+			... on InvalidSpecIssue {
+				id
+				message
+				teamEnvironment {
+					team {
+						slug
+					}
+					environment {
+						name
+					}
+				}
+				workload {
+					... on Application {
+						__typename
+						name
+					}
+					... on Job {
+						__typename
+						name
+					}
+				}
+			}
+			... on LastRunFailedIssue {
+				id
+				message
+				teamEnvironment {
+					team {
+						slug
+					}
+					environment {
+						name
+					}
+				}
+				job {
+					name
+				}
+			}
+			... on MissingSbomIssue {
+				id
+				message
+				teamEnvironment {
+					team {
+						slug
+					}
+					environment {
+						name
+					}
+				}
+				workload {
+					... on Application {
+						__typename
+						name
+					}
+					... on Job {
+						__typename
+						name
+					}
+				}
+			}
+			... on NoRunningInstancesIssue {
+				id
+				message
+				teamEnvironment {
+					team {
+						slug
+					}
+					environment {
+						name
+					}
+				}
+				workload {
+					... on Application {
+						__typename
+						name
+					}
+					... on Job {
+						__typename
+						name
+					}
+				}
+			}
+			... on OpenSearchIssue {
+				id
+				message
+				teamEnvironment {
+					team {
+						slug
+					}
+					environment {
+						name
+					}
+				}
+				openSearch {
+					name
+				}
+			}
+			... on PostgresBranchIssue {
+				id
+				message
+				teamEnvironment {
+					team {
+						slug
+					}
+					environment {
+						name
+					}
+				}
+				branch {
+					name
+					postgres {
+						name
+					}
+				}
+			}
+			... on SqlInstanceStateIssue {
+				id
+				message
+				teamEnvironment {
+					team {
+						slug
+					}
+					environment {
+						name
+					}
+				}
+				sqlInstance {
+					name
+				}
+			}
+			... on SqlInstanceVersionIssue {
+				id
+				message
+				teamEnvironment {
+					team {
+						slug
+					}
+					environment {
+						name
+					}
+				}
+				sqlInstance {
+					name
+				}
+			}
+			... on UnleashReleaseChannelIssue {
+				id
+				message
+				teamEnvironment {
+					team {
+						slug
+					}
+					environment {
+						name
+					}
+				}
+				unleash {
+					name
+				}
+			}
+			... on ValkeyIssue {
+				id
+				message
+				teamEnvironment {
+					team {
+						slug
+					}
+					environment {
+						name
+					}
+				}
+				valkey {
+					name
+				}
+			}
+			... on VulnerableImageIssue {
+				id
+				message
+				teamEnvironment {
+					team {
+						slug
+					}
+					environment {
+						name
+					}
+				}
+				workload {
+					... on Application {
+						__typename
+						name
+					}
+					... on Job {
+						__typename
+						name
+					}
+				}
+			}
+			... on WorkloadProblemIssue {
+				id
+				message
+				teamEnvironment {
+					team {
+						slug
+					}
+					environment {
+						name
+					}
+				}
+				workload {
+					... on Application {
+						__typename
+						name
+					}
+					... on Job {
+						__typename
+						name
+					}
+				}
+			}
+		}
+	}
+}

@@ -1,0 +1,26 @@
+query HomeTeamSummaries($teamSlugs: [Slug!]!) {
+	teams(first: 25, filter: { teamScope: { teamSlugs: $teamSlugs } }) {
+		nodes {
+			id
+			slug
+			inventoryCounts {
+				applications {
+					total
+				}
+				jobs {
+					total
+				}
+			}
+			criticalIssues: issues(first: 1, filter: { severity: CRITICAL }) {
+				pageInfo {
+					totalCount
+				}
+			}
+			issues(first: 1) {
+				pageInfo {
+					totalCount
+				}
+			}
+		}
+	}
+}

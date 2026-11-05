@@ -1,12 +1,12 @@
 import { dev } from '$app/env';
 import { HoudiniClient } from '$houdini';
-import { subscription, type SubscriptionClient } from '$houdini/plugins';
+import { fetch, subscription, type SubscriptionClient } from '$houdini/plugins';
 import { handleMissingLogin } from '#lib/authentication.js';
 import { updatesConnectionClosed } from '#lib/stores/update_complete.js';
 import { createClient } from 'graphql-sse';
 
 export default new HoudiniClient({
-	plugins: [subscription(sseSockets), handleMissingLogin('UserInfo')]
+	plugins: [subscription(sseSockets), handleMissingLogin('UserInfo'), fetch('/graphql')]
 });
 
 function sseSockets() {
