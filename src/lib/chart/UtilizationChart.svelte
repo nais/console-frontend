@@ -22,10 +22,16 @@
 	);
 </script>
 
-<div class="chart-container" class:clickable={!!onBarClick}>
+<div class={['chart-container', { clickable: !!onBarClick }]}>
+	<!-- Keep formatted byte ticks and rotated team labels inside the clipped chart. -->
 	<BarChart
 		{data}
-		padding={{ top: 24, bottom: 120, left: 40, right: 40 }}
+		padding={{
+			top: 24,
+			bottom: 112,
+			left: format === 'memory' ? 56 : 40,
+			right: 40
+		}}
 		cRange={[format == 'cpu' ? '#83bff6' : '#91dc75']}
 		x={xKey as string}
 		y={yKey as string}
@@ -41,7 +47,7 @@
 			},
 			xAxis: {
 				format(value: string) {
-					return truncateString(value, 23);
+					return truncateString(value, 14);
 				},
 				tickLabelProps: {
 					rotate: 300,

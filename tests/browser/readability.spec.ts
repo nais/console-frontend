@@ -78,6 +78,49 @@ async function contrast(
 
 for (const theme of ['light', 'dark']) {
 	for (const width of [375, 1440]) {
+		test(`${theme} cost tooltips are opaque and readable at ${width}px`, async ({ page }) => {
+			await page.setViewportSize({ width, height: 900 });
+			await page.goto('/tests/browser/primitive-feedback.html?cost-formatting');
+			await expect(page.locator('html')).toHaveAttribute('data-ready', 'true');
+			await page.locator('html').evaluate((element, theme) => {
+				element.classList.toggle('dark', theme === 'dark');
+			}, theme);
+			for (const chartId of ['cost-bar', 'cost-area-legend', 'cost-line']) {
+				await page.getByTestId(chartId).hover();
+				const tooltip = page.locator('.lc-tooltip-container:visible');
+				await expect(tooltip).toBeVisible();
+				// Wait for LayerChart's entrance fade before checking effective opacity.
+				await expect(tooltip.locator('..')).toHaveCSS('opacity', '1');
+				const surface = await tooltip.evaluate((element) => {
+					const canvas = document.createElement('canvas');
+					canvas.width = canvas.height = 1;
+					const context = canvas.getContext('2d');
+					if (!context) throw new Error('Cannot measure tooltip background');
+					context.fillStyle = getComputedStyle(element).backgroundColor;
+					context.fillRect(0, 0, 1, 1);
+					let opacity = 1;
+					for (let current: Element | null = element; current; current = current.parentElement) {
+						opacity *= Number(getComputedStyle(current).opacity);
+					}
+					return { alpha: context.getImageData(0, 0, 1, 1).data[3] / 255, opacity };
+				});
+				expect(surface, `${chartId} surface`).toEqual({ alpha: 1, opacity: 1 });
+				await expect(tooltip).toHaveCSS(
+					'background-color',
+					theme === 'dark' ? 'rgb(15, 23, 42)' : 'rgb(255, 255, 255)'
+				);
+				for (const text of await tooltip
+					.locator('.lc-tooltip-header, .lc-tooltip-item-label, .lc-tooltip-item-value')
+					.all()) {
+					expect(await contrast(text), `${chartId} text contrast`).toBeGreaterThanOrEqual(4.5);
+				}
+				await page.mouse.move(0, 0);
+				await expect(page.locator('.lc-tooltip-container')).toHaveCount(0);
+			}
+		});
+	}
+
+	for (const width of [375, 1440]) {
 		test(`${theme} at ${width}px keeps empty utilization gauges visible`, async ({ page }) => {
 			await page.setViewportSize({ width, height: 900 });
 			await page.goto('/tests/browser/primitive-feedback.html?utilization');

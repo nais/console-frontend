@@ -32,6 +32,9 @@
 	import PersistenceItem from '../../src/lib/domain/persistence/PersistenceItem.svelte';
 	import StaticUtilizationDonut from '../../src/lib/chart/StaticUtilizationDonut.svelte';
 	import type { TeamSummaryCost$result } from '$houdini';
+	import { BarChart, Tooltip as ChartTooltip } from 'layerchart';
+	import { format } from 'date-fns';
+	import { euroTooltipFormatter } from '../../src/lib/utils/formatters.js';
 
 	const sizes = ['3xlarge', '2xlarge', 'xlarge', 'large', 'medium', 'small', 'xsmall'] as const;
 	const headingSizes = ['xlarge', 'large', 'medium', 'small', 'xsmall'] as const;
@@ -87,6 +90,45 @@
 		</section>
 	{/if}
 	{#if showCostFormatting}
+		<!-- Same stacked chart and custom tooltip primitives as /cost. -->
+		<div data-testid="cost-bar" style="height: var(--utilization-chart-height)">
+			<BarChart
+				data={[
+					{ date: new Date(2026, 9, 1), compute: 100, storage: 0.1 },
+					{ date: new Date(2026, 10, 1), compute: 120, storage: 0.2 }
+				]}
+				x="date"
+				series={[{ key: 'compute' }, { key: 'storage' }]}
+				seriesLayout="stack"
+			>
+				{#snippet tooltip({ context })}
+					<ChartTooltip.Root>
+						{#snippet children({ data })}
+							<ChartTooltip.Header
+								value={data.date}
+								format={(value: Date) => format(value, 'yyyy-MM-dd')}
+							/>
+							<ChartTooltip.List>
+								{#each context.tooltipState.series as item (item.key)}
+									<ChartTooltip.Item
+										label={item.label ?? item.key}
+										color={item.color}
+										value={item.value}
+										format={euroTooltipFormatter}
+									/>
+								{/each}
+								<ChartTooltip.Separator />
+								<ChartTooltip.Item
+									label="total"
+									value={data.compute + data.storage}
+									format={euroTooltipFormatter}
+								/>
+							</ChartTooltip.List>
+						{/snippet}
+					</ChartTooltip.Root>
+				{/snippet}
+			</BarChart>
+		</div>
 		<div data-testid="cost-area-legend">
 			<CostAreaChart
 				data={[
