@@ -26,6 +26,7 @@
 	import ResourceTable from '../../src/lib/ui/ResourceTable.svelte';
 	import CostChart from '../../src/lib/chart/CostChart.svelte';
 	import CostAreaChart from '../../src/lib/chart/CostAreaChart.svelte';
+	import StaticUtilizationDonut from '../../src/lib/chart/StaticUtilizationDonut.svelte';
 	import type { TeamSummaryCost$result } from '$houdini';
 
 	const sizes = ['3xlarge', '2xlarge', 'xlarge', 'large', 'medium', 'small', 'xsmall'] as const;
@@ -37,6 +38,16 @@
 	let selectedLogFilter = $state('');
 	const showFavoriteDrag = new URLSearchParams(window.location.search).has('favorite-drag');
 	const showCostFormatting = new URLSearchParams(window.location.search).has('cost-formatting');
+	const showUtilization = new URLSearchParams(window.location.search).has('utilization');
+	const utilizationCases = [
+		{ key: 'zero', value: 0 },
+		{ key: 'missing', value: null },
+		{ key: 'undefined', value: undefined },
+		{ key: 'low', value: 1 },
+		{ key: 'partial', value: 50 },
+		{ key: 'warning', value: 80 },
+		{ key: 'full', value: 100 }
+	];
 
 	const costCases = [
 		{ key: 'decreasing', sum: 96 },
@@ -62,6 +73,15 @@
 </script>
 
 <main>
+	{#if showUtilization}
+		<section data-testid="utilization-gauges" aria-label="Utilization gauges">
+			{#each utilizationCases as utilization (utilization.key)}
+				<div data-testid="utilization-{utilization.key}">
+					<StaticUtilizationDonut value={utilization.value} label="CPU" />
+				</div>
+			{/each}
+		</section>
+	{/if}
 	{#if showCostFormatting}
 		<div data-testid="cost-area-legend">
 			<CostAreaChart

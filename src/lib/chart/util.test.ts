@@ -202,11 +202,11 @@ describe('chart/util', () => {
 
 	describe('getSegmentFill', () => {
 		test('returns neutral fill for inactive segment', () => {
-			expect(getSegmentFill(10, false, 36)).toBe('var(--ax-neutral-200)');
+			expect(getSegmentFill(10, false, 36)).toBe('var(--ax-border-neutral)');
 		});
 
 		test('returns neutral fill when total segments is invalid', () => {
-			expect(getSegmentFill(0, true, 0)).toBe('var(--ax-neutral-200)');
+			expect(getSegmentFill(0, true, 0)).toBe('var(--ax-border-neutral)');
 		});
 
 		test('returns success fill below warning threshold', () => {
