@@ -174,12 +174,28 @@ function pageData({
 	};
 }
 
+function normalizeHtml(html: string) {
+	let previous: string;
+	do {
+		previous = html;
+		html = html.replace(/<!--[\s\S]*?-->/g, '');
+	} while (html !== previous);
+	return html.replace(/\s+/g, ' ');
+}
+
 async function body(options: Parameters<typeof pageData>[0] = {}) {
 	const html = (
 		await render(HomePage, { props: { data: pageData(options), params: {}, form: null } })
 	).body;
-	return html.replace(/<!--[\s\S]*?-->/g, '').replace(/\s+/g, ' ');
+	return normalizeHtml(html);
 }
+
+test.each([
+	['<p>before<!-- comment -->after</p>', '<p>beforeafter</p>'],
+	['<p>before<!-<!-- inner -->-outer-->after</p>', '<p>beforeafter</p>']
+])('normalizes rendered HTML comments in %s', (html, expected) => {
+	expect(normalizeHtml(html)).toBe(expected);
+});
 
 test('prioritizes teams and pins over activity while keeping zero-state information quiet', async () => {
 	const html = await body();
