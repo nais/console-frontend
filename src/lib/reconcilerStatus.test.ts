@@ -56,12 +56,13 @@ test('detects an error on a later page and clears when refreshed data is healthy
 	const store = new AdminReconcilerStatusStore();
 	const state = writable({ ...get(store), data: status([0], true) });
 	Object.assign(store, { subscribe: state.subscribe });
-	vi.spyOn(store, 'loadNextPage').mockImplementation(async () => {
+	const loadNextPage = vi.spyOn(store, 'loadNextPage').mockImplementation(async () => {
 		state.update((current) => ({ ...current, data: status([0, 1]) }));
 		return get(store);
 	});
 
 	await loadRemainingReconcilerPages(store);
+	expect(loadNextPage).toHaveBeenCalledExactlyOnceWith();
 	expect(hasReconcilerErrors(get(store).data)).toBe(true);
 	state.update((current) => ({ ...current, data: status([0, 0]) }));
 	expect(hasReconcilerErrors(get(store).data)).toBe(false);

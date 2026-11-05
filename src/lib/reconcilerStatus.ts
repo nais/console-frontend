@@ -10,7 +10,7 @@ export async function loadRemainingReconcilerPages(
 	fetch?: typeof globalThis.fetch
 ) {
 	while (!get(store).errors?.length && get(store).data?.reconcilers.pageInfo.hasNextPage) {
-		const result = await store.loadNextPage({ fetch });
+		const result = await (fetch ? store.loadNextPage({ fetch }) : store.loadNextPage());
 		if (result.errors?.length) {
 			throw new Error(result.errors.map(({ message }) => message).join('; '));
 		}
