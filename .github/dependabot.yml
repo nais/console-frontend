@@ -15,7 +15,14 @@ updates:
       npm:
         patterns:
           - "*"
+        update-types:
+          - "minor"
+          - "patch"
     ignore:
+      - dependency-name: "@sveltejs/kit"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "@sveltejs/adapter-node"
+        update-types: ["version-update:semver-major"]
       - dependency-name: "typescript"
         update-types: ["version-update:semver-major"]
 
