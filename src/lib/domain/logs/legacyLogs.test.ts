@@ -1,6 +1,7 @@
 import type { ComponentProps } from 'svelte';
 import { render } from 'svelte/server';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
+import TeamLogs from './TeamLogs.svelte';
 import Logs from '../../../routes/team/[team]/[env]/app/[app]/logs/Logs.svelte';
 import JobLogs from '../../../routes/team/[team]/[env]/job/[job]/logs/JobLogs.svelte';
 
@@ -16,11 +17,15 @@ vi.mock('$houdini', () => ({
 	graphql: () => ({})
 }));
 
-function application(logDestinations: unknown[] = []) {
+function application(
+	logDestinations: unknown[] = [],
+	projectID: string | null = 'team-dev-project'
+) {
 	return {
 		team: {
 			slug: 'team',
 			environment: {
+				gcpProjectID: projectID,
 				environment: { name: 'dev-gcp' },
 				application: {
 					name: 'app',
@@ -32,11 +37,17 @@ function application(logDestinations: unknown[] = []) {
 	} as ComponentProps<typeof Logs>;
 }
 
-function job(logDestinations: unknown[] = [], running = true, completedRunName = 'job-run-2') {
+function job(
+	logDestinations: unknown[] = [],
+	running = true,
+	completedRunName = 'job-run-2',
+	projectID: string | null = 'team-dev-project'
+) {
 	return {
 		team: {
 			slug: 'team',
 			environment: {
+				gcpProjectID: projectID,
 				environment: { name: 'dev-gcp' },
 				job: {
 					name: 'job',
@@ -76,10 +87,10 @@ beforeEach(() => {
 });
 
 describe.each(['application', 'job'] as const)('%s log viewer fallback', (kind) => {
-	async function view(destinations: unknown[]) {
+	async function view(destinations: unknown[], projectID: string | null = 'team-dev-project') {
 		return kind === 'application'
-			? render(Logs, { props: application(destinations) })
-			: render(JobLogs, { props: job(destinations) });
+			? render(Logs, { props: application(destinations, projectID) })
+			: render(JobLogs, { props: job(destinations, true, 'job-run-2', projectID) });
 	}
 
 	it('shows the legacy viewer and migration warning without Loki', async () => {
@@ -91,6 +102,7 @@ describe.each(['application', 'job'] as const)('%s log viewer fallback', (kind) 
 		expect(body).toContain('Clear logs');
 		expect(body).not.toContain('This workload has no Loki log destination.');
 		expect(body).not.toContain('Search log content');
+		expect(body).not.toContain('Open Team Logs');
 	});
 
 	it('continues to use the explorer when Loki is configured', async () => {
@@ -99,14 +111,60 @@ describe.each(['application', 'job'] as const)('%s log viewer fallback', (kind) 
 		]);
 		expect(body).toContain('Search log content');
 		expect(body).not.toContain('old log viewer');
+		expect(body).not.toContain('Open Team Logs');
 	});
 
-	it('does not stream secure workloads through the legacy fallback', async () => {
-		const { body } = await view([{ __typename: 'LogDestinationSecureLogs' }]);
-		expect(body).toContain('unavailable for workloads with secure log destinations');
+	it.each([false, true])(
+		'links secure workloads to Team Logs (Loki configured: %s)',
+		async (loki) => {
+			const { body } = await view([
+				{ __typename: 'LogDestinationSecureLogs' },
+				...(loki
+					? [{ __typename: 'LogDestinationLoki', grafanaURL: 'https://grafana.example.com' }]
+					: [])
+			]);
+			const href = body.match(
+				/href="(https:\/\/console\.cloud\.google\.com\/logs\/query[^"]*)"/
+			)?.[1];
+			expect(href).toBeDefined();
+			const url = new URL(href!);
+			expect(url.searchParams.get('project')).toBe('team-dev-project');
+			expect(decodeURIComponent(url.pathname.split(';query=')[1])).toBe(
+				`resource.labels.namespace_name="team"\nresource.labels.container_name="${kind === 'application' ? 'app' : 'job'}"`
+			);
+			expect(body).toContain('Open Team Logs');
+			expect(body).toContain('target="_blank" rel="noopener noreferrer"');
+			expect(body).not.toContain('Clear logs');
+			expect(body).not.toContain('Search log content');
+		}
+	);
+
+	it('explains a missing project without linking to the wrong project or streaming logs', async () => {
+		const { body } = await view([{ __typename: 'LogDestinationSecureLogs' }], null);
+		expect(body).toContain('this environment has no GCP project ID');
+		expect(body).not.toContain('Open Team Logs');
+		expect(body).not.toContain('console.cloud.google.com');
 		expect(body).not.toContain('Clear logs');
 		expect(body).not.toContain('Search log content');
 	});
+});
+
+it('encodes the Team Logs project and query values without allowing extra URL parameters or filters', async () => {
+	const { body } = await render(TeamLogs, {
+		props: {
+			projectID: 'project&other=value',
+			team: 'team "one"',
+			workload: 'app" OR severity>=ERROR\n;query=other/#'
+		}
+	});
+	const href = body.match(/href="(https:\/\/console\.cloud\.google\.com\/logs\/query[^"]*)"/)?.[1];
+	expect(href).toBeDefined();
+	const url = new URL(href!);
+	expect([...url.searchParams]).toEqual([['project', 'project&other=value']]);
+	expect(url.hash).toBe('');
+	expect(decodeURIComponent(url.pathname.split(';query=')[1])).toBe(
+		'resource.labels.namespace_name="team \\"one\\""\nresource.labels.container_name="app\\" OR severity>=ERROR\\n;query=other/#"'
+	);
 });
 
 it('preserves application instance deep links', async () => {

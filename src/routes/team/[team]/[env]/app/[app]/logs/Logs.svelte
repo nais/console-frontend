@@ -2,10 +2,10 @@
 	import { apmURL } from '#lib/doc.js';
 	import LegacyLogViewer from '#lib/domain/logs/LegacyLogViewer.svelte';
 	import LogExplorer from '#lib/domain/logs/LogExplorer.svelte';
+	import TeamLogs from '#lib/domain/logs/TeamLogs.svelte';
 	import { exhaustive } from '#lib/utils/houdini.js';
 	import { page } from '$app/state';
 	import type { Instances$result } from '$houdini';
-	import { Alert } from '#lib/shadcn/ui/index.js';
 
 	const { team }: Instances$result = $props();
 	const destinations = $derived(exhaustive(team.environment.application.logDestinations));
@@ -24,9 +24,11 @@
 
 {#key `${team.slug}/${team.environment.environment.name}/${team.environment.application.name}/${selectedInstance ?? ''}`}
 	{#if hasSecureLogs}
-		<Alert variant="info"
-			>The Loki viewer is unavailable for workloads with secure log destinations.</Alert
-		>
+		<TeamLogs
+			team={team.slug}
+			workload={team.environment.application.name}
+			projectID={team.environment.gcpProjectID}
+		/>
 	{:else if !hasLoki}
 		<LegacyLogViewer
 			team={team.slug}
