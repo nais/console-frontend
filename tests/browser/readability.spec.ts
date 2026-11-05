@@ -22,7 +22,7 @@ async function expectTokenSizes(page: Page, rootFontSize = 16) {
 
 async function contrast(
 	locator: Locator,
-	property: 'color' | 'borderTopColor' = 'color',
+	property: 'color' | 'borderTopColor' | 'fill' = 'color',
 	pseudo: string | null = null
 ) {
 	return locator.evaluate(
@@ -78,6 +78,57 @@ async function contrast(
 
 for (const theme of ['light', 'dark']) {
 	for (const width of [375, 1440]) {
+		test(`${theme} at ${width}px keeps empty utilization gauges visible`, async ({ page }) => {
+			await page.setViewportSize({ width, height: 900 });
+			await page.goto('/tests/browser/primitive-feedback.html?utilization');
+			await expect(page.locator('html')).toHaveAttribute('data-ready', 'true');
+			await page.locator('html').evaluate((element, theme) => {
+				element.dataset.theme = theme;
+			}, theme);
+			const gauges = page.getByTestId('utilization-gauges');
+			const neutral = theme === 'light' ? 'rgb(203, 213, 225)' : 'rgb(51, 65, 85)';
+			for (const background of ['var(--ax-bg-default)', 'var(--ax-bg-sunken)']) {
+				await gauges.evaluate((element, background) => {
+					element.style.backgroundColor = background;
+				}, background);
+				for (const { key, center, inactive } of [
+					{ key: 'zero', center: '0.0%', inactive: 36 },
+					{ key: 'missing', center: 'No data', inactive: 36 },
+					{ key: 'undefined', center: 'No data', inactive: 36 },
+					{ key: 'low', center: '1.0%', inactive: 36 },
+					{ key: 'partial', center: '50.0%', inactive: 18 },
+					{ key: 'warning', center: '80.0%', inactive: 7 },
+					{ key: 'full', center: '100.0%', inactive: 0 }
+				]) {
+					const gauge = page.getByTestId(`utilization-${key}`);
+					const segments = gauge.locator('path');
+					await expect(segments).toHaveCount(36);
+					await expect(gauge.locator('.utilization-value')).toHaveText(center);
+					expect(
+						await contrast(gauge.locator('.utilization-value'), 'fill'),
+						`${key} value contrast`
+					).toBeGreaterThanOrEqual(4.5);
+					if (inactive < 36) {
+						expect(
+							await contrast(segments.first(), 'fill'),
+							`${key} active segment contrast`
+						).toBeGreaterThanOrEqual(3);
+					}
+					const fills = await segments.evaluateAll((elements) =>
+						elements.map((element) => getComputedStyle(element).fill)
+					);
+					expect(fills.filter((fill) => fill === neutral)).toHaveLength(inactive);
+					const strokes = await segments.evaluateAll((elements) =>
+						elements.map((element) => getComputedStyle(element).stroke)
+					);
+					expect(strokes.every((stroke) => stroke === 'none')).toBe(true);
+					expect(
+						await gauge.evaluate((element) => element.scrollWidth <= element.clientWidth)
+					).toBe(true);
+				}
+			}
+		});
+
 		test(`${theme} at ${width}px keeps text legible and status colours AA compliant`, async ({
 			page
 		}) => {
