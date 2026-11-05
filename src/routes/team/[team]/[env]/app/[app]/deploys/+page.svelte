@@ -132,7 +132,7 @@
 
 	.highlight-in {
 		background-color: var(--ax-accent-400);
-		padding-left: 0.5rem;
+		padding-left: var(--ax-space-8);
 		opacity: 1;
 		border-left-width: 4px;
 	}

@@ -43,13 +43,15 @@ When changing layouts, lists, tables, or chart-heavy pages, validate in responsi
 
 ### CSS Architecture
 
-Styles use `@layer` ordering and design tokens from `@nais/ds-svelte-community`:
+Styles use `@layer` ordering and shared tokens in [shadcn.css](src/styles/shadcn.css) and [app.css](src/styles/app.css):
 
 - **Tokens**: Use `--ax-space-*`, `--ax-radius-*`, `--ax-text-*` variables — never hardcode spacing, radii, or colors
+- **Exact replacements**: Mechanical replacements must use existing, property-appropriate tokens of the same value. Do not round sizes or use spacing tokens for typography. Remaining values and approved sizing changes or semantic tokens are recorded in [the CSS token follow-up](docs/CssTokenFollowup.md).
+- **Dimensions**: Use semantic size tokens for avatars, icons, and controls, not spacing tokens. Keep reviewed component-specific layout constraints as documented exceptions instead of adding single-use variables.
 - **Readability**: Use shared typography tokens instead of page-specific small sizes. Body/table text is 15–16px, secondary text and controls 14px, and compact labels 12–13px. Keep text contrast at least 4.5:1 on its actual surface in both themes; `tests/browser/readability.spec.ts` covers shared status colours, tables, inputs, and navigation.
 - **Utility classes**: `src/styles/app.css` provides `.layout-two-column`, `.layout-sidebar`, `.table-scroll`, `.detail-actions`, `.loading-centered` for common patterns
 - **LayerChart theming**: `src/styles/layerchart.css` maps chart library variables to design tokens. The `.dark` block must mirror the `:root` declarations (tokens resolve differently per scope)
-- **Validation**: Run `pnpm run lint` — ESLint includes custom rules for missing CSS variables and unused GraphQL files
+- **Validation**: Run `pnpm run lint` — ESLint checks missing CSS variables, exact existing token matches for literal `rem` spacing/typography/radii, and unused GraphQL files. Dimensions require semantic review; unmatched lengths and layout constraints are not rejected by the exact-match rule.
 
 #### AI-Assisted Development
 

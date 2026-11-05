@@ -1,4 +1,15 @@
+import { readFileSync } from 'node:fs';
 import { expect, test, type Locator } from '@playwright/test';
+
+const themeProperties = [
+	...new Set(
+		[
+			...readFileSync(new URL('../../src/styles/shadcn.css', import.meta.url), 'utf8').matchAll(
+				/(--[\w-]+)\s*:/g
+			)
+		].map(([, name]) => name)
+	)
+];
 
 test.beforeEach(async ({ page }) => {
 	await page.goto('/tests/browser/primitive-feedback.html');
@@ -411,11 +422,10 @@ test('shared heading tokens preserve the large weight and font-relative spacing'
 	}
 });
 
-async function themeTokens(locator: Locator, properties?: string[]) {
+async function themeTokens(locator: Locator, properties = themeProperties) {
 	return locator.evaluate((element, names) => {
 		const style = getComputedStyle(element);
-		const tokens = names ?? Array.from(style).filter((name) => name.startsWith('--'));
-		return Object.fromEntries(tokens.map((name) => [name, style.getPropertyValue(name).trim()]));
+		return Object.fromEntries(names.map((name) => [name, style.getPropertyValue(name).trim()]));
 	}, properties);
 }
 

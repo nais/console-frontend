@@ -263,6 +263,10 @@
 		overflow-wrap: anywhere;
 	}
 
+	.target :global(.icon-label) {
+		font-size: var(--ax-font-size-large);
+	}
+
 	.target :global(*) {
 		min-width: 0;
 	}

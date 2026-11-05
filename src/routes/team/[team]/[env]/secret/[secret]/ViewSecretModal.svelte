@@ -72,7 +72,7 @@
 <Modal bind:open onclose={handleClose} width="medium">
 	{#snippet header()}
 		<div class="header">
-			<PadlockLockedIcon style="font-size: 1.5rem;" />
+			<PadlockLockedIcon />
 			<Heading as="h2" size="medium">View secret values</Heading>
 		</div>
 	{/snippet}

@@ -151,8 +151,8 @@
 	}
 
 	.facet-item input[type='checkbox'] {
-		width: 1rem;
-		height: 1rem;
+		width: var(--ax-space-16);
+		height: var(--ax-space-16);
 		margin: 0;
 		flex-shrink: 0;
 		cursor: pointer;
@@ -169,7 +169,7 @@
 
 	.facet-count {
 		flex-shrink: 0;
-		font-size: 0.6875rem;
+		font-size: var(--sh-font-size-xs);
 		color: var(--ax-text-neutral-subtle);
 	}
 </style>

@@ -92,8 +92,8 @@
 	.header {
 		display: flex;
 		flex-direction: column;
-		padding: 0.9375rem 1.25rem;
-		gap: 0.75rem;
+		padding: var(--ax-space-16) var(--ax-space-20);
+		gap: var(--ax-space-12);
 		border-bottom: 1px solid var(--border);
 		background-color: var(--card);
 	}
@@ -102,7 +102,7 @@
 		display: flex;
 		justify-content: space-between;
 		align-items: center;
-		gap: 1rem;
+		gap: var(--ax-space-16);
 	}
 
 	.header.without-border {
@@ -112,15 +112,15 @@
 	.header-left {
 		display: flex;
 		align-items: center;
-		gap: 0.625rem;
+		gap: var(--ax-space-10);
 		min-width: 0;
 	}
 
 	.title {
 		display: flex;
 		align-items: center;
-		gap: 0.5rem;
-		font-size: 1.0625rem;
+		gap: var(--ax-space-8);
+		font-size: var(--ax-font-size-large);
 		font-weight: 600;
 		letter-spacing: -0.015em;
 		margin: 0;
@@ -128,7 +128,7 @@
 	}
 
 	.title.small {
-		font-size: 0.9375rem;
+		font-size: var(--sh-font-size-body);
 		line-height: 1.35;
 		letter-spacing: -0.01em;
 		font-weight: 600;
@@ -138,9 +138,9 @@
 		display: inline-flex;
 		align-items: center;
 		justify-content: center;
-		min-width: 1.5rem;
-		height: 1.375rem;
-		padding: 0 0.45rem;
+		min-width: var(--ax-space-24);
+		line-height: var(--sh-line-height-compact);
+		padding: 0 var(--ax-space-8);
 		border-radius: 9999px;
 		background: var(--secondary);
 		border: 1px solid var(--border);
@@ -153,7 +153,7 @@
 	.header-right {
 		display: flex;
 		align-items: center;
-		gap: 0.5rem;
+		gap: var(--ax-space-8);
 	}
 
 	.search-slot {
@@ -166,13 +166,13 @@
 		display: flex;
 		justify-content: space-between;
 		align-items: center;
-		gap: 0.75rem;
+		gap: var(--ax-space-12);
 		flex-wrap: wrap;
 	}
 
 	.filters-slot {
 		display: flex;
-		gap: 0.5rem;
+		gap: var(--ax-space-8);
 		flex-wrap: wrap;
 		align-items: center;
 	}
@@ -180,7 +180,7 @@
 	.menu-slot {
 		margin-left: auto;
 		display: flex;
-		gap: 0.5rem;
+		gap: var(--ax-space-8);
 		flex-shrink: 0;
 	}
 
@@ -196,8 +196,8 @@
 
 	@media (max-width: 767px) {
 		.header {
-			padding: 0.875rem 1rem;
-			gap: 0.75rem;
+			padding: var(--ax-space-14) var(--ax-space-16);
+			gap: var(--ax-space-12);
 		}
 
 		.header-row {
@@ -211,7 +211,7 @@
 		.toolbar {
 			flex-direction: column;
 			align-items: stretch;
-			gap: 0.5rem;
+			gap: var(--ax-space-8);
 		}
 
 		.filters-slot {

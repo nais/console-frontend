@@ -89,7 +89,7 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		height: calc(100vh - 1rem);
+		height: calc(100vh - var(--ax-space-16));
 	}
 
 	.login {

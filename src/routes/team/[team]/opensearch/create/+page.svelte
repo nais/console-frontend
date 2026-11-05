@@ -116,7 +116,7 @@
 </script>
 
 <form method="POST" use:enhance>
-	<BodyLong style="margin-bottom: 1rem;"
+	<BodyLong style="margin-bottom: var(--ax-space-16);"
 		>This will create a new OpenSearch instance for <span style="font-weight: bold;"
 			>{data.teamSlug}</span
 		>.</BodyLong
@@ -265,6 +265,6 @@
 	}
 
 	form :global(> *) {
-		margin-bottom: 1rem;
+		margin-bottom: var(--ax-space-16);
 	}
 </style>

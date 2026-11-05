@@ -438,7 +438,7 @@
 <style>
 	.prometheus-chart-wrapper {
 		position: relative;
-		margin-bottom: 3rem;
+		margin-bottom: var(--ax-space-48);
 	}
 
 	.prometheus-chart-visualization {
@@ -448,7 +448,7 @@
 
 	.prometheus-chart-header {
 		margin-bottom: var(--ax-space-8);
-		padding-right: 2.5rem;
+		padding-right: var(--ax-space-40);
 	}
 
 	.prometheus-chart-header :global(.prometheus-chart-description) {
@@ -474,7 +474,7 @@
 		flex-direction: column;
 		align-items: center;
 		gap: var(--ax-space-8);
-		padding: 1rem;
+		padding: var(--ax-space-16);
 		background: var(--ax-bg-sunken);
 		border-radius: var(--ax-radius-8);
 		font-weight: 500;
@@ -490,18 +490,18 @@
 
 	.query-info-button {
 		position: absolute;
-		top: 0.5rem;
-		right: 0.5rem;
+		top: var(--ax-space-8);
+		right: var(--ax-space-8);
 		background: var(--ax-bg-default);
 		border: 1px solid var(--ax-border-default);
 		border-radius: var(--ax-radius-4);
-		padding: 0.5rem;
+		padding: var(--ax-space-8);
 		cursor: pointer;
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		width: 2rem;
-		height: 2rem;
+		width: var(--ax-space-32);
+		height: var(--ax-space-32);
 		z-index: 15;
 		opacity: 0.7;
 		transition: opacity 0.2s ease;
@@ -529,6 +529,6 @@
 		display: flex;
 		align-items: center;
 		justify-content: space-between;
-		margin-bottom: 0.5rem;
+		margin-bottom: var(--ax-space-8);
 	}
 </style>

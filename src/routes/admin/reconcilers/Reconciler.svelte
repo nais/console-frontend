@@ -206,7 +206,7 @@
 		color: var(--ax-text-danger);
 	}
 	.card {
-		margin-bottom: 1rem;
+		margin-bottom: var(--ax-space-16);
 		background-color: var(--ax-bg-sunken);
 		border-radius: var(--ax-radius-12);
 		align-items: stretch;

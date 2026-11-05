@@ -204,8 +204,8 @@
 
 	.issue-row {
 		--surface-accent-color: var(--ax-text-danger);
-		--surface-icon-size: 2rem;
-		--surface-icon-glyph-size: 1.1rem;
+		--surface-icon-size: var(--ax-space-32);
+		--surface-icon-glyph-size: var(--ax-font-size-large);
 		--surface-icon-background: color-mix(in srgb, var(--ax-text-danger) 10%, transparent);
 		--surface-icon-shadow: none;
 		display: flex;
