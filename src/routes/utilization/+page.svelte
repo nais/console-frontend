@@ -366,12 +366,17 @@
 	}
 
 	.chart-row {
-		display: flex;
-		height: 350px;
+		display: grid;
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+		grid-auto-rows: 350px;
 	}
 
 	/* Mobile responsive styles */
 	@media (max-width: 767px) {
+		.chart-row {
+			grid-template-columns: 1fr;
+		}
+
 		.container {
 			gap: var(--ax-space-16);
 			margin-top: var(--ax-space-16);
