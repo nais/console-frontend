@@ -229,19 +229,19 @@
 	.content {
 		display: flex;
 		flex-direction: column;
-		gap: 0.25rem;
+		gap: var(--ax-space-4);
 	}
 
 	.persistence-row {
 		display: flex;
 		align-items: center;
-		gap: 0.55rem;
-		padding: 0.375rem 0.5rem;
-		margin: 0 -0.5rem;
+		gap: var(--ax-space-8);
+		padding: var(--ax-space-6) var(--ax-space-8);
+		margin: 0 calc(-1 * var(--ax-space-8));
 		border-radius: calc(var(--radius) - 3px);
 		color: var(--foreground);
 		text-decoration: none;
-		font-size: 0.8125rem;
+		font-size: var(--sh-font-size-caption);
 		transition: background-color 110ms ease;
 	}
 
@@ -255,7 +255,7 @@
 		align-items: center;
 		justify-content: center;
 		color: var(--muted-foreground);
-		font-size: 0.9375rem;
+		font-size: var(--sh-font-size-body);
 		flex-shrink: 0;
 	}
 

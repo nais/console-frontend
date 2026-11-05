@@ -134,13 +134,13 @@
 	.app-overview-workspace {
 		display: flex;
 		flex-direction: column;
-		gap: 1.25rem;
+		gap: var(--ax-space-20);
 	}
 
 	.app-bento {
 		display: grid;
 		grid-template-columns: minmax(0, 1.3fr) minmax(0, 0.7fr);
-		gap: 1.25rem;
+		gap: var(--ax-space-20);
 		align-items: start;
 	}
 
@@ -148,7 +148,7 @@
 	.side-section {
 		display: flex;
 		flex-direction: column;
-		gap: 1.25rem;
+		gap: var(--ax-space-20);
 		min-width: 0;
 	}
 

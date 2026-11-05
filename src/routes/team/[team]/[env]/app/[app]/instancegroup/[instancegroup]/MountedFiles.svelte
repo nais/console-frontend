@@ -89,7 +89,7 @@
 	}
 
 	.file-list {
-		--instancegroup-list-columns: minmax(0, 2.5fr) auto minmax(0, 1.8fr) 3rem;
+		--instancegroup-list-columns: minmax(0, 2.5fr) auto minmax(0, 1.8fr) var(--ax-space-48);
 	}
 
 	.file-cell code {

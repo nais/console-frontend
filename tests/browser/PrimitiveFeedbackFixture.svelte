@@ -2,6 +2,7 @@
 	import Loader from '../../src/lib/shadcn/ui/Loader.svelte';
 	import Heading from '../../src/lib/shadcn/ui/Heading.svelte';
 	import AddToFavorites from '../../src/lib/ui/AddToFavorites.svelte';
+	import CriticalIndicator from '../../src/lib/ui/CriticalIndicator.svelte';
 	import Theme from '../../src/lib/shadcn/ui/Theme.svelte';
 	import Button from '../../src/lib/shadcn/ui/Button.svelte';
 	import ActionMenu from '../../src/lib/shadcn/ui/ActionMenu.svelte';
@@ -26,6 +27,10 @@
 	import ResourceTable from '../../src/lib/ui/ResourceTable.svelte';
 	import CostChart from '../../src/lib/chart/CostChart.svelte';
 	import CostAreaChart from '../../src/lib/chart/CostAreaChart.svelte';
+	import SearchField from '../../src/lib/ui/SearchField.svelte';
+	import SbomStatusIcon from '../../src/lib/domain/vulnerability/SbomStatusIcon.svelte';
+	import PersistenceItem from '../../src/lib/domain/persistence/PersistenceItem.svelte';
+	import StaticUtilizationDonut from '../../src/lib/chart/StaticUtilizationDonut.svelte';
 	import type { TeamSummaryCost$result } from '$houdini';
 	import { BarChart, Tooltip as ChartTooltip } from 'layerchart';
 	import { format } from 'date-fns';
@@ -40,6 +45,16 @@
 	let selectedLogFilter = $state('');
 	const showFavoriteDrag = new URLSearchParams(window.location.search).has('favorite-drag');
 	const showCostFormatting = new URLSearchParams(window.location.search).has('cost-formatting');
+	const showUtilization = new URLSearchParams(window.location.search).has('utilization');
+	const utilizationCases = [
+		{ key: 'zero', value: 0 },
+		{ key: 'missing', value: null },
+		{ key: 'undefined', value: undefined },
+		{ key: 'low', value: 1 },
+		{ key: 'partial', value: 50 },
+		{ key: 'warning', value: 80 },
+		{ key: 'full', value: 100 }
+	];
 
 	const costCases = [
 		{ key: 'decreasing', sum: 96 },
@@ -65,6 +80,15 @@
 </script>
 
 <main>
+	{#if showUtilization}
+		<section data-testid="utilization-gauges" aria-label="Utilization gauges">
+			{#each utilizationCases as utilization (utilization.key)}
+				<div data-testid="utilization-{utilization.key}">
+					<StaticUtilizationDonut value={utilization.value} label="CPU" />
+				</div>
+			{/each}
+		</section>
+	{/if}
 	{#if showCostFormatting}
 		<!-- Same stacked chart and custom tooltip primitives as /cost. -->
 		<div data-testid="cost-bar" style="height: 300px">
@@ -202,6 +226,7 @@
 	<Loader title="Styled loading" size="large" style="color: var(--ax-text-accent)" />
 	<section aria-label="Readable controls">
 		<Input ariaLabel="Readability search" placeholder="Search resources" />
+		<span data-testid="critical-dot" aria-hidden="true"><CriticalIndicator /></span>
 		{#each statusVariants as variant (variant)}
 			<Badge {variant} size="sm">{variant} badge</Badge>
 			<Tag variant={variant === 'destructive' ? 'error' : variant} size="small">{variant} tag</Tag>
@@ -214,6 +239,18 @@
 				<Td><span class="table-meta">Recently updated</span></Td>
 			</Tr>
 		</ResourceTable>
+	</section>
+	<section aria-label="Token sizing">
+		<SearchField label="Token search" value="cache" />
+		<span data-testid="sbom-size">
+			<SbomStatusIcon indicator="no-sbom" label="No SBOM available" />
+		</span>
+		<div class="table-scroll" data-testid="persistence-size">
+			<PersistenceItem persistence={{ __typename: 'Valkey', name: 'Example cache' }} />
+		</div>
+		<div data-testid="loading-card">
+			<TeamSummary teamSlug="token-fixture" loading />
+		</div>
 	</section>
 	{#each headingSizes as size (size)}
 		<Heading as="h2" {size} spacing>{size} heading</Heading>

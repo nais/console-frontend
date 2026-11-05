@@ -86,25 +86,25 @@
 
 	.search-icon {
 		position: absolute;
-		left: 0.65rem;
+		left: var(--ax-space-10);
 		display: flex;
 		align-items: center;
 		pointer-events: none;
 		color: var(--muted-foreground);
-		font-size: 0.875rem;
+		font-size: var(--ax-font-size-small);
 	}
 
 	.search-input {
 		width: 100%;
-		height: 2.25rem;
-		padding: 0 2rem 0 2.125rem;
+		height: var(--ax-space-36);
+		padding: 0 var(--ax-space-32);
 		border: 1px solid var(--input);
 		border-radius: calc(var(--radius) - 2px);
 		background: var(--card);
 		color: var(--foreground);
 		font-family: inherit;
-		font-size: 0.8125rem;
-		line-height: 1.25rem;
+		font-size: var(--sh-font-size-caption);
+		line-height: var(--sh-line-height-compact);
 		box-shadow: var(--sh-shadow-xs);
 		box-sizing: border-box;
 		outline: none;
@@ -124,18 +124,18 @@
 
 	.clear-button {
 		position: absolute;
-		right: 0.375rem;
+		right: var(--ax-space-6);
 		display: inline-flex;
 		align-items: center;
 		justify-content: center;
-		width: 1.375rem;
-		height: 1.375rem;
+		width: var(--sh-icon-button-size-sm);
+		height: var(--sh-icon-button-size-sm);
 		padding: 0;
 		border: none;
-		border-radius: 0.25rem;
+		border-radius: var(--ax-radius-4);
 		background: transparent;
 		color: var(--muted-foreground);
-		font-size: 1rem;
+		font-size: var(--ax-font-size-medium);
 		cursor: pointer;
 		line-height: 1;
 	}

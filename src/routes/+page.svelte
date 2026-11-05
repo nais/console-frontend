@@ -150,40 +150,40 @@
 
 <style>
 	.onboarding-container {
-		padding-top: 1.5rem;
+		padding-top: var(--ax-space-24);
 	}
 
 	.home-dashboard {
 		display: flex;
 		flex-direction: column;
-		gap: 1.5rem;
+		gap: var(--ax-space-24);
 	}
 
 	.home-header {
 		display: flex;
 		align-items: flex-end;
 		justify-content: space-between;
-		gap: 1rem;
+		gap: var(--ax-space-16);
 		flex-wrap: wrap;
-		padding-bottom: 1rem;
+		padding-bottom: var(--ax-space-16);
 		border-bottom: 1px solid var(--border);
 	}
 
 	.home-header-left {
 		display: flex;
 		flex-direction: column;
-		gap: 0.25rem;
+		gap: var(--ax-space-4);
 	}
 
 	.home-title-row {
 		display: flex;
 		align-items: center;
-		gap: 0.625rem;
+		gap: var(--ax-space-10);
 	}
 
 	.home-title {
 		margin: 0;
-		font-size: 1.5rem;
+		font-size: var(--sh-font-size-title);
 		font-weight: 600;
 		letter-spacing: -0.025em;
 		line-height: 1.25;
@@ -192,14 +192,14 @@
 
 	.home-subtitle {
 		margin: 0;
-		font-size: 0.875rem;
+		font-size: var(--ax-font-size-small);
 		color: var(--muted-foreground);
 	}
 
 	.home-header-actions {
 		display: flex;
 		align-items: center;
-		gap: 0.625rem;
+		gap: var(--ax-space-10);
 		flex-wrap: wrap;
 	}
 
@@ -210,21 +210,21 @@
 	.home-grid {
 		display: grid;
 		grid-template-columns: minmax(0, 1fr) 340px;
-		gap: 1.5rem;
+		gap: var(--ax-space-24);
 		align-items: start;
 	}
 
 	.teams-section {
 		display: flex;
 		flex-direction: column;
-		gap: 1rem;
+		gap: var(--ax-space-16);
 		min-width: 0;
 	}
 
 	.teams-bento {
 		display: grid;
 		grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-		gap: 0.875rem;
+		gap: var(--ax-space-14);
 	}
 
 	.team-card {
@@ -250,8 +250,8 @@
 		display: flex;
 		flex-direction: column;
 		align-items: stretch;
-		gap: 0.5rem;
-		padding: 1rem 1.125rem 0.875rem;
+		gap: var(--ax-space-8);
+		padding: var(--ax-space-16) var(--ax-space-18) var(--ax-space-14);
 		text-decoration: none;
 		color: inherit;
 		flex: 1;
@@ -264,7 +264,7 @@
 	.team-card-header {
 		display: flex;
 		align-items: center;
-		gap: 0.625rem;
+		gap: var(--ax-space-10);
 		width: 100%;
 	}
 
@@ -272,13 +272,13 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		width: 1.875rem;
-		height: 1.875rem;
+		width: var(--sh-avatar-size-lg);
+		height: var(--sh-avatar-size-lg);
 		border-radius: var(--radius-md);
 		background-color: var(--secondary);
 		border: 1px solid var(--border);
 		color: var(--muted-foreground);
-		font-size: 0.9375rem;
+		font-size: var(--sh-font-size-body);
 		flex-shrink: 0;
 	}
 
@@ -289,7 +289,7 @@
 
 	.team-slug {
 		margin: 0;
-		font-size: 0.9375rem;
+		font-size: var(--sh-font-size-body);
 		font-weight: 600;
 		letter-spacing: -0.01em;
 		color: var(--foreground);
@@ -300,7 +300,7 @@
 
 	.team-card :global(.team-go-icon) {
 		color: var(--muted-foreground);
-		font-size: 0.875rem;
+		font-size: var(--ax-font-size-small);
 		flex-shrink: 0;
 		transition:
 			transform 140ms ease,
@@ -328,8 +328,8 @@
 	.team-card-footer {
 		display: flex;
 		align-items: center;
-		gap: 0.375rem;
-		padding: 0.5rem 1.125rem;
+		gap: var(--ax-space-6);
+		padding: var(--ax-space-8) var(--ax-space-18);
 		background-color: var(--background-subtle);
 		border-top: 1px solid var(--border);
 		font-size: var(--ax-font-size-small);
@@ -352,17 +352,17 @@
 	}
 
 	.empty-card {
-		padding: 2rem;
+		padding: var(--ax-space-32);
 		text-align: center;
 		background-color: var(--card);
 		border: 1px dashed var(--border);
 		border-radius: var(--radius);
 		color: var(--muted-foreground);
-		font-size: 0.875rem;
+		font-size: var(--ax-font-size-small);
 	}
 
 	.pagination-wrap {
-		margin-top: 0.25rem;
+		margin-top: var(--ax-space-4);
 	}
 
 	.favorites-aside {

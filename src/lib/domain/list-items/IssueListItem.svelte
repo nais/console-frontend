@@ -387,7 +387,7 @@
 							fill="currentColor"
 							style="color: {$data?.severity === 'WARNING'
 								? 'var(--ax-bg-warning-strong)'
-								: 'var(--ax-bg-info-strong)'}; font-size: var(--ax-space-12)"
+								: 'var(--ax-bg-info-strong)'}; font-size: var(--sh-font-size-micro)"
 						/>
 					{/if}
 				</span>
@@ -525,7 +525,7 @@
 		align-items: center;
 		justify-content: center;
 		color: var(--ax-text-neutral-subtle);
-		font-size: 1rem;
+		font-size: var(--ax-font-size-medium);
 	}
 
 	.detail {

@@ -1,5 +1,5 @@
 <svg
-	style="width: 0.7rem; height: 0.7rem"
+	style="width: var(--ax-space-12); height: var(--ax-space-12)"
 	viewBox="0 0 12 12"
 	fill="none"
 	xmlns="http://www.w3.org/2000/svg"

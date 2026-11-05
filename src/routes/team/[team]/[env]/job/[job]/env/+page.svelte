@@ -69,13 +69,13 @@
 			};
 		}}
 	>
-		<BodyLong style="margin-bottom: 1rem;">
+		<BodyLong style="margin-bottom: var(--ax-space-16);">
 			Set environment variables for <strong>{page.params.job}</strong> in
 			<strong>{page.params.env}</strong>. These are plain text values that will be added to the
 			workload.
 		</BodyLong>
 
-		<Alert variant="warning" size="small" style="margin-bottom: 1rem;">
+		<Alert variant="warning" size="small" style="margin-bottom: var(--ax-space-16);">
 			These changes are temporary and will be overwritten on next deploy.
 		</Alert>
 
@@ -140,7 +140,7 @@
 	}
 
 	form :global(> *) {
-		margin-bottom: 1rem;
+		margin-bottom: var(--ax-space-16);
 	}
 
 	.button-row {

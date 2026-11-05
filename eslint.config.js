@@ -8,6 +8,7 @@ import ts from 'typescript-eslint';
 import eslintPluginUnicorn from 'eslint-plugin-unicorn';
 
 import missingCssVarsRule from './eslint-rules/missing-css-vars.js';
+import preferRemTokensRule from './eslint-rules/prefer-rem-tokens.js';
 import unusedGqlRule from './eslint-rules/unused-gql.js';
 
 const gitignorePath = fileURLToPath(new URL('./.gitignore', import.meta.url));
@@ -15,6 +16,7 @@ const gitignorePath = fileURLToPath(new URL('./.gitignore', import.meta.url));
 const projectChecksPlugin = {
 	rules: {
 		'missing-css-vars': missingCssVarsRule,
+		'prefer-rem-tokens': preferRemTokensRule,
 		'unused-gql': unusedGqlRule
 	}
 };
@@ -36,6 +38,7 @@ export default ts.config(
 		files: ['eslint.config.js'],
 		rules: {
 			'project/missing-css-vars': 'error',
+			'project/prefer-rem-tokens': 'error',
 			'project/unused-gql': 'error'
 		}
 	},

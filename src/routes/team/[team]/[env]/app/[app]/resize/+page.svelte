@@ -53,7 +53,7 @@
 			};
 		}}
 	>
-		<BodyLong style="margin-bottom: 1rem;">
+		<BodyLong style="margin-bottom: var(--ax-space-16);">
 			Set the number of replicas for <strong>{page.params.app}</strong> in
 			<strong>{page.params.env}</strong>.
 		</BodyLong>
@@ -109,7 +109,7 @@
 	}
 
 	form :global(> *) {
-		margin-bottom: 1rem;
+		margin-bottom: var(--ax-space-16);
 	}
 
 	.button-row {

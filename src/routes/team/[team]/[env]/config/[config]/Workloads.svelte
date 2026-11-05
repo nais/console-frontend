@@ -29,6 +29,6 @@
 	ul {
 		list-style: none;
 		margin: 0;
-		padding: 0 0 0 1rem;
+		padding: 0 0 0 var(--ax-space-16);
 	}
 </style>

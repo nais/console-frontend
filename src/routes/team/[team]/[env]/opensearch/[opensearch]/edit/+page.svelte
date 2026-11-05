@@ -301,6 +301,6 @@ storageGB = "${storage}"
 	}
 
 	form :global(> *) {
-		margin-bottom: 1rem;
+		margin-bottom: var(--ax-space-16);
 	}
 </style>

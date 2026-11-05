@@ -148,7 +148,7 @@
 			<option value="OWNER">Owner</option>
 			<option value="MEMBER">Member</option>
 		</Select>
-		<Detail style="margin-top: 0.5rem; color: var(--ax-text-neutral-subtle)">
+		<Detail style="margin-top: var(--ax-space-8); color: var(--ax-text-neutral-subtle)">
 			{#if role === 'OWNER'}
 				Full access including member administration
 			{:else}

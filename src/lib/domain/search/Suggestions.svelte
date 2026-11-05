@@ -61,18 +61,18 @@
 <style>
 	.suggestions-panel {
 		display: grid;
-		gap: 0.65rem;
-		padding: 0.75rem;
+		gap: var(--ax-space-10);
+		padding: var(--ax-space-12);
 		border: 1px solid var(--border);
 		border-radius: calc(var(--radius) - 2px);
 		background-color: var(--background-subtle);
-		font-size: 0.8125rem;
+		font-size: var(--sh-font-size-caption);
 	}
 
 	.intro {
 		display: flex;
 		align-items: baseline;
-		gap: 0.5rem;
+		gap: var(--ax-space-8);
 		flex-wrap: wrap;
 	}
 
@@ -84,34 +84,34 @@
 	.prefixes {
 		display: flex;
 		flex-wrap: wrap;
-		gap: 0.375rem;
+		gap: var(--ax-space-6);
 	}
 
 	.scope {
 		display: flex;
 		align-items: center;
-		gap: 0.5rem;
-		padding-top: 0.5rem;
+		gap: var(--ax-space-8);
+		padding-top: var(--ax-space-8);
 		border-top: 1px solid var(--border);
 		color: var(--foreground);
 	}
 
 	.scope > span {
 		font-weight: 600;
-		font-size: 0.75rem;
+		font-size: var(--sh-font-size-micro);
 		color: var(--muted-foreground);
 	}
 
 	.prefix {
 		display: inline-flex;
 		align-items: center;
-		gap: 0.35rem;
-		padding: 0.25rem 0.5rem;
+		gap: var(--ax-space-6);
+		padding: var(--ax-space-4) var(--ax-space-8);
 		border: 1px solid var(--border);
 		border-radius: calc(var(--radius) - 4px);
 		background-color: var(--card);
 		color: var(--foreground);
-		font-size: 0.75rem;
+		font-size: var(--sh-font-size-micro);
 		text-align: left;
 		cursor: pointer;
 		transition:
@@ -132,13 +132,13 @@
 	.hint {
 		display: inline-flex;
 		align-items: center;
-		gap: 0.35rem;
-		padding: 0.2rem 0.5rem;
+		gap: var(--ax-space-6);
+		padding: var(--ax-space-4) var(--ax-space-8);
 		border: 1px solid var(--border);
 		border-radius: calc(var(--radius) - 4px);
 		background-color: var(--card);
 		color: var(--muted-foreground);
-		font-size: 0.75rem;
+		font-size: var(--sh-font-size-micro);
 	}
 
 	code {

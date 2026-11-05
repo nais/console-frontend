@@ -46,7 +46,7 @@
 
 	.resource-table :global(th.status-column:not([aria-sort])),
 	.resource-table :global(th.status-column .sh-ui-th__sort-btn) {
-		padding-inline: 0.5rem;
+		padding-inline: var(--ax-space-8);
 	}
 
 	.resource-table :global(thead tr) {
@@ -64,7 +64,7 @@
 
 	.resource-table :global(thead th:not([aria-sort])),
 	.resource-table :global(.sh-ui-th__sort-btn) {
-		padding-block: 0.65rem;
+		padding-block: var(--ax-space-10);
 	}
 
 	.resource-table :global(.sh-ui-th__sort-btn) {
@@ -86,7 +86,7 @@
 	}
 
 	.resource-table :global(tbody td) {
-		padding-block: 0.75rem;
+		padding-block: var(--ax-space-12);
 		border-bottom: none;
 	}
 
@@ -106,13 +106,13 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		gap: 0.25rem;
+		gap: var(--ax-space-4);
 	}
 
 	.resource-table :global(.resource-name-group) {
 		display: flex;
 		align-items: center;
-		gap: 0.5rem;
+		gap: var(--ax-space-8);
 	}
 
 	.resource-table :global(.table-meta) {

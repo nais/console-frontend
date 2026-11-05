@@ -24,7 +24,7 @@
 
 {#if $SqlInstance.errors}
 	{#each distinctErrors($SqlInstance.errors) as error (error)}
-		<Alert style="margin-bottom: 1rem;" variant="error">
+		<Alert style="margin-bottom: var(--ax-space-16);" variant="error">
 			{error}
 		</Alert>
 	{/each}

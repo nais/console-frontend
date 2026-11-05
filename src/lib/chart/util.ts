@@ -25,11 +25,11 @@ export function getSegmentFill(
 	dangerThreshold = 90
 ) {
 	if (!isActive) {
-		return 'var(--ax-neutral-200)';
+		return 'var(--ax-border-neutral)';
 	}
 
 	if (totalSegments <= 0) {
-		return 'var(--ax-neutral-200)';
+		return 'var(--ax-border-neutral)';
 	}
 
 	const segmentPercent = ((segmentIndex + 1) / totalSegments) * 100;
