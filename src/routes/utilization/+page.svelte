@@ -368,7 +368,7 @@
 	.chart-row {
 		display: grid;
 		grid-template-columns: repeat(2, minmax(0, 1fr));
-		grid-auto-rows: 350px;
+		grid-auto-rows: var(--utilization-chart-height);
 	}
 
 	/* Mobile responsive styles */

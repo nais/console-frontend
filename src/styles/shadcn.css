@@ -6,6 +6,7 @@
 
 :where(:root, [data-theme='light'], .light, .light-theme) {
 	--page-max-width: 89.5rem;
+	--utilization-chart-height: 350px;
 	--radius: 0.5rem;
 	--radius-sm: calc(var(--radius) - 2px);
 	--radius-md: var(--radius);

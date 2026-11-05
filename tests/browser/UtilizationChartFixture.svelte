@@ -51,8 +51,8 @@
 	.charts {
 		display: grid;
 		grid-template-columns: repeat(2, minmax(0, 1fr));
-		grid-auto-rows: 350px;
-		max-width: 1280px;
+		grid-auto-rows: var(--utilization-chart-height);
+		max-width: var(--page-max-width);
 		margin: auto;
 	}
 	.charts > div {
