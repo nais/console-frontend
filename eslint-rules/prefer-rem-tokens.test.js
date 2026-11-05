@@ -18,6 +18,7 @@ const tokens = `
 	--ax-space-24: 1.5rem;
 	--ax-radius-4: 0.25rem;
 	--ax-font-size-small: 0.875rem;
+	--ax-font-size-medium: 1rem;
 	--sh-font-size-micro: 0.75rem;
 	--sh-font-size-body: 0.9375rem;
 	--sh-line-height-compact: 1.25rem;
@@ -74,16 +75,86 @@ describe('exact rem token matches', () => {
 
 	it('finds inline styles and Svelte style directives', () => {
 		const source = `<div style="padding: 0.5rem; font-size: 0.875rem" style:margin-top="1rem"></div>`;
-		expect(findTokenizableRems(source, tokens).map((match) => match.replacement)).toEqual([
-			'var(--ax-space-8)',
+		expect(
+			findTokenizableRems(source, tokens, 'Example.svelte').map((match) => match.replacement)
+		).toEqual(['var(--ax-space-8)', 'var(--ax-font-size-small)', 'var(--ax-space-16)']);
+	});
+
+	it.each(['"', "'"])('respects %s attribute boundaries with the real token catalogue', (quote) => {
+		const catalogue = fs.readFileSync(new URL('../src/styles/shadcn.css', import.meta.url), 'utf8');
+		const source = `<div style=${quote}font-size: 0.875rem${quote} title=${quote}1rem${quote} style:margin-top|important=${quote}1rem${quote}></div>`;
+		const matches = findTokenizableRems(source, catalogue, 'Example.svelte');
+		expect(
+			matches.map(({ property, value, replacement }) => ({ property, value, replacement }))
+		).toEqual([
+			{
+				property: 'font-size',
+				value: '0.875rem',
+				replacement: 'var(--ax-font-size-small)'
+			},
+			{ property: 'margin-top', value: '1rem', replacement: 'var(--ax-space-16)' }
+		]);
+		for (const match of matches) {
+			expect(source.slice(match.start, match.end)).toBe(match.value);
+		}
+	});
+
+	it('ignores CSS-like text in scripts, other attributes, expressions and markup', () => {
+		const source = `<script>const text = 'padding: 1rem';</script>
+			<div title="padding: 1rem" style:color="red" style={text}>
+				font-size: 1rem
+				{'gap: 0.5rem'}
+			</div>`;
+		expect(findTokenizableRems(source, tokens, 'Example.svelte')).toEqual([]);
+	});
+
+	it('checks string-literal style expressions without crossing their boundaries', () => {
+		const source = `<div style={'font-size: 0.875rem'} title="1rem" style:margin-top={'1rem'}></div>`;
+		const matches = findTokenizableRems(source, tokens, 'Example.svelte');
+		expect(matches.map((match) => match.replacement)).toEqual([
 			'var(--ax-font-size-small)',
 			'var(--ax-space-16)'
 		]);
+		for (const match of matches) {
+			expect(source.slice(match.start, match.end)).toBe(match.value);
+		}
+	});
+
+	it('ignores CSS strings and accepts styles built from arbitrary expressions', () => {
+		const source = `<div style="content: 'x; font-size: 1rem'; padding: 0.5rem; {extraStyles}" style:font-size={fontSize}></div>
+			<div style="{styles}"></div>`;
+		expect(
+			findTokenizableRems(source, tokens, 'Example.svelte').map((match) => match.replacement)
+		).toEqual(['var(--ax-space-8)']);
+	});
+
+	it('keeps multiline declarations and static parts of dynamic styles in their own context', () => {
+		const source = `<div
+			style="padding: 0.5rem {spacing} 1rem;
+				font-size: {fontSize}"
+			style:margin-top="1rem"></div>
+			<style>
+				p { padding:
+					0.5rem /* 1rem */
+					1rem; }
+			</style>`;
+		const matches = findTokenizableRems(source, tokens, 'Example.svelte');
+		expect(matches.map((match) => match.property)).toEqual([
+			'padding',
+			'padding',
+			'margin-top',
+			'padding',
+			'padding'
+		]);
+		for (const match of matches) {
+			expect(source.slice(match.start, match.end)).toBe(match.value);
+			expect(match.line).toBe(source.slice(0, match.start).split('\n').length);
+		}
 	});
 
 	it('reports exact source ranges and line numbers', () => {
 		const source = '<style>\n.example {\n\tgap: 0.5rem;\n}\n</style>';
-		const [match] = findTokenizableRems(source, tokens);
+		const [match] = findTokenizableRems(source, tokens, 'Example.svelte');
 		expect(source.slice(match.start, match.end)).toBe('0.5rem');
 		expect(match.line).toBe(3);
 	});
@@ -100,10 +171,20 @@ describe('exact rem token matches', () => {
 	it('ignores comments and media/container query conditions', () => {
 		expect(
 			findTokenizableRems(
-				'/* padding: 1rem; */ <!-- gap: 1rem --> @media (min-width: 1rem) {} @container (width < 1rem) {}',
-				tokens
+				'<!-- gap: 1rem --><style>/* padding: 1rem; */ @media (min-width: 1rem) {} @container (width < 1rem) {}</style>',
+				tokens,
+				'Example.svelte'
 			)
 		).toEqual([]);
+	});
+
+	it('checks nested declarations without treating query conditions as declarations', () => {
+		expect(
+			findTokenizableRems(
+				'@media (min-width: 1rem) { @container (width < 1rem) { p { padding: 0.5rem; } } }',
+				tokens
+			).map((match) => match.replacement)
+		).toEqual(['var(--ax-space-8)']);
 	});
 
 	it('allows canonical token definitions but checks regular declarations in token files', () => {

@@ -46,7 +46,7 @@ When changing layouts, lists, tables, or chart-heavy pages, validate in responsi
 Styles use `@layer` ordering and shared tokens in [shadcn.css](src/styles/shadcn.css) and [app.css](src/styles/app.css):
 
 - **Tokens**: Use `--ax-space-*`, `--ax-radius-*`, `--ax-text-*` variables — never hardcode spacing, radii, or colors
-- **Exact replacements**: Mechanical replacements must use existing, property-appropriate tokens of the same value. Do not round sizes or use spacing tokens for typography. Remaining values and approved sizing changes or semantic tokens are recorded in [the CSS token follow-up](docs/CssTokenFollowup.md).
+- **Exact replacements**: Mechanical replacements must use existing, property-appropriate tokens of the same value. Do not round sizes or use spacing tokens for typography. Unmatched values, sizing changes, and new semantic tokens require design review.
 - **Dimensions**: Use semantic size tokens for avatars, icons, and controls, not spacing tokens. Keep reviewed component-specific layout constraints as documented exceptions instead of adding single-use variables.
 - **Readability**: Use shared typography tokens instead of page-specific small sizes. Body/table text is 15–16px, secondary text and controls 14px, and compact labels 12–13px. Keep text contrast at least 4.5:1 on its actual surface in both themes; `tests/browser/readability.spec.ts` covers shared status colours, tables, inputs, and navigation.
 - **Utility classes**: `src/styles/app.css` provides `.layout-two-column`, `.layout-sidebar`, `.table-scroll`, `.detail-actions`, `.loading-centered` for common patterns

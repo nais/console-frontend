@@ -1,5 +1,6 @@
 import fs from 'node:fs';
 import path from 'node:path';
+import { parse, parseCss } from 'svelte/compiler';
 
 const SPACING_PROPERTY =
 	/^(?:(?:margin|padding|inset)(?:-(?:top|right|bottom|left|inline|block)(?:-(?:start|end))?)?|(?:row-|column-)?gap|top|right|bottom|left)$/;
@@ -19,26 +20,89 @@ function prefixes(property) {
 	return [];
 }
 
+function findDeclarations(source, filename) {
+	const declarations = [];
+
+	function addStylesheet(styles, offset = 0) {
+		const css = maskComments(styles);
+		function visit(node) {
+			if (node.type === 'Declaration') {
+				const valueStart = css.indexOf(':', node.start) + 1;
+				declarations.push({
+					property: node.property,
+					value: css.slice(valueStart, node.end),
+					start: offset + valueStart
+				});
+			}
+			for (const child of node.children ?? []) visit(child);
+			if (node.block) visit(node.block);
+		}
+		visit(parseCss(css));
+	}
+
+	if (!filename.endsWith('.svelte')) {
+		addStylesheet(source);
+		return declarations;
+	}
+
+	const ast = parse(source, { modern: true, filename });
+	if (ast.css) addStylesheet(ast.css.content.styles, ast.css.content.start);
+
+	function visit(node) {
+		if (!node || typeof node !== 'object') return;
+		if ((node.type === 'Attribute' && node.name === 'style') || node.type === 'StyleDirective') {
+			let chunks = node.value;
+			if (
+				chunks?.type === 'ExpressionTag' &&
+				chunks.expression.type === 'Literal' &&
+				typeof chunks.expression.value === 'string'
+			) {
+				chunks = [
+					{
+						type: 'Text',
+						start: chunks.expression.start + 1,
+						end: chunks.expression.end - 1
+					}
+				];
+			}
+			if (!Array.isArray(chunks) || chunks.length === 0) return;
+			const value = maskComments(
+				chunks
+					.map((chunk) => {
+						const text = source.slice(chunk.start, chunk.end);
+						return chunk.type === 'Text' ? text : text.replace(/[^\n]/g, ' ');
+					})
+					.join('')
+			).replace(/"(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*'/g, (text) => text.replace(/[^\n]/g, ' '));
+			if (node.type === 'StyleDirective') {
+				declarations.push({ property: node.name, value, start: chunks[0].start });
+			} else {
+				for (const match of value.matchAll(/([\w-]+)\s*:\s*([^;{}]*)/g)) {
+					declarations.push({
+						property: match[1],
+						value: match[2],
+						start: chunks[0].start + match.index + match[0].length - match[2].length
+					});
+				}
+			}
+			return;
+		}
+		for (const child of Object.values(node)) visit(child);
+	}
+	visit(ast.fragment);
+	return declarations;
+}
+
 export function findTokenizableRems(source, tokenSource, filename = '') {
 	const tokens = [...maskComments(tokenSource).matchAll(/(--[\w-]+):\s*([\d.]+)rem\s*;/g)];
 	const normalizedFilename = filename.split(path.sep).join('/');
-	const masked = maskComments(source).replace(/@(media|container)[^{]*\{/g, (query) =>
-		query.replace(/[^\n]/g, ' ')
-	);
-	const declarations = [
-		...masked.matchAll(/([\w-]+)\s*:\s*([^;{}\n]*)/g),
-		...masked.matchAll(/style:([\w-]+)(?:\|important)?\s*=\s*["']([^"']*)/g)
-	];
 	const results = [];
 
-	for (const declaration of declarations) {
-		const [, property, value] = declaration;
+	for (const { property, value, start: valueStart } of findDeclarations(source, filename)) {
 		if (TOKEN_FILES.has(normalizedFilename) && property.startsWith('--')) continue;
 		const candidates = prefixes(property).flatMap((prefix) =>
 			tokens.filter((token) => token[1].startsWith(prefix))
 		);
-		const valueStart = declaration.index + declaration[0].length - value.length;
-
 		for (const literal of value.matchAll(/-?(?:\d+(?:\.\d+)?|\.\d+)rem\b/g)) {
 			const numericValue = Number.parseFloat(literal[0]);
 			const token = candidates.find((candidate) => Number(candidate[2]) === Math.abs(numericValue));
