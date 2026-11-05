@@ -75,6 +75,7 @@ test('reports an unavailable status without failing the entire page', async () =
 		expect(result.reconcilerStatusError).toBe(
 			'Unable to load reconciler status. Try refreshing the page.'
 		);
+		expect(result.AdminReconcilerStatus).toBeInstanceOf(AdminReconcilerStatusStore);
 		expect(log).toHaveBeenCalledWith('Unable to load reconciler status:', error);
 	} finally {
 		log.mockRestore();

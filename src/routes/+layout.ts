@@ -1,8 +1,4 @@
-import {
-	load_AdminReconcilerStatus,
-	load_UserInfo,
-	type AdminReconcilerStatusStore
-} from '$houdini';
+import { load_AdminReconcilerStatus, load_UserInfo, AdminReconcilerStatusStore } from '$houdini';
 import { loadRemainingReconcilerPages } from '#lib/reconcilerStatus.js';
 import { get } from 'svelte/store';
 
@@ -23,6 +19,7 @@ export async function load(event) {
 			({ AdminReconcilerStatus } = await load_AdminReconcilerStatus({ event, blocking: true }));
 			await loadRemainingReconcilerPages(AdminReconcilerStatus, event.fetch);
 		} catch (error) {
+			AdminReconcilerStatus ??= new AdminReconcilerStatusStore();
 			console.error('Unable to load reconciler status:', error);
 			reconcilerStatusError = 'Unable to load reconciler status. Try refreshing the page.';
 		}

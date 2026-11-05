@@ -22,9 +22,14 @@
 
 	let { data, children }: LayoutProps = $props();
 	let { UserInfo, userAgent, AdminReconcilerStatus } = $derived(data);
-	let reconcilerRefreshError = $state<string | null | undefined>();
+	let reconcilerRefreshResult = $state.raw<{
+		load: LayoutProps['data'];
+		error: string | null;
+	} | null>(null);
 	let reconcilerStatusError = $derived(
-		reconcilerRefreshError === undefined ? data.reconcilerStatusError : reconcilerRefreshError
+		reconcilerRefreshResult?.load === data
+			? reconcilerRefreshResult.error
+			: data.reconcilerStatusError
 	);
 
 	localizeLayerChart();
@@ -47,16 +52,23 @@
 		if (!AdminReconcilerStatus) return;
 		let refreshing = false;
 		const interval = setInterval(async () => {
-			const store = AdminReconcilerStatus;
+			const load = data;
+			const store = load.AdminReconcilerStatus;
 			if (!user?.isAdmin || !store || refreshing) return;
 			refreshing = true;
 			try {
 				await store.fetch({ policy: 'NetworkOnly' });
+				if (data !== load) return;
 				await loadRemainingReconcilerPages(store);
-				reconcilerRefreshError = null;
+				if (data !== load) return;
+				reconcilerRefreshResult = { load, error: null };
 			} catch (error) {
+				if (data !== load) return;
 				console.error('Unable to refresh reconciler status:', error);
-				reconcilerRefreshError = 'Unable to refresh reconciler status. Try refreshing the page.';
+				reconcilerRefreshResult = {
+					load,
+					error: 'Unable to refresh reconciler status. Try refreshing the page.'
+				};
 			} finally {
 				refreshing = false;
 			}
