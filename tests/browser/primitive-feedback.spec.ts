@@ -16,6 +16,21 @@ test.beforeEach(async ({ page }) => {
 	await expect(page.locator('html')).toHaveAttribute('data-ready', 'true');
 });
 
+test('native scrollbar colour schemes follow the root and nested themes', async ({ page }) => {
+	for (const theme of ['light', 'dark', 'light']) {
+		await page.locator('html').evaluate((element, theme) => {
+			element.dataset.theme = theme;
+			element.classList.toggle('dark', theme === 'dark');
+		}, theme);
+		await expect(page.locator('html')).toHaveCSS('color-scheme', theme);
+		await expect(page.locator('body')).toHaveCSS('color-scheme', theme);
+		await expect(page.getByTestId('dark-parent')).toHaveCSS('color-scheme', 'dark');
+		await expect(page.getByTestId('inherited-dark')).toHaveCSS('color-scheme', 'dark');
+		await expect(page.getByTestId('nested-theme')).toHaveCSS('color-scheme', 'light');
+		await expect(page.getByTestId('inherited-theme')).toHaveCSS('color-scheme', 'light');
+	}
+});
+
 for (const width of [375, 1200]) {
 	test(`cost axis follows visible legend series at ${width}px`, async ({ page }) => {
 		await page.setViewportSize({ width, height: 900 });

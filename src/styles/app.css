@@ -6,8 +6,11 @@
 @import './layerchart.css' layer(components);
 @import './shadcn.css' layer(components);
 
-:root {
+:where(:root, [data-theme='light'], .light, .light-theme) {
 	color-scheme: light;
+}
+
+:root {
 	--spacing-layout: var(--ax-space-24);
 	--spacing-layout-mobile: var(--ax-space-16);
 	--spacing-sidebar: var(--ax-space-16);
