@@ -35,6 +35,19 @@
 	font-size: var(--ax-font-size-small);
 }
 
+/* LayerChart's default surface mixes in transparency. Keep chart data from
+   showing through the tooltip, including when it is portaled to the body. */
+.lc-tooltip-container[data-variant='default'] {
+	background-color: var(--popover);
+	color: var(--popover-foreground);
+	border: var(--sh-border-width) solid var(--border);
+	box-shadow: var(--sh-shadow-md);
+}
+
+.lc-tooltip-container[data-variant='default'] .label {
+	color: var(--popover-foreground);
+}
+
 /* svg {
 	display: unset;
 } */
