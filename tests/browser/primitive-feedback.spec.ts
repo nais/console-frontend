@@ -42,6 +42,10 @@ for (const width of [375, 1200]) {
 		const small = chart.getByRole('button', { name: 'Cloud Storage', exact: true });
 		const credit = chart.getByRole('button', { name: 'Secret Manager', exact: true });
 
+		for (const name of ['Compute Engine', 'Cloud Storage', 'Secret Manager']) {
+			await expect(chart.getByText(name, { exact: true })).toHaveCount(1);
+		}
+
 		async function expectAxis(precision: number) {
 			await expect
 				.poll(async () => {
