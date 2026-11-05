@@ -4,6 +4,7 @@
 	import { menuItems } from '#lib/menuItems.js';
 	import type { TenantNavigationItem } from '#lib/tenantNavigation.js';
 	import Icon from '#lib/ui/Icon.svelte';
+	import ErrorIndicator from '#lib/ui/ErrorIndicator.svelte';
 	import { ChevronLeftIcon, ChevronRightIcon } from '#lib/icons/index.js';
 	import { onMount } from 'svelte';
 	import Heading from './Heading.svelte';
@@ -136,6 +137,9 @@
 							aria-current={item.active ? 'page' : undefined}
 						>
 							{item.label}
+							{#if item.error}
+								<ErrorIndicator label={item.error} />
+							{/if}
 						</a>
 					</li>
 				{/each}

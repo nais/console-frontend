@@ -62,6 +62,8 @@ function pageData({
 	return {
 		tenantName: 'test',
 		isAdmin: false,
+		AdminReconcilerStatus: null,
+		reconcilerStatusError: null,
 		githubOrganization: 'test',
 		theme: 'light',
 		userAgent: '',

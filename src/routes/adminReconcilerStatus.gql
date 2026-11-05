@@ -1,0 +1,18 @@
+query AdminReconcilerStatus {
+	reconcilers(first: 25) @paginate(mode: Infinite) {
+		pageInfo {
+			hasNextPage
+			endCursor
+		}
+		edges {
+			node {
+				id
+				errors {
+					pageInfo {
+						totalCount
+					}
+				}
+			}
+		}
+	}
+}

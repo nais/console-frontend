@@ -7,6 +7,33 @@ async function visit(page: Page, params: Record<string, string> = {}) {
 
 test.use({ viewport: { width: 800, height: 900 } });
 
+test('mobile Admin navigation reflects reconciler errors and clears recovered status', async ({
+	page
+}) => {
+	await visit(page, { path: '/admin', admin: 'true', 'reconciler-errors': 'true' });
+	const opener = page.getByRole('button', { name: 'Open navigation' });
+	await opener.click();
+	const dialog = page.getByRole('dialog', { name: 'Navigation' });
+	const admin = dialog.getByRole('link', { name: /Admin/ });
+	const indicator = admin.getByRole('img', { name: 'Reconcilers have errors' });
+	await expect(indicator).toBeVisible();
+	await page.emulateMedia({ reducedMotion: 'no-preference' });
+	await expect(indicator).not.toHaveCSS('animation-name', 'none');
+	await expect(indicator).toHaveCSS('animation-duration', '2s');
+	await expect(indicator).toHaveCSS('animation-iteration-count', 'infinite');
+	await page.emulateMedia({ reducedMotion: 'reduce' });
+	await expect(indicator).toHaveCSS('animation-name', 'none');
+	await expect(indicator).toBeVisible();
+	await expect(admin).toHaveAttribute('href', '/admin');
+	await admin.focus();
+	await expect(admin).toBeFocused();
+	await page.keyboard.press('Escape');
+	await page.getByRole('button', { name: 'Clear reconciler errors' }).click();
+	await opener.click();
+	await expect(admin.getByRole('img')).toHaveCount(0);
+	await expect(admin).toHaveAccessibleName('Admin');
+});
+
 test('narrow team navigation shows Tenant first and keeps team links distinct', async ({
 	page
 }) => {

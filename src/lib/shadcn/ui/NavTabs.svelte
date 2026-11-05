@@ -1,5 +1,6 @@
 <script lang="ts">
 	import type { Component, Snippet } from 'svelte';
+	import ErrorIndicator from '#lib/ui/ErrorIndicator.svelte';
 
 	export interface TabItem {
 		value: string;
@@ -7,6 +8,7 @@
 		href?: string;
 		icon?: Component;
 		badge?: string | number;
+		error?: string;
 	}
 
 	interface Props {
@@ -50,6 +52,9 @@
 						<span class="tab-icon"><Icon aria-hidden="true" /></span>
 					{/if}
 					<span>{item.label}</span>
+					{#if item.error}
+						<ErrorIndicator label={item.error} />
+					{/if}
 					{#if item.badge !== undefined}
 						<span class="tab-badge">{item.badge}</span>
 					{/if}
@@ -67,6 +72,9 @@
 						<span class="tab-icon"><Icon aria-hidden="true" /></span>
 					{/if}
 					<span>{item.label}</span>
+					{#if item.error}
+						<ErrorIndicator label={item.error} />
+					{/if}
 					{#if item.badge !== undefined}
 						<span class="tab-badge">{item.badge}</span>
 					{/if}

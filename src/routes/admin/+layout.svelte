@@ -1,11 +1,14 @@
 <script lang="ts">
 	import { page } from '$app/state';
 	import { replacer } from '#lib/replacer.js';
+	import { hasReconcilerErrors } from '#lib/reconcilerStatus.js';
 	import { NavTabs } from '#lib/shadcn/ui/index.js';
 	import PageHeader from '#lib/ui/PageHeader.svelte';
 	import type { LayoutProps } from './$types';
 
-	let { children }: LayoutProps = $props();
+	let { data, children }: LayoutProps = $props();
+	let { AdminReconcilerStatus } = $derived(data);
+	let reconcilerErrors = $derived(hasReconcilerErrors($AdminReconcilerStatus?.data));
 
 	let currentRoute = $derived(page.route.id);
 	const nav = [
@@ -59,7 +62,11 @@
 			items={nav.map(({ tab, routeId }) => ({
 				value: routeId,
 				label: tab,
-				href: replacer(routeId, {})
+				href: replacer(routeId, {}),
+				error:
+					routeId === '/admin/reconcilers' && reconcilerErrors
+						? 'Reconcilers have errors'
+						: undefined
 			}))}
 			activeValue={activeRoute}
 			ariaLabel="Admin navigation"

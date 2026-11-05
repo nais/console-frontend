@@ -7,6 +7,8 @@
 	import { localizeLayerChart } from '#lib/chart/util.js';
 	import '#lib/font.css';
 	import { themeSwitch } from '#lib/stores/theme.svelte.js';
+	import { hasReconcilerErrors, loadRemainingReconcilerPages } from '#lib/reconcilerStatus.js';
+	import GraphErrors from '#lib/ui/GraphErrors.svelte';
 	import ProgressBar from '#lib/ui/ProgressBar.svelte';
 	import { Alert, BodyShort, Button, Heading, Page, Theme } from '#lib/shadcn/ui/index.js';
 	import { ArrowCirclepathIcon } from '#lib/icons/index.js';
@@ -19,7 +21,11 @@
 	import PageHeader from './PageHeader.svelte';
 
 	let { data, children }: LayoutProps = $props();
-	let { UserInfo, userAgent } = $derived(data);
+	let { UserInfo, userAgent, AdminReconcilerStatus } = $derived(data);
+	let reconcilerRefreshError = $state<string | null | undefined>();
+	let reconcilerStatusError = $derived(
+		reconcilerRefreshError === undefined ? data.reconcilerStatusError : reconcilerRefreshError
+	);
 
 	localizeLayerChart();
 
@@ -35,6 +41,28 @@
 	});
 
 	let user = $derived($UserInfo.data?.me?.__typename === 'User' ? $UserInfo.data.me : undefined);
+	let reconcilerErrors = $derived(hasReconcilerErrors($AdminReconcilerStatus?.data));
+
+	onMount(() => {
+		if (!AdminReconcilerStatus) return;
+		let refreshing = false;
+		const interval = setInterval(async () => {
+			const store = AdminReconcilerStatus;
+			if (!user?.isAdmin || !store || refreshing) return;
+			refreshing = true;
+			try {
+				await store.fetch({ policy: 'NetworkOnly' });
+				await loadRemainingReconcilerPages(store);
+				reconcilerRefreshError = null;
+			} catch (error) {
+				console.error('Unable to refresh reconciler status:', error);
+				reconcilerRefreshError = 'Unable to refresh reconciler status. Try refreshing the page.';
+			} finally {
+				refreshing = false;
+			}
+		}, 30_000);
+		return () => clearInterval(interval);
+	});
 
 	const refreshCookie = graphql(`
 		query RefreshCookie {
@@ -102,6 +130,7 @@
 			{:else}
 				<PageHeader
 					{user}
+					{reconcilerErrors}
 					features={$UserInfo.data?.features}
 					loadMoreTeams={() => UserInfo.loadNextPage()}
 					teamsFetching={$UserInfo.fetching}
@@ -134,6 +163,13 @@
 							</div>
 						{/if}
 					</div>
+
+					{#if user?.isAdmin}
+						{#if reconcilerStatusError}
+							<Alert variant="error">{reconcilerStatusError}</Alert>
+						{/if}
+						<GraphErrors errors={$AdminReconcilerStatus?.errors} />
+					{/if}
 
 					<svelte:boundary onerror={(e) => console.error('Page render error:', e)}>
 						{@render children?.()}
