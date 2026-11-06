@@ -86,7 +86,7 @@
 	.axis {
 		display: flex;
 		justify-content: space-between;
-		font-size: var(--ax-font-size-small);
+		font-size: var(--sh-font-size-sm);
 	}
 
 	p {

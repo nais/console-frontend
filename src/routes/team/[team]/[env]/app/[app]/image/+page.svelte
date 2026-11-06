@@ -165,7 +165,7 @@
 
 	.release-time {
 		color: var(--ax-text-subtle);
-		font-size: var(--ax-font-size-small);
+		font-size: var(--sh-font-size-sm);
 	}
 
 	.button-row {

@@ -71,7 +71,7 @@
 
 	.card-eyebrow {
 		margin: 0;
-		font-size: var(--ax-font-size-small);
+		font-size: var(--sh-font-size-sm);
 		font-weight: 600;
 		letter-spacing: -0.01em;
 		color: var(--foreground);

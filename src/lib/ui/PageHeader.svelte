@@ -153,7 +153,7 @@
 				gap: var(--ax-space-6);
 				align-items: center;
 				min-width: 0;
-				font-size: var(--ax-font-size-small);
+				font-size: var(--sh-font-size-sm);
 				color: var(--muted-foreground);
 
 				.link {

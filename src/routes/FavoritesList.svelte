@@ -64,6 +64,6 @@
 	.favorites-empty {
 		margin: 0;
 		color: var(--ax-text-neutral);
-		font-size: var(--ax-font-size-small);
+		font-size: var(--sh-font-size-sm);
 	}
 </style>

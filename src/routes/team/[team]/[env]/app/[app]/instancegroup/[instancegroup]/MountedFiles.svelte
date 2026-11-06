@@ -93,7 +93,7 @@
 	}
 
 	.file-cell code {
-		font-size: var(--ax-font-size-small);
+		font-size: var(--sh-font-size-sm);
 		color: var(--ax-text-neutral);
 		white-space: normal;
 		overflow-wrap: anywhere;
@@ -102,13 +102,13 @@
 
 	.source-kind {
 		color: var(--ax-text-neutral-subtle);
-		font-size: var(--ax-font-size-small);
+		font-size: var(--sh-font-size-sm);
 		white-space: nowrap;
 	}
 
 	.source-name {
 		color: var(--ax-text-neutral-subtle);
-		font-size: var(--ax-font-size-small);
+		font-size: var(--sh-font-size-sm);
 		white-space: normal;
 		overflow-wrap: anywhere;
 		word-break: break-word;

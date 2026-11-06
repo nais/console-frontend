@@ -55,7 +55,7 @@
 		background: var(--ax-bg-success-moderate);
 		color: var(--ax-text-success-subtle);
 		border-radius: var(--ax-radius-8);
-		font-size: var(--ax-font-size-xlarge);
+		font-size: var(--sh-font-size-xl);
 		font-weight: 700;
 		box-shadow: none;
 	}

@@ -12,18 +12,17 @@
 	import GraphErrors from '#lib/ui/GraphErrors.svelte';
 	import ErrorIndicator from '#lib/ui/ErrorIndicator.svelte';
 	import { themeSwitch } from '#lib/stores/theme.svelte.js';
+	import UserSettingsMenu from './UserSettingsMenu.svelte';
 
 	import {
 		BooksIcon,
 		ChatElipsisIcon,
 		ChevronDownIcon,
-		LeaveIcon,
+		CogIcon,
 		LineGraphIcon,
 		MagnifyingGlassIcon,
 		MenuHamburgerIcon,
-		MoonIcon,
-		PersonGroupIcon,
-		SunIcon
+		PersonGroupIcon
 	} from '#lib/icons/index.js';
 	import type { Snippet } from 'svelte';
 	import Logo from '../Logo.svelte';
@@ -340,35 +339,28 @@
 				<ChatElipsisIcon aria-hidden="true" />
 			</button>
 
-			<button
-				type="button"
-				class="topnav-icon-btn"
-				onclick={() => themeSwitch.setTheme(themeSwitch.theme === 'dark' ? 'light' : 'dark')}
-				aria-label="Toggle color theme"
-				title={themeSwitch.theme === 'dark' ? 'Switch to light theme' : 'Switch to dark theme'}
-			>
-				{#if themeSwitch.theme === 'dark'}
-					<SunIcon aria-hidden="true" />
-				{:else}
-					<MoonIcon aria-hidden="true" />
-				{/if}
-			</button>
-
-			{#if user}
-				<div class="user-pill" title={user.name}>
-					<span class="user-avatar">{userInitials(user.name)}</span>
-					<span class="user-name">{user.name}</span>
-					<a
-						href="/oauth2/logout"
-						class="logout-link"
-						aria-label="Log out"
-						title="Log out"
-						data-sveltekit-reload
-					>
-						<LeaveIcon aria-hidden="true" />
-					</a>
-				</div>
-			{/if}
+			<div class="user-pill" title={user?.name}>
+				<UserSettingsMenu>
+					{#snippet trigger(props)}
+						<Button
+							{...props}
+							variant="tertiary"
+							size="xsmall"
+							class="user-settings-trigger"
+							aria-label="User settings"
+							title="User settings"
+						>
+							{#if user}
+								<span class="user-avatar">{userInitials(user.name)}</span>
+								<span class="user-name">{user.name}</span>
+							{:else}
+								<CogIcon aria-hidden="true" />
+							{/if}
+							<ChevronDownIcon aria-hidden="true" />
+						</Button>
+					{/snippet}
+				</UserSettingsMenu>
+			</div>
 		</div>
 	</header>
 
@@ -408,8 +400,8 @@
 		border-radius: var(--radius-sm);
 		background-color: var(--primary);
 		color: var(--primary-foreground);
-		font-size: var(--ax-font-size-small);
-		font-weight: var(--ax-font-weight-bold);
+		font-size: var(--sh-font-size-sm);
+		font-weight: var(--sh-font-weight-semibold);
 		transform: translateY(calc(-100% - var(--ax-space-16)));
 	}
 
@@ -467,7 +459,7 @@
 
 	.topnav-slash {
 		color: var(--muted-foreground);
-		font-size: var(--ax-font-size-medium);
+		font-size: var(--sh-font-size-base);
 		user-select: none;
 		padding: 0 var(--ax-space-2);
 	}
@@ -488,7 +480,7 @@
 		border: 1px solid var(--border);
 		background-color: var(--background);
 		color: var(--foreground);
-		font-size: var(--ax-font-size-small);
+		font-size: var(--sh-font-size-sm);
 		font-weight: 600;
 		cursor: pointer;
 		transition:
@@ -566,7 +558,7 @@
 		padding: var(--ax-space-8) var(--ax-space-10);
 		border-bottom: 1px solid var(--border);
 		color: var(--muted-foreground);
-		font-size: var(--ax-font-size-small);
+		font-size: var(--sh-font-size-sm);
 	}
 
 	.popover-search-input {
@@ -575,7 +567,7 @@
 		background: transparent;
 		color: var(--foreground);
 		font-family: inherit;
-		font-size: var(--ax-font-size-small);
+		font-size: var(--sh-font-size-sm);
 		outline: none;
 	}
 
@@ -633,7 +625,7 @@
 	}
 
 	.popover-team-name {
-		font-size: var(--ax-font-size-small);
+		font-size: var(--sh-font-size-sm);
 		font-weight: 600;
 		white-space: nowrap;
 		overflow: hidden;
@@ -659,7 +651,7 @@
 	.popover-empty {
 		padding: var(--ax-space-14);
 		text-align: center;
-		font-size: var(--ax-font-size-small);
+		font-size: var(--sh-font-size-sm);
 		color: var(--muted-foreground);
 	}
 
@@ -673,7 +665,7 @@
 	}
 
 	.popover-footer-link {
-		font-size: var(--ax-font-size-small);
+		font-size: var(--sh-font-size-sm);
 		font-weight: 500;
 		color: var(--primary);
 		text-decoration: none;
@@ -698,7 +690,7 @@
 		height: var(--ax-space-32);
 		padding: 0 var(--ax-space-10);
 		border-radius: calc(var(--radius) - 2px);
-		font-size: var(--ax-font-size-small);
+		font-size: var(--sh-font-size-sm);
 		font-weight: 500;
 		color: var(--muted-foreground);
 		text-decoration: none;
@@ -751,7 +743,7 @@
 		border: 1px solid var(--border);
 		background-color: var(--background);
 		color: var(--muted-foreground);
-		font-size: var(--ax-font-size-small);
+		font-size: var(--sh-font-size-sm);
 		cursor: pointer;
 		transition:
 			border-color 120ms ease,
@@ -844,6 +836,11 @@
 		flex-shrink: 0;
 	}
 
+	:global(.sh-ui-btn.user-settings-trigger) {
+		padding: 0;
+		border-radius: var(--radius-full);
+	}
+
 	.user-name {
 		font-size: var(--sh-font-size-xs);
 		font-weight: 500;
@@ -852,25 +849,6 @@
 		white-space: nowrap;
 		overflow: hidden;
 		text-overflow: ellipsis;
-	}
-
-	.logout-link {
-		display: inline-flex;
-		align-items: center;
-		justify-content: center;
-		width: var(--sh-icon-button-size-sm);
-		height: var(--sh-icon-button-size-sm);
-		border-radius: 9999px;
-		color: var(--muted-foreground);
-		text-decoration: none;
-		transition:
-			background-color 120ms ease,
-			color 120ms ease;
-	}
-
-	.logout-link:hover {
-		background-color: var(--destructive-muted);
-		color: var(--destructive);
 	}
 
 	.mobile-menu-btn {
@@ -957,7 +935,6 @@
 
 		.topnav-slash,
 		.switcher-avatar,
-		.user-avatar,
 		.jump-to-text,
 		.jump-to-control .sh-kbd {
 			display: none;
@@ -982,11 +959,6 @@
 
 		.user-pill {
 			padding: 0;
-		}
-
-		.logout-link {
-			width: var(--ax-space-32);
-			height: var(--ax-space-32);
 		}
 	}
 </style>

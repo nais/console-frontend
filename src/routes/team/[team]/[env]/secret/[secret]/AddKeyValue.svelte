@@ -192,7 +192,7 @@
 	{/snippet}
 	<div class="content">
 		<TextField
-			style="font-family: monospace; font-size: var(--ax-font-size-small);"
+			style="font-family: monospace; font-size: var(--sh-font-size-sm);"
 			size="small"
 			bind:value={key}
 			error={validKey(key)}
@@ -276,7 +276,7 @@
 		gap: var(--ax-space-8);
 		width: 100%;
 		color: var(--ax-text-neutral-subtle);
-		font-size: var(--ax-font-size-small);
+		font-size: var(--sh-font-size-sm);
 	}
 
 	.separator hr {
@@ -295,7 +295,7 @@
 	}
 
 	.file-selected-name {
-		font-size: var(--ax-font-size-small);
+		font-size: var(--sh-font-size-sm);
 		font-family: monospace;
 	}
 </style>

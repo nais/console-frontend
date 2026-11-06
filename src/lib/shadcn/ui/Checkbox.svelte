@@ -152,7 +152,7 @@
 		cursor: pointer;
 	}
 	.sh-checkbox--small .sh-checkbox__label {
-		font-size: var(--ax-font-size-small);
+		font-size: var(--sh-font-size-sm);
 	}
 	.sh-checkbox__description {
 		padding-left: var(--ax-space-24);

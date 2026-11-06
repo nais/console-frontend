@@ -516,7 +516,7 @@
 					<dd>
 						{#if unleash.ready}
 							<CheckmarkIcon
-								style="color: var(--ax-text-success-decoration); font-size: var(--ax-font-size-large)"
+								style="color: var(--ax-text-success-decoration); font-size: var(--sh-font-size-lg)"
 							/>
 						{:else}
 							<Tooltip
@@ -796,7 +796,7 @@
 	}
 
 	.channel-date {
-		font-size: var(--ax-font-size-small);
+		font-size: var(--sh-font-size-sm);
 		color: var(--ax-text-neutral-subtle);
 	}
 
@@ -809,7 +809,7 @@
 	}
 
 	.metrics-list dt {
-		font-weight: var(--ax-font-weight-bold);
+		font-weight: var(--sh-font-weight-semibold);
 		color: var(--ax-text-neutral-subtle);
 	}
 

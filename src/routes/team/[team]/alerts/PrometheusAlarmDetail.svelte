@@ -85,7 +85,7 @@
 		margin: 0;
 	}
 	.annotations dt {
-		font-weight: var(--ax-font-weight-bold);
+		font-weight: var(--sh-font-weight-semibold);
 	}
 	.annotations dt:not(:first-child) {
 		margin-top: var(--ax-space-12);
@@ -99,13 +99,13 @@
 		flex-wrap: wrap;
 		gap: var(--ax-space-8);
 		margin: 0;
-		font-size: var(--ax-font-size-small);
+		font-size: var(--sh-font-size-sm);
 	}
 	.metric dd {
 		margin: 0;
 	}
 	.since {
 		color: var(--ax-text-neutral);
-		font-size: var(--ax-font-size-small);
+		font-size: var(--sh-font-size-sm);
 	}
 </style>

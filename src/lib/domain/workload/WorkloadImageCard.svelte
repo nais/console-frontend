@@ -141,7 +141,7 @@
 	}
 
 	code {
-		font-size: var(--ax-font-size-small);
+		font-size: var(--sh-font-size-sm);
 		font-family: monospace;
 		overflow-wrap: anywhere;
 		word-break: break-word;

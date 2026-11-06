@@ -142,13 +142,13 @@
 
 	.instance-group-status {
 		font-weight: 600;
-		font-size: var(--ax-font-size-small);
+		font-size: var(--sh-font-size-sm);
 		color: var(--foreground);
 		font-variant-numeric: tabular-nums;
 	}
 
 	.instance-group-meta {
-		font-size: var(--ax-font-size-small);
+		font-size: var(--sh-font-size-sm);
 		color: var(--muted-foreground);
 		overflow-wrap: anywhere;
 	}
@@ -200,11 +200,11 @@
 
 	.empty-title {
 		font-weight: 600;
-		font-size: var(--ax-font-size-small);
+		font-size: var(--sh-font-size-sm);
 		color: var(--foreground);
 	}
 
 	.empty-description {
-		font-size: var(--ax-font-size-small);
+		font-size: var(--sh-font-size-sm);
 	}
 </style>

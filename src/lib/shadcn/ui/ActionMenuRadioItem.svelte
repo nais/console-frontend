@@ -41,7 +41,7 @@
 		background: transparent;
 		color: var(--popover-foreground);
 		font-family: inherit;
-		font-size: var(--ax-font-size-small);
+		font-size: var(--sh-font-size-sm);
 		text-align: left;
 		cursor: pointer;
 	}

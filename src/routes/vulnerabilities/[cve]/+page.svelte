@@ -383,7 +383,7 @@
 	}
 
 	.priority-guidance {
-		font-weight: var(--ax-font-weight-bold);
+		font-weight: var(--sh-font-weight-semibold);
 		text-align: right;
 		color: var(--ax-text-neutral-subtle);
 	}
@@ -573,6 +573,6 @@
 		word-break: break-all;
 	}
 	code {
-		font-size: var(--ax-font-size-small);
+		font-size: var(--sh-font-size-sm);
 	}
 </style>

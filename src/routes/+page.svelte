@@ -290,7 +290,7 @@
 	}
 	p {
 		margin: 0;
-		font-size: var(--ax-font-size-small);
+		font-size: var(--sh-font-size-sm);
 		color: var(--ax-text-neutral);
 	}
 	.entry {
@@ -299,7 +299,7 @@
 		overflow-wrap: anywhere;
 	}
 	.entry-context {
-		font-size: var(--ax-font-size-small);
+		font-size: var(--sh-font-size-sm);
 	}
 	.teams-container {
 		container-type: inline-size;

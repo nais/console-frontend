@@ -342,12 +342,12 @@
 
 	.workload-label {
 		font-weight: 600;
-		font-size: var(--ax-font-size-small);
+		font-size: var(--sh-font-size-sm);
 	}
 
 	.workload-total {
 		margin-left: auto;
-		font-size: var(--ax-font-size-xlarge);
+		font-size: var(--sh-font-size-xl);
 		font-weight: 700;
 		font-variant-numeric: tabular-nums;
 		letter-spacing: -0.02em;
@@ -398,7 +398,7 @@
 		display: inline-flex;
 		align-items: center;
 		gap: var(--ax-space-6);
-		font-size: var(--ax-font-size-small);
+		font-size: var(--sh-font-size-sm);
 		color: var(--muted-foreground);
 		font-variant-numeric: tabular-nums;
 	}
@@ -447,7 +447,7 @@
 		color: var(--foreground);
 		background-color: color-mix(in srgb, var(--background) 60%, var(--card));
 		border: 1px solid var(--border);
-		font-size: var(--ax-font-size-small);
+		font-size: var(--sh-font-size-sm);
 		transition:
 			background-color 120ms ease,
 			border-color 120ms ease;

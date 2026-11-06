@@ -152,7 +152,7 @@
 	}
 
 	.facet-heading {
-		font-size: var(--ax-font-size-small);
+		font-size: var(--sh-font-size-sm);
 		font-weight: 500;
 		color: var(--ax-text-neutral-subtle);
 		margin: 0;
@@ -195,7 +195,7 @@
 		align-items: center;
 		gap: var(--ax-space-8);
 		padding: var(--ax-space-6) 0;
-		font-size: var(--ax-font-size-small);
+		font-size: var(--sh-font-size-sm);
 		cursor: pointer;
 	}
 

@@ -459,7 +459,7 @@
 		display: inline-flex;
 		align-items: center;
 		color: var(--muted-foreground);
-		font-size: var(--ax-font-size-medium);
+		font-size: var(--sh-font-size-base);
 		flex-shrink: 0;
 	}
 
@@ -471,7 +471,7 @@
 		background: transparent;
 		color: var(--foreground);
 		font: inherit;
-		font-size: var(--ax-font-size-small);
+		font-size: var(--sh-font-size-sm);
 	}
 
 	.query-input input::placeholder {

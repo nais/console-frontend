@@ -583,7 +583,7 @@
 		display: flex;
 		align-items: center;
 		gap: var(--ax-space-12);
-		font-size: var(--ax-font-size-medium);
+		font-size: var(--sh-font-size-base);
 		--surface-icon-size: var(--ax-space-32);
 		--surface-icon-glyph-size: var(--ax-space-16);
 	}
@@ -602,7 +602,7 @@
 	.activity-text :global(a:not(.meta a)),
 	.content :global(a:not(.meta a)) {
 		color: var(--foreground);
-		font-weight: var(--ax-font-weight-bold);
+		font-weight: var(--sh-font-weight-semibold);
 		text-decoration: underline;
 		text-decoration-color: var(--border-strong);
 		text-underline-offset: 0.18em;
@@ -621,7 +621,7 @@
 
 	.activity-icon {
 		--surface-icon-size: calc(var(--ax-space-28) + var(--ax-space-2));
-		--surface-icon-glyph-size: var(--ax-font-size-medium);
+		--surface-icon-glyph-size: var(--sh-font-size-base);
 		position: relative;
 		z-index: 1;
 		display: flex;

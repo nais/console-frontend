@@ -296,7 +296,7 @@
 		gap: var(--ax-space-8);
 		padding-block: var(--ax-space-4);
 		font-family: monospace;
-		font-size: var(--ax-font-size-small);
+		font-size: var(--sh-font-size-sm);
 	}
 
 	time,

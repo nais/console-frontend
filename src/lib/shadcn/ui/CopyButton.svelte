@@ -123,7 +123,7 @@
 <style>
 	.copy-error {
 		color: var(--destructive);
-		font-size: var(--ax-font-size-small);
+		font-size: var(--sh-font-size-sm);
 	}
 	.sh-copy-btn {
 		display: inline-flex;

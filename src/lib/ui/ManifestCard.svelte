@@ -28,7 +28,7 @@
 <style>
 	.manifest {
 		display: block;
-		font-size: var(--ax-font-size-small);
+		font-size: var(--sh-font-size-sm);
 		white-space: pre-wrap;
 		margin: 0;
 	}

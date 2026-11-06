@@ -189,7 +189,7 @@
 		background-color: var(--background);
 		color: var(--foreground);
 		font: inherit;
-		font-size: var(--ax-font-size-small);
+		font-size: var(--sh-font-size-sm);
 		line-height: 1.45;
 		box-sizing: border-box;
 	}

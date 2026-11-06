@@ -4,6 +4,10 @@
  * Dark mode: Deep navy-slate canvas with layered navy surfaces & luminous accents
  */
 
+:root {
+	--sh-font-size-root: 16px;
+}
+
 :where(:root, [data-theme='light'], .light, .light-theme) {
 	--page-max-width: 89.5rem;
 	--utilization-chart-height: 350px;
@@ -23,16 +27,24 @@
 	--sh-status-dot-size: 0.5rem;
 	--sh-font-size-caption: 0.8125rem;
 	--sh-font-size-micro: 0.75rem;
-	--sh-font-size-xs: 0.8125rem;
-	--sh-font-size-label: 0.875rem;
+	--sh-font-size-xs: 0.85rem;
+	--sh-font-size-sm: 0.9rem;
+	--sh-font-size-label: 0.9rem;
 	--sh-font-size-body: 0.9375rem;
-	--sh-font-size-sm: 0.875rem;
 	--sh-font-size-base: 1rem;
+	--sh-font-size-lg: 1.125rem;
+	--sh-font-size-xl: 1.375rem;
 	--sh-font-size-title: 1.75rem;
-	--sh-line-height-compact: 1.25rem;
+	--sh-font-family-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+	--sh-font-line-height-compact: 1.25rem;
+	--sh-font-line-height-large: 1.5rem;
+	--sh-font-line-height-heading-xsmall: 1.375rem;
+	--sh-font-line-height-heading-medium: 1.75rem;
+	--sh-font-weight-regular: 400;
 	--sh-font-weight-medium: 500;
 	--sh-font-weight-semibold: 600;
 	--sh-font-weight-heading-large: 650;
+	--sh-font-weight-bold: 700;
 	--sh-heading-spacing: 0.5em;
 	--sh-menu-min-width: 11rem;
 	--sh-popover-min-width: 14rem;
@@ -42,7 +54,6 @@
 	--sh-modal-medium-max-width: 40rem;
 	--sh-modal-top-offset: 8vh;
 	--sh-modal-backdrop: rgba(2, 6, 23, 0.55);
-	--sh-font-weight-bold: 700;
 	--sh-sidebar-menu-width: 14.5rem;
 	--sh-sidebar-menu-wide-width: 15.5rem;
 
@@ -130,7 +141,6 @@
 	--sh-shadow-lg: 0 10px 15px -3px rgba(15, 23, 42, 0.08), 0 4px 6px -4px rgba(15, 23, 42, 0.04);
 
 	/* Bridge Aksel tokens so existing subcomponents harmonize with shadcn light mode */
-	--font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
 	--status-success-fg: var(--success);
 
 	--ax-space-1: 0.0625rem;
@@ -157,16 +167,6 @@
 	--ax-radius-8: 0.5rem;
 	--ax-radius-12: 0.75rem;
 	--ax-radius-full: 9999px;
-
-	--ax-font-size-small: 0.875rem;
-	--ax-font-size-medium: 1rem;
-	--ax-font-size-large: 1.125rem;
-	--ax-font-size-xlarge: 1.375rem;
-	--ax-font-weight-regular: 400;
-	--ax-font-weight-bold: 600;
-	--ax-font-line-height-large: 1.5rem;
-	--ax-font-line-height-heading-xsmall: 1.375rem;
-	--ax-font-line-height-heading-medium: 1.75rem;
 
 	--ax-breakpoint-sm: 480px;
 	--ax-breakpoint-md: 768px;
@@ -452,7 +452,7 @@ body {
 	padding: var(--ax-space-2) var(--ax-space-8);
 	font-size: var(--sh-font-size-xs);
 	font-weight: 600;
-	line-height: var(--sh-line-height-compact);
+	line-height: var(--sh-font-line-height-compact);
 	border-radius: 9999px;
 	border: 1px solid transparent;
 	white-space: nowrap;

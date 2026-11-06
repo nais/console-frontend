@@ -525,7 +525,7 @@
 		align-items: center;
 		justify-content: center;
 		color: var(--ax-text-neutral-subtle);
-		font-size: var(--ax-font-size-medium);
+		font-size: var(--sh-font-size-base);
 	}
 
 	.detail {
@@ -537,13 +537,13 @@
 	.message {
 		margin: 0;
 		color: var(--ax-text-neutral);
-		font-size: var(--ax-font-size-small);
-		line-height: var(--ax-font-line-height-large);
+		font-size: var(--sh-font-size-sm);
+		line-height: var(--sh-font-line-height-large);
 	}
 
 	.extra {
 		margin-top: var(--ax-space-8);
-		font-size: var(--ax-font-size-small);
+		font-size: var(--sh-font-size-sm);
 		color: var(--ax-text-neutral);
 		display: flex;
 		flex-direction: column;

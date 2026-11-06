@@ -232,6 +232,6 @@
 		border: var(--sh-border-width) solid var(--border);
 		border-radius: var(--ax-space-2);
 		font-size: var(--sh-font-size-caption);
-		font-family: var(--font-mono);
+		font-family: var(--sh-font-family-mono);
 	}
 </style>
