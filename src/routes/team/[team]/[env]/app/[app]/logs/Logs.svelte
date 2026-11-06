@@ -29,7 +29,8 @@
 			workload={team.environment.application.name}
 			projectID={team.environment.gcpProjectID}
 		/>
-	{:else if !hasLoki}
+	{/if}
+	{#if !hasLoki && !hasSecureLogs}
 		<LegacyLogViewer
 			team={team.slug}
 			environment={team.environment.environment.name}
@@ -38,7 +39,7 @@
 			initialInstances={selectedInstance ? [selectedInstance] : instances}
 			tracesURL={apmURL(page.params.team!, page.params.app!, 'traces')}
 		/>
-	{:else}
+	{:else if hasLoki}
 		<LogExplorer
 			team={team.slug}
 			environment={team.environment.environment.name}

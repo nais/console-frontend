@@ -134,18 +134,39 @@ describe.each(['application', 'job'] as const)('%s log viewer fallback', (kind) 
 			);
 			expect(body).toContain('Open Team Logs');
 			expect(body).toContain('target="_blank" rel="noopener noreferrer"');
+			expect(body).toContain('Requires configured log forwarding');
+			expect(body).not.toContain('This workload uses Team Logs');
 			expect(body).not.toContain('Clear logs');
-			expect(body).not.toContain('Search log content');
+			if (loki) {
+				expect(body).toContain('Search log content');
+				expect(body).toContain('Open Grafana');
+				expect(body).toContain('https://grafana.example.com');
+				expect(body).toContain('Traces');
+			} else {
+				expect(body).not.toContain('Search log content');
+			}
 		}
 	);
 
-	it('explains a missing project without linking to the wrong project or streaming logs', async () => {
-		const { body } = await view([{ __typename: 'LogDestinationSecureLogs' }], null);
+	it.each([false, true])('explains a missing project without hiding Loki (%s)', async (loki) => {
+		const { body } = await view(
+			[
+				{ __typename: 'LogDestinationSecureLogs' },
+				...(loki
+					? [{ __typename: 'LogDestinationLoki', grafanaURL: 'https://grafana.example.com' }]
+					: [])
+			],
+			null
+		);
 		expect(body).toContain('this environment has no GCP project ID');
 		expect(body).not.toContain('Open Team Logs');
 		expect(body).not.toContain('console.cloud.google.com');
 		expect(body).not.toContain('Clear logs');
-		expect(body).not.toContain('Search log content');
+		if (loki) {
+			expect(body).toContain('Search log content');
+		} else {
+			expect(body).not.toContain('Search log content');
+		}
 	});
 });
 

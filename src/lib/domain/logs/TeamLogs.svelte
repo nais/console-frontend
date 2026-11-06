@@ -19,7 +19,8 @@
 </script>
 
 <Alert variant="info">
-	This workload uses Team Logs. View these logs in Google Cloud Logs Explorer.
+	View Team Logs for this workload in Google Cloud Logs Explorer. Requires configured log forwarding
+	from the workload; access alone does not confirm that logs are being sent.
 	{#if logsURL}
 		<ExternalLink href={logsURL}>Open Team Logs</ExternalLink>
 	{:else}
