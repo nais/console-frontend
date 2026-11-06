@@ -18,6 +18,7 @@
 	let metricsSearch = $derived.by(() => {
 		const params = new SvelteURLSearchParams(page.url.searchParams);
 		params.delete('database');
+		params.delete('branch');
 		if (routeId.endsWith('/insights') || routeId.endsWith('/queries')) {
 			params.set('interval', page.data.interval);
 		}
@@ -29,14 +30,6 @@
 			value: '/team/[team]/[env]/postgres/[postgres]/(single)',
 			label: 'Overview',
 			href: resolve('/team/[team]/[env]/postgres/[postgres]/(single)', page.params as never)
-		},
-		{
-			value: '/team/[team]/[env]/postgres/[postgres]/(single)/branches',
-			label: 'Branches',
-			href: resolve(
-				'/team/[team]/[env]/postgres/[postgres]/(single)/branches',
-				page.params as never
-			)
 		},
 		{
 			value: '/team/[team]/[env]/postgres/[postgres]/(single)/insights',

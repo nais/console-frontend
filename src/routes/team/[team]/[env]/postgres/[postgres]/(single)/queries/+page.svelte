@@ -1,7 +1,6 @@
 <script lang="ts">
 	import { navigating } from '$app/state';
 	import { PrometheusChartQueryInterval } from '#lib/chart/util.js';
-	import PostgresBranchSelect from '#lib/domain/postgres/PostgresBranchSelect.svelte';
 	import { queryDuration, queryInsightsResult } from '#lib/domain/postgres/queryInsights.js';
 	import GraphErrors from '#lib/ui/GraphErrors.svelte';
 	import Time from '#lib/ui/Time.svelte';
@@ -45,11 +44,6 @@
 
 {#if postgres}
 	<div class="query-controls">
-		<PostgresBranchSelect
-			store={PostgresInsights}
-			{branch}
-			onchange={(value) => changeParams({ branch: value, database: '' })}
-		/>
 		<ToggleGroup
 			label="Time period"
 			size="small"
@@ -72,7 +66,7 @@
 	{:else if hasErrors}
 		<BodyShort>Query statistics could not be loaded.</BodyShort>
 	{:else if !postgres || !branch}
-		<BodyShort>Query statistics are not available until a branch exists.</BodyShort>
+		<BodyShort>Query statistics are not available until Postgres has an active branch.</BodyShort>
 	{:else if result.error}
 		<Alert variant="error">{result.error}</Alert>
 	{:else if !metrics}

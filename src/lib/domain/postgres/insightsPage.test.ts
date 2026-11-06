@@ -10,13 +10,16 @@ const fixture = vi.hoisted(() => ({
 	nodes: [{ id: 'preview', name: 'preview' }],
 	totalCount: 2,
 	hasNextPage: false,
+	url: new URL('https://console.example.com/team/test/dev/postgres/database/insights'),
 	metricErrors: [] as { message: string }[]
 }));
 
 vi.mock('$app/state', () => ({
 	page: {
 		params: { team: 'test', env: 'dev', postgres: 'database' },
-		url: new URL('https://console.example.com/team/test/dev/postgres/database/insights')
+		get url() {
+			return fixture.url;
+		}
 	}
 }));
 vi.mock('$app/navigation', () => ({ goto: vi.fn() }));
@@ -76,6 +79,7 @@ describe('Postgres Insights page', () => {
 		fixture.totalCount = 2;
 		fixture.hasNextPage = false;
 		fixture.metricErrors = [];
+		fixture.url = new URL('https://console.example.com/team/test/dev/postgres/database/insights');
 	});
 
 	test('renders twelve charts under five labelled sections without duplicating the page h1', async () => {
@@ -91,27 +95,30 @@ describe('Postgres Insights page', () => {
 		expect(body).toContain('Commits and rollbacks per second on the primary');
 	});
 
-	test('preserves active branch selection, pagination and all time ranges', async () => {
+	test('uses only the active branch without selection or pagination and preserves all time ranges', async () => {
+		fixture.url.searchParams.set('branch', 'preview');
 		fixture.hasNextPage = true;
 		fixture.nodes = [
 			{ id: 'main', name: 'main' },
 			{ id: 'preview', name: 'preview' }
 		];
 		const { body } = await renderPage();
-		expect(body.match(/<option value="main"/g)).toHaveLength(1);
-		expect(body).toContain('(active)');
-		expect(body).toContain('Load more branches');
+		expect(body).not.toContain('<select');
+		expect(body).not.toContain('Load more branches');
+		expect(body).toContain('branch main');
+		expect(body).not.toContain('branch preview');
 		for (const interval of ['1h', '6h', '1d', '7d', '30d']) {
 			expect(body).toContain(`>${interval}<`);
 		}
 	});
 
-	test('falls back to the first branch when there is no active branch', async () => {
+	test('does not fall back to another branch when there is no active branch', async () => {
 		fixture.activeBranch = null;
 		const { body } = await renderPage();
-		expect(body).toContain('branch preview');
+		expect(body).toContain('Utilization is not yet available.');
+		expect(body).not.toContain('branch preview');
 		expect(body).not.toContain('branch main');
-		expect(body.match(/class="prometheus-chart-wrapper\b/g)).toHaveLength(12);
+		expect(body).not.toContain('prometheus-chart-wrapper');
 	});
 
 	test('keeps the existing empty state when there are no branches', async () => {

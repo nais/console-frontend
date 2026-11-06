@@ -3,7 +3,6 @@
 	import PrometheusChart from '#lib/chart/PrometheusChart.svelte';
 	import { PrometheusChartQueryInterval } from '#lib/chart/util.js';
 	import { postgresInsightsSections } from '#lib/domain/postgres/insights.js';
-	import PostgresBranchSelect from '#lib/domain/postgres/PostgresBranchSelect.svelte';
 	import GraphErrors from '#lib/ui/GraphErrors.svelte';
 	import { changeParams } from '#lib/utils/searchparams.js';
 	import {
@@ -21,15 +20,7 @@
 	let { PostgresInsights, interval } = $derived(data);
 	let selectedInterval = $derived(interval);
 	let postgres = $derived($PostgresInsights.data?.team.environment.postgres);
-	let branches = $derived.by(() => {
-		const nodes = postgres?.branches.nodes ?? [];
-		const active = postgres?.activeBranch;
-		return active ? [active, ...nodes.filter((branch) => branch.id !== active.id)] : nodes;
-	});
-	let selectedBranch = $derived(page.url.searchParams.get('branch') ?? '');
-	let branch = $derived(
-		selectedBranch ? selectedBranch : (postgres?.activeBranch?.name ?? branches[0]?.name ?? '')
-	);
+	let branch = $derived(postgres?.activeBranch?.name ?? '');
 	let sections = $derived(
 		postgresInsightsSections(page.params.team!, page.params.postgres!, branch)
 	);
@@ -43,11 +34,6 @@
 	</div>
 {:else if postgres}
 	<div class="insights-controls sticky top-0 z-100 p-2">
-		<PostgresBranchSelect
-			store={PostgresInsights}
-			{branch}
-			onchange={(value) => changeParams({ branch: value })}
-		/>
 		<ToggleGroup
 			label="Time period"
 			size="small"

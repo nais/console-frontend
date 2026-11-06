@@ -120,6 +120,7 @@ describe('Postgres overview', () => {
 	test('preserves resource configuration with collapsed, labelled PostgreSQL parameters', async () => {
 		const { body } = await renderPage();
 		expect(body).not.toContain('<h1');
+		expect(body).not.toContain('/branches');
 		for (const value of ['Ready', '100m', '512Mi', '10Gi', 'Postgres version', 'Active branch']) {
 			expect(body).toContain(value);
 		}

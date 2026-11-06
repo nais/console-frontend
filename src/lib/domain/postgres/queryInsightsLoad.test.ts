@@ -67,15 +67,15 @@ describe('Postgres query insights load', () => {
 		);
 	});
 
-	test('honours deep-linked branches and intervals but ignores obsolete database filters', async () => {
+	test('ignores obsolete branch and database filters while preserving intervals', async () => {
 		const result = await load(event('?branch=older&database=postgres&interval=6h'));
-		expect(result).toMatchObject({ branch: 'older', interval: '6h' });
+		expect(result).toMatchObject({ branch: 'main', interval: '6h' });
 		expect(result).not.toHaveProperty('database');
 		expect(load_PostgresQueryStatistics).toHaveBeenCalledWith(
 			expect.objectContaining({
 				variables: expect.objectContaining({
 					input: expect.objectContaining({
-						query: expect.stringContaining('branch="older",datname="app"}[6h]')
+						query: expect.stringContaining('branch="main",datname="app"}[6h]')
 					})
 				})
 			})
@@ -86,9 +86,10 @@ describe('Postgres query insights load', () => {
 		expect(await load(event('?interval=bad-value'))).toMatchObject({ interval: '1h' });
 	});
 
-	test('uses the first branch while no active branch exists', async () => {
+	test('does not fall back to another branch while no active branch exists', async () => {
 		fixture.postgres = { activeBranch: null, branches: { nodes: [{ name: 'preview' }] } };
-		expect(await load(event())).toMatchObject({ branch: 'preview' });
+		expect(await load(event('?branch=preview'))).toMatchObject({ branch: '' });
+		expect(load_PostgresQueryStatistics).not.toHaveBeenCalled();
 	});
 
 	test.each([

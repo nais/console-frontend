@@ -24,11 +24,7 @@ export const load: PageLoad = async (event) => {
 		}
 	});
 	const postgres = get(insights.PostgresInsights).data?.team.environment.postgres;
-	const branch =
-		event.url.searchParams.get('branch') ||
-		postgres?.activeBranch?.name ||
-		postgres?.branches.nodes[0]?.name ||
-		'';
+	const branch = postgres?.activeBranch?.name ?? '';
 	const collectedAt = new Date();
 
 	return {
