@@ -1,4 +1,4 @@
-import { PostgresOverviewStore } from '$houdini';
+import { PostgresOverviewStore, type PostgresOverview$result } from '$houdini';
 import type { ComponentProps } from 'svelte';
 import { render } from 'svelte/server';
 import { readable } from 'svelte/store';
@@ -12,6 +12,9 @@ type Branch = {
 	state: string;
 	configuration?: Configuration;
 };
+type WorkloadUsage = NonNullable<
+	PostgresOverview$result['team']['environment']['postgres']
+>['workloads']['nodes'][number];
 
 const fixture = vi.hoisted(() => ({ overview: {} }));
 
@@ -41,6 +44,7 @@ async function renderPage({
 	activeBranch = { id: 'main', name: 'main', state: 'AVAILABLE', configuration },
 	desiredActiveBranch = 'main',
 	extensions = [],
+	workloads = [],
 	viewerIsMember = false,
 	isAdmin = false
 }: {
@@ -48,6 +52,7 @@ async function renderPage({
 	activeBranch?: Branch | null;
 	desiredActiveBranch?: string;
 	extensions?: string[];
+	workloads?: WorkloadUsage[];
 	viewerIsMember?: boolean;
 	isAdmin?: boolean;
 } = {}) {
@@ -66,7 +71,7 @@ async function renderPage({
 						majorVersion: '18',
 						extensions,
 						resources: { cpu: '100m', memory: '512Mi', diskSize: '10Gi' },
-						workloads: { nodes: [], pageInfo: { totalCount: 0 } },
+						workloads: { nodes: workloads, pageInfo: { totalCount: workloads.length } },
 						labels: []
 					}
 				}
@@ -99,6 +104,31 @@ function parameterPanel(body: string) {
 }
 
 describe('Postgres overview', () => {
+	test.each(['Application', 'Job'] as const)(
+		'keeps %s workload links but renders their branch names as plain text',
+		async (__typename) => {
+			const { body } = await renderPage({
+				workloads: [
+					{
+						branch: { id: 'preview', name: 'preview' },
+						workload: {
+							__typename,
+							id: 'workload',
+							name: 'worker',
+							team: { slug: 'test' },
+							teamEnvironment: { environment: { name: 'dev' } }
+						}
+					}
+				]
+			});
+			const kind = __typename === 'Job' ? 'job' : 'app';
+			expect(body).toContain(`href="/team/test/dev/${kind}/worker"`);
+			expect(body).toMatch(/Branch:\s*preview/);
+			expect(body).not.toContain('Not used by any workloads.');
+			expect(body).not.toContain('/branches');
+		}
+	);
+
 	test('renders configured extensions after the Postgres version', async () => {
 		const { body } = await renderPage({ extensions: ['pg_stat_statements', 'pgcrypto'] });
 		expect(body).toContain('>pg_stat_statements, pgcrypto</code>');
