@@ -13,7 +13,8 @@ import {
 	RobotIcon,
 	RocketIcon,
 	TerminalIcon,
-	VirusIcon
+	VirusIcon,
+	Webhook
 } from '#lib/icons/index.js';
 
 import KafkaIcon from '#lib/icons/KafkaIcon.svelte';
@@ -134,5 +135,8 @@ export const icons: { [typename: string]: Component } = {
 	ServiceAccountWorkloadBindingAddedActivityLogEntry: RobotIcon,
 	ServiceAccountWorkloadBindingRemovedActivityLogEntry: RobotIcon,
 	RoleAssignedToServiceAccountActivityLogEntry: RobotIcon,
-	RoleRevokedFromServiceAccountActivityLogEntry: RobotIcon
+	RoleRevokedFromServiceAccountActivityLogEntry: RobotIcon,
+	WebhookCreatedActivityLogEntry: Webhook,
+	WebhookDeletedActivityLogEntry: Webhook,
+	WebhookUpdatedActivityLogEntry: Webhook
 };

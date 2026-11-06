@@ -30,6 +30,52 @@ const schema = buildSchema(
 
 describe('ActivityLogEntryFragment', () => {
 	test.each([
+		'WebhookCreatedActivityLogEntry',
+		'WebhookDeletedActivityLogEntry',
+		'WebhookUpdatedActivityLogEntry'
+	])('selects all webhook presenter fields on %s for SSR', (typeName) => {
+		const definition = fragment.definitions.find(
+			(definition) => definition.kind === Kind.FRAGMENT_DEFINITION
+		);
+		const selection = definition?.selectionSet.selections.find(
+			(selection) =>
+				selection.kind === Kind.INLINE_FRAGMENT && selection.typeCondition?.name.value === typeName
+		);
+		if (selection?.kind !== Kind.INLINE_FRAGMENT) {
+			throw new Error(`Missing concrete fragment for ${typeName}`);
+		}
+		const fields = selection.selectionSet.selections
+			.filter((field) => field.kind === Kind.FIELD)
+			.map((field) => field.name.value);
+
+		expect(fields).toEqual(
+			expect.arrayContaining([
+				'__typename',
+				'id',
+				'createdAt',
+				'actor',
+				'environmentName',
+				'message',
+				'resourceName',
+				'resourceType',
+				'teamSlug'
+			])
+		);
+		const data = selection.selectionSet.selections.find(
+			(field) => field.kind === Kind.FIELD && field.name.value === 'data'
+		);
+		if (data?.kind !== Kind.FIELD || !data.selectionSet) {
+			throw new Error(`Missing webhook data for ${typeName}`);
+		}
+		expect(
+			data.selectionSet.selections
+				.filter((field) => field.kind === Kind.FIELD)
+				.map((field) => field.name.value)
+		).toContain('name');
+		expect(validate(schema, fragment, [FieldsOnCorrectTypeRule])).toEqual([]);
+	});
+
+	test.each([
 		'PostgresBranchCreatedActivityLogEntry',
 		'PostgresBranchActivatedActivityLogEntry',
 		'PostgresBranchDeletedActivityLogEntry',

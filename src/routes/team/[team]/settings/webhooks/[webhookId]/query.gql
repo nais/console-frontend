@@ -1,0 +1,30 @@
+query TeamWebhookDeliveries($id: ID!, $after: Cursor, $before: Cursor, $first: Int, $last: Int) {
+	node(id: $id) {
+		__typename
+		... on WebhookSubscription {
+			id
+			deliveries(after: $after, before: $before, first: $first, last: $last)
+				@paginate(mode: SinglePage) {
+				pageInfo {
+					totalCount
+					hasNextPage
+					hasPreviousPage
+					pageStart
+					pageEnd
+					startCursor
+					endCursor
+				}
+				nodes {
+					id
+					eventType
+					requestBody
+					responseStatus
+					responseBody
+					durationMs
+					success
+					createdAt
+				}
+			}
+		}
+	}
+}

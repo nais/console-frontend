@@ -1,0 +1,728 @@
+import type { WebhookSourceTeamSearch$result } from '$houdini';
+import type { ComponentProps } from 'svelte';
+import { flushSync, mount, unmount } from 'svelte';
+import { writable } from 'svelte/store';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import WebhookDeliveryLog from './WebhookDeliveryLog.svelte';
+import WebhookEvents from './WebhookEvents.svelte';
+import WebhookForm from './WebhookForm.svelte';
+
+vi.mock('$app/forms', () => ({ enhance: () => undefined }));
+vi.mock('$app/state', () => ({ page: { url: new URL('https://console.example.com/') } }));
+
+const { searchTeams } = vi.hoisted(() => ({ searchTeams: vi.fn().mockResolvedValue(undefined) }));
+vi.mock('$houdini', () => ({
+	graphql: () => ({ subscribe: sourceTeamSearch.subscribe, fetch: searchTeams })
+}));
+
+const sourceTeamSearch = writable<{
+	data: WebhookSourceTeamSearch$result | null;
+	errors: { message: string }[] | null;
+	fetching: boolean;
+}>({ data: null, errors: null, fetching: false });
+
+const eventTypes = [
+	{
+		type: 'TEAM_UPDATED',
+		description: 'Triggered when a team is updated.',
+		group: 'Team',
+		teamScoped: true,
+		cloudEventType: 'io.nais.team.updated'
+	},
+	{
+		type: 'TEAM_MEMBER_ADDED',
+		description: 'Triggered when a team member is added.',
+		group: 'Team',
+		teamScoped: true,
+		cloudEventType: 'io.nais.team.member.added'
+	},
+	{
+		type: 'APPLICATION_DELETED',
+		description: 'Triggered when an application is deleted.',
+		group: 'Application',
+		teamScoped: true,
+		cloudEventType: 'io.nais.application.deleted'
+	},
+	{
+		type: 'RECONCILER_ENABLED',
+		description: 'Triggered when a reconciler is enabled.',
+		group: 'Reconciler',
+		teamScoped: false,
+		cloudEventType: 'io.nais.reconciler.enabled'
+	}
+];
+const pageInfo = {
+	totalCount: 1,
+	hasNextPage: true,
+	hasPreviousPage: false,
+	pageStart: 1,
+	pageEnd: 1,
+	startCursor: 'first',
+	endCursor: 'last'
+};
+const delivery = {
+	id: 'delivery-id',
+	eventType: 'TEAM_UPDATED',
+	requestBody: '{"data":{"text":"<script>not executable</script>"}}',
+	responseBody: null,
+	responseStatus: null,
+	durationMs: 200,
+	success: false,
+	createdAt: new Date('2026-11-05T10:00:00Z')
+};
+
+let cleanup: (() => Promise<void>) | undefined;
+
+beforeEach(() => {
+	vi.clearAllMocks();
+	sourceTeamSearch.set({ data: null, errors: null, fetching: false });
+});
+
+afterEach(async () => {
+	await cleanup?.();
+	cleanup = undefined;
+	document.body.replaceChildren();
+});
+
+function renderForm(props: Partial<ComponentProps<typeof WebhookForm>> = {}) {
+	const component = mount(WebhookForm, {
+		target: document.body,
+		props: {
+			eventTypes,
+			ownerTeamSlug: 'my-team',
+			cancelHref: '/team/my-team/settings/webhooks',
+			...props
+		}
+	});
+	cleanup = () => unmount(component);
+	flushSync();
+}
+
+function renderDeliveries(props: Partial<ComponentProps<typeof WebhookDeliveryLog>> = {}) {
+	const component = mount(WebhookDeliveryLog, {
+		target: document.body,
+		props: {
+			deliveries: { nodes: [delivery], pageInfo },
+			fetching: false,
+			onprevious: vi.fn(),
+			onnext: vi.fn(),
+			...props
+		}
+	});
+	cleanup = () => unmount(component);
+	flushSync();
+}
+
+function renderEvents(types: readonly string[]) {
+	const component = mount(WebhookEvents, {
+		target: document.body,
+		props: { eventTypes: types, metadata: eventTypes }
+	});
+	cleanup = () => unmount(component);
+	flushSync();
+}
+
+function openSourceTeamPicker() {
+	document.querySelector<HTMLInputElement>('input[name="sourceScope"][value="selected"]')?.click();
+	flushSync();
+	const button = document.querySelector<HTMLButtonElement>('button[aria-haspopup="dialog"]');
+	if (!button) throw new Error('Missing source-team picker button');
+	button.click();
+	flushSync();
+}
+
+function findSourceTeams(query: string) {
+	openSourceTeamPicker();
+	const input = document.querySelector<HTMLInputElement>(
+		'input[placeholder="Search by team name"]'
+	);
+	if (!input) throw new Error('Missing source-team search');
+	input.value = query;
+	input.dispatchEvent(new Event('input', { bubbles: true }));
+	flushSync();
+	const button = [...document.querySelectorAll<HTMLButtonElement>('button')].find(
+		(button) => button.textContent?.trim() === 'Search teams'
+	);
+	if (!button) throw new Error('Missing source-team search button');
+	button.click();
+	flushSync();
+}
+
+describe('webhook names', () => {
+	it('renders a labelled, required name field and includes its value in submission', () => {
+		renderForm();
+		const input = document.querySelector<HTMLInputElement>('input[name="name"]');
+		expect(input).not.toBeNull();
+		expect(input?.labels?.[0]?.textContent).toContain('Webhook name');
+		expect(input?.required).toBe(true);
+		expect(input?.value).toBe('');
+		expect(input?.checkValidity()).toBe(false);
+		input!.value = 'Deployment notifications';
+		input!.dispatchEvent(new Event('input', { bubbles: true }));
+		flushSync();
+		expect(input?.checkValidity()).toBe(true);
+		expect(new FormData(document.querySelector('form')!).get('name')).toBe(
+			'Deployment notifications'
+		);
+	});
+
+	it('prefills the existing name when editing', () => {
+		renderForm({
+			initialFields: {
+				name: 'Existing notifications',
+				url: 'https://receiver.example.com',
+				eventScope: 'all',
+				eventTypes: ['*'],
+				enabled: true
+			}
+		});
+		expect(document.querySelector<HTMLInputElement>('input[name="name"]')?.value).toBe(
+			'Existing notifications'
+		);
+	});
+
+	it('keeps a rejected blank name instead of restoring the existing name', () => {
+		const fields = {
+			name: 'Existing notifications',
+			url: 'https://receiver.example.com',
+			eventScope: 'all' as const,
+			eventTypes: ['*'],
+			enabled: true
+		};
+		renderForm({
+			initialFields: fields,
+			formData: {
+				fields: { ...fields, name: '' },
+				errors: ['A webhook name is required.']
+			}
+		});
+		expect(document.querySelector<HTMLInputElement>('input[name="name"]')?.value).toBe('');
+		expect(document.body.textContent).toContain('A webhook name is required.');
+	});
+});
+
+describe('webhook signing secrets', () => {
+	const initialFields = {
+		name: 'Deployment notifications',
+		url: 'https://receiver.example.com',
+		eventScope: 'all' as const,
+		eventTypes: ['*'],
+		enabled: true
+	};
+
+	it('requires a secret of at least 8 characters on creation', () => {
+		renderForm();
+		const input = document.querySelector<HTMLInputElement>('input[name="secret"]');
+		expect(input?.required).toBe(true);
+		expect(input?.minLength).toBe(8);
+		expect(input?.checkValidity()).toBe(false);
+		expect(new FormData(document.querySelector('form')!).get('secret')).toBe('');
+		expect(document.querySelector('input[name="clearSecret"]')).toBeNull();
+		expect(document.body.textContent).toContain('at least 8 characters');
+	});
+
+	it('allows a blank edit field to preserve the existing secret and cannot clear it', () => {
+		renderForm({ initialFields, hasSecret: true });
+		const input = document.querySelector<HTMLInputElement>('input[name="secret"]');
+		expect(input?.required).toBe(false);
+		expect(input?.minLength).toBe(8);
+		expect(input?.checkValidity()).toBe(true);
+		expect(input?.disabled).toBe(false);
+		expect(input?.value).toBe('');
+		expect(document.querySelector('input[name="clearSecret"]')).toBeNull();
+		expect(document.body.textContent).toContain('Leave blank to keep the current secret');
+		expect(new FormData(document.querySelector('form')!).get('clearSecret')).toBeNull();
+		expect(new FormData(document.querySelector('form')!).get('secret')).toBe('');
+	});
+
+	it('still permits unchanged legacy webhooks without a configured secret', () => {
+		renderForm({ initialFields, hasSecret: false });
+		expect(document.querySelector('input[name="clearSecret"]')).toBeNull();
+		expect(document.querySelector<HTMLInputElement>('input[name="secret"]')?.required).toBe(false);
+		expect(document.querySelector<HTMLInputElement>('input[name="secret"]')?.disabled).toBe(false);
+		expect(document.body.textContent).toContain('No secret configured.');
+		expect(document.body.textContent).toContain('at least 8 characters to replace it');
+	});
+
+	it('does not repopulate the secret after validation fails', () => {
+		renderForm({
+			initialFields,
+			hasSecret: true,
+			formData: {
+				fields: initialFields,
+				errors: ['The signing secret must be at least 8 characters.']
+			}
+		});
+		const input = document.querySelector<HTMLInputElement>('input[name="secret"]');
+		expect(input?.value).toBe('');
+		expect(input?.disabled).toBe(false);
+		expect(new FormData(document.querySelector('form')!).get('clearSecret')).toBeNull();
+		expect(document.body.textContent).toContain(
+			'The signing secret must be at least 8 characters.'
+		);
+	});
+});
+
+describe('webhook source teams', () => {
+	it('defaults creation to the owning team without fetching suggestions on mount', () => {
+		renderForm();
+		expect(
+			document.querySelector<HTMLInputElement>('input[name="sourceScope"][value="team"]')?.checked
+		).toBe(true);
+		expect(
+			[...document.querySelectorAll<HTMLInputElement>('input[name="sourceScope"]')].map((input) =>
+				input.labels?.[0]?.textContent?.trim()
+			)
+		).toEqual(['This team', 'All teams', 'Selected teams']);
+		expect(document.querySelector('input[name="sourceTeamSlugs"]')).toBeNull();
+		expect(document.body.textContent).toContain('Receive events only from my-team.');
+		expect(document.body.textContent).not.toContain('Ownership cannot be changed');
+		expect(document.body.textContent).not.toContain('Owned by');
+		expect(document.querySelector('input[name="teamSlug"]')).toBeNull();
+		expect(searchTeams).not.toHaveBeenCalled();
+	});
+
+	it.each([
+		{ sources: ['my-team'], scope: 'team' },
+		{ sources: ['other-team'], scope: 'selected' },
+		{ sources: ['my-team', 'other-team'], scope: 'selected' }
+	])('derives $scope edit mode from $sources', ({ sources, scope }) => {
+		renderForm({
+			initialFields: {
+				name: 'Deployment notifications',
+				url: 'https://receiver.example.com',
+				eventScope: 'all',
+				eventTypes: ['*'],
+				sourceTeamSlugs: sources,
+				enabled: true
+			}
+		});
+		expect(
+			document.querySelector<HTMLInputElement>(`input[name="sourceScope"][value="${scope}"]`)
+				?.checked
+		).toBe(true);
+	});
+
+	it('submits all teams without a stale selected-team list and restores selection on switching back', () => {
+		renderForm();
+		document.querySelector<HTMLInputElement>('input[name="sourceScope"][value="all"]')?.click();
+		flushSync();
+		const form = document.querySelector('form');
+		expect(form).not.toBeNull();
+		expect(new FormData(form!).getAll('sourceTeamSlugs')).toEqual([]);
+		expect(document.body.textContent).toContain('excluding global events');
+		document
+			.querySelector<HTMLInputElement>('input[name="sourceScope"][value="selected"]')
+			?.click();
+		flushSync();
+		expect(new FormData(form!).getAll('sourceTeamSlugs')).toEqual(['my-team']);
+	});
+
+	it('derives all-team edit mode from an empty source list', () => {
+		renderForm({
+			initialFields: {
+				name: 'Deployment notifications',
+				url: 'https://receiver.example.com',
+				eventScope: 'all',
+				eventTypes: ['*'],
+				sourceTeamSlugs: [],
+				enabled: true
+			},
+			hasSecret: true
+		});
+		expect(
+			document.querySelector<HTMLInputElement>('input[name="sourceScope"][value="all"]')?.checked
+		).toBe(true);
+		expect(document.querySelector('input[name="sourceTeamSlugs"]')).toBeNull();
+		expect(document.body.textContent).toContain('Secret configured');
+		expect(document.querySelector<HTMLInputElement>('input[name="secret"]')?.value).toBe('');
+		expect(document.querySelector<HTMLInputElement>('input[name="secret"]')?.required).toBe(false);
+	});
+
+	it('keeps an invalid empty selected-team submission selected instead of switching to all teams', () => {
+		renderForm({
+			formData: {
+				fields: {
+					name: 'Deployment notifications',
+					url: 'https://receiver.example.com',
+					eventScope: 'all',
+					eventTypes: ['*'],
+					sourceScope: 'selected',
+					sourceTeamSlugs: [],
+					enabled: true
+				},
+				errors: ['Select at least one source team.']
+			}
+		});
+		expect(
+			document.querySelector<HTMLInputElement>('input[name="sourceScope"][value="selected"]')
+				?.checked
+		).toBe(true);
+		expect(
+			document.querySelector<HTMLInputElement>('input[name="sourceScope"][value="all"]')?.checked
+		).toBe(false);
+	});
+
+	it('opens team search in a labelled modal without fetching on open', () => {
+		renderForm();
+		openSourceTeamPicker();
+		const trigger = document.querySelector<HTMLButtonElement>('button[aria-haspopup="dialog"]');
+		const dialog = document.querySelector('[role="dialog"]');
+		expect(trigger?.getAttribute('aria-expanded')).toBe('true');
+		expect(dialog?.id).toBe(trigger?.getAttribute('aria-controls'));
+		expect(dialog?.getAttribute('data-state')).toBe('open');
+		expect(dialog?.textContent).toContain('Add source teams');
+		expect(dialog?.querySelector('input[placeholder="Search by team name"]')).not.toBeNull();
+		expect(dialog?.querySelector('input[name="sourceTeamSlugs"]')).toBeNull();
+		expect(searchTeams).not.toHaveBeenCalled();
+	});
+
+	it('allows searching and selecting another team without changing the owner or duplicating form values', () => {
+		sourceTeamSearch.set({
+			data: { search: { nodes: [{ __typename: 'Team', slug: 'other-team' }], pageInfo } },
+			errors: null,
+			fetching: false
+		});
+		renderForm();
+		const form = document.querySelector('form');
+		if (!form) throw new Error('Missing webhook form');
+		const submit = vi.fn((event: Event) => event.preventDefault());
+		form.addEventListener('submit', submit);
+		findSourceTeams('other-team');
+		expect(searchTeams).toHaveBeenCalledWith({
+			variables: { query: 'other-team', after: null, before: null, first: 25, last: null }
+		});
+		const add = document.querySelector<HTMLButtonElement>('button[aria-label="Add other-team"]');
+		expect(add).not.toBeNull();
+		expect(document.querySelector('[aria-label="Source team search results"] input')).toBeNull();
+		add?.click();
+		flushSync();
+		expect(
+			document.querySelector<HTMLButtonElement>('button[aria-label="Added other-team"]')?.disabled
+		).toBe(true);
+		const done = [...document.querySelectorAll<HTMLButtonElement>('[role="dialog"] button')].find(
+			(button) => button.textContent?.trim() === 'Done'
+		);
+		if (!done) throw new Error('Missing source-team picker Done button');
+		done.click();
+		flushSync();
+		expect(document.querySelector('[role="dialog"]')?.getAttribute('data-state')).toBe('closed');
+		expect(new FormData(form).getAll('sourceTeamSlugs')).toEqual(['my-team', 'other-team']);
+		expect(document.querySelector('input[name="teamSlug"]')).toBeNull();
+		expect(submit).not.toHaveBeenCalled();
+		openSourceTeamPicker();
+		expect(
+			document.querySelector<HTMLButtonElement>('button[aria-label="Added other-team"]')?.disabled
+		).toBe(true);
+	});
+
+	it('paginates the current search rather than using unsubmitted search text and preserves selections', () => {
+		sourceTeamSearch.set({
+			data: { search: { nodes: [{ __typename: 'Team', slug: 'other-team' }], pageInfo } },
+			errors: null,
+			fetching: false
+		});
+		renderForm();
+		findSourceTeams('other-team');
+		const input = document.querySelector<HTMLInputElement>(
+			'input[placeholder="Search by team name"]'
+		);
+		if (!input) throw new Error('Missing source-team search');
+		input.value = 'different-team';
+		input.dispatchEvent(new Event('input', { bubbles: true }));
+		flushSync();
+		document.querySelector<HTMLButtonElement>('[aria-label="Next page"]')?.click();
+		expect(searchTeams).toHaveBeenLastCalledWith({
+			variables: { query: 'other-team', after: 'last', before: null, first: 25, last: null }
+		});
+		sourceTeamSearch.set({
+			data: {
+				search: {
+					nodes: [{ __typename: 'Team', slug: 'next-team' }],
+					pageInfo: { ...pageInfo, hasNextPage: false, hasPreviousPage: true }
+				}
+			},
+			errors: null,
+			fetching: false
+		});
+		flushSync();
+		document.querySelector<HTMLButtonElement>('[aria-label="Previous page"]')?.click();
+		expect(searchTeams).toHaveBeenLastCalledWith({
+			variables: { query: 'other-team', after: null, before: 'first', first: null, last: 25 }
+		});
+		expect(document.querySelector<HTMLInputElement>('input[name="sourceTeamSlugs"]')?.checked).toBe(
+			true
+		);
+	});
+
+	it('shows team-search errors explicitly instead of presenting them as no results', () => {
+		sourceTeamSearch.set({
+			data: null,
+			errors: [{ message: 'Search unavailable' }],
+			fetching: false
+		});
+		renderForm();
+		findSourceTeams('other-team');
+		expect(document.body.textContent).toContain('Search unavailable');
+		expect(document.body.textContent).not.toContain('No matching teams found.');
+	});
+});
+
+describe('subscribed webhook events', () => {
+	it('shows All events without rendering a list or groups for a wildcard subscription', () => {
+		renderEvents(['*']);
+		expect(document.body.textContent?.trim()).toBe('All events');
+		expect(document.querySelector('button')).toBeNull();
+		expect(document.querySelector('ul')).toBeNull();
+	});
+
+	it('groups subscribed events using API metadata and starts every group collapsed', () => {
+		renderEvents(['TEAM_UPDATED', 'TEAM_MEMBER_ADDED', 'APPLICATION_DELETED']);
+		const groups = document.querySelectorAll('.sh-accordion-item');
+		expect(groups).toHaveLength(2);
+		expect(groups[0].querySelector('button')?.textContent).toContain('Application');
+		expect(groups[1].querySelector('button')?.textContent).toContain('Team');
+		expect(groups[1].querySelector('button')?.textContent?.replace(/\s/g, '')).toBe('Team2');
+		for (const group of groups) {
+			expect(group.querySelector('button')?.getAttribute('aria-expanded')).toBe('false');
+			expect(group.querySelector('.sh-accordion-content--closed')).not.toBeNull();
+		}
+
+		groups[1].querySelector('button')?.click();
+		flushSync();
+		expect(groups[1].querySelector('button')?.getAttribute('aria-expanded')).toBe('true');
+		expect(groups[1].querySelector('.sh-accordion-content--closed')).toBeNull();
+		expect(groups[1].querySelector('ul')?.textContent).toContain('Team updated');
+		expect(groups[1].querySelector('ul')?.textContent).toContain('Team member added');
+		expect(groups[0].querySelector('button')?.getAttribute('aria-expanded')).toBe('false');
+		expect(document.body.textContent).not.toContain('Reconciler');
+	});
+
+	it('keeps unrecognized subscribed events visible in a separate group', () => {
+		renderEvents(['FUTURE_EVENT']);
+		expect(document.querySelector('button')?.textContent).toContain('Other events');
+		expect(document.querySelector('li')?.textContent).toBe('Future event');
+	});
+
+	it('explicitly displays an empty subscription', () => {
+		renderEvents([]);
+		expect(document.body.textContent?.trim()).toBe('No events selected.');
+		expect(document.querySelector('button')).toBeNull();
+	});
+});
+
+describe('webhook form', () => {
+	it('offers only team-scoped event types, with all team events selected by default', () => {
+		renderForm();
+		expect(
+			document.querySelector<HTMLInputElement>('input[name="eventScope"][value="all"]')?.checked
+		).toBe(true);
+		expect(document.querySelector('input[value="TEAM_UPDATED"]')).not.toBeNull();
+		expect(document.querySelector('input[value="RECONCILER_ENABLED"]')).toBeNull();
+		expect(document.querySelector('input[name="enabled"]')).toBeNull();
+		expect(document.querySelector<HTMLInputElement>('input[name="secret"]')?.type).toBe('password');
+		expect(document.querySelector<HTMLInputElement>('input[name="secret"]')?.required).toBe(true);
+	});
+
+	it.each([
+		['APPLICATION_DELETED', 'Application deleted', 'io.nais.application.deleted'],
+		['TEAM_MEMBER_ADDED', 'Team member added', 'io.nais.team.member.added']
+	])(
+		'uses a short label for %s with the API description and CloudEvents type underneath',
+		(type, title, cloudEventType) => {
+			renderForm({ eventTypes: [{ ...eventTypes[0], type, cloudEventType }] });
+			const checkbox = document.querySelector<HTMLInputElement>(`input[value="${type}"]`);
+			expect(checkbox?.labels?.[0]?.textContent?.trim()).toBe(title);
+			const description = document.getElementById(checkbox?.getAttribute('aria-describedby') ?? '');
+			expect(description?.querySelector('div')?.textContent?.trim()).toBe(
+				eventTypes[0].description
+			);
+			expect(description?.querySelector('code')?.textContent).toBe(cloudEventType);
+		}
+	);
+
+	it('submits explicitly selected events', () => {
+		renderForm();
+		document.querySelector<HTMLInputElement>('input[name="eventScope"][value="selected"]')?.click();
+		document.querySelector<HTMLInputElement>('input[value="TEAM_UPDATED"]')?.click();
+		flushSync();
+		const form = document.querySelector('form');
+		expect(form).not.toBeNull();
+		const fields = new FormData(form!);
+		expect(fields.get('eventScope')).toBe('selected');
+		expect(fields.getAll('eventTypes')).toEqual(['TEAM_UPDATED']);
+	});
+
+	it('uses the group title as the toggle label and accessible group name', () => {
+		renderForm();
+		const group = document.querySelector<HTMLInputElement>('input[value="Team"]');
+		const fieldset = group?.closest('fieldset');
+		const title = document.getElementById(fieldset?.getAttribute('aria-labelledby') ?? '');
+		expect(title?.textContent).toBe('Team');
+		expect(group?.labels?.[0]?.contains(title)).toBe(true);
+		expect(group?.getAttribute('aria-label')).toBe('Select all Team events');
+	});
+
+	it('selects and clears one group without changing other groups or submitting group values', () => {
+		renderForm();
+		document.querySelector<HTMLInputElement>('input[name="eventScope"][value="selected"]')?.click();
+		document.querySelector<HTMLInputElement>('input[value="APPLICATION_DELETED"]')?.click();
+		const group = document.querySelector<HTMLInputElement>('input[value="Team"]');
+		const form = document.querySelector('form');
+		expect(form).not.toBeNull();
+
+		group?.click();
+		flushSync();
+		expect(group?.checked).toBe(true);
+		expect(group?.indeterminate).toBe(false);
+		expect(new FormData(form!).getAll('eventTypes')).toEqual([
+			'APPLICATION_DELETED',
+			'TEAM_UPDATED',
+			'TEAM_MEMBER_ADDED'
+		]);
+
+		group?.click();
+		flushSync();
+		expect(group?.checked).toBe(false);
+		expect(group?.indeterminate).toBe(false);
+		expect(new FormData(form!).getAll('eventTypes')).toEqual(['APPLICATION_DELETED']);
+		expect([...new FormData(form!).keys()]).toEqual([
+			'name',
+			'url',
+			'secret',
+			'sourceScope',
+			'eventScope',
+			'eventTypes'
+		]);
+	});
+
+	it('reflects individual selections and selects the entire group from a mixed state', () => {
+		renderForm();
+		const group = document.querySelector<HTMLInputElement>('input[value="Team"]');
+		const updated = document.querySelector<HTMLInputElement>('input[value="TEAM_UPDATED"]');
+		const memberAdded = document.querySelector<HTMLInputElement>(
+			'input[value="TEAM_MEMBER_ADDED"]'
+		);
+		expect(group?.checked).toBe(false);
+		expect(group?.indeterminate).toBe(false);
+
+		updated?.click();
+		flushSync();
+		expect(group?.checked).toBe(false);
+		expect(group?.indeterminate).toBe(true);
+
+		group?.click();
+		flushSync();
+		expect(group?.checked).toBe(true);
+		expect(group?.indeterminate).toBe(false);
+		expect(updated?.checked).toBe(true);
+		expect(memberAdded?.checked).toBe(true);
+
+		memberAdded?.click();
+		flushSync();
+		expect(group?.checked).toBe(false);
+		expect(group?.indeterminate).toBe(true);
+
+		updated?.click();
+		flushSync();
+		expect(group?.checked).toBe(false);
+		expect(group?.indeterminate).toBe(false);
+	});
+
+	it('preserves submitted selection and disabled status on a failed edit', () => {
+		renderForm({
+			initialFields: {
+				name: 'Original notifications',
+				url: 'https://old.example.com',
+				eventScope: 'all',
+				eventTypes: ['*'],
+				enabled: true
+			},
+			hasSecret: true,
+			formData: {
+				errors: ['API error'],
+				fields: {
+					name: 'Renamed notifications',
+					url: 'https://new.example.com',
+					eventScope: 'selected',
+					eventTypes: ['TEAM_UPDATED'],
+					sourceScope: 'selected',
+					sourceTeamSlugs: ['other-team'],
+					enabled: false
+				}
+			}
+		});
+		expect(document.querySelector<HTMLInputElement>('input[name="name"]')?.value).toBe(
+			'Renamed notifications'
+		);
+		expect(document.querySelector<HTMLInputElement>('input[name="name"]')?.required).toBe(true);
+		expect(document.querySelector<HTMLInputElement>('input[name="url"]')?.value).toBe(
+			'https://new.example.com'
+		);
+		expect(
+			document.querySelector<HTMLInputElement>('input[name="eventScope"][value="selected"]')
+				?.checked
+		).toBe(true);
+		expect(document.querySelector<HTMLInputElement>('input[value="TEAM_UPDATED"]')?.checked).toBe(
+			true
+		);
+		expect(document.querySelector<HTMLInputElement>('input[value="Team"]')?.indeterminate).toBe(
+			true
+		);
+		expect(document.querySelector<HTMLInputElement>('input[name="enabled"]')?.checked).toBe(false);
+		expect(document.querySelector<HTMLInputElement>('input[name="secret"]')?.value).toBe('');
+		expect(document.querySelector<HTMLInputElement>('input[name="sourceTeamSlugs"]')?.value).toBe(
+			'other-team'
+		);
+		expect(document.body.textContent).toContain('API error');
+	});
+});
+
+describe('webhook delivery log', () => {
+	it('uses readable event names while keeping the raw type available as a tooltip', () => {
+		renderDeliveries();
+		expect(document.querySelector('[title="TEAM_UPDATED"]')?.textContent).toBe('Team updated');
+	});
+
+	it('expands accessible delivery details and displays payloads as text', () => {
+		renderDeliveries();
+		const button = document.querySelector<HTMLButtonElement>(
+			'[aria-label="Expand delivery details"]'
+		);
+		const details = document.getElementById(button?.getAttribute('aria-controls') ?? '');
+		expect(details?.hidden).toBe(true);
+		button?.click();
+		flushSync();
+		expect(button?.getAttribute('aria-expanded')).toBe('true');
+		expect(details?.hidden).toBe(false);
+		expect(details?.textContent).toContain(delivery.requestBody);
+		expect(document.querySelector('script')).toBeNull();
+		expect(details?.textContent).toContain('No response body.');
+		expect(document.body.textContent).toContain('No response');
+	});
+
+	it('shows empty-state text outside the table when there are no deliveries', () => {
+		renderDeliveries({ deliveries: { nodes: [], pageInfo: { ...pageInfo, totalCount: 0 } } });
+		expect(document.body.textContent).toContain('No delivery attempts yet.');
+		expect(document.querySelector('table')).toBeNull();
+	});
+
+	it('shows successful response bodies and HTTP status', () => {
+		renderDeliveries({
+			deliveries: {
+				nodes: [{ ...delivery, success: true, responseStatus: 204, responseBody: 'accepted' }],
+				pageInfo
+			}
+		});
+		expect(document.body.textContent).toContain('204');
+		expect(document.body.textContent).toContain('Success');
+		expect(document.body.textContent).toContain('accepted');
+	});
+
+	it('uses the pagination callback rather than a full page reload', () => {
+		const onnext = vi.fn();
+		renderDeliveries({ onnext });
+		document.querySelector<HTMLButtonElement>('[aria-label="Next page"]')?.click();
+		expect(onnext).toHaveBeenCalledOnce();
+	});
+});

@@ -510,6 +510,53 @@
 							}
 						}
 					}
+					... on WebhookCreatedActivityLogEntry {
+						__typename
+						id
+						createdAt
+						actor
+						environmentName
+						message
+						resourceName
+						resourceType
+						teamSlug
+						webhook: data {
+							name
+						}
+					}
+					... on WebhookDeletedActivityLogEntry {
+						__typename
+						id
+						createdAt
+						actor
+						environmentName
+						message
+						resourceName
+						resourceType
+						teamSlug
+						webhook: data {
+							name
+						}
+					}
+					... on WebhookUpdatedActivityLogEntry {
+						__typename
+						id
+						createdAt
+						actor
+						environmentName
+						message
+						resourceName
+						resourceType
+						teamSlug
+						webhookUpdated: data {
+							name
+							updatedFields {
+								field
+								oldValue
+								newValue
+							}
+						}
+					}
 					... on ReconcilerConfiguredActivityLogEntry {
 						__typename
 					}

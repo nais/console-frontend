@@ -153,6 +153,7 @@
 				gap: var(--ax-space-6);
 				align-items: center;
 				min-width: 0;
+				overflow-wrap: anywhere;
 				font-size: var(--ax-font-size-small);
 				color: var(--muted-foreground);
 
