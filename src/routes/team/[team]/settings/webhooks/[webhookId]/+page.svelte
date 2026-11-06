@@ -20,6 +20,7 @@
 		ArrowCirclepathIcon,
 		MenuElipsisVerticalIcon,
 		PencilIcon,
+		SendIcon,
 		TrashIcon
 	} from '#lib/icons/index.js';
 	import GraphErrors from '#lib/ui/GraphErrors.svelte';
@@ -51,6 +52,7 @@
 	let deleteOpen = $state(false);
 	let deleting = $state(false);
 	let enabling = $state(false);
+	let testing = $state(false);
 </script>
 
 {#if webhook && canManage}
@@ -62,12 +64,21 @@
 					size="small"
 					icon={MenuElipsisVerticalIcon}
 					iconPosition="right"
-					loading={enabling}
+					loading={enabling || testing}
 					{...props}
 				>
 					Actions
 				</Button>
 			{/snippet}
+			<ActionMenuItem
+				icon={SendIcon}
+				form={`${uid}-test`}
+				disabled={testing}
+				onselect={(event: MouseEvent & { currentTarget: HTMLButtonElement }) =>
+					event.currentTarget.form?.requestSubmit()}
+			>
+				Send test event
+			</ActionMenuItem>
 			{#if !webhook.enabled}
 				<ActionMenuItem
 					icon={ArrowCirclepathIcon}
@@ -101,6 +112,24 @@
 
 <div class="webhook-detail">
 	{#if webhook}
+		{#if canManage}
+			<form
+				id={`${uid}-test`}
+				hidden
+				method="POST"
+				action="?/test"
+				use:enhance={() => {
+					testing = true;
+					return async ({ update }) => {
+						try {
+							await update();
+						} finally {
+							testing = false;
+						}
+					};
+				}}
+			></form>
+		{/if}
 		{#if canManage && !webhook.enabled}
 			<form
 				id={`${uid}-enable`}
@@ -146,6 +175,17 @@
 						<CopyButton copyText={webhook.url} size="small" aria-label="Copy webhook URL" />
 					</div>
 					<BodyShort size="small">HTTP POST requests with signed CloudEvents payloads.</BodyShort>
+					{#if !webhook.enabled}
+						<BodyShort size="small"
+							>Queued deliveries are paused while this webhook is disabled.</BodyShort
+						>
+					{/if}
+					{#if canManage}
+						<BodyShort size="small">
+							Send a test event from Actions, even while disabled. Limited to one test every 30
+							seconds; tests never retry or affect webhook health.
+						</BodyShort>
+					{/if}
 				</section>
 
 				<section aria-labelledby={`${uid}-events`}>
@@ -170,14 +210,15 @@
 
 				<div>
 					<GraphErrors errors={$TeamWebhookDeliveries.errors} />
-					{#if deliveries}
+					{#if deliveries || form?.testDelivery}
 						<WebhookDeliveryLog
 							{deliveries}
+							testDelivery={form?.testDelivery}
 							fetching={$TeamWebhookDeliveries.fetching}
 							onprevious={() =>
-								changeParams({ before: deliveries.pageInfo.startCursor ?? '', after: '' })}
+								changeParams({ before: deliveries?.pageInfo.startCursor ?? '', after: '' })}
 							onnext={() =>
-								changeParams({ after: deliveries.pageInfo.endCursor ?? '', before: '' })}
+								changeParams({ after: deliveries?.pageInfo.endCursor ?? '', before: '' })}
 						/>
 					{/if}
 				</div>

@@ -1,7 +1,7 @@
 import type { WebhookSourceTeamSearch$result } from '$houdini';
 import type { ComponentProps } from 'svelte';
 import { flushSync, mount, unmount } from 'svelte';
-import { writable } from 'svelte/store';
+import { fromStore, writable } from 'svelte/store';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import WebhookDeliveryLog from './WebhookDeliveryLog.svelte';
 import WebhookEvents from './WebhookEvents.svelte';
@@ -62,10 +62,17 @@ const pageInfo = {
 };
 const delivery = {
 	id: 'delivery-id',
+	' $fragments': { WebhookDeliveryFields: {} },
 	eventType: 'TEAM_UPDATED',
 	requestBody: '{"data":{"text":"<script>not executable</script>"}}',
 	responseBody: null,
 	responseStatus: null,
+	isTest: false,
+	requestHeaders: [],
+	responseHeaders: [],
+	responseBodyTruncated: false,
+	errorMessage: null,
+	deliveryState: null,
 	durationMs: 200,
 	success: false,
 	createdAt: new Date('2026-11-05T10:00:00Z')
@@ -106,7 +113,10 @@ function renderDeliveries(props: Partial<ComponentProps<typeof WebhookDeliveryLo
 			fetching: false,
 			onprevious: vi.fn(),
 			onnext: vi.fn(),
-			...props
+			...props,
+			get testDelivery() {
+				return props.testDelivery;
+			}
 		}
 	});
 	cleanup = () => unmount(component);
@@ -679,6 +689,85 @@ describe('webhook form', () => {
 });
 
 describe('webhook delivery log', () => {
+	it.each([true, false])(
+		'shows a returned test attempt as an expanded delivery row, success=%s',
+		(success) => {
+			const testDelivery = {
+				...delivery,
+				id: 'returned-test',
+				isTest: true,
+				eventType: 'io.nais.webhook.test',
+				success,
+				responseStatus: success ? 204 : 500,
+				errorMessage: success ? null : 'Connection failed'
+			};
+			renderDeliveries({ testDelivery });
+			const rows = document.querySelectorAll<HTMLTableRowElement>('tbody tr');
+			expect(rows).toHaveLength(4);
+			expect(rows[0]?.textContent).toContain('Test event');
+			expect(rows[0]?.textContent).toContain(success ? 'Success' : 'Failed');
+			expect(
+				rows[0]?.querySelector('td:last-child')?.textContent?.replaceAll(/\s+/g, ' ').trim()
+			).toBe(success ? 'Succeeded' : 'Failed No retries');
+			expect(rows[0]?.querySelector('button')?.getAttribute('aria-expanded')).toBe('true');
+			expect(rows[1]?.hidden).toBe(false);
+			expect(rows[1]?.textContent).toContain('never retried');
+			if (!success) expect(rows[1]?.textContent).toContain('Connection failed');
+			expect(rows[3]?.hidden).toBe(true);
+			expect(document.body.textContent).not.toContain('Test event result');
+		}
+	);
+
+	it('does not duplicate a returned attempt that is already in delivery history', () => {
+		const testDelivery = { ...delivery, isTest: true };
+		renderDeliveries({
+			testDelivery,
+			deliveries: { nodes: [testDelivery], pageInfo }
+		});
+		expect(document.querySelectorAll('tbody tr')).toHaveLength(2);
+		expect(document.querySelector('h2')?.textContent?.trim()).toBe('Delivery log (1)');
+		expect(document.querySelector('button[aria-expanded="true"]')).not.toBeNull();
+	});
+
+	it('shows the returned attempt even when loading delivery history failed', () => {
+		renderDeliveries({ testDelivery: { ...delivery, isTest: true }, deliveries: null });
+		expect(document.querySelectorAll('tbody tr')).toHaveLength(2);
+		expect(document.querySelector('button[aria-expanded="true"]')).not.toBeNull();
+		expect(document.querySelector('h2')?.textContent?.trim()).toBe('Delivery log');
+		expect(document.body.textContent).not.toContain('No delivery attempts yet.');
+	});
+
+	it('does not show a stale zero count when a test has just been returned', () => {
+		renderDeliveries({
+			testDelivery: { ...delivery, isTest: true },
+			deliveries: { nodes: [], pageInfo: { ...pageInfo, totalCount: 0 } }
+		});
+		expect(document.querySelector('h2')?.textContent?.trim()).toBe('Delivery log');
+		expect(document.querySelector('table')).not.toBeNull();
+	});
+
+	it('allows collapsing a returned attempt and automatically expands the next returned attempt', () => {
+		const result = writable<ComponentProps<typeof WebhookDeliveryLog>['testDelivery']>(null);
+		const latest = fromStore(result);
+		renderDeliveries({
+			get testDelivery() {
+				return latest.current;
+			}
+		});
+		document.querySelector<HTMLButtonElement>('[aria-label="Expand delivery details"]')?.click();
+		flushSync();
+		result.set({ ...delivery, id: 'first-test', isTest: true });
+		flushSync();
+		expect(document.querySelectorAll('button[aria-expanded="true"]')).toHaveLength(2);
+		document.querySelector<HTMLButtonElement>('[aria-label="Collapse delivery details"]')?.click();
+		flushSync();
+		expect(document.querySelector('tbody tr button')?.getAttribute('aria-expanded')).toBe('false');
+		result.set({ ...delivery, id: 'second-test', isTest: true });
+		flushSync();
+		expect(document.querySelector('tbody tr button')?.getAttribute('aria-expanded')).toBe('true');
+		expect(document.querySelectorAll('button[aria-expanded="true"]')).toHaveLength(2);
+	});
+
 	it('uses readable event names while keeping the raw type available as a tooltip', () => {
 		renderDeliveries();
 		expect(document.querySelector('[title="TEAM_UPDATED"]')?.textContent).toBe('Team updated');
@@ -697,7 +786,7 @@ describe('webhook delivery log', () => {
 		expect(details?.hidden).toBe(false);
 		expect(details?.textContent).toContain(delivery.requestBody);
 		expect(document.querySelector('script')).toBeNull();
-		expect(details?.textContent).toContain('No response body.');
+		expect(details?.textContent).toContain('No text response body available');
 		expect(document.body.textContent).toContain('No response');
 	});
 
@@ -717,6 +806,158 @@ describe('webhook delivery log', () => {
 		expect(document.body.textContent).toContain('204');
 		expect(document.body.textContent).toContain('Success');
 		expect(document.body.textContent).toContain('accepted');
+	});
+
+	it('distinguishes an empty response body from unavailable text', () => {
+		renderDeliveries({
+			deliveries: {
+				nodes: [{ ...delivery, success: true, responseStatus: 204, responseBody: '' }],
+				pageInfo
+			}
+		});
+		expect(document.body.textContent).toContain('Empty response body.');
+		expect(document.body.textContent).not.toContain('No text response body available');
+	});
+
+	it('renders all header values as text with a filtering notice', () => {
+		renderDeliveries({
+			deliveries: {
+				nodes: [
+					{
+						...delivery,
+						requestHeaders: [{ name: 'Content-Type', values: ['application/json'] }],
+						responseHeaders: [
+							{ name: 'X-Diagnostic', values: ['first', '<script>second</script>'] }
+						]
+					}
+				],
+				pageInfo
+			}
+		});
+		expect(document.body.textContent).toContain('Request headers');
+		expect(document.body.textContent).toContain('Response headers');
+		expect(document.body.textContent).toContain('application/json');
+		expect(document.body.textContent).toContain('first');
+		expect(document.body.textContent).toContain('<script>second</script>');
+		expect(document.body.textContent).toContain('Headers are filtered');
+		expect(document.querySelector('script')).toBeNull();
+	});
+
+	it('shows read errors even when an HTTP response was received, and warns about truncation', () => {
+		renderDeliveries({
+			deliveries: {
+				nodes: [
+					{
+						...delivery,
+						responseStatus: 200,
+						responseBody: 'partial response',
+						responseBodyTruncated: true,
+						errorMessage: 'Unable to read the complete response'
+					}
+				],
+				pageInfo
+			}
+		});
+		expect(document.body.textContent).toContain('Unable to read the complete response');
+		expect(document.body.textContent).toContain('truncated to 10 KiB');
+		expect(document.body.textContent).toContain('partial response');
+	});
+
+	it.each([true, false])('labels historical tests by their outcome, success=%s', (success) => {
+		renderDeliveries({
+			deliveries: {
+				nodes: [{ ...delivery, isTest: true, eventType: 'io.nais.webhook.test', success }],
+				pageInfo
+			}
+		});
+		expect(document.querySelector('[title="io.nais.webhook.test"]')?.textContent).toBe(
+			'Test event'
+		);
+		const row = document.querySelector('tbody tr');
+		expect(row?.querySelector('td:last-child')?.textContent?.replaceAll(/\s+/g, ' ').trim()).toBe(
+			success ? 'Succeeded' : 'Failed No retries'
+		);
+		const details = document.querySelector('.delivery-details');
+		expect(details?.textContent).toContain(success ? 'Succeeded' : 'Failed');
+		expect(details?.textContent?.includes('No retries')).toBe(!success);
+		expect(document.body.textContent).not.toContain('Not queued');
+		expect(document.body.textContent).toContain('never retried');
+		expect(document.body.textContent).toContain('do not affect webhook health');
+		expect(document.body.textContent).not.toContain('Will retry at');
+	});
+
+	it('keeps unavailable queue state distinct from a failed non-test attempt', () => {
+		renderDeliveries();
+		expect(document.querySelector('tbody tr td:last-child')?.textContent?.trim()).toBe(
+			'Not available'
+		);
+		expect(document.body.textContent).toContain('Queue state is no longer available');
+		expect(document.body.textContent).not.toContain('No retries');
+	});
+
+	it('keeps the failed attempt result separate from the shared completed state', () => {
+		renderDeliveries({
+			deliveries: {
+				nodes: [
+					{
+						...delivery,
+						deliveryState: { status: 'COMPLETED', attemptCount: 3, nextRetryAt: null }
+					}
+				],
+				pageInfo
+			}
+		});
+		const row = document.querySelectorAll('tbody tr')[0];
+		expect(row?.textContent).toContain('Failed');
+		expect(row?.textContent).toContain('Completed');
+		expect(document.body.textContent?.replaceAll(/\s+/g, ' ')).toContain('3 attempts');
+		expect(document.body.textContent).not.toContain('Will retry at');
+	});
+
+	it.each(['PENDING', 'PROCESSING', 'FAILED'] as const)(
+		'shows current %s queue state without inventing a retry time',
+		(status) => {
+			renderDeliveries({
+				deliveries: {
+					nodes: [{ ...delivery, deliveryState: { status, attemptCount: 1, nextRetryAt: null } }],
+					pageInfo
+				}
+			});
+			expect(document.body.textContent).toContain(status[0] + status.slice(1).toLowerCase());
+			expect(document.body.textContent?.replaceAll(/\s+/g, ' ')).toContain('1 attempt');
+			expect(document.body.textContent).not.toContain('Will retry at');
+		}
+	);
+
+	it('shows the next retry only when supplied by the API', () => {
+		const nextRetryAt = new Date('2026-11-06T15:00:00Z');
+		renderDeliveries({
+			deliveries: {
+				nodes: [
+					{
+						...delivery,
+						deliveryState: { status: 'PENDING', attemptCount: 2, nextRetryAt }
+					}
+				],
+				pageInfo
+			}
+		});
+		expect(document.body.textContent).toContain('Will retry at');
+		expect(document.querySelector(`time[datetime="${nextRetryAt.toISOString()}"]`)).not.toBeNull();
+	});
+
+	it('preserves source activity IDs, triggered times, and the original envelope time in payloads', () => {
+		const requestBody = JSON.stringify({
+			time: '2026-11-05T08:00:00Z',
+			data: { activityLogEntryId: 'activity-id', triggeredAt: '2026-11-05T08:00:01Z' }
+		});
+		renderDeliveries({ deliveries: { nodes: [{ ...delivery, requestBody }], pageInfo } });
+		expect(
+			[...document.querySelectorAll('pre')].some((pre) => pre.textContent === requestBody)
+		).toBe(true);
+		expect(document.body.textContent).toContain('source activity time');
+		expect(document.querySelector('thead')?.textContent).toContain('Attempted at');
+		expect(document.querySelector('time')?.dateTime).toBe(delivery.createdAt.toISOString());
 	});
 
 	it('uses the pagination callback rather than a full page reload', () => {

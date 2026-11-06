@@ -24,6 +24,7 @@ query TeamWebhooks($team: Slug!, $after: Cursor, $before: Cursor, $first: Int, $
 						id
 						createdAt
 						success
+						isTest
 					}
 				}
 			}

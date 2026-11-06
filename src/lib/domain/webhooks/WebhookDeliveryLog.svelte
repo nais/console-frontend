@@ -1,7 +1,8 @@
 <script lang="ts">
-	import type { TeamWebhookDeliveries$result } from '$houdini';
+	import type { TeamWebhookDeliveries$result, WebhookDeliveryFields$data } from '$houdini';
 	import {
 		BodyLong,
+		BodyShort,
 		Button,
 		Heading,
 		Table,
@@ -15,7 +16,8 @@
 	import { ChevronDownIcon, ChevronUpIcon } from '#lib/icons/index.js';
 	import Pagination from '#lib/ui/Pagination.svelte';
 	import Time from '#lib/ui/Time.svelte';
-	import { SvelteSet } from 'svelte/reactivity';
+	import { SvelteMap } from 'svelte/reactivity';
+	import WebhookDeliveryDetails from './WebhookDeliveryDetails.svelte';
 	import { formatWebhookEventName } from './webhooks.js';
 
 	type Webhook = Extract<
@@ -25,34 +27,46 @@
 
 	let {
 		deliveries,
+		testDelivery,
 		fetching,
 		onprevious,
 		onnext
 	}: {
-		deliveries: Webhook['deliveries'];
+		deliveries: Webhook['deliveries'] | null;
+		testDelivery?: WebhookDeliveryFields$data | null;
 		fetching: boolean;
 		onprevious: () => void;
 		onnext: () => void;
 	} = $props();
 
 	const uid = $props.id();
-	const expanded = new SvelteSet<string>();
+	const expanded = new SvelteMap<string, boolean>();
+	const nodes = $derived(
+		testDelivery
+			? [testDelivery, ...(deliveries?.nodes ?? []).filter(({ id }) => id !== testDelivery.id)]
+			: (deliveries?.nodes ?? [])
+	);
+	const totalCount = $derived(
+		!testDelivery || deliveries?.nodes.some(({ id }) => id === testDelivery.id)
+			? deliveries?.pageInfo.totalCount
+			: undefined
+	);
+
+	function isExpanded(id: string) {
+		return expanded.get(id) ?? id === testDelivery?.id;
+	}
 
 	function toggle(id: string) {
-		if (expanded.has(id)) {
-			expanded.delete(id);
-		} else {
-			expanded.add(id);
-		}
+		expanded.set(id, !isExpanded(id));
 	}
 </script>
 
 <section aria-labelledby={`${uid}-heading`}>
 	<Heading as="h2" size="small" id={`${uid}-heading`} spacing>
-		Delivery log ({deliveries.pageInfo.totalCount})
+		Delivery log{totalCount === undefined ? '' : ` (${totalCount})`}
 	</Heading>
 
-	{#if deliveries.pageInfo.totalCount === 0}
+	{#if nodes.length === 0}
 		<BodyLong>No delivery attempts yet.</BodyLong>
 	{:else}
 		<div class="table-scroll">
@@ -60,25 +74,26 @@
 				<Thead>
 					<Tr>
 						<Th><span class="sr-only">Details</span></Th>
-						<Th>Time</Th>
+						<Th>Attempted at</Th>
 						<Th>Event type</Th>
 						<Th>HTTP status</Th>
 						<Th>Duration</Th>
 						<Th>Result</Th>
+						<Th>Current state</Th>
 					</Tr>
 				</Thead>
 				<Tbody>
-					{#each deliveries.nodes as delivery (delivery.id)}
+					{#each nodes as delivery (delivery.id)}
 						<Tr>
 							<Td>
 								<Button
 									size="small"
 									variant="tertiary"
-									icon={expanded.has(delivery.id) ? ChevronUpIcon : ChevronDownIcon}
-									aria-label={expanded.has(delivery.id)
+									icon={isExpanded(delivery.id) ? ChevronUpIcon : ChevronDownIcon}
+									aria-label={isExpanded(delivery.id)
 										? 'Collapse delivery details'
 										: 'Expand delivery details'}
-									aria-expanded={expanded.has(delivery.id)}
+									aria-expanded={isExpanded(delivery.id)}
 									aria-controls={`${uid}-${delivery.id}`}
 									onclick={() => toggle(delivery.id)}
 								/>
@@ -86,7 +101,10 @@
 							<Td><Time time={delivery.createdAt} distance /></Td>
 							<Td
 								><span title={delivery.eventType}>{formatWebhookEventName(delivery.eventType)}</span
-								></Td
+								>
+								{#if delivery.isTest}
+									<Tag size="small" variant="neutral">Test</Tag>
+								{/if}</Td
 							>
 							<Td>
 								<Tag size="small" variant={delivery.success ? 'success' : 'error'}>
@@ -99,26 +117,23 @@
 									{delivery.success ? 'Success' : 'Failed'}
 								</Tag>
 							</Td>
+							<Td>
+								{#if delivery.isTest}
+									{delivery.success ? 'Succeeded' : 'Failed'}
+									{#if !delivery.success}
+										<BodyShort size="small">No retries</BodyShort>
+									{/if}
+								{:else}
+									{delivery.deliveryState
+										? formatWebhookEventName(delivery.deliveryState.status)
+										: 'Not available'}
+								{/if}
+							</Td>
 						</Tr>
-						<Tr id={`${uid}-${delivery.id}`} hidden={!expanded.has(delivery.id)}>
-							<Td colspan={6}>
-								<div class="delivery-bodies">
-									<div>
-										<Heading as="h3" size="xsmall" spacing>Request body</Heading>
-										<pre>{delivery.requestBody}</pre>
-									</div>
-									<div>
-										<Heading as="h3" size="xsmall" spacing>Response body</Heading>
-										{#if delivery.responseBody}
-											<pre>{delivery.responseBody}</pre>
-										{:else}
-											<BodyLong>
-												{delivery.responseBody === null
-													? 'No response body.'
-													: 'Empty response body.'}
-											</BodyLong>
-										{/if}
-									</div>
+						<Tr id={`${uid}-${delivery.id}`} hidden={!isExpanded(delivery.id)}>
+							<Td colspan={7}>
+								<div class="delivery-content">
+									<WebhookDeliveryDetails {delivery} />
 								</div>
 							</Td>
 						</Tr>
@@ -129,26 +144,14 @@
 	{/if}
 
 	<Pagination
-		page={deliveries.pageInfo}
+		page={deliveries?.pageInfo}
 		{fetching}
 		loaders={{ loadPreviousPage: onprevious, loadNextPage: onnext }}
 	/>
 </section>
 
 <style>
-	.delivery-bodies {
-		display: grid;
-		gap: var(--ax-space-24);
+	.delivery-content {
 		padding: var(--ax-space-16);
-	}
-
-	pre {
-		margin: 0;
-		padding: var(--ax-space-16);
-		white-space: pre-wrap;
-		overflow-wrap: anywhere;
-		font-family: monospace;
-		background: var(--ax-neutral-100);
-		border-radius: var(--radius-md);
 	}
 </style>

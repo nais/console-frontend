@@ -44,6 +44,16 @@ const deleteMutation = graphql(`
 	}
 `);
 
+const testMutation = graphql(`
+	mutation TestTeamWebhook($input: TestWebhookInput!) {
+		testWebhook(input: $input) {
+			delivery {
+				...WebhookDeliveryFields @mask_disable
+			}
+		}
+	}
+`);
+
 async function requireManagementAccess(event: TeamEvent, webhookId?: string) {
 	const { WebhookManagementAccess } = await load_WebhookManagementAccess({
 		event,
@@ -179,4 +189,18 @@ export async function enableWebhook(event: WebhookEvent) {
 	}
 
 	return { success: true };
+}
+
+export async function testWebhook(event: WebhookEvent) {
+	await requireManagementAccess(event, event.params.webhookId);
+	const result = await testMutation.mutate({ input: { id: event.params.webhookId } }, { event });
+	const testDelivery = result.data?.testWebhook.delivery;
+	if (result.errors?.length) {
+		return fail(400, { errors: result.errors.map((e) => e.message), testDelivery });
+	}
+	if (!testDelivery) {
+		return fail(500, { errors: ['Failed to send a webhook test event.'] });
+	}
+
+	return { testDelivery };
 }

@@ -65,7 +65,7 @@
 								<Detail>Created <Time time={webhook.createdAt} distance /></Detail>
 							</div>
 							<div class="delivery-summary">
-								<Detail>Last delivery</Detail>
+								<Detail>{latestDelivery?.isTest ? 'Last delivery (test)' : 'Last delivery'}</Detail>
 								{#if latestDelivery}
 									<div class="delivery-result">
 										<Tag size="small" variant={latestDelivery.success ? 'success' : 'error'}>

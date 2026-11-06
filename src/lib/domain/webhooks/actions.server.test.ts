@@ -1,5 +1,11 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { createWebhook, deleteWebhook, enableWebhook, updateWebhook } from './actions.server.js';
+import {
+	createWebhook,
+	deleteWebhook,
+	enableWebhook,
+	testWebhook,
+	updateWebhook
+} from './actions.server.js';
 
 const mocks = vi.hoisted(() => ({
 	owner: true,
@@ -13,6 +19,7 @@ const mocks = vi.hoisted(() => ({
 	create: vi.fn(),
 	update: vi.fn(),
 	delete: vi.fn(),
+	test: vi.fn(),
 	access: vi.fn(),
 	settings: vi.fn()
 }));
@@ -25,7 +32,9 @@ vi.mock('$houdini', async () => {
 				? mocks.create
 				: query.includes('DeleteTeamWebhook')
 					? mocks.delete
-					: mocks.update
+					: query.includes('TestTeamWebhook')
+						? mocks.test
+						: mocks.update
 		}),
 		load_WebhookManagementAccess: mocks.access.mockImplementation(async () => ({
 			WebhookManagementAccess: readable({
@@ -43,6 +52,7 @@ vi.mock('$houdini', async () => {
 					node: {
 						__typename: mocks.typename,
 						id: 'webhook-id',
+						enabled: false,
 						teamSlug: mocks.teamSlug
 					}
 				}
@@ -94,10 +104,16 @@ beforeEach(() => {
 		errors: mocks.mutationErrors,
 		data: mocks.missingData ? null : { deleteWebhook: { webhookID: 'webhook-id' } }
 	}));
+	mocks.test.mockImplementation(async () => ({
+		errors: mocks.mutationErrors,
+		data: mocks.missingData
+			? null
+			: { testWebhook: { delivery: { id: 'test-delivery-id', isTest: true, success: false } } }
+	}));
 });
 
 describe('team webhook actions', () => {
-	it.each([createWebhook, updateWebhook, deleteWebhook, enableWebhook])(
+	it.each([createWebhook, updateWebhook, deleteWebhook, enableWebhook, testWebhook])(
 		'rejects direct POSTs from a non-owner without global admin access (%s)',
 		async (action) => {
 			mocks.owner = false;
@@ -105,6 +121,7 @@ describe('team webhook actions', () => {
 			expect(mocks.create).not.toHaveBeenCalled();
 			expect(mocks.update).not.toHaveBeenCalled();
 			expect(mocks.delete).not.toHaveBeenCalled();
+			expect(mocks.test).not.toHaveBeenCalled();
 		}
 	);
 
@@ -127,14 +144,19 @@ describe('team webhook actions', () => {
 			{ event: input }
 		);
 		expect(mocks.update).not.toHaveBeenCalled();
+		expect(mocks.test).not.toHaveBeenCalled();
 	});
 
-	it.each([createWebhook, updateWebhook, deleteWebhook, enableWebhook])(
+	it.each([createWebhook, updateWebhook, deleteWebhook, enableWebhook, testWebhook])(
 		'allows global administrators who are not team owners (%s)',
 		async (action) => {
 			mocks.owner = false;
 			mocks.admin = true;
-			if (action === enableWebhook) {
+			if (action === testWebhook) {
+				await expect(action(event())).resolves.toMatchObject({
+					testDelivery: { id: 'test-delivery-id' }
+				});
+			} else if (action === enableWebhook) {
 				await expect(action(event({ secret: 'test-signing-key' }))).resolves.toEqual({
 					success: true
 				});
@@ -155,25 +177,29 @@ describe('team webhook actions', () => {
 		expect(mocks.create).not.toHaveBeenCalled();
 	});
 
-	it.each([updateWebhook, deleteWebhook, enableWebhook])(
+	it.each([updateWebhook, deleteWebhook, enableWebhook, testWebhook])(
 		'rejects webhooks that belong to a different team (%s)',
 		async (action) => {
 			mocks.teamSlug = 'another-team';
 			await expect(action(event())).rejects.toMatchObject({ status: 404 });
 			expect(mocks.update).not.toHaveBeenCalled();
 			expect(mocks.delete).not.toHaveBeenCalled();
+			expect(mocks.test).not.toHaveBeenCalled();
 		}
 	);
 
-	it('rejects global webhooks even for global administrators', async () => {
-		mocks.admin = true;
-		mocks.teamSlug = null;
-		await expect(updateWebhook(event())).rejects.toMatchObject({ status: 404 });
-	});
+	it.each([updateWebhook, testWebhook])(
+		'rejects global webhooks even for global administrators (%s)',
+		async (action) => {
+			mocks.admin = true;
+			mocks.teamSlug = null;
+			await expect(action(event())).rejects.toMatchObject({ status: 404 });
+		}
+	);
 
-	it('rejects IDs of other node types', async () => {
+	it.each([updateWebhook, testWebhook])('rejects IDs of other node types (%s)', async (action) => {
 		mocks.typename = 'Application';
-		await expect(updateWebhook(event())).rejects.toMatchObject({ status: 404 });
+		await expect(action(event())).rejects.toMatchObject({ status: 404 });
 	});
 
 	it('does not continue when permissions cannot be verified', async () => {
@@ -186,6 +212,15 @@ describe('team webhook actions', () => {
 		mocks.settingsErrors = [{ message: 'API unavailable' }];
 		await expect(deleteWebhook(event())).rejects.toMatchObject({ status: 500 });
 		expect(mocks.delete).not.toHaveBeenCalled();
+	});
+
+	it('does not send tests when fresh permission or ownership checks fail', async () => {
+		mocks.accessErrors = [{ message: 'API unavailable' }];
+		await expect(testWebhook(event())).rejects.toMatchObject({ status: 500 });
+		mocks.accessErrors = null;
+		mocks.settingsErrors = [{ message: 'API unavailable' }];
+		await expect(testWebhook(event())).rejects.toMatchObject({ status: 500 });
+		expect(mocks.test).not.toHaveBeenCalled();
 	});
 
 	it('keeps the existing secret when edit leaves it blank and can disable the webhook', async () => {
@@ -334,7 +369,7 @@ describe('team webhook actions', () => {
 		expect(JSON.stringify(result)).not.toContain('test-signing-key');
 	});
 
-	it.each([createWebhook, updateWebhook, deleteWebhook, enableWebhook])(
+	it.each([createWebhook, updateWebhook, deleteWebhook, enableWebhook, testWebhook])(
 		'does not report success when the API returns no payload (%s)',
 		async (action) => {
 			mocks.missingData = true;
@@ -356,6 +391,51 @@ describe('team webhook actions', () => {
 		expect(await enableWebhook(event())).toEqual({ success: true });
 		expect(mocks.update.mock.calls[0][0]).toEqual({
 			input: { id: 'webhook-id', enabled: true }
+		});
+	});
+
+	it('returns a failed test attempt for a disabled webhook without changing its configuration', async () => {
+		const input = event({ id: 'another-webhook' });
+		await expect(testWebhook(input)).resolves.toEqual({
+			testDelivery: { id: 'test-delivery-id', isTest: true, success: false }
+		});
+		expect(mocks.test).toHaveBeenCalledExactlyOnceWith(
+			{ input: { id: 'webhook-id' } },
+			{ event: input }
+		);
+		expect(mocks.create).not.toHaveBeenCalled();
+		expect(mocks.update).not.toHaveBeenCalled();
+	});
+
+	it('returns successful test attempts', async () => {
+		mocks.test.mockResolvedValue({
+			data: { testWebhook: { delivery: { id: 'test-delivery-id', isTest: true, success: true } } }
+		});
+		await expect(testWebhook(event())).resolves.toEqual({
+			testDelivery: { id: 'test-delivery-id', isTest: true, success: true }
+		});
+	});
+
+	it('surfaces rate-limit errors without retrying the mutation', async () => {
+		mocks.test.mockResolvedValue({
+			errors: [{ message: 'Wait 30 seconds before sending another test.' }],
+			data: null
+		});
+		await expect(testWebhook(event())).resolves.toMatchObject({
+			status: 400,
+			data: { errors: ['Wait 30 seconds before sending another test.'] }
+		});
+		expect(mocks.test).toHaveBeenCalledOnce();
+	});
+
+	it('preserves any returned attempt alongside GraphQL errors', async () => {
+		mocks.mutationErrors = [{ message: 'Additional diagnostic error' }];
+		await expect(testWebhook(event())).resolves.toMatchObject({
+			status: 400,
+			data: {
+				errors: ['Additional diagnostic error'],
+				testDelivery: { id: 'test-delivery-id', success: false }
+			}
 		});
 	});
 });

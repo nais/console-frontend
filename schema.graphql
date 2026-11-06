@@ -2776,7 +2776,9 @@ input CreateWebhookInput {
   """
   name: String!
 
-  """The secret used for HMAC-SHA256 signing of webhook payloads."""
+  """
+  The required secret used for HMAC-SHA256 signing of webhook payloads. Must contain at least 8 characters.
+  """
   secret: String!
 
   """
@@ -5507,6 +5509,7 @@ type Mutation {
   The owning team can select source teams without permission from those teams, or subscribe to all teams.
   By default, a team-owned webhook receives only its own team's events.
   If no owner team slug is provided, the webhook is global and receives all events (admin only).
+  Creation does not send an HTTP request; use testWebhook to check the endpoint.
   """
   createWebhook(input: CreateWebhookInput!): CreateWebhookPayload!
 
@@ -5634,6 +5637,13 @@ type Mutation {
 
   """Start maintenance updates for a Valkey instance."""
   startValkeyMaintenance(input: StartValkeyMaintenanceInput!): StartValkeyMaintenancePayload
+
+  """
+  Send a signed synthetic event to an existing webhook and return the recorded result.
+  Requires permission to update the webhook. Allowed even when the webhook is disabled.
+  Limited to one test per subscription every 30 seconds. Tests are not retried and do not affect automatic disabling.
+  """
+  testWebhook(input: TestWebhookInput!): TestWebhookPayload!
 
   """Trigger a job"""
   triggerJob(input: TriggerJobInput!): TriggerJobPayload!
@@ -11457,6 +11467,18 @@ input TenantVulnerabilitySummaryFilter {
   teamScope: TeamScopeInput
 }
 
+"""Input for sending a webhook test event."""
+input TestWebhookInput {
+  """The ID of the webhook subscription to test."""
+  id: ID!
+}
+
+"""The result of a single manual webhook test."""
+type TestWebhookPayload {
+  """The recorded attempt, including failures."""
+  delivery: WebhookDelivery!
+}
+
 """
 Time is a string in [RFC 3339](https://rfc-editor.org/rfc/rfc3339.html) format, with sub-second precision added if present.
 """
@@ -12262,7 +12284,7 @@ input UpdateWebhookInput {
   name: String
 
   """
-  The replacement signing secret. Omit or pass null to keep the current secret. The stored secret is never returned.
+  The replacement signing secret, containing at least 8 characters. Omit or pass null to keep the current secret. The stored secret is never returned.
   """
   secret: String
 
@@ -13342,8 +13364,16 @@ type WebhookDelivery implements Node {
   """When the delivery was attempted."""
   createdAt: Time!
 
+  """
+  The current state shared by all attempts for this event delivery. Null for manual tests or when queue state has expired.
+  """
+  deliveryState: WebhookDeliveryState
+
   """How long the delivery took in milliseconds."""
   durationMs: Int!
+
+  """A description of a request or response-read failure, if any."""
+  errorMessage: String
 
   """The event type that triggered this delivery."""
   eventType: String!
@@ -13351,13 +13381,31 @@ type WebhookDelivery implements Node {
   """Globally unique ID of the delivery."""
   id: ID!
 
+  """
+  Whether this is a user-triggered test event. Tests make one attempt and never change subscription health.
+  """
+  isTest: Boolean!
+
   """The CloudEvents JSON payload that was sent."""
   requestBody: String!
 
   """
-  The response body returned by the webhook endpoint. Null if the request failed.
+  Recorded diagnostic request headers. Credentials and unapproved custom headers are omitted.
+  """
+  requestHeaders: [WebhookHeader!]!
+
+  """
+  The response body as UTF-8 text. Null when no response was received or the body is not valid UTF-8.
   """
   responseBody: String
+
+  """Whether the recorded response body was truncated to the 10 KiB limit."""
+  responseBodyTruncated: Boolean!
+
+  """
+  Recorded diagnostic response headers. Credentials and unapproved custom headers are omitted.
+  """
+  responseHeaders: [WebhookHeader!]!
 
   """
   The HTTP status code returned by the webhook endpoint. Null if the request failed before receiving a response.
@@ -13389,6 +13437,37 @@ type WebhookDeliveryEdge {
   node: WebhookDelivery!
 }
 
+"""
+Current processing state of an event delivery, shared across its historical attempts.
+"""
+type WebhookDeliveryState {
+  """The number of recorded HTTP attempts for this event delivery."""
+  attemptCount: Int!
+
+  """
+  The next scheduled retry. Null unless a retry is pending and the subscription is enabled.
+  """
+  nextRetryAt: Time
+
+  """The current processing status."""
+  status: WebhookDeliveryStatus!
+}
+
+"""Processing status of an event delivery."""
+enum WebhookDeliveryStatus {
+  """The event was delivered successfully."""
+  COMPLETED
+
+  """The retry budget was exhausted."""
+  FAILED
+
+  """Waiting for an attempt or a scheduled retry."""
+  PENDING
+
+  """An attempt is currently being processed."""
+  PROCESSING
+}
+
 """Metadata about a webhook-subscribable event type."""
 type WebhookEventTypeInfo {
   """
@@ -13409,6 +13488,15 @@ type WebhookEventTypeInfo {
   The identifier to use in webhook subscription eventTypes (e.g. 'TEAM_MEMBER_ADDED').
   """
   type: String!
+}
+
+"""A recorded HTTP header and its values."""
+type WebhookHeader {
+  """The HTTP header name."""
+  name: String!
+
+  """All recorded values for this header."""
+  values: [String!]!
 }
 
 """
