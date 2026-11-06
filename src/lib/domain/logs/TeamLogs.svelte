@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Alert } from '#lib/shadcn/ui/index.js';
+	import { BodyShort } from '#lib/shadcn/ui/index.js';
 	import ExternalLink from '#lib/ui/ExternalLink.svelte';
 
 	const {
@@ -18,12 +18,12 @@
 	});
 </script>
 
-<Alert variant="info">
-	View Team Logs for this workload in Google Cloud Logs Explorer. Requires configured log forwarding
-	from the workload; access alone does not confirm that logs are being sent.
+<div class="detail-actions">
 	{#if logsURL}
 		<ExternalLink href={logsURL}>Open Team Logs</ExternalLink>
 	{:else}
-		A direct link is unavailable because this environment has no GCP project ID.
+		<BodyShort size="small"
+			>A direct link is unavailable because this environment has no GCP project ID.</BodyShort
+		>
 	{/if}
-</Alert>
+</div>

@@ -168,7 +168,7 @@ describe.each(['application', 'job'] as const)('%s log viewer fallback', (kind) 
 			);
 			expect(body).toContain('Open Team Logs');
 			expect(body).toContain('target="_blank" rel="noopener noreferrer"');
-			expect(body).toContain('Requires configured log forwarding');
+			expect(body).not.toContain('Requires configured log forwarding');
 			expect(body).not.toContain('This workload uses Team Logs');
 			expect(body).not.toContain('Clear logs');
 			if (loki) {
@@ -218,9 +218,24 @@ it('encodes the Team Logs project and query values without allowing extra URL pa
 	const url = new URL(href!);
 	expect([...url.searchParams]).toEqual([['project', 'project&other=value']]);
 	expect(url.hash).toBe('');
+	expect(body).toContain('class="detail-actions"');
+	expect(body).not.toContain('role="status"');
+	expect(body).not.toContain('role="alert"');
+	expect(body).not.toContain('sh-ui-alert');
 	expect(decodeURIComponent(url.pathname.split(';query=')[1])).toBe(
 		'resource.labels.namespace_name="team \\"one\\""\nresource.labels.container_name="app\\" OR severity>=ERROR\\n;query=other/#"'
 	);
+});
+
+it('shows missing Team Logs project information as plain text, not an alert', async () => {
+	const { body } = await render(TeamLogs, {
+		props: { projectID: null, team: 'team', workload: 'app' }
+	});
+	expect(body).toContain('this environment has no GCP project ID');
+	expect(body).not.toContain('<a ');
+	expect(body).not.toContain('role="status"');
+	expect(body).not.toContain('role="alert"');
+	expect(body).not.toContain('sh-ui-alert');
 });
 
 it('preserves application instance deep links', async () => {
