@@ -12,8 +12,8 @@
 	import Pagination from '#lib/ui/Pagination.svelte';
 	import SurfaceCard from '#lib/ui/SurfaceCard.svelte';
 	import { changeParams } from '#lib/utils/searchparams.js';
-	import { BodyShort, TextField, ToggleGroup, ToggleGroupItem } from '@nais/ds-svelte-community';
-	import { FunnelIcon } from '@nais/ds-svelte-community/icons';
+	import { BodyShort, TextField, ToggleGroup, ToggleGroupItem } from '#lib/shadcn/ui/index.js';
+	import { FunnelIcon } from '#lib/icons/index.js';
 	import type { PageProps } from './$types';
 	import { parseOslo } from './osloTime';
 
@@ -24,6 +24,7 @@
 	let toInput = $derived(data.dateRange.toInput);
 	let customRangePreview = $state(false);
 	let customRangeOpen = $derived(data.dateRange.custom || customRangePreview);
+	let myTeams = $derived(page.url.searchParams.get('myTeams') === 'true');
 
 	afterNavigate(() => {
 		customRangePreview = false;
@@ -41,6 +42,17 @@
 	let selectedEnvironments: string[] = $derived(
 		page.url.searchParams.get('environments')?.split(',').filter(Boolean) ?? []
 	);
+
+	function handleTeamScopeChange(value: string) {
+		changeParams(
+			{
+				myTeams: value === 'mine' ? 'true' : '',
+				after: '',
+				before: ''
+			},
+			{ noScroll: true }
+		);
+	}
 
 	function handleActivityTypesChange(selected: ActivityLogActivityType$options[]) {
 		changeParams(
@@ -158,7 +170,7 @@
 									aria-expanded={filtersOpen}
 									onclick={() => (filtersOpen = !filtersOpen)}
 								>
-									<FunnelIcon aria-hidden="true" style="font-size: 1rem" />
+									<FunnelIcon aria-hidden="true" style="font-size: var(--ax-font-size-medium)" />
 									Filters
 								</button>
 							{/if}
@@ -202,6 +214,15 @@
 					<CollapsibleSidebar bind:open={filtersOpen}>
 						<SurfaceCard title="Filters">
 							<ListFilters>
+								<ToggleGroup
+									label="Teams"
+									size="small"
+									value={myTeams ? 'mine' : 'all'}
+									onchange={handleTeamScopeChange}
+								>
+									<ToggleGroupItem value="all">All teams</ToggleGroupItem>
+									<ToggleGroupItem value="mine">Your teams</ToggleGroupItem>
+								</ToggleGroup>
 								<ToggleGroup
 									label="Time range"
 									size="small"

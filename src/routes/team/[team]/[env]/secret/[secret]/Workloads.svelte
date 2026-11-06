@@ -2,7 +2,7 @@
 	import { type Secret$result } from '$houdini';
 	import WorkloadLink from '#lib/domain/workload/WorkloadLink.svelte';
 	import SurfaceCard from '#lib/ui/SurfaceCard.svelte';
-	import { Alert } from '@nais/ds-svelte-community';
+	import { Alert } from '#lib/shadcn/ui/index.js';
 
 	interface Props {
 		workloads: Secret$result['team']['environment']['secret']['workloads'];
@@ -29,6 +29,6 @@
 	ul {
 		list-style: none;
 		margin: 0;
-		padding: 0 0 0 1rem;
+		padding: 0 0 0 var(--ax-space-16);
 	}
 </style>

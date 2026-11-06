@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { Button, TextField } from '@nais/ds-svelte-community';
-	import { PlusIcon, TrashIcon } from '@nais/ds-svelte-community/icons';
+	import { Button, TextField } from '#lib/shadcn/ui/index.js';
+	import { PlusIcon, TrashIcon } from '#lib/icons/index.js';
 	import { duplicateLabelKeys, rowKeyError, rowValueError, type LabelRow } from './labels';
 
 	let { rows = $bindable() }: { rows: LabelRow[] } = $props();

@@ -3,7 +3,7 @@
 	import { goto } from '$app/navigation';
 	import { page } from '$app/state';
 	import { isPossiblyInModal } from '#lib/ui/PageModal.svelte';
-	import { Alert, BodyLong, Button, ErrorMessage, TextField } from '@nais/ds-svelte-community';
+	import { Alert, BodyLong, Button, ErrorMessage, TextField } from '#lib/shadcn/ui/index.js';
 	import { tick } from 'svelte';
 	import type { PageProps } from './$types';
 
@@ -53,7 +53,7 @@
 			};
 		}}
 	>
-		<BodyLong style="margin-bottom: 1rem;">
+		<BodyLong style="margin-bottom: var(--ax-space-16);">
 			Set the number of replicas for <strong>{page.params.app}</strong> in
 			<strong>{page.params.env}</strong>.
 		</BodyLong>
@@ -104,12 +104,12 @@
 		width: 600px;
 	}
 
-	form :global(.aksel-form-field) {
+	form :global(:is(.sh-form-field, .sh-select-field)) {
 		max-width: 400px;
 	}
 
 	form :global(> *) {
-		margin-bottom: 1rem;
+		margin-bottom: var(--ax-space-16);
 	}
 
 	.button-row {

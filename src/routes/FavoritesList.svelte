@@ -1,42 +1,69 @@
 <script lang="ts">
 	import FavoritesListItem from '#lib/domain/list-items/FavoritesListItem.svelte';
+	import { Badge, Heading } from '#lib/shadcn/ui/index.js';
 	import { favorites } from '#lib/stores/favorites.svelte.js';
 	import SortableList from '#lib/ui/SortableList.svelte';
-	import { BodyLong, BodyShort, Heading } from '@nais/ds-svelte-community';
-	import { StarIcon } from '@nais/ds-svelte-community/icons';
+	import { StarIcon } from '#lib/icons/index.js';
+
+	let favItems = $derived(favorites.getFavorites().filter(Boolean));
+	const uid = $props.id();
 </script>
 
-<div class="favorites-list">
-	<div class="header">
-		<div>
-			<Heading as="h2" size="large" spacing>My Favorites</Heading>
-			<BodyShort>Favorites are also available in the search modal.</BodyShort>
+<section aria-labelledby="{uid}-heading" class="favorites">
+	<div class="favorites-header">
+		<div class="favorites-title">
+			<StarIcon aria-hidden="true" />
+			<Heading as="h2" size="medium" id="{uid}-heading">Pinned Favorites</Heading>
+			{#if favItems.length}<Badge variant="secondary">{favItems.length}</Badge>{/if}
 		</div>
 	</div>
-
-	<SortableList
-		items={favorites.getFavorites()}
-		onReorder={(newOrder) => favorites.setFavorites(newOrder)}
-	>
-		{#each favorites.getFavorites().filter(Boolean) as fav (fav)}
-			<FavoritesListItem path={fav} />
-		{:else}
-			<BodyLong>
-				Click the <StarIcon /> icon on any page to add it to your favorites. You haven’t added any yet.
-			</BodyLong>
-		{/each}
-	</SortableList>
-</div>
+	{#if favItems.length}
+		<div class="favorites-card">
+			<SortableList
+				items={favorites.getFavorites()}
+				onReorder={(newOrder) => favorites.setFavorites(newOrder)}
+			>
+				{#each favItems as fav (fav)}<FavoritesListItem path={fav} />{/each}
+			</SortableList>
+		</div>
+	{:else}
+		<p class="favorites-empty">
+			No pinned favorites yet. Click the star icon in any page header to pin workloads, databases,
+			or teams here.
+		</p>
+	{/if}
+</section>
 
 <style>
-	.favorites-list {
-		margin-top: var(--spacing-layout);
-	}
-	.header {
+	.favorites {
 		display: flex;
-		justify-content: space-between;
+		flex-direction: column;
+		gap: var(--ax-space-12);
+	}
+	.favorites-card {
+		background: var(--card);
+		border: var(--sh-border-width) solid var(--border);
+		border-radius: var(--radius);
+		box-shadow: var(--sh-shadow-xs);
+		overflow: hidden;
+	}
+	.favorites-header {
+		display: flex;
 		align-items: center;
-		padding-bottom: var(--ax-space-16);
-		border-bottom: 1px solid var(--ax-border-neutral-subtleA);
+		min-height: var(--ax-space-28);
+	}
+	.favorites-title {
+		display: flex;
+		align-items: center;
+		gap: var(--ax-space-8);
+		flex-wrap: wrap;
+	}
+	.favorites-title :global(svg) {
+		color: var(--ax-text-neutral);
+	}
+	.favorites-empty {
+		margin: 0;
+		color: var(--ax-text-neutral);
+		font-size: var(--ax-font-size-small);
 	}
 </style>

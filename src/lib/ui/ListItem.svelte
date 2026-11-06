@@ -23,7 +23,7 @@
 
 <style>
 	.list-item {
-		background: var(--ax-bg-default);
+		background: var(--card);
 		display: grid;
 		grid-template-columns: 1fr;
 		grid-auto-flow: column;
@@ -31,10 +31,11 @@
 		column-gap: var(--ax-space-16);
 		min-width: 0;
 		max-width: 100%;
-		padding: var(--ax-space-12) var(--ax-space-24);
-		color: inherit;
+		padding: var(--ax-space-12) var(--ax-space-20);
+		color: var(--card-foreground);
 		text-decoration: none;
-		border-bottom: 1px solid var(--ax-border-neutral-subtleA);
+		border-bottom: var(--sh-border-width) solid var(--border-subtle);
+		transition: background-color 120ms ease;
 	}
 
 	.list-item > :global(*) {
@@ -62,17 +63,14 @@
 			box-shadow 120ms ease;
 	}
 
-	.interactive:hover {
-		background: color-mix(in srgb, var(--surface-accent-color) 6%, var(--ax-bg-default));
-	}
-
-	a.list-item:not(.interactive):hover {
-		background: var(--ax-neutral-200);
+	.interactive:hover,
+	a.list-item:hover {
+		background: color-mix(in srgb, var(--primary) 5%, var(--card));
 	}
 
 	a.list-item:focus-visible {
-		outline: 2px solid var(--ax-border-focus);
-		outline-offset: -2px;
+		outline: var(--ax-space-2) solid var(--ring);
+		outline-offset: calc(-1 * var(--ax-space-2));
 	}
 
 	.animatable {
@@ -83,8 +81,8 @@
 	}
 
 	.highlight {
-		background-color: var(--ax-accent-400);
-		padding-left: 0.5rem;
+		background-color: var(--brand-muted);
+		padding-left: var(--ax-space-8);
 		opacity: 1;
 	}
 </style>

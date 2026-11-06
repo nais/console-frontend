@@ -5,13 +5,8 @@
 	import IconLabel from '#lib/ui/IconLabel.svelte';
 	import Collection from '#lib/ui/Collection.svelte';
 	import TooltipAlignHack from '#lib/ui/TooltipAlignHack.svelte';
-	import { BodyLong, Heading, Tag } from '@nais/ds-svelte-community';
-	import {
-		ArrowLeftIcon,
-		ArrowRightIcon,
-		GlobeIcon,
-		PackageIcon
-	} from '@nais/ds-svelte-community/icons';
+	import { BodyLong, Heading, Tag } from '#lib/shadcn/ui/index.js';
+	import { ArrowLeftIcon, ArrowRightIcon, GlobeIcon, PackageIcon } from '#lib/icons/index.js';
 
 	interface Props {
 		workload: NetworkPolicy;
@@ -226,11 +221,12 @@
 	}
 
 	.rule {
-		display: flex;
+		display: grid;
+		grid-template-columns: auto minmax(0, 1fr) auto;
 		align-items: center;
-		gap: var(--ax-space-12);
-		padding: var(--ax-space-6) 0;
-		border-bottom: 1px solid var(--ax-border-neutral-subtleA);
+		gap: var(--ax-space-16);
+		padding: var(--ax-space-12) var(--ax-space-20);
+		border-bottom: var(--sh-border-width) solid var(--ax-border-neutral-subtleA);
 		font-size: var(--ax-font-size-small);
 		min-width: 0;
 		transition: background-color 120ms ease;
@@ -251,7 +247,7 @@
 		color: var(--ax-text-neutral-subtle);
 		font-size: var(--ax-font-size-small);
 		flex-shrink: 0;
-		width: 3.5rem;
+		width: var(--ax-space-56);
 	}
 
 	.direction.inbound {
@@ -263,12 +259,12 @@
 	}
 
 	.target {
-		flex: 1;
 		min-width: 0;
+		overflow-wrap: anywhere;
 	}
 
 	.target :global(.icon-label) {
-		font-size: 1.25rem;
+		font-size: var(--ax-font-size-large);
 	}
 
 	.target :global(*) {
@@ -276,8 +272,7 @@
 	}
 
 	.status {
-		flex-shrink: 0;
-		margin-left: auto;
+		justify-self: end;
 	}
 
 	.wildcard {
@@ -286,5 +281,19 @@
 
 	.empty-state {
 		padding: var(--ax-space-12) var(--ax-space-24);
+	}
+
+	@container (max-width: 500px) {
+		.rule {
+			grid-template-columns: auto minmax(0, 1fr);
+			column-gap: var(--ax-space-12);
+			row-gap: var(--ax-space-8);
+			padding-inline: var(--ax-space-16);
+		}
+
+		.status {
+			grid-column: 2;
+			justify-self: start;
+		}
 	}
 </style>

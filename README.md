@@ -14,7 +14,25 @@ pnpm run check # Check for various issues
 pnpm run lint # Lint the code
 pnpm run format # Format the code (Or use a Prettier extension in  your editor)
 pnpm run test # Run tests with Vitest
+pnpm exec playwright install chromium # Install the browser for interaction tests
+pnpm run test:browser # Run Playwright interaction tests
 ```
+
+Browser tests start an isolated Vite server on port 4175 and do not require the API proxy.
+ActionMenu uses Bits UI for menu behavior while the local wrappers own its styling and
+native link/action callbacks. Its browser tests cover keyboard navigation, focus,
+disabled items, radio groups, dialogs, themes and constrained viewports.
+Modal and the filter drawer use Bits UI Dialog for focus, dismissal and scroll locking.
+Modal renders a portaled element with `role="dialog"`, not a native `<dialog>`. Its
+content stays mounted while closed, and `onBeforeClose` guards user dismissal without
+blocking programmatic changes to `open`. Select stays native to preserve browser and
+mobile selection, form submission and typed value bindings. Browser tests cover these
+contracts, nested dialogs, guarded dismissal and drawer breakpoints.
+The application shell provides a keyboard-visible **Skip to content** link to its single main landmark.
+
+To run the home SSR/hydration network regression against an already-running console and API proxy,
+use `CONSOLE_E2E_URL=http://127.0.0.1:5173 pnpm run test:browser home-network`. This runs only the live
+home test, without starting the isolated fixture server, and requires a user with team memberships.
 
 ### Mobile responsiveness
 
@@ -29,12 +47,15 @@ When changing layouts, lists, tables, or chart-heavy pages, validate in responsi
 
 ### CSS Architecture
 
-Styles use `@layer` ordering and design tokens from `@nais/ds-svelte-community`:
+Styles use `@layer` ordering and shared tokens in [shadcn.css](src/styles/shadcn.css) and [app.css](src/styles/app.css):
 
 - **Tokens**: Use `--ax-space-*`, `--ax-radius-*`, `--ax-text-*` variables — never hardcode spacing, radii, or colors
+- **Exact replacements**: Mechanical replacements must use existing, property-appropriate tokens of the same value. Do not round sizes or use spacing tokens for typography. Unmatched values, sizing changes, and new semantic tokens require design review.
+- **Dimensions**: Use semantic size tokens for avatars, icons, and controls, not spacing tokens. Keep reviewed component-specific layout constraints as documented exceptions instead of adding single-use variables.
+- **Readability**: Use shared typography tokens instead of page-specific small sizes. Body/table text is 15–16px, secondary text and controls 14px, and compact labels 12–13px. Keep text contrast at least 4.5:1 on its actual surface in both themes; `tests/browser/readability.spec.ts` covers shared status colours, tables, inputs, and navigation.
 - **Utility classes**: `src/styles/app.css` provides `.layout-two-column`, `.layout-sidebar`, `.table-scroll`, `.detail-actions`, `.loading-centered` for common patterns
 - **LayerChart theming**: `src/styles/layerchart.css` maps chart library variables to design tokens. The `.dark` block must mirror the `:root` declarations (tokens resolve differently per scope)
-- **Validation**: Run `pnpm run lint` — ESLint includes custom rules for missing CSS variables and unused GraphQL files
+- **Validation**: Run `pnpm run lint` — ESLint checks missing CSS variables, exact existing token matches for literal `rem` spacing/typography/radii, and unused GraphQL files. Dimensions require semantic review; unmatched lengths and layout constraints are not rejected by the exact-match rule.
 
 #### AI-Assisted Development
 

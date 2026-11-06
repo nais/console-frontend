@@ -31,8 +31,8 @@
 		HelpText,
 		Loader,
 		Search
-	} from '@nais/ds-svelte-community';
-	import { MagnifyingGlassIcon } from '@nais/ds-svelte-community/icons';
+	} from '#lib/shadcn/ui/index.js';
+	import { MagnifyingGlassIcon } from '#lib/icons/index.js';
 	import type { PageProps } from './$types';
 
 	let { data }: PageProps = $props();
@@ -87,7 +87,7 @@
 				<Loader size="3xlarge" />
 			</div>
 		{:else if isNotFoundError($CVEDetails.errors)}
-			<Alert variant="warning" size="medium" style="margin-bottom: 1rem;">
+			<Alert variant="warning" size="medium" style="margin-bottom: var(--ax-space-16);">
 				Vulnerability not found. The ID you entered doesn't exist in our database.
 			</Alert>
 		{:else if $CVEDetails.data}
@@ -573,6 +573,6 @@
 		word-break: break-all;
 	}
 	code {
-		font-size: 0.9rem;
+		font-size: var(--ax-font-size-small);
 	}
 </style>

@@ -10,18 +10,19 @@
 	import CollapsibleSidebar from '#lib/ui/CollapsibleSidebar.svelte';
 	import ExternalLink from '#lib/ui/ExternalLink.svelte';
 	import Collection from '#lib/ui/Collection.svelte';
+	import EmptyState from '#lib/ui/EmptyState.svelte';
 	import ListFilters from '#lib/ui/ListFilters.svelte';
 	import ListItem from '#lib/ui/ListItem.svelte';
 	import Pagination from '#lib/ui/Pagination.svelte';
 	import SurfaceCard from '#lib/ui/SurfaceCard.svelte';
 	import { changeParams } from '#lib/utils/searchparams.js';
-	import { Button, Tag } from '@nais/ds-svelte-community';
+	import { Button, Tag } from '#lib/shadcn/ui/index.js';
 	import {
 		ChevronRightIcon,
 		ClockDashedIcon,
 		ExternalLinkIcon,
 		FunnelIcon
-	} from '@nais/ds-svelte-community/icons';
+	} from '#lib/icons/index.js';
 	import type { PageProps } from './$types';
 	import PrometheusAlarmDetail from './PrometheusAlarmDetail.svelte';
 
@@ -159,7 +160,7 @@
 					aria-expanded={filtersOpen}
 					onclick={() => (filtersOpen = !filtersOpen)}
 				>
-					<FunnelIcon aria-hidden="true" style="font-size: 1rem" />
+					<FunnelIcon aria-hidden="true" style="font-size: var(--ax-font-size-medium)" />
 					Filters
 				</button>
 			{/snippet}
@@ -247,14 +248,14 @@
 					</details>
 				{/each}
 			{:else if totalAlerts === 0}
-				<ListItem>
-					<p>
-						No alerts found. Alerts notify you when something needs your attention.
-						<ExternalLink href={docURL('/observability/alerting')}
-							>Learn more about alerts and how to get started.</ExternalLink
-						>
-					</p>
-				</ListItem>
+				<EmptyState
+					title="No alerts found."
+					description="Alerts notify you when something needs your attention."
+				>
+					<ExternalLink href={docURL('/observability/alerting')}
+						>Learn more about alerts and how to get started.</ExternalLink
+					>
+				</EmptyState>
 			{:else}
 				<ListItem>
 					<p>No alerts match the current filters. Try adjusting your filters.</p>
@@ -348,7 +349,7 @@
 		gap: var(--ax-space-8);
 		min-width: 0;
 	}
-	.name-group :global(.aksel-tag) {
+	.name-group :global(.sh-ui-tag) {
 		white-space: nowrap;
 		flex-shrink: 0;
 	}

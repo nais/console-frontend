@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { MagnifyingGlassIcon } from '@nais/ds-svelte-community/icons';
+	import { MagnifyingGlassIcon } from '#lib/icons/index.js';
 	const inputId = $props.id();
 
 	const {
@@ -86,23 +86,27 @@
 
 	.search-icon {
 		position: absolute;
-		left: 0.75rem;
+		left: var(--ax-space-10);
 		display: flex;
 		align-items: center;
 		pointer-events: none;
-		color: var(--ax-text-neutral);
-		font-size: 1.125rem;
+		color: var(--muted-foreground);
+		font-size: var(--ax-font-size-small);
 	}
 
 	.search-input {
 		width: 100%;
-		padding: 0.5rem 2.25rem 0.5rem 2.5rem;
-		border: 1px solid var(--ax-border-neutral-subtleA);
-		border-radius: var(--ax-radius-8);
-		background: var(--ax-bg-default);
-		color: var(--ax-text-neutral);
-		font-size: var(--ax-font-size-medium);
-		line-height: 1.5;
+		height: var(--ax-space-36);
+		padding: 0 var(--ax-space-32);
+		border: 1px solid var(--input);
+		border-radius: calc(var(--radius) - 2px);
+		background: var(--card);
+		color: var(--foreground);
+		font-family: inherit;
+		font-size: var(--sh-font-size-caption);
+		line-height: var(--sh-line-height-compact);
+		box-shadow: var(--sh-shadow-xs);
+		box-sizing: border-box;
 		outline: none;
 		transition:
 			border-color 120ms ease,
@@ -110,34 +114,34 @@
 	}
 
 	.search-input::placeholder {
-		color: var(--ax-text-neutral);
+		color: var(--muted-foreground);
 	}
 
 	.search-input:focus {
-		border-color: var(--ax-text-neutral);
-		box-shadow: 0 0 0 1px var(--ax-text-neutral);
+		border-color: var(--ring);
+		box-shadow: 0 0 0 2px color-mix(in srgb, var(--ring) 18%, transparent);
 	}
 
 	.clear-button {
 		position: absolute;
-		right: 0.5rem;
+		right: var(--ax-space-6);
 		display: inline-flex;
 		align-items: center;
 		justify-content: center;
-		width: 1.5rem;
-		height: 1.5rem;
+		width: var(--sh-icon-button-size-sm);
+		height: var(--sh-icon-button-size-sm);
 		padding: 0;
 		border: none;
 		border-radius: var(--ax-radius-4);
 		background: transparent;
-		color: var(--ax-text-neutral-subtle);
-		font-size: 1.125rem;
+		color: var(--muted-foreground);
+		font-size: var(--ax-font-size-medium);
 		cursor: pointer;
 		line-height: 1;
 	}
 
 	.clear-button:hover {
-		background: var(--ax-neutral-200);
-		color: var(--ax-text-neutral);
+		background: var(--secondary);
+		color: var(--foreground);
 	}
 </style>

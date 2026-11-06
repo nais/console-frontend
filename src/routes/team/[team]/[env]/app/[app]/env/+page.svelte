@@ -3,8 +3,8 @@
 	import { goto } from '$app/navigation';
 	import { page } from '$app/state';
 	import { isPossiblyInModal } from '#lib/ui/PageModal.svelte';
-	import { Alert, BodyLong, Button, ErrorMessage, TextField } from '@nais/ds-svelte-community';
-	import { PlusIcon, TrashIcon } from '@nais/ds-svelte-community/icons';
+	import { Alert, BodyLong, Button, ErrorMessage, TextField } from '#lib/shadcn/ui/index.js';
+	import { PlusIcon, TrashIcon } from '#lib/icons/index.js';
 	import { tick } from 'svelte';
 	import { SvelteSet } from 'svelte/reactivity';
 
@@ -69,13 +69,13 @@
 			};
 		}}
 	>
-		<BodyLong style="margin-bottom: 1rem;">
+		<BodyLong style="margin-bottom: var(--ax-space-16);">
 			Set environment variables for <strong>{page.params.app}</strong> in
 			<strong>{page.params.env}</strong>. These are plain text values that will be added to the
 			workload.
 		</BodyLong>
 
-		<Alert variant="warning" size="small" style="margin-bottom: 1rem;">
+		<Alert variant="warning" size="small" style="margin-bottom: var(--ax-space-16);">
 			These changes are temporary and will be overwritten on next deploy.
 		</Alert>
 
@@ -140,7 +140,7 @@
 	}
 
 	form :global(> *) {
-		margin-bottom: 1rem;
+		margin-bottom: var(--ax-space-16);
 	}
 
 	.button-row {
@@ -155,7 +155,7 @@
 		align-items: flex-end;
 	}
 
-	.env-row :global(.aksel-form-field) {
+	.env-row :global(:is(.sh-form-field, .sh-select-field)) {
 		flex: 1;
 	}
 </style>

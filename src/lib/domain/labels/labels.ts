@@ -104,21 +104,37 @@ export function toLabelRows(labels: readonly Label[]): LabelRow[] {
 	}));
 }
 
+export interface LabelFacet {
+	key: string;
+	value: string;
+	count: number;
+}
+
+export interface LabelFilter {
+	key: string;
+	value?: string;
+}
+
+export function labelFilterId({ key, value }: LabelFilter): string {
+	return value === undefined ? key : `${key}:${value}`;
+}
+
+export function formatLabelFilter({ key, value }: LabelFilter): string {
+	return value === undefined ? key : `${key}=${value}`;
+}
+
 /**
- * Parse a URL search param value like "key:value,key2:value2" into LabelFilter objects.
- * Returns undefined if the param is empty or null.
+ * Parse a URL search param value like "key:value,key2:,key3" into LabelFilter objects.
+ * "key:" matches an empty value and "key" matches any value. Returns undefined if no
+ * filters are present.
  */
-export function parseLabelsParam(
-	param: string | null
-): { key: string; value: string }[] | undefined {
+export function parseLabelsParam(param: string | null): LabelFilter[] | undefined {
 	if (!param) return undefined;
-	const parsed = param
-		.split(',')
-		.filter(Boolean)
-		.map((l) => {
-			const [key, ...rest] = l.split(':');
-			return { key, value: rest.join(':') };
+	const parsed = [...new Set(param.split(',').filter(Boolean))]
+		.map((entry) => {
+			const [key, ...rest] = entry.split(':');
+			return { key, value: rest.length ? rest.join(':') : undefined };
 		})
-		.filter((l) => l.key && l.value);
+		.filter((l) => l.key);
 	return parsed.length > 0 ? parsed : undefined;
 }

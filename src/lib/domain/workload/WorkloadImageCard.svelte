@@ -1,7 +1,7 @@
 <script lang="ts">
 	import SurfaceCard from '#lib/ui/SurfaceCard.svelte';
 	import { formatImageRef, parseImage } from '#lib/utils/image.js';
-	import { BodyShort, CopyButton, Detail, Tooltip } from '@nais/ds-svelte-community';
+	import { BodyShort, CopyButton, Detail, Tooltip } from '#lib/shadcn/ui/index.js';
 	import type { Snippet } from 'svelte';
 
 	interface Props {

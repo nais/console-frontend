@@ -24,7 +24,7 @@
 		ReadMore,
 		Select,
 		TextField
-	} from '@nais/ds-svelte-community';
+	} from '#lib/shadcn/ui/index.js';
 	import type { PageProps } from './$types';
 
 	let { data }: PageProps = $props();
@@ -110,7 +110,7 @@
 </script>
 
 <form method="POST" use:enhance>
-	<BodyLong style="margin-bottom: 1rem;"
+	<BodyLong style="margin-bottom: var(--ax-space-16);"
 		>This will create a new Valkey instance for <span style="font-weight: bold;"
 			>{data.teamSlug}</span
 		>.</BodyLong
@@ -217,7 +217,7 @@
 	{/if}
 
 	{#if tier === ValkeyTier.SINGLE_NODE && memory === ValkeyMemory.GB_1}
-		<Alert variant="warning" size="small" style="margin-bottom: 1rem;">
+		<Alert variant="warning" size="small" style="margin-bottom: var(--ax-space-16);">
 			This combination of tier and memory is not recommended for production workloads.<br />
 			Limitations include no guarantees for uptime and availability, no detailed metrics, and limited
 			backups.
@@ -232,11 +232,11 @@
 		width: 600px;
 	}
 
-	form :global(.aksel-form-field) {
+	form :global(:is(.sh-form-field, .sh-select-field)) {
 		max-width: 400px;
 	}
 
 	form :global(> *) {
-		margin-bottom: 1rem;
+		margin-bottom: var(--ax-space-16);
 	}
 </style>

@@ -11,7 +11,7 @@
 	import Pagination from '#lib/ui/Pagination.svelte';
 	import SurfaceCard from '#lib/ui/SurfaceCard.svelte';
 	import { changeParams } from '#lib/utils/searchparams.js';
-	import { FunnelIcon } from '@nais/ds-svelte-community/icons';
+	import { FunnelIcon } from '#lib/icons/index.js';
 	import type { PageProps } from './$types';
 
 	let { data }: PageProps = $props();
@@ -113,7 +113,7 @@
 					aria-expanded={filtersOpen}
 					onclick={() => (filtersOpen = !filtersOpen)}
 				>
-					<FunnelIcon aria-hidden="true" style="font-size: 1rem" />
+					<FunnelIcon aria-hidden="true" style="font-size: var(--ax-font-size-medium)" />
 					Filters
 				</button>
 			{/snippet}

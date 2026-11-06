@@ -2,18 +2,15 @@
 	import { graphql } from '$houdini';
 	import ChartBoundary from '#lib/chart/ChartBoundary.svelte';
 	import LegendWrapper, { legendSnippet } from '#lib/chart/LegendWrapper.svelte';
-	import { euroAxisFormatter } from '#lib/chart/util.js';
+	import type { LegendContext } from '#lib/chart/LegendWrapperData.svelte';
+	import { createEuroAxis } from '#lib/chart/util.js';
 	import GraphErrors from '#lib/ui/GraphErrors.svelte';
 	import { changeParams } from '#lib/utils/searchparams.js';
+	import { euroTooltipFormatter } from '#lib/utils/formatters.js';
 	import { visualizationColors } from '#lib/visualizationColors.js';
-	import {
-		BodyLong,
-		Heading,
-		Loader,
-		ToggleGroup,
-		ToggleGroupItem
-	} from '@nais/ds-svelte-community';
+	import { BodyLong, Heading, Loader, ToggleGroup, ToggleGroupItem } from '#lib/shadcn/ui/index.js';
 	import { LineChart } from 'layerchart';
+	import { SvelteMap } from 'svelte/reactivity';
 
 	const {
 		teamSlug,
@@ -26,6 +23,8 @@
 		to: Date;
 		interval: string;
 	} = $props();
+
+	const legendContexts = new SvelteMap<string, LegendContext>();
 
 	const costQuery = graphql(`
 		query TeamEnvironmentApplicationsCost($teamSlug: Slug!, $from: Date!, $to: Date!) {
@@ -125,13 +124,26 @@
 		</div>
 	{:else}
 		{#each appsByEnv as env (env.id)}
+			{const euroAxis = $derived(
+				createEuroAxis(
+					env.series
+						.filter(
+							(series) => !series.name || !legendContexts.get(env.id)?.hiddenKeys.has(series.name)
+						)
+						.reduce(
+							(max, series) =>
+								series.data.reduce((max, [, cost]) => Math.max(max, Math.abs(cost ?? 0)), max),
+							0
+						)
+				)
+			)}
 			<div class="env-section">
 				<Heading as="h3" size="small">{env.environment.name}</Heading>
 				<div class="chart">
 					<ChartBoundary>
-						<LegendWrapper height="400px">
+						<LegendWrapper height="400px" onContextReady={(ctx) => legendContexts.set(env.id, ctx)}>
 							<LineChart
-								padding={{ left: 40 }}
+								padding={{ left: euroAxis.paddingLeft }}
 								legend={legendSnippet}
 								series={env.series.map((item, i) => {
 									return {
@@ -150,7 +162,10 @@
 										class: 'stroke-2'
 									},
 									yAxis: {
-										format: euroAxisFormatter
+										format: euroAxis.format
+									},
+									tooltip: {
+										item: { format: euroTooltipFormatter }
 									},
 									xAxis: {
 										format: 'day'

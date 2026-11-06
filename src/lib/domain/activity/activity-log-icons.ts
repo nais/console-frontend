@@ -14,7 +14,7 @@ import {
 	RocketIcon,
 	TerminalIcon,
 	VirusIcon
-} from '@nais/ds-svelte-community/icons';
+} from '#lib/icons/index.js';
 
 import KafkaIcon from '#lib/icons/KafkaIcon.svelte';
 import OpenSearchIcon from '#lib/icons/OpenSearchIcon.svelte';

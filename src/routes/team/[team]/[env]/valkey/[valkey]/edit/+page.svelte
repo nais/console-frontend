@@ -24,7 +24,7 @@
 		ReadMore,
 		Select,
 		TextField
-	} from '@nais/ds-svelte-community';
+	} from '#lib/shadcn/ui/index.js';
 	import type { PageProps } from './$types';
 
 	let { form, data }: PageProps = $props();
@@ -256,11 +256,11 @@ ${notifyKeyspaceEvents ? `notify_keyspace_events = "${notifyKeyspaceEvents}"` : 
 </ReadMore>
 
 <style>
-	form :global(.aksel-form-field) {
+	form :global(:is(.sh-form-field, .sh-select-field)) {
 		max-width: 400px;
 	}
 
 	form :global(> *) {
-		margin-bottom: 1rem;
+		margin-bottom: var(--ax-space-16);
 	}
 </style>

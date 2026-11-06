@@ -4,8 +4,8 @@
 	import ListItem from '#lib/ui/ListItem.svelte';
 	import Time from '#lib/ui/Time.svelte';
 	import TooltipAlignHack from '#lib/ui/TooltipAlignHack.svelte';
-	import { Button, Detail, Loader } from '@nais/ds-svelte-community';
-	import { QuestionmarkIcon, TimerIcon, TrashIcon } from '@nais/ds-svelte-community/icons';
+	import { Button, Detail, Loader, Tooltip } from '#lib/shadcn/ui/index.js';
+	import { QuestionmarkIcon, TimerIcon, TrashIcon } from '#lib/icons/index.js';
 	import ErrorIcon from '../../icons/ErrorIcon.svelte';
 
 	const {
@@ -87,13 +87,15 @@
 		<IconLabel size="small" label={formatDuration(run.duration)} icon={TimerIcon} />
 		<Detail>{run.status.message}</Detail>
 		{#if ondelete}
-			<Button
-				variant="tertiary-neutral"
-				size="xsmall"
-				icon={TrashIcon}
-				aria-label="Delete run {run.name}"
-				onclick={() => ondelete(run.name)}
-			/>
+			<Tooltip content="Delete run">
+				<Button
+					variant="tertiary-neutral"
+					size="xsmall"
+					icon={TrashIcon}
+					aria-label="Delete run {run.name}"
+					onclick={() => ondelete(run.name)}
+				/>
+			</Tooltip>
 		{/if}
 	</div>
 </ListItem>

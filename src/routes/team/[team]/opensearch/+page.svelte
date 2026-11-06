@@ -9,6 +9,7 @@
 	import WarningIcon from '#lib/icons/WarningIcon.svelte';
 	import CollapsibleSidebar from '#lib/ui/CollapsibleSidebar.svelte';
 	import ExternalLink from '#lib/ui/ExternalLink.svelte';
+	import EmptyState from '#lib/ui/EmptyState.svelte';
 	import GraphErrors from '#lib/ui/GraphErrors.svelte';
 	import Collection from '#lib/ui/Collection.svelte';
 	import ResourceTable from '#lib/ui/ResourceTable.svelte';
@@ -20,8 +21,8 @@
 	import { capitalizeFirstLetter } from '#lib/utils/formatters.js';
 	import { countIssuesBySeverity } from '#lib/utils/issueCounts.js';
 	import { changeParams } from '#lib/utils/searchparams.js';
-	import { Button, Tag, Td, Th, Tr, type TableSortState } from '@nais/ds-svelte-community';
-	import { FunnelIcon, PlusIcon } from '@nais/ds-svelte-community/icons';
+	import { Button, Tag, Td, Th, Tr, type TableSortState } from '#lib/shadcn/ui/index.js';
+	import { FunnelIcon, PlusIcon } from '#lib/icons/index.js';
 	import CreatePage from '../opensearch/create/+page.svelte';
 	import type { PageProps } from './$types';
 
@@ -140,7 +141,7 @@
 						aria-expanded={filtersOpen}
 						onclick={() => (filtersOpen = !filtersOpen)}
 					>
-						<FunnelIcon aria-hidden="true" style="font-size: 1rem" />
+						<FunnelIcon aria-hidden="true" style="font-size: var(--ax-font-size-medium)" />
 						Filters
 					</button>
 				{/snippet}
@@ -225,12 +226,14 @@
 						{/each}
 					</ResourceTable>
 				{:else}
-					<p>
-						No OpenSearch instances found. OpenSearch is a distributed search and analytics engine.
+					<EmptyState
+						title="No OpenSearch instances found."
+						description="OpenSearch is a distributed search and analytics engine."
+					>
 						<ExternalLink href={docURL('/persistence/opensearch')}
 							>Learn more about OpenSearch and how to get started.</ExternalLink
 						>
-					</p>
+					</EmptyState>
 				{/if}
 			</Collection>
 			<Pagination

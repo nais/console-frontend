@@ -9,6 +9,7 @@ const { loadHigh, loadSeverity, loadNoSbom, loadSummary, summary } = vi.hoisted(
 	const summary = {
 		missingSbomCount: 0,
 		sbomCount: 1,
+		filteredSbomCount: undefined as number | undefined,
 		workloadCount: 1,
 		wait: undefined as (() => Promise<void>) | undefined
 	};
@@ -29,7 +30,10 @@ const { loadHigh, loadSeverity, loadNoSbom, loadSummary, summary } = vi.hoisted(
 										pageInfo: { totalCount: summary.missingSbomCount }
 									},
 									workloads: { pageInfo: { totalCount: summary.workloadCount } },
-									vulnerabilitySummary: { sbomCount: summary.sbomCount }
+									teamVulnerabilitySummary: { sbomCount: summary.sbomCount },
+									vulnerabilitySummary: {
+										sbomCount: summary.filteredSbomCount ?? summary.sbomCount
+									}
 								}
 							}
 						});
@@ -42,27 +46,40 @@ const { loadHigh, loadSeverity, loadNoSbom, loadSummary, summary } = vi.hoisted(
 	};
 });
 
-vi.mock('$houdini', () => ({
-	load_TeamVulnerabilities: loadSummary,
-	load_TeamPriorityWorkloadsHigh: loadHigh,
-	load_TeamSeverityWorkloads: loadSeverity,
-	load_TeamNoSbomWorkloads: loadNoSbom,
-	OrderDirection: { DESC: 'DESC', ASC: 'ASC' },
-	SBOMStatus: { NO_SBOM: 'NO_SBOM' },
-	WorkloadOrderField: { NAME: 'NAME' },
-	VulnerabilitySummaryOrderByField: {
-		NAME: 'NAME',
-		VULNERABILITY_RISK_SCORE: 'VULNERABILITY_RISK_SCORE',
-		VULNERABILITY_SEVERITY_CRITICAL: 'VULNERABILITY_SEVERITY_CRITICAL'
-	},
-	TeamNoSbomWorkloadsStore: class {},
-	TeamPriorityWorkloadsHighStore: class {},
-	TeamSeverityWorkloadsStore: class {}
-}));
+vi.mock('$houdini', async () => {
+	const { writable } = await import('svelte/store');
+	class EmptyWorkloadStore {
+		subscribe = writable({ data: null, errors: null }).subscribe;
+	}
+	return {
+		graphql: () => new EmptyWorkloadStore(),
+		load_TeamVulnerabilities: loadSummary,
+		load_TeamPriorityWorkloadsHigh: loadHigh,
+		load_TeamSeverityWorkloads: loadSeverity,
+		load_TeamNoSbomWorkloads: loadNoSbom,
+		OrderDirection: { DESC: 'DESC', ASC: 'ASC' },
+		SBOMStatus: { NO_SBOM: 'NO_SBOM' },
+		WorkloadOrderField: { NAME: 'NAME' },
+		VulnerabilitySummaryOrderByField: {
+			NAME: 'NAME',
+			VULNERABILITY_RISK_SCORE: 'VULNERABILITY_RISK_SCORE',
+			VULNERABILITY_SEVERITY_CRITICAL: 'VULNERABILITY_SEVERITY_CRITICAL'
+		},
+		TeamNoSbomWorkloadsStore: class {},
+		TeamPriorityWorkloadsHighStore: EmptyWorkloadStore,
+		TeamPriorityWorkloadsElevatedStore: EmptyWorkloadStore,
+		TeamPriorityWorkloadsMonitorStore: EmptyWorkloadStore,
+		TeamSeverityWorkloadsStore: EmptyWorkloadStore
+	};
+});
 vi.mock('#lib/utils/pageMeta.js', () => ({ addPageMeta: vi.fn(async () => ({})) }));
 vi.mock('$app/env', () => ({ browser: false, building: false, dev: false }));
 vi.mock('$app/environment', () => ({ browser: false, building: false }));
-vi.mock('$app/navigation', () => ({ goto: vi.fn(), invalidateAll: vi.fn() }));
+vi.mock('$app/navigation', () => ({
+	goto: vi.fn(),
+	invalidateAll: vi.fn(),
+	afterNavigate: vi.fn()
+}));
 vi.mock('$app/state', () => ({
 	page: {
 		url: new URL('https://console.example.com/team/mango-panda/vulnerabilities'),
@@ -73,6 +90,8 @@ vi.mock('$app/state', () => ({
 import { load } from './+page';
 import TeamVulnerabilityPage from './+page.svelte';
 import WorkloadsWithoutSbom from '#lib/domain/vulnerability/WorkloadsWithoutSbom.svelte';
+import WorkloadsWithVulnerabilities from '#lib/domain/vulnerability/WorkloadsWithVulnerabilities.svelte';
+import { TeamPriorityWorkloadsHighStore, TeamSeverityWorkloadsStore } from '$houdini';
 
 function event(query = ''): Parameters<typeof load>[0] {
 	return {
@@ -86,11 +105,37 @@ afterEach(() => {
 	vi.clearAllMocks();
 	summary.missingSbomCount = 0;
 	summary.sbomCount = 1;
+	summary.filteredSbomCount = undefined;
 	summary.workloadCount = 1;
 	summary.wait = undefined;
 });
 
 describe('team vulnerability workload view', () => {
+	it.each([
+		{ environmentName: 'dev', labels: [] },
+		{ environmentName: null, labels: [{ key: 'owner', value: 'team' }] },
+		{ environmentName: 'dev', labels: [{ key: 'owner', value: 'team' }] }
+	])('shows filtered priority totals before group rows are loaded: %j', async (filters) => {
+		const { body } = await render(WorkloadsWithVulnerabilities, {
+			props: {
+				team: 'example',
+				high: new TeamPriorityWorkloadsHighStore(),
+				severity: new TeamSeverityWorkloadsStore(),
+				environmentNames: ['dev'],
+				labelFacets: [],
+				selection: { ...filters, view: 'priority' },
+				highWorkloadCount: 7,
+				elevatedWorkloadCount: 3,
+				monitorWorkloadCount: 0
+			}
+		});
+
+		expect(body).toMatch(/7\s+workloads/);
+		expect(body).toMatch(/3\s+workloads/);
+		expect(body).toMatch(/0\s+workloads/);
+		expect(body).not.toMatch(/…\s+workloads/);
+	});
+
 	it('requests the number of workloads with no SBOM', () => {
 		const query = parse(readFileSync(new URL('./query.gql', import.meta.url), 'utf8'));
 		const operation = query.definitions.find(
@@ -123,6 +168,34 @@ describe('team vulnerability workload view', () => {
 		expect(missingSboms.selectionSet?.selections).toMatchObject([
 			{ kind: Kind.FIELD, name: { value: 'pageInfo' } }
 		]);
+		const aggregate = team.selectionSet.selections.find(
+			(selection) =>
+				selection.kind === Kind.FIELD &&
+				selection.name.value === 'vulnerabilitySummary' &&
+				!selection.alias
+		);
+		if (aggregate?.kind !== Kind.FIELD) throw new Error('Missing vulnerability aggregate');
+		expect(
+			aggregate.arguments?.find((argument) => argument.name.value === 'filter')?.value
+		).toMatchObject({
+			kind: Kind.OBJECT,
+			fields: [
+				{
+					name: { value: 'environmentName' },
+					value: { kind: Kind.VARIABLE, name: { value: 'environmentName' } }
+				},
+				{
+					name: { value: 'labels' },
+					value: { kind: Kind.VARIABLE, name: { value: 'labels' } }
+				}
+			]
+		});
+		const teamSummary = team.selectionSet.selections.find(
+			(selection) =>
+				selection.kind === Kind.FIELD && selection.alias?.value === 'teamVulnerabilitySummary'
+		);
+		if (teamSummary?.kind !== Kind.FIELD) throw new Error('Missing team-wide SBOM context');
+		expect(teamSummary.arguments?.length ?? 0).toBe(0);
 	});
 
 	it('requests navigable pages for the missing-SBOM workload list', () => {
@@ -181,6 +254,7 @@ describe('team vulnerability workload view', () => {
 		expect(loadSeverity).toHaveBeenCalledOnce();
 		expect(loadSeverity).toHaveBeenCalledWith(
 			expect.objectContaining({
+				blocking: true,
 				variables: expect.objectContaining({
 					orderBy: { field: 'VULNERABILITY_SEVERITY_CRITICAL', direction: 'DESC' }
 				})
@@ -193,6 +267,7 @@ describe('team vulnerability workload view', () => {
 		await load(event('?view=priority'));
 
 		expect(loadHigh).toHaveBeenCalledOnce();
+		expect(loadHigh).toHaveBeenCalledWith(expect.objectContaining({ blocking: true }));
 		expect(loadSeverity).not.toHaveBeenCalled();
 	});
 
@@ -250,17 +325,25 @@ describe('team vulnerability workload view', () => {
 		expect(loadHigh).not.toHaveBeenCalled();
 	});
 
-	it('shows the no-data state and a collapsed list when SBOM counts disagree', async () => {
+	it('keeps the team-wide no-SBOM count when vulnerability filters are selected', async () => {
 		const { body } = await render(TeamVulnerabilityPage, {
 			props: {
 				params: { team: 'mango-panda' },
 				data: {
 					teamSlug: 'mango-panda',
+					selection: {
+						environmentName: 'dev-fss',
+						labels: [{ key: 'owner', value: 'retired' }],
+						view: 'severity'
+					},
 					TeamVulnerabilities: writable({
 						data: {
 							team: {
 								workloadsWithoutSbom: { pageInfo: { totalCount: 61 } },
 								workloads: { pageInfo: { totalCount: 62 } },
+								applications: { facets: { labels: [] } },
+								jobs: { facets: { labels: [] } },
+								teamVulnerabilitySummary: { sbomCount: 0 },
 								vulnerabilitySummary: { sbomCount: 0 }
 							}
 						},
@@ -270,15 +353,23 @@ describe('team vulnerability workload view', () => {
 						data: {
 							team: {
 								workloads: {
-									nodes: [],
+									nodes: [
+										{
+											__typename: 'Application',
+											id: 'polaris',
+											name: 'polaris',
+											team: { slug: 'mango-panda' },
+											teamEnvironment: { environment: { name: 'dev-fss' } }
+										}
+									],
 									pageInfo: {
-										totalCount: 61,
+										totalCount: 62,
 										hasNextPage: true,
 										hasPreviousPage: false,
 										pageStart: 1,
-										pageEnd: 20,
+										pageEnd: 1,
 										startCursor: 'cursor-1',
-										endCursor: 'cursor-20'
+										endCursor: 'cursor-1'
 									}
 								}
 							}
@@ -294,6 +385,7 @@ describe('team vulnerability workload view', () => {
 		expect(body).toContain('61 workloads have no');
 		expect(body).toContain('<details>');
 		expect(body).toContain('Workloads without usable SBOM (62)');
+		expect(body).toContain('/team/mango-panda/dev-fss/app/polaris/vulnerabilities');
 		expect(body).not.toContain('Workload Vulnerabilities');
 	});
 
@@ -303,11 +395,19 @@ describe('team vulnerability workload view', () => {
 				params: { team: 'mango-panda' },
 				data: {
 					teamSlug: 'mango-panda',
+					selection: {
+						environmentName: null,
+						labels: [],
+						view: 'severity'
+					},
 					TeamVulnerabilities: writable({
 						data: {
 							team: {
 								workloadsWithoutSbom: { pageInfo: { totalCount: 0 } },
 								workloads: { pageInfo: { totalCount: 1 } },
+								applications: { facets: { labels: [] } },
+								jobs: { facets: { labels: [] } },
+								teamVulnerabilitySummary: { sbomCount: 0 },
 								vulnerabilitySummary: { sbomCount: 0 }
 							}
 						},
@@ -435,6 +535,104 @@ describe('team vulnerability workload view', () => {
 		expect(previous).toBeDefined();
 		expect(previous).not.toContain('disabled');
 	});
+
+	it('filters both vulnerability totals and rows while keeping missing-SBOM workloads team-wide', async () => {
+		summary.missingSbomCount = 2;
+		await load(event('?view=priority&environment=dev&labels=owner%3Ateam'));
+
+		const labels = [{ key: 'owner', value: 'team' }];
+		expect(loadSummary).toHaveBeenCalledWith(
+			expect.objectContaining({
+				variables: { team: 'example', environmentName: 'dev', labels, unfiltered: false }
+			})
+		);
+		expect(loadNoSbom).toHaveBeenCalledWith(
+			expect.objectContaining({
+				variables: {
+					team: 'example',
+					first: 20,
+					last: null,
+					after: null,
+					before: null,
+					sbomStatus: 'NO_SBOM',
+					orderBy: { field: 'NAME', direction: 'ASC' }
+				}
+			})
+		);
+		expect(loadHigh).toHaveBeenCalledWith(
+			expect.objectContaining({
+				variables: expect.objectContaining({
+					environmentName: 'dev',
+					labels,
+					orderBy: { field: 'VULNERABILITY_RISK_SCORE', direction: 'DESC' }
+				})
+			})
+		);
+	});
+
+	it('does not mistake an empty filtered selection for a team without usable SBOMs', async () => {
+		summary.filteredSbomCount = 0;
+		await load(event('?labels=absent'));
+
+		expect(loadSeverity).toHaveBeenCalledOnce();
+		expect(loadNoSbom).not.toHaveBeenCalled();
+	});
+
+	it('loads severity by default when filters are set without selecting a view', async () => {
+		await load(event('?labels=region'));
+		expect(loadSeverity).toHaveBeenCalledWith(
+			expect.objectContaining({
+				variables: expect.objectContaining({ labels: [{ key: 'region', value: undefined }] })
+			})
+		);
+		expect(loadHigh).not.toHaveBeenCalled();
+	});
+
+	it.each(['severity', 'priority'])(
+		'forwards AND, existence and empty-value filters with standard ordering in %s view',
+		async (view) => {
+			const key = `${'a'.repeat(63)}.example.com/owner`;
+			const params = new URLSearchParams({
+				view,
+				labels: `${key}:team,region,empty:`
+			});
+			await load(event(`?${params}`));
+
+			const loader = view === 'priority' ? loadHigh : loadSeverity;
+			expect(loadSummary).toHaveBeenCalledWith(
+				expect.objectContaining({
+					variables: expect.objectContaining({
+						labels: [
+							{ key, value: 'team' },
+							{ key: 'region', value: undefined },
+							{ key: 'empty', value: '' }
+						],
+						unfiltered: false
+					})
+				})
+			);
+			expect(loader).toHaveBeenCalledOnce();
+			expect(loader).toHaveBeenCalledWith(
+				expect.objectContaining({
+					blocking: true,
+					variables: expect.objectContaining({
+						labels: [
+							{ key, value: 'team' },
+							{ key: 'region', value: undefined },
+							{ key: 'empty', value: '' }
+						],
+						orderBy: {
+							field:
+								view === 'priority'
+									? 'VULNERABILITY_RISK_SCORE'
+									: 'VULNERABILITY_SEVERITY_CRITICAL',
+							direction: 'DESC'
+						}
+					})
+				})
+			);
+		}
+	);
 
 	it('waits for the summary before deciding whether to load missing-SBOM workloads', async () => {
 		summary.missingSbomCount = 2;

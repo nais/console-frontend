@@ -5,7 +5,7 @@
 	import Pagination from '#lib/ui/Pagination.svelte';
 	import { changeParams } from '#lib/utils/searchparams.js';
 	import { CVEOrderField, OrderDirection } from '$houdini';
-	import { BodyLong, Heading, Loader } from '@nais/ds-svelte-community';
+	import { BodyLong, Heading, Loader } from '#lib/shadcn/ui/index.js';
 	import type { PageProps } from './$types';
 	import { cvePageParams, cvePaginationParams } from './pagination.js';
 

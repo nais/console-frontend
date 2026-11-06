@@ -2,12 +2,11 @@
 	import { PendingValue, graphql } from '$houdini';
 	import ChartBoundary from '#lib/chart/ChartBoundary.svelte';
 	import CostAreaChart from '#lib/chart/CostAreaChart.svelte';
-	import { serviceColor } from '#lib/chart/util.js';
 	import { getFromForCost, type CostInterval } from '#lib/domain/cost/dateUtils.js';
 	import GraphErrors from '#lib/ui/GraphErrors.svelte';
 	import SurfaceCard from '#lib/ui/SurfaceCard.svelte';
 	import { changeParams } from '#lib/utils/searchparams.js';
-	import { Detail, Loader, ToggleGroup, ToggleGroupItem } from '@nais/ds-svelte-community';
+	import { Detail, Loader, ToggleGroup, ToggleGroupItem } from '#lib/shadcn/ui/index.js';
 	import { subDays } from 'date-fns';
 
 	interface Props {
@@ -69,20 +68,6 @@
 
 	let workloadData = $derived($costQuery?.data?.team?.environment?.workload);
 	let envName = $derived($costQuery?.data?.team?.environment?.environment);
-
-	let services = $derived.by(() => {
-		const daily = workloadData?.cost?.daily;
-		if (!daily || daily === PendingValue) return [];
-		const names: string[] = [];
-		for (const item of daily.series) {
-			for (const s of item.services) {
-				if (!names.includes(s.service)) {
-					names.push(s.service);
-				}
-			}
-		}
-		return names;
-	});
 </script>
 
 <SurfaceCard title="Cost" eyebrow={false}>
@@ -106,16 +91,6 @@
 			{#if workloadData.cost.daily.series.length === 0 && envName !== PendingValue && envName && envName.name.search(/-fss/i) > 0}
 				<Detail>No cost data available for applications in {envName.name}.</Detail>
 			{:else if workloadData.cost.daily.series.length > 0}
-				{#if services.length > 1}
-					<div class="legend">
-						{#each services as name (name)}
-							<div class="legend-item">
-								<span class="legend-swatch" style="background-color: {serviceColor(name)}"></span>
-								<span class="legend-label">{name}</span>
-							</div>
-						{/each}
-					</div>
-				{/if}
 				<div class="chart">
 					<ChartBoundary>
 						<CostAreaChart
@@ -147,30 +122,6 @@
 		height: 350px;
 		min-width: 0;
 		margin-bottom: var(--ax-space-32);
-	}
-
-	.legend {
-		display: flex;
-		flex-wrap: wrap;
-		gap: var(--ax-space-8) var(--ax-space-16);
-	}
-
-	.legend-item {
-		display: flex;
-		align-items: center;
-		gap: var(--ax-space-4);
-	}
-
-	.legend-swatch {
-		width: 12px;
-		height: 12px;
-		border-radius: 50%;
-		flex-shrink: 0;
-	}
-
-	.legend-label {
-		font-size: var(--ax-font-size-small);
-		color: var(--ax-text-neutral-subtle);
 	}
 
 	.loading {

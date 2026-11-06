@@ -7,7 +7,6 @@
 	import GraphErrors from '#lib/ui/GraphErrors.svelte';
 	import SectionBoundary from '#lib/ui/SectionBoundary.svelte';
 	import SurfaceCard from '#lib/ui/SurfaceCard.svelte';
-	import { resolve } from '$app/paths';
 	import { page } from '$app/state';
 	import { graphql } from '$houdini';
 	import {
@@ -24,7 +23,7 @@
 		Th,
 		Thead,
 		Tr
-	} from '@nais/ds-svelte-community';
+	} from '#lib/shadcn/ui/index.js';
 	import { onMount } from 'svelte';
 	import type { PageProps } from './$types';
 	import BranchStateIndicator from './BranchStateIndicator.svelte';
@@ -151,14 +150,7 @@
 					<dt>Active branch</dt>
 					<dd>
 						{#if activeBranch}
-							<a
-								href={resolve(
-									'/team/[team]/[env]/postgres/[postgres]/(single)/branches',
-									page.params as never
-								)}
-							>
-								<strong>{activeBranch.name}</strong>
-							</a>
+							<strong>{activeBranch.name}</strong>
 						{:else}
 							None
 						{/if}
@@ -239,13 +231,7 @@
 								<WorkloadLink workload={usage.workload} hideTeam hideEnv />
 								<div class="branch-label">
 									<Detail>
-										Branch:
-										<a
-											href={resolve(
-												'/team/[team]/[env]/postgres/[postgres]/(single)/branches',
-												page.params as never
-											)}>{usage.branch.name}</a
-										>
+										Branch: {usage.branch.name}
 									</Detail>
 								</div>
 							</li>

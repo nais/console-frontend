@@ -5,6 +5,8 @@
 node_modules
 .pnpm-store/
 /build
+/playwright-report/
+/test-results/
 /.svelte-kit
 /package
 .env

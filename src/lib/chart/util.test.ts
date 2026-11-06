@@ -1,6 +1,50 @@
-import { getBrushDateDomain, getSegmentFill, serviceColor, truncateString } from './util';
+import {
+	createEuroAxis,
+	getBrushDateDomain,
+	getSegmentFill,
+	serviceColor,
+	truncateString
+} from './util';
 
 describe('chart/util', () => {
+	describe('createEuroAxis', () => {
+		const normalize = (value: string) => value.replace(/[\u00A0\u202F]/g, ' ');
+
+		test('uses decimal euros instead of milli-euros on a one-euro axis', () => {
+			const { format } = createEuroAxis(1);
+			expect([0, 0.2, 0.4, 0.6, 0.8, 1].map((value) => normalize(format(value)))).toEqual([
+				'0,00 €',
+				'0,20 €',
+				'0,40 €',
+				'0,60 €',
+				'0,80 €',
+				'1,00 €'
+			]);
+		});
+
+		test.each([0.001, 0.00001, 0.000001])(
+			'keeps ticks distinct and equally precise for a %s euro range',
+			(maximum) => {
+				const { format } = createEuroAxis(maximum);
+				const labels = Array.from({ length: 6 }, (_, index) => format((maximum * index) / 5));
+				expect(new Set(labels).size).toBe(labels.length);
+				const decimalPlaces = labels.map((label) => label.split(',')[1].split(/\s/)[0].length);
+				expect(new Set(decimalPlaces).size).toBe(1);
+				expect(labels.every((label) => label.endsWith('€') && !/[mµK]/.test(label))).toBe(true);
+			}
+		);
+
+		test('keeps negative values and large amounts in euros', () => {
+			const { format } = createEuroAxis(1000);
+			expect(normalize(format(1000))).toBe('1 000,00 €');
+			expect(normalize(format(-0.2))).toBe('−0,20 €');
+		});
+
+		test('handles an empty or zero-cost range', () => {
+			expect(normalize(createEuroAxis(0).format(0))).toBe('0,00 €');
+		});
+	});
+
 	describe('getBrushDateDomain', () => {
 		const start = new Date('2026-10-01T00:00:00Z');
 		const end = new Date('2026-10-02T00:00:00Z');
@@ -158,11 +202,11 @@ describe('chart/util', () => {
 
 	describe('getSegmentFill', () => {
 		test('returns neutral fill for inactive segment', () => {
-			expect(getSegmentFill(10, false, 36)).toBe('var(--ax-neutral-200)');
+			expect(getSegmentFill(10, false, 36)).toBe('var(--ax-border-neutral)');
 		});
 
 		test('returns neutral fill when total segments is invalid', () => {
-			expect(getSegmentFill(0, true, 0)).toBe('var(--ax-neutral-200)');
+			expect(getSegmentFill(0, true, 0)).toBe('var(--ax-border-neutral)');
 		});
 
 		test('returns success fill below warning threshold', () => {

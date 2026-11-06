@@ -1,6 +1,6 @@
-import { load_TenantActivityLog } from '$houdini';
-import type { ActivityLogFilter } from '$houdini/graphql/inputs';
 import { addPageMeta } from '#lib/utils/pageMeta.js';
+import { load_TenantActivityLog } from '$houdini';
+import type { TenantActivityLogFilter } from '$houdini/graphql/inputs';
 import { error } from '@sveltejs/kit';
 import { addDays, differenceInCalendarDays, format, isValid, parseISO, subDays } from 'date-fns';
 import { formatOslo, parseOslo } from './osloTime';
@@ -48,6 +48,7 @@ export async function load(event) {
 	const resourceTypes =
 		event.url.searchParams.get('resourceTypes')?.split(',').filter(Boolean) || [];
 	const environments = event.url.searchParams.get('environments')?.split(',').filter(Boolean) || [];
+	const myTeams = event.url.searchParams.get('myTeams') === 'true';
 
 	const rows = 20;
 
@@ -71,9 +72,10 @@ export async function load(event) {
 					activityTypes,
 					resourceTypes,
 					environments,
+					...(myTeams ? { teamScope: { memberOfViewer: true } } : {}),
 					from: fromTime,
 					to: toExclusive
-				} as ActivityLogFilter
+				} as TenantActivityLogFilter
 			}
 		}))
 	};

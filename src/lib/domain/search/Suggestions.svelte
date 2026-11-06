@@ -61,11 +61,12 @@
 <style>
 	.suggestions-panel {
 		display: grid;
-		gap: var(--ax-space-12);
+		gap: var(--ax-space-10);
 		padding: var(--ax-space-12);
-		border: 1px solid var(--ax-border-neutral-subtleA);
-		border-radius: var(--ax-radius-4);
-		background-color: var(--ax-neutral-000);
+		border: 1px solid var(--border);
+		border-radius: calc(var(--radius) - 2px);
+		background-color: var(--background-subtle);
+		font-size: var(--sh-font-size-caption);
 	}
 
 	.intro {
@@ -77,7 +78,7 @@
 
 	p {
 		margin: 0;
-		color: var(--ax-text-neutral);
+		color: var(--muted-foreground);
 	}
 
 	.prefixes {
@@ -91,12 +92,14 @@
 		align-items: center;
 		gap: var(--ax-space-8);
 		padding-top: var(--ax-space-8);
-		border-top: 1px solid var(--ax-border-neutral-subtleA);
-		color: var(--ax-text-neutral);
+		border-top: 1px solid var(--border);
+		color: var(--foreground);
 	}
 
 	.scope > span {
-		font-weight: var(--ax-font-weight-bold);
+		font-weight: 600;
+		font-size: var(--sh-font-size-micro);
+		color: var(--muted-foreground);
 	}
 
 	.prefix {
@@ -104,22 +107,25 @@
 		align-items: center;
 		gap: var(--ax-space-6);
 		padding: var(--ax-space-4) var(--ax-space-8);
-		border: 1px solid var(--ax-border-neutral-subtleA);
-		border-radius: var(--ax-radius-4);
-		background-color: transparent;
-		color: var(--ax-text-neutral);
-		font: inherit;
+		border: 1px solid var(--border);
+		border-radius: calc(var(--radius) - 4px);
+		background-color: var(--card);
+		color: var(--foreground);
+		font-size: var(--sh-font-size-micro);
 		text-align: left;
 		cursor: pointer;
+		transition:
+			border-color 120ms ease,
+			background-color 120ms ease;
 	}
 
 	.prefix:hover {
-		border-color: var(--surface-accent-color);
-		background-color: var(--ax-neutral-100);
+		border-color: var(--primary-border);
+		background-color: var(--secondary);
 	}
 
 	.prefix:focus-visible {
-		outline: 2px solid var(--surface-accent-color);
+		outline: 2px solid var(--ring);
 		outline-offset: 2px;
 	}
 
@@ -128,14 +134,16 @@
 		align-items: center;
 		gap: var(--ax-space-6);
 		padding: var(--ax-space-4) var(--ax-space-8);
-		border: 1px solid var(--ax-border-neutral-subtleA);
-		border-radius: var(--ax-radius-4);
-		color: var(--ax-text-neutral);
+		border: 1px solid var(--border);
+		border-radius: calc(var(--radius) - 4px);
+		background-color: var(--card);
+		color: var(--muted-foreground);
+		font-size: var(--sh-font-size-micro);
 	}
 
 	code {
-		font-family: monospace;
-		font-weight: var(--ax-font-weight-bold);
-		color: var(--surface-accent-color);
+		font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+		font-weight: 600;
+		color: var(--primary);
 	}
 </style>

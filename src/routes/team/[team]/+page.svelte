@@ -4,9 +4,9 @@
 	import CriticalIssues from '#lib/domain/issues/CriticalIssues.svelte';
 	import TeamInventory from '#lib/domain/team/TeamInventory.svelte';
 	import TeamSummary from '#lib/domain/team/TeamSummary.svelte';
+	import { ShAlert } from '#lib/shadcn/ui/index.js';
 	import GraphErrors from '#lib/ui/GraphErrors.svelte';
 	import SectionBoundary from '#lib/ui/SectionBoundary.svelte';
-	import { Alert, BodyShort } from '@nais/ds-svelte-community';
 	import type { PageProps } from './$types';
 
 	let { data }: PageProps = $props();
@@ -14,90 +14,106 @@
 		$derived(data);
 </script>
 
-<div class="team-info">
-	<div>
-		<BodyShort>{purpose}</BodyShort>
-	</div>
-</div>
+{#if purpose}
+	<p class="team-purpose-text">{purpose}</p>
+{/if}
 
 {#if page.url.searchParams.has('deleted')}
 	{const msgParts = $derived((page.url.searchParams.get('deleted') || '').split('/'))}
 	<div style="margin-bottom: var(--spacing-layout)">
-		<Alert variant="success" size="small">
+		<ShAlert variant="success" size="sm">
 			Successfully deleted {msgParts[0]}
 			{msgParts[1]}.
-		</Alert>
+		</ShAlert>
 	</div>
 {/if}
 
 <GraphErrors errors={$TeamOverview.errors} />
 
-<div class="wrapper">
-	<div class="main-content">
-		<CriticalIssues {teamSlug} store={TeamHealth} />
-		<SectionBoundary message="Team summary failed to render.">
-			<TeamSummary
-				{teamSlug}
-				criticalIssues={$TeamOverview.data?.team.criticalIssues.pageInfo.totalCount ?? 0}
-				warningIssues={$TeamOverview.data?.team.warningIssues.pageInfo.totalCount ?? 0}
-				todoIssues={$TeamOverview.data?.team.todoIssues.pageInfo.totalCount ?? 0}
-				firingAlerts={$TeamOverview.data?.team.firingAlerts.pageInfo.totalCount ?? 0}
-				loading={$TeamOverview.fetching}
-				vulnerabilityData={$TeamSummaryVulnerabilities.data}
-				costData={$TeamSummaryCost.data}
-				costLoading={$TeamSummaryCost.fetching}
-			/>
-		</SectionBoundary>
+<div class="health-strip">
+	<SectionBoundary message="Team summary failed to render.">
+		<TeamSummary
+			{teamSlug}
+			criticalIssues={$TeamOverview.data?.team.criticalIssues.pageInfo.totalCount ?? 0}
+			warningIssues={$TeamOverview.data?.team.warningIssues.pageInfo.totalCount ?? 0}
+			todoIssues={$TeamOverview.data?.team.todoIssues.pageInfo.totalCount ?? 0}
+			firingAlerts={$TeamOverview.data?.team.firingAlerts.pageInfo.totalCount ?? 0}
+			loading={$TeamOverview.fetching}
+			vulnerabilityData={$TeamSummaryVulnerabilities.data}
+			costData={$TeamSummaryCost.data}
+			costLoading={$TeamSummaryCost.fetching}
+		/>
+	</SectionBoundary>
+</div>
+
+<div
+	class="overview-bento"
+	class:no-critical-issues={!$TeamHealth.fetching &&
+		($TeamHealth.data?.team?.issues?.pageInfo?.totalCount ?? 0) === 0}
+>
+	{#if $TeamHealth.fetching || ($TeamHealth.data?.team?.issues?.pageInfo?.totalCount ?? 0) > 0}
+		<div class="bento-main">
+			<CriticalIssues {teamSlug} store={TeamHealth} />
+		</div>
+	{/if}
+	<div class="bento-side">
 		<TeamInventory {teamSlug} />
-	</div>
-	<div class="summary-cards">
 		<SectionBoundary message="Latest activity failed to render.">
 			<TeamActivityCard
 				{teamSlug}
 				viewAllHref="/team/{teamSlug}/activity-log"
-				title="Latest Activity"
+				title="Latest activity"
 			/>
 		</SectionBoundary>
 	</div>
 </div>
 
 <style>
-	.wrapper {
+	.team-purpose-text {
+		margin: 0 0 var(--ax-space-20) 0;
+		font-size: var(--ax-font-size-small);
+		color: var(--muted-foreground);
+		max-width: 68ch;
+		line-height: 1.5;
+	}
+
+	.health-strip {
+		margin-bottom: var(--ax-space-20);
+	}
+
+	.overview-bento {
 		display: grid;
-		grid-template-columns: 1fr 300px;
-		gap: var(--spacing-layout);
+		grid-template-columns: minmax(0, 1.2fr) minmax(0, 0.8fr);
+		gap: var(--ax-space-20);
+		align-items: start;
 	}
 
-	@media (max-width: 767px) {
-		.wrapper {
-			grid-template-columns: 1fr;
-		}
+	.overview-bento.no-critical-issues {
+		grid-template-columns: 1fr;
 	}
 
-	.main-content {
+	.overview-bento.no-critical-issues .bento-side {
+		display: grid;
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+		gap: var(--ax-space-20);
+		align-items: start;
+	}
+
+	.bento-main,
+	.bento-side {
 		display: flex;
 		flex-direction: column;
-		gap: var(--spacing-layout);
+		gap: var(--ax-space-20);
+		min-width: 0;
 	}
 
-	.summary-cards {
-		display: grid;
-		grid-template-columns: minmax(0, 1fr);
-		gap: var(--spacing-layout);
-		align-self: start;
-	}
-
-	.team-info {
-		display: grid;
-		grid-template-columns: 1fr 300px;
-		gap: var(--spacing-layout);
-		margin-top: calc(-1 * var(--spacing-layout));
-		margin-bottom: var(--spacing-layout);
-	}
-
-	@media (max-width: 767px) {
-		.team-info {
+	@media (max-width: 1024px) {
+		.overview-bento {
 			grid-template-columns: 1fr;
+		}
+
+		.overview-bento.no-critical-issues .bento-side {
+			grid-template-columns: minmax(0, 1fr);
 		}
 	}
 </style>

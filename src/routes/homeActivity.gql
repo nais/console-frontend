@@ -1,0 +1,737 @@
+query HomeActivity($from: Time!) {
+	activityLog(first: 8, filter: { teamScope: { memberOfViewer: true }, from: $from }) {
+		nodes {
+			__typename
+			... on ApplicationCreatedActivityLogEntry {
+				id
+				createdAt
+				actor
+				message
+				environmentName
+				resourceName
+				resourceType
+				teamSlug
+			}
+			... on ApplicationDeletedActivityLogEntry {
+				id
+				createdAt
+				actor
+				message
+				environmentName
+				resourceName
+				resourceType
+				teamSlug
+			}
+			... on ApplicationRestartedActivityLogEntry {
+				id
+				createdAt
+				actor
+				message
+				environmentName
+				resourceName
+				resourceType
+				teamSlug
+			}
+			... on ApplicationScaledActivityLogEntry {
+				id
+				createdAt
+				actor
+				message
+				environmentName
+				resourceName
+				resourceType
+				teamSlug
+			}
+			... on ApplicationUpdatedActivityLogEntry {
+				id
+				createdAt
+				actor
+				message
+				environmentName
+				resourceName
+				resourceType
+				teamSlug
+			}
+			... on ClusterAuditActivityLogEntry {
+				id
+				createdAt
+				actor
+				message
+				environmentName
+				resourceName
+				resourceType
+				teamSlug
+			}
+			... on ConfigCreatedActivityLogEntry {
+				id
+				createdAt
+				actor
+				message
+				environmentName
+				resourceName
+				resourceType
+				teamSlug
+			}
+			... on ConfigDeletedActivityLogEntry {
+				id
+				createdAt
+				actor
+				message
+				environmentName
+				resourceName
+				resourceType
+				teamSlug
+			}
+			... on ConfigUpdatedActivityLogEntry {
+				id
+				createdAt
+				actor
+				message
+				environmentName
+				resourceName
+				resourceType
+				teamSlug
+			}
+			... on DeploymentActivityLogEntry {
+				id
+				createdAt
+				actor
+				message
+				environmentName
+				resourceName
+				resourceType
+				teamSlug
+			}
+			... on GenericKubernetesResourceActivityLogEntry {
+				id
+				createdAt
+				actor
+				message
+				environmentName
+				resourceName
+				resourceType
+				optionalTeamSlug: teamSlug
+			}
+			... on JobCreatedActivityLogEntry {
+				id
+				createdAt
+				actor
+				message
+				environmentName
+				resourceName
+				resourceType
+				teamSlug
+			}
+			... on JobDeletedActivityLogEntry {
+				id
+				createdAt
+				actor
+				message
+				environmentName
+				resourceName
+				resourceType
+				teamSlug
+			}
+			... on JobRunDeletedActivityLogEntry {
+				id
+				createdAt
+				actor
+				message
+				environmentName
+				resourceName
+				resourceType
+				teamSlug
+			}
+			... on JobTriggeredActivityLogEntry {
+				id
+				createdAt
+				actor
+				message
+				environmentName
+				resourceName
+				resourceType
+				teamSlug
+			}
+			... on JobUpdatedActivityLogEntry {
+				id
+				createdAt
+				actor
+				message
+				environmentName
+				resourceName
+				resourceType
+				teamSlug
+			}
+			... on KafkaCredentialsCreatedActivityLogEntry {
+				id
+				createdAt
+				actor
+				message
+				environmentName
+				resourceName
+				resourceType
+				teamSlug
+			}
+			... on KafkaTopicUpdatedActivityLogEntry {
+				id
+				createdAt
+				actor
+				message
+				environmentName
+				resourceName
+				resourceType
+				teamSlug
+			}
+			... on OpenSearchCreatedActivityLogEntry {
+				id
+				createdAt
+				actor
+				message
+				environmentName
+				resourceName
+				resourceType
+				teamSlug
+			}
+			... on OpenSearchCredentialsCreatedActivityLogEntry {
+				id
+				createdAt
+				actor
+				message
+				environmentName
+				resourceName
+				resourceType
+				teamSlug
+			}
+			... on OpenSearchDeletedActivityLogEntry {
+				id
+				createdAt
+				actor
+				message
+				environmentName
+				resourceName
+				resourceType
+				teamSlug
+			}
+			... on OpenSearchUpdatedActivityLogEntry {
+				id
+				createdAt
+				actor
+				message
+				environmentName
+				resourceName
+				resourceType
+				teamSlug
+			}
+			... on PostgresBranchActivatedActivityLogEntry {
+				id
+				createdAt
+				actor
+				message
+				environmentName
+				resourceName
+				resourceType
+				teamSlug
+			}
+			... on PostgresBranchCreatedActivityLogEntry {
+				id
+				createdAt
+				actor
+				message
+				environmentName
+				resourceName
+				resourceType
+				teamSlug
+			}
+			... on PostgresBranchDeletedActivityLogEntry {
+				id
+				createdAt
+				actor
+				message
+				environmentName
+				resourceName
+				resourceType
+				teamSlug
+			}
+			... on PostgresCreatedActivityLogEntry {
+				id
+				createdAt
+				actor
+				message
+				environmentName
+				resourceName
+				resourceType
+				teamSlug
+			}
+			... on PostgresDeletedActivityLogEntry {
+				id
+				createdAt
+				actor
+				message
+				environmentName
+				resourceName
+				resourceType
+				teamSlug
+			}
+			... on PostgresGrantAccessActivityLogEntry {
+				id
+				createdAt
+				actor
+				message
+				environmentName
+				resourceName
+				resourceType
+				teamSlug
+			}
+			... on PostgresPersonalAccessConnectionActivityLogEntry {
+				id
+				createdAt
+				actor
+				message
+				environmentName
+				resourceName
+				resourceType
+				teamSlug
+			}
+			... on PostgresPersonalAccessCreatedActivityLogEntry {
+				id
+				createdAt
+				actor
+				message
+				environmentName
+				resourceName
+				resourceType
+				teamSlug
+			}
+			... on PostgresUpdatedActivityLogEntry {
+				id
+				createdAt
+				actor
+				message
+				environmentName
+				resourceName
+				resourceType
+				teamSlug
+			}
+			... on ReconcilerConfiguredActivityLogEntry {
+				id
+				createdAt
+				actor
+				message
+				environmentName
+				resourceName
+				resourceType
+				teamSlug
+			}
+			... on ReconcilerDisabledActivityLogEntry {
+				id
+				createdAt
+				actor
+				message
+				environmentName
+				resourceName
+				resourceType
+				teamSlug
+			}
+			... on ReconcilerEnabledActivityLogEntry {
+				id
+				createdAt
+				actor
+				message
+				environmentName
+				resourceName
+				resourceType
+				teamSlug
+			}
+			... on RepositoryAddedActivityLogEntry {
+				id
+				createdAt
+				actor
+				message
+				environmentName
+				resourceName
+				resourceType
+				teamSlug
+			}
+			... on RepositoryRemovedActivityLogEntry {
+				id
+				createdAt
+				actor
+				message
+				environmentName
+				resourceName
+				resourceType
+				teamSlug
+			}
+			... on RoleAssignedToServiceAccountActivityLogEntry {
+				id
+				createdAt
+				actor
+				message
+				environmentName
+				resourceName
+				resourceType
+				optionalTeamSlug: teamSlug
+			}
+			... on RoleRevokedFromServiceAccountActivityLogEntry {
+				id
+				createdAt
+				actor
+				message
+				environmentName
+				resourceName
+				resourceType
+				optionalTeamSlug: teamSlug
+			}
+			... on SecretCreatedActivityLogEntry {
+				id
+				createdAt
+				actor
+				message
+				environmentName
+				resourceName
+				resourceType
+				teamSlug
+			}
+			... on SecretDeletedActivityLogEntry {
+				id
+				createdAt
+				actor
+				message
+				environmentName
+				resourceName
+				resourceType
+				teamSlug
+			}
+			... on SecretUpdatedActivityLogEntry {
+				id
+				createdAt
+				actor
+				message
+				environmentName
+				resourceName
+				resourceType
+				teamSlug
+			}
+			... on SecretValueAddedActivityLogEntry {
+				id
+				createdAt
+				actor
+				message
+				environmentName
+				resourceName
+				resourceType
+				teamSlug
+			}
+			... on SecretValueRemovedActivityLogEntry {
+				id
+				createdAt
+				actor
+				message
+				environmentName
+				resourceName
+				resourceType
+				teamSlug
+			}
+			... on SecretValueUpdatedActivityLogEntry {
+				id
+				createdAt
+				actor
+				message
+				environmentName
+				resourceName
+				resourceType
+				teamSlug
+			}
+			... on SecretValuesViewedActivityLogEntry {
+				id
+				createdAt
+				actor
+				message
+				environmentName
+				resourceName
+				resourceType
+				teamSlug
+			}
+			... on ServiceAccountCreatedActivityLogEntry {
+				id
+				createdAt
+				actor
+				message
+				environmentName
+				resourceName
+				resourceType
+				optionalTeamSlug: teamSlug
+			}
+			... on ServiceAccountDeletedActivityLogEntry {
+				id
+				createdAt
+				actor
+				message
+				environmentName
+				resourceName
+				resourceType
+				optionalTeamSlug: teamSlug
+			}
+			... on ServiceAccountTokenCreatedActivityLogEntry {
+				id
+				createdAt
+				actor
+				message
+				environmentName
+				resourceName
+				resourceType
+				optionalTeamSlug: teamSlug
+			}
+			... on ServiceAccountTokenDeletedActivityLogEntry {
+				id
+				createdAt
+				actor
+				message
+				environmentName
+				resourceName
+				resourceType
+				optionalTeamSlug: teamSlug
+			}
+			... on ServiceAccountTokenUpdatedActivityLogEntry {
+				id
+				createdAt
+				actor
+				message
+				environmentName
+				resourceName
+				resourceType
+				optionalTeamSlug: teamSlug
+			}
+			... on ServiceAccountUpdatedActivityLogEntry {
+				id
+				createdAt
+				actor
+				message
+				environmentName
+				resourceName
+				resourceType
+				optionalTeamSlug: teamSlug
+			}
+			... on ServiceAccountWorkloadBindingAddedActivityLogEntry {
+				id
+				createdAt
+				actor
+				message
+				environmentName
+				resourceName
+				resourceType
+				optionalTeamSlug: teamSlug
+			}
+			... on ServiceAccountWorkloadBindingRemovedActivityLogEntry {
+				id
+				createdAt
+				actor
+				message
+				environmentName
+				resourceName
+				resourceType
+				optionalTeamSlug: teamSlug
+			}
+			... on ServiceMaintenanceActivityLogEntry {
+				id
+				createdAt
+				actor
+				message
+				environmentName
+				resourceName
+				resourceType
+				teamSlug
+			}
+			... on TeamConfirmDeleteKeyActivityLogEntry {
+				id
+				createdAt
+				actor
+				message
+				environmentName
+				resourceName
+				resourceType
+				teamSlug
+			}
+			... on TeamCreateDeleteKeyActivityLogEntry {
+				id
+				createdAt
+				actor
+				message
+				environmentName
+				resourceName
+				resourceType
+				teamSlug
+			}
+			... on TeamCreatedActivityLogEntry {
+				id
+				createdAt
+				actor
+				message
+				environmentName
+				resourceName
+				resourceType
+				teamSlug
+			}
+			... on TeamDeployKeyUpdatedActivityLogEntry {
+				id
+				createdAt
+				actor
+				message
+				environmentName
+				resourceName
+				resourceType
+				teamSlug
+			}
+			... on TeamEnvironmentUpdatedActivityLogEntry {
+				id
+				createdAt
+				actor
+				message
+				environmentName
+				resourceName
+				resourceType
+				teamSlug
+			}
+			... on TeamMemberAddedActivityLogEntry {
+				id
+				createdAt
+				actor
+				message
+				environmentName
+				resourceName
+				resourceType
+				teamSlug
+			}
+			... on TeamMemberRemovedActivityLogEntry {
+				id
+				createdAt
+				actor
+				message
+				environmentName
+				resourceName
+				resourceType
+				teamSlug
+			}
+			... on TeamMemberSetRoleActivityLogEntry {
+				id
+				createdAt
+				actor
+				message
+				environmentName
+				resourceName
+				resourceType
+				teamSlug
+			}
+			... on TeamUpdatedActivityLogEntry {
+				id
+				createdAt
+				actor
+				message
+				environmentName
+				resourceName
+				resourceType
+				teamSlug
+			}
+			... on TunnelCreatedActivityLogEntry {
+				id
+				createdAt
+				actor
+				message
+				environmentName
+				resourceName
+				resourceType
+				optionalTeamSlug: teamSlug
+			}
+			... on TunnelDeletedActivityLogEntry {
+				id
+				createdAt
+				actor
+				message
+				environmentName
+				resourceName
+				resourceType
+				optionalTeamSlug: teamSlug
+			}
+			... on UnleashInstanceCreatedActivityLogEntry {
+				id
+				createdAt
+				actor
+				message
+				environmentName
+				resourceName
+				resourceType
+				teamSlug
+			}
+			... on UnleashInstanceDeletedActivityLogEntry {
+				id
+				createdAt
+				actor
+				message
+				environmentName
+				resourceName
+				resourceType
+				teamSlug
+			}
+			... on UnleashInstanceUpdatedActivityLogEntry {
+				id
+				createdAt
+				actor
+				message
+				environmentName
+				resourceName
+				resourceType
+				teamSlug
+			}
+			... on ValkeyCreatedActivityLogEntry {
+				id
+				createdAt
+				actor
+				message
+				environmentName
+				resourceName
+				resourceType
+				teamSlug
+			}
+			... on ValkeyCredentialsCreatedActivityLogEntry {
+				id
+				createdAt
+				actor
+				message
+				environmentName
+				resourceName
+				resourceType
+				teamSlug
+			}
+			... on ValkeyDeletedActivityLogEntry {
+				id
+				createdAt
+				actor
+				message
+				environmentName
+				resourceName
+				resourceType
+				teamSlug
+			}
+			... on ValkeyUpdatedActivityLogEntry {
+				id
+				createdAt
+				actor
+				message
+				environmentName
+				resourceName
+				resourceType
+				teamSlug
+			}
+			... on VulnerabilityUpdatedActivityLogEntry {
+				id
+				createdAt
+				actor
+				message
+				environmentName
+				resourceName
+				resourceType
+				optionalTeamSlug: teamSlug
+			}
+		}
+	}
+}

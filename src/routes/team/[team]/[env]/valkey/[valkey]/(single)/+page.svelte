@@ -12,21 +12,12 @@
 	import ExternalLink from '#lib/ui/ExternalLink.svelte';
 	import GraphErrors from '#lib/ui/GraphErrors.svelte';
 	import Collection from '#lib/ui/Collection.svelte';
+	import EmptyState from '#lib/ui/EmptyState.svelte';
 	import ManifestCard from '#lib/ui/ManifestCard.svelte';
 	import Pagination from '#lib/ui/Pagination.svelte';
 	import { changeParams } from '#lib/utils/searchparams.js';
-	import {
-		Alert,
-		Button,
-		Heading,
-		Table,
-		Tbody,
-		Td,
-		Th,
-		Thead,
-		Tr
-	} from '@nais/ds-svelte-community';
-	import { CogRotationIcon, NotePencilIcon, TrashIcon } from '@nais/ds-svelte-community/icons';
+	import { Alert, Button, Heading, Table, Tbody, Td, Th, Thead, Tr } from '#lib/shadcn/ui/index.js';
+	import { CogRotationIcon, NotePencilIcon, TrashIcon } from '#lib/icons/index.js';
 	import type { PageProps } from './$types';
 
 	const runServiceMaintenance = graphql(`
@@ -274,11 +265,11 @@
 
 			<section aria-labelledby="issues-heading">
 				<Heading as="h2" id="issues-heading" size="medium" spacing>Issues</Heading>
-				<Collection>
+				<Collection headerless>
 					{#each $Valkey.data.team.environment.valkey.issues.edges as edge (edge.node.id)}
 						<IssueListItem item={edge.node} />
 					{:else}
-						<span>No issues found</span>
+						<EmptyState title="No issues found" />
 					{/each}
 				</Collection>
 			</section>

@@ -1,8 +1,8 @@
 <script lang="ts">
 	import { graphql } from '$houdini';
+	import { ShSpinner } from '#lib/shadcn/ui/index.js';
 	import SurfaceCard from '#lib/ui/SurfaceCard.svelte';
-	import { Loader } from '@nais/ds-svelte-community';
-	import { BriefcaseClockIcon, PackageIcon } from '@nais/ds-svelte-community/icons';
+	import { BriefcaseClockIcon, PackageIcon } from '#lib/icons/index.js';
 
 	interface Props {
 		teamSlug: string;
@@ -147,10 +147,10 @@
 	});
 </script>
 
-<SurfaceCard title="Inventory" bordered>
+<SurfaceCard title="Inventory">
 	{#if $inventoryQuery.fetching}
 		<div class="loading">
-			<Loader size="xlarge" />
+			<ShSpinner size="lg" />
 		</div>
 	{:else}
 		<div class="inventory">
@@ -287,22 +287,23 @@
 		display: flex;
 		justify-content: center;
 		align-items: center;
-		min-height: 6rem;
+		min-height: var(--loading-card-min-height);
 	}
 
 	.inventory {
 		display: flex;
 		flex-direction: column;
 		gap: var(--ax-space-16);
+		container-type: inline-size;
 	}
 
 	.workloads {
 		display: grid;
-		grid-template-columns: 1fr 1fr;
+		grid-template-columns: repeat(2, minmax(0, 1fr));
 		gap: var(--ax-space-12);
 	}
 
-	@media (max-width: 500px) {
+	@container (max-width: 500px) {
 		.workloads {
 			grid-template-columns: 1fr;
 		}
@@ -311,53 +312,55 @@
 	.workload-card {
 		display: flex;
 		flex-direction: column;
-		gap: var(--ax-space-8);
-		padding: var(--ax-space-12);
-		border-radius: var(--ax-radius-8);
+		align-items: stretch;
+		gap: var(--ax-space-10);
+		padding: var(--ax-space-16);
+		border-radius: var(--radius);
 		text-decoration: none;
 		color: inherit;
-		background: color-mix(in srgb, var(--ax-bg-default) 82%, transparent);
-		box-shadow: 0 0 0 1px var(--ax-border-neutral-subtleA);
+		background-color: var(--card);
+		border: 1px solid var(--border);
 		transition:
-			background-color 120ms ease,
-			box-shadow 120ms ease,
-			transform 120ms ease;
+			background-color 140ms ease,
+			border-color 140ms ease,
+			box-shadow 140ms ease;
 	}
 
 	.workload-card:hover {
-		background: color-mix(in srgb, var(--surface-accent-color) 8%, var(--ax-bg-default));
-		box-shadow:
-			0 0 0 1px color-mix(in srgb, var(--surface-accent-color) 24%, transparent),
-			0 8px 12px -10px var(--surface-shadow-color);
-		transform: translateY(-1px);
+		background-color: var(--card-hover);
+		border-color: var(--border-strong);
+		box-shadow: var(--sh-shadow-xs);
+		text-decoration: none;
 	}
 
 	.workload-header {
 		display: flex;
 		align-items: center;
-		gap: var(--ax-space-6);
-		color: var(--ax-text-neutral);
+		gap: var(--ax-space-8);
+		color: var(--foreground);
 	}
 
 	.workload-label {
-		font-weight: var(--ax-font-weight-bold);
+		font-weight: 600;
 		font-size: var(--ax-font-size-small);
 	}
 
 	.workload-total {
 		margin-left: auto;
 		font-size: var(--ax-font-size-xlarge);
-		font-weight: var(--ax-font-weight-bold);
+		font-weight: 700;
+		font-variant-numeric: tabular-nums;
+		letter-spacing: -0.02em;
 	}
 
 	.state-bar {
 		display: flex;
 		width: 100%;
 		height: 6px;
-		border-radius: 3px;
+		border-radius: var(--radius-full);
 		overflow: hidden;
-		background: var(--ax-neutral-200);
-		gap: 1px;
+		background: var(--secondary);
+		gap: 2px;
 	}
 
 	.state-segment {
@@ -366,23 +369,23 @@
 	}
 
 	.state-segment.running {
-		background: var(--ax-bg-success-strong);
+		background: var(--success);
 	}
 
 	.state-segment.completed {
-		background: var(--ax-bg-success-strong);
+		background: var(--success);
 	}
 
 	.state-segment.not-running {
-		background: var(--ax-bg-danger-strong);
+		background: var(--destructive);
 	}
 
 	.state-segment.job-running {
-		background: var(--ax-bg-info-strong);
+		background: var(--info);
 	}
 
 	.state-segment.unknown {
-		background: var(--ax-bg-neutral-strong);
+		background: var(--muted-foreground);
 	}
 
 	.state-legend {
@@ -394,70 +397,80 @@
 	.legend-item {
 		display: inline-flex;
 		align-items: center;
-		gap: var(--ax-space-4);
+		gap: var(--ax-space-6);
 		font-size: var(--ax-font-size-small);
-		color: var(--ax-text-neutral-subtle);
+		color: var(--muted-foreground);
+		font-variant-numeric: tabular-nums;
 	}
 
 	.dot {
 		display: inline-block;
-		width: 8px;
-		height: 8px;
+		width: 7px;
+		height: 7px;
 		border-radius: 50%;
 	}
 
 	.dot.running {
-		background: var(--ax-bg-success-strong);
+		background: var(--success);
 	}
 
 	.dot.completed {
-		background: var(--ax-bg-success-strong);
+		background: var(--success);
 	}
 
 	.dot.not-running {
-		background: var(--ax-bg-danger-strong);
+		background: var(--destructive);
 	}
 
 	.dot.job-running {
-		background: var(--ax-bg-info-strong);
+		background: var(--info);
 	}
 
 	.dot.unknown {
-		background: var(--ax-bg-neutral-strong);
+		background: var(--muted-foreground);
 	}
 
 	.resources {
-		display: flex;
-		flex-wrap: wrap;
-		gap: var(--ax-space-6);
+		display: grid;
+		grid-template-columns: repeat(auto-fill, minmax(135px, 1fr));
+		gap: var(--ax-space-8);
 	}
 
 	.resource-item {
-		display: inline-flex;
+		display: flex;
 		align-items: center;
-		gap: var(--ax-space-6);
-		padding: var(--ax-space-4) var(--ax-space-12);
-		border-radius: var(--ax-radius-8);
+		justify-content: space-between;
+		gap: var(--ax-space-8);
+		padding: var(--ax-space-8) var(--ax-space-12);
+		border-radius: var(--radius-md);
 		text-decoration: none;
-		color: var(--ax-text-neutral);
-		background: color-mix(in srgb, var(--ax-bg-default) 82%, transparent);
-		box-shadow: 0 0 0 1px var(--ax-border-neutral-subtleA);
+		color: var(--foreground);
+		background-color: color-mix(in srgb, var(--background) 60%, var(--card));
+		border: 1px solid var(--border);
 		font-size: var(--ax-font-size-small);
 		transition:
 			background-color 120ms ease,
-			box-shadow 120ms ease;
+			border-color 120ms ease;
 	}
 
 	.resource-item:hover {
-		background: color-mix(in srgb, var(--surface-accent-color) 8%, var(--ax-bg-default));
-		box-shadow: 0 0 0 1px color-mix(in srgb, var(--surface-accent-color) 24%, transparent);
+		background-color: var(--accent);
+		border-color: color-mix(in srgb, var(--primary) 45%, var(--border));
 	}
 
 	.resource-label {
-		color: var(--ax-text-neutral);
+		color: var(--muted-foreground);
+		font-weight: 500;
 	}
 
 	.resource-count {
-		font-weight: var(--ax-font-weight-bold);
+		font-weight: 700;
+		font-family: monospace;
+		font-size: var(--sh-font-size-xs);
+		padding: var(--ax-space-1) var(--ax-space-8);
+		border-radius: var(--radius-full);
+		background-color: var(--secondary);
+		color: var(--foreground);
+		font-variant-numeric: tabular-nums;
 	}
 </style>

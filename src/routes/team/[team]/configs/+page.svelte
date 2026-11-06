@@ -7,6 +7,7 @@
 	import { envTagVariant } from '#lib/envTagVariant.js';
 	import CollapsibleSidebar from '#lib/ui/CollapsibleSidebar.svelte';
 	import ExternalLink from '#lib/ui/ExternalLink.svelte';
+	import EmptyState from '#lib/ui/EmptyState.svelte';
 	import GraphErrors from '#lib/ui/GraphErrors.svelte';
 	import Collection from '#lib/ui/Collection.svelte';
 	import ListFilters from '#lib/ui/ListFilters.svelte';
@@ -16,8 +17,8 @@
 	import Time from '#lib/ui/Time.svelte';
 	import { getConfigPermissions } from '#lib/utils/configPermissions.js';
 	import { changeParams } from '#lib/utils/searchparams.js';
-	import { Button, Tag, Td, Th, Tr, type TableSortState } from '@nais/ds-svelte-community';
-	import { FileTextIcon, FunnelIcon, PlusIcon } from '@nais/ds-svelte-community/icons';
+	import { Button, Tag, Td, Th, Tr, type TableSortState } from '#lib/shadcn/ui/index.js';
+	import { FileTextIcon, FunnelIcon, PlusIcon } from '#lib/icons/index.js';
 	import type { PageProps } from './$types';
 	import CreateConfig, { type EnvironmentType } from './CreateConfig.svelte';
 
@@ -180,7 +181,7 @@
 						aria-expanded={filtersOpen}
 						onclick={() => (filtersOpen = !filtersOpen)}
 					>
-						<FunnelIcon aria-hidden="true" style="font-size: 1rem" />
+						<FunnelIcon aria-hidden="true" style="font-size: var(--ax-font-size-medium)" />
 						Filters
 					</button>
 				{/snippet}
@@ -233,12 +234,14 @@
 						{/each}
 					</ResourceTable>
 				{:else}
-					<p>
-						No configs found. Configs are used to store configuration data for your applications.
+					<EmptyState
+						title="No configs found."
+						description="Configs are used to store configuration data for your applications."
+					>
 						<ExternalLink href={docURL('/services/config')}
 							>Learn more about configs in Nais and how to get started.</ExternalLink
 						>
-					</p>
+					</EmptyState>
 				{/if}
 			</Collection>
 			<Pagination

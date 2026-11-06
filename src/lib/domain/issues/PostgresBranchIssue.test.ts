@@ -37,6 +37,28 @@ test('renders a named, linked Postgres branch in the issue list during SSR', asy
 	expect(body).not.toContain('Unknown');
 });
 
+test.each([
+	['CRITICAL', 'Critical'],
+	['WARNING', 'Warning'],
+	['TODO', 'Todo']
+])('labels the %s severity tooltip during SSR', async (severity, label) => {
+	fixture.data.severity = severity;
+	const { body } = await render(IssueListItem, { props: { item } });
+	expect(body).toMatch(new RegExp(`<span class="sr-only">Severity: ${label}</span>`));
+});
+
+test.each([
+	['WARNING', '--ax-bg-warning-strong'],
+	['TODO', '--ax-bg-info-strong']
+])('renders a filled %s indicator with its strong semantic colour', async (severity, token) => {
+	fixture.data.severity = severity;
+	const { body } = await render(IssueListItem, { props: { item } });
+	expect(body).toMatch(/<svg\b[^>]*fill="currentColor"[^>]*>/);
+	expect(body).toContain(`color: var(${token})`);
+	expect(body).not.toContain('light-dark(');
+	expect(body).not.toContain('--ax-bg-warning-moderate-pressed');
+});
+
 test('renders a named, linked Postgres branch in the critical issues card during SSR', async () => {
 	const { body } = await render(CriticalIssueRow, { props: { issue: item } });
 	expect(body).toContain('Postgres branch failure for database / failed-restore in dev-gcp');

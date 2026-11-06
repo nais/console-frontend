@@ -2,8 +2,8 @@
 	import { RevealSecretValuesStore } from '$houdini';
 	import GraphErrors from '#lib/ui/GraphErrors.svelte';
 	import Textarea from '#lib/ui/Textarea.svelte';
-	import { Alert, BodyShort, Button, Heading, Modal } from '@nais/ds-svelte-community';
-	import { PadlockLockedIcon } from '@nais/ds-svelte-community/icons';
+	import { Alert, BodyShort, Button, Heading, Modal } from '#lib/shadcn/ui/index.js';
+	import { PadlockLockedIcon } from '#lib/icons/index.js';
 
 	import type { ValueEncoding$options } from '$houdini';
 
@@ -72,7 +72,7 @@
 <Modal bind:open onclose={handleClose} width="medium">
 	{#snippet header()}
 		<div class="header">
-			<PadlockLockedIcon style="font-size: 1.5rem;" />
+			<PadlockLockedIcon />
 			<Heading as="h2" size="medium">View secret values</Heading>
 		</div>
 	{/snippet}

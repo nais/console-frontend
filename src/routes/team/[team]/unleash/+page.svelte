@@ -28,15 +28,14 @@
 		Thead,
 		Tooltip,
 		Tr
-	} from '@nais/ds-svelte-community';
+	} from '#lib/shadcn/ui/index.js';
 	import {
 		CheckmarkIcon,
 		PencilIcon,
 		PlusCircleFillIcon,
 		PlusIcon,
-		TrashIcon,
-		XMarkIcon
-	} from '@nais/ds-svelte-community/icons';
+		TrashIcon
+	} from '#lib/icons/index.js';
 	import type { GraphQLError } from 'houdini/runtime';
 	import prettyBytes from 'pretty-bytes';
 	import { onMount } from 'svelte';
@@ -135,7 +134,6 @@
 	let releaseChannelLoading = $state(false);
 	let editingReleaseChannel = $state(false);
 	let creatingUnleash = $state(false);
-	let pollingInterval: number | undefined = $state(undefined);
 
 	// Helper functions
 	/**
@@ -172,43 +170,25 @@
 
 	const createNewUnleash = async () => {
 		creatingUnleash = true;
-		await createUnleashForTeam.mutate({
-			team: teamSlug
-		});
-
-		if ($createUnleashForTeam.errors) {
+		try {
+			await createUnleashForTeam.mutate({
+				team: teamSlug
+			});
+			if ($createUnleashForTeam.errors) return;
+			await Unleash.fetch({ policy: 'CacheAndNetwork' });
+		} finally {
 			creatingUnleash = false;
-			return;
 		}
-
-		Unleash.fetch({ policy: 'CacheAndNetwork' });
-		// Start polling until Unleash is ready
-		startPolling();
 	};
 
-	const startPolling = () => {
-		if (pollingInterval) return; // Already polling
-		pollingInterval = window.setInterval(() => {
-			Unleash.fetch({ policy: 'NetworkOnly' });
-		}, 3000); // Poll every 3 seconds
-	};
-
-	const stopPolling = () => {
-		if (pollingInterval) {
-			window.clearInterval(pollingInterval);
-			pollingInterval = undefined;
-		}
-		creatingUnleash = false;
-	};
-
-	// Watch for when unleash becomes ready
-	$effect(() => {
-		if (unleash?.ready && (creatingUnleash || pollingInterval)) {
-			stopPolling();
-		}
+	onMount(() => {
+		const interval = window.setInterval(() => {
+			if (unleash && !unleash.ready && !$Unleash.fetching) {
+				void Unleash.fetch({ policy: 'NetworkOnly' });
+			}
+		}, 3000);
+		return () => window.clearInterval(interval);
 	});
-
-	onMount(() => () => stopPolling());
 
 	// Both mutations return the resulting allowed-team list so the response can
 	// be checked against what was asked for. A backend that accepts the request
@@ -336,7 +316,7 @@
 </script>
 
 {#if $Unleash.errors}
-	<Alert variant="error" size="small" style="margin-bottom: 1rem;">
+	<Alert variant="error" size="small" style="margin-bottom: var(--ax-space-16);">
 		{#each new Set(extractErrorMessages($Unleash.errors)) as error (error)}
 			{error}<br />
 		{/each}
@@ -344,7 +324,7 @@
 {/if}
 
 {#if $UnleashReleaseChannels.errors}
-	<Alert variant="error" size="small" style="margin-bottom: 1rem;">
+	<Alert variant="error" size="small" style="margin-bottom: var(--ax-space-16);">
 		{#each new Set(extractErrorMessages($UnleashReleaseChannels.errors)) as error (error)}
 			{error}<br />
 		{/each}
@@ -352,7 +332,7 @@
 {/if}
 
 {#if $createUnleashForTeam.errors}
-	<Alert variant="error" size="small" style="margin-bottom: 1rem;">
+	<Alert variant="error" size="small" style="margin-bottom: var(--ax-space-16);">
 		{#each new Set(extractErrorMessages($createUnleashForTeam.errors)) as error (error)}
 			{error}<br />
 		{/each}
@@ -363,7 +343,7 @@
 {/if}
 
 {#if $updateUnleashInstance.errors}
-	<Alert variant="error" size="small" style="margin-bottom: 1rem;">
+	<Alert variant="error" size="small" style="margin-bottom: var(--ax-space-16);">
 		{#each new Set(extractErrorMessages($updateUnleashInstance.errors)) as error (error)}
 			{error}<br />
 		{/each}
@@ -374,7 +354,7 @@
 {/if}
 
 {#if $allowTeamAccess.errors}
-	<Alert variant="error" size="small" style="margin-bottom: 1rem;">
+	<Alert variant="error" size="small" style="margin-bottom: var(--ax-space-16);">
 		{#each new Set(extractErrorMessages($allowTeamAccess.errors)) as error (error)}
 			{error}<br />
 		{/each}
@@ -385,7 +365,7 @@
 {/if}
 
 {#if $revokeTeamAccess.errors}
-	<Alert variant="error" size="small" style="margin-bottom: 1rem;">
+	<Alert variant="error" size="small" style="margin-bottom: var(--ax-space-16);">
 		{#each new Set(extractErrorMessages($revokeTeamAccess.errors)) as error (error)}
 			{error}<br />
 		{/each}
@@ -396,7 +376,7 @@
 {/if}
 
 {#if $deleteUnleashInstance.errors}
-	<Alert variant="error" size="small" style="margin-bottom: 1rem;">
+	<Alert variant="error" size="small" style="margin-bottom: var(--ax-space-16);">
 		{#each new Set(extractErrorMessages($deleteUnleashInstance.errors)) as error (error)}
 			{error}<br />
 		{/each}
@@ -407,27 +387,28 @@
 {/if}
 
 {#if deleteError}
-	<Alert variant="error" size="small" style="margin-bottom: 1rem;">
+	<Alert variant="error" size="small" style="margin-bottom: var(--ax-space-16);">
 		{deleteError}
 		<Button variant="tertiary" size="small" onclick={() => (deleteError = '')}>Dismiss</Button>
 	</Alert>
 {/if}
 
 {#if accessError}
-	<Alert variant="error" size="small" style="margin-bottom: 1rem;">
+	<Alert variant="error" size="small" style="margin-bottom: var(--ax-space-16);">
 		{accessError}
 		<Button variant="tertiary" size="small" onclick={() => (accessError = '')}>Dismiss</Button>
 	</Alert>
 {/if}
 
 {#if !enabled}
-	<Alert style="margin-bottom: 1rem;" variant="info">
+	<Alert style="margin-bottom: var(--ax-space-16);" variant="info">
 		Unleash is not enabled for this tenant. Contact your administrator.
 	</Alert>
 {:else if unleash}
 	{#if !unleash.ready}
 		<Alert variant="info" size="small">
-			<Loader size="small" /> Your Unleash instance is being created. This usually takes about a minute...
+			<Loader size="small" /> The Unleash instance is not ready. It may be starting or applying changes.
+			Status is refreshed automatically.
 		</Alert>
 	{/if}
 	{#if !unleash.releaseChannelName}
@@ -534,13 +515,15 @@
 					<dt>Status</dt>
 					<dd>
 						{#if unleash.ready}
-							<CheckmarkIcon style="color: var(--ax-text-success-decoration); font-size: 1.2rem" />
+							<CheckmarkIcon
+								style="color: var(--ax-text-success-decoration); font-size: var(--ax-font-size-large)"
+							/>
 						{:else}
 							<Tooltip
-								content="Unleash is not ready, new instances will be online after a minute."
+								content="Unleash is not ready. It may be starting or applying changes."
 								placement="right"
 							>
-								<XMarkIcon style="color: var(--ax-text-danger-decoration); font-size: 1.2rem" />
+								<Loader size="small" title="Unleash is not ready" />
 							</Tooltip>
 						{/if}
 					</dd>

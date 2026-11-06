@@ -19,7 +19,7 @@
 		ToggleGroup,
 		ToggleGroupItem,
 		Tr
-	} from '@nais/ds-svelte-community';
+	} from '#lib/shadcn/ui/index.js';
 
 	import ResourceActivityCard from '#lib/domain/activity/ResourceActivityCard.svelte';
 	import Labels from '#lib/domain/labels/Labels.svelte';
@@ -30,7 +30,7 @@
 	import ManifestCard from '#lib/ui/ManifestCard.svelte';
 	import Textarea from '#lib/ui/Textarea.svelte';
 	import { getConfigPermissions } from '#lib/utils/configPermissions.js';
-	import { DocPencilIcon, DownloadIcon, TrashIcon } from '@nais/ds-svelte-community/icons';
+	import { DocPencilIcon, DownloadIcon, TrashIcon } from '#lib/icons/index.js';
 	import type { PageProps } from './$types';
 	import AddKeyValue from './AddKeyValue.svelte';
 	import Workloads from './Workloads.svelte';
@@ -525,7 +525,7 @@
 	ul {
 		list-style: none;
 		margin: 0;
-		padding: 0 0 0 1rem;
+		padding: 0 0 0 var(--ax-space-16);
 	}
 
 	@media (max-width: 767px) {

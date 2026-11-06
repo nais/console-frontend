@@ -6,6 +6,7 @@
 	import PostgreSQLIcon from '#lib/icons/PostgreSQLIcon.svelte';
 	import CollapsibleSidebar from '#lib/ui/CollapsibleSidebar.svelte';
 	import ExternalLink from '#lib/ui/ExternalLink.svelte';
+	import EmptyState from '#lib/ui/EmptyState.svelte';
 	import GraphErrors from '#lib/ui/GraphErrors.svelte';
 	import Collection from '#lib/ui/Collection.svelte';
 	import ResourceTable from '#lib/ui/ResourceTable.svelte';
@@ -13,8 +14,8 @@
 	import StatusIndicator from '#lib/ui/StatusIndicator.svelte';
 	import SurfaceCard from '#lib/ui/SurfaceCard.svelte';
 	import { changeParams } from '#lib/utils/searchparams.js';
-	import { Alert, Button, Checkbox, Loader, Tag, Td, Th, Tr } from '@nais/ds-svelte-community';
-	import { FunnelIcon } from '@nais/ds-svelte-community/icons';
+	import { Alert, Button, Checkbox, Loader, Tag, Td, Th, Tr } from '#lib/shadcn/ui/index.js';
+	import { FunnelIcon } from '#lib/icons/index.js';
 	import type { PageProps } from './$types';
 
 	let { data }: PageProps = $props();
@@ -134,12 +135,14 @@
 						{/each}
 					</ResourceTable>
 				{:else}
-					<p>
-						No Postgres found. Postgres provides managed relational databases in the cloud.
+					<EmptyState
+						title="No Postgres found."
+						description="Postgres provides managed relational databases in the cloud."
+					>
 						<ExternalLink href={docURL('/persistence/postgresql')}
 							>Learn more about Postgres in Nais and how to get started.</ExternalLink
 						>
-					</p>
+					</EmptyState>
 				{/if}
 			</Collection>
 			<Pagination

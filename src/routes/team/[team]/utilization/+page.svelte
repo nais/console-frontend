@@ -22,7 +22,7 @@
 		Thead,
 		Tr,
 		type TableSortState
-	} from '@nais/ds-svelte-community';
+	} from '#lib/shadcn/ui/index.js';
 	import prettyBytes from 'pretty-bytes';
 	import type { PageProps } from './$types';
 

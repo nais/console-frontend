@@ -7,14 +7,15 @@
 	import { envTagVariant } from '#lib/envTagVariant.js';
 	import CollapsibleSidebar from '#lib/ui/CollapsibleSidebar.svelte';
 	import ExternalLink from '#lib/ui/ExternalLink.svelte';
+	import EmptyState from '#lib/ui/EmptyState.svelte';
 	import GraphErrors from '#lib/ui/GraphErrors.svelte';
 	import Collection from '#lib/ui/Collection.svelte';
 	import ResourceTable from '#lib/ui/ResourceTable.svelte';
 	import Pagination from '#lib/ui/Pagination.svelte';
 	import SurfaceCard from '#lib/ui/SurfaceCard.svelte';
 	import { changeParams } from '#lib/utils/searchparams.js';
-	import { Tag, Td, Th, Tr, type TableSortState } from '@nais/ds-svelte-community';
-	import { BucketIcon, FunnelIcon } from '@nais/ds-svelte-community/icons';
+	import { Tag, Td, Th, Tr, type TableSortState } from '#lib/shadcn/ui/index.js';
+	import { BucketIcon, FunnelIcon } from '#lib/icons/index.js';
 	import type { PageProps } from './$types';
 
 	type BucketOrderFieldOptions = (typeof BucketOrderField)[keyof typeof BucketOrderField];
@@ -87,7 +88,7 @@
 						aria-expanded={filtersOpen}
 						onclick={() => (filtersOpen = !filtersOpen)}
 					>
-						<FunnelIcon aria-hidden="true" style="font-size: 1rem" />
+						<FunnelIcon aria-hidden="true" style="font-size: var(--ax-font-size-medium)" />
 						Filters
 					</button>
 				{/snippet}
@@ -123,13 +124,14 @@
 						{/each}
 					</ResourceTable>
 				{:else}
-					<p>
-						No buckets found. Storage buckets are containers for storing and managing data in the
-						cloud.
+					<EmptyState
+						title="No buckets found."
+						description="Storage buckets are containers for storing and managing data in the cloud."
+					>
 						<ExternalLink href={docURL('/persistence/buckets')}
 							>Learn more about Buckets and how to get started.</ExternalLink
 						>
-					</p>
+					</EmptyState>
 				{/if}
 			</Collection>
 			<Pagination

@@ -5,7 +5,7 @@
 	import { page } from '$app/state';
 	import { docURL } from '#lib/doc.js';
 	import ExternalLink from '#lib/ui/ExternalLink.svelte';
-	import { Alert, BodyLong, Button, ErrorMessage, TextField } from '@nais/ds-svelte-community';
+	import { Alert, BodyLong, Button, ErrorMessage, TextField } from '#lib/shadcn/ui/index.js';
 	import type { PageProps } from './$types';
 
 	let { form, data }: PageProps = $props();
@@ -31,7 +31,7 @@
 	>
 {/if}
 
-<BodyLong style="margin-bottom: 1rem;">
+<BodyLong style="margin-bottom: var(--ax-space-16);">
 	You should remove all references to this OpenSearch instance from your workloads before deletion.
 	See the
 	<ExternalLink href={docURL('/persistence/opensearch/how-to/delete/')}>
@@ -57,6 +57,6 @@
 	}
 
 	form :global(> *) {
-		margin-bottom: 1rem;
+		margin-bottom: var(--ax-space-16);
 	}
 </style>

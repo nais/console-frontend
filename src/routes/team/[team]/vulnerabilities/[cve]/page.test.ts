@@ -140,10 +140,11 @@ describe('team CVE grouping', () => {
 		'groups %s by the selected field while preserving API order',
 		async (sort, nodes, expected) => {
 			const { body } = await renderFindings(sort, [...nodes]);
-			const headings = [...body.matchAll(/<h3\b[^>]*>([\s\S]*?)<\/h3>/g)].map(([, text]) =>
-				text.replace(/<!--[\s\S]*?-->/g, '').trim()
-			);
-			expect(headings).toEqual(expected);
+			const headings = [...body.matchAll(/<h3\b[^>]*>[\s\S]*?<\/h3>/g)].map(([html]) => html);
+			expect(headings).toHaveLength(expected.length);
+			expected.forEach((heading, index) => {
+				expect(headings[index]).toContain(`>${heading}<`);
+			});
 			expect(body).toContain('alpha');
 			expect(body).toContain('beta');
 			expect(body).toContain('pkg:maven/example@1.0');
@@ -203,9 +204,8 @@ describe('team CVE grouping', () => {
 			expect(checkboxes).toHaveLength(member ? 3 : 0);
 			if (member) {
 				const rows = body.split(/class="workload-container\b[^"]*"/).slice(1);
-				expect(rows[0]).not.toContain('aksel-checkbox--readonly');
-				expect(rows[1]).toContain('aksel-checkbox--readonly');
-				expect(rows[1]).toContain('aksel-checkbox--disabled');
+				expect(rows[0]).not.toMatch(/<input\b[^>]*type="checkbox"[^>]*\sdisabled(?:\s|=|>)/);
+				expect(rows[1]).toMatch(/<input\b[^>]*type="checkbox"[^>]*\sdisabled(?:\s|=|>)/);
 				expect(body).toContain('Select all for this team');
 				expect(body).toContain('Select all workloads with package');
 			}

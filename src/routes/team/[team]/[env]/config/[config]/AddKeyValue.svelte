@@ -2,8 +2,8 @@
 	import { ValueEncoding, graphql, type ValueEncoding$options } from '$houdini';
 	import GraphErrors from '#lib/ui/GraphErrors.svelte';
 	import Textarea from '#lib/ui/Textarea.svelte';
-	import { Alert, Button, Heading, Modal, TextField } from '@nais/ds-svelte-community';
-	import { PlusCircleFillIcon, UploadIcon } from '@nais/ds-svelte-community/icons';
+	import { Alert, Button, Heading, Modal, TextField } from '#lib/shadcn/ui/index.js';
+	import { PlusCircleFillIcon, UploadIcon } from '#lib/icons/index.js';
 
 	interface Props {
 		initial: { name: string }[];

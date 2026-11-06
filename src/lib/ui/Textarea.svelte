@@ -22,31 +22,52 @@
 	}: Props = $props();
 </script>
 
-<div class="aksel-form-field">
+<div class="sh-ui-field">
 	{#if label}
-		<label class="aksel-form-field__label aksel-label aksel-label--small" for={id}>
+		<label class="field-label" for={id}>
 			{label}
 		</label>
 	{/if}
 	{#if description}
-		<div class="aksel-form-field__description aksel-detail">
+		<div class="field-description">
 			<i>{description}</i>
 		</div>
 	{/if}
-	<textarea
-		class="aksel-textarea__input aksel-body-short aksel-body-short--small textarea"
-		{id}
-		{rows}
-		{cols}
-		bind:value={text}
-		{readonly}></textarea>
+	<textarea class="textarea" {id} {rows} {cols} bind:value={text} {readonly}></textarea>
 </div>
 
 <style>
+	.sh-ui-field {
+		display: flex;
+		flex-direction: column;
+		gap: var(--ax-space-6);
+	}
+	.field-label {
+		font-size: var(--ax-font-size-small);
+		font-weight: var(--sh-font-weight-medium);
+		color: var(--foreground);
+	}
+	.field-description {
+		font-size: var(--sh-font-size-xs);
+		color: var(--muted-foreground);
+	}
 	.textarea {
 		resize: vertical;
-		min-height: 2rem;
+		min-height: var(--ax-space-32);
+		width: 100%;
+		padding: var(--ax-space-8) var(--ax-space-12);
+		border-radius: var(--radius-sm);
+		border: var(--sh-border-width) solid var(--input);
+		background-color: var(--background);
+		color: var(--foreground);
 		font-family: monospace;
 		font-size: var(--ax-font-size-small);
+		line-height: 1.45;
+		box-sizing: border-box;
+	}
+	.textarea:focus-visible {
+		outline: var(--ax-space-2) solid var(--ring);
+		outline-offset: var(--ax-space-1);
+		border-color: var(--ring);
 	}
 </style>

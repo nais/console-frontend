@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { Button } from '@nais/ds-svelte-community';
-	import { MenuHamburgerIcon } from '@nais/ds-svelte-community/icons';
+	import { Button } from '#lib/shadcn/ui/index.js';
+	import { MenuHamburgerIcon } from '#lib/icons/index.js';
 	import { getTeamContext } from './teamContext.svelte';
 
 	const teamContext = getTeamContext();

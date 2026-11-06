@@ -1,8 +1,8 @@
 <script lang="ts">
 	import type { InstanceGroupDetail$result } from '$houdini';
 	import Collection from '#lib/ui/Collection.svelte';
-	import { Button } from '@nais/ds-svelte-community';
-	import { DownloadIcon } from '@nais/ds-svelte-community/icons';
+	import { Button } from '#lib/shadcn/ui/index.js';
+	import { DownloadIcon } from '#lib/icons/index.js';
 
 	type MountedFile =
 		InstanceGroupDetail$result['team']['environment']['application']['instanceGroups'][number]['mountedFiles'][number];
@@ -89,7 +89,7 @@
 	}
 
 	.file-list {
-		--instancegroup-list-columns: minmax(0, 2.5fr) auto minmax(0, 1.8fr) 3rem;
+		--instancegroup-list-columns: minmax(0, 2.5fr) auto minmax(0, 1.8fr) var(--ax-space-48);
 	}
 
 	.file-cell code {

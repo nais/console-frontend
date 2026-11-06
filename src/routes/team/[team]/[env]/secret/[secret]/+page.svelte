@@ -19,7 +19,7 @@
 		ToggleGroup,
 		ToggleGroupItem,
 		Tr
-	} from '@nais/ds-svelte-community';
+	} from '#lib/shadcn/ui/index.js';
 	import { SvelteMap } from 'svelte/reactivity';
 
 	import ResourceActivityCard from '#lib/domain/activity/ResourceActivityCard.svelte';
@@ -37,7 +37,7 @@
 		EyeSlashIcon,
 		PadlockLockedIcon,
 		TrashIcon
-	} from '@nais/ds-svelte-community/icons';
+	} from '#lib/icons/index.js';
 	import type { PageProps } from './$types';
 	import AddKeyValue from './AddKeyValue.svelte';
 	import ViewSecretModal from './ViewSecretModal.svelte';
@@ -606,7 +606,7 @@
 	ul {
 		list-style: none;
 		margin: 0;
-		padding: 0 0 0 1rem;
+		padding: 0 0 0 var(--ax-space-16);
 	}
 
 	@media (max-width: 767px) {

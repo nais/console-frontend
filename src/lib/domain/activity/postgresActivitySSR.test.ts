@@ -48,6 +48,9 @@ describe('Postgres activity SSR team mapping', () => {
 			expect(body).toContain('environments=dev-gcp');
 			expect(body).toContain('resourceTypes=POSTGRES');
 			expect(body).toContain('id=event');
+			expect(body).toMatch(
+				/<span\b[^>]*class="[^"]*sh-tooltip-anchor[^"]*activity-icon-tooltip[^"]*"[^>]*>[\s\S]*?<div class="activity-icon/
+			);
 		}
 	);
 });

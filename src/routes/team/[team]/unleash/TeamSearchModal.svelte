@@ -1,8 +1,8 @@
 <script lang="ts">
 	import { graphql } from '$houdini';
 	import Search from '#lib/domain/search/Search.svelte';
-	import { Modal } from '@nais/ds-svelte-community';
-	import { PersonGroupIcon } from '@nais/ds-svelte-community/icons';
+	import { Modal } from '#lib/shadcn/ui/index.js';
+	import { PersonGroupIcon } from '#lib/icons/index.js';
 
 	const teamSearch = graphql(`
 		query TeamSearch($query: String!) {

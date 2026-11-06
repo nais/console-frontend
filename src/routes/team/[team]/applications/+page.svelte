@@ -4,6 +4,7 @@
 	import CollapsibleSidebar from '#lib/ui/CollapsibleSidebar.svelte';
 	import GraphErrors from '#lib/ui/GraphErrors.svelte';
 	import Collection from '#lib/ui/Collection.svelte';
+	import EmptyState from '#lib/ui/EmptyState.svelte';
 	import Pagination from '#lib/ui/Pagination.svelte';
 	import ResourceTable from '#lib/ui/ResourceTable.svelte';
 	import SurfaceCard from '#lib/ui/SurfaceCard.svelte';
@@ -15,8 +16,8 @@
 		type ApplicationOrderField$options,
 		type OrderDirection$options
 	} from '$houdini';
-	import { BodyLong, Th, type TableSortState } from '@nais/ds-svelte-community';
-	import { FunnelIcon, PackageIcon } from '@nais/ds-svelte-community/icons';
+	import { Button, Th, type TableSortState } from '#lib/shadcn/ui/index.js';
+	import { FunnelIcon, PackageIcon } from '#lib/icons/index.js';
 	import type { PageProps } from './$types';
 
 	let { data }: PageProps = $props();
@@ -145,13 +146,28 @@
 			headerBorder={false}
 		>
 			{#snippet actions()}
+				{#if hasActiveFilters}
+					<Button
+						variant="outline"
+						size="small"
+						onclick={() => {
+							filter = '';
+							changeParams(
+								{ filter: '', environments: '', states: '', labels: '', after: '', before: '' },
+								{ noScroll: true }
+							);
+						}}
+					>
+						Clear filters
+					</Button>
+				{/if}
 				<button
 					type="button"
 					class="sidebar-toggle"
 					aria-expanded={filtersOpen}
 					onclick={() => (filtersOpen = !filtersOpen)}
 				>
-					<FunnelIcon aria-hidden="true" style="font-size: 1rem" />
+					<FunnelIcon aria-hidden="true" style="font-size: var(--ax-font-size-medium)" />
 					Filters
 				</button>
 			{/snippet}
@@ -170,15 +186,11 @@
 					{/each}
 				</ResourceTable>
 			{:else}
-				<BodyLong>
-					<strong>
-						{#if hasActiveFilters}
-							No applications match your filters.
-						{:else}
-							No applications found.
-						{/if}
-					</strong>
-				</BodyLong>
+				<EmptyState
+					title={hasActiveFilters
+						? 'No applications match your filters.'
+						: 'No applications found.'}
+				/>
 			{/if}
 		</Collection>
 		{#if totalApplications > 0}

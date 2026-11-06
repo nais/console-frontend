@@ -1,7 +1,12 @@
 <script lang="ts">
-	import { BodyShort, Detail, Heading, Tag } from '@nais/ds-svelte-community';
-	import type { TagProps } from '@nais/ds-svelte-community/components/Tag/type.js';
-	import type { HeadingProps } from '@nais/ds-svelte-community/components/typography/Heading/type.js';
+	import {
+		BodyShort,
+		Detail,
+		Heading,
+		Tag,
+		type HeadingProps,
+		type TagProps
+	} from '#lib/shadcn/ui/index.js';
 	import type { Component, Snippet } from 'svelte';
 	import Icon from './Icon.svelte';
 	import TooltipAlignHack from './TooltipAlignHack.svelte';
@@ -128,7 +133,7 @@
 		display: flex;
 		align-items: center;
 		gap: var(--ax-space-8);
-		font-size: 1.25rem;
+		font-size: var(--ax-font-size-large);
 
 		> * {
 			flex: 1 1 0;
@@ -159,7 +164,7 @@
 		gap: var(--ax-space-8);
 	}
 	.icon-label--with-desc {
-		font-size: 1.5rem;
+		font-size: var(--ax-font-size-xlarge);
 	}
 	.icon-label--large.icon-label--with-desc {
 		gap: var(--ax-space-12);

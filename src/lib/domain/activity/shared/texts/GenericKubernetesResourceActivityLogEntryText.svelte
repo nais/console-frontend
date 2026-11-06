@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { ReadMore } from '@nais/ds-svelte-community';
+	import { ReadMore } from '#lib/shadcn/ui/index.js';
 	import Meta from '../../Meta.svelte';
 	import type { ActivityLogEntry, TimelineModes } from './types';
 
@@ -60,7 +60,7 @@
 	code {
 		font-family: 'Courier New', Courier, monospace;
 		background-color: var(--ax-bg-neutral-soft);
-		padding: 0.1rem 0.3rem;
+		padding: var(--ax-space-2) var(--ax-space-4);
 		border-radius: var(--ax-radius-4);
 	}
 </style>

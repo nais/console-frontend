@@ -7,9 +7,11 @@
 	import { localizeLayerChart } from '#lib/chart/util.js';
 	import '#lib/font.css';
 	import { themeSwitch } from '#lib/stores/theme.svelte.js';
+	import { hasReconcilerErrors, loadRemainingReconcilerPages } from '#lib/reconcilerStatus.js';
+	import GraphErrors from '#lib/ui/GraphErrors.svelte';
 	import ProgressBar from '#lib/ui/ProgressBar.svelte';
-	import { Alert, BodyShort, Button, Heading, Page, Theme } from '@nais/ds-svelte-community';
-	import { ArrowCirclepathIcon } from '@nais/ds-svelte-community/icons';
+	import { Alert, BodyShort, Button, Heading, Page, Theme } from '#lib/shadcn/ui/index.js';
+	import { ArrowCirclepathIcon } from '#lib/icons/index.js';
 	import { onMount } from 'svelte';
 	import '../styles/app.css';
 	import '../styles/colors.css';
@@ -19,7 +21,16 @@
 	import PageHeader from './PageHeader.svelte';
 
 	let { data, children }: LayoutProps = $props();
-	let { UserInfo, userAgent } = $derived(data);
+	let { UserInfo, userAgent, AdminReconcilerStatus } = $derived(data);
+	let reconcilerRefreshResult = $state.raw<{
+		load: LayoutProps['data'];
+		error: string | null;
+	} | null>(null);
+	let reconcilerStatusError = $derived(
+		reconcilerRefreshResult?.load === data
+			? reconcilerRefreshResult.error
+			: data.reconcilerStatusError
+	);
 
 	localizeLayerChart();
 
@@ -27,15 +38,43 @@
 		themeSwitch.theme = data.theme;
 	});
 
-	let user = $derived(
-		$UserInfo.data?.me as
-			| {
-					readonly name: string;
-					readonly isAdmin: boolean;
-					readonly __typename: 'User';
-			  }
-			| undefined
-	);
+	$effect(() => {
+		if (browser) {
+			document.documentElement.dataset.theme = themeSwitch.theme;
+			document.documentElement.classList.toggle('dark', themeSwitch.theme === 'dark');
+		}
+	});
+
+	let user = $derived($UserInfo.data?.me?.__typename === 'User' ? $UserInfo.data.me : undefined);
+	let reconcilerErrors = $derived(hasReconcilerErrors($AdminReconcilerStatus?.data));
+
+	onMount(() => {
+		if (!AdminReconcilerStatus) return;
+		let refreshing = false;
+		const interval = setInterval(async () => {
+			const load = data;
+			const store = load.AdminReconcilerStatus;
+			if (!user?.isAdmin || !store || refreshing) return;
+			refreshing = true;
+			try {
+				await store.fetch({ policy: 'NetworkOnly' });
+				if (data !== load) return;
+				await loadRemainingReconcilerPages(store);
+				if (data !== load) return;
+				reconcilerRefreshResult = { load, error: null };
+			} catch (error) {
+				if (data !== load) return;
+				console.error('Unable to refresh reconciler status:', error);
+				reconcilerRefreshResult = {
+					load,
+					error: 'Unable to refresh reconciler status. Try refreshing the page.'
+				};
+			} finally {
+				refreshing = false;
+			}
+		}, 30_000);
+		return () => clearInterval(interval);
+	});
 
 	const refreshCookie = graphql(`
 		query RefreshCookie {
@@ -101,54 +140,66 @@
 				<!-- logged out. We check both to support both  -->
 				<Login {userAgent} />
 			{:else}
-				{#if user?.__typename === 'User'}
-					<PageHeader {user} />
-				{/if}
+				<PageHeader
+					{user}
+					{reconcilerErrors}
+					features={$UserInfo.data?.features}
+					loadMoreTeams={() => UserInfo.loadNextPage()}
+					teamsFetching={$UserInfo.fetching}
+					teamErrors={$UserInfo.errors}
+				>
+					<div role="status" aria-live="polite">
+						{#if updated.current && !updateDismissed && !isNaisdevice()}
+							<div class="update-status">
+								<Alert
+									variant="info"
+									size="small"
+									contentMaxWidth={false}
+									closeButton
+									closeButtonIconText="Dismiss update notification"
+									onclose={() => (updateDismissed = true)}
+								>
+									<div class="update-notice">
+										<span>New version available</span>
+										<Button
+											variant="secondary"
+											size="small"
+											disabled={!!navigating.to}
+											onclick={() => window.location.reload()}
+										>
+											{#snippet icon()}<ArrowCirclepathIcon aria-hidden="true" />{/snippet}
+											Update
+										</Button>
+									</div>
+								</Alert>
+							</div>
+						{/if}
+					</div>
 
-				<div role="status" aria-live="polite">
-					{#if updated.current && !updateDismissed && !isNaisdevice()}
-						<div class="update-status">
-							<Alert
-								variant="info"
-								size="small"
-								contentMaxWidth={false}
-								closeButton
-								closeButtonIconText="Dismiss update notification"
-								onclose={() => (updateDismissed = true)}
-							>
-								<div class="update-notice">
-									<span>New version available</span>
-									<Button
-										variant="secondary"
-										size="small"
-										disabled={!!navigating.to}
-										onclick={() => window.location.reload()}
-									>
-										{#snippet icon()}<ArrowCirclepathIcon aria-hidden="true" />{/snippet}
-										Update
-									</Button>
-								</div>
-							</Alert>
-						</div>
+					{#if user?.isAdmin}
+						{#if reconcilerStatusError}
+							<Alert variant="error">{reconcilerStatusError}</Alert>
+						{/if}
+						<GraphErrors errors={$AdminReconcilerStatus?.errors} />
 					{/if}
-				</div>
 
-				<svelte:boundary onerror={(e) => console.error('Page render error:', e)}>
-					{@render children?.()}
+					<svelte:boundary onerror={(e) => console.error('Page render error:', e)}>
+						{@render children?.()}
 
-					{#snippet failed(error, reset)}
-						{void error}
-						<div class="boundary-error">
-							<Alert variant="error">
-								<Heading size="xsmall" as="h2">Something went wrong</Heading>
-								<BodyShort>An unexpected error occurred while rendering the page.</BodyShort>
-								<Button variant="secondary" size="small" onclick={reset}>Try again</Button>
-							</Alert>
-						</div>
-					{/snippet}
-				</svelte:boundary>
+						{#snippet failed(error, reset)}
+							{void error}
+							<div class="boundary-error">
+								<Alert variant="error">
+									<Heading size="xsmall" as="h2">Something went wrong</Heading>
+									<BodyShort>An unexpected error occurred while rendering the page.</BodyShort>
+									<Button variant="secondary" size="small" onclick={reset}>Try again</Button>
+								</Alert>
+							</div>
+						{/snippet}
+					</svelte:boundary>
 
-				<Naisdevice />
+					<Naisdevice />
+				</PageHeader>
 			{/if}
 		</div>
 	</Page>
@@ -158,17 +209,13 @@
 	:global(.page) {
 		margin: 0 auto 0 auto;
 		width: 100%;
-		max-width: 1432px;
-	}
-
-	@media (max-width: 1464px) {
-		:global(.page) {
-			padding: 0 2rem;
-		}
+		max-width: var(--page-max-width);
 	}
 
 	.full-wrapper {
-		padding-bottom: 1rem;
+		min-height: 100vh;
+		background-color: var(--background);
+		color: var(--foreground);
 	}
 
 	.update-status {

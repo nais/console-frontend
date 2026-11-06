@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Modal } from '@nais/ds-svelte-community';
+	import { Modal } from '#lib/shadcn/ui/index.js';
 	import type { Snippet } from 'svelte';
 	import { MediaQuery } from 'svelte/reactivity';
 
@@ -39,7 +39,12 @@
 </div>
 
 {#if open && children}
-	<Modal bind:open header={{ heading: label, size: 'small' }} class="filter-drawer">
+	<Modal
+		bind:open
+		header={{ heading: label, size: 'small' }}
+		class="filter-drawer"
+		backdropClass="filter-drawer-backdrop"
+	>
 		<div class="drawer-content">
 			{@render children()}
 		</div>
@@ -66,11 +71,12 @@
 		}
 	}
 
-	:global(dialog.filter-drawer.aksel-modal) {
+	:global(.filter-drawer.sh-modal) {
+		position: fixed;
 		inset: 0 0 0 auto;
 		margin: 0;
 		display: flex;
-		width: 320px;
+		width: var(--sh-popover-max-width);
 		max-width: calc(100vw - var(--ax-space-16));
 		max-height: 100dvh;
 		height: 100dvh;
@@ -79,21 +85,20 @@
 		border-radius: 0;
 		padding: 0;
 		background: var(--ax-bg-default);
-		box-shadow: -4px 0 24px rgb(15 23 42 / 0.16);
+		box-shadow: var(--sh-shadow-lg);
 		animation: filter-drawer-enter 160ms ease-out;
 	}
 
-	:global(dialog.filter-drawer::backdrop) {
-		background: rgb(15 23 42 / 0.38);
+	:global(.filter-drawer-backdrop) {
 		animation: filter-backdrop-enter 160ms ease-out;
 	}
 
-	:global(dialog.filter-drawer .aksel-modal__header) {
+	:global(.filter-drawer .sh-modal__header) {
 		padding: var(--ax-space-16);
-		border-bottom: 1px solid var(--ax-border-neutral-subtleA);
+		border-bottom: var(--sh-border-width) solid var(--ax-border-neutral-subtleA);
 	}
 
-	:global(dialog.filter-drawer .aksel-modal__body) {
+	:global(.filter-drawer .sh-modal__body) {
 		flex: 1;
 		min-height: 0;
 		padding: 0;
@@ -109,7 +114,7 @@
 
 	@keyframes filter-drawer-enter {
 		from {
-			transform: translateX(24px);
+			transform: translateX(var(--ax-space-24));
 			opacity: 0;
 		}
 		to {
@@ -128,16 +133,16 @@
 	}
 
 	@media (prefers-reduced-motion: reduce) {
-		:global(dialog.filter-drawer.aksel-modal) {
+		:global(.filter-drawer.sh-modal) {
 			animation: none;
 		}
-		:global(dialog.filter-drawer::backdrop) {
+		:global(.filter-drawer-backdrop) {
 			animation: none;
 		}
 	}
 
 	@media (min-width: 1025px) {
-		:global(dialog.filter-drawer.aksel-modal) {
+		:global(.filter-drawer.sh-modal) {
 			display: none;
 		}
 	}

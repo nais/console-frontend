@@ -6,8 +6,8 @@
 	import GraphErrors from '#lib/ui/GraphErrors.svelte';
 	import SurfaceCard from '#lib/ui/SurfaceCard.svelte';
 	import TooltipAlignHack from '#lib/ui/TooltipAlignHack.svelte';
-	import { BodyShort, CopyButton, Heading } from '@nais/ds-svelte-community';
-	import { CheckmarkIcon, XMarkIcon } from '@nais/ds-svelte-community/icons';
+	import { BodyShort, CopyButton, Heading } from '#lib/shadcn/ui/index.js';
+	import { CheckmarkIcon, XMarkIcon } from '#lib/icons/index.js';
 	import type { PageProps } from './$types';
 
 	let { data }: PageProps = $props();

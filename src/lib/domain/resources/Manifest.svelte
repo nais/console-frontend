@@ -1,11 +1,11 @@
 <script lang="ts">
 	import { fragment, graphql, type Manifest } from '$houdini';
 	import SurfaceCard from '#lib/ui/SurfaceCard.svelte';
-	import { CopyButton } from '@nais/ds-svelte-community';
+	import { CopyButton } from '#lib/shadcn/ui/index.js';
 	import Highlight from 'svelte-highlight/Highlight.svelte';
 	import LineNumbers from 'svelte-highlight/LineNumbers.svelte';
 	import { yaml } from 'svelte-highlight/languages';
-	import '../../../styles/aksel-highlight.css';
+	import '../../../styles/highlight.css';
 
 	interface Props {
 		workload: Manifest;

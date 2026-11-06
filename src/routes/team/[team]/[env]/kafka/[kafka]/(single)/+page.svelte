@@ -9,7 +9,7 @@
 	import Pagination from '#lib/ui/Pagination.svelte';
 	import TooltipAlignHack from '#lib/ui/TooltipAlignHack.svelte';
 	import { changeParams } from '#lib/utils/searchparams.js';
-	import { Heading, Table, Tbody, Td, Th, Thead, Tr } from '@nais/ds-svelte-community';
+	import { Heading, Table, Tbody, Td, Th, Thead, Tr } from '#lib/shadcn/ui/index.js';
 	import type { PageProps } from './$types';
 
 	let { data }: PageProps = $props();

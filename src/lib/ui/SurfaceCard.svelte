@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { Box, Heading } from '@nais/ds-svelte-community';
 	import type { Snippet } from 'svelte';
 
 	interface Props {
@@ -21,20 +20,18 @@
 	}: Props = $props();
 </script>
 
-<Box
-	borderRadius="12"
-	padding="space-16"
-	class="surface-card {bordered ? 'surface-card-bordered' : ''}"
->
+<div class="surface-card {bordered ? 'surface-card-bordered' : ''}">
 	{#if title || headerAside}
 		<div class="header">
 			{#if title}
-				<Heading as={level} size={eyebrow ? 'xsmall' : 'medium'} class={eyebrow ? 'eyebrow' : ''}
-					>{title}</Heading
+				<svelte:element this={level} class={eyebrow ? 'card-eyebrow' : 'card-title'}
+					>{title}</svelte:element
 				>
 			{/if}
 			{#if headerAside}
-				{@render headerAside()}
+				<div class="header-aside">
+					{@render headerAside()}
+				</div>
 			{/if}
 		</div>
 	{/if}
@@ -42,20 +39,27 @@
 	<div class="content">
 		{@render children()}
 	</div>
-</Box>
+</div>
 
 <style>
-	:global(.surface-card) {
+	.surface-card {
 		display: flex;
 		flex-direction: column;
-		gap: var(--ax-space-12);
+		gap: var(--ax-space-14);
 		width: 100%;
 		min-width: 0;
+		padding: var(--ax-space-18) var(--ax-space-20);
+		background-color: var(--card);
+		color: var(--card-foreground);
+		border: 1px solid var(--border);
+		border-radius: var(--radius);
+		box-shadow: var(--sh-shadow-xs);
 	}
 
-	:global(.surface-card-bordered) {
-		background: color-mix(in srgb, var(--surface-accent-color) 4%, var(--ax-bg-default));
-		box-shadow: 0 8px 8px -8px var(--ax-border-neutral-subtleA);
+	.surface-card-bordered {
+		background-color: var(--background-subtle);
+		border-color: var(--border);
+		box-shadow: var(--sh-shadow-xs);
 	}
 
 	.header {
@@ -65,17 +69,39 @@
 		gap: var(--ax-space-8);
 	}
 
+	.card-eyebrow {
+		margin: 0;
+		font-size: var(--ax-font-size-small);
+		font-weight: 600;
+		letter-spacing: -0.01em;
+		color: var(--foreground);
+	}
+
+	.card-title {
+		margin: 0;
+		font-size: var(--sh-font-size-body);
+		font-weight: 600;
+		letter-spacing: -0.01em;
+		color: var(--foreground);
+	}
+
+	.header-aside {
+		display: flex;
+		align-items: center;
+		gap: var(--ax-space-8);
+	}
+
 	.content {
 		display: flex;
 		flex-direction: column;
-		gap: var(--ax-space-16);
+		gap: var(--ax-space-14);
 		width: 100%;
 		min-width: 0;
 	}
 
 	@media (max-width: 767px), (max-height: 500px) {
-		:global(.surface-card) {
-			padding: var(--ax-space-12);
+		.surface-card {
+			padding: var(--ax-space-14) var(--ax-space-16);
 		}
 	}
 </style>

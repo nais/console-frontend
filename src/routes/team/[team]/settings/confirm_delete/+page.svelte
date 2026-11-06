@@ -7,8 +7,8 @@
 	} from '$houdini';
 	import GraphErrors from '#lib/ui/GraphErrors.svelte';
 	import Time from '#lib/ui/Time.svelte';
-	import { Alert, BodyLong, Button, Modal } from '@nais/ds-svelte-community';
-	import { TrashIcon } from '@nais/ds-svelte-community/icons';
+	import { Alert, BodyLong, Button, Modal } from '#lib/shadcn/ui/index.js';
+	import { TrashIcon } from '#lib/icons/index.js';
 	import type { QueryResult } from 'houdini/runtime';
 	import type { PageProps } from './$types';
 
@@ -39,7 +39,7 @@
 	{:else if Date.now() - +key.expires > 0}
 		<Alert variant="error">The delete key has expired.</Alert>
 	{:else}
-		<BodyLong style="padding-bottom: 1rem;">
+		<BodyLong style="padding-bottom: var(--ax-space-16);">
 			The deletion was initiated by <strong>{key.createdBy.name}</strong> and expires
 			<strong><Time distance={true} time={key.expires}></Time></strong>. Deleting the team will
 			permanently delete all managed resources and all resources within them. All applications,

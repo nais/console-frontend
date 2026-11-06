@@ -14,7 +14,7 @@
 	import { graphql } from '$houdini';
 	import GraphErrors from '#lib/ui/GraphErrors.svelte';
 
-	import { BodyShort, Button, Heading, Modal, Select, TextField } from '@nais/ds-svelte-community';
+	import { BodyShort, Button, Heading, Modal, Select, TextField } from '#lib/shadcn/ui/index.js';
 
 	interface Props {
 		team: string;

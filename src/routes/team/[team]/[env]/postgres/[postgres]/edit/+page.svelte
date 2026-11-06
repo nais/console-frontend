@@ -3,7 +3,7 @@
 	import PostgresConfigurationFields from '#lib/domain/postgres/PostgresConfigurationFields.svelte';
 	import { quantityInUnits } from '#lib/domain/postgres/forms.js';
 	import GraphErrors from '#lib/ui/GraphErrors.svelte';
-	import { Alert, BodyShort, Button } from '@nais/ds-svelte-community';
+	import { Alert, BodyShort, Button } from '#lib/shadcn/ui/index.js';
 	import type { PageProps } from './$types';
 
 	let { data, form }: PageProps = $props();

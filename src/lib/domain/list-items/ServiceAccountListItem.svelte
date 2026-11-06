@@ -2,8 +2,8 @@
 	import IconLabel from '#lib/ui/IconLabel.svelte';
 	import ListItem from '#lib/ui/ListItem.svelte';
 	import Time from '#lib/ui/Time.svelte';
-	import { Detail } from '@nais/ds-svelte-community';
-	import { RobotIcon } from '@nais/ds-svelte-community/icons';
+	import { Detail } from '#lib/shadcn/ui/index.js';
+	import { RobotIcon } from '#lib/icons/index.js';
 
 	const {
 		serviceAccount,

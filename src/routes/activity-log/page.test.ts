@@ -123,6 +123,62 @@ describe('global activity log date range', () => {
 		});
 	});
 
+	describe('global activity log team scope', () => {
+		afterEach(() => {
+			vi.clearAllMocks();
+		});
+
+		it.each(['', '?myTeams=false'])('keeps tenant-wide activity by default (%s)', async (query) => {
+			await load(event(query));
+			expect(loadTenantActivityLog).toHaveBeenCalledWith(
+				expect.objectContaining({
+					variables: expect.objectContaining({
+						filter: expect.not.objectContaining({ teamScope: expect.anything() })
+					})
+				})
+			);
+		});
+
+		it.each([
+			{ cursor: '', pagination: { first: 20 } },
+			{ cursor: '&after=next-page', pagination: { after: 'next-page', first: 20 } },
+			{ cursor: '&before=previous-page', pagination: { before: 'previous-page', last: 20 } }
+		])('scopes every page to viewer memberships ($cursor)', async ({ cursor, pagination }) => {
+			await load(event(`?myTeams=true${cursor}`));
+			expect(loadTenantActivityLog).toHaveBeenCalledWith(
+				expect.objectContaining({
+					variables: expect.objectContaining({
+						...pagination,
+						filter: expect.objectContaining({
+							teamScope: { memberOfViewer: true }
+						})
+					})
+				})
+			);
+		});
+
+		it('combines viewer memberships with the existing filters', async () => {
+			await load(
+				event(
+					'?myTeams=true&environments=prod-gcp&resourceTypes=APP&from=2026-09-24T12:00:00Z&to=2026-09-24T13:00:00Z'
+				)
+			);
+			expect(loadTenantActivityLog).toHaveBeenCalledWith(
+				expect.objectContaining({
+					variables: expect.objectContaining({
+						filter: expect.objectContaining({
+							teamScope: { memberOfViewer: true },
+							environments: ['prod-gcp'],
+							resourceTypes: ['APP'],
+							from: new Date('2026-09-24T12:00:00Z'),
+							to: new Date('2026-09-24T13:00:01Z')
+						})
+					})
+				})
+			);
+		});
+	});
+
 	it('interprets edited wall times in Oslo regardless of the machine timezone', () => {
 		expect(parseOslo('2026-01-15T12:34:56').toISOString()).toBe('2026-01-15T11:34:56.000Z');
 		expect(parseOslo('2026-07-15T12:34:56').toISOString()).toBe('2026-07-15T10:34:56.000Z');

@@ -5,7 +5,7 @@
 	import ListItem from '#lib/ui/ListItem.svelte';
 	import Time from '#lib/ui/Time.svelte';
 	import { isValidSha } from '#lib/utils/isValidSha.js';
-	import { BodyShort } from '@nais/ds-svelte-community';
+	import { BodyShort } from '#lib/shadcn/ui/index.js';
 	import type { ValueOf } from 'houdini/runtime';
 
 	const {

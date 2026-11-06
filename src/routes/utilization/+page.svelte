@@ -25,8 +25,8 @@
 		Thead,
 		Tr,
 		type TableSortState
-	} from '@nais/ds-svelte-community';
-	import { PersonGroupIcon } from '@nais/ds-svelte-community/icons';
+	} from '#lib/shadcn/ui/index.js';
+	import { PersonGroupIcon } from '#lib/icons/index.js';
 	import prettyBytes from 'pretty-bytes';
 	import type { PageProps } from './$types';
 
@@ -366,12 +366,17 @@
 	}
 
 	.chart-row {
-		display: flex;
-		height: 350px;
+		display: grid;
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+		grid-auto-rows: var(--utilization-chart-height);
 	}
 
 	/* Mobile responsive styles */
 	@media (max-width: 767px) {
+		.chart-row {
+			grid-template-columns: 1fr;
+		}
+
 		.container {
 			gap: var(--ax-space-16);
 			margin-top: var(--ax-space-16);

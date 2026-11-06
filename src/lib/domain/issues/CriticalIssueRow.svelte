@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { fragment, graphql, type CriticalIssueRow } from '$houdini';
-	import { BodyLong, Heading, VStack } from '@nais/ds-svelte-community';
-	import { ExclamationmarkTriangleFillIcon } from '@nais/ds-svelte-community/icons';
+	import { BodyLong, Heading } from '#lib/shadcn/ui/index.js';
+	import { ExclamationmarkTriangleFillIcon } from '#lib/icons/index.js';
 	import { issueResource } from './issueResource.js';
 
 	interface Props {
@@ -185,21 +185,27 @@
 	<div class="surface-icon">
 		<ExclamationmarkTriangleFillIcon />
 	</div>
-	<VStack gap="space-1">
+	<div class="issue-content">
 		<Heading size="xsmall" level="2">
 			{title} for {resource.name} in {$data.teamEnvironment.environment.name}
 		</Heading>
 		<BodyLong size="small">
 			{$data.message}
 		</BodyLong>
-	</VStack>
+	</div>
 </a>
 
 <style>
+	.issue-content {
+		display: flex;
+		flex-direction: column;
+		gap: var(--ax-space-1);
+	}
+
 	.issue-row {
 		--surface-accent-color: var(--ax-text-danger);
-		--surface-icon-size: 2rem;
-		--surface-icon-glyph-size: 1.1rem;
+		--surface-icon-size: var(--ax-space-32);
+		--surface-icon-glyph-size: var(--ax-font-size-large);
 		--surface-icon-background: color-mix(in srgb, var(--ax-text-danger) 10%, transparent);
 		--surface-icon-shadow: none;
 		display: flex;

@@ -2,8 +2,8 @@
 	import { favorites } from '#lib/stores/favorites.svelte.js';
 	import IconLabel from '#lib/ui/IconLabel.svelte';
 	import ListItem from '#lib/ui/ListItem.svelte';
-	import { Button, Tooltip } from '@nais/ds-svelte-community';
-	import { DragVerticalIcon, StarFillIcon, TrashIcon } from '@nais/ds-svelte-community/icons';
+	import { Button, Tooltip } from '#lib/shadcn/ui/index.js';
+	import { DragVerticalIcon, StarFillIcon, TrashIcon } from '#lib/icons/index.js';
 
 	const {
 		path
@@ -171,9 +171,11 @@
 					aria-label="Remove from favorites"
 				/>
 			</Tooltip>
-			<div class="drag-handle" aria-label="Drag to reorder" title="Drag to reorder">
-				<DragVerticalIcon />
-			</div>
+			<Tooltip placement="bottom" content="Drag to reorder">
+				<div class="drag-handle">
+					<DragVerticalIcon aria-hidden="true" />
+				</div>
+			</Tooltip>
 		</div>
 	</div>
 </ListItem>
@@ -199,6 +201,6 @@
 		margin-right: var(--ax-space-2);
 		display: flex;
 		align-items: center;
-		font-size: 1.2rem;
+		font-size: var(--ax-font-size-large);
 	}
 </style>

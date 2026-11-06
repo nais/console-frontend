@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
-	import { BodyLong, Button, ErrorMessage, Textarea, TextField } from '@nais/ds-svelte-community';
+	import { BodyLong, Button, ErrorMessage, Textarea, TextField } from '#lib/shadcn/ui/index.js';
 
 	const {
 		teamSlug,
@@ -67,11 +67,11 @@
 		width: 600px;
 	}
 
-	form :global(.aksel-form-field) {
+	form :global(:is(.sh-form-field, .sh-select-field)) {
 		max-width: 400px;
 	}
 
 	form :global(> *) {
-		margin-bottom: 1rem;
+		margin-bottom: var(--ax-space-16);
 	}
 </style>

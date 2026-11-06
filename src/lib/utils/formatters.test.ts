@@ -1,6 +1,7 @@
 import {
 	capitalizeFirstLetter,
 	daysOpenLabel,
+	euroTooltipFormatter,
 	euroValueFormatter,
 	formatKubernetesCPU,
 	formatKubernetesMemory,
@@ -169,6 +170,57 @@ describe('formatters', () => {
 			expect(result01).toContain('0,01');
 			expect(result001).toContain('€');
 			expect(result001).toContain('0');
+		});
+
+		test('distinguishes zero from positive sub-cent costs and negative credits', () => {
+			expect(normSep(euroValueFormatter(0))).toBe('0 €');
+			expect(normSep(euroValueFormatter(0.0024))).toBe('< 0,01 €');
+			expect(normSep(euroValueFormatter(0.00999))).toBe('< 0,01 €');
+			expect(normSep(euroValueFormatter(-0.0024))).toBe('> −0,01 €');
+			expect(normSep(euroValueFormatter(0.01))).toBe('0,01 €');
+		});
+
+		test('preserves explicitly requested sub-cent precision', () => {
+			expect(normSep(euroValueFormatter(0.0024, { maximumFractionDigits: 4 }))).toBe('0,0024 €');
+		});
+
+		test.each([
+			[0.001, 0, '< 1 €'],
+			[0.01, 0, '< 1 €'],
+			[0.49, 0, '< 1 €'],
+			[0.99, 0, '< 1 €'],
+			[-0.49, 0, '> −1 €'],
+			[0, 0, '0 €'],
+			[1, 0, '1 €'],
+			[123.456, 0, '123 €'],
+			[0.01, 1, '< 0,1 €'],
+			[-0.01, 1, '> −0,1 €'],
+			[0.1, 1, '0,1 €'],
+			[0.001, 2, '< 0,01 €'],
+			[0.0001, 3, '< 0,001 €'],
+			[0.00001, 4, '< 0,0001 €']
+		])(
+			'formats %s euro with %s fraction digits as %s',
+			(value, maximumFractionDigits, expected) => {
+				expect(normSep(euroValueFormatter(value, { maximumFractionDigits }))).toBe(expected);
+			}
+		);
+	});
+
+	describe('euroTooltipFormatter', () => {
+		test.each([
+			[0, '0 €'],
+			[0.2, '0,20 €'],
+			[0.0024, '0,0024 €'],
+			[0.0000024, '0,0000024 €'],
+			[-0.0024, '−0,0024 €'],
+			[1234.567, '1 234,57 €']
+		])('preserves useful precision for %s euro', (value, expected) => {
+			expect(normSep(euroTooltipFormatter(value))).toBe(expected);
+		});
+
+		test('does not display absent values as zero', () => {
+			expect(euroTooltipFormatter(undefined)).toBe('');
 		});
 	});
 

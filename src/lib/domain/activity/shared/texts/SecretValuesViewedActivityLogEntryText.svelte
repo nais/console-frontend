@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { BodyShort } from '@nais/ds-svelte-community';
+	import { BodyShort } from '#lib/shadcn/ui/index.js';
 	import Meta from '../../Meta.svelte';
 
 	import { activityLogResourceLink } from '../../utils';
