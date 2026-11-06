@@ -79,7 +79,7 @@
 						<Th>HTTP status</Th>
 						<Th>Duration</Th>
 						<Th>Result</Th>
-						<Th>Current state</Th>
+						<Th>Attempt state</Th>
 					</Tr>
 				</Thead>
 				<Tbody>
@@ -118,15 +118,11 @@
 								</Tag>
 							</Td>
 							<Td>
-								{#if delivery.isTest}
-									{delivery.success ? 'Succeeded' : 'Failed'}
-									{#if !delivery.success}
-										<BodyShort size="small">No retries</BodyShort>
-									{/if}
-								{:else}
-									{delivery.deliveryState
-										? formatWebhookEventName(delivery.deliveryState.status)
-										: 'Not available'}
+								{delivery.deliveryState
+									? formatWebhookEventName(delivery.deliveryState.status)
+									: 'Not available'}
+								{#if delivery.isTest && !delivery.success}
+									<BodyShort size="small">No retries</BodyShort>
 								{/if}
 							</Td>
 						</Tr>

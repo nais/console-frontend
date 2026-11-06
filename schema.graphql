@@ -13403,7 +13403,7 @@ type WebhookDelivery implements Node {
   responseBodyTruncated: Boolean!
 
   """
-  Recorded diagnostic response headers. Credentials and unapproved custom headers are omitted.
+  Recorded response headers. Known authentication and cookie headers are omitted.
   """
   responseHeaders: [WebhookHeader!]!
 
