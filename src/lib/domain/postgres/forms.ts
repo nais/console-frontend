@@ -3,14 +3,6 @@ export function formString(data: FormData, name: string): string {
 	return typeof value === 'string' ? value.trim() : '';
 }
 
-export function canActivateBranch(
-	branch: { name: string; state: string },
-	activeBranch: string | null | undefined,
-	desiredActiveBranch: string | null | undefined
-) {
-	return branch.state === 'AVAILABLE' && branch.name !== (desiredActiveBranch ?? activeBranch);
-}
-
 export function postgresConfiguration(data: FormData) {
 	return {
 		cpu: formString(data, 'cpu'),
@@ -122,17 +114,6 @@ export function quantityInUnits(quantity: string | null | undefined, unit: 'core
 	return `${negative ? '-' : ''}${whole}${decimals ? `.${decimals}` : ''}`;
 }
 
-export function canDeleteBranch(
-	branch: string,
-	activeBranch: string | null | undefined,
-	desiredActiveBranch: string | null | undefined
-) {
-	return (
-		branch !== activeBranch &&
-		branch !== desiredActiveBranch &&
-		!(!activeBranch && branch === 'main')
-	);
-}
 export const postgresResources = {
 	cpu: { default: '0.1', max: 8 },
 	memory: { default: '0.5', max: 32 },
