@@ -9,6 +9,7 @@
 	import { onMount } from 'svelte';
 	import Heading from './Heading.svelte';
 	import Modal from './Modal.svelte';
+	import Tooltip from './Tooltip.svelte';
 
 	interface Props {
 		features?: {
@@ -76,18 +77,26 @@
 			<ul class="nav-list">
 				{#each group.items as item (item.href)}
 					<li>
-						<a
-							href={item.href}
-							class={['nav-item', { active: item.active }]}
-							aria-current={item.active ? 'page' : undefined}
-							aria-label={compact ? item.label : undefined}
-							title={compact ? item.label : undefined}
-						>
-							<span class="nav-icon" aria-hidden="true"><Icon icon={item.label} /></span>
-							{#if !compact}
-								<span class="nav-label">{item.label}</span>
-							{/if}
-						</a>
+						{#snippet itemLink()}
+							<a
+								href={item.href}
+								class={['nav-item', { active: item.active }]}
+								aria-current={item.active ? 'page' : undefined}
+								aria-label={compact ? item.label : undefined}
+							>
+								<span class="nav-icon" aria-hidden="true"><Icon icon={item.label} /></span>
+								{#if !compact}
+									<span class="nav-label">{item.label}</span>
+								{/if}
+							</a>
+						{/snippet}
+						{#if compact}
+							<Tooltip content={item.label} placement="right" class="sidebar-link-tooltip">
+								{@render itemLink()}
+							</Tooltip>
+						{:else}
+							{@render itemLink()}
+						{/if}
 					</li>
 				{/each}
 			</ul>
@@ -255,6 +264,10 @@
 		transition:
 			background-color 110ms ease,
 			color 110ms ease;
+	}
+
+	.nav-list :global(.sidebar-link-tooltip) {
+		display: grid;
 	}
 
 	.sh-sidebar.collapsed .nav-item {

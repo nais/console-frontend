@@ -43,6 +43,8 @@ home test, without starting the isolated fixture server, and requires a user wit
 ### Mobile responsiveness
 
 The console should remain usable at small viewport widths, with `375px` as the baseline mobile target.
+Collapsed desktop sidebar links use themed tooltips to the right on hover and keyboard focus.
+Expanded sidebar and mobile navigation links retain their text labels without tooltips.
 
 When changing layouts, lists, tables, or chart-heavy pages, validate in responsive mode (for example `375x812`) and ensure:
 
