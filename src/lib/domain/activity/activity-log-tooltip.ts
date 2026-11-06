@@ -99,6 +99,10 @@ export function activityTooltip(typename: string): string {
 		case 'ReconcilerEnabledActivityLogEntry':
 		case 'ReconcilerDisabledActivityLogEntry':
 			return 'Reconciler';
+		case 'WebhookCreatedActivityLogEntry':
+		case 'WebhookDeletedActivityLogEntry':
+		case 'WebhookUpdatedActivityLogEntry':
+			return 'Webhook';
 		default:
 			return 'Activity';
 	}
