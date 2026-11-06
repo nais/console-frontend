@@ -9,31 +9,6 @@ directive @defer(
   label: String
 ) on FRAGMENT_SPREAD | INLINE_FRAGMENT
 
-"""
-Request a branch for normal workloads. It becomes active once its database is ready.
-"""
-input ActivatePostgresBranchInput {
-  """Local name of the branch to activate."""
-  branch: String!
-
-  """Environment containing the Postgres."""
-  environmentName: String!
-
-  """Name of the owning Postgres."""
-  postgres: String!
-
-  """Team owning the Postgres."""
-  teamSlug: Slug!
-}
-
-"""
-Result of requesting activation; compare desiredActiveBranch to activeBranch while activation is in progress.
-"""
-type ActivatePostgresBranchPayload {
-  """Postgres with desired and observed branch selection."""
-  postgres: Postgres!
-}
-
 enum ActivityLogActivityType {
   """An application was deleted."""
   APPLICATION_DELETED
@@ -2526,35 +2501,6 @@ type CreatePostgresAccessPayload {
   name: String!
 }
 
-"""
-Recovery request for a new, inactive branch. A branch cannot be re-created with different recovery settings.
-"""
-input CreatePostgresBranchInput {
-  """Local name of the new branch."""
-  branch: String!
-
-  """Environment containing the Postgres."""
-  environmentName: String!
-
-  """Name of the owning Postgres."""
-  postgres: String!
-
-  """Local name of the source branch in the same Postgres."""
-  sourceBranch: String!
-
-  """Explicit UTC recovery target; must not be in the future."""
-  targetTime: Time!
-
-  """Team owning the Postgres."""
-  teamSlug: Slug!
-}
-
-"""Result of creating a branch; provisioning continues asynchronously."""
-type CreatePostgresBranchPayload {
-  """The new branch."""
-  postgresBranch: PostgresBranch!
-}
-
 """Input for creating a Postgres."""
 input CreatePostgresInput {
   """
@@ -2914,25 +2860,6 @@ input DeleteOpenSearchInput {
 type DeleteOpenSearchPayload {
   """Whether or not the OpenSearch instance was deleted."""
   openSearchDeleted: Boolean
-}
-
-input DeletePostgresBranchInput {
-  """Local name of the branch to delete."""
-  branch: String!
-
-  """The environment containing the PostgresBranch."""
-  environmentName: String!
-
-  """Name of the Postgres containing the branch."""
-  postgres: String!
-
-  """The team that owns the PostgresBranch."""
-  teamSlug: Slug!
-}
-
-type DeletePostgresBranchPayload {
-  """Whether the PostgresBranch was deleted."""
-  postgresBranchDeleted: Boolean
 }
 
 """
@@ -5397,11 +5324,6 @@ type MissingSbomIssue implements Issue & Node {
 
 """The mutation root for the Nais GraphQL API."""
 type Mutation {
-  """
-  Request activation of an available PostgresBranch. The observed active branch may lag behind the request.
-  """
-  activatePostgresBranch(input: ActivatePostgresBranchInput!): ActivatePostgresBranchPayload!
-
   """Add a value to a config."""
   addConfigValue(input: AddConfigValueInput!): AddConfigValuePayload!
 
@@ -5471,11 +5393,6 @@ type Mutation {
   When the access is ready, retrieve its connection materials through PostgresAccess.connection.
   """
   createPostgresAccess(input: CreatePostgresAccessInput!): CreatePostgresAccessPayload!
-
-  """
-  Create an inactive PostgresBranch recovered from a source branch archive at a UTC point in time.
-  """
-  createPostgresBranch(input: CreatePostgresBranchInput!): CreatePostgresBranchPayload!
 
   """Create a new secret."""
   createSecret(input: CreateSecretInput!): CreateSecretPayload!
@@ -5549,9 +5466,6 @@ type Mutation {
   Request deletion of an entire Postgres and all its branches/data. Fails while workloads or bindings reference it; cleanup is asynchronous.
   """
   deletePostgres(input: DeletePostgresInput!): DeletePostgresPayload!
-
-  """Delete a PostgresBranch that is not active on its Postgres."""
-  deletePostgresBranch(input: DeletePostgresBranchInput!): DeletePostgresBranchPayload!
 
   """Delete a secret, and the values it contains."""
   deleteSecret(input: DeleteSecretInput!): DeleteSecretPayload!
