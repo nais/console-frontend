@@ -15,14 +15,7 @@ query TeamWebhookDeliveries($id: ID!, $after: Cursor, $before: Cursor, $first: I
 					endCursor
 				}
 				nodes {
-					id
-					eventType
-					requestBody
-					responseStatus
-					responseBody
-					durationMs
-					success
-					createdAt
+					...WebhookDeliveryFields @mask_disable
 				}
 			}
 		}

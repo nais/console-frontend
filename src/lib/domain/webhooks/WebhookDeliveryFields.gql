@@ -1,0 +1,26 @@
+fragment WebhookDeliveryFields on WebhookDelivery {
+	id
+	eventType
+	isTest
+	requestBody
+	requestHeaders {
+		name
+		values
+	}
+	responseStatus
+	responseBody
+	responseBodyTruncated
+	responseHeaders {
+		name
+		values
+	}
+	errorMessage
+	durationMs
+	success
+	createdAt
+	deliveryState {
+		status
+		attemptCount
+		nextRetryAt
+	}
+}

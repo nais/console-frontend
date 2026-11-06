@@ -3,6 +3,7 @@ import { capitalizeFirstLetter } from '#lib/utils/formatters.js';
 export const WEBHOOK_SECRET_MIN_LENGTH = 8;
 
 export function formatWebhookEventName(type: string): string {
+	if (type === 'io.nais.webhook.test') return 'Test event';
 	return capitalizeFirstLetter(type.replaceAll('_', ' ').toLowerCase());
 }
 

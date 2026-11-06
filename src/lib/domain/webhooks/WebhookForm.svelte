@@ -109,7 +109,7 @@
 			Enabled
 		</Switch>
 	{:else}
-		<BodyLong>New webhooks are enabled immediately. You can disable them after creation.</BodyLong>
+		<BodyLong>New webhooks are enabled immediately.</BodyLong>
 	{/if}
 
 	<div class="buttons">
