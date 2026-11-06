@@ -52,7 +52,7 @@
 		container,
 		instances,
 		podNamePrefix,
-		exactPostgresBranch = false,
+		postgresClusterName,
 		filters,
 		formatInstanceName,
 		initialInstance = '',
@@ -68,7 +68,7 @@
 		container?: string;
 		instances: string[];
 		podNamePrefix?: string;
-		exactPostgresBranch?: boolean;
+		postgresClusterName?: string;
 		filters?: Snippet;
 		formatInstanceName?: (instance: string) => string;
 		initialInstance?: string;
@@ -149,7 +149,7 @@
 			instances: instance.trim() && !instanceIsPrefix ? [instance.trim()] : undefined,
 			podNamePrefix:
 				podNamePrefix ?? (instance.trim() && instanceIsPrefix ? instance.trim() : undefined),
-			exactPostgresBranch,
+			postgresClusterName,
 			search,
 			logLevels: level ? [level] : undefined,
 			labelFilters

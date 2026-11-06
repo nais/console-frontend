@@ -101,9 +101,6 @@
 										id
 										name
 									}
-									branch {
-										name
-									}
 								}
 							}
 						}
@@ -116,9 +113,6 @@
 								node {
 									postgres {
 										id
-										name
-									}
-									branch {
 										name
 									}
 								}
@@ -152,7 +146,6 @@
 	};
 	type PostgresUsage = {
 		postgres: { id: string; name: string };
-		branch: { name: string };
 	};
 	const postgresUsages = $derived.by(() => {
 		const workloadData = fragmentData as Record<string, unknown>;
@@ -193,14 +186,19 @@
 			description: os.access.edges.find((access) => access.node.workload.name == $data.name)?.node
 				.access
 		})),
-		postgres: postgresUsages.map(({ cursor, node: usage }) => ({
-			id: cursor,
-			label: usage.postgres.name,
-			href: `/team/${$data.team.slug}/${$data.teamEnvironment.environment.name}/postgres/${usage.postgres.name}`,
-			icon: 'postgres',
-			tooltip: 'Postgres',
-			description: `Branch: ${usage.branch.name}`
-		})),
+		postgres: postgresUsages
+			.filter(
+				({ node }, index, usages) =>
+					usages.findIndex((usage) => usage.node.postgres.id === node.postgres.id) === index
+			)
+			.map(({ node: usage }) => ({
+				id: usage.postgres.id,
+				label: usage.postgres.name,
+				href: `/team/${$data.team.slug}/${$data.teamEnvironment.environment.name}/postgres/${usage.postgres.name}`,
+				icon: 'postgres',
+				tooltip: 'Postgres',
+				description: undefined
+			})),
 		valkey: $data.valkeys.edges.map(toIconLabel('valkey', 'Valkey'))
 	});
 </script>

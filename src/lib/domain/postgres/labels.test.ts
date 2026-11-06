@@ -38,8 +38,7 @@ describe('Postgres labels', () => {
 						postgres: {
 							id: 'database',
 							name: 'database',
-							activeBranch: { id: 'main', name: 'main', state: 'AVAILABLE' },
-							desiredActiveBranch: 'main',
+							state: 'AVAILABLE',
 							highAvailability: false,
 							majorVersion: '18',
 							extensions: [],

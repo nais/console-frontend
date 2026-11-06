@@ -1,18 +1,11 @@
-import { addPageMeta } from '#lib/utils/pageMeta.js';
-import { load_PostgresBranches } from '$houdini';
+import { requireMainBranch } from '#lib/domain/postgres/branchCompatibility.js';
+import { redirect } from '@sveltejs/kit';
+import type { PageLoad } from './$types';
 
-export async function load(event) {
-	return {
-		...(await addPageMeta(event, { title: 'Branches', pageHeaderTitle: event.params.postgres })),
-		...(await load_PostgresBranches({
-			event,
-			blocking: true,
-			variables: {
-				team: event.params.team,
-				env: event.params.env,
-				name: event.params.postgres,
-				first: 20
-			}
-		}))
-	};
-}
+export const load: PageLoad = ({ url }) => {
+	requireMainBranch(url);
+	const target = new URL(url);
+	target.pathname = target.pathname.replace(/\/branches\/?$/, '');
+	target.searchParams.delete('branch');
+	redirect(307, `${target.pathname}${target.search}${target.hash}`);
+};

@@ -31,14 +31,6 @@
 			href: resolve('/team/[team]/[env]/postgres/[postgres]/(single)', page.params as never)
 		},
 		{
-			value: '/team/[team]/[env]/postgres/[postgres]/(single)/branches',
-			label: 'Branches',
-			href: resolve(
-				'/team/[team]/[env]/postgres/[postgres]/(single)/branches',
-				page.params as never
-			)
-		},
-		{
 			value: '/team/[team]/[env]/postgres/[postgres]/(single)/insights',
 			label: 'Insights',
 			href: `${resolve(

@@ -26,6 +26,11 @@ query Teams(
 		edges {
 			node {
 				slug
+				postgreses {
+					pageInfo {
+						totalCount
+					}
+				}
 				members {
 					pageInfo {
 						totalCount
@@ -52,9 +57,6 @@ query Teams(
 						total
 					}
 					sqlInstances {
-						total
-					}
-					postgresBranches {
 						total
 					}
 					valkeys {

@@ -150,7 +150,7 @@ describe('home navigation and search', () => {
 		);
 	});
 
-	test('links Postgres branch issues to the branch overview', () => {
+	test('links legacy main Postgres issues to the database overview', () => {
 		expect(
 			homeIssueResource({
 				__typename: 'PostgresBranchIssue',
@@ -161,7 +161,7 @@ describe('home navigation and search', () => {
 			})
 		).toEqual({
 			name: 'database / main',
-			href: '/team/my-team/prod-gcp/postgres/database/branches'
+			href: '/team/my-team/prod-gcp/postgres/database'
 		});
 	});
 

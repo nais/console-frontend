@@ -97,12 +97,7 @@
 							<Th>Version</Th>
 						{/snippet}
 						{#each postgreses.edges as { node: postgres } (postgres.id)}
-							{const state = $derived(
-								postgres.desiredActiveBranch &&
-									postgres.desiredActiveBranch !== postgres.activeBranch?.name
-									? 'PROGRESSING'
-									: (postgres.activeBranch?.state ?? 'PROGRESSING')
-							)}
+							{const state = $derived(postgres.state)}
 							<Tr>
 								<Td
 									><div class="status-cell">

@@ -13,7 +13,7 @@ query PostgresOverview($team: Slug!, $env: String!, $name: String!) {
 				majorVersion
 				extensions
 				highAvailability
-				desiredActiveBranch
+				state
 				resources {
 					cpu
 					memory
@@ -23,15 +23,10 @@ query PostgresOverview($team: Slug!, $env: String!, $name: String!) {
 					key
 					value
 				}
-				activeBranch {
-					id
-					name
-					state
-					configuration {
-						parameters {
-							name
-							value
-						}
+				configuration {
+					parameters {
+						name
+						value
 					}
 				}
 				workloads(first: 25) {
@@ -39,7 +34,7 @@ query PostgresOverview($team: Slug!, $env: String!, $name: String!) {
 						totalCount
 					}
 					nodes {
-						branch {
+						postgres {
 							id
 							name
 						}

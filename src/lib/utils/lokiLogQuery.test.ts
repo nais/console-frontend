@@ -230,15 +230,14 @@ describe('buildLokiLogQuery', () => {
 	});
 
 	it.each(['test', 'test-feature', 'test.feature'])(
-		'matches only the exact Postgres branch %s',
+		'matches only the exact legacy physical Postgres cluster for %s',
 		(branch) => {
 			const query = buildLokiLogQuery({
 				team: 'my-team',
 				workload: 'roger',
 				container: 'postgres',
 				instances: [],
-				podNamePrefix: `pg-roger-${branch}-`,
-				exactPostgresBranch: true
+				postgresClusterName: `pg-roger-${branch}-f222277b`
 			});
 			const podFilter = query.split('k8s_pod_name=~')[1];
 			const podPattern = new RegExp(JSON.parse(podFilter));
@@ -252,14 +251,13 @@ describe('buildLokiLogQuery', () => {
 		}
 	);
 
-	it('keeps all Postgres branches in the broad prefix filter', () => {
+	it('keeps the generic prefix filter available for other workloads', () => {
 		const query = buildLokiLogQuery({
 			team: 'my-team',
 			workload: 'roger',
 			container: 'postgres',
 			instances: [],
-			podNamePrefix: 'pg-roger-',
-			exactPostgresBranch: false
+			podNamePrefix: 'pg-roger-'
 		});
 		const podPattern = new RegExp(JSON.parse(query.split('k8s_pod_name=~')[1]));
 		for (const branch of ['main', 'test', 'test-feature']) {
@@ -268,15 +266,14 @@ describe('buildLokiLogQuery', () => {
 	});
 
 	it.each(['pg-roger-main-f222277b-1', 'pg-roger-test-f222277b-1'])(
-		'intersects the selected Postgres instance %s with its branch scope',
+		'intersects the selected Postgres instance %s with its physical cluster scope',
 		(instance) => {
 			const query = buildLokiLogQuery({
 				team: 'my-team',
 				workload: 'roger',
 				container: 'postgres',
 				cluster: 'prod',
-				podNamePrefix: 'pg-roger-main-',
-				exactPostgresBranch: true,
+				postgresClusterName: 'pg-roger-main-f222277b',
 				instances: [instance]
 			});
 			const patterns = [...query.matchAll(/k8s_pod_name=~("(?:\\.|[^"\\])*")/g)].map(

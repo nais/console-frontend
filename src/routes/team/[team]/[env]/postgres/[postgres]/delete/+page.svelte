@@ -30,12 +30,12 @@
 		}}
 	>
 		<Alert variant="warning">
-			This permanently deletes {postgres.name}, all its branches and their stored data. Deletion
-			continues asynchronously after the request is accepted.
+			This permanently deletes {postgres.name} and its stored data. Deletion continues asynchronously
+			after the request is accepted.
 		</Alert>
 		{#if postgres.workloads.pageInfo.totalCount > 0}
 			<Alert variant="warning">
-				This Postgres is used by {postgres.workloads.pageInfo.totalCount} workloads across its branches.
+				This Postgres is used by {postgres.workloads.pageInfo.totalCount} workloads.
 			</Alert>
 		{/if}
 		<BodyShort>Remove references to this database from all workloads before deletion.</BodyShort>

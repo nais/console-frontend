@@ -8,8 +8,10 @@ import { postgresQueryInsightsQuery } from '#lib/domain/postgres/queryInsights.j
 import { addPageMeta } from '#lib/utils/pageMeta.js';
 import { get } from 'svelte/store';
 import type { PageLoad } from './$types';
+import { requireMainBranch } from '#lib/domain/postgres/branchCompatibility.js';
 
 export const load: PageLoad = async (event) => {
+	requireMainBranch(event.url);
 	const requestedInterval = event.url.searchParams.get('interval');
 	const interval =
 		Object.values(PrometheusChartQueryInterval).find((value) => value === requestedInterval) ??
@@ -24,11 +26,7 @@ export const load: PageLoad = async (event) => {
 		}
 	});
 	const postgres = get(insights.PostgresInsights).data?.team.environment.postgres;
-	const branch =
-		event.url.searchParams.get('branch') ||
-		postgres?.activeBranch?.name ||
-		postgres?.branches.nodes[0]?.name ||
-		'';
+	const branch = 'main'; // Historical Prometheus label, not a physical branch lookup.
 	const collectedAt = new Date();
 
 	return {

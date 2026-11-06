@@ -69,11 +69,10 @@
 		kafkaTopics: { total: number };
 		openSearches: { total: number };
 		sqlInstances: { total: number };
-		postgresBranches: { total: number };
 		valkeys: { total: number };
 	};
 
-	const inventoryItemsForTeam = (inventoryCounts: InventoryCounts) =>
+	const inventoryItemsForTeam = (inventoryCounts: InventoryCounts, postgresCount: number) =>
 		[
 			{
 				total: inventoryCounts.applications.total,
@@ -104,8 +103,8 @@
 				label: 'Cloud SQL instances'
 			},
 			{
-				total: inventoryCounts.postgresBranches.total,
-				label: 'Postgres branches'
+				total: postgresCount,
+				label: 'Postgres databases'
 			},
 			{
 				total: inventoryCounts.valkeys.total,
@@ -154,7 +153,10 @@
 							></Td
 						>
 						<Td>
-							{inventoryItemsForTeam(t.node.inventoryCounts).join(', ')}
+							{inventoryItemsForTeam(
+								t.node.inventoryCounts,
+								t.node.postgreses.pageInfo.totalCount
+							).join(', ')}
 						</Td>
 					</Tr>
 				{/each}

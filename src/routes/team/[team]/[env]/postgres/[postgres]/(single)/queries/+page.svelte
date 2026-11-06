@@ -1,7 +1,6 @@
 <script lang="ts">
 	import { navigating } from '$app/state';
 	import { PrometheusChartQueryInterval } from '#lib/chart/util.js';
-	import PostgresBranchSelect from '#lib/domain/postgres/PostgresBranchSelect.svelte';
 	import { queryDuration, queryInsightsResult } from '#lib/domain/postgres/queryInsights.js';
 	import GraphErrors from '#lib/ui/GraphErrors.svelte';
 	import Time from '#lib/ui/Time.svelte';
@@ -45,11 +44,6 @@
 
 {#if postgres}
 	<div class="query-controls">
-		<PostgresBranchSelect
-			store={PostgresInsights}
-			{branch}
-			onchange={(value) => changeParams({ branch: value, database: '' })}
-		/>
 		<ToggleGroup
 			label="Time period"
 			size="small"
@@ -72,7 +66,7 @@
 	{:else if hasErrors}
 		<BodyShort>Query statistics could not be loaded.</BodyShort>
 	{:else if !postgres || !branch}
-		<BodyShort>Query statistics are not available until a branch exists.</BodyShort>
+		<BodyShort>Query statistics are not yet available for this Postgres.</BodyShort>
 	{:else if result.error}
 		<Alert variant="error">{result.error}</Alert>
 	{:else if !metrics}
@@ -83,16 +77,15 @@
 		{/each}
 		{#if !result.available}
 			<Alert variant="info">
-				Query statistics are not currently exported for the app database in this branch. Check that
+				Query statistics are not currently exported for the app database. Check that
 				pg_stat_statements metrics are enabled.
 			</Alert>
 		{:else}
 			<BodyShort spacing>
 				Top 20 queries in the app database, sorted by total execution time (highest first) during
-				the last {interval}, across instances in branch
-				<strong>{branch}</strong>. Each database user is listed separately. Values are estimates
-				from Prometheus counter increases; gaps, statistics resets and evicted queries can limit
-				coverage. Exported SQL text is limited to 256 characters.
+				the last {interval}, across Postgres instances. Each database user is listed separately.
+				Values are estimates from Prometheus counter increases; gaps, statistics resets and evicted
+				queries can limit coverage. Exported SQL text is limited to 256 characters.
 			</BodyShort>
 			<BodyShort spacing>Evaluated at <Time time={data.collectedAt} dateFormat="PPpp" />.</BodyShort
 			>

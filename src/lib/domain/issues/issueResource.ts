@@ -38,7 +38,9 @@ export function issueResource(issue: IssueResourceData | null | undefined): {
 	if (issue?.branch) {
 		return {
 			name: `${issue.branch.postgres.name} / ${issue.branch.name}`,
-			href: href(`postgres/${issue.branch.postgres.name}/branches`)
+			href: href(
+				`postgres/${issue.branch.postgres.name}${issue.branch.name === 'main' ? '' : `?branch=${encodeURIComponent(issue.branch.name)}`}`
+			)
 		};
 	}
 	if (issue?.sqlInstance) {

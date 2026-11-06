@@ -35,11 +35,7 @@ query TeamPostgres(
 				node {
 					id
 					name
-					desiredActiveBranch
-					activeBranch {
-						name
-						state
-					}
+					state
 					teamEnvironment {
 						environment {
 							name

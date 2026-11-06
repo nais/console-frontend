@@ -6,12 +6,6 @@ import { vi } from 'vitest';
 import Overview from '../../../routes/team/[team]/[env]/postgres/[postgres]/(single)/+page.svelte';
 
 type Configuration = { parameters: { name: string; value: string }[] } | null;
-type Branch = {
-	id: string;
-	name: string;
-	state: string;
-	configuration?: Configuration;
-};
 
 const fixture = vi.hoisted(() => ({ overview: {} }));
 
@@ -38,15 +32,13 @@ async function renderPage({
 			{ name: 'statement_timeout', value: '30s' }
 		]
 	},
-	activeBranch = { id: 'main', name: 'main', state: 'AVAILABLE', configuration },
-	desiredActiveBranch = 'main',
+	state = 'AVAILABLE',
 	extensions = [],
 	viewerIsMember = false,
 	isAdmin = false
 }: {
 	configuration?: Configuration;
-	activeBranch?: Branch | null;
-	desiredActiveBranch?: string;
+	state?: string;
 	extensions?: string[];
 	viewerIsMember?: boolean;
 	isAdmin?: boolean;
@@ -60,8 +52,8 @@ async function renderPage({
 					postgres: {
 						id: 'database',
 						name: 'database',
-						activeBranch,
-						desiredActiveBranch,
+						state,
+						configuration,
 						highAvailability: false,
 						majorVersion: '18',
 						extensions,
@@ -120,7 +112,7 @@ describe('Postgres overview', () => {
 	test('preserves resource configuration with collapsed, labelled PostgreSQL parameters', async () => {
 		const { body } = await renderPage();
 		expect(body).not.toContain('<h1');
-		for (const value of ['Ready', '100m', '512Mi', '10Gi', 'Postgres version', 'Active branch']) {
+		for (const value of ['Ready', '100m', '512Mi', '10Gi', 'Postgres version']) {
 			expect(body).toContain(value);
 		}
 		const { html, headingId, panelId } = parameterPanel(body);
@@ -146,11 +138,9 @@ describe('Postgres overview', () => {
 		);
 	});
 
-	test('shows unavailable parameters while preserving provisioning UI when no branch is active', async () => {
-		const { body } = await renderPage({ activeBranch: null });
-		expect(body).toContain(
-			'Postgres is being created. The main branch will appear when it is ready.'
-		);
+	test('shows unavailable parameters while provisioning without a branch resource', async () => {
+		const { body } = await renderPage({ state: 'PROGRESSING', configuration: null });
+		expect(body).toContain('Postgres is being prepared. Status updates automatically.');
 		expect(body).toContain('Preparing');
 		const { html } = parameterPanel(body);
 		expect(html).toContain('PostgreSQL parameters are unavailable.');
@@ -158,12 +148,11 @@ describe('Postgres overview', () => {
 		expect(html).not.toContain('<select');
 	});
 
-	test('preserves requested activation status without introducing branch selection in parameters', async () => {
-		const { body } = await renderPage({ desiredActiveBranch: 'preview' });
-		expect(body).toContain('Activation requested');
-		expect(body).toContain('preview');
-		expect(body).toContain('Preparing');
-		expect(body).toContain('<strong>main</strong>');
+	test('shows degraded direct state without branch controls', async () => {
+		const { body } = await renderPage({ state: 'DEGRADED' });
+		expect(body).toContain('Degraded');
+		expect(body).not.toContain('Activation requested');
+		expect(body).not.toContain('Active branch');
 		const { html } = parameterPanel(body);
 		expect(html).toContain('16MB');
 		expect(html).not.toContain('preview');
@@ -196,7 +185,7 @@ describe('Postgres overview', () => {
 
 	test.each([null, undefined])('shows unavailable for configuration=%s', async (configuration) => {
 		const { body } = await renderPage({
-			activeBranch: { id: 'main', name: 'main', state: 'AVAILABLE', configuration }
+			configuration: configuration ?? null
 		});
 		const { html } = parameterPanel(body);
 		expect(html).toContain('PostgreSQL parameters are unavailable.');
