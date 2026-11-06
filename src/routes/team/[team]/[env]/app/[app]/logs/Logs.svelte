@@ -6,6 +6,7 @@
 	import { exhaustive } from '#lib/utils/houdini.js';
 	import { page } from '$app/state';
 	import type { Instances$result } from '$houdini';
+	import { Alert } from '#lib/shadcn/ui/index.js';
 
 	const { team }: Instances$result = $props();
 	const destinations = $derived(exhaustive(team.environment.application.logDestinations));
@@ -16,6 +17,9 @@
 	const selectedInstance = $derived(page.url.searchParams.get('instance'));
 	const hasLoki = $derived(
 		destinations.some((destination) => destination.__typename === 'LogDestinationLoki')
+	);
+	const hasLegacyLogs = $derived(
+		destinations.some((destination) => destination.__typename === 'LogDestinationGeneric')
 	);
 	const grafanaURL = $derived(
 		destinations.find((destination) => destination.__typename === 'LogDestinationLoki')?.grafanaURL
@@ -30,16 +34,7 @@
 			projectID={team.environment.gcpProjectID}
 		/>
 	{/if}
-	{#if !hasLoki && !hasSecureLogs}
-		<LegacyLogViewer
-			team={team.slug}
-			environment={team.environment.environment.name}
-			workload={team.environment.application.name}
-			{instances}
-			initialInstances={selectedInstance ? [selectedInstance] : instances}
-			tracesURL={apmURL(page.params.team!, page.params.app!, 'traces')}
-		/>
-	{:else if hasLoki}
+	{#if hasLoki}
 		<LogExplorer
 			team={team.slug}
 			environment={team.environment.environment.name}
@@ -51,5 +46,16 @@
 			{grafanaURL}
 			tracesURL={apmURL(page.params.team!, page.params.app!, 'traces')}
 		/>
+	{:else if hasLegacyLogs}
+		<LegacyLogViewer
+			team={team.slug}
+			environment={team.environment.environment.name}
+			workload={team.environment.application.name}
+			{instances}
+			initialInstances={selectedInstance ? [selectedInstance] : instances}
+			tracesURL={apmURL(page.params.team!, page.params.app!, 'traces')}
+		/>
+	{:else}
+		<Alert variant="info">No standard log destination is configured for this workload.</Alert>
 	{/if}
 {/key}

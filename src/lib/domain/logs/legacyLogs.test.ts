@@ -17,8 +17,10 @@ vi.mock('$houdini', () => ({
 	graphql: () => ({})
 }));
 
+const legacyDestinations = [{ __typename: 'LogDestinationGeneric', name: 'elastic' }];
+
 function application(
-	logDestinations: unknown[] = [],
+	logDestinations: unknown[] = legacyDestinations,
 	projectID: string | null = 'team-dev-project'
 ) {
 	return {
@@ -38,7 +40,7 @@ function application(
 }
 
 function job(
-	logDestinations: unknown[] = [],
+	logDestinations: unknown[] = legacyDestinations,
 	running = true,
 	completedRunName = 'job-run-2',
 	projectID: string | null = 'team-dev-project'
@@ -115,6 +117,38 @@ describe.each(['application', 'job'] as const)('%s log viewer fallback', (kind) 
 	});
 
 	it.each([false, true])(
+		'preserves the legacy viewer with Team Logs present: %s',
+		async (secure) => {
+			const { body } = await view([
+				...legacyDestinations,
+				...(secure ? [{ __typename: 'LogDestinationSecureLogs' }] : [])
+			]);
+			expect(body).toContain('Clear logs');
+			expect(body).not.toContain('Search log content');
+			expect(body.includes('Open Team Logs')).toBe(secure);
+		}
+	);
+
+	it('does not start a log viewer when standard forwarding is disabled', async () => {
+		const { body } = await view([]);
+		expect(body).toContain('No standard log destination is configured for this workload.');
+		expect(body).not.toContain('Clear logs');
+		expect(body).not.toContain('Search log content');
+		expect(body).not.toContain('Open Team Logs');
+	});
+
+	it('prefers Loki over a legacy destination when Team Logs is also present', async () => {
+		const { body } = await view([
+			...legacyDestinations,
+			{ __typename: 'LogDestinationLoki', grafanaURL: 'https://grafana.example.com' },
+			{ __typename: 'LogDestinationSecureLogs' }
+		]);
+		expect(body).toContain('Search log content');
+		expect(body).toContain('Open Team Logs');
+		expect(body).not.toContain('Clear logs');
+	});
+
+	it.each([false, true])(
 		'links secure workloads to Team Logs (Loki configured: %s)',
 		async (loki) => {
 			const { body } = await view([
@@ -144,6 +178,7 @@ describe.each(['application', 'job'] as const)('%s log viewer fallback', (kind) 
 				expect(body).toContain('Traces');
 			} else {
 				expect(body).not.toContain('Search log content');
+				expect(body).toContain('No standard log destination is configured for this workload.');
 			}
 		}
 	);
@@ -200,7 +235,7 @@ it('selects running job instances by default', async () => {
 });
 
 it('selects all job instances when no runs are running', async () => {
-	const { body } = await render(JobLogs, { props: job([], false) });
+	const { body } = await render(JobLogs, { props: job(legacyDestinations, false) });
 	expect(selectedInstances(body)).toEqual(['run-1-one', 'run-1-two', 'run-2-one']);
 });
 
@@ -212,7 +247,7 @@ it('selects all instances for a linked job run instead of the running run', asyn
 
 it('matches a linked run exactly before matching instance prefixes', async () => {
 	page.url.searchParams.set('instance', 'job-run-1');
-	const { body } = await render(JobLogs, { props: job([], true, 'job-run-10') });
+	const { body } = await render(JobLogs, { props: job(legacyDestinations, true, 'job-run-10') });
 	expect(selectedInstances(body)).toEqual(['run-1-one', 'run-1-two']);
 });
 
