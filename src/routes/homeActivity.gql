@@ -732,6 +732,36 @@ query HomeActivity($from: Time!) {
 				resourceType
 				optionalTeamSlug: teamSlug
 			}
+			... on WebhookCreatedActivityLogEntry {
+				id
+				createdAt
+				actor
+				message
+				environmentName
+				resourceName
+				resourceType
+				optionalTeamSlug: teamSlug
+			}
+			... on WebhookDeletedActivityLogEntry {
+				id
+				createdAt
+				actor
+				message
+				environmentName
+				resourceName
+				resourceType
+				optionalTeamSlug: teamSlug
+			}
+			... on WebhookUpdatedActivityLogEntry {
+				id
+				createdAt
+				actor
+				message
+				environmentName
+				resourceName
+				resourceType
+				optionalTeamSlug: teamSlug
+			}
 		}
 	}
 }
