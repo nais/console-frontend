@@ -108,11 +108,11 @@
 		flex-wrap: wrap;
 		padding: var(--ax-space-12) var(--ax-space-16);
 		border-top: var(--sh-border-width) solid var(--border);
-		font-size: var(--ax-font-size-small);
+		font-size: var(--sh-font-size-sm);
 	}
 	.team-purpose {
 		margin: 0;
-		font-size: var(--ax-font-size-small);
+		font-size: var(--sh-font-size-sm);
 		color: var(--ax-text-neutral);
 		display: -webkit-box;
 		-webkit-line-clamp: 2;

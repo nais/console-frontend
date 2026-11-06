@@ -205,7 +205,7 @@
 	.issue-row {
 		--surface-accent-color: var(--ax-text-danger);
 		--surface-icon-size: var(--ax-space-32);
-		--surface-icon-glyph-size: var(--ax-font-size-large);
+		--surface-icon-glyph-size: var(--sh-font-size-lg);
 		--surface-icon-background: color-mix(in srgb, var(--ax-text-danger) 10%, transparent);
 		--surface-icon-shadow: none;
 		display: flex;

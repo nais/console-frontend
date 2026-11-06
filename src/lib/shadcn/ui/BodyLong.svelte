@@ -54,7 +54,7 @@
 		font-size: var(--sh-font-size-sm);
 	}
 	.sh-body-long--small {
-		font-size: var(--ax-font-size-small);
+		font-size: var(--sh-font-size-sm);
 	}
 	.sh-body-long--spacing {
 		margin-bottom: var(--ax-space-14);

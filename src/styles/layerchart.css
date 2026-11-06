@@ -27,12 +27,12 @@
 
 .lc-legend-swatch-label {
 	font-family: inherit;
-	font-size: var(--ax-font-size-small);
+	font-size: var(--sh-font-size-sm);
 }
 
 .lc-text {
 	font-family: sans-serif;
-	font-size: var(--ax-font-size-small);
+	font-size: var(--sh-font-size-sm);
 }
 
 /* LayerChart's default surface mixes in transparency. Keep chart data from

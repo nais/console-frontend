@@ -115,7 +115,7 @@
 		color: var(--foreground);
 		text-decoration: none;
 		font-weight: 600;
-		font-size: var(--ax-font-size-small);
+		font-size: var(--sh-font-size-sm);
 		white-space: nowrap;
 		transition: color 120ms ease;
 	}
@@ -125,7 +125,7 @@
 	}
 
 	.healthy-text {
-		font-size: var(--ax-font-size-small);
+		font-size: var(--sh-font-size-sm);
 		color: var(--muted-foreground);
 	}
 
@@ -137,7 +137,7 @@
 	}
 
 	.instances-text {
-		font-size: var(--ax-font-size-small);
+		font-size: var(--sh-font-size-sm);
 		color: var(--muted-foreground);
 		font-variant-numeric: tabular-nums;
 	}

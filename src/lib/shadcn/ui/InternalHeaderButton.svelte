@@ -33,7 +33,7 @@
 		background: transparent;
 		color: var(--foreground);
 		font-family: inherit;
-		font-size: var(--ax-font-size-small);
+		font-size: var(--sh-font-size-sm);
 		font-weight: var(--sh-font-weight-medium);
 		text-decoration: none;
 		cursor: pointer;

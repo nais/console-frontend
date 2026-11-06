@@ -227,7 +227,7 @@
 		gap: var(--ax-space-16);
 		padding: var(--ax-space-12) var(--ax-space-20);
 		border-bottom: var(--sh-border-width) solid var(--ax-border-neutral-subtleA);
-		font-size: var(--ax-font-size-small);
+		font-size: var(--sh-font-size-sm);
 		min-width: 0;
 		transition: background-color 120ms ease;
 	}
@@ -245,7 +245,7 @@
 		align-items: center;
 		gap: var(--ax-space-2);
 		color: var(--ax-text-neutral-subtle);
-		font-size: var(--ax-font-size-small);
+		font-size: var(--sh-font-size-sm);
 		flex-shrink: 0;
 		width: var(--ax-space-56);
 	}
@@ -255,7 +255,7 @@
 	}
 
 	.direction-label {
-		font-weight: var(--ax-font-weight-bold);
+		font-weight: var(--sh-font-weight-semibold);
 	}
 
 	.target {
@@ -264,7 +264,7 @@
 	}
 
 	.target :global(.icon-label) {
-		font-size: var(--ax-font-size-large);
+		font-size: var(--sh-font-size-lg);
 	}
 
 	.target :global(*) {

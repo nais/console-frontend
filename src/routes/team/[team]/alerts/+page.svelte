@@ -160,7 +160,7 @@
 					aria-expanded={filtersOpen}
 					onclick={() => (filtersOpen = !filtersOpen)}
 				>
-					<FunnelIcon aria-hidden="true" style="font-size: var(--ax-font-size-medium)" />
+					<FunnelIcon aria-hidden="true" style="font-size: var(--sh-font-size-base)" />
 					Filters
 				</button>
 			{/snippet}
@@ -405,7 +405,7 @@
 		align-items: center;
 		gap: var(--ax-space-4);
 		cursor: pointer;
-		font-weight: var(--ax-font-weight-bold);
+		font-weight: var(--sh-font-weight-semibold);
 	}
 	.query-details[open] .query-toggle :global(svg) {
 		transform: rotate(90deg);

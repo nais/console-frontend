@@ -250,7 +250,7 @@
 		border-radius: var(--radius-xs);
 		color: var(--sidebar-foreground);
 		text-decoration: none;
-		font-size: var(--ax-font-size-small);
+		font-size: var(--sh-font-size-sm);
 		font-weight: var(--sh-font-weight-medium);
 		transition:
 			background-color 110ms ease,

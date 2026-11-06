@@ -120,7 +120,7 @@
 		display: flex;
 		align-items: center;
 		gap: var(--ax-space-8);
-		font-size: var(--ax-font-size-large);
+		font-size: var(--sh-font-size-lg);
 		font-weight: 600;
 		letter-spacing: -0.015em;
 		margin: 0;
@@ -139,7 +139,7 @@
 		align-items: center;
 		justify-content: center;
 		min-width: var(--ax-space-24);
-		line-height: var(--sh-line-height-compact);
+		line-height: var(--sh-font-line-height-compact);
 		padding: 0 var(--ax-space-8);
 		border-radius: 9999px;
 		background: var(--secondary);

@@ -141,7 +141,7 @@
 
 	.error-message {
 		color: var(--ax-text-danger);
-		font-size: var(--ax-font-size-small);
+		font-size: var(--sh-font-size-sm);
 		margin-top: var(--ax-space-4);
 	}
 </style>

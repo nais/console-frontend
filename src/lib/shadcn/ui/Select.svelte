@@ -110,7 +110,7 @@
 	.sh-select-control--small {
 		height: var(--ax-space-32);
 		padding: 0 var(--ax-space-28) 0 var(--ax-space-10);
-		font-size: var(--ax-font-size-small);
+		font-size: var(--sh-font-size-sm);
 	}
 	.sh-select-control:focus-visible {
 		outline: none;

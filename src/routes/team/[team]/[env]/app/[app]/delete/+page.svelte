@@ -158,7 +158,7 @@
 
 <style>
 	code {
-		font-size: var(--ax-font-size-medium);
+		font-size: var(--sh-font-size-base);
 	}
 
 	form {

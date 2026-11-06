@@ -45,16 +45,16 @@
 		font-weight: var(--sh-font-weight-bold);
 	}
 	.sh-heading--large {
-		font-size: var(--ax-font-size-xlarge);
+		font-size: var(--sh-font-size-xl);
 		line-height: 1.25;
 		font-weight: var(--sh-font-weight-heading-large);
 	}
 	.sh-heading--medium {
-		font-size: var(--ax-font-size-large);
+		font-size: var(--sh-font-size-lg);
 		line-height: 1.35;
 	}
 	.sh-heading--small {
-		font-size: var(--ax-font-size-medium);
+		font-size: var(--sh-font-size-base);
 		line-height: 1.4;
 	}
 	.sh-heading--xsmall {

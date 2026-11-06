@@ -131,7 +131,7 @@
 <style>
 	.lines {
 		overflow-x: auto;
-		font-size: var(--ax-font-size-small);
+		font-size: var(--sh-font-size-sm);
 	}
 
 	summary,
@@ -174,7 +174,7 @@
 
 	.level {
 		min-width: 5ch;
-		font-weight: var(--ax-font-weight-bold);
+		font-weight: var(--sh-font-weight-semibold);
 	}
 
 	[data-level='ERROR'] .level,

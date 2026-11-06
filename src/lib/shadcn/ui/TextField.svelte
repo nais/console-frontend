@@ -121,7 +121,7 @@
 	.sh-input-control--small {
 		height: var(--ax-space-32);
 		padding: 0 var(--ax-space-10);
-		font-size: var(--ax-font-size-small);
+		font-size: var(--sh-font-size-sm);
 	}
 	.sh-input-control:focus-visible {
 		outline: none;

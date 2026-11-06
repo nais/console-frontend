@@ -512,12 +512,12 @@
 
 	.value {
 		font-family: monospace;
-		font-size: var(--ax-font-size-small);
+		font-size: var(--sh-font-size-sm);
 		word-break: break-all;
 	}
 
 	.binary-label {
-		font-size: var(--ax-font-size-small);
+		font-size: var(--sh-font-size-sm);
 		color: var(--ax-text-neutral-subtle);
 		font-style: italic;
 	}

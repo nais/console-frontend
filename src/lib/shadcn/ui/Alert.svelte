@@ -103,7 +103,7 @@
 	}
 	.sh-ui-alert.size-sm {
 		padding: var(--ax-space-8) var(--ax-space-12);
-		font-size: var(--ax-font-size-small);
+		font-size: var(--sh-font-size-sm);
 	}
 	.sh-ui-alert.full-width {
 		border-radius: 0;

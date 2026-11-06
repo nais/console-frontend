@@ -51,7 +51,7 @@
 		font-size: var(--sh-font-size-sm);
 	}
 	.sh-label--small {
-		font-size: var(--ax-font-size-small);
+		font-size: var(--sh-font-size-sm);
 	}
 	.sh-label--spacing {
 		margin-bottom: var(--ax-space-6);
