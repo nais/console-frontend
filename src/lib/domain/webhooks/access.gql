@@ -1,6 +1,7 @@
 query WebhookManagementAccess($team: Slug!) @cache(policy: NetworkOnly) {
 	team(slug: $team) {
 		viewerIsOwner
+		viewerIsMember
 	}
 	me {
 		__typename

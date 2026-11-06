@@ -4,6 +4,7 @@ import { addPageMeta } from '#lib/utils/pageMeta.js';
 const rows = 20;
 
 export async function load(event) {
+	await event.parent();
 	const after = event.url.searchParams.get('after') || '';
 	const before = event.url.searchParams.get('before') || '';
 	const [webhooks, activity] = await Promise.all([

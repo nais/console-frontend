@@ -1,7 +1,6 @@
 <script lang="ts">
 	import type { WebhookEventTypes$result } from '$houdini';
 	import { Checkbox, Radio, RadioGroup } from '#lib/shadcn/ui/index.js';
-	import { formatWebhookEventName } from './webhooks.js';
 	import { untrack } from 'svelte';
 	import { SvelteSet } from 'svelte/reactivity';
 
@@ -76,9 +75,8 @@
 					checked={selected.has(event.type)}
 					onchange={(e) => toggle(event.type, e.currentTarget.checked)}
 				>
-					{formatWebhookEventName(event.type)}
+					{event.description}
 					{#snippet description()}
-						<div>{event.description}</div>
 						<code>{event.cloudEventType}</code>
 					{/snippet}
 				</Checkbox>

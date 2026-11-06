@@ -3,6 +3,7 @@ import { error } from '@sveltejs/kit';
 import { get } from 'svelte/store';
 
 export async function load(event) {
+	await event.parent();
 	const result = await load_WebhookSettings({
 		event,
 		variables: { id: event.params.webhookId },

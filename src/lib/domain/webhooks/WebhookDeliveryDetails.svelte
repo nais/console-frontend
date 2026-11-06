@@ -11,7 +11,7 @@
 		Tabs
 	} from '#lib/shadcn/ui/index.js';
 	import Time from '#lib/ui/Time.svelte';
-	import { formatWebhookEventName } from './webhooks.js';
+	import { capitalizeFirstLetter } from '#lib/utils/formatters.js';
 
 	let { delivery }: { delivery: WebhookDeliveryFields$data } = $props();
 
@@ -49,22 +49,18 @@
 	<div>
 		<Heading as="h3" size="xsmall" spacing>Attempt state</Heading>
 		<BodyShort>
-			{delivery.deliveryState
-				? formatWebhookEventName(delivery.deliveryState.status)
-				: 'Not available'}
+			{capitalizeFirstLetter(delivery.deliveryState.status.toLowerCase())}
 		</BodyShort>
-		{#if delivery.deliveryState}
+		<BodyShort>
+			Attempt {delivery.deliveryState.attemptCount}
+		</BodyShort>
+		{#if delivery.deliveryState.nextRetryAt}
 			<BodyShort>
-				Attempt {delivery.deliveryState.attemptCount}
+				Retry scheduled for <Time
+					time={delivery.deliveryState.nextRetryAt}
+					dateFormat="d MMM yyyy, HH:mm:ss"
+				/>
 			</BodyShort>
-			{#if delivery.deliveryState.nextRetryAt}
-				<BodyShort>
-					Retry scheduled for <Time
-						time={delivery.deliveryState.nextRetryAt}
-						dateFormat="d MMM yyyy, HH:mm:ss"
-					/>
-				</BodyShort>
-			{/if}
 		{/if}
 		{#if delivery.isTest && !delivery.success}
 			<BodyShort>No retries</BodyShort>

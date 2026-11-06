@@ -1,13 +1,13 @@
 <script lang="ts">
 	import { Accordion, AccordionItem, BodyShort, Tag } from '#lib/shadcn/ui/index.js';
-	import { formatWebhookEventName } from './webhooks.js';
+	import { formatWebhookEventName, type WebhookEventType } from './webhooks.js';
 
 	let {
 		eventTypes,
 		metadata
 	}: {
 		eventTypes: readonly string[];
-		metadata: readonly { type: string; group: string }[];
+		metadata: readonly WebhookEventType[];
 	} = $props();
 
 	const groups = $derived.by(() => {
@@ -36,7 +36,7 @@
 				{/snippet}
 				<ul>
 					{#each events as type (type)}
-						<li>{formatWebhookEventName(type)}</li>
+						<li>{formatWebhookEventName(type, metadata)}</li>
 					{/each}
 				</ul>
 			</AccordionItem>

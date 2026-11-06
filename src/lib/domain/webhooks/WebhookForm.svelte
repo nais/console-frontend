@@ -7,6 +7,7 @@
 	import WebhookSourceTeamFields from './WebhookSourceTeamFields.svelte';
 	import {
 		WEBHOOK_SECRET_MIN_LENGTH,
+		webhookUrlError,
 		type WebhookFormFields,
 		type WebhookFormResult
 	} from './webhooks.js';
@@ -72,11 +73,13 @@
 		name="url"
 		type="url"
 		label="Webhook URL"
-		description="The HTTP or HTTPS endpoint that will receive webhook requests."
+		description="The HTTPS endpoint that will receive webhook requests."
 		value={fields?.url ?? ''}
 		placeholder="https://example.com/webhook"
 		required
 		disabled={saving}
+		oninput={(event) =>
+			event.currentTarget.setCustomValidity(webhookUrlError(event.currentTarget.value) ?? '')}
 	/>
 	<TextField
 		name="secret"
