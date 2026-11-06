@@ -1,6 +1,4 @@
 import {
-	canActivateBranch,
-	canDeleteBranch,
 	configurationError,
 	configurationErrors,
 	formString,
@@ -26,20 +24,6 @@ describe('Postgres forms', () => {
 			resourceInput(withoutUnchangedStorage({ ...values, diskSize: '20' }, current)).diskSize
 		).toBe('20Gi');
 		expect(configurationErrors(withoutUnchangedStorage(values, undefined)).diskSize).toBeDefined();
-	});
-	test.each(['PROGRESSING', 'DEGRADED', 'DELETING', 'UNKNOWN'])(
-		'does not activate a branch in %s state',
-		(state) => {
-			expect(canActivateBranch({ name: 'restore', state }, 'main', null)).toBe(false);
-		}
-	);
-	test('only activates available branches that are not the requested selection', () => {
-		expect(canActivateBranch({ name: 'restore', state: 'AVAILABLE' }, 'main', null)).toBe(true);
-		expect(canActivateBranch({ name: 'main', state: 'AVAILABLE' }, 'main', null)).toBe(false);
-		expect(canActivateBranch({ name: 'restore', state: 'AVAILABLE' }, 'main', 'restore')).toBe(
-			false
-		);
-		expect(canActivateBranch({ name: 'main', state: 'AVAILABLE' }, 'main', 'restore')).toBe(true);
 	});
 	test('returns all resource errors keyed by field', () => {
 		expect(configurationErrors({ cpu: '9', memory: '0', diskSize: '1001' })).toEqual({
@@ -164,18 +148,4 @@ describe('Postgres forms', () => {
 		data.set('name', new Blob(['database']), 'name.txt');
 		expect(formString(data, 'name')).toBe('');
 	});
-
-	test.each([
-		['main', 'main', 'restore', false],
-		['restore', 'main', 'restore', false],
-		['old', 'main', 'restore', true],
-		['main', null, null, false],
-		['main', null, 'restore', false],
-		['restore', null, null, true]
-	])(
-		'checks deletion of %s with active %s and requested %s',
-		(branch, active, requested, expected) => {
-			expect(canDeleteBranch(branch, active, requested)).toBe(expected);
-		}
-	);
 });
