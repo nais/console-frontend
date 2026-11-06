@@ -13,16 +13,6 @@ query PostgresInsights($team: Slug!, $env: String!, $name: String!) {
 					id
 					name
 				}
-				branches(first: 20) @paginate(mode: Infinite) {
-					pageInfo {
-						totalCount
-						hasNextPage
-					}
-					nodes {
-						id
-						name
-					}
-				}
 			}
 		}
 	}

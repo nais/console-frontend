@@ -160,18 +160,14 @@ describe('Postgres Queries page', () => {
 		expect(body).toContain('Exported SQL text is limited to 256 characters');
 		expect(body).not.toContain('SQL text unavailable');
 		expect(body).toContain('Calls (estimated)');
-		expect(body).toMatch(/<label[^>]*for="[^"]+"[^>]*>[\s\S]*?Branch[\s\S]*?<\/label>/);
+		expect(body).not.toContain('<select');
+		expect(body).not.toContain('Load more branches');
 		expect(body).not.toMatch(/<label[^>]*>\s*Database<\/label>/);
 		expect(body).not.toMatch(/<th\b[^>]*>Database<\/th>/);
 		expect(body).not.toContain('All databases');
 		expect(body).toContain('Top 20 queries in the app database');
 		expect([...body.matchAll(/<th\b/g)]).toHaveLength(6);
 		expect(body).toContain('Time period');
-	});
-
-	test('keeps the deep-linked branch visible before its pagination page is loaded', async () => {
-		const { body } = await renderPage({ branch: 'older' });
-		expect(body).toMatch(/<option value="older" selected="">[\s\S]*?older<\/option>/);
 	});
 
 	test('shows empty activity outside a table', async () => {
@@ -215,7 +211,7 @@ describe('Postgres Queries page', () => {
 
 	test('shows provisioning feedback when no branch exists without loading metrics forever', async () => {
 		const { body } = await renderPage({ branch: '', fetching: true });
-		expect(body).toContain('not available until a branch exists');
+		expect(body).toContain('not available until Postgres has an active branch');
 		expect(body).not.toContain('Loading query statistics');
 	});
 
@@ -280,15 +276,14 @@ describe('Postgres Queries page', () => {
 		expect(body).not.toContain('<script>bad</script>');
 	});
 
-	test('includes Queries navigation and preserves branch and time when switching tabs', async () => {
+	test('removes Branches navigation and obsolete branch filters while preserving time', async () => {
 		const { body } = await renderLayout();
 		expect(body).toContain('>Queries<');
-		expect(body).toContain(
-			'href="/team/test/dev/postgres/database/queries?branch=preview&amp;interval=6h"'
-		);
-		expect(body).toContain(
-			'href="/team/test/dev/postgres/database/insights?branch=preview&amp;interval=6h"'
-		);
+		expect(body).toContain('href="/team/test/dev/postgres/database/queries?interval=6h"');
+		expect(body).toContain('href="/team/test/dev/postgres/database/insights?interval=6h"');
+		expect(body).not.toContain('>Branches<');
+		expect(body).not.toContain('/branches');
+		expect(body).not.toContain('branch=preview');
 		expect(body).not.toContain('database=app');
 	});
 

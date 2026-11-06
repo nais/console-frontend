@@ -7,15 +7,6 @@ query PostgresLogs($team: Slug!, $env: String!, $name: String!) {
 					id
 					name
 				}
-				branches(first: 20) @paginate(mode: Infinite) {
-					pageInfo {
-						hasNextPage
-					}
-					nodes {
-						id
-						name
-					}
-				}
 			}
 		}
 	}
