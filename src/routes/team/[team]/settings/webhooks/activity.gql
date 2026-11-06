@@ -1,0 +1,15 @@
+query TeamWebhooksActivity($team: Slug!) {
+	team(slug: $team) {
+		activityLog(first: 5, filter: { resourceTypes: [WEBHOOK] }) @paginate(mode: Infinite) {
+			pageInfo {
+				hasNextPage
+				endCursor
+			}
+			edges {
+				node {
+					...ActivityLogEntryFragment
+				}
+			}
+		}
+	}
+}

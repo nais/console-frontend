@@ -11,6 +11,9 @@
 		if (routeId.startsWith('/team/[team]/settings/service_accounts')) {
 			return '/team/[team]/settings/service_accounts';
 		}
+		if (routeId.startsWith('/team/[team]/settings/webhooks')) {
+			return '/team/[team]/settings/webhooks';
+		}
 		return '/team/[team]/settings';
 	});
 	const tabs = $derived([
@@ -23,6 +26,11 @@
 			value: '/team/[team]/settings/service_accounts',
 			label: 'Service Accounts',
 			href: resolve('/team/[team]/settings/service_accounts', page.params as never)
+		},
+		{
+			value: '/team/[team]/settings/webhooks',
+			label: 'Webhooks',
+			href: resolve('/team/[team]/settings/webhooks', page.params as never)
 		}
 	]);
 </script>

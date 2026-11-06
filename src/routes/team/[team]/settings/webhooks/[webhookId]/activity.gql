@@ -1,0 +1,18 @@
+query TeamWebhookActivity($id: ID!) {
+	node(id: $id) {
+		__typename
+		... on WebhookSubscription {
+			activityLog(first: 5) @paginate(mode: Infinite) {
+				pageInfo {
+					hasNextPage
+					endCursor
+				}
+				edges {
+					node {
+						...ActivityLogEntryFragment
+					}
+				}
+			}
+		}
+	}
+}

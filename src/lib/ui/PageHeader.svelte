@@ -1,11 +1,11 @@
 <script lang="ts">
-	import { resolve } from '$app/paths';
-	import { page } from '$app/state';
-	import type { RouteId } from '$app/types';
 	import { ShBadge } from '#lib/shadcn/ui/index.js';
 	import AddToFavorites from '#lib/ui/AddToFavorites.svelte';
 	import DocsLink from '#lib/ui/DocsLink.svelte';
 	import { getHeaderActionsContext } from '#lib/ui/headerActionsContext.svelte.js';
+	import { resolve } from '$app/paths';
+	import { page } from '$app/state';
+	import type { RouteId } from '$app/types';
 	import type { Snippet } from 'svelte';
 
 	const { beforeBreadcrumbs }: { beforeBreadcrumbs?: Snippet } = $props();
