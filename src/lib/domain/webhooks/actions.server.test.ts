@@ -361,6 +361,24 @@ describe('team webhook actions', () => {
 		expect(mocks.create).not.toHaveBeenCalled();
 	});
 
+	it.each([createWebhook, updateWebhook])(
+		'rejects restricted endpoints before sending a mutation (%s)',
+		async (action) => {
+			for (const url of [
+				'http://receiver.example.com',
+				'https://user:password@receiver.example.com',
+				'https://receiver.example.com/#fragment',
+				'https://10.0.0.1/events',
+				'https://localhost/events'
+			]) {
+				const result = await action(event({ url, secret: 'test-signing-key' }));
+				expect(result?.status).toBe(400);
+			}
+			expect(mocks.create).not.toHaveBeenCalled();
+			expect(mocks.update).not.toHaveBeenCalled();
+		}
+	);
+
 	it('returns API errors without echoing the signing secret', async () => {
 		mocks.mutationErrors = [{ message: 'The endpoint is not allowed.' }];
 		const result = await createWebhook(event({ secret: 'test-signing-key' }));

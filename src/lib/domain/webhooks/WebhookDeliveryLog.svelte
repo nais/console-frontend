@@ -16,9 +16,10 @@
 	import { ChevronDownIcon, ChevronUpIcon } from '#lib/icons/index.js';
 	import Pagination from '#lib/ui/Pagination.svelte';
 	import Time from '#lib/ui/Time.svelte';
+	import { capitalizeFirstLetter } from '#lib/utils/formatters.js';
 	import { SvelteMap } from 'svelte/reactivity';
 	import WebhookDeliveryDetails from './WebhookDeliveryDetails.svelte';
-	import { formatWebhookEventName } from './webhooks.js';
+	import { formatWebhookEventName, type WebhookEventType } from './webhooks.js';
 
 	type Webhook = Extract<
 		NonNullable<TeamWebhookDeliveries$result['node']>,
@@ -28,12 +29,14 @@
 	let {
 		deliveries,
 		testDelivery,
+		eventTypes,
 		fetching,
 		onprevious,
 		onnext
 	}: {
 		deliveries: Webhook['deliveries'] | null;
 		testDelivery?: WebhookDeliveryFields$data | null;
+		eventTypes: readonly WebhookEventType[];
 		fetching: boolean;
 		onprevious: () => void;
 		onnext: () => void;
@@ -100,7 +103,10 @@
 							</Td>
 							<Td><Time time={delivery.createdAt} distance /></Td>
 							<Td
-								><span title={delivery.eventType}>{formatWebhookEventName(delivery.eventType)}</span
+								><span title={delivery.eventType}
+									>{delivery.isTest
+										? 'Test event'
+										: formatWebhookEventName(delivery.eventType, eventTypes)}</span
 								>
 								{#if delivery.isTest}
 									<Tag size="small" variant="neutral">Test</Tag>
@@ -118,9 +124,7 @@
 								</Tag>
 							</Td>
 							<Td>
-								{delivery.deliveryState
-									? formatWebhookEventName(delivery.deliveryState.status)
-									: 'Not available'}
+								{capitalizeFirstLetter(delivery.deliveryState.status.toLowerCase())}
 								{#if delivery.isTest && !delivery.success}
 									<BodyShort size="small">No retries</BodyShort>
 								{/if}

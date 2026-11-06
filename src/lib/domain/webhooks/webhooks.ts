@@ -1,10 +1,48 @@
-import { capitalizeFirstLetter } from '#lib/utils/formatters.js';
+import type { WebhookEventTypes$result } from '$houdini';
 
 export const WEBHOOK_SECRET_MIN_LENGTH = 8;
+export type WebhookEventType = WebhookEventTypes$result['webhookEventTypes'][number];
 
-export function formatWebhookEventName(type: string): string {
-	if (type === 'io.nais.webhook.test') return 'Test event';
-	return capitalizeFirstLetter(type.replaceAll('_', ' ').toLowerCase());
+export function formatWebhookEventName(
+	type: string,
+	catalogue: readonly WebhookEventType[]
+): string {
+	return (
+		catalogue.find((event) => event.type === type || event.cloudEventType === type)?.description ??
+		type
+	);
+}
+
+export function canViewWebhooks(viewer: {
+	viewerIsMember: boolean;
+	viewerIsOwner: boolean;
+	isAdmin: boolean;
+}): boolean {
+	return viewer.viewerIsMember || viewer.viewerIsOwner || viewer.isAdmin;
+}
+
+export function webhookUrlError(value: string): string | null {
+	const url = value.trim();
+	if (!URL.canParse(url) || !/^https:\/\//i.test(url)) {
+		return 'Enter a valid HTTPS webhook URL.';
+	}
+	const parsed = new URL(url);
+	if (parsed.username || parsed.password || /^https:\/\/[^/?#]*@/i.test(url)) {
+		return 'Webhook URLs cannot contain credentials.';
+	}
+	if (url.includes('#')) {
+		return 'Webhook URLs cannot contain fragments.';
+	}
+	const hostname = parsed.hostname.replace(/\.+$/, '').toLowerCase();
+	if (
+		hostname === 'localhost' ||
+		hostname.endsWith('.localhost') ||
+		hostname.startsWith('[') ||
+		/^\d+\.\d+\.\d+\.\d+$/.test(hostname)
+	) {
+		return 'Webhook URLs must use a hostname other than localhost or an IP address.';
+	}
+	return null;
 }
 
 export interface WebhookFormFields {
@@ -64,9 +102,8 @@ export function readWebhookForm(data: FormData, creating: boolean, ownerTeamSlug
 	if (!name) {
 		errors.push('A webhook name is required.');
 	}
-	if (!URL.canParse(url) || !['http:', 'https:'].includes(new URL(url).protocol)) {
-		errors.push('Enter a valid HTTP or HTTPS webhook URL.');
-	}
+	const urlError = webhookUrlError(url);
+	if (urlError) errors.push(urlError);
 	if (secretValue !== null && typeof secretValue !== 'string') {
 		errors.push('Invalid signing secret.');
 	} else if (creating && !secret) {

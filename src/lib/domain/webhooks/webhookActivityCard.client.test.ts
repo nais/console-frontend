@@ -208,4 +208,13 @@ describe('Webhook activity card', () => {
 		expect(document.body.textContent).toContain('Activity unavailable');
 		expect(document.body.textContent).not.toContain('No activity log entries found.');
 	});
+
+	it('does not render cached activity alongside a query authorization error without a code', () => {
+		state.set({ ...initialState(), errors: [{ message: 'Access denied.' }] });
+		renderCard();
+		expect(document.body.textContent).toContain('Access denied.');
+		expect(document.body.textContent).not.toContain('Deployment notifications');
+		expect(document.body.textContent).not.toContain('No activity log entries found.');
+		expect(document.querySelector('button')).toBeNull();
+	});
 });

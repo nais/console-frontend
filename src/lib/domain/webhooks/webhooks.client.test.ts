@@ -76,7 +76,7 @@ const delivery: Delivery = {
 	responseHeaders: [],
 	responseBodyTruncated: false,
 	errorMessage: null,
-	deliveryState: null,
+	deliveryState: { status: 'FAILED', attemptCount: 1, nextRetryAt: null },
 	durationMs: 200,
 	success: false,
 	createdAt: new Date('2026-11-05T10:00:00Z')
@@ -115,6 +115,7 @@ function renderDeliveries(props: Partial<ComponentProps<typeof WebhookDeliveryLo
 		target: document.body,
 		props: {
 			fetching: false,
+			eventTypes,
 			onprevious: vi.fn(),
 			onnext: vi.fn(),
 			...props,
@@ -146,10 +147,10 @@ function selectDeliveryTab(
 	return panel;
 }
 
-function renderEvents(types: readonly string[]) {
+function renderEvents(types: readonly string[], metadata = eventTypes) {
 	const component = mount(WebhookEvents, {
 		target: document.body,
-		props: { eventTypes: types, metadata: eventTypes }
+		props: { eventTypes: types, metadata }
 	});
 	cleanup = () => unmount(component);
 	flushSync();
@@ -525,8 +526,8 @@ describe('subscribed webhook events', () => {
 		flushSync();
 		expect(groups[1].querySelector('button')?.getAttribute('aria-expanded')).toBe('true');
 		expect(groups[1].querySelector('.sh-accordion-content--closed')).toBeNull();
-		expect(groups[1].querySelector('ul')?.textContent).toContain('Team updated');
-		expect(groups[1].querySelector('ul')?.textContent).toContain('Team member added');
+		expect(groups[1].querySelector('ul')?.textContent).toContain(eventTypes[0].description);
+		expect(groups[1].querySelector('ul')?.textContent).toContain(eventTypes[1].description);
 		expect(groups[0].querySelector('button')?.getAttribute('aria-expanded')).toBe('false');
 		expect(document.body.textContent).not.toContain('Reconciler');
 	});
@@ -534,7 +535,23 @@ describe('subscribed webhook events', () => {
 	it('keeps unrecognized subscribed events visible in a separate group', () => {
 		renderEvents(['FUTURE_EVENT']);
 		expect(document.querySelector('button')?.textContent).toContain('Other events');
-		expect(document.querySelector('li')?.textContent).toBe('Future event');
+		expect(document.querySelector('li')?.textContent).toBe('FUTURE_EVENT');
+	});
+
+	it('uses updated server descriptions and groups without inferring labels from event identifiers', () => {
+		renderEvents(
+			['TEAM_UPDATED'],
+			[
+				{
+					...eventTypes[0],
+					description: 'A new description from the API.',
+					group: 'Notifications'
+				}
+			]
+		);
+		expect(document.querySelector('button')?.textContent).toContain('Notifications');
+		expect(document.querySelector('li')?.textContent).toBe('A new description from the API.');
+		expect(document.body.textContent).not.toContain('Team updated');
 	});
 
 	it('explicitly displays an empty subscription', () => {
@@ -558,21 +575,37 @@ describe('webhook form', () => {
 	});
 
 	it.each([
-		['APPLICATION_DELETED', 'Application deleted', 'io.nais.application.deleted'],
-		['TEAM_MEMBER_ADDED', 'Team member added', 'io.nais.team.member.added']
+		['APPLICATION_DELETED', 'Removed an application.', 'io.nais.application.deleted'],
+		['TEAM_MEMBER_ADDED', 'Added a new member.', 'io.nais.team.member.added']
 	])(
-		'uses a short label for %s with the API description and CloudEvents type underneath',
+		'uses the API description for %s and the CloudEvents type underneath',
 		(type, title, cloudEventType) => {
-			renderForm({ eventTypes: [{ ...eventTypes[0], type, cloudEventType }] });
+			renderForm({ eventTypes: [{ ...eventTypes[0], type, description: title, cloudEventType }] });
 			const checkbox = document.querySelector<HTMLInputElement>(`input[value="${type}"]`);
 			expect(checkbox?.labels?.[0]?.textContent?.trim()).toBe(title);
 			const description = document.getElementById(checkbox?.getAttribute('aria-describedby') ?? '');
-			expect(description?.querySelector('div')?.textContent?.trim()).toBe(
-				eventTypes[0].description
-			);
 			expect(description?.querySelector('code')?.textContent).toBe(cloudEventType);
 		}
 	);
+
+	it.each([
+		'http://receiver.example.com/events',
+		'https://user:password@receiver.example.com',
+		'https://receiver.example.com/#fragment',
+		'https://127.0.0.1/events',
+		'https://[::1]/events',
+		'https://localhost/events'
+	])('rejects restricted URL inputs and clears validity after correction: %s', (url) => {
+		renderForm();
+		const input = document.querySelector<HTMLInputElement>('input[name="url"]')!;
+		input.value = url;
+		input.dispatchEvent(new Event('input', { bubbles: true }));
+		expect(input.checkValidity()).toBe(false);
+		expect(input.validationMessage).not.toBe('');
+		input.value = 'https://receiver.intern.example.com/events';
+		input.dispatchEvent(new Event('input', { bubbles: true }));
+		expect(input.checkValidity()).toBe(true);
+	});
 
 	it('submits explicitly selected events', () => {
 		renderForm();
@@ -796,10 +829,50 @@ describe('webhook delivery log', () => {
 		expect(document.querySelectorAll('button[aria-expanded="true"]')).toHaveLength(2);
 	});
 
-	it('uses readable event names while keeping the raw type available as a tooltip', () => {
+	it('uses server descriptions while keeping the raw event type available as a tooltip', () => {
 		renderDeliveries();
-		expect(document.querySelector('[title="TEAM_UPDATED"]')?.textContent).toBe('Team updated');
+		expect(document.querySelector('[title="TEAM_UPDATED"]')?.textContent).toBe(
+			eventTypes[0].description
+		);
 	});
+
+	it('uses server descriptions for CloudEvents identifiers', () => {
+		renderDeliveries({
+			deliveries: { nodes: [{ ...delivery, eventType: 'io.nais.team.updated' }], pageInfo }
+		});
+		expect(document.querySelector('[title="io.nais.team.updated"]')?.textContent).toBe(
+			eventTypes[0].description
+		);
+	});
+
+	it.each([301, 302, 303, 307, 308])(
+		'shows a %s redirect as a failed original response',
+		(responseStatus) => {
+			renderDeliveries({
+				deliveries: {
+					nodes: [
+						{
+							...delivery,
+							responseStatus,
+							success: false,
+							errorMessage: 'Redirects are not followed.',
+							responseHeaders: [{ name: 'Location', values: ['https://other.example.com/events'] }],
+							deliveryState: { status: 'FAILED', attemptCount: 1, nextRetryAt: null }
+						}
+					],
+					pageInfo
+				}
+			});
+			const row = document.querySelector('tbody tr');
+			expect(row?.textContent).toContain(String(responseStatus));
+			expect(row?.querySelectorAll('td')[5]?.textContent?.trim()).toBe('Failed');
+			expect(row?.textContent).not.toContain('Success');
+			expect(selectDeliveryTab('Response').querySelector('pre.headers')?.textContent).toContain(
+				'Location: https://other.example.com/events'
+			);
+			expect(document.body.textContent).toContain('Redirects are not followed.');
+		}
+	);
 
 	it('expands accessible delivery details and displays payloads as text', () => {
 		renderDeliveries();
@@ -1024,12 +1097,12 @@ describe('webhook delivery log', () => {
 		expect(document.body.textContent).not.toContain('Will retry at');
 	});
 
-	it('shows unavailable attempt state without inferring expired queue data', () => {
+	it('shows the recorded attempt state without inferring queue state', () => {
 		renderDeliveries();
-		expect(document.querySelector('tbody tr td:last-child')?.textContent?.trim()).toBe(
-			'Not available'
-		);
-		expect(document.querySelector('.delivery-details')?.textContent).toContain('Not available');
+		expect(document.querySelector('tbody tr td:last-child')?.textContent?.trim()).toBe('Failed');
+		expect(document.querySelector('.delivery-details')?.textContent).toContain('Failed');
+		expect(document.querySelector('.delivery-details')?.textContent).toContain('Attempt 1');
+		expect(document.body.textContent).not.toContain('Not available');
 		expect(document.body.textContent).not.toContain('Queue state');
 		expect(document.body.textContent).not.toContain('No retries');
 	});

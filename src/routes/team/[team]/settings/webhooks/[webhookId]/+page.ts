@@ -9,9 +9,10 @@ import { get } from 'svelte/store';
 const rows = 20;
 
 export async function load(event) {
+	const parent = await event.parent();
 	const after = event.url.searchParams.get('after') || '';
 	const before = event.url.searchParams.get('before') || '';
-	const [deliveries, eventTypes, activity, parent] = await Promise.all([
+	const [deliveries, eventTypes, activity] = await Promise.all([
 		load_TeamWebhookDeliveries({
 			event,
 			variables: {
@@ -20,8 +21,7 @@ export async function load(event) {
 			}
 		}),
 		load_WebhookEventTypes({ event, blocking: true }),
-		load_TeamWebhookActivity({ event, variables: { id: event.params.webhookId } }),
-		event.parent()
+		load_TeamWebhookActivity({ event, variables: { id: event.params.webhookId } })
 	]);
 	const node = get(parent.WebhookSettings).data?.node;
 	const name = node?.__typename === 'WebhookSubscription' ? node.name : 'Webhook';

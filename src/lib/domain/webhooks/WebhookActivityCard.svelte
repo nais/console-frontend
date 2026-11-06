@@ -13,6 +13,7 @@
 	} = $props();
 
 	const activity = $derived.by(() => {
+		if ($activityStore.errors?.length) return null;
 		const data = $activityStore.data;
 		if (!data) return null;
 		if ('team' in data) return data.team.activityLog;

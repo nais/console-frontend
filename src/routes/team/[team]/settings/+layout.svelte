@@ -2,9 +2,10 @@
 	import { resolve } from '$app/paths';
 	import { page } from '$app/state';
 	import { NavTabs } from '#lib/shadcn/ui/index.js';
+	import { canViewWebhooks } from '#lib/domain/webhooks/webhooks.js';
 	import type { LayoutProps } from './$types';
 
-	let { children }: LayoutProps = $props();
+	let { children, data }: LayoutProps = $props();
 
 	const activeTab = $derived.by(() => {
 		const routeId = page.route.id ?? '';
@@ -27,11 +28,15 @@
 			label: 'Service Accounts',
 			href: resolve('/team/[team]/settings/service_accounts', page.params as never)
 		},
-		{
-			value: '/team/[team]/settings/webhooks',
-			label: 'Webhooks',
-			href: resolve('/team/[team]/settings/webhooks', page.params as never)
-		}
+		...(canViewWebhooks(data)
+			? [
+					{
+						value: '/team/[team]/settings/webhooks',
+						label: 'Webhooks',
+						href: resolve('/team/[team]/settings/webhooks', page.params as never)
+					}
+				]
+			: [])
 	]);
 </script>
 

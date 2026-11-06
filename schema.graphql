@@ -2791,7 +2791,9 @@ input CreateWebhookInput {
   """
   teamSlug: Slug
 
-  """The URL that will receive webhook HTTP POST requests."""
+  """
+  The HTTPS URL that will receive webhook HTTP POST requests. Credentials and fragments are not allowed.
+  """
   url: String!
 }
 
@@ -12293,7 +12295,9 @@ input UpdateWebhookInput {
   """
   sourceTeamSlugs: [Slug!]
 
-  """The new URL for the webhook. Null to keep the current value."""
+  """
+  The new HTTPS URL for the webhook, without credentials or a fragment. Null to keep the current value.
+  """
   url: String
 }
 
@@ -13365,9 +13369,9 @@ type WebhookDelivery implements Node {
   createdAt: Time!
 
   """
-  The current state shared by all attempts for this event delivery. Null for manual tests or when queue state has expired.
+  The recorded result and retry information for this attempt, unaffected by later attempts or queue changes.
   """
-  deliveryState: WebhookDeliveryState
+  deliveryState: WebhookDeliveryState!
 
   """How long the delivery took in milliseconds."""
   durationMs: Int!
@@ -13438,34 +13442,30 @@ type WebhookDeliveryEdge {
 }
 
 """
-Current processing state of an event delivery, shared across its historical attempts.
+The recorded result and retry information for one HTTP delivery attempt.
 """
 type WebhookDeliveryState {
-  """The number of recorded HTTP attempts for this event delivery."""
+  """
+  The number of attempts made up to and including this attempt. Manual tests always have one attempt.
+  """
   attemptCount: Int!
 
   """
-  The next scheduled retry. Null unless a retry is pending and the subscription is enabled.
+  The retry time scheduled after this failed attempt, if any. This historical timestamp does not change when the retry runs or the subscription is disabled.
   """
   nextRetryAt: Time
 
-  """The current processing status."""
+  """Whether this attempt succeeded or failed, regardless of later retries."""
   status: WebhookDeliveryStatus!
 }
 
-"""Processing status of an event delivery."""
+"""The outcome of an individual HTTP delivery attempt."""
 enum WebhookDeliveryStatus {
-  """The event was delivered successfully."""
+  """This attempt succeeded."""
   COMPLETED
 
-  """The retry budget was exhausted."""
+  """This attempt failed, whether or not a retry was scheduled."""
   FAILED
-
-  """Waiting for an attempt or a scheduled retry."""
-  PENDING
-
-  """An attempt is currently being processed."""
-  PROCESSING
 }
 
 """Metadata about a webhook-subscribable event type."""
@@ -13584,7 +13584,9 @@ type WebhookSubscription implements ActivityLogger & Node {
   """When the webhook was last updated."""
   updatedAt: Time!
 
-  """The URL that will receive webhook HTTP POST requests."""
+  """
+  The HTTPS URL that will receive webhook HTTP POST requests. Credentials and fragments are not allowed.
+  """
   url: String!
 }
 

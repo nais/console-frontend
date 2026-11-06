@@ -1,13 +1,84 @@
 import { describe, expect, it } from 'vitest';
-import { formatWebhookEventName, readWebhookForm } from './webhooks.js';
+import {
+	canViewWebhooks,
+	formatWebhookEventName,
+	readWebhookForm,
+	webhookUrlError,
+	type WebhookEventType
+} from './webhooks.js';
 
 describe('webhook event names', () => {
+	const catalogue: WebhookEventType[] = [
+		{
+			type: 'APPLICATION_DELETED',
+			description: 'An application was removed.',
+			group: 'Applications',
+			cloudEventType: 'io.nais.application.deleted',
+			teamScoped: true
+		}
+	];
+	it.each(['APPLICATION_DELETED', 'io.nais.application.deleted'])(
+		'uses the server description for %s',
+		(type) => {
+			expect(formatWebhookEventName(type, catalogue)).toBe('An application was removed.');
+		}
+	);
+
+	it('preserves unknown event identifiers instead of inventing labels', () => {
+		expect(formatWebhookEventName('FUTURE_EVENT', catalogue)).toBe('FUTURE_EVENT');
+	});
+});
+
+describe('webhook read access', () => {
 	it.each([
-		['APPLICATION_DELETED', 'Application deleted'],
-		['TEAM_MEMBER_ADDED', 'Team member added'],
-		['POSTGRES_BRANCH_ACTIVATED', 'Postgres branch activated']
-	])('formats %s as %s', (type, name) => {
-		expect(formatWebhookEventName(type)).toBe(name);
+		[false, false, false, false],
+		[true, false, false, true],
+		[false, true, false, true],
+		[false, false, true, true]
+	])(
+		'allows member=%s owner=%s admin=%s: %s',
+		(viewerIsMember, viewerIsOwner, isAdmin, allowed) => {
+			expect(canViewWebhooks({ viewerIsMember, viewerIsOwner, isAdmin })).toBe(allowed);
+		}
+	);
+});
+
+describe('webhook URL restrictions', () => {
+	it.each([
+		'http://receiver.example.com',
+		'https://user:password@receiver.example.com',
+		'https://user@receiver.example.com',
+		'https://@receiver.example.com',
+		'https://receiver.example.com/#fragment',
+		'https://receiver.example.com/#',
+		'https://127.0.0.1/events',
+		'https://10.0.0.1/events',
+		'https://[::1]/events',
+		'https://[2001:db8::1]/events',
+		'https://2130706433/events',
+		'https://0x7f000001/events',
+		'https://0177.0.0.1/events',
+		'https://localhost/events',
+		'https://LOCALHOST./events',
+		'https://receiver.localhost/events'
+	])('rejects unsafe endpoint %s on creation and update', (url) => {
+		expect(webhookUrlError(url)).not.toBeNull();
+		for (const creating of [true, false]) {
+			expect(readWebhookForm(form({ url }), creating, 'my-team').errors).toContain(
+				webhookUrlError(url)
+			);
+		}
+	});
+
+	it.each([
+		'https://receiver.example.com/events',
+		'https://receiver.intern.dev-gcp.example.com/events',
+		'https://receiver.private.example.com:8443/events?token=value',
+		'https://receiver.example.com/events@source',
+		'https://receiver.example.com/%23fragment'
+	])('allows HTTPS hostnames without resolving their addresses: %s', (url) => {
+		expect(webhookUrlError(url)).toBeNull();
+		expect(readWebhookForm(form({ url }), true, 'my-team').errors).toEqual([]);
 	});
 });
 
@@ -71,19 +142,22 @@ describe('webhook form validation', () => {
 		'rejects invalid webhook URL %s',
 		(url) => {
 			expect(readWebhookForm(form({ url }), true, 'my-team').errors).toContain(
-				'Enter a valid HTTP or HTTPS webhook URL.'
+				'Enter a valid HTTPS webhook URL.'
 			);
 		}
 	);
 
 	it('trims URLs but preserves signing secrets exactly', () => {
 		const result = readWebhookForm(
-			form({ url: '  http://localhost:3000/events  ', secret: '  test-signing-key  ' }),
+			form({
+				url: '  https://receiver.intern.example.com/events  ',
+				secret: '  test-signing-key  '
+			}),
 			true,
 			'my-team'
 		);
 		expect(result.errors).toEqual([]);
-		expect(result.fields.url).toBe('http://localhost:3000/events');
+		expect(result.fields.url).toBe('https://receiver.intern.example.com/events');
 		expect(result.secret).toBe('  test-signing-key  ');
 		expect(result.fields).not.toHaveProperty('secret');
 	});

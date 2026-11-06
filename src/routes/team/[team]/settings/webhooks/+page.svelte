@@ -14,7 +14,9 @@
 
 	let { data }: PageProps = $props();
 	const { TeamWebhooks, TeamWebhooksActivity, viewerIsOwner, isAdmin, teamSlug } = $derived(data);
-	const connection = $derived($TeamWebhooks.data?.team.webhooks);
+	const connection = $derived(
+		$TeamWebhooks.errors?.length ? null : $TeamWebhooks.data?.team.webhooks
+	);
 </script>
 
 <GraphErrors errors={$TeamWebhooks.errors} />

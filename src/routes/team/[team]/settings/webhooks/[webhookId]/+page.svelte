@@ -41,9 +41,11 @@
 		isAdmin,
 		teamSlug
 	} = $derived(data);
-	const node = $derived($WebhookSettings.data?.node);
+	const node = $derived($WebhookSettings.errors?.length ? null : $WebhookSettings.data?.node);
 	const webhook = $derived(node?.__typename === 'WebhookSubscription' ? node : null);
-	const deliveryNode = $derived($TeamWebhookDeliveries.data?.node);
+	const deliveryNode = $derived(
+		$TeamWebhookDeliveries.errors?.length ? null : $TeamWebhookDeliveries.data?.node
+	);
 	const deliveries = $derived(
 		deliveryNode?.__typename === 'WebhookSubscription' ? deliveryNode.deliveries : null
 	);
@@ -213,6 +215,7 @@
 					{#if deliveries || form?.testDelivery}
 						<WebhookDeliveryLog
 							{deliveries}
+							eventTypes={$WebhookEventTypes.data?.webhookEventTypes ?? []}
 							testDelivery={form?.testDelivery}
 							fetching={$TeamWebhookDeliveries.fetching}
 							onprevious={() =>
