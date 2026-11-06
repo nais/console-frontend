@@ -1,10 +1,44 @@
 <script lang="ts">
 	import type { WebhookDeliveryFields$data } from '$houdini';
-	import { Alert, BodyLong, BodyShort, Heading } from '#lib/shadcn/ui/index.js';
+	import {
+		Alert,
+		BodyLong,
+		BodyShort,
+		Heading,
+		Tab,
+		TabList,
+		TabPanel,
+		Tabs
+	} from '#lib/shadcn/ui/index.js';
 	import Time from '#lib/ui/Time.svelte';
 	import { formatWebhookEventName } from './webhooks.js';
 
 	let { delivery }: { delivery: WebhookDeliveryFields$data } = $props();
+
+	function formatBody(body: string): string {
+		try {
+			const parsed: unknown = JSON.parse(body);
+			return JSON.stringify(parsed, null, 2);
+		} catch (error) {
+			if (error instanceof SyntaxError) return body;
+			throw error;
+		}
+	}
+
+	const messages = $derived([
+		{
+			value: 'request',
+			label: 'Request',
+			headers: delivery.requestHeaders,
+			body: formatBody(delivery.requestBody)
+		},
+		{
+			value: 'response',
+			label: 'Response',
+			headers: delivery.responseHeaders,
+			body: delivery.responseBody === null ? null : formatBody(delivery.responseBody)
+		}
+	]);
 </script>
 
 <div class="delivery-details">
@@ -13,85 +47,68 @@
 	{/if}
 
 	<div>
-		<Heading as="h3" size="xsmall" spacing>Current delivery state</Heading>
-		{#if delivery.isTest}
-			<BodyShort>{delivery.success ? 'Succeeded' : 'Failed'}</BodyShort>
-			{#if !delivery.success}
-				<BodyShort>No retries</BodyShort>
-			{/if}
-			<BodyLong>
-				Test events make one attempt, are never retried, and do not affect webhook health.
-			</BodyLong>
-		{:else if delivery.deliveryState}
+		<Heading as="h3" size="xsmall" spacing>Attempt state</Heading>
+		<BodyShort>
+			{delivery.deliveryState
+				? formatWebhookEventName(delivery.deliveryState.status)
+				: 'Not available'}
+		</BodyShort>
+		{#if delivery.deliveryState}
 			<BodyShort>
-				{formatWebhookEventName(delivery.deliveryState.status)}
-				- {delivery.deliveryState.attemptCount}
-				{delivery.deliveryState.attemptCount === 1 ? 'attempt' : 'attempts'}
+				Attempt {delivery.deliveryState.attemptCount}
 			</BodyShort>
 			{#if delivery.deliveryState.nextRetryAt}
 				<BodyShort>
-					Will retry at <Time
+					Retry scheduled for <Time
 						time={delivery.deliveryState.nextRetryAt}
 						dateFormat="d MMM yyyy, HH:mm:ss"
 					/>
 				</BodyShort>
 			{/if}
-			<BodyShort size="small">
-				This is the current state shared by all attempts for this event, not this attempt's result.
-			</BodyShort>
-		{:else}
-			<BodyLong>Queue state is no longer available for this delivery.</BodyLong>
+		{/if}
+		{#if delivery.isTest && !delivery.success}
+			<BodyShort>No retries</BodyShort>
 		{/if}
 	</div>
 
-	<BodyShort size="small">
-		Headers are filtered for diagnostics; credentials and unapproved headers are omitted.
-	</BodyShort>
-
-	{#each [{ title: 'Request headers', headers: delivery.requestHeaders }, { title: 'Response headers', headers: delivery.responseHeaders }] as group (group.title)}
-		<div>
-			<Heading as="h3" size="xsmall" spacing>{group.title}</Heading>
-			{#if group.headers.length}
-				<dl class="headers">
-					{#each group.headers as header (header.name)}
-						<div>
-							<dt><code>{header.name}</code></dt>
-							<dd>
-								{#each header.values as value, index (index)}
-									<pre>{value}</pre>
-								{/each}
-							</dd>
-						</div>
-					{/each}
-				</dl>
-			{:else}
-				<BodyLong>No headers recorded.</BodyLong>
-			{/if}
-		</div>
-	{/each}
-
-	<div>
-		<Heading as="h3" size="xsmall" spacing>Request body</Heading>
-		{#if !delivery.isTest}
-			<BodyShort size="small">
-				The CloudEvents time is the source activity time, not the delivery attempt time.
-			</BodyShort>
-		{/if}
-		<pre>{delivery.requestBody}</pre>
-	</div>
-	<div>
-		<Heading as="h3" size="xsmall" spacing>Response body</Heading>
-		{#if delivery.responseBodyTruncated}
-			<Alert variant="warning">The recorded response body was truncated to 10 KiB.</Alert>
-		{/if}
-		{#if delivery.responseBody === null}
-			<BodyLong>No text response body available (no response or binary content).</BodyLong>
-		{:else if delivery.responseBody === ''}
-			<BodyLong>Empty response body.</BodyLong>
-		{:else}
-			<pre>{delivery.responseBody}</pre>
-		{/if}
-	</div>
+	<Tabs defaultValue="request" size="small">
+		<TabList aria-label="Delivery request and response">
+			{#each messages as message (message.value)}
+				<Tab value={message.value}>{message.label}</Tab>
+			{/each}
+		</TabList>
+		{#each messages as message (message.value)}
+			<TabPanel value={message.value}>
+				<div class="message">
+					<div>
+						<Heading as="h3" size="xsmall" spacing>Headers</Heading>
+						{#if message.headers.length}
+							<pre class="headers">{#each message.headers as header, index (header.name)}<strong
+										>{header.name}:</strong
+									>{` ${header.values.join(', ')}`}{index < message.headers.length - 1
+										? '\n'
+										: ''}{/each}</pre>
+						{:else}
+							<BodyLong>No headers recorded.</BodyLong>
+						{/if}
+					</div>
+					<div>
+						<Heading as="h3" size="xsmall" spacing>Body</Heading>
+						{#if message.value === 'response' && delivery.responseBodyTruncated}
+							<Alert variant="warning">Response body truncated to 10 KiB.</Alert>
+						{/if}
+						{#if message.body === null}
+							<BodyLong>No text response body.</BodyLong>
+						{:else if message.body === ''}
+							<BodyLong>Empty response body.</BodyLong>
+						{:else}
+							<pre class="body">{message.body}</pre>
+						{/if}
+					</div>
+				</div>
+			</TabPanel>
+		{/each}
+	</Tabs>
 </div>
 
 <style>
@@ -102,19 +119,15 @@
 		overflow-wrap: anywhere;
 	}
 
-	.headers {
+	.message {
 		display: grid;
-		gap: var(--ax-space-12);
-		margin: 0;
+		gap: var(--ax-space-24);
+		padding-top: var(--ax-space-16);
+		min-width: 0;
 	}
 
-	dt {
+	.headers strong {
 		font-weight: var(--ax-font-weight-bold);
-		margin-bottom: var(--ax-space-4);
-	}
-
-	dd {
-		margin: 0;
 	}
 
 	pre {

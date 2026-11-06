@@ -60,7 +60,11 @@ const pageInfo = {
 	startCursor: 'first',
 	endCursor: 'last'
 };
-const delivery = {
+type Delivery = NonNullable<
+	ComponentProps<typeof WebhookDeliveryLog>['deliveries']
+>['nodes'][number];
+
+const delivery: Delivery = {
 	id: 'delivery-id',
 	' $fragments': { WebhookDeliveryFields: {} },
 	eventType: 'TEAM_UPDATED',
@@ -106,14 +110,17 @@ function renderForm(props: Partial<ComponentProps<typeof WebhookForm>> = {}) {
 }
 
 function renderDeliveries(props: Partial<ComponentProps<typeof WebhookDeliveryLog>> = {}) {
+	const defaultDeliveries = { nodes: [delivery], pageInfo };
 	const component = mount(WebhookDeliveryLog, {
 		target: document.body,
 		props: {
-			deliveries: { nodes: [delivery], pageInfo },
 			fetching: false,
 			onprevious: vi.fn(),
 			onnext: vi.fn(),
 			...props,
+			get deliveries() {
+				return props.deliveries === undefined ? defaultDeliveries : props.deliveries;
+			},
 			get testDelivery() {
 				return props.testDelivery;
 			}
@@ -121,6 +128,22 @@ function renderDeliveries(props: Partial<ComponentProps<typeof WebhookDeliveryLo
 	});
 	cleanup = () => unmount(component);
 	flushSync();
+}
+
+function selectDeliveryTab(
+	label: 'Request' | 'Response',
+	details = document.querySelector('.delivery-details')
+) {
+	const tab = [...(details?.querySelectorAll<HTMLButtonElement>('[role="tab"]') ?? [])].find(
+		(tab) => tab.textContent?.trim() === label
+	);
+	if (!tab) throw new Error(`Missing ${label} tab`);
+	tab.click();
+	flushSync();
+	const panel = document.getElementById(tab.getAttribute('aria-controls') ?? '');
+	if (!panel) throw new Error(`Missing ${label} panel`);
+	expect(panel.hidden).toBe(false);
+	return panel;
 }
 
 function renderEvents(types: readonly string[]) {
@@ -692,14 +715,19 @@ describe('webhook delivery log', () => {
 	it.each([true, false])(
 		'shows a returned test attempt as an expanded delivery row, success=%s',
 		(success) => {
-			const testDelivery = {
+			const testDelivery: Delivery = {
 				...delivery,
 				id: 'returned-test',
 				isTest: true,
 				eventType: 'io.nais.webhook.test',
 				success,
 				responseStatus: success ? 204 : 500,
-				errorMessage: success ? null : 'Connection failed'
+				errorMessage: success ? null : 'Connection failed',
+				deliveryState: {
+					status: success ? 'COMPLETED' : 'FAILED',
+					attemptCount: 1,
+					nextRetryAt: null
+				}
 			};
 			renderDeliveries({ testDelivery });
 			const rows = document.querySelectorAll<HTMLTableRowElement>('tbody tr');
@@ -708,10 +736,10 @@ describe('webhook delivery log', () => {
 			expect(rows[0]?.textContent).toContain(success ? 'Success' : 'Failed');
 			expect(
 				rows[0]?.querySelector('td:last-child')?.textContent?.replaceAll(/\s+/g, ' ').trim()
-			).toBe(success ? 'Succeeded' : 'Failed No retries');
+			).toBe(success ? 'Completed' : 'Failed No retries');
 			expect(rows[0]?.querySelector('button')?.getAttribute('aria-expanded')).toBe('true');
 			expect(rows[1]?.hidden).toBe(false);
-			expect(rows[1]?.textContent).toContain('never retried');
+			expect(rows[1]?.textContent).toContain('Attempt 1');
 			if (!success) expect(rows[1]?.textContent).toContain('Connection failed');
 			expect(rows[3]?.hidden).toBe(true);
 			expect(document.body.textContent).not.toContain('Test event result');
@@ -784,9 +812,11 @@ describe('webhook delivery log', () => {
 		flushSync();
 		expect(button?.getAttribute('aria-expanded')).toBe('true');
 		expect(details?.hidden).toBe(false);
-		expect(details?.textContent).toContain(delivery.requestBody);
+		expect(selectDeliveryTab('Request', details).querySelector('pre.body')?.textContent).toBe(
+			JSON.stringify(JSON.parse(delivery.requestBody), null, 2)
+		);
 		expect(document.querySelector('script')).toBeNull();
-		expect(details?.textContent).toContain('No text response body available');
+		expect(selectDeliveryTab('Response', details).textContent).toContain('No text response body.');
 		expect(document.body.textContent).toContain('No response');
 	});
 
@@ -805,7 +835,7 @@ describe('webhook delivery log', () => {
 		});
 		expect(document.body.textContent).toContain('204');
 		expect(document.body.textContent).toContain('Success');
-		expect(document.body.textContent).toContain('accepted');
+		expect(selectDeliveryTab('Response').querySelector('pre.body')?.textContent).toBe('accepted');
 	});
 
 	it('distinguishes an empty response body from unavailable text', () => {
@@ -815,11 +845,13 @@ describe('webhook delivery log', () => {
 				pageInfo
 			}
 		});
-		expect(document.body.textContent).toContain('Empty response body.');
-		expect(document.body.textContent).not.toContain('No text response body available');
+		const response = selectDeliveryTab('Response');
+		expect(response.textContent).toContain('Empty response body.');
+		expect(response.textContent).not.toContain('No text response body.');
+		expect(response.querySelector('pre.body')).toBeNull();
 	});
 
-	it('renders all header values as text with a filtering notice', () => {
+	it('renders all header values as text with bold names', () => {
 		renderDeliveries({
 			deliveries: {
 				nodes: [
@@ -834,12 +866,19 @@ describe('webhook delivery log', () => {
 				pageInfo
 			}
 		});
-		expect(document.body.textContent).toContain('Request headers');
-		expect(document.body.textContent).toContain('Response headers');
-		expect(document.body.textContent).toContain('application/json');
-		expect(document.body.textContent).toContain('first');
-		expect(document.body.textContent).toContain('<script>second</script>');
-		expect(document.body.textContent).toContain('Headers are filtered');
+		const request = selectDeliveryTab('Request');
+		expect(request.querySelectorAll('pre.headers')).toHaveLength(1);
+		expect(request.querySelector('pre.headers')?.textContent).toBe(
+			'Content-Type: application/json'
+		);
+		expect(request.querySelector('pre.headers strong')?.textContent).toBe('Content-Type:');
+		const response = selectDeliveryTab('Response');
+		expect(response.querySelectorAll('pre.headers')).toHaveLength(1);
+		expect(response.querySelector('pre.headers')?.textContent).toBe(
+			'X-Diagnostic: first, <script>second</script>'
+		);
+		expect(response.querySelector('pre.headers strong')?.textContent).toBe('X-Diagnostic:');
+		expect(response.querySelector('h3')?.textContent).toBe('Headers');
 		expect(document.querySelector('script')).toBeNull();
 	});
 
@@ -859,14 +898,109 @@ describe('webhook delivery log', () => {
 			}
 		});
 		expect(document.body.textContent).toContain('Unable to read the complete response');
-		expect(document.body.textContent).toContain('truncated to 10 KiB');
-		expect(document.body.textContent).toContain('partial response');
+		const response = selectDeliveryTab('Response');
+		expect(response.textContent).toContain('truncated to 10 KiB');
+		expect(response.querySelector('pre.body')?.textContent).toBe('partial response');
 	});
+
+	it('shows each header on its own line in one preformatted block', () => {
+		renderDeliveries({
+			deliveries: {
+				nodes: [
+					{
+						...delivery,
+						requestHeaders: [
+							{ name: 'Content-Type', values: ['application/json'] },
+							{ name: 'Accept', values: ['application/json', 'text/plain'] }
+						]
+					}
+				],
+				pageInfo
+			}
+		});
+		const headers = selectDeliveryTab('Request').querySelector('pre.headers');
+		expect(headers?.textContent).toBe(
+			'Content-Type: application/json\nAccept: application/json, text/plain'
+		);
+		expect(headers?.querySelectorAll('strong')).toHaveLength(2);
+	});
+
+	it('keeps request/response tabs accessible and independent for each delivery', () => {
+		renderDeliveries({
+			deliveries: { nodes: [delivery, { ...delivery, id: 'second-delivery' }], pageInfo }
+		});
+		const details = document.querySelectorAll('.delivery-details');
+		const requestTab = details[0]?.querySelector('[role="tab"]');
+		const request = document.getElementById(requestTab?.getAttribute('aria-controls') ?? '');
+		expect(requestTab?.getAttribute('aria-selected')).toBe('true');
+		expect(request?.hidden).toBe(false);
+		const response = selectDeliveryTab('Response', details[0]);
+		expect(request?.hidden).toBe(true);
+		expect(requestTab?.getAttribute('aria-selected')).toBe('false');
+		expect(response.getAttribute('aria-labelledby')).not.toBe(
+			request?.getAttribute('aria-labelledby')
+		);
+		const responseTab = document.getElementById(response.getAttribute('aria-labelledby') ?? '');
+		expect(responseTab?.getAttribute('aria-selected')).toBe('true');
+		expect(responseTab?.getAttribute('aria-controls')).toBe(response.id);
+		expect(details[1]?.querySelector('[role="tab"]')?.getAttribute('aria-selected')).toBe('true');
+		const ids = [...document.querySelectorAll('[role="tab"], [role="tabpanel"]')].map(
+			(element) => element.id
+		);
+		expect(new Set(ids).size).toBe(ids.length);
+	});
+
+	it('pretty-prints both JSON bodies without rendering markup from their content', () => {
+		const request = { data: { activityLogEntryId: 'entry-id', values: [1, true, null] } };
+		const response = { message: '<script>not executable</script>', details: { accepted: true } };
+		renderDeliveries({
+			deliveries: {
+				nodes: [
+					{
+						...delivery,
+						requestBody: JSON.stringify(request),
+						responseBody: JSON.stringify(response)
+					}
+				],
+				pageInfo
+			}
+		});
+		expect(selectDeliveryTab('Request').querySelector('pre.body')?.textContent).toBe(
+			JSON.stringify(request, null, 2)
+		);
+		expect(selectDeliveryTab('Response').querySelector('pre.body')?.textContent).toBe(
+			JSON.stringify(response, null, 2)
+		);
+		expect(document.querySelector('script')).toBeNull();
+	});
+
+	it.each(['plain text\n  preserve whitespace', '{"incomplete":', '<html>not JSON</html>'])(
+		'preserves non-JSON and incomplete bodies unchanged (%s)',
+		(body) => {
+			renderDeliveries({
+				deliveries: { nodes: [{ ...delivery, requestBody: body, responseBody: body }], pageInfo }
+			});
+			expect(selectDeliveryTab('Request').querySelector('pre.body')?.textContent).toBe(body);
+			expect(selectDeliveryTab('Response').querySelector('pre.body')?.textContent).toBe(body);
+		}
+	);
 
 	it.each([true, false])('labels historical tests by their outcome, success=%s', (success) => {
 		renderDeliveries({
 			deliveries: {
-				nodes: [{ ...delivery, isTest: true, eventType: 'io.nais.webhook.test', success }],
+				nodes: [
+					{
+						...delivery,
+						isTest: true,
+						eventType: 'io.nais.webhook.test',
+						success,
+						deliveryState: {
+							status: success ? 'COMPLETED' : 'FAILED',
+							attemptCount: 1,
+							nextRetryAt: null
+						}
+					}
+				],
 				pageInfo
 			}
 		});
@@ -875,47 +1009,73 @@ describe('webhook delivery log', () => {
 		);
 		const row = document.querySelector('tbody tr');
 		expect(row?.querySelector('td:last-child')?.textContent?.replaceAll(/\s+/g, ' ').trim()).toBe(
-			success ? 'Succeeded' : 'Failed No retries'
+			success ? 'Completed' : 'Failed No retries'
 		);
 		const details = document.querySelector('.delivery-details');
-		expect(details?.textContent).toContain(success ? 'Succeeded' : 'Failed');
+		expect(details?.textContent).toContain(success ? 'Completed' : 'Failed');
+		expect(details?.textContent).toContain('Attempt 1');
 		expect(details?.textContent?.includes('No retries')).toBe(!success);
 		expect(document.body.textContent).not.toContain('Not queued');
-		expect(document.body.textContent).toContain('never retried');
-		expect(document.body.textContent).toContain('do not affect webhook health');
+		expect(document.body.textContent).not.toContain('never retried');
+		expect(document.body.textContent).not.toContain('do not affect webhook health');
+		expect(document.body.textContent).not.toContain('shared');
+		expect(document.body.textContent).not.toContain('Current state');
+		expect(document.body.textContent).not.toContain('Current delivery state');
 		expect(document.body.textContent).not.toContain('Will retry at');
 	});
 
-	it('keeps unavailable queue state distinct from a failed non-test attempt', () => {
+	it('shows unavailable attempt state without inferring expired queue data', () => {
 		renderDeliveries();
 		expect(document.querySelector('tbody tr td:last-child')?.textContent?.trim()).toBe(
 			'Not available'
 		);
-		expect(document.body.textContent).toContain('Queue state is no longer available');
+		expect(document.querySelector('.delivery-details')?.textContent).toContain('Not available');
+		expect(document.body.textContent).not.toContain('Queue state');
 		expect(document.body.textContent).not.toContain('No retries');
 	});
 
-	it('keeps the failed attempt result separate from the shared completed state', () => {
+	it('keeps an earlier failed attempt and its scheduled retry unchanged after a later success', () => {
+		const nextRetryAt = new Date('2026-01-01T10:00:00Z');
+		const firstAttempt: Delivery = {
+			...delivery,
+			id: 'first-attempt',
+			deliveryState: { status: 'FAILED', attemptCount: 1, nextRetryAt }
+		};
+		const secondAttempt: Delivery = {
+			...delivery,
+			id: 'second-attempt',
+			success: true,
+			responseStatus: 200,
+			deliveryState: { status: 'COMPLETED', attemptCount: 2, nextRetryAt: null }
+		};
+		const history = writable({ nodes: [firstAttempt], pageInfo });
+		const current = fromStore(history);
 		renderDeliveries({
-			deliveries: {
-				nodes: [
-					{
-						...delivery,
-						deliveryState: { status: 'COMPLETED', attemptCount: 3, nextRetryAt: null }
-					}
-				],
-				pageInfo
+			get deliveries() {
+				return current.current;
 			}
 		});
-		const row = document.querySelectorAll('tbody tr')[0];
-		expect(row?.textContent).toContain('Failed');
-		expect(row?.textContent).toContain('Completed');
-		expect(document.body.textContent?.replaceAll(/\s+/g, ' ')).toContain('3 attempts');
+		const originalRow = document.querySelector('tbody tr');
+		history.set({
+			nodes: [secondAttempt, firstAttempt],
+			pageInfo: { ...pageInfo, totalCount: 2, pageEnd: 2 }
+		});
+		flushSync();
+		expect(originalRow?.isConnected).toBe(true);
+		expect(originalRow?.querySelector('td:last-child')?.textContent?.trim()).toBe('Failed');
+		const rows = document.querySelectorAll('tbody tr');
+		expect(rows[0]?.querySelector('td:last-child')?.textContent?.trim()).toBe('Completed');
+		expect(rows[1]?.textContent).toContain('Attempt 2');
+		expect(rows[1]?.textContent).not.toContain('Retry scheduled for');
+		expect(rows[3]?.textContent).toContain('Attempt 1');
+		expect(rows[3]?.textContent).toContain('Retry scheduled for');
+		expect(rows[3]?.querySelector('time')?.dateTime).toBe(nextRetryAt.toISOString());
+		expect(document.body.textContent).not.toContain('shared');
 		expect(document.body.textContent).not.toContain('Will retry at');
 	});
 
-	it.each(['PENDING', 'PROCESSING', 'FAILED'] as const)(
-		'shows current %s queue state without inventing a retry time',
+	it.each(['COMPLETED', 'FAILED'] as const)(
+		'shows the recorded %s attempt state without inventing a retry time',
 		(status) => {
 			renderDeliveries({
 				deliveries: {
@@ -924,25 +1084,27 @@ describe('webhook delivery log', () => {
 				}
 			});
 			expect(document.body.textContent).toContain(status[0] + status.slice(1).toLowerCase());
-			expect(document.body.textContent?.replaceAll(/\s+/g, ' ')).toContain('1 attempt');
+			expect(document.body.textContent).toContain('Attempt 1');
+			expect(document.body.textContent).not.toContain('Retry scheduled for');
 			expect(document.body.textContent).not.toContain('Will retry at');
 		}
 	);
 
-	it('shows the next retry only when supplied by the API', () => {
+	it('labels recorded retry scheduling without implying it is currently pending', () => {
 		const nextRetryAt = new Date('2026-11-06T15:00:00Z');
 		renderDeliveries({
 			deliveries: {
 				nodes: [
 					{
 						...delivery,
-						deliveryState: { status: 'PENDING', attemptCount: 2, nextRetryAt }
+						deliveryState: { status: 'FAILED', attemptCount: 2, nextRetryAt }
 					}
 				],
 				pageInfo
 			}
 		});
-		expect(document.body.textContent).toContain('Will retry at');
+		expect(document.body.textContent).toContain('Retry scheduled for');
+		expect(document.body.textContent).not.toContain('Will retry at');
 		expect(document.querySelector(`time[datetime="${nextRetryAt.toISOString()}"]`)).not.toBeNull();
 	});
 
@@ -952,10 +1114,9 @@ describe('webhook delivery log', () => {
 			data: { activityLogEntryId: 'activity-id', triggeredAt: '2026-11-05T08:00:01Z' }
 		});
 		renderDeliveries({ deliveries: { nodes: [{ ...delivery, requestBody }], pageInfo } });
-		expect(
-			[...document.querySelectorAll('pre')].some((pre) => pre.textContent === requestBody)
-		).toBe(true);
-		expect(document.body.textContent).toContain('source activity time');
+		const formatted = selectDeliveryTab('Request').querySelector('pre.body')?.textContent;
+		expect(formatted).toBe(JSON.stringify(JSON.parse(requestBody), null, 2));
+		expect(document.body.textContent).not.toContain('source activity time');
 		expect(document.querySelector('thead')?.textContent).toContain('Attempted at');
 		expect(document.querySelector('time')?.dateTime).toBe(delivery.createdAt.toISOString());
 	});
