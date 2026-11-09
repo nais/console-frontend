@@ -14,6 +14,17 @@ const props = {
 };
 
 describe('LogExplorer', () => {
+	it('shows the traces link outside Settings even without other external links', async () => {
+		const { body } = await render(LogExplorer, {
+			props: { ...props, tracesURL: 'https://grafana.example.com/services/team/app?tab=traces' }
+		});
+		const settings = body.indexOf('aria-label="Log settings"');
+		const traces = body.indexOf('Open traces');
+		expect(traces).toBeGreaterThan(-1);
+		expect(traces).toBeLessThan(settings);
+		expect(body.match(/Open traces/g)).toHaveLength(1);
+	});
+
 	it('shows automatic filter controls without a manual run button', async () => {
 		const { body } = await render(LogExplorer, { props });
 		expect(body).toContain('Search log content');

@@ -1,95 +1,183 @@
 <script lang="ts">
-	import { Button, Heading, Tooltip } from '#lib/shadcn/ui/index.js';
-	import type { VolumeBucket } from './loki.js';
+	import { BodyShort, Heading, Loader } from '#lib/shadcn/ui/index.js';
+	import { Chart, Rect, Tooltip } from 'layerchart';
+	import { logDate, type LogRange, type VolumeBucket } from './loki.js';
 
 	let {
 		buckets,
+		range,
+		loading = false,
 		onselect
 	}: {
 		buckets: VolumeBucket[];
+		range?: LogRange;
+		loading?: boolean;
 		onselect: (bucket: VolumeBucket) => void;
 	} = $props();
 	const id = $props.id();
 	const maximum = $derived(Math.max(1, ...buckets.map((bucket) => bucket.count)));
 	const hasVolume = $derived(buckets.some((bucket) => bucket.count > 0));
+	const domain = $derived(
+		(range
+			? [logDate(range.start).getTime(), logDate(range.end).getTime()]
+			: [buckets[0]?.start ?? 0, buckets.at(-1)?.end ?? 1]
+		).map((timestamp) => new Date(timestamp))
+	);
+
+	function formatTime(value: number) {
+		if (domain[1].getTime() - domain[0].getTime() >= 86_400_000) {
+			return new Date(value).toLocaleString('en-GB', {
+				day: 'numeric',
+				month: 'short',
+				hour: '2-digit',
+				minute: '2-digit'
+			});
+		}
+		return new Date(value).toLocaleTimeString('en-GB', {
+			hour: '2-digit',
+			minute: '2-digit',
+			...(domain[1].getTime() - domain[0].getTime() < 60_000 ? { second: '2-digit' } : {})
+		});
+	}
+
+	function intervalLabel(bucket: VolumeBucket) {
+		return `${new Date(bucket.start).toLocaleString('en-GB')} – ${new Date(bucket.end).toLocaleString('en-GB')}: ${bucket.count.toLocaleString()} log lines`;
+	}
 </script>
 
-<section aria-labelledby={id}>
-	<Heading as="h3" size="xsmall" class="aksel-sr-only" {id}>Log volume</Heading>
-	<p class="aksel-sr-only">Select a bar to search that time interval.</p>
-	<div class="histogram">
-		{#each buckets as bucket (bucket.end)}
-			{const label = $derived(
-				`${new Date(bucket.start).toLocaleTimeString('en-GB')} – ${new Date(bucket.end).toLocaleTimeString('en-GB')}: ${bucket.count.toLocaleString()} log lines`
-			)}
-			<div class="bucket">
-				<Tooltip content={label}>
-					<Button
-						type="button"
-						variant="tertiary"
-						size="small"
-						aria-label={`Search ${label}`}
-						onclick={() => onselect(bucket)}
-						style={`--bar-height: ${(bucket.count / maximum) * 100}%`}
-					>
-						<span class="bar" aria-hidden="true"></span>
-					</Button>
-				</Tooltip>
+<section aria-labelledby={id} aria-busy={loading}>
+	<Heading as="h3" size="xsmall" class="sr-only" {id}>Log volume</Heading>
+	<p id={`${id}-help`} class="sr-only">Select an interval to search its logs.</p>
+	<div class={['visualization', { empty: !hasVolume || loading }]}>
+		<Chart
+			data={buckets}
+			x="start"
+			y="count"
+			xDomain={domain}
+			yDomain={[0, maximum]}
+			padding={{ left: 48, right: 16, top: 16, bottom: 32 }}
+			axis
+			grid
+			rule={false}
+			highlight={false}
+			pointerEvents={hasVolume && !loading}
+			props={{
+				xAxis: { format: formatTime, ticks: 4, tickOcclusion: true, rule: true },
+				yAxis: {
+					ticks: maximum > 1 ? 3 : [0, 1],
+					format: (value: number) => (Number.isInteger(value) ? value.toLocaleString() : '')
+				}
+			}}
+		>
+			{#snippet marks({ context })}
+				{#each buckets as bucket (bucket.end)}
+					{const x = $derived(context.xScale(bucket.start))}
+					{const width = $derived(context.xScale(bucket.end) - x)}
+					<Rect
+						{x}
+						{width}
+						y={context.yScale(bucket.count)}
+						height={context.yScale(0) - context.yScale(bucket.count)}
+						fill="var(--ax-bg-info-strong)"
+						class="log-volume-bar"
+						aria-hidden="true"
+					/>
+					<Rect
+						{x}
+						{width}
+						y={0}
+						height={context.height}
+						fill="transparent"
+						class="interval-target"
+						role="button"
+						tabindex={hasVolume && !loading ? 0 : -1}
+						aria-disabled={!hasVolume || loading}
+						aria-label={`Search ${intervalLabel(bucket)}`}
+						aria-describedby={`${id}-help`}
+						onclick={() => {
+							if (hasVolume && !loading) onselect(bucket);
+						}}
+						onkeydown={(event) => {
+							if ((event.key === 'Enter' || event.key === ' ') && hasVolume && !loading) {
+								event.preventDefault();
+								onselect(bucket);
+							}
+						}}
+						onfocus={() => context.tooltip.show({ data: bucket })}
+						onblur={() => context.tooltip.hide()}
+						onpointerenter={() => context.tooltip.show({ data: bucket })}
+						onpointerleave={() => context.tooltip.hide()}
+					/>
+				{/each}
+			{/snippet}
+			{#snippet tooltip()}
+				<Tooltip.Root>
+					{#snippet children({ data })}
+						<Tooltip.Header>
+							{new Date(data.start).toLocaleString('en-GB')} – {new Date(
+								data.end
+							).toLocaleTimeString('en-GB')}
+						</Tooltip.Header>
+						<Tooltip.List>
+							<Tooltip.Item label="Log lines">{data.count.toLocaleString()}</Tooltip.Item>
+						</Tooltip.List>
+					{/snippet}
+				</Tooltip.Root>
+			{/snippet}
+		</Chart>
+		{#if loading || !hasVolume}
+			<div class="overlay">
+				<div class="overlay-content" role="status">
+					{#if loading}
+						<Loader size="small" />
+						<BodyShort size="small">Loading log volume…</BodyShort>
+					{:else}
+						<BodyShort>No logs match this query and time range.</BodyShort>
+						<BodyShort size="small">Try a wider time range or adjust the filters.</BodyShort>
+					{/if}
+				</div>
 			</div>
-		{/each}
+		{/if}
 	</div>
-	{#if buckets.length > 0}
-		<div class="axis" aria-hidden="true">
-			<span>{new Date(buckets[0].start).toLocaleTimeString('en-GB')}</span>
-			<span>{new Date(buckets.at(-1)!.end).toLocaleTimeString('en-GB')}</span>
-		</div>
-	{/if}
-	{#if buckets.length > 0 && !hasVolume}
-		<p>No log lines in this time range.</p>
-	{/if}
 </section>
 
 <style>
-	.histogram {
-		display: flex;
-		align-items: stretch;
-		height: var(--ax-space-64);
-		gap: var(--ax-space-2);
-	}
-
-	.bucket {
-		flex: 1;
-		min-width: 0;
-		display: grid;
-	}
-
-	.bucket :global(button) {
+	.visualization {
 		position: relative;
-		width: 100%;
-		height: 100%;
+		height: calc(var(--ax-space-64) * 3);
 		min-width: 0;
-		min-height: 0;
-		padding: 0;
-		border-radius: 0;
 	}
 
-	.bar {
+	.empty :global(svg) {
+		opacity: 0.35;
+	}
+
+	.visualization :global(.interval-target) {
+		cursor: pointer;
+	}
+
+	.visualization :global(.interval-target:focus-visible) {
+		outline: var(--sh-border-width) solid var(--ring);
+		outline-offset: calc(-1 * var(--sh-border-width));
+	}
+
+	.overlay {
 		position: absolute;
-		inset-inline: 0;
-		bottom: 0;
-		display: block;
-		height: var(--bar-height);
-		background: var(--ax-bg-info-strong);
+		inset: 0;
+		display: grid;
+		place-items: center;
+		padding: var(--ax-space-16);
 		pointer-events: none;
 	}
 
-	.axis {
-		display: flex;
-		justify-content: space-between;
-		font-size: var(--sh-font-size-sm);
-	}
-
-	p {
-		margin-block: var(--ax-space-8);
+	.overlay-content {
+		display: grid;
+		justify-items: center;
+		gap: var(--ax-space-8);
+		padding: var(--ax-space-16);
+		border-radius: var(--ax-radius-8);
+		background: var(--ax-bg-sunken);
+		color: var(--ax-text-neutral);
+		text-align: center;
 	}
 </style>
