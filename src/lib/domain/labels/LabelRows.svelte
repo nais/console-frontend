@@ -7,7 +7,7 @@
 
 	let duplicates = $derived(duplicateLabelKeys(rows));
 
-	const keyInputStyle = `font-family: monospace; font-size: var(--ax-font-size-small); padding-left: var(--ax-space-12);`;
+	const keyInputStyle = `font-family: monospace; font-size: var(--sh-font-size-sm); padding-left: var(--ax-space-12);`;
 
 	function addRow() {
 		rows.push({ key: '', value: '' });

@@ -6,13 +6,16 @@ import { vi } from 'vitest';
 import Insights from '../../../routes/team/[team]/[env]/postgres/[postgres]/(single)/insights/+page.svelte';
 
 const fixture = vi.hoisted(() => ({
+	url: new URL('https://console.example.com/team/test/dev/postgres/database/insights'),
 	metricErrors: [] as { message: string }[]
 }));
 
 vi.mock('$app/state', () => ({
 	page: {
 		params: { team: 'test', env: 'dev', postgres: 'database' },
-		url: new URL('https://console.example.com/team/test/dev/postgres/database/insights')
+		get url() {
+			return fixture.url;
+		}
 	}
 }));
 vi.mock('$app/navigation', () => ({ goto: vi.fn() }));
@@ -60,6 +63,7 @@ async function renderPage() {
 describe('Postgres Insights page', () => {
 	beforeEach(() => {
 		fixture.metricErrors = [];
+		fixture.url = new URL('https://console.example.com/team/test/dev/postgres/database/insights');
 	});
 
 	test('renders twelve charts under five labelled sections without duplicating the page h1', async () => {

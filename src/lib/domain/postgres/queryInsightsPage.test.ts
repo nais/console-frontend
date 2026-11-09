@@ -150,6 +150,8 @@ describe('Postgres Queries page', () => {
 		expect(body).not.toContain('SQL text unavailable');
 		expect(body).toContain('Calls (estimated)');
 		expect(body).not.toContain('Branch');
+		expect(body).not.toContain('<select');
+		expect(body).not.toContain('Load more branches');
 		expect(body).not.toMatch(/<label[^>]*>\s*Database<\/label>/);
 		expect(body).not.toMatch(/<th\b[^>]*>Database<\/th>/);
 		expect(body).not.toContain('All databases');
@@ -270,15 +272,14 @@ describe('Postgres Queries page', () => {
 		expect(body).not.toContain('<script>bad</script>');
 	});
 
-	test('includes Queries navigation and preserves branch and time when switching tabs', async () => {
+	test('removes Branches navigation and obsolete branch filters while preserving time', async () => {
 		const { body } = await renderLayout();
 		expect(body).toContain('>Queries<');
-		expect(body).toContain(
-			'href="/team/test/dev/postgres/database/queries?branch=main&amp;interval=6h"'
-		);
-		expect(body).toContain(
-			'href="/team/test/dev/postgres/database/insights?branch=main&amp;interval=6h"'
-		);
+		expect(body).toContain('href="/team/test/dev/postgres/database/queries?interval=6h"');
+		expect(body).toContain('href="/team/test/dev/postgres/database/insights?interval=6h"');
+		expect(body).not.toContain('>Branches<');
+		expect(body).not.toContain('/branches');
+		expect(body).not.toContain('branch=preview');
 		expect(body).not.toContain('database=app');
 		expect(body).not.toContain('>Branches<');
 	});

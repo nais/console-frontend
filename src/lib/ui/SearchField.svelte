@@ -91,7 +91,7 @@
 		align-items: center;
 		pointer-events: none;
 		color: var(--muted-foreground);
-		font-size: var(--ax-font-size-small);
+		font-size: var(--sh-font-size-sm);
 	}
 
 	.search-input {
@@ -104,7 +104,7 @@
 		color: var(--foreground);
 		font-family: inherit;
 		font-size: var(--sh-font-size-caption);
-		line-height: var(--sh-line-height-compact);
+		line-height: var(--sh-font-line-height-compact);
 		box-shadow: var(--sh-shadow-xs);
 		box-sizing: border-box;
 		outline: none;
@@ -135,7 +135,7 @@
 		border-radius: var(--ax-radius-4);
 		background: transparent;
 		color: var(--muted-foreground);
-		font-size: var(--ax-font-size-medium);
+		font-size: var(--sh-font-size-base);
 		cursor: pointer;
 		line-height: 1;
 	}

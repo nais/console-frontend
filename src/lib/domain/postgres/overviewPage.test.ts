@@ -1,4 +1,4 @@
-import { PostgresOverviewStore } from '$houdini';
+import { PostgresOverviewStore, type PostgresOverview$result } from '$houdini';
 import type { ComponentProps } from 'svelte';
 import { render } from 'svelte/server';
 import { readable } from 'svelte/store';
@@ -6,6 +6,9 @@ import { vi } from 'vitest';
 import Overview from '../../../routes/team/[team]/[env]/postgres/[postgres]/(single)/+page.svelte';
 
 type Configuration = { parameters: { name: string; value: string }[] } | null;
+type WorkloadUsage = NonNullable<
+	PostgresOverview$result['team']['environment']['postgres']
+>['workloads']['nodes'][number];
 
 const fixture = vi.hoisted(() => ({ overview: {} }));
 
@@ -34,12 +37,14 @@ async function renderPage({
 	},
 	state = 'AVAILABLE',
 	extensions = [],
+	workloads = [],
 	viewerIsMember = false,
 	isAdmin = false
 }: {
 	configuration?: Configuration;
 	state?: string;
 	extensions?: string[];
+	workloads?: WorkloadUsage[];
 	viewerIsMember?: boolean;
 	isAdmin?: boolean;
 } = {}) {
@@ -58,7 +63,7 @@ async function renderPage({
 						majorVersion: '18',
 						extensions,
 						resources: { cpu: '100m', memory: '512Mi', diskSize: '10Gi' },
-						workloads: { nodes: [], pageInfo: { totalCount: 0 } },
+						workloads: { nodes: workloads, pageInfo: { totalCount: workloads.length } },
 						labels: []
 					}
 				}
@@ -91,6 +96,31 @@ function parameterPanel(body: string) {
 }
 
 describe('Postgres overview', () => {
+	test.each(['Application', 'Job'] as const)(
+		'keeps %s workload links without branch labels or navigation',
+		async (__typename) => {
+			const { body } = await renderPage({
+				workloads: [
+					{
+						postgres: { id: 'database', name: 'database' },
+						workload: {
+							__typename,
+							id: 'workload',
+							name: 'worker',
+							team: { slug: 'test' },
+							teamEnvironment: { environment: { name: 'dev' } }
+						}
+					}
+				]
+			});
+			const kind = __typename === 'Job' ? 'job' : 'app';
+			expect(body).toContain(`href="/team/test/dev/${kind}/worker"`);
+			expect(body).not.toContain('Branch:');
+			expect(body).not.toContain('Not used by any workloads.');
+			expect(body).not.toContain('/branches');
+		}
+	);
+
 	test('renders configured extensions after the Postgres version', async () => {
 		const { body } = await renderPage({ extensions: ['pg_stat_statements', 'pgcrypto'] });
 		expect(body).toContain('>pg_stat_statements, pgcrypto</code>');
@@ -112,6 +142,7 @@ describe('Postgres overview', () => {
 	test('preserves resource configuration with collapsed, labelled PostgreSQL parameters', async () => {
 		const { body } = await renderPage();
 		expect(body).not.toContain('<h1');
+		expect(body).not.toContain('/branches');
 		for (const value of ['Ready', '100m', '512Mi', '10Gi', 'Postgres version']) {
 			expect(body).toContain(value);
 		}

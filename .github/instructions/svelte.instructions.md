@@ -19,4 +19,4 @@ This project uses Svelte 5 with `forceRunesMode: true`. All components must use 
 - Do not use `$effect()` to trigger GraphQL query fetches or to sync one piece of state with another. If you believe an effect is the only viable solution, add a comment explaining why no derived value or load function applies.
 
 Components should use `#lib/shadcn/ui/index.js` and `#lib/icons/index.js` before building custom UI elements.
-Use `--ax-*` CSS tokens for spacing, colors, and typography — never hardcode raw values.
+Use `--sh-font-*` CSS tokens for typography and `--ax-*` for spacing and colors — never hardcode raw values.

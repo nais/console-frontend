@@ -979,7 +979,7 @@
 
 	.context {
 		margin: 0;
-		font-size: var(--ax-font-size-small);
+		font-size: var(--sh-font-size-sm);
 		overflow-wrap: anywhere;
 	}
 
@@ -1019,7 +1019,7 @@
 	}
 
 	pre {
-		font-size: var(--ax-font-size-small);
+		font-size: var(--sh-font-size-sm);
 		white-space: pre-wrap;
 		overflow-wrap: anywhere;
 	}

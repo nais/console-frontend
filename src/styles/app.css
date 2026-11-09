@@ -51,7 +51,7 @@
 
 @media (max-width: 767px), (max-height: 500px) {
 	:root {
-		--metric-value-font-size: var(--ax-font-size-xlarge);
+		--metric-value-font-size: var(--sh-font-size-xl);
 	}
 }
 
@@ -85,27 +85,28 @@ body {
 	margin: 0px;
 	padding: 0px;
 	font-family: 'Source Sans Pro', Arial, sans-serif;
+	font-size: var(--sh-font-size-body);
 }
 html {
-	font-size: 16px;
+	font-size: var(--sh-font-size-root);
 	overflow-y: scroll;
 	scrollbar-gutter: stable;
 }
 
 .text-aligned-icon {
-	height: var(--ax-font-line-height-large);
+	height: var(--sh-font-line-height-large);
 	vertical-align: bottom;
 }
 
 .heading-aligned-icon {
-	height: var(--ax-font-line-height-heading-medium);
+	height: var(--sh-font-line-height-heading-medium);
 	vertical-align: bottom;
 }
 
 .eyebrow {
-	font-size: var(--ax-font-size-medium) !important;
-	font-weight: var(--ax-font-weight-bold) !important;
-	line-height: var(--ax-font-line-height-large) !important;
+	font-size: var(--sh-font-size-base) !important;
+	font-weight: var(--sh-font-weight-semibold) !important;
+	line-height: var(--sh-font-line-height-large) !important;
 	color: var(--ax-text-neutral-subtle);
 	text-transform: uppercase;
 	letter-spacing: 0.04em;
@@ -176,7 +177,7 @@ html {
 }
 
 .filter-section > .section-heading {
-	font-size: var(--ax-font-size-small);
+	font-size: var(--sh-font-size-sm);
 	font-weight: 600;
 	color: var(--foreground);
 	margin: 0;
@@ -221,7 +222,7 @@ html {
 	padding: var(--ax-space-6);
 	margin: 0 calc(-1 * var(--ax-space-6));
 	border-radius: calc(var(--radius) - 4px);
-	font-size: var(--ax-font-size-small);
+	font-size: var(--sh-font-size-sm);
 	color: var(--foreground);
 	cursor: pointer;
 	transition: background-color 100ms ease;
@@ -319,7 +320,7 @@ html {
 }
 
 .settings-list dt {
-	font-weight: var(--ax-font-weight-bold);
+	font-weight: var(--sh-font-weight-semibold);
 	color: var(--ax-text-neutral-subtle);
 }
 
@@ -396,8 +397,8 @@ html {
 
 .instancegroup-list-label {
 	display: none;
-	font-size: var(--ax-font-size-small);
-	font-weight: var(--ax-font-weight-bold);
+	font-size: var(--sh-font-size-sm);
+	font-weight: var(--sh-font-weight-semibold);
 	color: var(--ax-text-neutral-subtle);
 	text-transform: uppercase;
 	letter-spacing: 0.04em;
@@ -436,7 +437,7 @@ html {
 	border: 1px solid var(--ax-border-neutral-subtleA);
 	background: var(--ax-bg-default);
 	color: var(--ax-text-neutral);
-	font-size: var(--ax-font-size-small);
+	font-size: var(--sh-font-size-sm);
 	font-weight: 500;
 	cursor: pointer;
 	transition: background-color 120ms ease;
@@ -484,7 +485,7 @@ html {
 	border: none;
 	border-radius: var(--ax-radius-4);
 	padding: 2px 8px;
-	font-weight: var(--ax-font-weight-bold);
+	font-weight: var(--sh-font-weight-semibold);
 	white-space: nowrap;
 	display: inline-flex;
 	align-items: center;

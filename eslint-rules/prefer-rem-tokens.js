@@ -13,8 +13,8 @@ function maskComments(source) {
 }
 
 function prefixes(property) {
-	if (property === 'font-size') return ['--ax-font-size-', '--sh-font-size-'];
-	if (property === 'line-height') return ['--ax-font-line-height-', '--sh-line-height-'];
+	if (property === 'font-size') return ['--sh-font-size-'];
+	if (property === 'line-height') return ['--sh-font-line-height-'];
 	if (property.endsWith('radius')) return ['--ax-radius-'];
 	if (SPACING_PROPERTY.test(property)) return ['--ax-space-'];
 	return [];

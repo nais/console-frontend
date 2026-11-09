@@ -91,6 +91,38 @@ it('matches the visible search label and exposes the keyboard shortcuts separate
 	expect(search.getAttribute('aria-keyshortcuts')).toBe('Control+K /');
 });
 
+it('provides user settings with a chevron instead of a separate logout control', () => {
+	components.push(
+		mount(PageHeader, {
+			target: document.body,
+			props: {
+				user: { name: 'Test User', isAdmin: false }
+			}
+		})
+	);
+	flushSync();
+	const settings = element<HTMLButtonElement>('button[aria-label="User settings"]');
+	expect(settings.getAttribute('aria-haspopup')).toBe('menu');
+	expect(document.querySelector('button[aria-label="Toggle color theme"]')).toBeNull();
+	expect(settings.querySelector('.user-avatar')?.textContent).toBe('TU');
+	expect(settings.querySelector('.lucide-chevron-down')).not.toBeNull();
+	expect(settings.querySelector('.lucide-log-out')).toBeNull();
+	expect(document.querySelector('.sh-topnav a[href="/oauth2/logout"]')).toBeNull();
+});
+
+it('keeps appearance settings available without user profile data', () => {
+	components.push(
+		mount(PageHeader, {
+			target: document.body,
+			props: { user: undefined }
+		})
+	);
+	flushSync();
+	const settings = element<HTMLButtonElement>('button[aria-label="User settings"]');
+	expect(settings.getAttribute('aria-haspopup')).toBe('menu');
+	expect(document.querySelector('a[aria-label="Log out"]')).toBeNull();
+});
+
 it('updates the Admin error indicator without hiding the link when errors clear', () => {
 	const errors = writable(true);
 	const status = fromStore(errors);

@@ -58,7 +58,7 @@
 <style>
 	.sh-th {
 		padding: var(--ax-space-10) var(--ax-space-14);
-		font-size: var(--ax-font-size-small);
+		font-size: var(--sh-font-size-sm);
 		font-weight: var(--sh-font-weight-semibold);
 		color: var(--muted-foreground);
 		text-align: left;

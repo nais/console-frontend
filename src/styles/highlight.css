@@ -2,7 +2,7 @@ pre code.hljs {
 	display: block;
 	overflow-x: auto;
 	padding: 1em;
-	font-size: 14px;
+	font-size: var(--sh-font-size-sm);
 }
 code.hljs {
 	padding: 3px 5px;
@@ -11,7 +11,7 @@ code.hljs {
 .hljs,
 .hljs pre,
 .hljs code {
-	font-size: 14px;
+	font-size: var(--sh-font-size-sm);
 }
 /*!
 	Theme: GitHub Dark

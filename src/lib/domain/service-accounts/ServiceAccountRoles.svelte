@@ -164,12 +164,12 @@
 	}
 
 	.role-item dt {
-		font-weight: var(--ax-font-weight-bold);
+		font-weight: var(--sh-font-weight-semibold);
 	}
 
 	.role-item dd {
 		margin: 0;
 		color: var(--ax-text-neutral);
-		font-size: var(--ax-font-size-small);
+		font-size: var(--sh-font-size-sm);
 	}
 </style>

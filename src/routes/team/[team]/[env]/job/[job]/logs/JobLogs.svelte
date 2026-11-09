@@ -2,6 +2,7 @@
 	import { apmURL } from '#lib/doc.js';
 	import LegacyLogViewer from '#lib/domain/logs/LegacyLogViewer.svelte';
 	import LogExplorer from '#lib/domain/logs/LogExplorer.svelte';
+	import TeamLogs from '#lib/domain/logs/TeamLogs.svelte';
 	import { exhaustive } from '#lib/utils/houdini.js';
 	import { page } from '$app/state';
 	import { JobRunState, type RunsWithPodNames$result } from '$houdini';
@@ -29,6 +30,9 @@
 	const hasLoki = $derived(
 		destinations.some((destination) => destination.__typename === 'LogDestinationLoki')
 	);
+	const hasLegacyLogs = $derived(
+		destinations.some((destination) => destination.__typename === 'LogDestinationGeneric')
+	);
 	const grafanaURL = $derived(
 		destinations.find((destination) => destination.__typename === 'LogDestinationLoki')?.grafanaURL
 	);
@@ -36,19 +40,13 @@
 
 {#key `${team.slug}/${team.environment.environment.name}/${team.environment.job.name}/${selectedInstance ?? ''}`}
 	{#if hasSecureLogs}
-		<Alert variant="info"
-			>The Loki viewer is unavailable for workloads with secure log destinations.</Alert
-		>
-	{:else if !hasLoki}
-		<LegacyLogViewer
+		<TeamLogs
 			team={team.slug}
-			environment={team.environment.environment.name}
 			workload={team.environment.job.name}
-			{instances}
-			{initialInstances}
-			tracesURL={apmURL(page.params.team!, page.params.job!, 'traces')}
+			projectID={team.environment.gcpProjectID}
 		/>
-	{:else}
+	{/if}
+	{#if hasLoki}
 		<LogExplorer
 			team={team.slug}
 			environment={team.environment.environment.name}
@@ -61,5 +59,16 @@
 			{grafanaURL}
 			tracesURL={apmURL(page.params.team!, page.params.job!, 'traces')}
 		/>
+	{:else if hasLegacyLogs}
+		<LegacyLogViewer
+			team={team.slug}
+			environment={team.environment.environment.name}
+			workload={team.environment.job.name}
+			{instances}
+			{initialInstances}
+			tracesURL={apmURL(page.params.team!, page.params.job!, 'traces')}
+		/>
+	{:else}
+		<Alert variant="info">No standard log destination is configured for this workload.</Alert>
 	{/if}
 {/key}

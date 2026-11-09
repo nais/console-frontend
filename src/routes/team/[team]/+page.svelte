@@ -71,7 +71,7 @@
 <style>
 	.team-purpose-text {
 		margin: 0 0 var(--ax-space-20) 0;
-		font-size: var(--ax-font-size-small);
+		font-size: var(--sh-font-size-sm);
 		color: var(--muted-foreground);
 		max-width: 68ch;
 		line-height: 1.5;

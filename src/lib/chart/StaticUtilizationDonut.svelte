@@ -118,17 +118,17 @@
 	}
 
 	:global(.utilization-value) {
-		font-size: var(--ax-font-size-large);
-		font-weight: var(--ax-font-weight-bold);
+		font-size: var(--sh-font-size-lg);
+		font-weight: var(--sh-font-weight-semibold);
 	}
 
 	:global(.utilization-value--empty) {
-		font-size: var(--ax-font-size-small);
-		font-weight: var(--ax-font-weight-regular);
+		font-size: var(--sh-font-size-sm);
+		font-weight: var(--sh-font-weight-regular);
 	}
 
 	:global(.utilization-label) {
-		font-size: var(--ax-font-size-small);
-		font-weight: var(--ax-font-weight-regular);
+		font-size: var(--sh-font-size-sm);
+		font-weight: var(--sh-font-weight-regular);
 	}
 </style>

@@ -30,6 +30,12 @@ mobile selection, form submission and typed value bindings. Browser tests cover 
 contracts, nested dialogs, guarded dismissal and drawer breakpoints.
 The application shell provides a keyboard-visible **Skip to content** link to its single main landmark.
 
+The profile button with the user avatar and a chevron opens the user settings menu.
+It offers **Color theme** choices (Light and Dark), followed by **Log out**.
+Theme preferences use the existing `theme` cookie. Text size is controlled by browser zoom
+(Cmd+/Cmd- on macOS, Ctrl+/Ctrl- on other platforms), not a separate profile preference.
+Typography, controls, and spacing use rem-based tokens.
+
 To run the home SSR/hydration network regression against an already-running console and API proxy,
 use `CONSOLE_E2E_URL=http://127.0.0.1:5173 pnpm run test:browser home-network`. This runs only the live
 home test, without starting the isolated fixture server, and requires a user with team memberships.
@@ -37,6 +43,8 @@ home test, without starting the isolated fixture server, and requires a user wit
 ### Mobile responsiveness
 
 The console should remain usable at small viewport widths, with `375px` as the baseline mobile target.
+Collapsed desktop sidebar links use themed tooltips to the right on hover and keyboard focus.
+Expanded sidebar and mobile navigation links retain their text labels without tooltips.
 
 When changing layouts, lists, tables, or chart-heavy pages, validate in responsive mode (for example `375x812`) and ensure:
 
@@ -49,10 +57,10 @@ When changing layouts, lists, tables, or chart-heavy pages, validate in responsi
 
 Styles use `@layer` ordering and shared tokens in [shadcn.css](src/styles/shadcn.css) and [app.css](src/styles/app.css):
 
-- **Tokens**: Use `--ax-space-*`, `--ax-radius-*`, `--ax-text-*` variables — never hardcode spacing, radii, or colors
+- **Tokens**: Use `--sh-font-*` for typography and `--ax-space-*`, `--ax-radius-*`, `--ax-text-*` for spacing, radii, and colors. Typography has one canonical token set; semibold is 600 and bold is 700.
 - **Exact replacements**: Mechanical replacements must use existing, property-appropriate tokens of the same value. Do not round sizes or use spacing tokens for typography. Unmatched values, sizing changes, and new semantic tokens require design review.
 - **Dimensions**: Use semantic size tokens for avatars, icons, and controls, not spacing tokens. Keep reviewed component-specific layout constraints as documented exceptions instead of adding single-use variables.
-- **Readability**: Use shared typography tokens instead of page-specific small sizes. Body/table text is 15–16px, secondary text and controls 14px, and compact labels 12–13px. Keep text contrast at least 4.5:1 on its actual surface in both themes; `tests/browser/readability.spec.ts` covers shared status colours, tables, inputs, and navigation.
+- **Readability**: Use shared typography tokens instead of page-specific small sizes. Body/table text uses 0.9375rem, controls use 0.9rem, and compact labels use 0.75–0.85rem. Keep text contrast at least 4.5:1 on its actual surface in both themes; `tests/browser/readability.spec.ts` covers shared status colours, tables, inputs, and navigation.
 - **Utility classes**: `src/styles/app.css` provides `.layout-two-column`, `.layout-sidebar`, `.table-scroll`, `.detail-actions`, `.loading-centered` for common patterns
 - **LayerChart theming**: `src/styles/layerchart.css` maps chart library variables to design tokens. The `.dark` block must mirror the `:root` declarations (tokens resolve differently per scope)
 - **Validation**: Run `pnpm run lint` — ESLint checks missing CSS variables, exact existing token matches for literal `rem` spacing/typography/radii, and unused GraphQL files. Dimensions require semantic review; unmatched lengths and layout constraints are not rejected by the exact-match rule.

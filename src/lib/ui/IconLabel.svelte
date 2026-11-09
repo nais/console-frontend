@@ -133,7 +133,7 @@
 		display: flex;
 		align-items: center;
 		gap: var(--ax-space-8);
-		font-size: var(--ax-font-size-large);
+		font-size: var(--sh-font-size-lg);
 
 		> * {
 			flex: 1 1 0;
@@ -155,7 +155,7 @@
 	}
 	.icon-label--small {
 		gap: var(--ax-space-4);
-		font-size: var(--ax-font-size-small);
+		font-size: var(--sh-font-size-sm);
 	}
 	.icon-label--medium {
 		gap: var(--ax-space-8);
@@ -164,7 +164,7 @@
 		gap: var(--ax-space-8);
 	}
 	.icon-label--with-desc {
-		font-size: var(--ax-font-size-xlarge);
+		font-size: var(--sh-font-size-xl);
 	}
 	.icon-label--large.icon-label--with-desc {
 		gap: var(--ax-space-12);

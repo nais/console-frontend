@@ -172,6 +172,80 @@ test('desktop collapse survives resizing while mobile links retain their text', 
 });
 
 for (const theme of ['light', 'dark']) {
+	test(`${theme}: collapsed links show themed tooltips outside the sidebar on hover and focus`, async ({
+		page
+	}) => {
+		await page.setViewportSize({ width: 1200, height: 900 });
+		await visit(page, {
+			path: '/team/nais/opensearch',
+			features: 'true',
+			...(theme === 'dark' ? { dark: 'true' } : {})
+		});
+		const sidebar = page.getByRole('complementary', { name: 'Team navigation' });
+		await page.getByRole('button', { name: 'Collapse team sidebar' }).click();
+		await expect(sidebar).toHaveCSS('width', '60px');
+		const link = sidebar.getByRole('link', { name: 'OpenSearch', exact: true });
+		await expect(link).toHaveAttribute('aria-current', 'page');
+		await expect(link).not.toHaveAttribute('title');
+		await link.hover();
+		const tooltip = page.getByRole('tooltip', { name: 'OpenSearch', exact: true });
+		await expect(tooltip).toBeVisible();
+		await expect(tooltip).toHaveAttribute('data-side', 'right');
+		await expect(tooltip).toHaveCSS(
+			'background-color',
+			theme === 'dark' ? 'rgb(15, 23, 42)' : 'rgb(255, 255, 255)'
+		);
+		expect(await tooltip.evaluate((element) => element.closest('.sidebar-scroll'))).toBeNull();
+		const linkBox = await link.boundingBox();
+		const tooltipBox = await tooltip.boundingBox();
+		if (!linkBox || !tooltipBox) throw new Error('Sidebar link or tooltip has no visible bounds');
+		expect(linkBox.width).toBeGreaterThanOrEqual(40);
+		expect(tooltipBox.x).toBeGreaterThanOrEqual(linkBox.x + linkBox.width);
+		expect(
+			await tooltip.evaluate((element) => {
+				const box = element.getBoundingClientRect();
+				return element.contains(
+					document.elementFromPoint(box.x + box.width / 2, box.y + box.height / 2)
+				);
+			})
+		).toBe(true);
+		await page.mouse.move(1100, 850);
+		await expect(tooltip).toHaveCount(0);
+		await link.focus();
+		await expect(tooltip).toBeVisible();
+		await expect(link).toHaveAccessibleDescription('OpenSearch');
+		await page.keyboard.press('Escape');
+		await expect(tooltip).toHaveCount(0);
+		await expect(link).toBeFocused();
+		await page.keyboard.press('Tab');
+		await expect(sidebar.getByRole('link', { name: 'Kafka Topics', exact: true })).toBeFocused();
+		await expect(page.getByRole('tooltip', { name: 'Kafka Topics', exact: true })).toBeVisible();
+	});
+
+	test(`${theme}: expanded and mobile links keep text labels without tooltips`, async ({
+		page
+	}) => {
+		await page.setViewportSize({ width: 1200, height: 900 });
+		await visit(page, { features: 'true', ...(theme === 'dark' ? { dark: 'true' } : {}) });
+		const sidebar = page.getByRole('complementary', { name: 'Team navigation' });
+		const link = sidebar.getByRole('link', { name: 'OpenSearch', exact: true });
+		await expect(link).toHaveText('OpenSearch');
+		await link.hover();
+		await link.focus();
+		await expect(page.getByRole('tooltip')).toHaveCount(0);
+		await page.getByRole('button', { name: 'Collapse team sidebar' }).click();
+		await sidebar.getByRole('link', { name: 'OpenSearch', exact: true }).hover();
+		await expect(page.getByRole('tooltip', { name: 'OpenSearch', exact: true })).toBeVisible();
+		await page.setViewportSize({ width: 800, height: 900 });
+		await page.getByRole('button', { name: 'Open navigation' }).click();
+		const dialog = page.getByRole('dialog', { name: 'Navigation' });
+		const mobileLink = dialog.getByRole('link', { name: 'OpenSearch', exact: true });
+		await expect(mobileLink).toHaveText('OpenSearch');
+		await mobileLink.hover();
+		await mobileLink.focus();
+		await expect(page.getByRole('tooltip')).toHaveCount(0);
+	});
+
 	test(`320px ${theme} navigation fits the viewport and scrolls to the last team link`, async ({
 		page
 	}) => {

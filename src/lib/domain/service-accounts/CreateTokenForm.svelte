@@ -115,7 +115,7 @@
 	}
 
 	.token-secret code {
-		font-size: var(--ax-font-size-small);
+		font-size: var(--sh-font-size-sm);
 		word-break: break-all;
 	}
 </style>

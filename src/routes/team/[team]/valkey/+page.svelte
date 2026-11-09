@@ -140,7 +140,7 @@
 						aria-expanded={filtersOpen}
 						onclick={() => (filtersOpen = !filtersOpen)}
 					>
-						<FunnelIcon aria-hidden="true" style="font-size: var(--ax-font-size-medium)" />
+						<FunnelIcon aria-hidden="true" style="font-size: var(--sh-font-size-base)" />
 						Filters
 					</button>
 				{/snippet}
@@ -189,7 +189,7 @@
 											>
 												<WarningIcon
 													aria-label="This instance will be migrated on the 9th of September."
-													style="color: var(--ax-text-warning); font-size: var(--ax-font-size-small)"
+													style="color: var(--ax-text-warning); font-size: var(--sh-font-size-sm)"
 												/>
 											</TooltipAlignHack>
 										{/if}

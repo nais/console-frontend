@@ -56,7 +56,7 @@
 	.team-banner {
 		padding: var(--ax-space-12) var(--ax-space-16);
 		border-radius: var(--radius);
-		font-size: var(--ax-font-size-small);
+		font-size: var(--sh-font-size-sm);
 		font-weight: 500;
 		border: 1px solid var(--border);
 	}
