@@ -253,7 +253,7 @@ describe('Postgres management actions', () => {
 		}
 	);
 
-	test.each(['4', '9'])('accepts %s GiB storage when creating and updating', async (diskSize) => {
+	test.each(['5', '9'])('accepts %s GiB storage when creating and updating', async (diskSize) => {
 		create.mutate.mockResolvedValue({
 			data: {
 				createPostgres: {
@@ -313,6 +313,7 @@ describe('Postgres management actions', () => {
 		['cpu', '100m'],
 		['memory', '-0.5'],
 		['diskSize', '3'],
+		['diskSize', '4'],
 		['diskSize', '0'],
 		['diskSize', '10.5'],
 		['cpu', '8.1'],
