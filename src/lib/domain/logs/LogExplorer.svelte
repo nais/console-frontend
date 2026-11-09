@@ -494,6 +494,13 @@
 	});
 </script>
 
+{#snippet emptyResult()}
+	<div role="status">
+		<BodyShort>No logs match this query and time range.</BodyShort>
+		<BodyShort size="small">Try a wider time range or adjust the filters.</BodyShort>
+	</div>
+{/snippet}
+
 <svelte:document onclick={handleOutsideClick} />
 
 {#if !hasLoki}
@@ -842,6 +849,11 @@
 								loading={loading || volumeLoading}
 								onselect={selectBucket}
 							/>
+							{#snippet fallback()}
+								{#if !loading && completedAt && entries.length === 0 && !buckets.some((bucket) => bucket.count > 0)}
+									{@render emptyResult()}
+								{/if}
+							{/snippet}
 						</ChartBoundary>
 					{/if}
 				</div>
@@ -862,10 +874,7 @@
 					</p>
 				</div>
 				{#if !loading && completedAt && entries.length === 0 && (!showTimeline || volumeError || buckets.some((bucket) => bucket.count > 0))}
-					<div role="status">
-						<BodyShort>No logs match this query and time range.</BodyShort>
-						<BodyShort size="small">Try a wider time range or adjust the filters.</BodyShort>
-					</div>
+					{@render emptyResult()}
 				{:else if entries.length > 0}
 					<LogResults
 						{entries}

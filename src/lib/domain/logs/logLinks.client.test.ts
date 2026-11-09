@@ -2,6 +2,8 @@ import { flushSync, mount, unmount } from 'svelte';
 import { afterEach, beforeEach, expect, it, vi } from 'vitest';
 import Logs from '../../../routes/team/[team]/[env]/app/[app]/logs/Logs.svelte';
 import JobLogs from '../../../routes/team/[team]/[env]/job/[job]/logs/JobLogs.svelte';
+import LogExplorer from './LogExplorer.svelte';
+import { Chart } from 'layerchart';
 
 const matchMedia = vi.hoisted(() => {
 	const mock = vi.fn(() => ({
@@ -21,6 +23,10 @@ vi.mock('$app/state', () => ({
 	}
 }));
 vi.mock('$houdini', () => ({ JobRunState: { RUNNING: 'RUNNING' } }));
+vi.mock('layerchart', async (importOriginal) => {
+	const actual = await importOriginal<typeof import('layerchart')>();
+	return { ...actual, Chart: vi.fn(actual.Chart) };
+});
 
 let component: ReturnType<typeof Logs> | ReturnType<typeof JobLogs> | undefined;
 
@@ -80,24 +86,26 @@ function assertLinkRanges() {
 	return { from, to };
 }
 
+function mockEmptyLogs() {
+	vi.stubGlobal(
+		'fetch',
+		vi.fn(async (input: string) => {
+			const url = new URL(input, 'https://console.example.com');
+			const volume = url.searchParams.get('query')?.startsWith('sum(');
+			const resultType = volume
+				? url.pathname.endsWith('/query_range')
+					? 'matrix'
+					: 'vector'
+				: 'streams';
+			return new Response(JSON.stringify({ status: 'success', data: { resultType, result: [] } }));
+		})
+	);
+}
+
 it.each(['application', 'job'] as const)(
 	'keeps all %s links visible and synchronized through time navigation and custom ranges',
 	async (kind) => {
-		vi.stubGlobal(
-			'fetch',
-			vi.fn(async (input: string) => {
-				const url = new URL(input, 'https://console.example.com');
-				const volume = url.searchParams.get('query')?.startsWith('sum(');
-				const resultType = volume
-					? url.pathname.endsWith('/query_range')
-						? 'matrix'
-						: 'vector'
-					: 'streams';
-				return new Response(
-					JSON.stringify({ status: 'success', data: { resultType, result: [] } })
-				);
-			})
-		);
+		mockEmptyLogs();
 		const workload = {
 			name: 'app',
 			logDestinations: [
@@ -162,3 +170,46 @@ it.each(['application', 'job'] as const)(
 		});
 	}
 );
+
+it('preserves the empty-result explanation after chart failure and removes the fallback on retry', async () => {
+	mockEmptyLogs();
+	const failure = new Error('synthetic log volume rendering failure');
+	const logError = vi.spyOn(console, 'error').mockImplementation(() => {});
+	vi.mocked(Chart).mockImplementationOnce(() => {
+		throw failure;
+	});
+	component = mount(LogExplorer, {
+		target: document.body,
+		props: {
+			team: 'team',
+			environment: 'dev-gcp',
+			tenant: 'nav',
+			workload: 'app',
+			instances: [],
+			hasLoki: true
+		}
+	});
+	flushSync();
+	expect(document.body.textContent).not.toContain('No logs match');
+	await vi.waitFor(() => {
+		expect(document.body.textContent).toContain('Chart failed to render.');
+		expect(
+			document.body.textContent?.match(/No logs match this query and time range\./g)
+		).toHaveLength(1);
+	});
+	expect(document.body.textContent).toContain('Try a wider time range or adjust the filters.');
+	expect(document.querySelector('.overlay-content')).toBeNull();
+	expect(logError).toHaveBeenCalledWith('Chart render error:', failure);
+
+	const retry = [...document.querySelectorAll('button')].find(
+		(button) => button.textContent?.trim() === 'Retry'
+	);
+	expect(retry).toBeDefined();
+	retry!.click();
+	flushSync();
+	await vi.waitFor(() => expect(document.querySelector('.overlay-content')).not.toBeNull());
+	expect(document.body.textContent).not.toContain('Chart failed to render.');
+	expect(
+		document.body.textContent?.match(/No logs match this query and time range\./g)
+	).toHaveLength(1);
+});
