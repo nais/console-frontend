@@ -3683,6 +3683,12 @@ input ImageVulnerabilityFilter {
   hasKevEntry: Boolean
 
   """
+  Only return vulnerabilities for this PURL type, for example maven or npm.
+  Omit to include all package types.
+  """
+  packageType: String
+
+  """
   Only return vulnerabilities whose priority is exactly one of the given values.
   URGENT is workload-contextual and cannot be resolved at image scope, so
   including it in this set is rejected as an error.
