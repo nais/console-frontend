@@ -20,43 +20,38 @@
 		fetching?: boolean;
 	}
 
-	let { page, loaders, fetching }: Props = $props();
+	let { page, loaders, fetching = false }: Props = $props();
+	const previousDisabled = $derived(fetching || !page?.hasPreviousPage);
+	const nextDisabled = $derived(fetching || !page?.hasNextPage);
 </script>
 
-{#if fetching}
-	<div class="pagination" aria-busy="true" aria-label="Loading page">
-		<div class="fetching">
-			<ShSkeleton width="12ch" height="var(--ax-space-20)" />
-		</div>
-
-		<span class="pagination-buttons">
-			<ShButton size="icon-sm" variant="outline" disabled={true} ariaLabel="Previous page">
-				<ChevronLeftIcon aria-hidden="true" />
-			</ShButton>
-			<ShButton size="icon-sm" variant="outline" disabled={true} ariaLabel="Next page">
-				<ChevronRightIcon aria-hidden="true" />
-			</ShButton>
-		</span>
-	</div>
-{:else if page && (page.hasPreviousPage || page.hasNextPage)}
-	<div class="pagination">
-		<span>
-			<span class="active-range">
-				{#if page.pageStart !== page.pageEnd}
-					{page.pageStart}–{page.pageEnd}
-				{:else}
-					{page.pageStart}
-				{/if}
+{#if fetching || (page && (page.hasPreviousPage || page.hasNextPage))}
+	<div class="pagination" aria-busy={fetching} aria-label={fetching ? 'Loading page' : undefined}>
+		{#if fetching}
+			<div class="fetching">
+				<ShSkeleton width="12ch" height="var(--ax-space-20)" />
+			</div>
+		{:else if page}
+			<span>
+				<span class="active-range">
+					{#if page.pageStart !== page.pageEnd}
+						{page.pageStart}–{page.pageEnd}
+					{:else}
+						{page.pageStart}
+					{/if}
+				</span>
+				of {page.totalCount}
 			</span>
-			of {page.totalCount}
-		</span>
+		{/if}
 
 		<span class="pagination-buttons">
 			<ShButton
 				size="icon-sm"
 				variant="outline"
-				disabled={!page.hasPreviousPage}
-				onclick={() => loaders.loadPreviousPage()}
+				aria-disabled={previousDisabled ? 'true' : undefined}
+				onclick={() => {
+					if (!previousDisabled) loaders.loadPreviousPage();
+				}}
 				ariaLabel="Previous page"
 			>
 				<ChevronLeftIcon aria-hidden="true" />
@@ -64,8 +59,10 @@
 			<ShButton
 				size="icon-sm"
 				variant="outline"
-				disabled={!page.hasNextPage}
-				onclick={() => loaders.loadNextPage()}
+				aria-disabled={nextDisabled ? 'true' : undefined}
+				onclick={() => {
+					if (!nextDisabled) loaders.loadNextPage();
+				}}
 				ariaLabel="Next page"
 			>
 				<ChevronRightIcon aria-hidden="true" />
