@@ -15,6 +15,7 @@
 		onselect: (bucket: VolumeBucket) => void;
 	} = $props();
 	const id = $props.id();
+	let tooltipDismissed = $state(false);
 	const maximum = $derived(Math.max(1, ...buckets.map((bucket) => bucket.count)));
 	const hasVolume = $derived(buckets.some((bucket) => bucket.count > 0));
 	const domain = $derived(
@@ -44,6 +45,12 @@
 		return `${new Date(bucket.start).toLocaleString('en-GB')} – ${new Date(bucket.end).toLocaleString('en-GB')}: ${bucket.count.toLocaleString()} log lines`;
 	}
 </script>
+
+<svelte:window
+	onkeydown={(event) => {
+		if (event.key === 'Escape') tooltipDismissed = true;
+	}}
+/>
 
 <section aria-labelledby={id} aria-busy={loading}>
 	<Heading as="h3" size="xsmall" class="sr-only" {id}>Log volume</Heading>
@@ -93,7 +100,7 @@
 						tabindex={hasVolume && !loading ? 0 : -1}
 						aria-disabled={!hasVolume || loading}
 						aria-label={`Search ${intervalLabel(bucket)}`}
-						aria-describedby={`${id}-help`}
+						aria-describedby={`${id}-help ${id}-tooltip-${bucket.end}`}
 						onclick={() => {
 							if (hasVolume && !loading) onselect(bucket);
 						}}
@@ -103,26 +110,36 @@
 								onselect(bucket);
 							}
 						}}
-						onfocus={() => context.tooltip.show({ data: bucket })}
+						onfocus={() => {
+							tooltipDismissed = false;
+							context.tooltip.show({ data: bucket });
+						}}
 						onblur={() => context.tooltip.hide()}
-						onpointerenter={() => context.tooltip.show({ data: bucket })}
+						onpointerenter={() => {
+							tooltipDismissed = false;
+							context.tooltip.show({ data: bucket });
+						}}
 						onpointerleave={() => context.tooltip.hide()}
 					/>
 				{/each}
 			{/snippet}
 			{#snippet tooltip()}
-				<Tooltip.Root>
-					{#snippet children({ data })}
-						<Tooltip.Header>
-							{new Date(data.start).toLocaleString('en-GB')} – {new Date(
-								data.end
-							).toLocaleTimeString('en-GB')}
-						</Tooltip.Header>
-						<Tooltip.List>
-							<Tooltip.Item label="Log lines">{data.count.toLocaleString()}</Tooltip.Item>
-						</Tooltip.List>
-					{/snippet}
-				</Tooltip.Root>
+				{#if !tooltipDismissed && hasVolume && !loading}
+					<Tooltip.Root>
+						{#snippet children({ data })}
+							<div id={`${id}-tooltip-${data.end}`} role="tooltip" aria-label={intervalLabel(data)}>
+								<Tooltip.Header>
+									{new Date(data.start).toLocaleString('en-GB')} – {new Date(
+										data.end
+									).toLocaleTimeString('en-GB')}
+								</Tooltip.Header>
+								<Tooltip.List>
+									<Tooltip.Item label="Log lines">{data.count.toLocaleString()}</Tooltip.Item>
+								</Tooltip.List>
+							</div>
+						{/snippet}
+					</Tooltip.Root>
+				{/if}
 			{/snippet}
 		</Chart>
 		{#if loading || !hasVolume}

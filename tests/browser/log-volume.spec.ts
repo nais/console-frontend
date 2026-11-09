@@ -28,8 +28,38 @@ test('renders proportional bars, real time widths, axes and a tooltip', async ({
 	expect(firstInterval).not.toBeNull();
 	expect(firstTick!.x + firstTick!.width / 2).toBeCloseTo(firstInterval!.x, 0);
 	await chart.getByRole('button', { name: /25 log lines/ }).hover();
-	await expect(page.locator('.lc-tooltip-container')).toContainText('Log lines');
-	await expect(page.locator('.lc-tooltip-container')).toContainText('25');
+	const tooltip = page.getByRole('tooltip', { name: /25 log lines/ });
+	await expect(tooltip).toBeVisible();
+	await expect(tooltip).toContainText('Log lines');
+	await expect(tooltip).toContainText('25');
+});
+
+test('dismisses hover and focus tooltips with Escape and reopens on a new interaction', async ({
+	page
+}) => {
+	const button = page.getByRole('button', { name: /25 log lines/ });
+	const tooltip = page.getByRole('tooltip', { name: /25 log lines/ });
+	await button.hover();
+	await expect(tooltip).toBeVisible();
+	await page.keyboard.press('Escape');
+	await expect(tooltip).toHaveCount(0);
+	const bounds = await button.boundingBox();
+	expect(bounds).not.toBeNull();
+	await page.mouse.move(bounds!.x + bounds!.width / 2 + 1, bounds!.y + bounds!.height / 2);
+	await expect(tooltip).toHaveCount(0);
+	await page.mouse.move(0, 0);
+	await button.hover();
+	await expect(tooltip).toBeVisible();
+	await page.mouse.move(0, 0);
+	await expect(tooltip).toHaveCount(0);
+	await button.focus();
+	await expect(tooltip).toBeVisible();
+	await expect(button).toHaveAccessibleDescription(/25 log lines/);
+	await page.keyboard.press('Escape');
+	await expect(tooltip).toHaveCount(0);
+	await expect(button).toBeFocused();
+	await page.keyboard.press('Tab');
+	await expect(page.getByRole('tooltip', { name: /100 log lines/ })).toBeVisible();
 });
 
 test('selects intervals by mouse and keyboard, including intervals with no logs', async ({
@@ -43,7 +73,7 @@ test('selects intervals by mouse and keyboard, including intervals with no logs'
 	);
 	await buttons.nth(2).focus();
 	await expect(buttons.nth(2)).toBeFocused();
-	await expect(page.locator('.lc-tooltip-container')).toContainText('100');
+	await expect(page.getByRole('tooltip', { name: /100 log lines/ })).toBeVisible();
 	await page.keyboard.press('Enter');
 	await expect(page.getByRole('status', { name: 'Selected interval' })).toHaveText(
 		'1794225602000/1794225603000/100'
