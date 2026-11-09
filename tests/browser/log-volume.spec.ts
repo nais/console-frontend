@@ -34,6 +34,23 @@ test('renders proportional bars, real time widths, axes and a tooltip', async ({
 	await expect(tooltip).toContainText('25');
 });
 
+for (const { range, format } of [
+	{ range: 'Last minute', format: /^\d{2}:\d{2}:\d{2}$/ },
+	{ range: 'Under five minutes', format: /^\d{2}:\d{2}:\d{2}$/ },
+	{ range: 'Five minutes', format: /^\d{2}:\d{2}$/ },
+	{ range: 'One day', format: /^\d{1,2} \w+, \d{2}:\d{2}$/ }
+]) {
+	test(`renders distinct time-axis labels for ${range}`, async ({ page }) => {
+		await page.getByRole('button', { name: range, exact: true }).click();
+		const ticks = page.locator('.lc-axis').nth(1).locator('text');
+		await expect(ticks.first()).toHaveText(format);
+		const labels = await ticks.allTextContents();
+		expect(labels.length).toBeGreaterThan(1);
+		for (const label of labels) expect(label).toMatch(format);
+		expect(new Set(labels).size).toBe(labels.length);
+	});
+}
+
 test('dismisses hover and focus tooltips with Escape and reopens on a new interaction', async ({
 	page
 }) => {

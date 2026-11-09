@@ -37,7 +37,7 @@
 		return new Date(value).toLocaleTimeString('en-GB', {
 			hour: '2-digit',
 			minute: '2-digit',
-			...(domain[1].getTime() - domain[0].getTime() < 60_000 ? { second: '2-digit' } : {})
+			...(domain[1].getTime() - domain[0].getTime() < 300_000 ? { second: '2-digit' } : {})
 		});
 	}
 
