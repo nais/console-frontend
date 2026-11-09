@@ -67,30 +67,30 @@
 			>
 				<span class="group-title" id={`${uid}-group-${index}`}>{group}</span>
 			</Checkbox>
-			{#each events as event (event.type)}
-				<Checkbox
-					size="small"
-					name="eventTypes"
-					value={event.type}
-					checked={selected.has(event.type)}
-					onchange={(e) => toggle(event.type, e.currentTarget.checked)}
-				>
-					{event.description}
-					{#snippet description()}
-						<code>{event.cloudEventType}</code>
-					{/snippet}
-				</Checkbox>
-			{/each}
+			<div class="group-events">
+				{#each events as event (event.type)}
+					<Checkbox
+						size="small"
+						name="eventTypes"
+						value={event.type}
+						checked={selected.has(event.type)}
+						onchange={(e) => toggle(event.type, e.currentTarget.checked)}
+					>
+						{event.description}
+						{#snippet description()}
+							<code>{event.cloudEventType}</code>
+						{/snippet}
+					</Checkbox>
+				{/each}
+			</div>
 		</fieldset>
 	{/each}
 </div>
 
 <style>
 	.event-groups {
-		display: grid;
-		grid-template-columns: repeat(2, minmax(0, 1fr));
-		align-items: start;
-		gap: var(--ax-space-24);
+		column-count: 2;
+		column-gap: var(--ax-space-24);
 	}
 
 	.event-options:has(:global(input[value='all']:checked)) + .event-groups {
@@ -98,8 +98,9 @@
 	}
 
 	fieldset {
+		break-inside: avoid;
 		min-width: 0;
-		margin: 0;
+		margin: 0 0 var(--ax-space-24);
 		padding: var(--ax-space-16);
 		border: var(--sh-border-width) solid var(--border);
 		border-radius: var(--radius-md);
@@ -112,9 +113,16 @@
 		font-weight: var(--ax-font-weight-bold);
 	}
 
+	.group-events {
+		display: grid;
+		gap: var(--ax-space-12);
+		padding-inline-start: var(--ax-space-24);
+		min-width: 0;
+	}
+
 	@media (max-width: 767px) {
 		.event-groups {
-			grid-template-columns: 1fr;
+			column-count: 1;
 		}
 	}
 </style>

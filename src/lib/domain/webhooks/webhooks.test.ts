@@ -122,10 +122,13 @@ describe('webhook form validation', () => {
 		expect(readWebhookForm(data, true, 'my-team').errors).toContain('A webhook name is required.');
 	});
 
-	it('uses the wildcard for all events and ignores individual selections', () => {
+	it('keeps all-event scope separate from individual selections', () => {
 		const data = form();
 		data.append('eventTypes', 'TEAM_UPDATED');
-		expect(readWebhookForm(data, true, 'my-team').fields.eventTypes).toEqual(['*']);
+		expect(readWebhookForm(data, true, 'my-team')).toMatchObject({
+			errors: [],
+			fields: { eventScope: 'all', eventTypes: [] }
+		});
 	});
 
 	it('deduplicates explicitly selected event types', () => {
@@ -273,6 +276,14 @@ describe('webhook form validation', () => {
 		const data = form({ eventScope: 'selected' });
 		data.append('eventTypes', '*');
 		expect(readWebhookForm(data, true, 'my-team').errors).not.toHaveLength(0);
+	});
+
+	it.each(['', '   '])('rejects blank event types (%s)', (eventType) => {
+		const data = form({ eventScope: 'selected' });
+		data.append('eventTypes', eventType);
+		expect(readWebhookForm(data, true, 'my-team').errors).toContain(
+			'Select at least one event type from the list.'
+		);
 	});
 
 	it('rejects file entries instead of treating them as form text', () => {

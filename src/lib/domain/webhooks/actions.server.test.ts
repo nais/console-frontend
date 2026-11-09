@@ -137,7 +137,7 @@ describe('team webhook actions', () => {
 					name: 'Deployment notifications',
 					url: 'https://receiver.example.com/events',
 					secret: 'test-signing-key',
-					eventTypes: ['*'],
+					events: { allEvents: true },
 					teamSlug: 'my-team'
 				}
 			},
@@ -230,7 +230,7 @@ describe('team webhook actions', () => {
 				id: 'webhook-id',
 				name: 'Deployment notifications',
 				url: 'https://receiver.example.com/events',
-				eventTypes: ['*'],
+				events: { allEvents: true },
 				enabled: false
 			}
 		});
@@ -242,6 +242,45 @@ describe('team webhook actions', () => {
 		});
 		expect(mocks.update.mock.calls[0][0].input.secret).toBe('  new-test-key  ');
 	});
+
+	it.each([createWebhook, updateWebhook])(
+		'sends exactly one event-selection field for all or selected events (%s)',
+		async (action) => {
+			for (const eventScope of ['all', 'selected']) {
+				await expect(
+					action(
+						event({
+							secret: 'test-signing-key',
+							eventScope,
+							eventTypes: ['TEAM_UPDATED', 'TEAM_UPDATED', 'APPLICATION_DELETED']
+						})
+					)
+				).rejects.toMatchObject({ status: 303 });
+				const mutation = action === createWebhook ? mocks.create : mocks.update;
+				const input = mutation.mock.lastCall?.[0].input;
+				expect(input.events).toEqual(
+					eventScope === 'all'
+						? { allEvents: true }
+						: { eventTypes: ['TEAM_UPDATED', 'APPLICATION_DELETED'] }
+				);
+				expect(input).not.toHaveProperty('eventTypes');
+			}
+		}
+	);
+
+	it.each([createWebhook, updateWebhook])(
+		'rejects empty or wildcard selections before calling the API (%s)',
+		async (action) => {
+			for (const eventTypes of [[], ['*'], ['']]) {
+				const result = await action(
+					event({ secret: 'test-signing-key', eventScope: 'selected', eventTypes })
+				);
+				expect(result?.status).toBe(400);
+			}
+			expect(mocks.create).not.toHaveBeenCalled();
+			expect(mocks.update).not.toHaveBeenCalled();
+		}
+	);
 
 	it.each([createWebhook, updateWebhook])(
 		'rejects 7-character secrets without calling the API (%s)',

@@ -71,7 +71,7 @@ export function readWebhookForm(data: FormData, creating: boolean, ownerTeamSlug
 	const name = typeof nameValue === 'string' ? nameValue.trim() : '';
 	const url = typeof urlValue === 'string' ? urlValue.trim() : '';
 	const secret = typeof secretValue === 'string' ? secretValue : '';
-	const eventTypes = scope === 'all' ? ['*'] : selected.filter((v) => typeof v === 'string');
+	const eventTypes = scope === 'all' ? [] : selected.filter((v) => typeof v === 'string');
 	const fields: WebhookFormFields = {
 		name,
 		url,
@@ -131,7 +131,7 @@ export function readWebhookForm(data: FormData, creating: boolean, ownerTeamSlug
 		scope === 'selected' &&
 		(eventTypes.length === 0 ||
 			eventTypes.includes('*') ||
-			selected.some((v) => typeof v !== 'string'))
+			selected.some((v) => typeof v !== 'string' || !v.trim()))
 	) {
 		errors.push('Select at least one event type from the list.');
 	}

@@ -24,6 +24,7 @@ const updateMutation = graphql(`
 				id
 				name
 				url
+				allEvents
 				eventTypes
 				sourceTeamSlugs
 				enabled
@@ -105,7 +106,8 @@ export async function createWebhook(event: TeamEvent) {
 				name: fields.name,
 				url: fields.url,
 				secret,
-				eventTypes: fields.eventTypes,
+				events:
+					fields.eventScope === 'all' ? { allEvents: true } : { eventTypes: fields.eventTypes },
 				teamSlug: event.params.team,
 				...(fields.sourceTeamSlugs !== undefined ? { sourceTeamSlugs: fields.sourceTeamSlugs } : {})
 			}
@@ -142,7 +144,8 @@ export async function updateWebhook(event: WebhookEvent) {
 				id: event.params.webhookId,
 				name: fields.name,
 				url: fields.url,
-				eventTypes: fields.eventTypes,
+				events:
+					fields.eventScope === 'all' ? { allEvents: true } : { eventTypes: fields.eventTypes },
 				enabled: fields.enabled,
 				...(fields.sourceTeamSlugs !== undefined
 					? { sourceTeamSlugs: fields.sourceTeamSlugs }

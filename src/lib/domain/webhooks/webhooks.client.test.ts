@@ -6,6 +6,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import WebhookDeliveryLog from './WebhookDeliveryLog.svelte';
 import WebhookEvents from './WebhookEvents.svelte';
 import WebhookForm from './WebhookForm.svelte';
+import EditWebhookPage from '../../../routes/team/[team]/settings/webhooks/[webhookId]/edit/+page.svelte';
 
 vi.mock('$app/forms', () => ({ enhance: () => undefined }));
 vi.mock('$app/state', () => ({ page: { url: new URL('https://console.example.com/') } }));
@@ -147,10 +148,10 @@ function selectDeliveryTab(
 	return panel;
 }
 
-function renderEvents(types: readonly string[], metadata = eventTypes) {
+function renderEvents(types: readonly string[], metadata = eventTypes, allEvents = false) {
 	const component = mount(WebhookEvents, {
 		target: document.body,
-		props: { eventTypes: types, metadata }
+		props: { allEvents, eventTypes: types, metadata }
 	});
 	cleanup = () => unmount(component);
 	flushSync();
@@ -206,7 +207,7 @@ describe('webhook names', () => {
 				name: 'Existing notifications',
 				url: 'https://receiver.example.com',
 				eventScope: 'all',
-				eventTypes: ['*'],
+				eventTypes: [],
 				enabled: true
 			}
 		});
@@ -220,7 +221,7 @@ describe('webhook names', () => {
 			name: 'Existing notifications',
 			url: 'https://receiver.example.com',
 			eventScope: 'all' as const,
-			eventTypes: ['*'],
+			eventTypes: [],
 			enabled: true
 		};
 		renderForm({
@@ -240,7 +241,7 @@ describe('webhook signing secrets', () => {
 		name: 'Deployment notifications',
 		url: 'https://receiver.example.com',
 		eventScope: 'all' as const,
-		eventTypes: ['*'],
+		eventTypes: [],
 		enabled: true
 	};
 
@@ -326,7 +327,7 @@ describe('webhook source teams', () => {
 				name: 'Deployment notifications',
 				url: 'https://receiver.example.com',
 				eventScope: 'all',
-				eventTypes: ['*'],
+				eventTypes: [],
 				sourceTeamSlugs: sources,
 				enabled: true
 			}
@@ -358,7 +359,7 @@ describe('webhook source teams', () => {
 				name: 'Deployment notifications',
 				url: 'https://receiver.example.com',
 				eventScope: 'all',
-				eventTypes: ['*'],
+				eventTypes: [],
 				sourceTeamSlugs: [],
 				enabled: true
 			},
@@ -380,7 +381,7 @@ describe('webhook source teams', () => {
 					name: 'Deployment notifications',
 					url: 'https://receiver.example.com',
 					eventScope: 'all',
-					eventTypes: ['*'],
+					eventTypes: [],
 					sourceScope: 'selected',
 					sourceTeamSlugs: [],
 					enabled: true
@@ -503,11 +504,49 @@ describe('webhook source teams', () => {
 });
 
 describe('subscribed webhook events', () => {
-	it('shows All events without rendering a list or groups for a wildcard subscription', () => {
-		renderEvents(['*']);
+	it('shows All events for an all-event subscription with an empty event list', () => {
+		renderEvents([], [], true);
 		expect(document.body.textContent?.trim()).toBe('All events');
 		expect(document.querySelector('button')).toBeNull();
 		expect(document.querySelector('ul')).toBeNull();
+	});
+
+	describe('editing webhook event selections', () => {
+		it.each([true, false])('prefills the API event scope (allEvents: %s)', (allEvents) => {
+			const selected = allEvents ? [] : ['TEAM_UPDATED'];
+			const component = mount(EditWebhookPage, {
+				target: document.body,
+				props: {
+					params: { team: 'my-team', webhookId: 'webhook-id' },
+					form: null,
+					data: {
+						teamSlug: 'my-team',
+						WebhookSettings: writable({
+							data: {
+								node: {
+									__typename: 'WebhookSubscription',
+									id: 'webhook-id',
+									name: 'Existing notifications',
+									url: 'https://receiver.example.com',
+									allEvents,
+									eventTypes: selected,
+									sourceTeamSlugs: ['my-team'],
+									enabled: true,
+									hasSecret: true
+								}
+							},
+							errors: null
+						}),
+						WebhookEventTypes: writable({ data: { webhookEventTypes: eventTypes }, errors: null })
+					} as unknown as ComponentProps<typeof EditWebhookPage>['data']
+				}
+			});
+			cleanup = () => unmount(component);
+			flushSync();
+			const form = new FormData(document.querySelector('form')!);
+			expect(form.get('eventScope')).toBe(allEvents ? 'all' : 'selected');
+			expect(form.getAll('eventTypes')).toEqual(selected);
+		});
 	});
 
 	it('groups subscribed events using API metadata and starts every group collapsed', () => {
@@ -701,7 +740,7 @@ describe('webhook form', () => {
 				name: 'Original notifications',
 				url: 'https://old.example.com',
 				eventScope: 'all',
-				eventTypes: ['*'],
+				eventTypes: [],
 				enabled: true
 			},
 			hasSecret: true,

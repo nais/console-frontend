@@ -24,7 +24,7 @@
 				initialFields={{
 					name: webhook.name,
 					url: webhook.url,
-					eventScope: webhook.eventTypes.includes('*') ? 'all' : 'selected',
+					eventScope: webhook.allEvents ? 'all' : 'selected',
 					eventTypes: [...webhook.eventTypes],
 					sourceTeamSlugs: [...webhook.sourceTeamSlugs],
 					enabled: webhook.enabled

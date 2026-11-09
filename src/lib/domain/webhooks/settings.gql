@@ -7,6 +7,7 @@ query WebhookSettings($id: ID!) @cache(policy: NetworkOnly) {
 			teamSlug
 			sourceTeamSlugs
 			url
+			allEvents
 			eventTypes
 			enabled
 			hasSecret

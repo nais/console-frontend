@@ -193,8 +193,9 @@
 				<section aria-labelledby={`${uid}-events`}>
 					<Heading as="h2" size="small" id={`${uid}-events`} spacing>Subscribed events</Heading>
 					<GraphErrors errors={$WebhookEventTypes.errors} />
-					{#if $WebhookEventTypes.data || webhook.eventTypes.includes('*')}
+					{#if $WebhookEventTypes.data || webhook.allEvents}
 						<WebhookEvents
+							allEvents={webhook.allEvents}
 							eventTypes={webhook.eventTypes}
 							metadata={$WebhookEventTypes.data?.webhookEventTypes ?? []}
 						/>

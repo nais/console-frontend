@@ -3,9 +3,11 @@
 	import { formatWebhookEventName, type WebhookEventType } from './webhooks.js';
 
 	let {
+		allEvents,
 		eventTypes,
 		metadata
 	}: {
+		allEvents: boolean;
 		eventTypes: readonly string[];
 		metadata: readonly WebhookEventType[];
 	} = $props();
@@ -20,7 +22,7 @@
 	});
 </script>
 
-{#if eventTypes.includes('*')}
+{#if allEvents}
 	<BodyShort>All events</BodyShort>
 {:else if eventTypes.length === 0}
 	<BodyShort>No events selected.</BodyShort>
