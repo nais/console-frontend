@@ -253,6 +253,35 @@ describe('Postgres management actions', () => {
 		}
 	);
 
+	test.each(['4', '9'])('accepts %s GiB storage when creating and updating', async (diskSize) => {
+		create.mutate.mockResolvedValue({
+			data: {
+				createPostgres: {
+					postgres: {
+						id: 'pg',
+						name: 'database',
+						teamEnvironment: { environment: { name: 'dev' } }
+					}
+				}
+			}
+		});
+		update.mutate.mockResolvedValue({ data: { updatePostgres: { postgres: { id: 'pg' } } } });
+		await expect(
+			createActions.default(
+				createEvent({ name: 'database', environment: 'dev', majorVersion: '18', diskSize })
+			)
+		).rejects.toMatchObject({ status: 303 });
+		await expect(updateActions.default(updateEvent({ diskSize }))).rejects.toMatchObject({
+			status: 303
+		});
+		for (const mutation of [create, update]) {
+			expect(mutation.mutate).toHaveBeenCalledWith(
+				{ input: expect.objectContaining({ diskSize: `${diskSize}Gi` }) },
+				expect.any(Object)
+			);
+		}
+	});
+
 	test('omits unchanged fractional storage while updating CPU and high availability', async () => {
 		currentResources.fetch.mockResolvedValue({
 			data: { team: { environment: { postgres: { resources: { diskSize: '20G' } } } } }
@@ -283,7 +312,8 @@ describe('Postgres management actions', () => {
 	test.each([
 		['cpu', '100m'],
 		['memory', '-0.5'],
-		['diskSize', '9'],
+		['diskSize', '3'],
+		['diskSize', '0'],
 		['diskSize', '10.5'],
 		['cpu', '8.1'],
 		['memory', '32.1'],

@@ -29,15 +29,27 @@ describe('PostgresConfigurationFields', () => {
 			props: {
 				cpu: '9',
 				memory: '33',
-				diskSize: '9',
+				diskSize: '3',
 				errors: { cpu: 'invalid', memory: 'invalid', diskSize: 'invalid' }
 			}
 		});
 		expect(body).toContain('CPU (cores) must be no greater than 8.');
 		expect(body).toContain('Memory (GiB) must be no greater than 32.');
-		expect(body).toContain('Storage (GiB) must be a whole number between 10 and 1000.');
+		expect(body).toContain('Storage (GiB) must be a whole number between 4 and 1000.');
 		expect(body.match(/aria-invalid="true"/g)).toHaveLength(3);
 	});
+	test.each([false, true])(
+		'shows and validates the storage minimum when editing=%s',
+		async (editing) => {
+			for (const diskSize of ['3', '4', '9']) {
+				const { body } = await render(PostgresConfigurationFields, {
+					props: { editing, diskSize, errors: { diskSize: 'invalid' } }
+				});
+				expect(body).toContain('4–1000 GiB, whole numbers.');
+				expect(body.includes('aria-invalid="true"')).toBe(diskSize === '3');
+			}
+		}
+	);
 	test('renders a default summary without placeholders or submitted defaults', async () => {
 		const { body } = await render(PostgresConfigurationFields);
 		for (const name of ['cpu', 'memory', 'diskSize', 'highAvailability']) {
