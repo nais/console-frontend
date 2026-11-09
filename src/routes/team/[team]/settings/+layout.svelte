@@ -33,6 +33,7 @@
 					{
 						value: '/team/[team]/settings/webhooks',
 						label: 'Webhooks',
+						badge: 'Preview',
 						href: resolve('/team/[team]/settings/webhooks', page.params as never)
 					}
 				]
