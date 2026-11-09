@@ -99,7 +99,7 @@
 		box-shadow: var(--sh-shadow-xs);
 	}
 	.sh-textarea-control--small {
-		font-size: var(--ax-font-size-small);
+		font-size: var(--sh-font-size-sm);
 		padding: var(--ax-space-6) var(--ax-space-10);
 	}
 	.sh-textarea-control:focus-visible {

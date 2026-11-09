@@ -91,11 +91,11 @@ Generates Svelte Playground link. Ask user first, and NEVER if code was written 
 
 #### Typography
 
-- Font sizes: `--ax-font-size-small`, `--ax-font-size-medium`, `--ax-font-size-large`, `--ax-font-size-xlarge`
-- Font weights: `--ax-font-weight-regular`, `--ax-font-weight-bold`
-- Primitive typography uses the `--sh-font-size-*` and `--sh-font-weight-*` tokens defined in `src/styles/shadcn.css`; keep exact font sizes and weights when replacing raw values.
-- Line heights: `--ax-font-line-height-large`, `--ax-font-line-height-heading-medium`
-- **Font family**: Use `monospace` directly, NOT a CSS variable (there is no `--ax-font-family-mono`)
+- All typography uses `--sh-font-*` tokens defined in `src/styles/shadcn.css`; keep exact font sizes, weights, and line heights when replacing values.
+- Font sizes: `--sh-font-size-sm` (0.9rem), `--sh-font-size-base` (1rem), `--sh-font-size-lg` (1.125rem), `--sh-font-size-xl` (1.375rem).
+- Font weights: `--sh-font-weight-regular` (400), `--sh-font-weight-medium` (500), `--sh-font-weight-semibold` (600), `--sh-font-weight-bold` (700).
+- Line heights: `--sh-font-line-height-compact`, `--sh-font-line-height-large`, `--sh-font-line-height-heading-xsmall`, `--sh-font-line-height-heading-medium`.
+- **Font family**: Use `--sh-font-family-mono` for the shared monospace stack, or `monospace` directly when a generic monospace family is intended.
 
 Primitive radii, borders, and overlay dimensions use the shared `--radius-*`, `--sh-border-width`, and `--sh-modal-*` / `--sh-menu-*` / `--sh-popover-*` tokens in `src/styles/shadcn.css`.
 
@@ -120,8 +120,8 @@ Primitive radii, borders, and overlay dimensions use the shared `--radius-*`, `-
 ### Rules for CSS Variables:
 
 1. **Before using ANY CSS variable**, search the codebase first for existing usage patterns. For new tokens, verify they exist in `src/styles/shadcn.css` or `src/styles/app.css` and rely on the ESLint checks for validation
-2. **Never invent** CSS variable names like `--ax-font-family-mono`, `--ax-color-*`, etc.
-3. **For font-family**: Use `font-family: monospace` directly (not a CSS variable)
+2. **Never invent** CSS variable names; use only tokens defined in `src/styles/shadcn.css` or `src/styles/app.css`.
+3. **For font-family**: Use the defined `--sh-font-family-mono` token for the shared stack; `monospace` is also valid when the generic family is intended.
 4. **For spacing**: Use the predefined spacing scale, not arbitrary values
 5. **For text color**: Prefer `--ax-text-neutral` as the default text color. Only use `--ax-text-subtle` when explicitly asked for subdued/secondary text
 6. **Run validation**: The project's ESLint configuration includes project checks for missing CSS variables and unused GraphQL files

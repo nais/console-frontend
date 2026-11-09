@@ -168,7 +168,7 @@
 		border-radius: var(--radius-sm);
 		font-family: inherit;
 		font-weight: var(--sh-font-weight-medium);
-		font-size: var(--ax-font-size-small);
+		font-size: var(--sh-font-size-sm);
 		line-height: var(--ax-space-20);
 		text-decoration: none;
 		border: var(--sh-border-width) solid transparent;
@@ -248,7 +248,7 @@
 	.size-sm {
 		height: var(--ax-space-32);
 		padding: 0 var(--ax-space-10);
-		font-size: var(--ax-font-size-small);
+		font-size: var(--sh-font-size-sm);
 	}
 	.size-xs {
 		height: var(--ax-space-24);
@@ -259,7 +259,7 @@
 	.size-lg {
 		height: var(--ax-space-40);
 		padding: 0 var(--ax-space-20);
-		font-size: var(--ax-font-size-medium);
+		font-size: var(--sh-font-size-base);
 	}
 	.size-icon {
 		width: var(--ax-space-32);

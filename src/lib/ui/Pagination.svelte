@@ -80,7 +80,7 @@
 		justify-content: space-between;
 		align-items: center;
 		color: var(--muted-foreground);
-		font-size: var(--ax-font-size-small);
+		font-size: var(--sh-font-size-sm);
 	}
 	.pagination {
 		display: flex;

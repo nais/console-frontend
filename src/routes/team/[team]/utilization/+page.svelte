@@ -279,7 +279,7 @@
 
 	.cost-amount {
 		background-color: var(--ax-bg-raised);
-		font-size: var(--ax-font-size-xlarge);
+		font-size: var(--sh-font-size-xl);
 		border-radius: var(--ax-radius-4);
 		display: inline-block;
 		align-items: center;

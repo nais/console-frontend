@@ -107,7 +107,7 @@
 		color: var(--ax-text-success-subtle);
 		border-radius: var(--ax-radius-8);
 		margin-bottom: var(--ax-space-32);
-		font-size: var(--ax-font-size-xlarge);
+		font-size: var(--sh-font-size-xl);
 		font-weight: 700;
 		box-shadow: none;
 	}
@@ -141,7 +141,7 @@
 	.note {
 		margin-top: var(--ax-space-8);
 		margin-bottom: 0;
-		font-size: var(--ax-font-size-medium);
+		font-size: var(--sh-font-size-base);
 		color: var(--ax-text-neutral-subtle);
 		text-align: left;
 	}

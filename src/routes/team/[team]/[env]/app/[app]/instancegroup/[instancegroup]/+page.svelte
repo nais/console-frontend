@@ -530,18 +530,18 @@
 	}
 
 	.toggle-role {
-		font-size: var(--ax-font-size-small);
-		font-weight: var(--ax-font-weight-bold);
+		font-size: var(--sh-font-size-sm);
+		font-weight: var(--sh-font-weight-semibold);
 	}
 
 	.toggle-name {
-		font-size: var(--ax-font-size-small);
+		font-size: var(--sh-font-size-sm);
 		font-family: monospace;
 		opacity: 0.75;
 	}
 
 	.toggle-time {
-		font-size: var(--ax-font-size-small);
+		font-size: var(--sh-font-size-sm);
 		opacity: 0.6;
 	}
 
@@ -570,7 +570,7 @@
 
 	.image-line code {
 		font-family: monospace;
-		font-size: var(--ax-font-size-small);
+		font-size: var(--sh-font-size-sm);
 		word-break: break-all;
 	}
 
@@ -588,7 +588,7 @@
 	}
 
 	.page :global(code) {
-		font-size: var(--ax-font-size-small);
+		font-size: var(--sh-font-size-sm);
 		color: var(--ax-text-neutral);
 	}
 
@@ -599,12 +599,12 @@
 	}
 
 	.kv-label {
-		font-size: var(--ax-font-size-small);
+		font-size: var(--sh-font-size-sm);
 		color: var(--ax-text-neutral-subtle);
 	}
 
 	.kv-value {
-		font-size: var(--ax-font-size-small);
+		font-size: var(--sh-font-size-sm);
 	}
 
 	.scaling-stats {
@@ -631,7 +631,7 @@
 
 	.instances-list {
 		--instancegroup-list-columns: minmax(0, 3fr) auto minmax(0, 2fr) minmax(0, 2fr);
-		font-size: var(--ax-font-size-small);
+		font-size: var(--sh-font-size-sm);
 		color: var(--ax-text-neutral-subtle);
 	}
 

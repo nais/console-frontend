@@ -17,12 +17,12 @@ const tokens = `
 	--ax-space-16: 1rem;
 	--ax-space-24: 1.5rem;
 	--ax-radius-4: 0.25rem;
-	--ax-font-size-small: 0.875rem;
-	--ax-font-size-medium: 1rem;
+	--sh-font-size-sm: 0.875rem;
+	--sh-font-size-base: 1rem;
 	--sh-font-size-micro: 0.75rem;
 	--sh-font-size-body: 0.9375rem;
-	--sh-line-height-compact: 1.25rem;
-	--ax-font-line-height-large: 1.5rem;
+	--sh-font-line-height-compact: 1.25rem;
+	--sh-font-line-height-large: 1.5rem;
 `;
 
 describe('exact rem token matches', () => {
@@ -34,8 +34,8 @@ describe('exact rem token matches', () => {
 		expect(matches.map((match) => match.replacement)).toEqual([
 			'var(--ax-space-8)',
 			'var(--ax-space-16)',
-			'var(--ax-font-size-small)',
-			'var(--ax-font-line-height-large)',
+			'var(--sh-font-size-sm)',
+			'var(--sh-font-line-height-large)',
 			'var(--ax-radius-4)'
 		]);
 		expect(findTokenizableRems('p { font-size: 1.5rem; }', tokens)).toEqual([]);
@@ -53,7 +53,7 @@ describe('exact rem token matches', () => {
 	it('uses the shared compact line-height token for an exact match', () => {
 		expect(
 			findTokenizableRems('p { line-height: 1.25rem; }', tokens).map((match) => match.replacement)
-		).toEqual(['var(--sh-line-height-compact)']);
+		).toEqual(['var(--sh-font-line-height-compact)']);
 	});
 
 	it('does not substitute spacing tokens for control, icon, or layout dimensions', () => {
@@ -77,20 +77,20 @@ describe('exact rem token matches', () => {
 		const source = `<div style="padding: 0.5rem; font-size: 0.875rem" style:margin-top="1rem"></div>`;
 		expect(
 			findTokenizableRems(source, tokens, 'Example.svelte').map((match) => match.replacement)
-		).toEqual(['var(--ax-space-8)', 'var(--ax-font-size-small)', 'var(--ax-space-16)']);
+		).toEqual(['var(--ax-space-8)', 'var(--sh-font-size-sm)', 'var(--ax-space-16)']);
 	});
 
 	it.each(['"', "'"])('respects %s attribute boundaries with the real token catalogue', (quote) => {
 		const catalogue = fs.readFileSync(new URL('../src/styles/shadcn.css', import.meta.url), 'utf8');
-		const source = `<div style=${quote}font-size: 0.875rem${quote} title=${quote}1rem${quote} style:margin-top|important=${quote}1rem${quote}></div>`;
+		const source = `<div style=${quote}font-size: 0.9rem${quote} title=${quote}1rem${quote} style:margin-top|important=${quote}1rem${quote}></div>`;
 		const matches = findTokenizableRems(source, catalogue, 'Example.svelte');
 		expect(
 			matches.map(({ property, value, replacement }) => ({ property, value, replacement }))
 		).toEqual([
 			{
 				property: 'font-size',
-				value: '0.875rem',
-				replacement: 'var(--ax-font-size-small)'
+				value: '0.9rem',
+				replacement: 'var(--sh-font-size-sm)'
 			},
 			{ property: 'margin-top', value: '1rem', replacement: 'var(--ax-space-16)' }
 		]);
@@ -112,7 +112,7 @@ describe('exact rem token matches', () => {
 		const source = `<div style={'font-size: 0.875rem'} title="1rem" style:margin-top={'1rem'}></div>`;
 		const matches = findTokenizableRems(source, tokens, 'Example.svelte');
 		expect(matches.map((match) => match.replacement)).toEqual([
-			'var(--ax-font-size-small)',
+			'var(--sh-font-size-sm)',
 			'var(--ax-space-16)'
 		]);
 		for (const match of matches) {
@@ -211,7 +211,7 @@ describe('exact rem token matches', () => {
 		listeners['Program:exit']();
 		expect(report.mock.calls.map(([entry]) => entry.message)).toEqual([
 			`${path.join('src', 'Example.svelte')}:2: gap: 0.5rem should use var(--ax-space-8).`,
-			`${path.join('src', 'styles', 'example.css')}:1: font-size: 0.875rem should use var(--ax-font-size-small).`
+			`${path.join('src', 'styles', 'example.css')}:1: font-size: 0.875rem should use var(--sh-font-size-sm).`
 		]);
 	});
 

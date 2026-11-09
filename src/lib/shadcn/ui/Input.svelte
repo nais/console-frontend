@@ -77,7 +77,7 @@
 		background-color: var(--card);
 		color: var(--foreground);
 		font-family: inherit;
-		font-size: var(--ax-font-size-small);
+		font-size: var(--sh-font-size-sm);
 		line-height: var(--ax-space-20);
 		box-shadow: var(--sh-shadow-xs);
 		transition:

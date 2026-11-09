@@ -53,7 +53,7 @@
 		margin: var(--ax-space-8) 0;
 	}
 	dt {
-		font-weight: var(--ax-font-weight-bold);
+		font-weight: var(--sh-font-weight-semibold);
 	}
 	dd {
 		margin: 0;
@@ -62,7 +62,7 @@
 	}
 	code {
 		font-family: monospace;
-		font-size: var(--ax-font-size-small);
+		font-size: var(--sh-font-size-sm);
 	}
 	@media (max-width: 767px) {
 		.updated-fields {

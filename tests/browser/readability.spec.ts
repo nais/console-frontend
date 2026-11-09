@@ -191,9 +191,9 @@ for (const theme of ['light', 'dark']) {
 				'font-size',
 				width <= 767 ? '22px' : '28px'
 			);
-			await expect(controls.getByRole('columnheader').first()).toHaveCSS('font-size', '14px');
+			await expect(controls.getByRole('columnheader').first()).toHaveCSS('font-size', '14.4px');
 			await expect(controls.getByRole('cell').first()).toHaveCSS('font-size', '15px');
-			await expect(controls.getByText('Recently updated')).toHaveCSS('font-size', '14px');
+			await expect(controls.getByText('Recently updated')).toHaveCSS('font-size', '14.4px');
 			for (const text of [
 				'success badge',
 				'warning badge',
@@ -216,7 +216,7 @@ for (const theme of ['light', 'dark']) {
 				expect(await contrast(locator)).toBeGreaterThanOrEqual(4.5);
 			}
 			const input = controls.getByRole('textbox', { name: 'Readability search' });
-			await expect(input).toHaveCSS('font-size', '14px');
+			await expect(input).toHaveCSS('font-size', '14.4px');
 			const criticalDot = controls.getByTestId('critical-dot').locator('svg');
 			await expect(criticalDot).toHaveCSS('width', '12px');
 			await expect(criticalDot).toHaveCSS('height', '12px');
@@ -271,7 +271,7 @@ for (const theme of ['light', 'dark']) {
 			`/tests/browser/navigation.html?path=/team/nais&features${theme === 'dark' ? '&dark' : ''}`
 		);
 		const group = page.locator('.sh-sidebar .nav-group-label').first();
-		await expect(group).toHaveCSS('font-size', '13px');
+		await expect(group).toHaveCSS('font-size', '13.6px');
 		expect(await contrast(group)).toBeGreaterThanOrEqual(4.5);
 	});
 }

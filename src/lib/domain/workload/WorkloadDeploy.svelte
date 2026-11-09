@@ -172,7 +172,7 @@
 		display: inline-flex;
 		align-items: center;
 		gap: var(--ax-space-6);
-		font-size: var(--ax-font-size-small);
+		font-size: var(--sh-font-size-sm);
 		line-height: 1.4;
 		padding: var(--ax-space-6) var(--ax-space-10);
 		border-radius: var(--radius-md);
@@ -181,7 +181,7 @@
 	}
 
 	.repo-name {
-		font-weight: var(--ax-font-weight-bold);
+		font-weight: var(--sh-font-weight-semibold);
 		font-family: monospace;
 		font-size: var(--sh-font-size-xs);
 		color: var(--foreground);

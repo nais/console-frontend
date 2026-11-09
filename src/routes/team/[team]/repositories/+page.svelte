@@ -184,7 +184,7 @@
 							aria-expanded={filtersOpen}
 							onclick={() => (filtersOpen = !filtersOpen)}
 						>
-							<FunnelIcon aria-hidden="true" style="font-size: var(--ax-font-size-medium)" />
+							<FunnelIcon aria-hidden="true" style="font-size: var(--sh-font-size-base)" />
 							Filters
 						</button>
 					{/snippet}
@@ -327,6 +327,6 @@
 	}
 
 	code {
-		font-size: var(--ax-font-size-medium);
+		font-size: var(--sh-font-size-base);
 	}
 </style>

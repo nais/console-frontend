@@ -2,6 +2,7 @@ query RunsWithPodNames($job: String!, $team: Slug!, $env: String!) {
 	team(slug: $team) {
 		slug
 		environment(name: $env) {
+			gcpProjectID
 			environment {
 				name
 			}

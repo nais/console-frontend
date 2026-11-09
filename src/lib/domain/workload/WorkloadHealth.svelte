@@ -435,7 +435,7 @@
 		height: var(--ax-space-32);
 		flex-shrink: 0;
 		border-radius: var(--radius-md);
-		font-size: var(--ax-font-size-medium);
+		font-size: var(--sh-font-size-base);
 		color: var(--muted-foreground);
 		background-color: var(--secondary);
 		border: 1px solid var(--border);
@@ -467,7 +467,7 @@
 	}
 
 	.metric-value {
-		font-size: var(--ax-font-size-xlarge);
+		font-size: var(--sh-font-size-xl);
 		font-weight: 700;
 		letter-spacing: -0.025em;
 		line-height: 1.15;
@@ -487,7 +487,7 @@
 	}
 
 	.metric-label {
-		font-size: var(--ax-font-size-small);
+		font-size: var(--sh-font-size-sm);
 		color: var(--muted-foreground);
 		white-space: nowrap;
 		display: flex;

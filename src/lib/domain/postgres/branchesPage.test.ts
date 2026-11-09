@@ -71,27 +71,27 @@ describe('Postgres branches page', () => {
 		{ viewerIsMember: true, isAdmin: false },
 		{ viewerIsMember: false, isAdmin: true },
 		{ viewerIsMember: false, isAdmin: false }
-	])('removes branch creation for permissions %j', async (permissions) => {
+	])('keeps branch management read-only for permissions %j', async (permissions) => {
 		const { body } = await renderPage(permissions);
 		expect(body).not.toContain('Create branch');
 		expect(body).not.toContain('Create child branch');
 		expect(body).not.toContain('Branch name');
 		expect(body).not.toContain('Restore to (UTC)');
-		expect(body).toContain('Creating new branches is no longer available in Console.');
-		const operations = vi.mocked(graphql).mock.calls.map(([document]) => document);
-		expect(operations).toHaveLength(2);
-		expect(operations[0]).toContain('mutation ActivatePostgresBranch');
-		expect(operations[1]).toContain('mutation DeletePostgresBranch');
+		expect(body).not.toContain('Use as active');
+		expect(body).not.toContain('Switch active branch');
+		expect(body).not.toContain('Delete branch');
+		expect(body).not.toContain('aria-label="Actions for');
+		expect(body).toContain('Branch management is no longer available in Console.');
+		expect(graphql).not.toHaveBeenCalled();
 	});
 
 	test.each([{ viewerIsMember: true }, { isAdmin: true }])(
-		'preserves existing branch management without an empty active-branch menu for %j',
+		'preserves the branch overview without management actions for %j',
 		async (permissions) => {
 			const { body } = await renderPage(permissions);
 			expect(body).toContain('Branches (2)');
 			expect(body).toContain('preview');
-			expect(body).toContain('aria-label="Actions for preview"');
-			expect(body).not.toContain('aria-label="Actions for main"');
+			expect(body).not.toContain('aria-label="Actions for');
 		}
 	);
 

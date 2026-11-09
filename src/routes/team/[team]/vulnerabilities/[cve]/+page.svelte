@@ -534,7 +534,7 @@
 
 	.cve-description {
 		max-width: 80ch;
-		line-height: var(--ax-font-line-height-large);
+		line-height: var(--sh-font-line-height-large);
 	}
 
 	@media (max-width: 767px) {
@@ -644,7 +644,7 @@
 	}
 
 	code {
-		font-size: var(--ax-font-size-small);
+		font-size: var(--sh-font-size-sm);
 		word-break: break-all;
 	}
 </style>

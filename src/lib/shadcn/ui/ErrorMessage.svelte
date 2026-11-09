@@ -50,7 +50,7 @@
 		line-height: 1.4;
 	}
 	.sh-error-message--medium {
-		font-size: var(--ax-font-size-small);
+		font-size: var(--sh-font-size-sm);
 	}
 	.sh-error-message--small {
 		font-size: var(--sh-font-size-xs);

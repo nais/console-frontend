@@ -40,7 +40,7 @@
 	}
 	.sh-error-summary__heading {
 		margin: 0;
-		font-size: var(--ax-font-size-medium);
+		font-size: var(--sh-font-size-base);
 		font-weight: var(--sh-font-weight-semibold);
 	}
 	.sh-error-summary__body {

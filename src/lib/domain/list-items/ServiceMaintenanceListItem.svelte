@@ -35,6 +35,6 @@
 		align-items: center;
 		justify-content: center;
 		gap: var(--ax-space-4);
-		font-size: 16px;
+		font-size: var(--sh-font-size-base);
 	}
 </style>

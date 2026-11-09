@@ -177,7 +177,7 @@
 		align-items: center;
 		gap: var(--ax-space-6);
 		padding: var(--ax-space-6) var(--ax-space-12);
-		font-size: var(--ax-font-size-small);
+		font-size: var(--sh-font-size-sm);
 		font-weight: var(--sh-font-weight-medium);
 		color: var(--muted-foreground);
 		text-decoration: none;

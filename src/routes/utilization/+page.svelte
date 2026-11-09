@@ -358,7 +358,7 @@
 
 	.cost-amount {
 		background-color: var(--ax-bg-raised);
-		font-size: var(--ax-font-size-xlarge);
+		font-size: var(--sh-font-size-xl);
 		padding: var(--ax-space-16) var(--ax-space-32);
 		border-radius: var(--ax-radius-8);
 		display: inline-block;
@@ -388,7 +388,7 @@
 
 		.cost-amount {
 			padding: var(--ax-space-8) var(--ax-space-12);
-			font-size: var(--ax-font-size-large);
+			font-size: var(--sh-font-size-lg);
 		}
 	}
 </style>

@@ -43,7 +43,7 @@
 		gap: var(--ax-space-6);
 	}
 	.field-label {
-		font-size: var(--ax-font-size-small);
+		font-size: var(--sh-font-size-sm);
 		font-weight: var(--sh-font-weight-medium);
 		color: var(--foreground);
 	}
@@ -61,7 +61,7 @@
 		background-color: var(--background);
 		color: var(--foreground);
 		font-family: monospace;
-		font-size: var(--ax-font-size-small);
+		font-size: var(--sh-font-size-sm);
 		line-height: 1.45;
 		box-sizing: border-box;
 	}

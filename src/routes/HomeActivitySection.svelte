@@ -104,7 +104,7 @@
 	}
 	p {
 		margin: 0;
-		font-size: var(--ax-font-size-small);
+		font-size: var(--sh-font-size-sm);
 		color: var(--ax-text-neutral);
 	}
 	.entry {

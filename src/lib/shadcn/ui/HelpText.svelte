@@ -78,7 +78,7 @@
 		background-color: var(--popover);
 		color: var(--popover-foreground);
 		box-shadow: var(--sh-shadow-md);
-		font-size: var(--ax-font-size-small);
+		font-size: var(--sh-font-size-sm);
 		line-height: 1.45;
 	}
 </style>

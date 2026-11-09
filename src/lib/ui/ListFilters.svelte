@@ -102,8 +102,8 @@
 	}
 
 	.section-heading {
-		font-size: var(--ax-font-size-small);
-		font-weight: var(--ax-font-weight-bold);
+		font-size: var(--sh-font-size-sm);
+		font-weight: var(--sh-font-weight-semibold);
 		color: var(--foreground);
 		margin: 0;
 		border-bottom: var(--sh-border-width) solid var(--border);
@@ -148,7 +148,7 @@
 		border: none;
 		border-radius: var(--ax-radius-8);
 		background: transparent;
-		font-size: var(--ax-font-size-small);
+		font-size: var(--sh-font-size-sm);
 		color: var(--ax-text-neutral);
 		cursor: pointer;
 		text-align: left;
@@ -160,12 +160,12 @@
 	}
 
 	.sort-option.active {
-		font-weight: var(--ax-font-weight-bold);
+		font-weight: var(--sh-font-weight-semibold);
 		color: var(--ax-text-accent);
 	}
 
 	.sort-direction {
-		font-size: var(--ax-font-size-small);
-		font-weight: var(--ax-font-weight-bold);
+		font-size: var(--sh-font-size-sm);
+		font-weight: var(--sh-font-weight-semibold);
 	}
 </style>

@@ -178,13 +178,13 @@
 	}
 
 	.resource-summary dt {
-		font-size: var(--ax-font-size-small);
+		font-size: var(--sh-font-size-sm);
 	}
 
 	.resource-summary dd {
 		margin: 0;
-		font-size: var(--ax-font-size-xlarge);
-		font-weight: var(--ax-font-weight-bold);
+		font-size: var(--sh-font-size-xl);
+		font-weight: var(--sh-font-weight-semibold);
 		overflow-wrap: anywhere;
 	}
 </style>

@@ -120,7 +120,7 @@
 	}
 	.sh-search-input--small {
 		height: var(--ax-space-32);
-		font-size: var(--ax-font-size-small);
+		font-size: var(--sh-font-size-sm);
 	}
 	.sh-search-input:focus-visible {
 		outline: none;
