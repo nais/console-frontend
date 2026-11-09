@@ -1,0 +1,9 @@
+query WebhookEventTypes {
+	webhookEventTypes {
+		type
+		description
+		group
+		teamScoped
+		cloudEventType
+	}
+}

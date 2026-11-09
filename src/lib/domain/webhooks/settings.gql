@@ -1,0 +1,20 @@
+query WebhookSettings($id: ID!) @cache(policy: NetworkOnly) {
+	node(id: $id) {
+		__typename
+		... on WebhookSubscription {
+			id
+			name
+			teamSlug
+			sourceTeamSlugs
+			url
+			allEvents
+			eventTypes
+			enabled
+			hasSecret
+			consecutiveFailures
+			disabledAt
+			createdAt
+			updatedAt
+		}
+	}
+}
