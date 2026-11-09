@@ -9,6 +9,7 @@
 	} from '#lib/utils/lokiLogQuery.js';
 	import {
 		Alert,
+		BodyShort,
 		Button,
 		Checkbox,
 		Chips,
@@ -31,6 +32,7 @@
 	import { onMount, tick, untrack, type Snippet } from 'svelte';
 	import LogResults from './LogResults.svelte';
 	import LogVolume from './LogVolume.svelte';
+	import { grafanaTimeRangeURL } from './logLinks.js';
 	import {
 		fetchLogPage,
 		fetchLogVolume,
@@ -59,7 +61,8 @@
 		initialInstanceIsPrefix = false,
 		hasLoki,
 		grafanaURL,
-		tracesURL
+		tracesURL,
+		externalLinks
 	}: {
 		team: string;
 		environment: string;
@@ -76,6 +79,7 @@
 		hasLoki: boolean;
 		grafanaURL?: string;
 		tracesURL?: string;
+		externalLinks?: Snippet<[LogRange | undefined]>;
 	} = $props();
 
 	const id = $props.id();
@@ -126,6 +130,7 @@
 	let loadingMore = $state(false);
 	let error = $state('');
 	let volumeError = $state('');
+	let volumeLoading = $state(false);
 	let warnings: string[] = $state([]);
 	let entries: LogEntry[] = $state.raw([]);
 	let buckets: VolumeBucket[] = $state.raw([]);
@@ -352,6 +357,7 @@
 	async function loadVolume(query: string, range: LogRange, current: number) {
 		volumeController?.abort();
 		volumeController = new AbortController();
+		volumeLoading = true;
 		const signal = volumeController.signal;
 		try {
 			const result = await fetchLogVolume(query, range, signal);
@@ -361,6 +367,8 @@
 		} catch (cause) {
 			if (signal.aborted || current !== requestId) return;
 			volumeError = cause instanceof Error ? cause.message : 'Unable to load log volume.';
+		} finally {
+			if (current === requestId) volumeLoading = false;
 		}
 	}
 
@@ -467,6 +475,7 @@
 		loading = false;
 		loadingMore = false;
 		refreshSeconds = '0';
+		volumeLoading = false;
 		stopRefresh();
 		error = 'Query cancelled. Refresh to load results again.';
 	}
@@ -485,12 +494,34 @@
 	});
 </script>
 
+{#snippet emptyResult()}
+	<div role="status">
+		<BodyShort>No logs match this query and time range.</BodyShort>
+		<BodyShort size="small">Try a wider time range or adjust the filters.</BodyShort>
+	</div>
+{/snippet}
+
 <svelte:document onclick={handleOutsideClick} />
 
 {#if !hasLoki}
 	<Alert variant="info">This workload has no Loki log destination.</Alert>
 {:else}
 	<div class="explorer">
+		{#if grafanaURL || tracesURL || externalLinks}
+			<div class="detail-actions">
+				{#if grafanaURL}
+					<ExternalLink href={grafanaTimeRangeURL(grafanaURL, active?.range)}
+						>Open Grafana</ExternalLink
+					>
+				{/if}
+				{@render externalLinks?.(active?.range)}
+				{#if tracesURL}
+					<ExternalLink href={grafanaTimeRangeURL(tracesURL, active?.range)}
+						>Open traces</ExternalLink
+					>
+				{/if}
+			</div>
+		{/if}
 		<form
 			onsubmit={(event) => {
 				event.preventDefault();
@@ -726,8 +757,6 @@
 				<Checkbox size="small" bind:checked={wrap}>Wrap lines</Checkbox>
 				<Checkbox size="small" bind:checked={oldestFirst}>Oldest first</Checkbox>
 				<Checkbox size="small" bind:checked={showQuery}>Show query</Checkbox>
-				{#if grafanaURL}<ExternalLink href={grafanaURL}>Open Grafana</ExternalLink>{/if}
-				{#if tracesURL}<ExternalLink href={tracesURL}>Traces</ExternalLink>{/if}
 				<p class="context">Browser time zone: {Intl.DateTimeFormat().resolvedOptions().timeZone}</p>
 				<Button type="button" variant="tertiary" size="small" onclick={closeSettings}
 					>Close settings</Button
@@ -740,9 +769,7 @@
 
 		{#if active}
 			<section aria-labelledby={`${id}-results`} aria-busy={loading || loadingMore}>
-				<Heading as="h2" size="small" class="aksel-sr-only" id={`${id}-results`}
-					>Query results</Heading
-				>
+				<Heading as="h2" size="small" class="sr-only" id={`${id}-results`}>Query results</Heading>
 				{#if !advanced && labelFilters.length > 0}
 					<div class="active-label-filters">
 						<Chips size="small" aria-label="Active label filters">
@@ -814,9 +841,19 @@
 						>{/if}
 				</div>
 				<div id={`${id}-timeline`} hidden={!showTimeline}>
-					{#if buckets.length > 0}
+					{#if !volumeError && !error}
 						<ChartBoundary fillHeight={false}>
-							<LogVolume {buckets} onselect={selectBucket} />
+							<LogVolume
+								{buckets}
+								range={active.range}
+								loading={loading || volumeLoading}
+								onselect={selectBucket}
+							/>
+							{#snippet fallback()}
+								{#if !loading && completedAt && entries.length === 0 && !buckets.some((bucket) => bucket.count > 0)}
+									{@render emptyResult()}
+								{/if}
+							{/snippet}
 						</ChartBoundary>
 					{/if}
 				</div>
@@ -836,8 +873,8 @@
 						).toLocaleString()}
 					</p>
 				</div>
-				{#if !loading && completedAt && entries.length === 0}
-					<Alert variant="info">No logs match this query and time range.</Alert>
+				{#if !loading && completedAt && entries.length === 0 && (!showTimeline || volumeError || buckets.some((bucket) => bucket.count > 0))}
+					{@render emptyResult()}
 				{:else if entries.length > 0}
 					<LogResults
 						{entries}

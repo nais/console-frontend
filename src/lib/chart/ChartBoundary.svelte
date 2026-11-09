@@ -2,7 +2,11 @@
 	import { Alert, Button } from '#lib/shadcn/ui/index.js';
 	import type { Snippet } from 'svelte';
 
-	let { children, fillHeight = true }: { children: Snippet; fillHeight?: boolean } = $props();
+	let {
+		children,
+		fillHeight = true,
+		fallback
+	}: { children: Snippet; fillHeight?: boolean; fallback?: Snippet } = $props();
 </script>
 
 <div class={['chart-boundary', { 'fill-height': fillHeight }]}>
@@ -17,6 +21,7 @@
 					<Button variant="tertiary" size="xsmall" onclick={reset}>Retry</Button>
 				</Alert>
 			</div>
+			{@render fallback?.()}
 		{/snippet}
 	</svelte:boundary>
 </div>

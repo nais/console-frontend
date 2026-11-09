@@ -28,6 +28,7 @@ describe('ChartBoundary', () => {
 		});
 
 		expect(body).toContain('Chart failed to render.');
+		expect(body).toContain('Chart-independent context');
 		expect(body).toContain('Metadata failed to render.');
 		expect(body).toContain('Content before chart');
 		expect(body).toContain('Content after chart');
