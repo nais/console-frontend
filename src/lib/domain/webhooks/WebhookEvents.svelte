@@ -58,6 +58,6 @@
 		gap: var(--ax-space-8);
 		margin: 0;
 		padding-left: var(--ax-space-24);
-		font-size: var(--ax-font-size-small);
+		font-size: var(--sh-font-size-sm);
 	}
 </style>

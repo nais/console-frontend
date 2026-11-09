@@ -345,12 +345,12 @@
 		display: grid;
 		gap: var(--ax-space-16);
 		margin: 0;
-		font-size: var(--ax-font-size-small);
+		font-size: var(--sh-font-size-sm);
 	}
 
 	dt {
 		margin-bottom: var(--ax-space-4);
-		font-weight: var(--ax-font-weight-bold);
+		font-weight: var(--sh-font-weight-bold);
 	}
 
 	dd {

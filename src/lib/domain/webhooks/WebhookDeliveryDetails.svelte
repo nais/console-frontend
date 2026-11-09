@@ -123,7 +123,7 @@
 	}
 
 	.headers strong {
-		font-weight: var(--ax-font-weight-bold);
+		font-weight: var(--sh-font-weight-bold);
 	}
 
 	pre {
