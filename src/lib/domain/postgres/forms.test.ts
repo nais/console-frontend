@@ -29,7 +29,7 @@ describe('Postgres forms', () => {
 		expect(configurationErrors({ cpu: '9', memory: '0', diskSize: '1001' })).toEqual({
 			cpu: 'CPU (cores) must be no greater than 8.',
 			memory: 'Memory (GiB) must be a positive decimal number.',
-			diskSize: 'Storage (GiB) must be a whole number between 10 and 1000.'
+			diskSize: 'Storage (GiB) must be a whole number between 5 and 1000.'
 		});
 		expect(configurationErrors({ cpu: '0,1', memory: '0.5', diskSize: '10' })).toEqual({});
 	});
@@ -109,7 +109,7 @@ describe('Postgres forms', () => {
 		}
 	);
 
-	test.each(['9', '0', '-10', '10.5', '10Gi', '10,5'])('rejects invalid storage %s', (diskSize) => {
+	test.each(['4', '0', '-10', '5.5', '10Gi', '5,5'])('rejects invalid storage %s', (diskSize) => {
 		expect(
 			configurationError({ cpu: '', memory: '', diskSize, highAvailability: false })
 		).toBeDefined();
@@ -129,6 +129,10 @@ describe('Postgres forms', () => {
 		['memory', '32', true],
 		['memory', '32,0000000000000000001', false],
 		['memory', '33', false],
+		['diskSize', '3', false],
+		['diskSize', '4', false],
+		['diskSize', '5', true],
+		['diskSize', '9', true],
 		['diskSize', '10', true],
 		['diskSize', '1000', true],
 		['diskSize', '1001', false]

@@ -117,5 +117,5 @@ export function quantityInUnits(quantity: string | null | undefined, unit: 'core
 export const postgresResources = {
 	cpu: { default: '0.1', max: 8 },
 	memory: { default: '0.5', max: 32 },
-	diskSize: { default: '10', min: 10, max: 1000 }
+	diskSize: { default: '10', min: 5, max: 1000 }
 };
