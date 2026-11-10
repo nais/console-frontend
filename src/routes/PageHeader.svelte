@@ -24,8 +24,14 @@
 		MenuHamburgerIcon,
 		PersonGroupIcon
 	} from '#lib/icons/index.js';
-	import type { Snippet } from 'svelte';
+	import { onDestroy, tick, type Snippet } from 'svelte';
 	import Logo from '../Logo.svelte';
+
+	interface Team {
+		readonly id: string;
+		readonly slug: string;
+		readonly purpose: string;
+	}
 
 	interface Props {
 		user:
@@ -35,14 +41,8 @@
 					readonly isAdmin: boolean;
 					readonly teams?: {
 						readonly pageInfo?: { readonly hasNextPage: boolean };
-						readonly edges: readonly {
-							readonly node: {
-								readonly team: {
-									readonly id: string;
-									readonly slug: string;
-									readonly purpose: string;
-								};
-							};
+						readonly nodes: readonly {
+							readonly team: Team;
 						}[];
 					};
 			  }
@@ -54,9 +54,13 @@
 			openSearch: { enabled: boolean };
 		};
 		children?: Snippet;
-		loadMoreTeams?: () => Promise<unknown>;
+		loadMoreTeams?: () => Promise<{ errors?: { message: string }[] | null } | void>;
 		teamsFetching?: boolean;
 		teamErrors?: { message: string }[] | null;
+		searchTeams?: (
+			query: string,
+			after?: string | null
+		) => Promise<{ teams: Team[]; hasNextPage: boolean; endCursor: string | null }>;
 		reconcilerErrors?: boolean;
 	}
 
@@ -69,6 +73,7 @@
 		loadMoreTeams,
 		teamsFetching = false,
 		teamErrors,
+		searchTeams,
 		reconcilerErrors = false
 	}: Props = $props();
 
@@ -78,11 +83,21 @@
 	let feedbackOpen = $state(false);
 	let teamSwitcherOpen = $state(false);
 	let teamQuery = $state('');
+	let teamSearchResult = $state<{
+		teams: Team[];
+		hasNextPage: boolean;
+		endCursor: string | null;
+	} | null>(null);
+	let teamSearchPending = $state(false);
+	let teamSearchErrors = $state<{ message: string }[] | null>(null);
+	let teamSearchTimeout: ReturnType<typeof setTimeout> | undefined;
+	let teamSearchRequest = 0;
+	let loadingMoreTeams: ReturnType<NonNullable<Props['loadMoreTeams']>> | undefined;
 
 	const isMac = browser && navigator.platform === 'MacIntel';
 
 	const currentTeamSlug = $derived(page.params.team);
-	const userTeams = $derived((user?.teams?.edges ?? []).map((e) => e.node.team));
+	const userTeams = $derived((user?.teams?.nodes ?? []).map((node) => node.team));
 	const hasMoreTeams = $derived(user?.teams?.pageInfo?.hasNextPage ?? false);
 
 	const filteredUserTeams = $derived(
@@ -90,6 +105,79 @@
 			? userTeams.filter((t) => t.slug.toLowerCase().includes(teamQuery.trim().toLowerCase()))
 			: userTeams
 	);
+	const displayedTeams = $derived(teamSearchResult?.teams ?? filteredUserTeams);
+
+	function cancelTeamSearch() {
+		clearTimeout(teamSearchTimeout);
+		teamSearchRequest++;
+		teamSearchPending = false;
+	}
+
+	function closeTeamSwitcher() {
+		teamSwitcherOpen = false;
+		cancelTeamSearch();
+		teamQuery = '';
+		teamSearchResult = null;
+		teamSearchErrors = null;
+	}
+
+	async function findTeams(request: number, query: string, after?: string | null) {
+		try {
+			while (!after && hasMoreTeams && !filteredUserTeams.length && loadMoreTeams) {
+				const previousCount = userTeams.length;
+				loadingMoreTeams ??= loadMoreTeams();
+				try {
+					const result = await loadingMoreTeams;
+					if (result?.errors?.length) {
+						throw new Error(result.errors.map(({ message }) => message).join('; '));
+					}
+				} finally {
+					loadingMoreTeams = undefined;
+				}
+				await tick();
+				if (request !== teamSearchRequest) return;
+				if (teamErrors?.length) {
+					throw new Error(teamErrors.map(({ message }) => message).join('; '));
+				}
+				if (hasMoreTeams && userTeams.length === previousCount) {
+					throw new Error('Loading more teams returned no additional teams');
+				}
+			}
+			if (request !== teamSearchRequest || (!after && filteredUserTeams.length)) return;
+			if (!searchTeams || hasMoreTeams) return;
+			const result = await searchTeams(query, after);
+			if (request !== teamSearchRequest) return;
+			teamSearchResult = {
+				...result,
+				teams: after ? [...(teamSearchResult?.teams ?? []), ...result.teams] : result.teams
+			};
+		} catch (error) {
+			if (request !== teamSearchRequest) return;
+			console.error('Unable to search teams:', error);
+			teamSearchErrors = [{ message: 'Unable to search teams. Please try again.' }];
+		} finally {
+			if (request === teamSearchRequest) teamSearchPending = false;
+		}
+	}
+
+	function searchTeamInput() {
+		cancelTeamSearch();
+		teamSearchResult = null;
+		teamSearchErrors = null;
+		const query = teamQuery.trim();
+		if (!query || filteredUserTeams.length) return;
+		teamSearchPending = true;
+		const request = teamSearchRequest;
+		teamSearchTimeout = setTimeout(() => void findTeams(request, query), 250);
+	}
+
+	function loadMoreSearchResults() {
+		teamSearchPending = true;
+		teamSearchErrors = null;
+		void findTeams(teamSearchRequest, teamQuery.trim(), teamSearchResult?.endCursor);
+	}
+
+	onDestroy(cancelTeamSearch);
 
 	const tenantItems = $derived(
 		tenantNavigation(page.url.pathname, user?.isAdmin, reconcilerErrors)
@@ -137,13 +225,12 @@
 			e.preventDefault();
 			searchOpen = true;
 		} else if (e.key === 'Escape' && teamSwitcherOpen) {
-			teamSwitcherOpen = false;
+			closeTeamSwitcher();
 		}
 	};
 
 	afterNavigate(() => {
-		teamSwitcherOpen = false;
-		teamQuery = '';
+		closeTeamSwitcher();
 		mobileSidebarOpen = false;
 	});
 </script>
@@ -155,7 +242,7 @@
 		type="button"
 		class="dropdown-backdrop"
 		aria-label="Close team switcher"
-		onclick={() => (teamSwitcherOpen = false)}
+		onclick={closeTeamSwitcher}
 	></button>
 {/if}
 
@@ -189,7 +276,10 @@
 					class:active={!!currentTeamSlug}
 					aria-expanded={teamSwitcherOpen}
 					aria-haspopup="menu"
-					onclick={() => (teamSwitcherOpen = !teamSwitcherOpen)}
+					onclick={() => {
+						if (teamSwitcherOpen) closeTeamSwitcher();
+						else teamSwitcherOpen = true;
+					}}
 				>
 					<span class="switcher-avatar" class:active={!!currentTeamSlug}>
 						{#if currentTeamSlug}
@@ -213,11 +303,21 @@
 								placeholder="Find team…"
 								aria-label="Find team"
 								bind:value={teamQuery}
+								oninput={searchTeamInput}
 								class="popover-search-input"
 							/>
 						</div>
+						<div class="popover-scope" role="status">
+							{#if teamSearchPending}
+								Searching teams…
+							{:else if teamSearchResult}
+								No matches in your teams. Results from all teams:
+							{:else}
+								Your teams
+							{/if}
+						</div>
 						<div class="popover-list">
-							{#each filteredUserTeams as t (t.id)}
+							{#each displayedTeams as t (t.id)}
 								{const isCurrent = $derived(t.slug === currentTeamSlug)}
 								<a
 									href={teamSwitchHref(t.slug)}
@@ -239,26 +339,44 @@
 									{/if}
 								</a>
 							{:else}
-								<div class="popover-empty">
-									{hasMoreTeams
-										? 'No matches in loaded teams. Load more teams to continue searching.'
-										: 'No teams found'}
-								</div>
+								{#if !teamSearchPending && !teamSearchErrors?.length && !teamErrors?.length}
+									<div class="popover-empty">
+										{hasMoreTeams
+											? 'No matches in your loaded teams. Load more teams to continue searching.'
+											: teamSearchResult
+												? 'No teams found'
+												: 'No teams found in your teams'}
+									</div>
+								{/if}
 							{/each}
 							{#if hasMoreTeams && loadMoreTeams}
 								<Button
 									variant="tertiary"
 									size="small"
 									loading={teamsFetching}
-									disabled={teamsFetching}
+									disabled={teamsFetching || teamSearchPending}
 									onclick={loadMoreTeams}>Load more teams</Button
 								>
 							{/if}
+							{#if teamSearchResult?.hasNextPage}
+								<Button
+									variant="tertiary"
+									size="small"
+									loading={teamSearchPending}
+									disabled={teamSearchPending}
+									onclick={loadMoreSearchResults}>Load more results</Button
+								>
+							{/if}
 							<GraphErrors errors={teamErrors} size="small" />
-						</div>
-						<div class="popover-footer">
-							<a href="/" class="popover-footer-link">All teams</a>
-							<a href="/team/create" class="popover-footer-link">+ New team</a>
+							<GraphErrors errors={teamSearchErrors} size="small" />
+							{#if teamSearchErrors?.length}
+								<Button
+									variant="tertiary"
+									size="small"
+									onclick={() => (teamSearchResult ? loadMoreSearchResults() : searchTeamInput())}
+									>Try again</Button
+								>
+							{/if}
 						</div>
 					</div>
 				{/if}
@@ -655,24 +773,10 @@
 		color: var(--muted-foreground);
 	}
 
-	.popover-footer {
-		display: flex;
-		align-items: center;
-		justify-content: space-between;
+	.popover-scope {
 		padding: var(--ax-space-8) var(--ax-space-10);
-		border-top: 1px solid var(--border);
-		background-color: var(--background-subtle);
-	}
-
-	.popover-footer-link {
 		font-size: var(--sh-font-size-sm);
-		font-weight: 500;
-		color: var(--primary);
-		text-decoration: none;
-	}
-
-	.popover-footer-link:hover {
-		text-decoration: underline;
+		font-weight: var(--sh-font-weight-medium);
 	}
 
 	/* Platform Nav Links */

@@ -10,13 +10,11 @@
 		name: 'Test User',
 		isAdmin: false,
 		teams: {
-			edges: Array.from({ length: loaded }, (_, index) => ({
-				node: {
-					team: {
-						id: `test-team-${index + 1}`,
-						slug: `test-team-${String(index + 1).padStart(2, '0')}`,
-						purpose: ''
-					}
+			nodes: Array.from({ length: loaded }, (_, index) => ({
+				team: {
+					id: `test-team-${index + 1}`,
+					slug: `test-team-${String(index + 1).padStart(2, '0')}`,
+					purpose: ''
 				}
 			})),
 			pageInfo: { hasNextPage: loaded < 30 }

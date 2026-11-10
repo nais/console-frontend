@@ -174,13 +174,12 @@
 					</div>
 					<ShButton
 						variant="outline"
-						size="icon-sm"
+						size="sm"
 						href="/team/create"
-						ariaLabel="Create team"
-						title="Create team"
+						icon={PlusIcon}
 						onclick={pageModalClick}
 					>
-						<PlusIcon aria-hidden="true" />
+						Create team
 					</ShButton>
 				</div>
 				<SectionBoundary message="Your teams could not be displayed.">
