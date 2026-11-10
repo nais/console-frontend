@@ -1,0 +1,16 @@
+query TeamSwitcherSearch($query: String!, $after: Cursor) {
+	search(first: 25, after: $after, filter: { types: [TEAM], query: $query }) {
+		nodes {
+			__typename
+			... on Team {
+				id
+				slug
+				purpose
+			}
+		}
+		pageInfo {
+			hasNextPage
+			endCursor
+		}
+	}
+}

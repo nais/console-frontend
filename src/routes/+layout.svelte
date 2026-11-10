@@ -2,7 +2,7 @@
 	import { browser } from '$app/env';
 	import { afterNavigate, beforeNavigate } from '$app/navigation';
 	import { navigating, page, updated } from '$app/state';
-	import { graphql } from '$houdini';
+	import { graphql, TeamSwitcherSearchStore } from '$houdini';
 	import { isAuthenticated, isUnauthenticated } from '#lib/authentication.js';
 	import { localizeLayerChart } from '#lib/chart/util.js';
 	import '#lib/font.css';
@@ -47,6 +47,21 @@
 
 	let user = $derived($UserInfo.data?.me?.__typename === 'User' ? $UserInfo.data.me : undefined);
 	let reconcilerErrors = $derived(hasReconcilerErrors($AdminReconcilerStatus?.data));
+
+	async function searchTeams(query: string, after?: string | null) {
+		const store = new TeamSwitcherSearchStore();
+		const result = await store.fetch({ variables: { query, after } });
+		if (result.errors?.length) {
+			throw new Error(result.errors.map(({ message }) => message).join('; '));
+		}
+		if (!result.data) {
+			throw new Error('Team search returned no data');
+		}
+		return {
+			teams: result.data.search.nodes.filter((node) => node.__typename === 'Team'),
+			...result.data.search.pageInfo
+		};
+	}
 
 	onMount(() => {
 		if (!AdminReconcilerStatus) return;
@@ -147,6 +162,7 @@
 					loadMoreTeams={() => UserInfo.loadNextPage()}
 					teamsFetching={$UserInfo.fetching}
 					teamErrors={$UserInfo.errors}
+					{searchTeams}
 				>
 					<div role="status" aria-live="polite">
 						{#if updated.current && !updateDismissed && !isNaisdevice()}
