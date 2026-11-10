@@ -41,14 +41,8 @@
 					readonly isAdmin: boolean;
 					readonly teams?: {
 						readonly pageInfo?: { readonly hasNextPage: boolean };
-						readonly edges: readonly {
-							readonly node: {
-								readonly team: {
-									readonly id: string;
-									readonly slug: string;
-									readonly purpose: string;
-								};
-							};
+						readonly nodes: readonly {
+							readonly team: Team;
 						}[];
 					};
 			  }
@@ -60,7 +54,7 @@
 			openSearch: { enabled: boolean };
 		};
 		children?: Snippet;
-		loadMoreTeams?: () => Promise<unknown>;
+		loadMoreTeams?: () => Promise<{ errors?: { message: string }[] | null } | void>;
 		teamsFetching?: boolean;
 		teamErrors?: { message: string }[] | null;
 		searchTeams?: (
@@ -98,12 +92,12 @@
 	let teamSearchErrors = $state<{ message: string }[] | null>(null);
 	let teamSearchTimeout: ReturnType<typeof setTimeout> | undefined;
 	let teamSearchRequest = 0;
-	let loadingMoreTeams: Promise<unknown> | undefined;
+	let loadingMoreTeams: ReturnType<NonNullable<Props['loadMoreTeams']>> | undefined;
 
 	const isMac = browser && navigator.platform === 'MacIntel';
 
 	const currentTeamSlug = $derived(page.params.team);
-	const userTeams = $derived((user?.teams?.edges ?? []).map((e) => e.node.team));
+	const userTeams = $derived((user?.teams?.nodes ?? []).map((node) => node.team));
 	const hasMoreTeams = $derived(user?.teams?.pageInfo?.hasNextPage ?? false);
 
 	const filteredUserTeams = $derived(
@@ -133,15 +127,17 @@
 				const previousCount = userTeams.length;
 				loadingMoreTeams ??= loadMoreTeams();
 				try {
-					await loadingMoreTeams;
+					const result = await loadingMoreTeams;
+					if (result?.errors?.length) {
+						throw new Error(result.errors.map(({ message }) => message).join('; '));
+					}
 				} finally {
 					loadingMoreTeams = undefined;
 				}
 				await tick();
 				if (request !== teamSearchRequest) return;
 				if (teamErrors?.length) {
-					teamSearchPending = false;
-					return;
+					throw new Error(teamErrors.map(({ message }) => message).join('; '));
 				}
 				if (hasMoreTeams && userTeams.length === previousCount) {
 					throw new Error('Loading more teams returned no additional teams');
@@ -374,7 +370,12 @@
 							<GraphErrors errors={teamErrors} size="small" />
 							<GraphErrors errors={teamSearchErrors} size="small" />
 							{#if teamSearchErrors?.length}
-								<Button variant="tertiary" size="small" onclick={searchTeamInput}>Try again</Button>
+								<Button
+									variant="tertiary"
+									size="small"
+									onclick={() => (teamSearchResult ? loadMoreSearchResults() : searchTeamInput())}
+									>Try again</Button
+								>
 							{/if}
 						</div>
 					</div>

@@ -6,19 +6,17 @@ query UserInfo {
 			name
 			email
 			isAdmin
-			teams(first: 25, orderBy: { field: TEAM_SLUG, direction: ASC }) @paginate {
+			teams(first: 25, orderBy: { field: TEAM_SLUG, direction: ASC }) @paginate(mode: Infinite) {
 				pageInfo {
 					hasNextPage
 					endCursor
 					totalCount
 				}
-				edges {
-					node {
-						team {
-							id
-							slug
-							purpose
-						}
+				nodes {
+					team {
+						id
+						slug
+						purpose
 					}
 				}
 			}

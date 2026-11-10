@@ -165,13 +165,16 @@ function openTeamSwitcher(props: Partial<HeaderProps> = {}) {
 			target: document.body,
 			props: {
 				...props,
+				get teamErrors() {
+					return props.teamErrors;
+				},
 				get user() {
 					return (
 						props.user ?? {
 							name: 'Test User',
 							isAdmin: false,
 							teams: {
-								edges: [{ node: { team: ownTeam } }],
+								nodes: [{ team: ownTeam }],
 								pageInfo: { hasNextPage: false }
 							}
 						}
@@ -294,12 +297,49 @@ it('paginates all-team results without replacing previous matches', async () => 
 	expect(document.querySelectorAll('.popover-item')).toHaveLength(2);
 });
 
+it('retries a failed results page with the same cursor and keeps previous matches', async () => {
+	vi.spyOn(console, 'error').mockImplementation(() => {});
+	const searchTeams = vi
+		.fn()
+		.mockResolvedValueOnce({ ...searchResult, hasNextPage: true, endCursor: 'next' })
+		.mockRejectedValueOnce(new Error('Next page unavailable'))
+		.mockResolvedValueOnce({
+			teams: [{ id: 'example-2', slug: 'example-2', purpose: '' }],
+			hasNextPage: false,
+			endCursor: null
+		});
+	openTeamSwitcher({ searchTeams });
+	typeTeamQuery('example');
+	await finishTeamSearch();
+	const more = [...document.querySelectorAll<HTMLButtonElement>('.popover-list button')].find(
+		(button) => button.textContent?.includes('Load more results')
+	);
+	more!.click();
+	await finishTeamSearch();
+	expect(element('.graph-errors').textContent).toContain('Unable to search teams');
+	expect(element('.popover-item').textContent).toContain('example');
+	const retry = [...document.querySelectorAll<HTMLButtonElement>('.popover-list button')].find(
+		(button) => button.textContent?.includes('Try again')
+	);
+	retry!.click();
+	await finishTeamSearch();
+	expect(searchTeams.mock.calls).toEqual([
+		['example', undefined],
+		['example', 'next'],
+		['example', 'next']
+	]);
+	expect(
+		[...document.querySelectorAll('.popover-team-name')].map((node) => node.textContent)
+	).toEqual(['example', 'example-2']);
+	expect(document.querySelector('.graph-errors')).toBeNull();
+});
+
 it('checks remaining own-team pages before falling back to all teams', async () => {
 	const userStore = writable({
 		name: 'Test User',
 		isAdmin: false,
 		teams: {
-			edges: [{ node: { team: ownTeam } }],
+			nodes: [{ team: ownTeam }],
 			pageInfo: { hasNextPage: true }
 		}
 	});
@@ -309,7 +349,7 @@ it('checks remaining own-team pages before falling back to all teams', async () 
 		userStore.update((value) => ({
 			...value,
 			teams: {
-				edges: [...value.teams.edges, { node: { team: otherTeam } }],
+				nodes: [...value.teams.nodes, { team: otherTeam }],
 				pageInfo: { hasNextPage: false }
 			}
 		}));
@@ -329,12 +369,63 @@ it('checks remaining own-team pages before falling back to all teams', async () 
 	expect(element('.popover-scope').textContent?.trim()).toBe('Your teams');
 });
 
+it.each([true, false])(
+	'checks all 75 memberships before deciding whether to search all teams (own match: %s)',
+	async (ownMatch) => {
+		function membershipPage(start: number) {
+			return Array.from({ length: 25 }, (_, index) => {
+				const number = start + index + 1;
+				return {
+					team: {
+						id: `own-team-${number}`,
+						slug: ownMatch && number === 75 ? 'example' : `own-team-${number}`,
+						purpose: ''
+					}
+				};
+			});
+		}
+		const userStore = writable({
+			name: 'Test User',
+			isAdmin: false,
+			teams: { nodes: membershipPage(0), pageInfo: { hasNextPage: true } }
+		});
+		const user = fromStore(userStore);
+		const searchTeams = vi.fn().mockResolvedValue(searchResult);
+		const loadMoreTeams = vi.fn(async () => {
+			userStore.update((value) => ({
+				...value,
+				teams: {
+					nodes: [...value.teams.nodes, ...membershipPage(value.teams.nodes.length)],
+					pageInfo: { hasNextPage: value.teams.nodes.length + 25 < 75 }
+				}
+			}));
+		});
+		openTeamSwitcher({
+			get user() {
+				return user.current;
+			},
+			loadMoreTeams,
+			searchTeams
+		});
+		typeTeamQuery('example');
+		await vi.advanceTimersByTimeAsync(1000);
+		flushSync();
+		expect(loadMoreTeams).toHaveBeenCalledTimes(2);
+		if (ownMatch) expect(searchTeams).not.toHaveBeenCalled();
+		else expect(searchTeams).toHaveBeenCalledExactlyOnceWith('example', undefined);
+		expect(element('.popover-item').textContent).toContain('example');
+		typeTeamQuery('');
+		expect(document.querySelectorAll('.popover-item')).toHaveLength(75);
+		expect(element('.popover-item').textContent).toContain('own-team-1');
+	}
+);
+
 it('searches all teams after exhausting own-team pages without a match', async () => {
 	const userStore = writable({
 		name: 'Test User',
 		isAdmin: false,
 		teams: {
-			edges: [{ node: { team: ownTeam } }],
+			nodes: [{ team: ownTeam }],
 			pageInfo: { hasNextPage: true }
 		}
 	});
@@ -344,10 +435,7 @@ it('searches all teams after exhausting own-team pages without a match', async (
 		userStore.update((value) => ({
 			...value,
 			teams: {
-				edges: [
-					...value.teams.edges,
-					{ node: { team: { ...ownTeam, id: 'nais-2', slug: 'nais-2' } } }
-				],
+				nodes: [...value.teams.nodes, { team: { ...ownTeam, id: 'nais-2', slug: 'nais-2' } }],
 				pageInfo: { hasNextPage: false }
 			}
 		}));
@@ -374,7 +462,7 @@ it('does not report zero own-team matches if loading memberships fails', async (
 			name: 'Test User',
 			isAdmin: false,
 			teams: {
-				edges: [{ node: { team: ownTeam } }],
+				nodes: [{ team: ownTeam }],
 				pageInfo: { hasNextPage: true }
 			}
 		},
@@ -386,6 +474,83 @@ it('does not report zero own-team matches if loading memberships fails', async (
 	expect(searchTeams).not.toHaveBeenCalled();
 	expect(element('.graph-errors').textContent).toContain('Unable to search teams');
 	expect(document.querySelector('.popover-empty')).toBeNull();
+});
+
+it('handles pagination-result errors even when the parent store does not publish them', async () => {
+	const log = vi.spyOn(console, 'error').mockImplementation(() => {});
+	const searchTeams = vi.fn().mockResolvedValue(searchResult);
+	openTeamSwitcher({
+		user: {
+			name: 'Test User',
+			isAdmin: false,
+			teams: {
+				nodes: [{ team: ownTeam }],
+				pageInfo: { hasNextPage: true }
+			}
+		},
+		loadMoreTeams: vi.fn().mockResolvedValue({ errors: [{ message: 'Memberships unavailable' }] }),
+		searchTeams
+	});
+	typeTeamQuery('example');
+	await finishTeamSearch();
+	expect(log).toHaveBeenCalledWith('Unable to search teams:', new Error('Memberships unavailable'));
+	expect(document.body.textContent).toContain('Try again');
+	expect(searchTeams).not.toHaveBeenCalled();
+});
+
+it('retries resolved membership errors and resumes the all-team search after recovery', async () => {
+	vi.spyOn(console, 'error').mockImplementation(() => {});
+	const userStore = writable({
+		name: 'Test User',
+		isAdmin: false,
+		teams: {
+			nodes: [{ team: ownTeam }],
+			pageInfo: { hasNextPage: true }
+		}
+	});
+	const errors = writable<{ message: string }[] | null>(null);
+	const user = fromStore(userStore);
+	const teamErrors = fromStore(errors);
+	const searchTeams = vi.fn().mockResolvedValue(searchResult);
+	const loadMoreTeams = vi
+		.fn()
+		.mockImplementationOnce(async () => {
+			errors.set([{ message: 'Memberships unavailable' }]);
+		})
+		.mockImplementationOnce(async () => {
+			errors.set(null);
+			userStore.update((value) => ({
+				...value,
+				teams: {
+					nodes: [...value.teams.nodes, { team: { ...ownTeam, id: 'nais-2', slug: 'nais-2' } }],
+					pageInfo: { hasNextPage: false }
+				}
+			}));
+		});
+	openTeamSwitcher({
+		get user() {
+			return user.current;
+		},
+		get teamErrors() {
+			return teamErrors.current;
+		},
+		loadMoreTeams,
+		searchTeams
+	});
+	typeTeamQuery('example');
+	await finishTeamSearch();
+	expect(searchTeams).not.toHaveBeenCalled();
+	expect(document.body.textContent).toContain('Unable to search teams');
+	const retry = [...document.querySelectorAll<HTMLButtonElement>('.popover-list button')].find(
+		(button) => button.textContent?.includes('Try again')
+	);
+	expect(retry).toBeDefined();
+	retry!.click();
+	await finishTeamSearch();
+	expect(loadMoreTeams).toHaveBeenCalledTimes(2);
+	expect(searchTeams).toHaveBeenCalledExactlyOnceWith('example', undefined);
+	expect(element('.popover-item').textContent).toContain('example');
+	expect(document.querySelector('.graph-errors')).toBeNull();
 });
 
 it('clearing a query prevents in-flight fallback results from replacing own teams', async () => {
