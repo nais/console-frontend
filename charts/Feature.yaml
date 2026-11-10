@@ -1,5 +1,6 @@
 dependencies:
   - allOf:
+      - monitoring-crds
       - fqdn-policy-crds
       - nais-api
 environmentKinds:
