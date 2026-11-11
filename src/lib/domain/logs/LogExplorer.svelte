@@ -52,7 +52,7 @@
 		container,
 		instances,
 		podNamePrefix,
-		postgresClusterName,
+		postgresId,
 		filters,
 		formatInstanceName,
 		initialInstance = '',
@@ -68,7 +68,7 @@
 		container?: string;
 		instances: string[];
 		podNamePrefix?: string;
-		postgresClusterName?: string;
+		postgresId?: string;
 		filters?: Snippet;
 		formatInstanceName?: (instance: string) => string;
 		initialInstance?: string;
@@ -149,7 +149,6 @@
 			instances: instance.trim() && !instanceIsPrefix ? [instance.trim()] : undefined,
 			podNamePrefix:
 				podNamePrefix ?? (instance.trim() && instanceIsPrefix ? instance.trim() : undefined),
-			postgresClusterName,
 			search,
 			logLevels: level ? [level] : undefined,
 			labelFilters
@@ -354,7 +353,7 @@
 		volumeController = new AbortController();
 		const signal = volumeController.signal;
 		try {
-			const result = await fetchLogVolume(query, range, signal);
+			const result = await fetchLogVolume({ query, ...range, signal, postgresId });
 			if (current !== requestId) return;
 			buckets = result.buckets;
 			warnings = [...new Set([...warnings, ...result.warnings])];
@@ -416,6 +415,7 @@
 				...next.range,
 				query: next.query,
 				limit: next.limit,
+				postgresId,
 				signal
 			});
 			if (current !== requestId) return;
@@ -445,6 +445,7 @@
 				end: nextEnd,
 				query: active.query,
 				limit: active.limit,
+				postgresId,
 				signal
 			});
 			if (current !== requestId) return;

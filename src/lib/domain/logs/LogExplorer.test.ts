@@ -92,7 +92,7 @@ describe('LogExplorer', () => {
 				...props,
 				workload: 'roger',
 				container: 'postgres',
-				postgresClusterName: 'pg-roger-main-f222277b',
+				postgresId: 'opaque-postgres-id',
 				instances: ['pg-roger-main-f222277b-1'],
 				formatInstanceName: (name) => formatPostgresLogInstance(name, 'roger')
 			}

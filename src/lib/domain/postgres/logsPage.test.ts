@@ -7,7 +7,7 @@ import LogExplorer from '#lib/domain/logs/LogExplorer.svelte';
 import Logs from '../../../routes/team/[team]/[env]/postgres/[postgres]/(single)/logs/+page.svelte';
 
 const fixture = vi.hoisted(() => ({
-	clusterName: 'pg-database-main-f222277b' as string | null,
+	postgres: { id: 'opaque-postgres-id' } as { id: string } | null,
 	fetching: false,
 	errors: null as { message: string }[] | null
 }));
@@ -26,10 +26,7 @@ vi.mock('$houdini', () => ({
 			data: {
 				team: {
 					environment: {
-						postgres: {
-							id: 'database',
-							clusterName: fixture.clusterName
-						}
+						postgres: fixture.postgres
 					}
 				}
 			},
@@ -51,15 +48,15 @@ function renderPage() {
 describe('Postgres logs page', () => {
 	beforeEach(() => {
 		vi.clearAllMocks();
-		fixture.clusterName = 'pg-database-main-f222277b';
+		fixture.postgres = { id: 'opaque-postgres-id' };
 		fixture.fetching = false;
 		fixture.errors = null;
 	});
 
-	test.each(['pg-database-main-f222277b', 'pg-database', 'custom-cluster-identity'])(
-		'uses the full actual cluster %s without branch selection or pagination',
-		async (clusterName) => {
-			fixture.clusterName = clusterName;
+	test.each(['opaque-postgres-id', 'another-postgres-id'])(
+		'passes logical Postgres ID %s without requiring a physical cluster identity',
+		async (id) => {
+			fixture.postgres = { id };
 			const { body } = await renderPage();
 			expect(body).not.toContain('All branches');
 			expect(body).not.toContain('Load more branches');
@@ -67,25 +64,31 @@ describe('Postgres logs page', () => {
 			expect(LogExplorer).toHaveBeenCalledWith(
 				expect.anything(),
 				expect.objectContaining({
-					postgresClusterName: clusterName
+					postgresId: id,
+					team: 'test',
+					environment: 'dev',
+					workload: 'database',
+					container: 'postgres'
 				})
 			);
 			expect(vi.mocked(LogExplorer).mock.calls[0][1]).not.toHaveProperty('filters');
+			expect(vi.mocked(LogExplorer).mock.calls[0][1]).not.toHaveProperty('postgresClusterName');
 		}
 	);
 
-	test.each([null, ''])(
-		'does not start a broad log search for unknown cluster %s',
-		async (clusterName) => {
-			fixture.clusterName = clusterName;
-			const { body } = await renderPage();
-			expect(body).toContain(
-				'Logs are not available until the Postgres cluster identity is known.'
-			);
-			expect(body).not.toContain('Search log content');
-			expect(LogExplorer).not.toHaveBeenCalled();
-		}
-	);
+	test('does not render the explorer when Postgres is missing', async () => {
+		fixture.postgres = null;
+		await renderPage();
+		expect(LogExplorer).not.toHaveBeenCalled();
+	});
+
+	test('shows loading while resolving Postgres', async () => {
+		fixture.postgres = null;
+		fixture.fetching = true;
+		const { body } = await renderPage();
+		expect(body).toContain('aria-label="Loading"');
+		expect(LogExplorer).not.toHaveBeenCalled();
+	});
 
 	test('surfaces GraphQL errors', async () => {
 		fixture.errors = [{ message: 'Access denied' }];

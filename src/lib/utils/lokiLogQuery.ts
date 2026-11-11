@@ -58,7 +58,6 @@ type LokiLogQueryOptions = {
 	instances?: string[];
 	cluster?: string;
 	podNamePrefix?: string;
-	postgresClusterName?: string;
 	search?: string;
 	logLevels?: string[];
 	labelFilters?: LokiLabelFilter[];
@@ -79,7 +78,6 @@ export function buildLokiLogQuery({
 	instances,
 	cluster,
 	podNamePrefix,
-	postgresClusterName,
 	search,
 	logLevels,
 	labelFilters: additionalFilters = []
@@ -90,20 +88,10 @@ export function buildLokiLogQuery({
 	];
 	if (cluster !== undefined) selectors.push(`k8s_cluster_name=${JSON.stringify(cluster)}`);
 	const labelFilters = [`k8s_container_name=~${exactMatch([container])}`];
-	// CNPG GetInstanceName is <clusterName>-<serial>, not a generated Pod suffix.
-	// Anchor the escaped full cluster identity to exclude poolers and neighbouring databases.
-	if (postgresClusterName !== undefined) {
-		labelFilters.push(
-			`k8s_pod_name=~${JSON.stringify(`^${escapeRegex(postgresClusterName)}-[0-9]+$`)}`
-		);
-	}
 	if (podNamePrefix !== undefined) {
 		labelFilters.push(`k8s_pod_name=~${JSON.stringify(`^${escapeRegex(podNamePrefix)}.*$`)}`);
 	}
-	if (
-		instances !== undefined &&
-		((podNamePrefix === undefined && postgresClusterName === undefined) || instances.length > 0)
-	) {
+	if (instances !== undefined && (podNamePrefix === undefined || instances.length > 0)) {
 		labelFilters.push(`k8s_pod_name=~${exactMatch(instances)}`);
 	}
 	let query = `{${selectors.join(',')}} | ${labelFilters.join(' | ')}`;
