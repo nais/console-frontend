@@ -18,7 +18,7 @@ describe('LogExplorer', () => {
 		const { body } = await render(LogExplorer, {
 			props: { ...props, tracesURL: 'https://grafana.example.com/services/team/app?tab=traces' }
 		});
-		const settings = body.indexOf('aria-label="Log settings"');
+		const settings = body.indexOf('Settings');
 		const traces = body.indexOf('Open traces');
 		expect(traces).toBeGreaterThan(-1);
 		expect(traces).toBeLessThan(settings);
@@ -35,12 +35,10 @@ describe('LogExplorer', () => {
 		expect(body).toContain('Last 15 seconds');
 		expect(body).toContain('Last 10 minutes');
 		expect(body).toContain('Last 7 days');
-		expect(body).toContain('Lines per page');
 		expect(body).not.toContain('Edit LogQL');
 		expect(body).toContain('Refresh');
 		expect(body).toContain('Settings');
-		expect(body).toContain('Show query');
-		expect(body).toContain('aria-label="Log settings"');
+		expect(body).toContain('aria-haspopup="dialog"');
 		expect(body).toContain('aria-hidden="true"');
 		expect(body).not.toContain('Run query');
 		expect(body).not.toContain('Use filters');
@@ -55,14 +53,12 @@ describe('LogExplorer', () => {
 		expect(body).not.toContain('Search log content');
 	});
 
-	it('places Show query in Settings rather than the filter toolbar', async () => {
+	it('keeps settings controls out of the initial render while the popover is closed', async () => {
 		const { body } = await render(LogExplorer, { props });
-		const start = body.indexOf('aria-label="Log settings"');
-		const end = body.indexOf('Close settings', start);
-		expect(start).toBeGreaterThan(-1);
-		expect(end).toBeGreaterThan(start);
-		expect(body.slice(0, start)).not.toContain('Show query');
-		expect(body.slice(start, end)).toContain('Show query');
+		expect(body).toContain('aria-expanded="false"');
+		expect(body).not.toContain('Show query');
+		expect(body).not.toContain('Lines per page');
+		expect(body).not.toContain('Close settings');
 	});
 
 	it('keeps an inaccessible, disabled Cancel button in its reserved slot while idle', async () => {
