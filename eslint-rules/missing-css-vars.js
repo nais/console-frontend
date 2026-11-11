@@ -13,6 +13,8 @@ const KNOWN_DYNAMIC_VARS = new Set([
 	'chat-panel-width',
 	'bits-dropdown-menu-content-available-width',
 	'bits-dropdown-menu-content-available-height',
+	'bits-popover-content-available-width',
+	'bits-popover-content-available-height',
 	'bits-tooltip-content-available-width'
 ]);
 

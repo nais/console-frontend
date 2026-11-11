@@ -174,7 +174,8 @@ describe.each(['application', 'job'] as const)('%s log viewer fallback', (kind) 
 			if (loki) {
 				expect(body).toContain('Search log content');
 				expect(body).toContain('Open Grafana');
-				const settings = body.indexOf('aria-label="Log settings"');
+				const settings = body.indexOf('Settings');
+				expect(settings).toBeGreaterThan(-1);
 				expect(body.indexOf('Open Grafana')).toBeLessThan(settings);
 				expect(body.indexOf('Open Team Logs')).toBeLessThan(settings);
 				expect(body.indexOf('Open traces')).toBeLessThan(settings);
