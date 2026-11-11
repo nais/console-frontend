@@ -8,7 +8,7 @@ env:
 jobs:
   check:
     name: Lint and check
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     permissions:
       contents: read
     steps:
@@ -25,6 +25,7 @@ jobs:
       - name: Run tests
         run: pnpm run test -- --run
       - name: Install browser
+        timeout-minutes: 5
         run: pnpm exec playwright install --with-deps chromium
       - name: Run browser tests
         run: pnpm run test:browser
