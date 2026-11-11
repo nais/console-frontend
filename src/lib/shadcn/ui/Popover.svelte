@@ -25,6 +25,7 @@
 	<Popover.Portal to={portalTarget}>
 		<Popover.Content
 			class="sh-popover-content"
+			role="dialog"
 			aria-label={label}
 			side="bottom"
 			align="end"
