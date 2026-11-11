@@ -627,6 +627,8 @@ Run these checks in order (mirrors the CI pipeline in `.github/workflows/pr.yaml
 
 All of these must pass before committing. If prettier reports issues, fix them with `pnpm run format` and include the formatting in the same commit.
 
+CI runs `pnpm run test:browser` in a separate `Browser tests` job using the official Playwright container, with browsers and system dependencies preinstalled. Keep its image version in `.github/workflows/pr.yaml` aligned with `@playwright/test` in `package.json`. The required `Lint and check` job succeeds only when both the validation and browser jobs pass.
+
 ### File Naming:
 
 - Components: PascalCase (e.g., `MyComponent.svelte`)

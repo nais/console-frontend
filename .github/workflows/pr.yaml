@@ -6,8 +6,8 @@ env:
   NAME: console-frontend
   IMAGE_REPOSITORY: oci://europe-north1-docker.pkg.dev/nais-io/nais
 jobs:
-  check:
-    name: Lint and check
+  validation:
+    name: Type check, lint and unit tests
     runs-on: ubuntu-24.04
     permissions:
       contents: read
@@ -24,13 +24,48 @@ jobs:
         run: pnpm run lint
       - name: Run tests
         run: pnpm run test -- --run
-      - name: Install browser
-        timeout-minutes: 5
-        run: pnpm exec playwright install --with-deps chromium
-      - name: Run browser tests
-        run: pnpm run test:browser
       - name: Helm lint
         run: helm lint --strict ./charts
+
+  browser:
+    name: Browser tests
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    permissions:
+      contents: read
+    container:
+      image: mcr.microsoft.com/playwright:v1.64.1-noble
+      options: --ipc=host --init
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # ratchet:actions/checkout@v7
+      - uses: jdx/mise-action@82a612c5ab8bcda7cc5db6b7e81a8e7584c3dc6e # ratchet:jdx/mise-action@v5
+        with:
+          install_args: node pnpm
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+      - name: Sync generated files
+        run: pnpm exec svelte-kit sync && pnpm exec houdini generate
+      - name: Run browser tests
+        run: pnpm run test:browser
+
+  check:
+    name: Lint and check
+    needs: [validation, browser]
+    if: ${{ always() }}
+    runs-on: ubuntu-24.04
+    permissions: {}
+    steps:
+      - name: Require validation and browser tests
+        env:
+          VALIDATION_RESULT: ${{ needs.validation.result }}
+          BROWSER_RESULT: ${{ needs.browser.result }}
+        run: |
+          echo "Validation: $VALIDATION_RESULT"
+          echo "Browser tests: $BROWSER_RESULT"
+          test "$VALIDATION_RESULT" = success && test "$BROWSER_RESULT" = success
 
   build_push:
     if: github.actor != 'dependabot[bot]'
