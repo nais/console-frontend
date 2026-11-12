@@ -35,7 +35,7 @@
 	<a
 		href={`${resolve('/team/[team]/activity-log', { team: data.teamSlug })}?activityTypes=APPLICATION_UPDATED%2CJOB_UPDATED`}
 		>Activity Log</a
-	>, not here.
+	>.
 </Alert>
 
 {#if $Deployments.data}
