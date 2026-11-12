@@ -26,16 +26,14 @@ export const load: PageLoad = async (event) => {
 		}
 	});
 	const postgres = get(insights.PostgresInsights).data?.team.environment.postgres;
-	const branch = 'main'; // Historical Prometheus label, not a physical branch lookup.
 	const collectedAt = new Date();
 
 	return {
 		...(await addPageMeta(event, { title: 'Queries', pageHeaderTitle: event.params.postgres })),
 		...insights,
 		interval,
-		branch,
 		collectedAt,
-		...(postgres && branch && !get(insights.PostgresInsights).errors
+		...(postgres && !get(insights.PostgresInsights).errors
 			? await load_PostgresQueryStatistics({
 					event,
 					blocking: true,
@@ -43,12 +41,7 @@ export const load: PageLoad = async (event) => {
 						environmentName: event.params.env,
 						input: {
 							time: collectedAt,
-							query: postgresQueryInsightsQuery(
-								event.params.team,
-								event.params.postgres,
-								branch,
-								interval
-							)
+							query: postgresQueryInsightsQuery(event.params.team, event.params.postgres, interval)
 						}
 					}
 				})

@@ -5,13 +5,7 @@
 	import { postgresInsightsSections } from '#lib/domain/postgres/insights.js';
 	import GraphErrors from '#lib/ui/GraphErrors.svelte';
 	import { changeParams } from '#lib/utils/searchparams.js';
-	import {
-		BodyShort,
-		Heading,
-		Loader,
-		ToggleGroup,
-		ToggleGroupItem
-	} from '#lib/shadcn/ui/index.js';
+	import { Heading, Loader, ToggleGroup, ToggleGroupItem } from '#lib/shadcn/ui/index.js';
 	import type { PageProps } from './$types';
 
 	const uid = $props.id();
@@ -20,11 +14,7 @@
 	let { PostgresInsights, interval } = $derived(data);
 	let selectedInterval = $derived(interval);
 	let postgres = $derived($PostgresInsights.data?.team.environment.postgres);
-	// Retain the historical metrics label; it does not require a branch resource.
-	const branch = 'main';
-	let sections = $derived(
-		postgresInsightsSections(page.params.team!, page.params.postgres!, branch)
-	);
+	let sections = $derived(postgresInsightsSections(page.params.team!, page.params.postgres!));
 </script>
 
 <GraphErrors errors={$PostgresInsights.errors} />
@@ -47,31 +37,24 @@
 		</ToggleGroup>
 	</div>
 
-	{#if branch}
-		{#key `${page.params.team}/${page.params.env}/${page.params.postgres}/${branch}`}
-			<div class="insights-sections">
-				{#each sections as section (section.id)}
-					<section aria-labelledby={`${uid}-${section.id}-heading`}>
-						<Heading as="h2" size="medium" spacing id={`${uid}-${section.id}-heading`}>
-							{section.title}
-						</Heading>
-						{#each section.charts as chart (chart.title)}
-							<PrometheusChart
-								{interval}
-								{...chart}
-								environmentName={postgres.teamEnvironment.environment.name}
-							/>
-						{/each}
-					</section>
-				{/each}
-			</div>
-		{/key}
-	{:else}
-		<section aria-labelledby={`${uid}-utilization-heading`}>
-			<Heading as="h2" size="medium" spacing id={`${uid}-utilization-heading`}>Utilization</Heading>
-			<BodyShort>Utilization is not yet available.</BodyShort>
-		</section>
-	{/if}
+	{#key `${page.params.team}/${page.params.env}/${page.params.postgres}`}
+		<div class="insights-sections">
+			{#each sections as section (section.id)}
+				<section aria-labelledby={`${uid}-${section.id}-heading`}>
+					<Heading as="h2" size="medium" spacing id={`${uid}-${section.id}-heading`}>
+						{section.title}
+					</Heading>
+					{#each section.charts as chart (chart.title)}
+						<PrometheusChart
+							{interval}
+							{...chart}
+							environmentName={postgres.teamEnvironment.environment.name}
+						/>
+					{/each}
+				</section>
+			{/each}
+		</div>
+	{/key}
 {/if}
 
 <style>

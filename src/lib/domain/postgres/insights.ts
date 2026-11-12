@@ -29,29 +29,29 @@ const stateLabel = (labels: MetricLabel[]) =>
 
 export function postgresInsightsSections(
 	team: string,
-	postgres: string,
-	branch: string
+	postgres: string
 ): PostgresInsightsSection[] {
 	const namespace = `namespace=${JSON.stringify(team)}`;
-	const selector = `${namespace},team=${JSON.stringify(team)},postgres=${JSON.stringify(postgres)},branch=${JSON.stringify(branch)}`;
+	const selector = `${namespace},team=${JSON.stringify(team)},postgres=${JSON.stringify(postgres)}`;
 	const podLabels = 'namespace,pod,k8s_cluster_name';
 	const pvcLabels = 'namespace,persistentvolumeclaim,k8s_cluster_name';
 	const selectedPods = `max by (${podLabels}) (up{${selector}} == 1)`;
-	const onBranch = (expression: string) => `(${expression}) and on(${podLabels}) (${selectedPods})`;
+	const onPostgres = (expression: string) =>
+		`(${expression}) and on(${podLabels}) (${selectedPods})`;
 	const container = `${namespace},container="postgres",image!=""`;
 	const containerSum = (metric: string) =>
-		`sum(${onBranch(`sum by (${podLabels}) (${metric}{${container}})`)})`;
+		`sum(${onPostgres(`sum by (${podLabels}) (${metric}{${container}})`)})`;
 	const containerRate = (metric: string) =>
-		`sum(${onBranch(`sum by (${podLabels}) (rate(${metric}{${container}}[$__rate_interval]))`)})`;
+		`sum(${onPostgres(`sum by (${podLabels}) (rate(${metric}{${container}}[$__rate_interval]))`)})`;
 	const requested = (resource: string, unit: string) =>
-		`sum(${onBranch(`sum by (${podLabels}) (kube_pod_container_resource_requests{${namespace},container="postgres",resource="${resource}",unit="${unit}"})`)})`;
+		`sum(${onPostgres(`sum by (${podLabels}) (kube_pod_container_resource_requests{${namespace},container="postgres",resource="${resource}",unit="${unit}"})`)})`;
 	const named = (query: string, name: string) =>
 		`label_replace(${query}, "series", "${name}", "__name__", ".*")`;
 	const pair = (first: string, firstName: string, second: string, secondName: string) =>
 		`${named(first, firstName)} or ${named(second, secondName)}`;
-	const branchPvcs = `max by (${pvcLabels}) (kube_pod_spec_volumes_persistentvolumeclaims_info{${namespace},volume="pgdata"} and on(${podLabels}) (${selectedPods}))`;
+	const postgresPvcs = `max by (${pvcLabels}) (kube_pod_spec_volumes_persistentvolumeclaims_info{${namespace},volume="pgdata"} and on(${podLabels}) (${selectedPods}))`;
 	const volume = (metric: string) =>
-		`sum(max by (${pvcLabels}) (${metric}{${namespace}}) and on(${pvcLabels}) (${branchPvcs}))`;
+		`sum(max by (${pvcLabels}) (${metric}{${namespace}}) and on(${pvcLabels}) (${postgresPvcs}))`;
 	const diskUsed = volume('kubelet_volume_stats_used_bytes');
 	const diskCapacity = volume('kubelet_volume_stats_capacity_bytes');
 	const memoryWorkingSet = containerSum('container_memory_working_set_bytes');
@@ -61,7 +61,7 @@ export function postgresInsightsSections(
 	const transactionRate = (metric: string) =>
 		`sum(rate(${metric}{${selector}}[$__rate_interval]) and on(${podLabels}) (${primary}))`;
 	const networkRate = (metric: string) =>
-		`sum(${onBranch(`max by (${podLabels},interface) (rate(${metric}{${namespace},container=~"POD|",interface!="lo"}[$__rate_interval]))`)})`;
+		`sum(${onPostgres(`max by (${podLabels},interface) (rate(${metric}{${namespace},container=~"POD|",interface!="lo"}[$__rate_interval]))`)})`;
 
 	return [
 		{
@@ -70,21 +70,23 @@ export function postgresInsightsSections(
 			charts: [
 				{
 					title: 'CPU utilization',
-					description: `CPU usage as a percentage of requested CPU across instances in branch ${branch}.`,
+					description: 'CPU usage as a percentage of requested CPU across Postgres instances.',
 					query: `${containerRate('container_cpu_usage_seconds_total')} / clamp_min(${requested('cpu', 'core')}, 0.001)`,
 					labelFormatter: () => 'CPU used',
 					formatYValue: formatPercentage
 				},
 				{
 					title: 'Memory utilization',
-					description: `Memory working set as a percentage of requested memory across instances in branch ${branch}.`,
+					description:
+						'Memory working set as a percentage of requested memory across Postgres instances.',
 					query: `${memoryWorkingSet} / clamp_min(${memoryRequested}, 1)`,
 					labelFormatter: () => 'Memory used',
 					formatYValue: formatPercentage
 				},
 				{
 					title: 'Disk utilization',
-					description: `Storage used as a percentage of pgdata volume capacity across instances in branch ${branch}.`,
+					description:
+						'Storage used as a percentage of pgdata volume capacity across Postgres instances.',
 					query: `${diskUsed} / clamp_min(${diskCapacity}, 1)`,
 					labelFormatter: () => 'Disk used',
 					formatYValue: formatPercentage
@@ -97,7 +99,8 @@ export function postgresInsightsSections(
 			charts: [
 				{
 					title: 'Memory components',
-					description: `Resident anonymous memory (RSS) and file cache across instances in branch ${branch}. These are container metrics, not PostgreSQL shared buffer statistics.`,
+					description:
+						'Resident anonymous memory (RSS) and file cache across Postgres instances. These are container metrics, not PostgreSQL shared buffer statistics.',
 					query: pair(
 						containerSum('container_memory_rss'),
 						'RSS',
@@ -109,7 +112,8 @@ export function postgresInsightsSections(
 				},
 				{
 					title: 'Total memory usage',
-					description: `Total container memory including cache, working set excluding inactive file cache, and requested memory across instances in branch ${branch}. The usage series overlap and should not be added together.`,
+					description:
+						'Total container memory including cache, working set excluding inactive file cache, and requested memory across Postgres instances. The usage series overlap and should not be added together.',
 					query: `${pair(containerSum('container_memory_usage_bytes'), 'Total usage', memoryWorkingSet, 'Working set')} or ${named(memoryRequested, 'Requested')}`,
 					labelFormatter: seriesLabel,
 					formatYValue: formatBytes
@@ -122,25 +126,29 @@ export function postgresInsightsSections(
 			charts: [
 				{
 					title: 'Total connections',
-					description: `Client connections across primary and replica instances in branch ${branch}. Internal PostgreSQL processes and the metrics exporter's own connection are excluded.`,
+					description:
+						"Client connections across primary and replica Postgres instances. Internal PostgreSQL processes and the metrics exporter's own connection are excluded.",
 					query: `sum(${connections})`,
 					labelFormatter: () => 'Client connections'
 				},
 				{
 					title: 'Connections by state',
-					description: `Client connections grouped by state across primary and replica instances in branch ${branch}.`,
+					description:
+						'Client connections grouped by state across primary and replica Postgres instances.',
 					query: `sum by (state) (${connections})`,
 					labelFormatter: stateLabel
 				},
 				{
 					title: 'Connections per database',
-					description: `Client connections grouped by database across primary and replica instances in branch ${branch}.`,
+					description:
+						'Client connections grouped by database across primary and replica Postgres instances.',
 					query: `sum by (datname) (${connections})`,
 					labelFormatter: databaseLabel
 				},
 				{
 					title: 'Transactions',
-					description: `Commits and rollbacks per second on the primary instance in branch ${branch}, including internal and monitoring transactions. Read-only transactions on replicas are excluded.`,
+					description:
+						'Commits and rollbacks per second on the primary Postgres instance, including internal and monitoring transactions. Read-only transactions on replicas are excluded.',
 					query: pair(
 						transactionRate('cnpg_pg_stat_database_xact_commit'),
 						'Commits',
@@ -158,14 +166,16 @@ export function postgresInsightsSections(
 			charts: [
 				{
 					title: 'Storage usage',
-					description: `Used space and capacity of pgdata volumes across primary and replica instances in branch ${branch}. Includes WAL and other files on these volumes.`,
+					description:
+						'Used space and capacity of pgdata volumes across primary and replica Postgres instances. Includes WAL and other files on these volumes.',
 					query: pair(diskUsed, 'Used', diskCapacity, 'Capacity'),
 					labelFormatter: seriesLabel,
 					formatYValue: formatBytes
 				},
 				{
 					title: 'Container read/write operations',
-					description: `Filesystem reads and writes per second reported for PostgreSQL containers across instances in branch ${branch}. This is container I/O, not a measurement of physical disk IOPS or PostgreSQL buffer reads.`,
+					description:
+						'Filesystem reads and writes per second reported for PostgreSQL containers across Postgres instances. This is container I/O, not a measurement of physical disk IOPS or PostgreSQL buffer reads.',
 					query: pair(
 						containerRate('container_fs_reads_total'),
 						'Reads',
@@ -183,7 +193,8 @@ export function postgresInsightsSections(
 			charts: [
 				{
 					title: 'Data transfer',
-					description: `Network bytes received and sent per second across pods in branch ${branch}. Includes replication, backups and monitoring traffic, not just client traffic.`,
+					description:
+						'Network bytes received and sent per second across Postgres pods. Includes replication, backups and monitoring traffic, not just client traffic.',
 					query: pair(
 						networkRate('container_network_receive_bytes_total'),
 						'Received',

@@ -72,8 +72,7 @@ async function renderPage({
 	errors = null,
 	insightErrors = null,
 	hasPostgres = true,
-	fetching = false,
-	branch = 'main'
+	fetching = false
 }: {
 	series?: Series[];
 	warnings?: string[];
@@ -81,7 +80,6 @@ async function renderPage({
 	insightErrors?: { message: string }[] | null;
 	hasPostgres?: boolean;
 	fetching?: boolean;
-	branch?: string;
 } = {}) {
 	fixture.insights = {
 		errors: insightErrors,
@@ -104,7 +102,6 @@ async function renderPage({
 			data: {
 				PostgresInsights: new PostgresInsightsStore(),
 				PostgresQueryStatistics: new PostgresQueryStatisticsStore(),
-				branch,
 				interval: '1h',
 				collectedAt: new Date('2026-11-02T14:00:00Z')
 			} as ComponentProps<typeof Queries>['data'],

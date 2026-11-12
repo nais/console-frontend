@@ -88,10 +88,9 @@ describe('Postgres Insights page', () => {
 		}
 	});
 
-	test('renders historical main metrics without a branch resource', async () => {
+	test('renders database metrics without branch wording', async () => {
 		const { body } = await renderPage();
-		expect(body).not.toContain('branch preview');
-		expect(body).toContain('branch main');
+		expect(body).not.toContain('branch ');
 		expect(body.match(/class="prometheus-chart-wrapper\b/g)).toHaveLength(12);
 	});
 

@@ -22,7 +22,7 @@
 	import type { PageProps } from './$types';
 
 	let { data }: PageProps = $props();
-	let { PostgresInsights, PostgresQueryStatistics, branch, interval } = $derived(data);
+	let { PostgresInsights, PostgresQueryStatistics, interval } = $derived(data);
 	let selectedInterval = $derived(interval);
 	let postgres = $derived($PostgresInsights.data?.team.environment.postgres);
 	let metrics = $derived($PostgresQueryStatistics.data?.environment.metrics);
@@ -33,8 +33,7 @@
 	let loading = $derived(
 		!!navigating.to ||
 			(!hasErrors &&
-				($PostgresInsights.fetching ||
-					(!!postgres && !!branch && $PostgresQueryStatistics.fetching)))
+				($PostgresInsights.fetching || (!!postgres && $PostgresQueryStatistics.fetching)))
 	);
 	const uid = $props.id();
 </script>
@@ -65,7 +64,7 @@
 		</div>
 	{:else if hasErrors}
 		<BodyShort>Query statistics could not be loaded.</BodyShort>
-	{:else if !postgres || !branch}
+	{:else if !postgres}
 		<BodyShort>Query statistics are not yet available for this Postgres.</BodyShort>
 	{:else if result.error}
 		<Alert variant="error">{result.error}</Alert>

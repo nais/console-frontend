@@ -41,9 +41,10 @@ beforeEach(() => {
 });
 
 describe('Postgres query insights load', () => {
-	test('loads database metadata before fetching historical main statistics without branches', async () => {
+	test('loads database metadata before fetching database-scoped statistics without a branch label', async () => {
 		const result = await load(event());
-		expect(result).toMatchObject({ branch: 'main', interval: '1h' });
+		expect(result).toMatchObject({ interval: '1h' });
+		expect(result).not.toHaveProperty('branch');
 		expect(load_PostgresInsights).toHaveBeenCalledWith(
 			expect.objectContaining({
 				blocking: true,
@@ -55,7 +56,10 @@ describe('Postgres query insights load', () => {
 				blocking: true,
 				variables: {
 					environmentName: 'dev',
-					input: { time: expect.any(Date), query: expect.stringContaining('branch="main"') }
+					input: {
+						time: expect.any(Date),
+						query: expect.stringContaining('postgres="database",datname="app"')
+					}
 				}
 			})
 		);
@@ -66,13 +70,13 @@ describe('Postgres query insights load', () => {
 
 	test('honours legacy main links and intervals but ignores obsolete database filters', async () => {
 		const result = await load(event('?branch=main&database=postgres&interval=6h'));
-		expect(result).toMatchObject({ branch: 'main', interval: '6h' });
+		expect(result).toMatchObject({ interval: '6h' });
 		expect(result).not.toHaveProperty('database');
 		expect(load_PostgresQueryStatistics).toHaveBeenCalledWith(
 			expect.objectContaining({
 				variables: expect.objectContaining({
 					input: expect.objectContaining({
-						query: expect.stringContaining('branch="main",datname="app"}[6h]')
+						query: expect.stringContaining('postgres="database",datname="app"}[6h]')
 					})
 				})
 			})
@@ -95,7 +99,7 @@ describe('Postgres query insights load', () => {
 			postgres: { id: 'database' },
 			errors: [{ message: 'Denied' }]
 		}
-	])('does not fetch metrics when branch metadata is unavailable: %j', async (state) => {
+	])('does not fetch metrics when database metadata is unavailable: %j', async (state) => {
 		fixture.postgres = state.postgres;
 		fixture.errors = state.errors;
 		await load(event());

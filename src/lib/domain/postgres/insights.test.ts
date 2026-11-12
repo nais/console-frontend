@@ -1,6 +1,6 @@
 import { postgresInsightsSections } from './insights';
 
-const sections = postgresInsightsSections('my-team', 'my-database', 'main');
+const sections = postgresInsightsSections('my-team', 'my-database');
 const charts = sections.flatMap((section) => section.charts);
 
 function chart(title: string) {
@@ -35,27 +35,29 @@ describe('Postgres Insights queries', () => {
 		expect(new Set(charts.map((candidate) => candidate.title)).size).toBe(charts.length);
 	});
 
-	test.each(charts)('$title is scoped to the selected team, database and branch', ({ query }) => {
-		expect(query).toContain('namespace="my-team"');
-		expect(query).toContain('team="my-team"');
-		expect(query).toContain('postgres="my-database"');
-		expect(query).toContain('branch="main"');
-	});
+	test.each(charts)(
+		'$title is scoped to the selected team and database without a branch label',
+		({ query }) => {
+			expect(query).toContain('namespace="my-team"');
+			expect(query).toContain('team="my-team"');
+			expect(query).toContain('postgres="my-database"');
+			expect(query).not.toContain('branch=');
+		}
+	);
 
 	test('escapes label values without changing their meaning', () => {
-		const scoped = postgresInsightsSections('a"b', 'c\\d', 'e\nf');
+		const scoped = postgresInsightsSections('a"b', 'c\\d');
 		for (const { query } of scoped.flatMap((section) => section.charts)) {
 			expect(query).toContain('namespace="a\\"b"');
 			expect(query).toContain('postgres="c\\\\d"');
-			expect(query).toContain('branch="e\\nf"');
 		}
 	});
 
-	test('changing the selected branch updates every query', () => {
-		const other = postgresInsightsSections('my-team', 'my-database', 'preview');
+	test('changing the selected database updates every query', () => {
+		const other = postgresInsightsSections('my-team', 'another-database');
 		for (const { query } of other.flatMap((section) => section.charts)) {
-			expect(query).toContain('branch="preview"');
-			expect(query).not.toContain('branch="main"');
+			expect(query).toContain('postgres="another-database"');
+			expect(query).not.toContain('postgres="my-database"');
 		}
 	});
 
