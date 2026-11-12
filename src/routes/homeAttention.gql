@@ -205,7 +205,7 @@ query HomeAttention {
 					name
 				}
 			}
-			... on PostgresBranchIssue {
+			... on PostgresIssue {
 				id
 				message
 				teamEnvironment {
@@ -216,11 +216,8 @@ query HomeAttention {
 						name
 					}
 				}
-				branch {
+				postgres {
 					name
-					postgres {
-						name
-					}
 				}
 			}
 			... on SqlInstanceStateIssue {

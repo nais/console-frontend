@@ -61,6 +61,8 @@ describe('home queries', () => {
 			const interfaceType = schema.getType(interfaceName);
 			if (!interfaceType || !isInterfaceType(interfaceType)) throw new Error('Missing interface');
 			for (const type of schema.getPossibleTypes(interfaceType)) {
+				// Compatibility-only: the API returns PostgresIssue for all stored Postgres issues.
+				if (type.name === 'PostgresBranchIssue') continue;
 				const concrete = nodes.selectionSet?.selections.find(
 					(field) =>
 						field.kind === Kind.INLINE_FRAGMENT && field.typeCondition?.name.value === type.name
@@ -150,17 +152,17 @@ describe('home navigation and search', () => {
 		);
 	});
 
-	test('links legacy main Postgres issues to the database overview', () => {
+	test('links Postgres issues directly to the logical database overview', () => {
 		expect(
 			homeIssueResource({
-				__typename: 'PostgresBranchIssue',
+				__typename: 'PostgresIssue',
 				id: 'issue',
-				message: 'Branch failed',
+				message: 'Database failed',
 				teamEnvironment: context,
-				branch: { name: 'main', postgres: { name: 'database' } }
+				postgres: { name: 'database' }
 			})
 		).toEqual({
-			name: 'database / main',
+			name: 'database',
 			href: '/team/my-team/prod-gcp/postgres/database'
 		});
 	});

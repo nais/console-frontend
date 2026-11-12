@@ -4199,8 +4199,11 @@ enum IssueType {
   NO_RUNNING_INSTANCES
   OPENSEARCH
 
+  """Postgres database failure."""
+  POSTGRES
+
   """Raised when a Postgres branch has reported a failure."""
-  POSTGRES_BRANCH
+  POSTGRES_BRANCH @deprecated(reason: "Use POSTGRES instead.")
   SQLINSTANCE_STATE
   SQLINSTANCE_VERSION
   UNLEASH_RELEASE_CHANNEL
@@ -5515,7 +5518,7 @@ type Mutation {
 
   """
   Create a new webhook subscription.
-
+  
   The owning team can select source teams without permission from those teams, or subscribe to all teams.
   By default, a team-owned webhook receives only its own team's events.
   If no owner team slug is provided, the webhook is global and receives all events (admin only).
@@ -5571,7 +5574,7 @@ type Mutation {
 
   """
   Delete a webhook subscription.
-
+  
   All associated delivery records will also be deleted.
   """
   deleteWebhook(input: DeleteWebhookInput!): DeleteWebhookPayload!
@@ -5738,7 +5741,7 @@ type Mutation {
 
   """
   Update an existing webhook subscription.
-
+  
   Can be used to change the name, source teams, URL, secret, event types, or enabled status. Ownership and the subscription ID cannot be changed.
   """
   updateWebhook(input: UpdateWebhookInput!): UpdateWebhookPayload!
@@ -6734,10 +6737,10 @@ input PostgresBranchFilter {
   states: [PostgresBranchState!]
 }
 
-"""A failure reported by a Postgres branch, including inactive branches."""
+"""Legacy issue type, no longer returned. Use PostgresIssue instead."""
 type PostgresBranchIssue implements Issue & Node {
   """The branch that reported the failure."""
-  branch: PostgresBranch!
+  branch: PostgresBranch! @deprecated(reason: "Use PostgresIssue.postgres instead.")
 
   """Unique identifier for this issue."""
   id: ID!
@@ -6912,6 +6915,24 @@ type PostgresGrantAccessActivityLogEntry implements ActivityLogEntry & Node {
 type PostgresGrantAccessActivityLogEntryData {
   grantee: String!
   until: Time!
+}
+
+"""A failure reported by a Postgres database."""
+type PostgresIssue implements Issue & Node {
+  """Unique identifier for this issue."""
+  id: ID!
+
+  """Description of the reported failure."""
+  message: String!
+
+  """The Postgres database that reported the failure."""
+  postgres: Postgres!
+
+  """Severity of the reported failure."""
+  severity: Severity!
+
+  """Team environment containing the affected Postgres database."""
+  teamEnvironment: TeamEnvironment!
 }
 
 """An explicitly configured PostgreSQL parameter."""
@@ -8064,8 +8085,11 @@ enum ResourceType {
   JOB
   OPENSEARCH
 
+  """Postgres database."""
+  POSTGRES
+
   """A branch of a Postgres database."""
-  POSTGRES_BRANCH
+  POSTGRES_BRANCH @deprecated(reason: "Use POSTGRES instead.")
   SQLINSTANCE
   UNLEASH
   VALKEY
