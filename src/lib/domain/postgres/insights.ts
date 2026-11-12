@@ -69,26 +69,18 @@ export function postgresInsightsSections(
 			title: 'Utilization',
 			charts: [
 				{
-					title: 'CPU utilization',
-					description: 'CPU usage as a percentage of requested CPU across Postgres instances.',
-					query: `${containerRate('container_cpu_usage_seconds_total')} / clamp_min(${requested('cpu', 'core')}, 0.001)`,
-					labelFormatter: () => 'CPU used',
-					formatYValue: formatPercentage
-				},
-				{
-					title: 'Memory utilization',
+					title: 'Resource utilization',
 					description:
-						'Memory working set as a percentage of requested memory across Postgres instances.',
-					query: `${memoryWorkingSet} / clamp_min(${memoryRequested}, 1)`,
-					labelFormatter: () => 'Memory used',
-					formatYValue: formatPercentage
-				},
-				{
-					title: 'Disk utilization',
-					description:
-						'Storage used as a percentage of pgdata volume capacity across Postgres instances.',
-					query: `${diskUsed} / clamp_min(${diskCapacity}, 1)`,
-					labelFormatter: () => 'Disk used',
+						'CPU usage and memory working set as percentages of requested resources, and disk usage as a percentage of pgdata capacity. Aggregated across Postgres instances, not the busiest instance. CPU and memory can exceed 100%.',
+					query: [
+						named(
+							`${containerRate('container_cpu_usage_seconds_total')} / clamp_min(${requested('cpu', 'core')}, 0.001)`,
+							'CPU'
+						),
+						named(`${memoryWorkingSet} / clamp_min(${memoryRequested}, 1)`, 'Memory'),
+						named(`${diskUsed} / clamp_min(${diskCapacity}, 1)`, 'Disk')
+					].join(' or '),
+					labelFormatter: seriesLabel,
 					formatYValue: formatPercentage
 				}
 			]
