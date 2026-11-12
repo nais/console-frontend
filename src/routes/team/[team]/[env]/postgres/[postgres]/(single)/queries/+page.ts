@@ -8,8 +8,10 @@ import { postgresQueryInsightsQuery } from '#lib/domain/postgres/queryInsights.j
 import { addPageMeta } from '#lib/utils/pageMeta.js';
 import { get } from 'svelte/store';
 import type { PageLoad } from './$types';
+import { requireMainBranch } from '#lib/domain/postgres/branchCompatibility.js';
 
 export const load: PageLoad = async (event) => {
+	requireMainBranch(event.url);
 	const requestedInterval = event.url.searchParams.get('interval');
 	const interval =
 		Object.values(PrometheusChartQueryInterval).find((value) => value === requestedInterval) ??
@@ -24,16 +26,14 @@ export const load: PageLoad = async (event) => {
 		}
 	});
 	const postgres = get(insights.PostgresInsights).data?.team.environment.postgres;
-	const branch = postgres?.activeBranch?.name ?? '';
 	const collectedAt = new Date();
 
 	return {
 		...(await addPageMeta(event, { title: 'Queries', pageHeaderTitle: event.params.postgres })),
 		...insights,
 		interval,
-		branch,
 		collectedAt,
-		...(postgres && branch && !get(insights.PostgresInsights).errors
+		...(postgres && !get(insights.PostgresInsights).errors
 			? await load_PostgresQueryStatistics({
 					event,
 					blocking: true,
@@ -41,12 +41,7 @@ export const load: PageLoad = async (event) => {
 						environmentName: event.params.env,
 						input: {
 							time: collectedAt,
-							query: postgresQueryInsightsQuery(
-								event.params.team,
-								event.params.postgres,
-								branch,
-								interval
-							)
+							query: postgresQueryInsightsQuery(event.params.team, event.params.postgres, interval)
 						}
 					}
 				})

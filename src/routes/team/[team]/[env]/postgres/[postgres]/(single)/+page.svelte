@@ -14,7 +14,6 @@
 		AccordionItem,
 		Alert,
 		BodyShort,
-		Detail,
 		Heading,
 		Loader,
 		Table,
@@ -32,9 +31,7 @@
 	let { data }: PageProps = $props();
 	let { PostgresOverview } = $derived(data);
 	let postgres = $derived($PostgresOverview.data?.team.environment.postgres);
-	let activeBranch = $derived(postgres?.activeBranch);
-	// The API currently exposes PostgreSQL parameters only through the observed active branch.
-	let parameters = $derived(activeBranch?.configuration?.parameters);
+	let parameters = $derived(postgres?.configuration?.parameters);
 	const parametersId = $props.id();
 	let parametersOpen = $state(false);
 	let canManage = $derived(data.viewerIsMember || data.isAdmin);
@@ -86,25 +83,12 @@
 			];
 		}
 	}
-	let visibleErrors = $derived(
-		$PostgresOverview.errors?.filter(
-			(error) =>
-				activeBranch ||
-				!error.path?.includes('activeBranch') ||
-				!error.message.startsWith('Resource not found: ') ||
-				!error.message.endsWith('/main')
-		)
-	);
 	let workloads = $derived(
 		(postgres?.workloads.nodes ?? []).filter(
 			(usage) => usage.workload.__typename === 'Application' || usage.workload.__typename === 'Job'
 		)
 	);
-	let branchState = $derived(
-		postgres?.desiredActiveBranch && postgres.desiredActiveBranch !== activeBranch?.name
-			? 'PROGRESSING'
-			: (activeBranch?.state ?? 'PROGRESSING')
-	);
+	let branchState = $derived(postgres?.state ?? 'PROGRESSING');
 
 	onMount(() => {
 		const interval = window.setInterval(() => {
@@ -123,17 +107,17 @@
 	});
 </script>
 
-<GraphErrors errors={visibleErrors} />
+<GraphErrors errors={$PostgresOverview.errors} />
 
 {#if $PostgresOverview.fetching && !postgres}
 	<div class="loading-centered" role="status" aria-label="Loading">
 		<Loader size="3xlarge" />
 	</div>
 {:else if postgres}
-	{#if !activeBranch}
+	{#if branchState === 'PROGRESSING'}
 		<div class="provisioning-alert">
 			<Alert variant="info" size="small">
-				Postgres is being created. The main branch will appear when it is ready.
+				Postgres is being prepared. Status updates automatically.
 			</Alert>
 		</div>
 	{/if}
@@ -147,18 +131,6 @@
 						<BranchStateIndicator state={branchState} />
 						{branchStateLabel(branchState)}
 					</dd>
-					<dt>Active branch</dt>
-					<dd>
-						{#if activeBranch}
-							<strong>{activeBranch.name}</strong>
-						{:else}
-							None
-						{/if}
-					</dd>
-					{#if postgres.desiredActiveBranch && postgres.desiredActiveBranch !== activeBranch?.name}
-						<dt>Activation requested</dt>
-						<dd>{postgres.desiredActiveBranch}</dd>
-					{/if}
 					<dt>High availability</dt>
 					<dd>
 						{postgres.highAvailability
@@ -229,11 +201,6 @@
 						{#each workloads as usage (usage.workload.id)}
 							<li class="workload-usage">
 								<WorkloadLink workload={usage.workload} hideTeam hideEnv />
-								<div class="branch-label">
-									<Detail>
-										Branch: {usage.branch.name}
-									</Detail>
-								</div>
 							</li>
 						{/each}
 					</ul>
@@ -310,9 +277,5 @@
 		display: grid;
 		justify-items: start;
 		gap: var(--ax-space-2);
-	}
-	.branch-label {
-		margin-inline-start: var(--ax-space-32);
-		color: var(--ax-text-subtle);
 	}
 </style>

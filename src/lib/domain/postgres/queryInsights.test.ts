@@ -19,7 +19,7 @@ describe('Postgres query insights PromQL', () => {
 	test.each(Object.values(PrometheusChartQueryInterval))(
 		'builds valid PromQL for %s with escaped selectors',
 		(interval) => {
-			const query = postgresQueryInsightsQuery('a"b', 'c\\d', 'e\nf', interval);
+			const query = postgresQueryInsightsQuery('a"b', 'c\\d', interval);
 			const errors: string[] = [];
 			promQLLanguage(LanguageType.PromQL)
 				.parser.parse(query)
@@ -32,14 +32,14 @@ describe('Postgres query insights PromQL', () => {
 			expect(query).toContain('namespace="a\\"b"');
 			expect(query).toContain('team="a\\"b"');
 			expect(query).toContain('postgres="c\\\\d"');
-			expect(query).toContain('branch="e\\nf"');
+			expect(query).not.toContain('branch=');
 			expect(query).toContain('datname="app"');
 			expect(query).toContain(`[${interval}]`);
 		}
 	);
 
 	test('calculates counter increases before deduplicating scrapes and summing instances', () => {
-		const query = postgresQueryInsightsQuery('team', 'database', 'main', '1h');
+		const query = postgresQueryInsightsQuery('team', 'database', '1h');
 		expect(query).toContain(
 			'sum by (datname,user,queryid) (max by (namespace,k8s_cluster_name,pod,datname,user,queryid) (increase(cnpg_pg_stat_statements_seconds_total{'
 		);
@@ -51,25 +51,23 @@ describe('Postgres query insights PromQL', () => {
 	});
 
 	test('scopes every counter, SQL metadata and availability selector to app before ranking and summing', () => {
-		const query = postgresQueryInsightsQuery('team', 'database', 'preview', '1d');
+		const query = postgresQueryInsightsQuery('team', 'database', '1d');
 		const selectors = [...query.matchAll(/cnpg_pg_stat_statements_\w+\{([^}]+)\}/g)];
 		expect(selectors.length).toBeGreaterThan(0);
 		for (const [, selector] of selectors) {
-			expect(selector).toBe(
-				'namespace="team",team="team",postgres="database",branch="preview",datname="app"'
-			);
+			expect(selector).toBe('namespace="team",team="team",postgres="database",datname="app"');
 		}
 		expect(query).toContain(
-			'count by (datname) (cnpg_pg_stat_statements_calls_total{namespace="team",team="team",postgres="database",branch="preview",datname="app"})'
+			'count by (datname) (cnpg_pg_stat_statements_calls_total{namespace="team",team="team",postgres="database",datname="app"})'
 		);
 		expect(query).toContain('label_replace(sum(sum by (datname,user,queryid)');
-		expect(query).toContain('branch="preview",datname="app"}[1d]');
+		expect(query).toContain('postgres="database",datname="app"}[1d]');
 	});
 
 	test('loads SQL metadata for the same scope and top queries without dropping text variants', () => {
-		const query = postgresQueryInsightsQuery('team', 'database', 'preview', '1d');
+		const query = postgresQueryInsightsQuery('team', 'database', '1d');
 		expect(query).toContain(
-			'group by (datname,user,queryid,query) (cnpg_pg_stat_statements_queries_info{namespace="team",team="team",postgres="database",branch="preview",datname="app"}) and on (datname,user,queryid) (topk(20,'
+			'group by (datname,user,queryid,query) (cnpg_pg_stat_statements_queries_info{namespace="team",team="team",postgres="database",datname="app"}) and on (datname,user,queryid) (topk(20,'
 		);
 		expect(query).toContain('"statistic", "query"');
 	});

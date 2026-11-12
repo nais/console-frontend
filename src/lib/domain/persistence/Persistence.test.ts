@@ -12,7 +12,7 @@ vi.mock('$houdini', () => ({
 
 describe('Postgres persistence usages', () => {
 	test.each(['Application', 'Job'])(
-		'renders two branches of the same database for a %s',
+		'renders one logical database without requiring branches for a %s',
 		async (__typename) => {
 			fixture.data = {
 				__typename,
@@ -29,8 +29,7 @@ describe('Postgres persistence usages', () => {
 					edges: ['main', 'restore'].map((name) => ({
 						cursor: `usage-${name}`,
 						node: {
-							postgres: { id: 'same-database', name: 'database' },
-							branch: { name }
+							postgres: { id: 'same-database', name: 'database' }
 						}
 					}))
 				}
@@ -40,9 +39,8 @@ describe('Postgres persistence usages', () => {
 				props: { workload: { ' $fragments': { Persistence: {} } } }
 			});
 
-			expect(body).toContain('Branch: main');
-			expect(body).toContain('Branch: restore');
-			expect(body.match(/href="\/team\/nais\/dev-gcp\/postgres\/database"/g)).toHaveLength(2);
+			expect(body).not.toContain('Branch:');
+			expect(body.match(/href="\/team\/nais\/dev-gcp\/postgres\/database"/g)).toHaveLength(1);
 		}
 	);
 });

@@ -13,7 +13,7 @@ const fixture = vi.hoisted(() => ({
 	page: {
 		route: { id: '/team/[team]/[env]/postgres/[postgres]/(single)/queries' },
 		params: { team: 'test', env: 'dev', postgres: 'database' },
-		url: new URL('https://console.test/?branch=preview&interval=6h&database=app'),
+		url: new URL('https://console.test/?branch=main&interval=6h&database=app'),
 		data: { interval: '6h' }
 	}
 }));
@@ -72,8 +72,7 @@ async function renderPage({
 	errors = null,
 	insightErrors = null,
 	hasPostgres = true,
-	fetching = false,
-	branch = 'main'
+	fetching = false
 }: {
 	series?: Series[];
 	warnings?: string[];
@@ -81,7 +80,6 @@ async function renderPage({
 	insightErrors?: { message: string }[] | null;
 	hasPostgres?: boolean;
 	fetching?: boolean;
-	branch?: string;
 } = {}) {
 	fixture.insights = {
 		errors: insightErrors,
@@ -89,18 +87,7 @@ async function renderPage({
 		data: {
 			team: {
 				environment: {
-					postgres: hasPostgres
-						? {
-								activeBranch: { id: 'main', name: 'main' },
-								branches: {
-									nodes: [
-										{ id: 'main', name: 'main' },
-										{ id: 'preview', name: 'preview' }
-									],
-									pageInfo: { totalCount: 2, hasNextPage: false }
-								}
-							}
-						: null
+					postgres: hasPostgres ? { id: 'database' } : null
 				}
 			}
 		}
@@ -115,7 +102,6 @@ async function renderPage({
 			data: {
 				PostgresInsights: new PostgresInsightsStore(),
 				PostgresQueryStatistics: new PostgresQueryStatisticsStore(),
-				branch,
 				interval: '1h',
 				collectedAt: new Date('2026-11-02T14:00:00Z')
 			} as ComponentProps<typeof Queries>['data'],
@@ -139,7 +125,7 @@ function renderLayout() {
 beforeEach(() => {
 	fixture.navigating.to = null;
 	fixture.page.route.id = '/team/[team]/[env]/postgres/[postgres]/(single)/queries';
-	fixture.page.url = new URL('https://console.test/?branch=preview&interval=6h&database=app');
+	fixture.page.url = new URL('https://console.test/?branch=main&interval=6h&database=app');
 	fixture.page.data.interval = '6h';
 });
 
@@ -160,6 +146,7 @@ describe('Postgres Queries page', () => {
 		expect(body).toContain('Exported SQL text is limited to 256 characters');
 		expect(body).not.toContain('SQL text unavailable');
 		expect(body).toContain('Calls (estimated)');
+		expect(body).not.toContain('Branch');
 		expect(body).not.toContain('<select');
 		expect(body).not.toContain('Load more branches');
 		expect(body).not.toMatch(/<label[^>]*>\s*Database<\/label>/);
@@ -168,6 +155,12 @@ describe('Postgres Queries page', () => {
 		expect(body).toContain('Top 20 queries in the app database');
 		expect([...body.matchAll(/<th\b/g)]).toHaveLength(6);
 		expect(body).toContain('Time period');
+	});
+
+	test('does not expose branch selection or pagination', async () => {
+		const { body } = await renderPage();
+		expect(body).not.toContain('<select');
+		expect(body).not.toContain('Load more branches');
 	});
 
 	test('shows empty activity outside a table', async () => {
@@ -209,9 +202,9 @@ describe('Postgres Queries page', () => {
 		expect(body).not.toContain('Loading query statistics');
 	});
 
-	test('shows provisioning feedback when no branch exists without loading metrics forever', async () => {
-		const { body } = await renderPage({ branch: '', fetching: true });
-		expect(body).toContain('not available until Postgres has an active branch');
+	test('does not leave an unexecuted metrics store loading when Postgres is absent', async () => {
+		const { body } = await renderPage({ hasPostgres: false, fetching: true });
+		expect(body).toContain('Query statistics are not yet available for this Postgres.');
 		expect(body).not.toContain('Loading query statistics');
 	});
 
@@ -285,6 +278,7 @@ describe('Postgres Queries page', () => {
 		expect(body).not.toContain('/branches');
 		expect(body).not.toContain('branch=preview');
 		expect(body).not.toContain('database=app');
+		expect(body).not.toContain('>Branches<');
 	});
 
 	test.each([

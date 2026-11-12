@@ -7,7 +7,7 @@ import LogExplorer from '#lib/domain/logs/LogExplorer.svelte';
 import Logs from '../../../routes/team/[team]/[env]/postgres/[postgres]/(single)/logs/+page.svelte';
 
 const fixture = vi.hoisted(() => ({
-	activeBranch: { id: 'main', name: 'main' } as { id: string; name: string } | null,
+	postgres: { id: 'opaque-postgres-id' } as { id: string } | null,
 	fetching: false,
 	errors: null as { message: string }[] | null
 }));
@@ -16,7 +16,7 @@ vi.mock('$app/state', () => ({
 	page: {
 		params: { team: 'test', env: 'dev', postgres: 'database' },
 		data: { tenantName: 'nav' },
-		url: new URL('https://console.test/?branch=preview')
+		url: new URL('https://console.test/?branch=main')
 	}
 }));
 vi.mock('#lib/domain/logs/LogExplorer.svelte', () => ({ default: vi.fn() }));
@@ -26,14 +26,7 @@ vi.mock('$houdini', () => ({
 			data: {
 				team: {
 					environment: {
-						postgres: {
-							id: 'database',
-							activeBranch: fixture.activeBranch,
-							branches: {
-								nodes: [{ id: 'preview', name: 'preview' }],
-								pageInfo: { hasNextPage: true }
-							}
-						}
+						postgres: fixture.postgres
 					}
 				}
 			},
@@ -55,31 +48,45 @@ function renderPage() {
 describe('Postgres logs page', () => {
 	beforeEach(() => {
 		vi.clearAllMocks();
-		fixture.activeBranch = { id: 'main', name: 'main' };
+		fixture.postgres = { id: 'opaque-postgres-id' };
 		fixture.fetching = false;
 		fixture.errors = null;
 	});
 
-	test('uses only the active branch and removes branch selection and pagination', async () => {
-		const { body } = await renderPage();
-		expect(body).not.toContain('All branches');
-		expect(body).not.toContain('Load more branches');
-		expect(body).not.toContain('value="preview"');
-		expect(LogExplorer).toHaveBeenCalledWith(
-			expect.anything(),
-			expect.objectContaining({
-				podNamePrefix: 'pg-database-main-',
-				exactPostgresBranch: true
-			})
-		);
-		expect(vi.mocked(LogExplorer).mock.calls[0][1]).not.toHaveProperty('filters');
+	test.each(['opaque-postgres-id', 'another-postgres-id'])(
+		'passes logical Postgres ID %s without requiring a physical cluster identity',
+		async (id) => {
+			fixture.postgres = { id };
+			const { body } = await renderPage();
+			expect(body).not.toContain('All branches');
+			expect(body).not.toContain('Load more branches');
+			expect(body).not.toContain('value="preview"');
+			expect(LogExplorer).toHaveBeenCalledWith(
+				expect.anything(),
+				expect.objectContaining({
+					postgresId: id,
+					team: 'test',
+					environment: 'dev',
+					workload: 'database',
+					container: 'postgres'
+				})
+			);
+			expect(vi.mocked(LogExplorer).mock.calls[0][1]).not.toHaveProperty('filters');
+			expect(vi.mocked(LogExplorer).mock.calls[0][1]).not.toHaveProperty('postgresClusterName');
+		}
+	);
+
+	test('does not render the explorer when Postgres is missing', async () => {
+		fixture.postgres = null;
+		await renderPage();
+		expect(LogExplorer).not.toHaveBeenCalled();
 	});
 
-	test('does not query another branch or all branches when no branch is active', async () => {
-		fixture.activeBranch = null;
+	test('shows loading while resolving Postgres', async () => {
+		fixture.postgres = null;
+		fixture.fetching = true;
 		const { body } = await renderPage();
-		expect(body).toContain('Logs are not available until Postgres has an active branch.');
-		expect(body).not.toContain('Search log content');
+		expect(body).toContain('aria-label="Loading"');
 		expect(LogExplorer).not.toHaveBeenCalled();
 	});
 

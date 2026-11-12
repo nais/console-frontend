@@ -30,7 +30,7 @@ beforeEach(() => {
 test('renders a named, linked Postgres branch in the issue list during SSR', async () => {
 	const { body } = await render(IssueListItem, { props: { item } });
 	expect(body).toContain('database / failed-restore');
-	expect(body).toContain('href="/team/nais/dev-gcp/postgres/database/branches"');
+	expect(body).toContain('href="/team/nais/dev-gcp/postgres/database?branch=failed-restore"');
 	expect(body).toContain('Postgres Branch');
 	expect(body).toContain('dev-gcp');
 	expect(body).toContain('has reported a failure.');
@@ -62,7 +62,7 @@ test.each([
 test('renders a named, linked Postgres branch in the critical issues card during SSR', async () => {
 	const { body } = await render(CriticalIssueRow, { props: { issue: item } });
 	expect(body).toContain('Postgres branch failure for database / failed-restore in dev-gcp');
-	expect(body).toContain('href="/team/nais/dev-gcp/postgres/database/branches"');
+	expect(body).toContain('href="/team/nais/dev-gcp/postgres/database?branch=failed-restore"');
 	expect(body).toContain('has reported a failure.');
 	expect(body).not.toContain('Unknown');
 });

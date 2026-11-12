@@ -1,8 +1,10 @@
 import { PrometheusChartQueryInterval } from '#lib/chart/util.js';
 import { addPageMeta } from '#lib/utils/pageMeta.js';
 import { load_PostgresInsights } from '$houdini';
+import { requireMainBranch } from '#lib/domain/postgres/branchCompatibility.js';
 
 export async function load(event) {
+	requireMainBranch(event.url);
 	let interval = (event.url.searchParams.get('interval') || '7d') as PrometheusChartQueryInterval;
 	if (!Object.values(PrometheusChartQueryInterval).includes(interval)) {
 		interval = '7d';

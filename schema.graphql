@@ -2483,19 +2483,19 @@ input CreatePostgresAccessInput {
   """Privileges requested for the personal database role."""
   accessLevel: PostgresAccessLevel!
 
-  """Local name of the branch to access."""
-  branch: String!
+  """Legacy branch selection. Omit for normal database access."""
+  branch: String
 
-  """Environment containing the Postgres branch."""
+  """Environment containing the Postgres."""
   environmentName: String!
 
-  """Name of the Postgres containing the branch."""
+  """Name of the Postgres to access."""
   postgres: String!
 
   """Reason for personal database access. Must be at least 10 characters."""
   reason: String!
 
-  """Team that owns the Postgres branch."""
+  """Team that owns the Postgres."""
   teamSlug: Slug!
 
   """
@@ -5515,7 +5515,7 @@ type Mutation {
 
   """
   Create a new webhook subscription.
-  
+
   The owning team can select source teams without permission from those teams, or subscribe to all teams.
   By default, a team-owned webhook receives only its own team's events.
   If no owner team slug is provided, the webhook is global and receives all events (admin only).
@@ -5571,7 +5571,7 @@ type Mutation {
 
   """
   Delete a webhook subscription.
-  
+
   All associated delivery records will also be deleted.
   """
   deleteWebhook(input: DeleteWebhookInput!): DeleteWebhookPayload!
@@ -5738,7 +5738,7 @@ type Mutation {
 
   """
   Update an existing webhook subscription.
-  
+
   Can be used to change the name, source teams, URL, secret, event types, or enabled status. Ownership and the subscription ID cannot be changed.
   """
   updateWebhook(input: UpdateWebhookInput!): UpdateWebhookPayload!
@@ -6332,7 +6332,7 @@ interface Persistence implements Node {
   teamEnvironment: TeamEnvironment!
 }
 
-"""A Postgres whose active branch can change."""
+"""A managed Postgres database."""
 type Postgres implements ActivityLogger & Node {
   """Currently observed active branch, if selected."""
   activeBranch: PostgresBranch
@@ -6365,10 +6365,19 @@ type Postgres implements ActivityLogger & Node {
   """Branches belonging to this Postgres."""
   branches(after: Cursor, before: Cursor, first: Int, last: Int, orderBy: PostgresBranchOrder): PostgresBranchConnection!
 
+  """Observed PostgreSQL configuration, when available."""
+  configuration: PostgresConfiguration
+
+  """When this Postgres was created."""
+  createdAt: Time!
+
   """
   Branch requested for activation; may differ from the active branch while activation is in progress.
   """
   desiredActiveBranch: String
+
+  """Earliest point in time covered by available backups, when known."""
+  earliestRestoreTime: Time
 
   """Names of PostgreSQL extensions configured for this Postgres."""
   extensions: [String!]!
@@ -6378,6 +6387,27 @@ type Postgres implements ActivityLogger & Node {
 
   """Opaque identifier for this Postgres."""
   id: ID!
+
+  """Issues reported for this database."""
+  issues(
+    """Get items after this cursor."""
+    after: Cursor
+
+    """Get items before this cursor."""
+    before: Cursor
+
+    """Filter issues."""
+    filter: ResourceIssueFilter
+
+    """Get the first n items in the connection."""
+    first: Int
+
+    """Get the last n items in the connection."""
+    last: Int
+
+    """Order issues."""
+    orderBy: IssueOrder
+  ): IssueConnection!
 
   """User-defined labels on this Postgres."""
   labels: [ResourceLabel!]!
@@ -6390,6 +6420,11 @@ type Postgres implements ActivityLogger & Node {
 
   """Requested CPU, memory and disk size, when present on this Postgres."""
   resources: PostgresResources!
+
+  """
+  Observed database state; availability does not guarantee successful client connections.
+  """
+  state: PostgresState!
 
   """Team owning this Postgres."""
   team: Team!
@@ -6415,7 +6450,7 @@ type Postgres implements ActivityLogger & Node {
   ): PostgresWorkloadConnection!
 }
 
-"""A time-limited personal access request for a Postgres branch."""
+"""A time-limited personal access request for a Postgres database."""
 type PostgresAccess implements Node {
   """Requested access level."""
   accessLevel: PostgresAccessLevel!
@@ -6438,8 +6473,11 @@ type PostgresAccess implements Node {
   """Name of the PostgresAccess resource."""
   name: String!
 
-  """PostgresBranch selected by this access."""
-  postgresBranch: PostgresBranch!
+  """Postgres selected by this access."""
+  postgres: Postgres!
+
+  """Legacy branch view of the database selected by this access."""
+  postgresBranch: PostgresBranch! @deprecated(reason: "Use postgres instead.")
 
   """Connection routing identifier, once available. Contains no credential."""
   relayAccess: String
@@ -6979,6 +7017,18 @@ type PostgresResources {
   memory: String
 }
 
+"""Observed state of a Postgres database."""
+enum PostgresState {
+  """The database reports that it is available."""
+  AVAILABLE
+
+  """The database reports an error requiring intervention."""
+  DEGRADED
+
+  """The database is being provisioned or reconciled."""
+  PROGRESSING
+}
+
 """Activity log entry for a Postgres that was updated."""
 type PostgresUpdatedActivityLogEntry implements ActivityLogEntry & Node {
   """
@@ -7052,6 +7102,9 @@ type PostgresWorkload {
   The explicitly referenced branch, or the observed active branch when no branch is specified. Defaults to main when no active branch has been observed; a requested activation does not change this selection until observed.
   """
   branch: PostgresBranch!
+
+  """The database referenced by this workload."""
+  postgres: Postgres!
 
   """The application or job referencing this Postgres."""
   workload: Workload!

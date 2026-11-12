@@ -58,7 +58,6 @@ type LokiLogQueryOptions = {
 	instances?: string[];
 	cluster?: string;
 	podNamePrefix?: string;
-	exactPostgresBranch?: boolean;
 	search?: string;
 	logLevels?: string[];
 	labelFilters?: LokiLabelFilter[];
@@ -79,7 +78,6 @@ export function buildLokiLogQuery({
 	instances,
 	cluster,
 	podNamePrefix,
-	exactPostgresBranch = false,
 	search,
 	logLevels,
 	labelFilters: additionalFilters = []
@@ -91,11 +89,7 @@ export function buildLokiLogQuery({
 	if (cluster !== undefined) selectors.push(`k8s_cluster_name=${JSON.stringify(cluster)}`);
 	const labelFilters = [`k8s_container_name=~${exactMatch([container])}`];
 	if (podNamePrefix !== undefined) {
-		labelFilters.push(
-			`k8s_pod_name=~${JSON.stringify(
-				`^${escapeRegex(podNamePrefix)}${exactPostgresBranch ? '[a-f0-9]{8}-[0-9]+' : '.*'}$`
-			)}`
-		);
+		labelFilters.push(`k8s_pod_name=~${JSON.stringify(`^${escapeRegex(podNamePrefix)}.*$`)}`);
 	}
 	if (instances !== undefined && (podNamePrefix === undefined || instances.length > 0)) {
 		labelFilters.push(`k8s_pod_name=~${exactMatch(instances)}`);

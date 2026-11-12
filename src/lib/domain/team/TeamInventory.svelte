@@ -13,6 +13,11 @@
 	const inventoryQuery = graphql(`
 		query TeamInventoryOverview($team: Slug!) {
 			team(slug: $team) {
+				postgreses {
+					pageInfo {
+						totalCount
+					}
+				}
 				inventoryCounts {
 					applications {
 						total
@@ -28,9 +33,6 @@
 						unknown
 					}
 					sqlInstances {
-						total
-					}
-					postgresBranches {
 						total
 					}
 					buckets {
@@ -64,6 +66,7 @@
 	});
 
 	let counts = $derived($inventoryQuery.data?.team?.inventoryCounts);
+	let postgresCount = $derived($inventoryQuery.data?.team?.postgreses.pageInfo.totalCount ?? 0);
 
 	let appStates = $derived.by(() => {
 		const apps = counts?.applications;
@@ -95,10 +98,10 @@
 				count: counts.sqlInstances.total,
 				href: `/team/${teamSlug}/cloudsql`
 			});
-		if (counts.postgresBranches.total > 0)
+		if (postgresCount > 0)
 			items.push({
 				label: 'Postgres',
-				count: counts.postgresBranches.total,
+				count: postgresCount,
 				href: `/team/${teamSlug}/postgres`
 			});
 		if (counts.buckets.total > 0)

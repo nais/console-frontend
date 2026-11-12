@@ -229,74 +229,31 @@ describe('buildLokiLogQuery', () => {
 		).toContain('|~"(?i)failed \\\\(retry\\\\)"');
 	});
 
-	it.each(['test', 'test-feature', 'test.feature'])(
-		'matches only the exact Postgres branch %s',
-		(branch) => {
-			const query = buildLokiLogQuery({
-				team: 'my-team',
-				workload: 'roger',
-				container: 'postgres',
-				instances: [],
-				podNamePrefix: `pg-roger-${branch}-`,
-				exactPostgresBranch: true
-			});
-			const podFilter = query.split('k8s_pod_name=~')[1];
-			const podPattern = new RegExp(JSON.parse(podFilter));
-			expect(podPattern.test(`pg-roger-${branch}-f222277b-1`)).toBe(true);
-			expect(podPattern.test(`pg-roger-${branch}-f222277b-2`)).toBe(true);
-			expect(podPattern.test(`pg-roger-${branch}-feature-f222277b-1`)).toBe(false);
-			expect(podPattern.test(`pg-roger-${branch}-f222277b-1-extra`)).toBe(false);
-			expect(podPattern.test(`pg-roger-${branch}-f222277b-pooler-abc`)).toBe(false);
-			expect(podPattern.test('pg-roger-main-bf09717d-1')).toBe(false);
-			expect(podPattern.test('pg-roger-testing-f222277b-1')).toBe(false);
-		}
-	);
+	it('leaves physical Postgres pod scoping to the API', () => {
+		const query = buildLokiLogQuery({
+			team: 'my-team',
+			workload: 'roger',
+			container: 'postgres',
+			cluster: 'prod'
+		});
+		expect(query).toBe(
+			'{service_namespace="my-team",service_name="roger",k8s_cluster_name="prod"} | k8s_container_name=~"^(?:postgres)$"'
+		);
+	});
 
-	it('keeps all Postgres branches in the broad prefix filter', () => {
+	it('keeps the generic prefix filter available for other workloads', () => {
 		const query = buildLokiLogQuery({
 			team: 'my-team',
 			workload: 'roger',
 			container: 'postgres',
 			instances: [],
-			podNamePrefix: 'pg-roger-',
-			exactPostgresBranch: false
+			podNamePrefix: 'pg-roger-'
 		});
 		const podPattern = new RegExp(JSON.parse(query.split('k8s_pod_name=~')[1]));
 		for (const branch of ['main', 'test', 'test-feature']) {
 			expect(podPattern.test(`pg-roger-${branch}-f222277b-1`)).toBe(true);
 		}
 	});
-
-	it.each(['pg-roger-main-f222277b-1', 'pg-roger-test-f222277b-1'])(
-		'intersects the selected Postgres instance %s with its branch scope',
-		(instance) => {
-			const query = buildLokiLogQuery({
-				team: 'my-team',
-				workload: 'roger',
-				container: 'postgres',
-				cluster: 'prod',
-				podNamePrefix: 'pg-roger-main-',
-				exactPostgresBranch: true,
-				instances: [instance]
-			});
-			const patterns = [...query.matchAll(/k8s_pod_name=~("(?:\\.|[^"\\])*")/g)].map(
-				(match) => new RegExp(JSON.parse(match[1]))
-			);
-			expect(patterns).toHaveLength(2);
-			expect(patterns.every((pattern) => pattern.test(instance))).toBe(
-				instance === 'pg-roger-main-f222277b-1'
-			);
-			for (const pod of [
-				'pg-roger-main-f222277b-2',
-				'pg-roger-main-feature-f222277b-1',
-				'pg-roger-main-f222277b-pooler-abc'
-			]) {
-				expect(patterns.every((pattern) => pattern.test(pod))).toBe(false);
-			}
-			expect(query).toContain('k8s_container_name=~"^(?:postgres)$"');
-			expect(query).toContain('k8s_cluster_name="prod"');
-		}
-	);
 
 	it('filters selected JSON log levels and includes numeric INFO and missing levels', () => {
 		expect(

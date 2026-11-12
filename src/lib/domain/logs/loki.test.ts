@@ -219,43 +219,58 @@ describe('Loki history', () => {
 		const url = new URL(mock.mock.calls[0][0], 'https://console.test');
 		expect(url.pathname).toBe('/api/loki/api/v1/query_range');
 		expect(url.searchParams.get('query')).toBe('{app="x"} |= "a&b"');
+		expect(url.searchParams.has('postgres')).toBe(false);
 		expect(mock.mock.calls[0][1].credentials).toBe('same-origin');
 	});
 
-	it('completes timestamp boundaries, preserving identical lines and excluding the boundary on the next page', async () => {
-		const mock = vi
-			.fn()
-			.mockResolvedValueOnce(
-				respond(
-					streams([
-						['1000000002', 'new'],
-						['1000000001', 'same']
-					])
+	it.each([undefined, 'Postgres:opaque+/id='])(
+		'completes timestamp boundaries with Postgres ID %s, preserving identical lines',
+		async (postgresId) => {
+			const mock = vi
+				.fn()
+				.mockResolvedValueOnce(
+					respond(
+						streams([
+							['1000000002', 'new'],
+							['1000000001', 'same']
+						])
+					)
 				)
-			)
-			.mockResolvedValueOnce(
-				respond(
-					streams([
-						['1000000001', 'same'],
-						['1000000001', 'same'],
-						['1000000001', 'other']
-					])
-				)
-			);
-		vi.stubGlobal('fetch', mock);
-		const result = await fetchLogPage({
-			query: '{app="x"}',
-			start: '1',
-			end: '2000000000',
-			limit: 2
-		});
-		expect(result.entries.map((entry) => entry.message)).toEqual(['new', 'same', 'same', 'other']);
-		expect(result.nextEnd).toBe('1000000001');
-		const boundary = new URL(mock.mock.calls[1][0], 'https://console.test').searchParams;
-		expect(boundary.get('start')).toBe('1000000001');
-		expect(boundary.get('end')).toBe('1000000002');
-		expect(boundary.get('limit')).toBe('5000');
-	});
+				.mockResolvedValueOnce(
+					respond(
+						streams([
+							['1000000001', 'same'],
+							['1000000001', 'same'],
+							['1000000001', 'other']
+						])
+					)
+				);
+			vi.stubGlobal('fetch', mock);
+			const result = await fetchLogPage({
+				query: '{app="x"}',
+				start: '1',
+				end: '2000000000',
+				limit: 2,
+				postgresId
+			});
+			expect(result.entries.map((entry) => entry.message)).toEqual([
+				'new',
+				'same',
+				'same',
+				'other'
+			]);
+			expect(result.nextEnd).toBe('1000000001');
+			const boundary = new URL(mock.mock.calls[1][0], 'https://console.test').searchParams;
+			expect(boundary.get('start')).toBe('1000000001');
+			expect(boundary.get('end')).toBe('1000000002');
+			expect(boundary.get('limit')).toBe('5000');
+			for (const [input] of mock.mock.calls) {
+				const parameters = new URL(input, 'https://console.test').searchParams;
+				expect(parameters.get('postgres')).toBe(postgresId ?? null);
+				expect(parameters.get('query')).toBe('{app="x"}');
+			}
+		}
+	);
 
 	it('fails explicitly instead of skipping an oversized timestamp boundary', async () => {
 		vi.stubGlobal(
@@ -375,41 +390,60 @@ describe('Loki volume', () => {
 			})
 		);
 		vi.stubGlobal('fetch', mock);
-		const result = await fetchLogVolume('{app="x"} |= "error"', { start: '0', end: '4000000000' });
+		const result = await fetchLogVolume({
+			query: '{app="x"} |= "error"',
+			start: '0',
+			end: '4000000000'
+		});
 		expect(result.buckets.map((bucket) => bucket.count)).toEqual([0, 3, 0, 5]);
 		const parameters = new URL(mock.mock.calls[0][0], 'https://console.test').searchParams;
 		expect(parameters.get('query')).toBe('sum(count_over_time({app="x"} |= "error" [1000ms]))');
 		expect(parameters.has('limit')).toBe(false);
+		expect(parameters.has('postgres')).toBe(false);
 	});
 
-	it('keeps the first histogram bucket inside an uneven custom range', async () => {
-		const mock = vi.fn().mockImplementation((input: string) => {
-			const url = new URL(input, 'https://console.test');
-			return Promise.resolve(
-				respond({
-					status: 'success',
-					data: { resultType: url.pathname.endsWith('/query') ? 'vector' : 'matrix', result: [] }
-				})
-			);
-		});
-		vi.stubGlobal('fetch', mock);
-		const result = await fetchLogVolume('{app="x"}', { start: '1000000000', end: '62500000000' });
-		expect(result.buckets).toHaveLength(32);
-		expect(result.buckets[0]).toEqual({ start: 1000, end: 2000, count: 0 });
-		expect(result.buckets.at(-1)?.end).toBe(62500);
-		const remaining = new URL(mock.mock.calls[0][0], 'https://console.test').searchParams;
-		expect(remaining.get('query')).toContain('[2000ms]');
-		expect(remaining.get('step')).toBe('2000ms');
-		expect(remaining.get('start')).toBe('4000000000');
-		expect(remaining.get('end')).toBe('62000000000');
-		const first = new URL(mock.mock.calls[1][0], 'https://console.test');
-		expect(first.pathname).toBe('/api/loki/api/v1/query');
-		expect(first.searchParams.get('query')).toContain('[1000ms]');
-		expect(first.searchParams.get('time')).toBe('2000000000');
-		const last = new URL(mock.mock.calls[2][0], 'https://console.test').searchParams;
-		expect(last.get('query')).toContain('[500ms]');
-		expect(last.get('time')).toBe('62500000000');
-	});
+	it.each([undefined, 'Postgres:opaque+/id='])(
+		'keeps all histogram buckets inside an uneven range with Postgres ID %s',
+		async (postgresId) => {
+			const mock = vi.fn().mockImplementation((input: string) => {
+				const url = new URL(input, 'https://console.test');
+				return Promise.resolve(
+					respond({
+						status: 'success',
+						data: { resultType: url.pathname.endsWith('/query') ? 'vector' : 'matrix', result: [] }
+					})
+				);
+			});
+			vi.stubGlobal('fetch', mock);
+			const result = await fetchLogVolume({
+				query: '{app="x"}',
+				start: '1000000000',
+				end: '62500000000',
+				postgresId
+			});
+			expect(result.buckets).toHaveLength(32);
+			expect(result.buckets[0]).toEqual({ start: 1000, end: 2000, count: 0 });
+			expect(result.buckets.at(-1)?.end).toBe(62500);
+			const remaining = new URL(mock.mock.calls[0][0], 'https://console.test').searchParams;
+			expect(remaining.get('query')).toContain('[2000ms]');
+			expect(remaining.get('step')).toBe('2000ms');
+			expect(remaining.get('start')).toBe('4000000000');
+			expect(remaining.get('end')).toBe('62000000000');
+			const first = new URL(mock.mock.calls[1][0], 'https://console.test');
+			expect(first.pathname).toBe('/api/loki/api/v1/query');
+			expect(first.searchParams.get('query')).toContain('[1000ms]');
+			expect(first.searchParams.get('time')).toBe('2000000000');
+			const last = new URL(mock.mock.calls[2][0], 'https://console.test').searchParams;
+			expect(last.get('query')).toContain('[500ms]');
+			expect(last.get('time')).toBe('62500000000');
+			expect(mock).toHaveBeenCalledTimes(3);
+			for (const [input] of mock.mock.calls) {
+				const parameters = new URL(input, 'https://console.test').searchParams;
+				expect(parameters.get('postgres')).toBe(postgresId ?? null);
+				expect(parameters.get('query')).toContain('sum(count_over_time({app="x"} [');
+			}
+		}
+	);
 
 	it.each(
 		[0, 500, 7000, 8000, 9000, 14999].flatMap((offset) =>
@@ -452,7 +486,8 @@ describe('Loki volume', () => {
 			});
 			vi.stubGlobal('fetch', mock);
 			const start = Date.UTC(2026, 9, 30, 11) + offset;
-			const result = await fetchLogVolume('{app="x"}', {
+			const result = await fetchLogVolume({
+				query: '{app="x"}',
 				start: String(BigInt(start) * 1_000_000n),
 				end: String(BigInt(start + duration) * 1_000_000n)
 			});

@@ -9,10 +9,6 @@ query PostgresInsights($team: Slug!, $env: String!, $name: String!) {
 						name
 					}
 				}
-				activeBranch {
-					id
-					name
-				}
 			}
 		}
 	}

@@ -20,10 +20,9 @@ export type QueryInsight = {
 export function postgresQueryInsightsQuery(
 	team: string,
 	postgres: string,
-	branch: string,
 	interval: PrometheusChartQueryInterval
 ) {
-	const selector = `namespace=${JSON.stringify(team)},team=${JSON.stringify(team)},postgres=${JSON.stringify(postgres)},branch=${JSON.stringify(branch)},datname="app"`;
+	const selector = `namespace=${JSON.stringify(team)},team=${JSON.stringify(team)},postgres=${JSON.stringify(postgres)},datname="app"`;
 	const identity = 'datname,user,queryid';
 	const increase = (metric: string) =>
 		`sum by (${identity}) (max by (namespace,k8s_cluster_name,pod,${identity}) (increase(${metric}{${selector}}[${interval}])))`;

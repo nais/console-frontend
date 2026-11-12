@@ -16,8 +16,23 @@ describe('issueResource', () => {
 		};
 		expect(issueResource(issue)).toEqual({
 			name: 'database / failed-restore',
-			href: '/team/nais/dev-gcp/postgres/database/branches'
+			href: '/team/nais/dev-gcp/postgres/database?branch=failed-restore'
 		});
+	});
+
+	test('links legacy main issues to the database overview', () => {
+		expect(
+			issueResource({ ...context, branch: { name: 'main', postgres: { name: 'database' } } })
+		).toEqual({ name: 'database / main', href: '/team/nais/dev-gcp/postgres/database' });
+	});
+
+	test('preserves and encodes non-main identity rather than linking to a different database', () => {
+		expect(
+			issueResource({
+				...context,
+				branch: { name: 'old&branch=main', postgres: { name: 'database' } }
+			}).href
+		).toBe('/team/nais/dev-gcp/postgres/database?branch=old%26branch%3Dmain');
 	});
 
 	test.each([

@@ -3,10 +3,6 @@ query PostgresLogs($team: Slug!, $env: String!, $name: String!) {
 		environment(name: $env) {
 			postgres(name: $name) {
 				id
-				activeBranch {
-					id
-					name
-				}
 			}
 		}
 	}

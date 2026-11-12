@@ -15,6 +15,7 @@ type QueryOptions = LogRange & {
 	query: string;
 	limit: number;
 	signal?: AbortSignal;
+	postgresId?: string;
 };
 
 const boundaryLimit = 5000;
@@ -178,6 +179,7 @@ function parseEntries(data: Record<string, unknown>): LogEntry[] {
 export async function fetchLogPage(options: QueryOptions): Promise<LogPage> {
 	const parameters = {
 		query: options.query,
+		...(options.postgresId !== undefined ? { postgres: options.postgresId } : {}),
 		start: options.start,
 		end: options.end,
 		direction: 'backward',
@@ -219,12 +221,11 @@ export async function fetchLogPage(options: QueryOptions): Promise<LogPage> {
 }
 
 export async function fetchLogVolume(
-	query: string,
-	range: LogRange,
-	signal?: AbortSignal
+	options: Omit<QueryOptions, 'limit'>
 ): Promise<{ buckets: VolumeBucket[]; warnings: string[] }> {
-	const startMs = logDate(range.start).getTime();
-	const endMs = logDate(range.end).getTime();
+	const { query, signal, postgresId } = options;
+	const startMs = logDate(options.start).getTime();
+	const endMs = logDate(options.end).getTime();
 	const stepMs = Math.max(1, Math.ceil((endMs - startMs) / 60_000)) * 1000;
 	const buckets: VolumeBucket[] = [];
 	for (let start = startMs; start < endMs;) {
@@ -252,7 +253,8 @@ export async function fetchLogVolume(
 			const first = buckets[group.first];
 			const last = buckets[group.last];
 			const parameters: Record<string, string> = {
-				query: `sum(count_over_time(${query} [${first.end - first.start}ms]))`
+				query: `sum(count_over_time(${query} [${first.end - first.start}ms]))`,
+				...(postgresId !== undefined ? { postgres: postgresId } : {})
 			};
 			if (group.instant) {
 				parameters.time = String(BigInt(first.end) * nanosecondsPerMillisecond);

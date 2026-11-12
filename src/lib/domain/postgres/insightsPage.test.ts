@@ -6,10 +6,6 @@ import { vi } from 'vitest';
 import Insights from '../../../routes/team/[team]/[env]/postgres/[postgres]/(single)/insights/+page.svelte';
 
 const fixture = vi.hoisted(() => ({
-	activeBranch: { id: 'main', name: 'main' } as { id: string; name: string } | null,
-	nodes: [{ id: 'preview', name: 'preview' }],
-	totalCount: 2,
-	hasNextPage: false,
 	url: new URL('https://console.example.com/team/test/dev/postgres/database/insights'),
 	metricErrors: [] as { message: string }[]
 }));
@@ -41,15 +37,7 @@ vi.mock('$houdini', () => ({
 						postgres: {
 							id: 'database',
 							name: 'database',
-							teamEnvironment: { environment: { name: 'dev' } },
-							activeBranch: fixture.activeBranch,
-							branches: {
-								nodes: fixture.nodes,
-								pageInfo: {
-									totalCount: fixture.totalCount,
-									hasNextPage: fixture.hasNextPage
-								}
-							}
+							teamEnvironment: { environment: { name: 'dev' } }
 						}
 					}
 				}
@@ -74,10 +62,6 @@ async function renderPage() {
 
 describe('Postgres Insights page', () => {
 	beforeEach(() => {
-		fixture.activeBranch = { id: 'main', name: 'main' };
-		fixture.nodes = [{ id: 'preview', name: 'preview' }];
-		fixture.totalCount = 2;
-		fixture.hasNextPage = false;
 		fixture.metricErrors = [];
 		fixture.url = new URL('https://console.example.com/team/test/dev/postgres/database/insights');
 	});
@@ -95,39 +79,19 @@ describe('Postgres Insights page', () => {
 		expect(body).toContain('Commits and rollbacks per second on the primary');
 	});
 
-	test('uses only the active branch without selection or pagination and preserves all time ranges', async () => {
-		fixture.url.searchParams.set('branch', 'preview');
-		fixture.hasNextPage = true;
-		fixture.nodes = [
-			{ id: 'main', name: 'main' },
-			{ id: 'preview', name: 'preview' }
-		];
+	test('preserves all time ranges without branch selection or pagination', async () => {
 		const { body } = await renderPage();
 		expect(body).not.toContain('<select');
 		expect(body).not.toContain('Load more branches');
-		expect(body).toContain('branch main');
-		expect(body).not.toContain('branch preview');
 		for (const interval of ['1h', '6h', '1d', '7d', '30d']) {
 			expect(body).toContain(`>${interval}<`);
 		}
 	});
 
-	test('does not fall back to another branch when there is no active branch', async () => {
-		fixture.activeBranch = null;
+	test('renders database metrics without branch wording', async () => {
 		const { body } = await renderPage();
-		expect(body).toContain('Utilization is not yet available.');
-		expect(body).not.toContain('branch preview');
-		expect(body).not.toContain('branch main');
-		expect(body).not.toContain('prometheus-chart-wrapper');
-	});
-
-	test('keeps the existing empty state when there are no branches', async () => {
-		fixture.activeBranch = null;
-		fixture.nodes = [];
-		fixture.totalCount = 0;
-		const { body } = await renderPage();
-		expect(body).toContain('Utilization is not yet available.');
-		expect(body).not.toContain('prometheus-chart-wrapper');
+		expect(body).not.toContain('branch ');
+		expect(body.match(/class="prometheus-chart-wrapper\b/g)).toHaveLength(12);
 	});
 
 	test('shows metric query errors instead of an indefinite loading or empty-data state', async () => {

@@ -10,8 +10,7 @@ const fixture = vi.hoisted(() => ({
 		id: string;
 		name: string;
 		majorVersion: string;
-		desiredActiveBranch: string | null;
-		activeBranch: { name: string; state: string } | null;
+		state: string;
 		teamEnvironment: { environment: { name: string } };
 	}[]
 }));
@@ -54,18 +53,16 @@ async function renderPage() {
 
 describe('Postgres table', () => {
 	test.each([
-		['AVAILABLE', 'main', 'main', 'success', 'available'],
-		['DEGRADED', 'main', 'main', 'danger', 'degraded'],
-		['AVAILABLE', 'main', 'next', 'warning', 'progressing'],
-		[null, null, null, 'warning', 'progressing']
-	])('shows state=%s active=%s desired=%s', async (state, active, desired, tone, label) => {
+		['AVAILABLE', 'success', 'available'],
+		['DEGRADED', 'danger', 'degraded'],
+		['PROGRESSING', 'warning', 'progressing']
+	])('shows direct Postgres state=%s without branch resources', async (state, tone, label) => {
 		fixture.nodes = [
 			{
 				id: 'database',
 				name: 'database',
 				majorVersion: '18',
-				activeBranch: state && active ? { name: active, state } : null,
-				desiredActiveBranch: desired,
+				state,
 				teamEnvironment: { environment: { name: 'dev-gcp' } }
 			}
 		];

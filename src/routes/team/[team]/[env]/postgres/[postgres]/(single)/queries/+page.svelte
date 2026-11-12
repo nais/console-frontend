@@ -22,7 +22,7 @@
 	import type { PageProps } from './$types';
 
 	let { data }: PageProps = $props();
-	let { PostgresInsights, PostgresQueryStatistics, branch, interval } = $derived(data);
+	let { PostgresInsights, PostgresQueryStatistics, interval } = $derived(data);
 	let selectedInterval = $derived(interval);
 	let postgres = $derived($PostgresInsights.data?.team.environment.postgres);
 	let metrics = $derived($PostgresQueryStatistics.data?.environment.metrics);
@@ -33,8 +33,7 @@
 	let loading = $derived(
 		!!navigating.to ||
 			(!hasErrors &&
-				($PostgresInsights.fetching ||
-					(!!postgres && !!branch && $PostgresQueryStatistics.fetching)))
+				($PostgresInsights.fetching || (!!postgres && $PostgresQueryStatistics.fetching)))
 	);
 	const uid = $props.id();
 </script>
@@ -65,8 +64,8 @@
 		</div>
 	{:else if hasErrors}
 		<BodyShort>Query statistics could not be loaded.</BodyShort>
-	{:else if !postgres || !branch}
-		<BodyShort>Query statistics are not available until Postgres has an active branch.</BodyShort>
+	{:else if !postgres}
+		<BodyShort>Query statistics are not yet available for this Postgres.</BodyShort>
 	{:else if result.error}
 		<Alert variant="error">{result.error}</Alert>
 	{:else if !metrics}
@@ -77,16 +76,15 @@
 		{/each}
 		{#if !result.available}
 			<Alert variant="info">
-				Query statistics are not currently exported for the app database in this branch. Check that
+				Query statistics are not currently exported for the app database. Check that
 				pg_stat_statements metrics are enabled.
 			</Alert>
 		{:else}
 			<BodyShort spacing>
 				Top 20 queries in the app database, sorted by total execution time (highest first) during
-				the last {interval}, across instances in branch
-				<strong>{branch}</strong>. Each database user is listed separately. Values are estimates
-				from Prometheus counter increases; gaps, statistics resets and evicted queries can limit
-				coverage. Exported SQL text is limited to 256 characters.
+				the last {interval}, across Postgres instances. Each database user is listed separately.
+				Values are estimates from Prometheus counter increases; gaps, statistics resets and evicted
+				queries can limit coverage. Exported SQL text is limited to 256 characters.
 			</BodyShort>
 			<BodyShort spacing>Evaluated at <Time time={data.collectedAt} dateFormat="PPpp" />.</BodyShort
 			>
