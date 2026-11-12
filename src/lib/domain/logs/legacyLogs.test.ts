@@ -174,8 +174,14 @@ describe.each(['application', 'job'] as const)('%s log viewer fallback', (kind) 
 			if (loki) {
 				expect(body).toContain('Search log content');
 				expect(body).toContain('Open Grafana');
+				const settings = body.indexOf('Settings');
+				expect(settings).toBeGreaterThan(-1);
+				expect(body.indexOf('Open Grafana')).toBeLessThan(settings);
+				expect(body.indexOf('Open Team Logs')).toBeLessThan(settings);
+				expect(body.indexOf('Open traces')).toBeLessThan(settings);
+				expect(body.match(/Open Team Logs/g)).toHaveLength(1);
 				expect(body).toContain('https://grafana.example.com');
-				expect(body).toContain('Traces');
+				expect(body).toContain('Open traces');
 			} else {
 				expect(body).not.toContain('Search log content');
 				expect(body).toContain('No standard log destination is configured for this workload.');
@@ -218,7 +224,6 @@ it('encodes the Team Logs project and query values without allowing extra URL pa
 	const url = new URL(href!);
 	expect([...url.searchParams]).toEqual([['project', 'project&other=value']]);
 	expect(url.hash).toBe('');
-	expect(body).toContain('class="detail-actions"');
 	expect(body).not.toContain('role="status"');
 	expect(body).not.toContain('role="alert"');
 	expect(body).not.toContain('sh-ui-alert');

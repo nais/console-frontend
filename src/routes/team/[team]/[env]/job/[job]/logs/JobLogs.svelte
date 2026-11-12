@@ -39,12 +39,14 @@
 </script>
 
 {#key `${team.slug}/${team.environment.environment.name}/${team.environment.job.name}/${selectedInstance ?? ''}`}
-	{#if hasSecureLogs}
-		<TeamLogs
-			team={team.slug}
-			workload={team.environment.job.name}
-			projectID={team.environment.gcpProjectID}
-		/>
+	{#if hasSecureLogs && !hasLoki}
+		<div class="detail-actions">
+			<TeamLogs
+				team={team.slug}
+				workload={team.environment.job.name}
+				projectID={team.environment.gcpProjectID}
+			/>
+		</div>
 	{/if}
 	{#if hasLoki}
 		<LogExplorer
@@ -58,7 +60,18 @@
 			{hasLoki}
 			{grafanaURL}
 			tracesURL={apmURL(page.params.team!, page.params.job!, 'traces')}
-		/>
+		>
+			{#snippet externalLinks(range)}
+				{#if hasSecureLogs}
+					<TeamLogs
+						team={team.slug}
+						workload={team.environment.job.name}
+						projectID={team.environment.gcpProjectID}
+						{range}
+					/>
+				{/if}
+			{/snippet}
+		</LogExplorer>
 	{:else if hasLegacyLogs}
 		<LegacyLogViewer
 			team={team.slug}

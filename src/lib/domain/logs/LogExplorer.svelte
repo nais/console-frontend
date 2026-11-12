@@ -9,16 +9,18 @@
 	} from '#lib/utils/lokiLogQuery.js';
 	import {
 		Alert,
+		BodyShort,
 		Button,
 		Checkbox,
 		Chips,
 		Heading,
+		Popover,
+		RemovableChip,
 		Select,
 		Textarea,
 		TextField,
 		Tooltip
 	} from '#lib/shadcn/ui/index.js';
-	import { Popover, RemovableChip } from '@nais/ds-svelte-community';
 	import {
 		ArrowCirclepathIcon,
 		ChevronDownIcon,
@@ -31,6 +33,7 @@
 	import { onMount, tick, untrack, type Snippet } from 'svelte';
 	import LogResults from './LogResults.svelte';
 	import LogVolume from './LogVolume.svelte';
+	import { grafanaTimeRangeURL } from './logLinks.js';
 	import {
 		fetchLogPage,
 		fetchLogVolume,
@@ -59,7 +62,8 @@
 		initialInstanceIsPrefix = false,
 		hasLoki,
 		grafanaURL,
-		tracesURL
+		tracesURL,
+		externalLinks
 	}: {
 		team: string;
 		environment: string;
@@ -76,6 +80,7 @@
 		hasLoki: boolean;
 		grafanaURL?: string;
 		tracesURL?: string;
+		externalLinks?: Snippet<[LogRange | undefined]>;
 	} = $props();
 
 	const id = $props.id();
@@ -116,7 +121,6 @@
 	let showQuery = $state(false);
 	let showTimeline = $state(true);
 	let settingsOpen = $state(false);
-	let settingsButton = $state<Element>();
 	let logQL = $state('');
 	let limit = $state('500');
 	let refreshSeconds = $state('0');
@@ -126,6 +130,7 @@
 	let loadingMore = $state(false);
 	let error = $state('');
 	let volumeError = $state('');
+	let volumeLoading = $state(false);
 	let warnings: string[] = $state([]);
 	let entries: LogEntry[] = $state.raw([]);
 	let buckets: VolumeBucket[] = $state.raw([]);
@@ -280,29 +285,6 @@
 		}
 	}
 
-	async function toggleSettings() {
-		settingsOpen = !settingsOpen;
-		if (!settingsOpen) return;
-		await tick();
-		document.getElementById(`${id}-settings`)?.querySelector('select')?.focus();
-	}
-
-	function closeSettings() {
-		settingsOpen = false;
-		if (settingsButton instanceof HTMLElement) settingsButton.focus();
-	}
-
-	function handleOutsideClick(event: MouseEvent) {
-		if (
-			settingsOpen &&
-			event.target instanceof Node &&
-			!settingsButton?.contains(event.target) &&
-			!document.getElementById(`${id}-settings`)?.contains(event.target)
-		) {
-			settingsOpen = false;
-		}
-	}
-
 	function stopRefresh() {
 		clearInterval(timer);
 		timer = undefined;
@@ -351,6 +333,7 @@
 	async function loadVolume(query: string, range: LogRange, current: number) {
 		volumeController?.abort();
 		volumeController = new AbortController();
+		volumeLoading = true;
 		const signal = volumeController.signal;
 		try {
 			const result = await fetchLogVolume({ query, ...range, signal, postgresId });
@@ -360,6 +343,8 @@
 		} catch (cause) {
 			if (signal.aborted || current !== requestId) return;
 			volumeError = cause instanceof Error ? cause.message : 'Unable to load log volume.';
+		} finally {
+			if (current === requestId) volumeLoading = false;
 		}
 	}
 
@@ -468,6 +453,7 @@
 		loading = false;
 		loadingMore = false;
 		refreshSeconds = '0';
+		volumeLoading = false;
 		stopRefresh();
 		error = 'Query cancelled. Refresh to load results again.';
 	}
@@ -486,12 +472,32 @@
 	});
 </script>
 
-<svelte:document onclick={handleOutsideClick} />
+{#snippet emptyResult()}
+	<div role="status">
+		<BodyShort>No logs match this query and time range.</BodyShort>
+		<BodyShort size="small">Try a wider time range or adjust the filters.</BodyShort>
+	</div>
+{/snippet}
 
 {#if !hasLoki}
 	<Alert variant="info">This workload has no Loki log destination.</Alert>
 {:else}
 	<div class="explorer">
+		{#if grafanaURL || tracesURL || externalLinks}
+			<div class="detail-actions">
+				{#if grafanaURL}
+					<ExternalLink href={grafanaTimeRangeURL(grafanaURL, active?.range)}
+						>Open Grafana</ExternalLink
+					>
+				{/if}
+				{@render externalLinks?.(active?.range)}
+				{#if tracesURL}
+					<ExternalLink href={grafanaTimeRangeURL(tracesURL, active?.range)}
+						>Open traces</ExternalLink
+					>
+				{/if}
+			</div>
+		{/if}
 		<form
 			onsubmit={(event) => {
 				event.preventDefault();
@@ -585,17 +591,18 @@
 						disabled={!active || loading || loadingMore}
 						onclick={() => (advanced ? applyQuerySettings() : run())}
 					/>
-					<Button
-						type="button"
-						variant="tertiary-neutral"
-						size="small"
-						icon={CogIcon}
-						bind:ref={settingsButton}
-						aria-expanded={settingsOpen}
-						aria-controls={`${id}-settings`}
-						aria-haspopup="dialog"
-						onclick={toggleSettings}>Settings</Button
-					>
+					<Popover bind:open={settingsOpen} label="Log settings">
+						{#snippet trigger(props)}
+							<Button
+								type="button"
+								variant="tertiary-neutral"
+								size="small"
+								icon={CogIcon}
+								{...props}>Settings</Button
+							>
+						{/snippet}
+						{@render logSettings()}
+					</Popover>
 					<span
 						class={['cancel-slot', { idle: !loading && !loadingMore }]}
 						aria-hidden={!loading && !loadingMore}
@@ -676,21 +683,7 @@
 			{/if}
 		</form>
 
-		<Popover
-			id={`${id}-settings`}
-			role="dialog"
-			aria-label="Log settings"
-			tabindex={-1}
-			anchorEl={settingsButton}
-			bind:open={settingsOpen}
-			placement="bottom-end"
-			onkeydown={(event: KeyboardEvent) => {
-				if (event.key === 'Escape') {
-					event.preventDefault();
-					closeSettings();
-				}
-			}}
-		>
+		{#snippet logSettings()}
 			<div class="settings">
 				<Select
 					label="Auto-refresh"
@@ -727,37 +720,29 @@
 				<Checkbox size="small" bind:checked={wrap}>Wrap lines</Checkbox>
 				<Checkbox size="small" bind:checked={oldestFirst}>Oldest first</Checkbox>
 				<Checkbox size="small" bind:checked={showQuery}>Show query</Checkbox>
-				{#if grafanaURL}<ExternalLink href={grafanaURL}>Open Grafana</ExternalLink>{/if}
-				{#if tracesURL}<ExternalLink href={tracesURL}>Traces</ExternalLink>{/if}
 				<p class="context">Browser time zone: {Intl.DateTimeFormat().resolvedOptions().timeZone}</p>
-				<Button type="button" variant="tertiary" size="small" onclick={closeSettings}
+				<Button type="button" variant="tertiary" size="small" onclick={() => (settingsOpen = false)}
 					>Close settings</Button
 				>
 			</div>
-		</Popover>
+		{/snippet}
 
 		{#if error}<Alert variant="error">{error}</Alert>{/if}
 		{#each warnings as warning (warning)}<Alert variant="warning">{warning}</Alert>{/each}
 
 		{#if active}
 			<section aria-labelledby={`${id}-results`} aria-busy={loading || loadingMore}>
-				<Heading as="h2" size="small" class="aksel-sr-only" id={`${id}-results`}
-					>Query results</Heading
-				>
+				<Heading as="h2" size="small" class="sr-only" id={`${id}-results`}>Query results</Heading>
 				{#if !advanced && labelFilters.length > 0}
-					<div class="active-label-filters">
-						<Chips size="small" aria-label="Active label filters">
-							{#each labelFilters as filter (`${filter.name}${filter.operator}${JSON.stringify(filter.value)}`)}
-								<li>
-									<RemovableChip
-										value={`${filter.name}${filter.operator}${JSON.stringify(filter.value)}`}
-										removeLabel="Remove filter"
-										ondelete={() => removeLabelFilter(filter)}
-									/>
-								</li>
-							{/each}
-						</Chips>
-					</div>
+					<Chips size="small" aria-label="Active label filters">
+						{#each labelFilters as filter (`${filter.name}${filter.operator}${JSON.stringify(filter.value)}`)}
+							<RemovableChip
+								value={`${filter.name}${filter.operator}${JSON.stringify(filter.value)}`}
+								removeLabel="Remove filter"
+								onclick={() => removeLabelFilter(filter)}
+							/>
+						{/each}
+					</Chips>
 				{/if}
 				{#if showQuery}
 					<div class="executed-query">
@@ -815,9 +800,19 @@
 						>{/if}
 				</div>
 				<div id={`${id}-timeline`} hidden={!showTimeline}>
-					{#if buckets.length > 0}
+					{#if !volumeError && !error}
 						<ChartBoundary fillHeight={false}>
-							<LogVolume {buckets} onselect={selectBucket} />
+							<LogVolume
+								{buckets}
+								range={active.range}
+								loading={loading || volumeLoading}
+								onselect={selectBucket}
+							/>
+							{#snippet fallback()}
+								{#if !loading && completedAt && entries.length === 0 && !buckets.some((bucket) => bucket.count > 0)}
+									{@render emptyResult()}
+								{/if}
+							{/snippet}
 						</ChartBoundary>
 					{/if}
 				</div>
@@ -837,8 +832,8 @@
 						).toLocaleString()}
 					</p>
 				</div>
-				{#if !loading && completedAt && entries.length === 0}
-					<Alert variant="info">No logs match this query and time range.</Alert>
+				{#if !loading && completedAt && entries.length === 0 && (!showTimeline || volumeError || buckets.some((bucket) => bucket.count > 0))}
+					{@render emptyResult()}
 				{:else if entries.length > 0}
 					<LogResults
 						{entries}
@@ -877,56 +872,6 @@
 
 	.explorer {
 		grid-template-columns: minmax(0, 1fr);
-	}
-
-	.explorer :global(.aksel-popover) {
-		z-index: 1000;
-		max-width: calc(100vw - var(--ax-space-24));
-		border: var(--ax-space-1) solid var(--border);
-		border-radius: var(--ax-radius-12);
-		background: var(--popover);
-		color: var(--popover-foreground);
-		box-shadow: var(--sh-shadow-lg);
-	}
-
-	.explorer :global(.aksel-popover--hidden) {
-		display: none;
-	}
-
-	.explorer :global(.aksel-popover__content) {
-		padding: var(--ax-space-16);
-	}
-
-	.explorer :global(.aksel-chips__chip) {
-		display: inline-flex;
-		align-items: center;
-		gap: var(--ax-space-4);
-		padding: var(--ax-space-4) var(--ax-space-8);
-		border: var(--ax-space-1) solid var(--border);
-		border-radius: var(--ax-radius-full);
-		background: var(--secondary);
-		color: var(--secondary-foreground);
-		font: inherit;
-		cursor: pointer;
-	}
-
-	.explorer :global(.aksel-chips__chip:hover) {
-		background: var(--accent);
-		color: var(--accent-foreground);
-	}
-
-	.explorer :global(.aksel-chips__chip:focus-visible) {
-		outline: var(--ax-space-2) solid var(--ring);
-		outline-offset: var(--ax-space-2);
-	}
-
-	.explorer :global(.aksel-chips__removable-icon) {
-		display: inline-flex;
-	}
-
-	.explorer :global(.aksel-chips__removable-icon svg) {
-		width: var(--ax-space-16);
-		height: var(--ax-space-16);
 	}
 
 	.query-toolbar,
@@ -1001,22 +946,6 @@
 
 	.query-preview summary {
 		cursor: pointer;
-	}
-
-	.active-label-filters li {
-		min-width: 0;
-		max-width: 100%;
-		list-style: none;
-	}
-
-	.active-label-filters :global(.aksel-chips__chip) {
-		max-width: 100%;
-		height: auto;
-		white-space: normal;
-	}
-
-	.active-label-filters :global(.aksel-chips__chip-text) {
-		overflow-wrap: anywhere;
 	}
 
 	pre {

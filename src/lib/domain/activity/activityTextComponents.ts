@@ -69,6 +69,7 @@ import ValkeyCredentialsCreatedActivityLogEntryText from './shared/texts/ValkeyC
 import ValkeyDeletedActivityLogEntryText from './shared/texts/ValkeyDeletedActivityLogEntryText.svelte';
 import ValkeyUpdatedActivityLogEntryText from './shared/texts/ValkeyUpdatedActivityLogEntryText.svelte';
 import VulnerabilityUpdatedActivityLogEntryText from './shared/texts/VulnerabilityUpdatedActivityLogEntryText.svelte';
+import WebhookActivityLogEntryText from './shared/texts/WebhookActivityLogEntryText.svelte';
 import type { TimelineModes } from './shared/texts/types';
 
 type textComponentProps = {
@@ -216,6 +217,10 @@ export function activityTextComponent(typename: string | null): Component<textCo
 			return ValkeyUpdatedActivityLogEntryText as Component<textComponentProps>;
 		case 'VulnerabilityUpdatedActivityLogEntry':
 			return VulnerabilityUpdatedActivityLogEntryText as Component<textComponentProps>;
+		case 'WebhookCreatedActivityLogEntry':
+		case 'WebhookDeletedActivityLogEntry':
+		case 'WebhookUpdatedActivityLogEntry':
+			return WebhookActivityLogEntryText as Component<textComponentProps>;
 		default:
 			return DefaultText as Component<textComponentProps>;
 	}

@@ -394,7 +394,7 @@ Use `#lib/shadcn/ui/index.js` components, not custom implementations:
 - Icons: Import from `#lib/icons/index.js` (backed by `@lucide/svelte`)
 - Always check existing components before creating new ones
 
-`LogExplorer` temporarily uses `Popover` and `RemovableChip` from `@nais/ds-svelte-community` until equivalents are available in the new component library. Keep that dependency while these imports remain. Their compatibility styles are scoped to `LogExplorer`; do not restore the old global stylesheet.
+Use `Popover` and `RemovableChip` from `#lib/shadcn/ui/index.js` for settings panels and removable filters. `Popover` uses a trigger snippet and handles focus, Escape, and outside-click dismissal through Bits UI.
 
 ---
 
@@ -626,6 +626,8 @@ Run these checks in order (mirrors the CI pipeline in `.github/workflows/pr.yaml
 5. `helm lint --strict ./charts` — Helm chart validation (requires helm CLI)
 
 All of these must pass before committing. If prettier reports issues, fix them with `pnpm run format` and include the formatting in the same commit.
+
+CI runs `pnpm run test:browser` in a separate `Browser tests` job using the official Playwright container, with browsers and system dependencies preinstalled. Keep its image version in `.github/workflows/pr.yaml` aligned with `@playwright/test` in `package.json`. The required `Lint and check` job succeeds only when both the validation and browser jobs pass.
 
 ### File Naming:
 

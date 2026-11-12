@@ -217,6 +217,15 @@ test('prioritizes teams and pins over activity while keeping zero-state informat
 	expect(html).not.toContain('Last 7 days');
 });
 
+test('labels the create-team action visibly instead of showing only a plus icon', async () => {
+	const html = await body();
+	const createTeam = html.match(/<a\b[^>]*href="\/team\/create"[^>]*>[\s\S]*?<\/a>/)?.[0];
+	expect(createTeam).toBeDefined();
+	expect(createTeam).toContain('Create team</span>');
+	expect(createTeam).toContain('size-sm');
+	expect(createTeam).not.toContain('size-icon');
+});
+
 test('makes the team heading, description and arrow one large link with separate quick links', async () => {
 	const html = await body();
 	const mainLink = html.match(

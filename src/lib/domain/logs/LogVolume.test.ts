@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest';
 import LogVolume from './LogVolume.svelte';
 
 describe('LogVolume', () => {
-	it('scales bars proportionally without giving empty intervals a false volume', async () => {
+	it('provides a labelled chart without redundant visible headings or instructions', async () => {
 		const { body } = await render(LogVolume, {
 			props: {
 				buckets: [
@@ -14,26 +14,31 @@ describe('LogVolume', () => {
 				onselect: () => {}
 			}
 		});
-		expect(body).toContain('--bar-height: 0%');
-		expect(body).toContain('--bar-height: 25%');
-		expect(body).toContain('--bar-height: 100%');
-		expect(body).toContain('aksel-sr-only');
-		expect(body).toContain('aria-label="Search ');
-		expect(body).toContain('25 log lines');
-		expect(body).not.toContain('title=');
-		expect(body).not.toContain('No log lines in this time range.');
+		expect(body).toContain('class="sr-only"');
+		expect(body).toContain('Log volume');
+		expect(body).toContain('Select an interval to search its logs.');
+		expect(body).not.toContain('No logs match');
+		expect(body).not.toContain('Loading log volume');
 	});
 
-	it('explains an empty histogram without dividing by zero', async () => {
+	it.each([{ buckets: [] }, { buckets: [{ start: 0, end: 1000, count: 0 }] }])(
+		'shows one empty-state overlay without invalid chart values ($buckets)',
+		async ({ buckets }) => {
+			const { body } = await render(LogVolume, { props: { buckets, onselect: () => {} } });
+			expect(body.match(/No logs match this query and time range\./g)).toHaveLength(1);
+			expect(body).toContain('Try a wider time range or adjust the filters.');
+			expect(body).toContain('role="status"');
+			expect(body).not.toContain('NaN');
+			expect(body).not.toContain('Infinity');
+		}
+	);
+
+	it('does not present a pending volume request as an empty result', async () => {
 		const { body } = await render(LogVolume, {
-			props: {
-				buckets: [{ start: 0, end: 1000, count: 0 }],
-				onselect: () => {}
-			}
+			props: { buckets: [], loading: true, onselect: () => {} }
 		});
-		expect(body).toContain('No log lines in this time range.');
-		expect(body).toContain('--bar-height: 0%');
-		expect(body).not.toContain('NaN');
-		expect(body).not.toContain('Infinity');
+		expect(body).toContain('aria-busy="true"');
+		expect(body).toContain('Loading log volume');
+		expect(body).not.toContain('No logs match');
 	});
 });

@@ -1,0 +1,96 @@
+{{- if .Values.alerts.enabled }}
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: '{{ .Release.Name }}'
+  labels:
+    app: '{{ .Release.Name }}'
+spec:
+  groups:
+    - name: '{{ .Release.Name }}-alerts'
+      rules:
+        - alert: Console frontend HTTP probe failing
+          expr: |
+            max by (namespace, ingress) (
+              probe_success{job=~"probe/nais-system/.+-ingresses-nais", namespace="{{ .Release.Namespace }}", ingress="{{ .Release.Name }}"}
+            ) == 0
+          for: 3m
+          labels:
+            namespace: '{{ .Release.Namespace }}'
+            severity: critical
+          annotations:
+            summary: Console frontend readiness probe through HTTPS is failing.
+            consequence: Users may be unable to access Console or its API.
+            action: 'Check https://{{ .Values.host }}/isReady, DNS, TLS, ingress, {{ .Release.Name }} and nais-api. Check the probe exporter if the endpoint responds normally.'
+        - alert: Console frontend high HTTP error rate
+          expr: |
+            (
+              sum(rate(haproxy_backend_http_responses_total{proxy="{{ .Release.Namespace }}_svc_{{ .Release.Name }}_http", code="5xx"}[5m]))
+              /
+              sum(rate(haproxy_backend_http_responses_total{proxy="{{ .Release.Namespace }}_svc_{{ .Release.Name }}_http"}[5m]))
+            ) > 0.05
+            and
+            sum(increase(haproxy_backend_http_responses_total{proxy="{{ .Release.Namespace }}_svc_{{ .Release.Name }}_http", code="5xx"}[5m])) >= 10
+          for: 5m
+          labels:
+            namespace: '{{ .Release.Namespace }}'
+            severity: critical
+          annotations:
+            summary: More than 5% of Console HTTP responses are server errors, with at least 10 server errors in the last 5 minutes.
+            consequence: Users are experiencing errors when accessing Console.
+            action: 'Check ingress access logs, {{ .Release.Name }} logs and nais-api. Compare the failures with recent deployments.'
+        - alert: Console frontend unavailable
+          expr: |
+            max by (namespace, deployment) (
+              kube_deployment_status_replicas_available{namespace="{{ .Release.Namespace }}", deployment="{{ .Release.Name }}"}
+            ) < 1
+          for: 2m
+          labels:
+            namespace: '{{ .Release.Namespace }}'
+            severity: warning
+          annotations:
+            summary: Console frontend has no available replicas.
+            consequence: Users cannot access Console.
+            action: 'Check deployment, pod events and logs for {{ .Release.Name }} in {{ .Release.Namespace }}.'
+        - alert: Console frontend probe metrics missing
+          expr: |
+            absent(probe_success{job=~"probe/nais-system/.+-ingresses-nais", namespace="{{ .Release.Namespace }}", ingress="{{ .Release.Name }}"})
+          for: 10m
+          labels:
+            namespace: '{{ .Release.Namespace }}'
+            severity: warning
+          annotations:
+            summary: Console frontend HTTP probe metrics are missing.
+            consequence: Console HTTPS availability cannot be monitored.
+            action: 'Check the nais-probes ingress Probe, its exporter, Prometheus scraping and the prometheus.io annotations on ingress {{ .Release.Name }}.'
+        - alert: Console frontend deployment metrics missing
+          expr: |
+            absent(kube_deployment_status_replicas_available{namespace="{{ .Release.Namespace }}", deployment="{{ .Release.Name }}"})
+          for: 10m
+          labels:
+            namespace: '{{ .Release.Namespace }}'
+            severity: warning
+          annotations:
+            summary: Console frontend deployment metrics are missing.
+            consequence: Console replica availability cannot be monitored; the deployment may also be missing.
+            action: 'Check that deployment {{ .Release.Name }} exists in {{ .Release.Namespace }}, then check kube-state-metrics and Prometheus scraping.'
+        - alert: Console frontend reduced capacity
+          expr: |
+            (
+              max by (namespace, deployment) (
+                kube_deployment_status_replicas_available{namespace="{{ .Release.Namespace }}", deployment="{{ .Release.Name }}"}
+              ) > 0
+            )
+            < on (namespace, deployment)
+            max by (namespace, deployment) (
+              kube_deployment_spec_replicas{namespace="{{ .Release.Namespace }}", deployment="{{ .Release.Name }}"}
+            )
+          for: 10m
+          labels:
+            namespace: '{{ .Release.Namespace }}'
+            severity: warning
+          annotations:
+            summary: Console frontend has fewer available replicas than desired.
+            consequence: Console has reduced capacity and redundancy.
+            action: 'Check deployment, pod events and logs for {{ .Release.Name }} in {{ .Release.Namespace }}.'
+{{- end }}

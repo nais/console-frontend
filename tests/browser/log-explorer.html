@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Log explorer browser tests</title>
+	</head>
+	<body>
+		<div id="app"></div>
+		<script type="module">
+			import { mount, tick } from 'svelte';
+			import LogExplorerFixture from './LogExplorerFixture.svelte';
+			import '../../src/styles/shadcn.css';
+			import '../../src/styles/layerchart.css';
+
+			mount(LogExplorerFixture, { target: document.getElementById('app') });
+			await tick();
+			document.documentElement.dataset.ready = 'true';
+		</script>
+	</body>
+</html>

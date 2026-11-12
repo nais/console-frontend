@@ -11,6 +11,9 @@
 
 <ChartBoundary>
 	<p>{failDuringRender()}</p>
+	{#snippet fallback()}
+		<p>Chart-independent context</p>
+	{/snippet}
 </ChartBoundary>
 
 <SectionBoundary message="Metadata failed to render.">
