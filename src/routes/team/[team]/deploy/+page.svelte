@@ -31,7 +31,7 @@
 <GraphErrors errors={$Deployments.errors} />
 
 <Alert variant="info" style="margin-bottom: var(--ax-space-16);">
-	Deployments made with <code>nais/deploy</code> v3 or <code>nais apply</code> appear in the
+	Deployments made with <code>nais/deploy v3</code> or <code>nais apply</code> appear in the
 	<a
 		href={`${resolve('/team/[team]/activity-log', { team: data.teamSlug })}?activityTypes=APPLICATION_UPDATED%2CJOB_UPDATED`}
 		>Activity Log</a
