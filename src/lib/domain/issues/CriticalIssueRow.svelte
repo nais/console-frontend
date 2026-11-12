@@ -97,7 +97,7 @@
 							name
 						}
 					}
-					... on PostgresBranchIssue {
+					... on PostgresIssue {
 						__typename
 						severity
 						message
@@ -109,11 +109,8 @@
 								slug
 							}
 						}
-						branch {
+						postgres {
 							name
-							postgres {
-								name
-							}
 						}
 					}
 					... on SqlInstanceStateIssue {
@@ -167,7 +164,7 @@
 			MissingSbomIssue: 'Missing SBOM',
 			VulnerableImageIssue: 'Vulnerable image',
 			OpenSearchIssue: 'OpenSearch issue',
-			PostgresBranchIssue: 'Postgres branch failure',
+			PostgresIssue: 'Postgres failure',
 			SqlInstanceStateIssue: 'Database unhealthy',
 			SqlInstanceVersionIssue: 'Outdated database version',
 			ValkeyIssue: 'Valkey issue',

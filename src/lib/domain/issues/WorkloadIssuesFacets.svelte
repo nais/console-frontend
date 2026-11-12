@@ -12,6 +12,9 @@
 	let { selectedSeverity, selectedIssueType, onSeverityChange, onIssueTypeChange }: Props =
 		$props();
 
+	// POSTGRES_BRANCH remains in the schema only for compatibility with older clients.
+	const issueTypes = Object.values(IssueType).filter((type) => type !== 'POSTGRES_BRANCH');
+
 	function severityLabel(severity: string): string {
 		return severity.charAt(0) + severity.slice(1).toLowerCase();
 	}
@@ -55,7 +58,7 @@
 			/>
 			<span class="facet-label">All</span>
 		</label>
-		{#each Object.values(IssueType) as type (type)}
+		{#each issueTypes as type (type)}
 			<label class="facet-item">
 				<input
 					type="radio"
