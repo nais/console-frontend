@@ -5515,7 +5515,7 @@ type Mutation {
 
   """
   Create a new webhook subscription.
-
+  
   The owning team can select source teams without permission from those teams, or subscribe to all teams.
   By default, a team-owned webhook receives only its own team's events.
   If no owner team slug is provided, the webhook is global and receives all events (admin only).
@@ -5571,7 +5571,7 @@ type Mutation {
 
   """
   Delete a webhook subscription.
-
+  
   All associated delivery records will also be deleted.
   """
   deleteWebhook(input: DeleteWebhookInput!): DeleteWebhookPayload!
@@ -5738,7 +5738,7 @@ type Mutation {
 
   """
   Update an existing webhook subscription.
-
+  
   Can be used to change the name, source teams, URL, secret, event types, or enabled status. Ownership and the subscription ID cannot be changed.
   """
   updateWebhook(input: UpdateWebhookInput!): UpdateWebhookPayload!
