@@ -120,12 +120,19 @@ query ApplicationImageDetails($team: Slug!, $env: String!, $app: String!)
 								}
 							}
 						}
+						packageTypeFacets: vulnerabilities(first: 1) {
+							facets {
+								packageTypes {
+									value
+									count
+								}
+							}
+						}
 						handleFirst: vulnerabilities(
 							first: 50
 							filter: { hasKevEntry: true }
 							orderBy: { field: SEVERITY_SINCE, direction: DESC }
 						) {
-							packageTypes
 							pageInfo {
 								totalCount
 							}
