@@ -78,7 +78,7 @@
 	}
 
 	.wrapper {
-		margin-bottom: var(--ax-space-16);
+		margin-bottom: var(--nais-space-16);
 	}
 
 	.chart {
@@ -89,24 +89,24 @@
 	.legend-items {
 		display: flex;
 		flex-wrap: wrap;
-		gap: var(--ax-space-8) var(--ax-space-16);
+		gap: var(--nais-space-8) var(--nais-space-16);
 		justify-content: center;
 	}
 
 	.legend-item {
 		display: flex;
 		align-items: center;
-		gap: var(--ax-space-4);
+		gap: var(--nais-space-4);
 		border: none;
 		background: none;
-		padding: var(--ax-space-2) var(--ax-space-4);
-		border-radius: var(--ax-radius-8);
+		padding: var(--nais-space-2) var(--nais-space-4);
+		border-radius: var(--nais-radius-8);
 		cursor: pointer;
 		transition: opacity 150ms ease;
 	}
 
 	.legend-item:hover {
-		background: var(--ax-neutral-200);
+		background: var(--secondary);
 	}
 
 	.legend-item.deselected {
@@ -122,6 +122,6 @@
 
 	.legend-label {
 		font-size: var(--sh-font-size-sm);
-		color: var(--ax-text-neutral);
+		color: var(--foreground);
 	}
 </style>

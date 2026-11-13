@@ -95,7 +95,7 @@
 	.sh-form-field {
 		display: flex;
 		flex-direction: column;
-		gap: var(--ax-space-6);
+		gap: var(--nais-space-6);
 	}
 	.sh-form-field__description {
 		font-size: var(--sh-font-size-xs);
@@ -109,24 +109,24 @@
 		border: var(--sh-border-width) solid var(--input);
 		background-color: var(--card);
 		color: var(--foreground);
-		padding: 0 var(--ax-space-12);
+		padding: 0 var(--nais-space-12);
 		font-family: inherit;
 		font-size: var(--sh-font-size-sm);
-		height: var(--ax-space-36);
+		height: var(--nais-space-36);
 		box-shadow: var(--sh-shadow-xs);
 		transition:
 			border-color 120ms ease,
 			box-shadow 120ms ease;
 	}
 	.sh-input-control--small {
-		height: var(--ax-space-32);
-		padding: 0 var(--ax-space-10);
+		height: var(--nais-space-32);
+		padding: 0 var(--nais-space-10);
 		font-size: var(--sh-font-size-sm);
 	}
 	.sh-input-control:focus-visible {
 		outline: none;
 		border-color: var(--ring);
-		box-shadow: 0 0 0 var(--ax-space-2) color-mix(in srgb, var(--ring) 22%, transparent);
+		box-shadow: 0 0 0 var(--nais-space-2) color-mix(in srgb, var(--ring) 22%, transparent);
 	}
 	.sh-input-control:disabled,
 	.sh-input-control[readonly] {
@@ -138,10 +138,10 @@
 	}
 	.sr-only {
 		position: absolute;
-		width: var(--ax-space-1);
-		height: var(--ax-space-1);
+		width: var(--nais-space-1);
+		height: var(--nais-space-1);
 		padding: 0;
-		margin: calc(-1 * var(--ax-space-1));
+		margin: calc(-1 * var(--nais-space-1));
 		overflow: hidden;
 		clip: rect(0, 0, 0, 0);
 		white-space: nowrap;

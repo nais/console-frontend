@@ -130,7 +130,7 @@ for (const theme of ['light', 'dark']) {
 			}, theme);
 			const gauges = page.getByTestId('utilization-gauges');
 			const neutral = theme === 'light' ? 'rgb(203, 213, 225)' : 'rgb(51, 65, 85)';
-			for (const background of ['var(--ax-bg-default)', 'var(--ax-bg-sunken)']) {
+			for (const background of ['var(--card)', 'var(--background-subtle)']) {
 				await gauges.evaluate((element, background) => {
 					element.style.backgroundColor = background;
 				}, background);

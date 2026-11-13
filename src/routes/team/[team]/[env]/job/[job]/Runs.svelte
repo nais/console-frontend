@@ -118,12 +118,12 @@
 
 <style>
 	.empty-state {
-		padding: var(--ax-space-16) var(--ax-space-24);
+		padding: var(--nais-space-16) var(--nais-space-24);
 	}
 
 	.load-more {
 		display: flex;
 		justify-content: center;
-		padding-top: var(--ax-space-8);
+		padding-top: var(--nais-space-8);
 	}
 </style>

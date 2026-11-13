@@ -399,15 +399,15 @@
 	.metrics {
 		display: grid;
 		grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
-		gap: var(--ax-space-12);
+		gap: var(--nais-space-12);
 	}
 
 	.metric {
 		position: relative;
 		display: flex;
 		align-items: center;
-		gap: var(--ax-space-12);
-		padding: var(--ax-space-14) var(--ax-space-16);
+		gap: var(--nais-space-12);
+		padding: var(--nais-space-14) var(--nais-space-16);
 		border-radius: var(--radius);
 		text-decoration: none;
 		color: inherit;
@@ -431,8 +431,8 @@
 		display: inline-flex;
 		align-items: center;
 		justify-content: center;
-		width: var(--ax-space-32);
-		height: var(--ax-space-32);
+		width: var(--nais-space-32);
+		height: var(--nais-space-32);
 		flex-shrink: 0;
 		border-radius: var(--radius-md);
 		font-size: var(--sh-font-size-base);
@@ -462,7 +462,7 @@
 	.metric-body {
 		display: flex;
 		flex-direction: column;
-		gap: var(--ax-space-2);
+		gap: var(--nais-space-2);
 		min-width: 0;
 	}
 
@@ -492,7 +492,7 @@
 		white-space: nowrap;
 		display: flex;
 		flex-wrap: wrap;
-		gap: var(--ax-space-4);
+		gap: var(--nais-space-4);
 	}
 
 	@media (max-width: 767px), (max-height: 500px) {
@@ -503,7 +503,7 @@
 
 	.metric-processing {
 		position: absolute;
-		top: var(--ax-space-12);
-		right: var(--ax-space-12);
+		top: var(--nais-space-12);
+		right: var(--nais-space-12);
 	}
 </style>

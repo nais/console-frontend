@@ -296,14 +296,14 @@
 	.inventory {
 		display: flex;
 		flex-direction: column;
-		gap: var(--ax-space-16);
+		gap: var(--nais-space-16);
 		container-type: inline-size;
 	}
 
 	.workloads {
 		display: grid;
 		grid-template-columns: repeat(2, minmax(0, 1fr));
-		gap: var(--ax-space-12);
+		gap: var(--nais-space-12);
 	}
 
 	@container (max-width: 500px) {
@@ -316,8 +316,8 @@
 		display: flex;
 		flex-direction: column;
 		align-items: stretch;
-		gap: var(--ax-space-10);
-		padding: var(--ax-space-16);
+		gap: var(--nais-space-10);
+		padding: var(--nais-space-16);
 		border-radius: var(--radius);
 		text-decoration: none;
 		color: inherit;
@@ -339,7 +339,7 @@
 	.workload-header {
 		display: flex;
 		align-items: center;
-		gap: var(--ax-space-8);
+		gap: var(--nais-space-8);
 		color: var(--foreground);
 	}
 
@@ -394,13 +394,13 @@
 	.state-legend {
 		display: flex;
 		flex-wrap: wrap;
-		gap: var(--ax-space-6) var(--ax-space-12);
+		gap: var(--nais-space-6) var(--nais-space-12);
 	}
 
 	.legend-item {
 		display: inline-flex;
 		align-items: center;
-		gap: var(--ax-space-6);
+		gap: var(--nais-space-6);
 		font-size: var(--sh-font-size-sm);
 		color: var(--muted-foreground);
 		font-variant-numeric: tabular-nums;
@@ -436,15 +436,15 @@
 	.resources {
 		display: grid;
 		grid-template-columns: repeat(auto-fill, minmax(135px, 1fr));
-		gap: var(--ax-space-8);
+		gap: var(--nais-space-8);
 	}
 
 	.resource-item {
 		display: flex;
 		align-items: center;
 		justify-content: space-between;
-		gap: var(--ax-space-8);
-		padding: var(--ax-space-8) var(--ax-space-12);
+		gap: var(--nais-space-8);
+		padding: var(--nais-space-8) var(--nais-space-12);
 		border-radius: var(--radius-md);
 		text-decoration: none;
 		color: var(--foreground);
@@ -470,7 +470,7 @@
 		font-weight: 700;
 		font-family: monospace;
 		font-size: var(--sh-font-size-xs);
-		padding: var(--ax-space-1) var(--ax-space-8);
+		padding: var(--nais-space-1) var(--nais-space-8);
 		border-radius: var(--radius-full);
 		background-color: var(--secondary);
 		color: var(--foreground);

@@ -629,10 +629,10 @@
 	.activity-log-list-item {
 		display: flex;
 		align-items: center;
-		gap: var(--ax-space-12);
+		gap: var(--nais-space-12);
 		font-size: var(--sh-font-size-base);
-		--surface-icon-size: var(--ax-space-32);
-		--surface-icon-glyph-size: var(--ax-space-16);
+		--surface-icon-size: var(--nais-space-32);
+		--surface-icon-glyph-size: var(--nais-space-16);
 	}
 
 	.activity-log-list-item :global(.surface-icon) {
@@ -667,7 +667,7 @@
 	}
 
 	.activity-icon {
-		--surface-icon-size: calc(var(--ax-space-28) + var(--ax-space-2));
+		--surface-icon-size: calc(var(--nais-space-28) + var(--nais-space-2));
 		--surface-icon-glyph-size: var(--sh-font-size-base);
 		position: relative;
 		z-index: 1;
@@ -687,24 +687,24 @@
 	.activity-item {
 		display: flex;
 		position: relative;
-		padding-bottom: var(--ax-space-12);
+		padding-bottom: var(--nais-space-12);
 	}
 
 	.content {
 		flex: 1 1 auto;
 		min-width: 0;
 		overflow-wrap: anywhere;
-		padding: 0 0 0 var(--ax-space-8);
+		padding: 0 0 0 var(--nais-space-8);
 	}
 
 	.activity-item:not(:last-child)::before {
-		background: var(--ax-border-neutral-subtleA);
+		background: var(--border);
 		content: '';
-		top: var(--ax-space-32);
-		bottom: calc(-1 * var(--ax-space-4));
-		left: calc(var(--ax-space-16) - var(--ax-space-1));
+		top: var(--nais-space-32);
+		bottom: calc(-1 * var(--nais-space-4));
+		left: calc(var(--nais-space-16) - var(--nais-space-1));
 		position: absolute;
-		width: var(--ax-space-2);
+		width: var(--nais-space-2);
 	}
 
 	@media (max-width: 767px) {

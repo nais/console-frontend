@@ -20,20 +20,20 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		width: var(--ax-space-24);
-		height: var(--ax-space-24);
+		width: var(--nais-space-24);
+		height: var(--nais-space-24);
 		flex-shrink: 0;
 	}
 	.status-indicator > span {
 		display: inline-flex;
 	}
 	.status-dot {
-		width: var(--ax-space-8);
-		height: var(--ax-space-8);
-		border-radius: var(--ax-radius-full);
-		background-color: var(--ax-text-neutral-decoration);
+		width: var(--nais-space-8);
+		height: var(--nais-space-8);
+		border-radius: var(--radius-full);
+		background-color: var(--muted-foreground);
 	}
 	.status-dot.degraded {
-		background-color: var(--ax-text-danger-decoration);
+		background-color: var(--destructive);
 	}
 </style>

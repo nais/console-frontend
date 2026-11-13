@@ -101,6 +101,6 @@
 		justify-content: center;
 		align-items: center;
 		min-width: 100%;
-		min-height: calc(5 * var(--ax-space-40));
+		min-height: calc(5 * var(--nais-space-40));
 	}
 </style>

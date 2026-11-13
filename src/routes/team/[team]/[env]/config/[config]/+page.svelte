@@ -403,7 +403,7 @@
 													}}
 												>
 													{#snippet icon()}
-														<TrashIcon style="color:var(--ax-text-danger-decoration)!important" />
+														<TrashIcon style="color:var(--destructive)!important" />
 													{/snippet}
 												</Button>
 											{/if}
@@ -485,7 +485,7 @@
 	.content {
 		display: flex;
 		flex-direction: column;
-		gap: var(--ax-space-16);
+		gap: var(--nais-space-16);
 		min-width: 0;
 	}
 
@@ -493,12 +493,12 @@
 		display: flex;
 		align-items: center;
 		justify-content: space-between;
-		gap: var(--ax-space-8);
+		gap: var(--nais-space-8);
 	}
 
 	.header-buttons {
 		display: flex;
-		gap: var(--ax-space-8);
+		gap: var(--nais-space-8);
 	}
 
 	.buttons {
@@ -507,7 +507,7 @@
 	}
 
 	.entry {
-		margin: var(--ax-space-32) 0;
+		margin: var(--nais-space-32) 0;
 	}
 
 	.value {
@@ -518,14 +518,14 @@
 
 	.binary-label {
 		font-size: var(--sh-font-size-sm);
-		color: var(--ax-text-neutral-subtle);
+		color: var(--muted-foreground);
 		font-style: italic;
 	}
 
 	ul {
 		list-style: none;
 		margin: 0;
-		padding: 0 0 0 var(--ax-space-16);
+		padding: 0 0 0 var(--nais-space-16);
 	}
 
 	@media (max-width: 767px) {

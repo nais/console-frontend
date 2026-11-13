@@ -1,22 +1,22 @@
 :where(:root, [data-theme='light'], .light, .light-theme) {
-	--color-primary: var(--ax-text-accent);
-	--color-primary-content: var(--ax-text-neutral);
-	--color-secondary: var(--ax-text-accent);
-	--color-surface-100: var(--ax-neutral-000);
-	--color-surface-200: var(--ax-neutral-100);
-	--color-surface-300: var(--ax-neutral-200);
-	--color-surface-content: var(--ax-text-neutral);
+	--color-primary: var(--info);
+	--color-primary-content: var(--foreground);
+	--color-secondary: var(--info);
+	--color-surface-100: var(--card);
+	--color-surface-200: var(--background-subtle);
+	--color-surface-300: var(--secondary);
+	--color-surface-content: var(--foreground);
 }
 
 .dark,
 .dark-theme {
-	--color-primary: var(--ax-text-accent);
-	--color-primary-content: var(--ax-text-neutral);
-	--color-secondary: var(--ax-text-accent);
-	--color-surface-100: var(--ax-neutral-000);
-	--color-surface-200: var(--ax-neutral-100);
-	--color-surface-300: var(--ax-neutral-200);
-	--color-surface-content: var(--ax-text-neutral);
+	--color-primary: var(--info);
+	--color-primary-content: var(--foreground);
+	--color-secondary: var(--info);
+	--color-surface-100: var(--card);
+	--color-surface-200: var(--background-subtle);
+	--color-surface-300: var(--secondary);
+	--color-surface-content: var(--foreground);
 }
 
 .lc-legend-swatch-button {
@@ -57,11 +57,11 @@
 }
 
 .stroke-warning {
-	stroke: var(--ax-border-warning);
+	stroke: var(--warning-border);
 }
 
 .stroke-danger {
-	stroke: var(--ax-border-danger);
+	stroke: var(--destructive-border);
 }
 
 .lc-legend-ramp-svg {

@@ -26,8 +26,8 @@
 	.sh-internal-header-btn {
 		display: inline-flex;
 		align-items: center;
-		gap: var(--ax-space-6);
-		padding: var(--ax-space-6) var(--ax-space-10);
+		gap: var(--nais-space-6);
+		padding: var(--nais-space-6) var(--nais-space-10);
 		border: var(--sh-border-width) solid transparent;
 		border-radius: var(--radius-sm);
 		background: transparent;

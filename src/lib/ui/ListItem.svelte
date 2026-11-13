@@ -28,10 +28,10 @@
 		grid-template-columns: 1fr;
 		grid-auto-flow: column;
 		align-items: center;
-		column-gap: var(--ax-space-16);
+		column-gap: var(--nais-space-16);
 		min-width: 0;
 		max-width: 100%;
-		padding: var(--ax-space-12) var(--ax-space-20);
+		padding: var(--nais-space-12) var(--nais-space-20);
 		color: var(--card-foreground);
 		text-decoration: none;
 		border-bottom: var(--sh-border-width) solid var(--border-subtle);
@@ -46,14 +46,14 @@
 	@container (max-width: 500px) {
 		.list-item {
 			grid-auto-flow: row;
-			padding: var(--ax-space-12) var(--ax-space-16);
+			padding: var(--nais-space-12) var(--nais-space-16);
 		}
 	}
 
 	@media (max-width: 767px), (max-height: 500px) {
 		.list-item {
 			grid-auto-flow: row;
-			padding: var(--ax-space-12) var(--ax-space-16);
+			padding: var(--nais-space-12) var(--nais-space-16);
 		}
 	}
 
@@ -69,8 +69,8 @@
 	}
 
 	a.list-item:focus-visible {
-		outline: var(--ax-space-2) solid var(--ring);
-		outline-offset: calc(-1 * var(--ax-space-2));
+		outline: var(--nais-space-2) solid var(--ring);
+		outline-offset: calc(-1 * var(--nais-space-2));
 	}
 
 	.animatable {
@@ -82,7 +82,7 @@
 
 	.highlight {
 		background-color: var(--brand-muted);
-		padding-left: var(--ax-space-8);
+		padding-left: var(--nais-space-8);
 		opacity: 1;
 	}
 </style>

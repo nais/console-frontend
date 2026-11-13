@@ -129,8 +129,8 @@
 		display: inline-flex;
 		align-items: center;
 		justify-content: center;
-		gap: var(--ax-space-6);
-		padding: var(--ax-space-4) var(--ax-space-8);
+		gap: var(--nais-space-6);
+		padding: var(--nais-space-4) var(--nais-space-8);
 		border: var(--sh-border-width) solid transparent;
 		border-radius: var(--radius-xs);
 		background: transparent;
@@ -144,7 +144,7 @@
 			color 110ms ease;
 	}
 	.sh-copy-btn.icon-only {
-		padding: var(--ax-space-4);
+		padding: var(--nais-space-4);
 	}
 	.sh-copy-btn:hover {
 		background-color: var(--secondary);

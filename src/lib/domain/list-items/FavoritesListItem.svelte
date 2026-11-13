@@ -185,7 +185,7 @@
 		display: flex;
 		align-items: center;
 		justify-content: space-between;
-		gap: var(--ax-space-8);
+		gap: var(--nais-space-8);
 		width: 100%;
 	}
 
@@ -198,7 +198,7 @@
 	.drag-handle {
 		cursor: grab;
 		user-select: none;
-		margin-right: var(--ax-space-2);
+		margin-right: var(--nais-space-2);
 		display: flex;
 		align-items: center;
 		font-size: var(--sh-font-size-lg);

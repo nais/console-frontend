@@ -186,6 +186,6 @@
 
 <style>
 	.deletion-alert {
-		margin-bottom: var(--ax-space-24);
+		margin-bottom: var(--nais-space-24);
 	}
 </style>

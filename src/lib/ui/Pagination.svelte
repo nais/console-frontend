@@ -29,7 +29,7 @@
 	<div class="pagination" aria-busy={fetching} aria-label={fetching ? 'Loading page' : undefined}>
 		{#if fetching}
 			<div class="fetching">
-				<ShSkeleton width="12ch" height="var(--ax-space-20)" />
+				<ShSkeleton width="12ch" height="var(--nais-space-20)" />
 			</div>
 		{:else if page}
 			<span>
@@ -83,9 +83,9 @@
 		display: flex;
 		justify-content: flex-end;
 		align-items: center;
-		gap: var(--ax-space-14);
+		gap: var(--nais-space-14);
 		color: var(--muted-foreground);
-		padding: var(--ax-space-12) var(--ax-space-16);
+		padding: var(--nais-space-12) var(--nais-space-16);
 		font-size: var(--sh-font-size-caption);
 		font-variant-numeric: tabular-nums;
 
@@ -96,7 +96,7 @@
 
 		.pagination-buttons {
 			display: flex;
-			gap: var(--ax-space-4);
+			gap: var(--nais-space-4);
 		}
 	}
 </style>

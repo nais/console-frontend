@@ -73,7 +73,7 @@
 	.list {
 		display: flex;
 		flex-direction: column;
-		gap: var(--ax-space-4);
+		gap: var(--nais-space-4);
 		align-items: start;
 	}
 </style>

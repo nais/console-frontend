@@ -39,7 +39,7 @@
 	{:else if Date.now() - +key.expires > 0}
 		<Alert variant="error">The delete key has expired.</Alert>
 	{:else}
-		<BodyLong style="padding-bottom: var(--ax-space-16);">
+		<BodyLong style="padding-bottom: var(--nais-space-16);">
 			The deletion was initiated by <strong>{key.createdBy.name}</strong> and expires
 			<strong><Time distance={true} time={key.expires}></Time></strong>. Deleting the team will
 			permanently delete all managed resources and all resources within them. All applications,

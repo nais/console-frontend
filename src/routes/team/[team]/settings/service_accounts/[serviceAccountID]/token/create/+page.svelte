@@ -31,7 +31,7 @@
 	.page {
 		display: flex;
 		flex-direction: column;
-		gap: var(--ax-space-16);
+		gap: var(--nais-space-16);
 		max-width: 600px;
 	}
 </style>

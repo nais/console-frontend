@@ -121,7 +121,7 @@
 	.chart {
 		height: 350px;
 		min-width: 0;
-		margin-bottom: var(--ax-space-32);
+		margin-bottom: var(--nais-space-32);
 	}
 
 	.loading {

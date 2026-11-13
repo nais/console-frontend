@@ -4,4 +4,4 @@
 	const props = $props();
 </script>
 
-<XMarkOctagonFillIcon {...props} style="color:var(--ax-text-danger-decoration);{props.style}" />
+<XMarkOctagonFillIcon {...props} style="color:var(--destructive);{props.style}" />

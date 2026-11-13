@@ -110,15 +110,15 @@
 <style>
 	.delivery-details {
 		display: grid;
-		gap: var(--ax-space-24);
+		gap: var(--nais-space-24);
 		min-width: 0;
 		overflow-wrap: anywhere;
 	}
 
 	.message {
 		display: grid;
-		gap: var(--ax-space-24);
-		padding-top: var(--ax-space-16);
+		gap: var(--nais-space-24);
+		padding-top: var(--nais-space-16);
 		min-width: 0;
 	}
 
@@ -128,11 +128,11 @@
 
 	pre {
 		margin: 0;
-		padding: var(--ax-space-16);
+		padding: var(--nais-space-16);
 		white-space: pre-wrap;
 		overflow-wrap: anywhere;
 		font-family: monospace;
-		background: var(--ax-neutral-100);
+		background: var(--background-subtle);
 		border-radius: var(--radius-md);
 	}
 </style>

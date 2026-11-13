@@ -270,7 +270,7 @@
 	.legacy-logs {
 		display: flex;
 		flex-direction: column;
-		gap: var(--ax-space-24);
+		gap: var(--nais-space-24);
 		min-width: 0;
 	}
 
@@ -279,7 +279,7 @@
 		display: flex;
 		align-items: center;
 		flex-wrap: wrap;
-		gap: var(--ax-space-8);
+		gap: var(--nais-space-8);
 	}
 
 	.controls {
@@ -293,8 +293,8 @@
 	.log-line {
 		display: flex;
 		align-items: baseline;
-		gap: var(--ax-space-8);
-		padding-block: var(--ax-space-4);
+		gap: var(--nais-space-8);
+		padding-block: var(--nais-space-4);
 		font-family: monospace;
 		font-size: var(--sh-font-size-sm);
 	}
@@ -305,7 +305,7 @@
 	}
 
 	.instance {
-		color: var(--ax-text-neutral);
+		color: var(--foreground);
 	}
 
 	.message {

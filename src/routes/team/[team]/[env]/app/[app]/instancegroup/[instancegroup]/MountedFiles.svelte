@@ -84,30 +84,30 @@
 	.section {
 		display: flex;
 		flex-direction: column;
-		gap: var(--ax-space-16);
+		gap: var(--nais-space-16);
 		width: 100%;
 	}
 
 	.file-list {
-		--instancegroup-list-columns: minmax(0, 2.5fr) auto minmax(0, 1.8fr) var(--ax-space-48);
+		--instancegroup-list-columns: minmax(0, 2.5fr) auto minmax(0, 1.8fr) var(--nais-space-48);
 	}
 
 	.file-cell code {
 		font-size: var(--sh-font-size-sm);
-		color: var(--ax-text-neutral);
+		color: var(--foreground);
 		white-space: normal;
 		overflow-wrap: anywhere;
 		word-break: break-word;
 	}
 
 	.source-kind {
-		color: var(--ax-text-neutral-subtle);
+		color: var(--muted-foreground);
 		font-size: var(--sh-font-size-sm);
 		white-space: nowrap;
 	}
 
 	.source-name {
-		color: var(--ax-text-neutral-subtle);
+		color: var(--muted-foreground);
 		font-size: var(--sh-font-size-sm);
 		white-space: normal;
 		overflow-wrap: anywhere;
@@ -119,6 +119,6 @@
 	}
 
 	.muted {
-		color: var(--ax-text-neutral-subtle);
+		color: var(--muted-foreground);
 	}
 </style>

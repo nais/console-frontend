@@ -81,8 +81,8 @@
 		width: 100%;
 		display: flex;
 		align-items: center;
-		gap: var(--ax-space-8);
-		padding: var(--ax-space-12) var(--ax-space-4);
+		gap: var(--nais-space-8);
+		padding: var(--nais-space-12) var(--nais-space-4);
 		border: none;
 		background: transparent;
 		color: var(--foreground);
@@ -102,6 +102,6 @@
 		display: none;
 	}
 	.sh-accordion-content {
-		padding: var(--ax-space-4) 0 var(--ax-space-14);
+		padding: var(--nais-space-4) 0 var(--nais-space-14);
 	}
 </style>

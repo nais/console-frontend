@@ -56,7 +56,7 @@
 <style>
 	form {
 		display: grid;
-		gap: var(--ax-space-16);
-		max-width: var(--ax-breakpoint-sm);
+		gap: var(--nais-space-16);
+		max-width: var(--nais-breakpoint-sm);
 	}
 </style>

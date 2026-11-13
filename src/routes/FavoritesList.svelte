@@ -38,7 +38,7 @@
 	.favorites {
 		display: flex;
 		flex-direction: column;
-		gap: var(--ax-space-12);
+		gap: var(--nais-space-12);
 	}
 	.favorites-card {
 		background: var(--card);
@@ -50,20 +50,20 @@
 	.favorites-header {
 		display: flex;
 		align-items: center;
-		min-height: var(--ax-space-28);
+		min-height: var(--nais-space-28);
 	}
 	.favorites-title {
 		display: flex;
 		align-items: center;
-		gap: var(--ax-space-8);
+		gap: var(--nais-space-8);
 		flex-wrap: wrap;
 	}
 	.favorites-title :global(svg) {
-		color: var(--ax-text-neutral);
+		color: var(--foreground);
 	}
 	.favorites-empty {
 		margin: 0;
-		color: var(--ax-text-neutral);
+		color: var(--foreground);
 		font-size: var(--sh-font-size-sm);
 	}
 </style>

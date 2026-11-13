@@ -220,7 +220,7 @@
 	.job-content {
 		display: grid;
 		grid-template-columns: 1fr 300px;
-		gap: var(--ax-space-16);
+		gap: var(--nais-space-16);
 	}
 
 	.configuration-section {

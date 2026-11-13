@@ -128,7 +128,7 @@
 		display: grid;
 		grid-template-columns: minmax(0, 1fr) auto;
 		align-items: center;
-		gap: var(--ax-space-16);
+		gap: var(--nais-space-16);
 		min-width: 0;
 		overflow-wrap: anywhere;
 	}
@@ -136,7 +136,7 @@
 	.identity,
 	.delivery-summary {
 		display: grid;
-		gap: var(--ax-space-4);
+		gap: var(--nais-space-4);
 		min-width: 0;
 	}
 
@@ -150,7 +150,7 @@
 		display: flex;
 		align-items: center;
 		flex-wrap: wrap;
-		gap: var(--ax-space-8);
+		gap: var(--nais-space-8);
 	}
 
 	.delivery-result {

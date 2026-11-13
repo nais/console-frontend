@@ -96,21 +96,21 @@
 	form {
 		display: flex;
 		flex-direction: column;
-		gap: var(--ax-space-16);
+		gap: var(--nais-space-16);
 	}
 
 	.actions {
 		display: flex;
-		gap: var(--ax-space-8);
+		gap: var(--nais-space-8);
 	}
 
 	.token-secret {
 		display: flex;
 		align-items: center;
-		gap: var(--ax-space-8);
-		background-color: var(--ax-bg-sunken);
-		padding: var(--ax-space-12);
-		border-radius: var(--ax-radius-8);
+		gap: var(--nais-space-8);
+		background-color: var(--background-subtle);
+		padding: var(--nais-space-12);
+		border-radius: var(--nais-radius-8);
 		overflow-x: auto;
 	}
 

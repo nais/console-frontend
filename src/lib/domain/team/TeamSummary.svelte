@@ -240,7 +240,7 @@
 	.metrics {
 		display: grid;
 		grid-template-columns: repeat(4, minmax(0, 1fr));
-		gap: var(--ax-space-12);
+		gap: var(--nais-space-12);
 	}
 
 	.metric {
@@ -249,8 +249,8 @@
 		flex-direction: column;
 		align-items: stretch;
 		justify-content: space-between;
-		gap: var(--ax-space-8);
-		padding: var(--ax-space-14) var(--ax-space-16);
+		gap: var(--nais-space-8);
+		padding: var(--nais-space-14) var(--nais-space-16);
 		border-radius: var(--radius);
 		text-decoration: none;
 		color: inherit;
@@ -274,7 +274,7 @@
 		display: flex;
 		align-items: center;
 		justify-content: space-between;
-		gap: var(--ax-space-8);
+		gap: var(--nais-space-8);
 		width: 100%;
 	}
 
@@ -288,8 +288,8 @@
 		display: inline-flex;
 		align-items: center;
 		justify-content: center;
-		width: var(--ax-space-28);
-		height: var(--ax-space-28);
+		width: var(--nais-space-28);
+		height: var(--nais-space-28);
 		flex-shrink: 0;
 		border-radius: var(--radius-md);
 		font-size: var(--sh-font-size-body);
@@ -320,13 +320,13 @@
 		display: flex;
 		align-items: flex-end;
 		justify-content: space-between;
-		gap: var(--ax-space-8);
+		gap: var(--nais-space-8);
 	}
 
 	.metric-body {
 		display: flex;
 		flex-direction: column;
-		gap: var(--ax-space-2);
+		gap: var(--nais-space-2);
 		min-width: 0;
 	}
 
@@ -356,7 +356,7 @@
 		white-space: nowrap;
 		display: flex;
 		flex-wrap: wrap;
-		gap: var(--ax-space-4);
+		gap: var(--nais-space-4);
 	}
 
 	.sparkline {

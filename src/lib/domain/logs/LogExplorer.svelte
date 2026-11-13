@@ -866,7 +866,7 @@
 	form,
 	.settings {
 		display: grid;
-		gap: var(--ax-space-8);
+		gap: var(--nais-space-8);
 		min-width: 0;
 	}
 
@@ -883,7 +883,7 @@
 	.result-status {
 		display: flex;
 		flex-wrap: wrap;
-		gap: var(--ax-space-8);
+		gap: var(--nais-space-8);
 		align-items: center;
 	}
 
@@ -901,12 +901,12 @@
 	}
 
 	.time-controls {
-		gap: var(--ax-space-2);
+		gap: var(--nais-space-2);
 		max-width: 100%;
 	}
 
 	.instance-field {
-		width: min(100%, calc(var(--ax-space-64) * 4));
+		width: min(100%, calc(var(--nais-space-64) * 4));
 		min-width: 0;
 	}
 
@@ -916,11 +916,11 @@
 	}
 
 	.result-status {
-		margin-block: var(--ax-space-8);
+		margin-block: var(--nais-space-8);
 	}
 
 	.settings {
-		max-width: min(calc(var(--ax-space-64) * 4), calc(100vw - var(--ax-space-16) * 2));
+		max-width: min(calc(var(--nais-space-64) * 4), calc(100vw - var(--nais-space-16) * 2));
 	}
 
 	.context {
@@ -930,18 +930,18 @@
 	}
 
 	.query-preview {
-		margin-block: var(--ax-space-8);
+		margin-block: var(--nais-space-8);
 	}
 
 	.executed-query {
 		display: grid;
-		gap: var(--ax-space-16);
+		gap: var(--nais-space-16);
 		min-width: 0;
-		margin-block-end: var(--ax-space-24);
+		margin-block-end: var(--nais-space-24);
 	}
 
 	.executed-query form {
-		gap: var(--ax-space-16);
+		gap: var(--nais-space-16);
 	}
 
 	.query-preview summary {
@@ -957,7 +957,7 @@
 	.older {
 		display: grid;
 		justify-items: center;
-		gap: var(--ax-space-8);
+		gap: var(--nais-space-8);
 	}
 
 	@media (max-width: 767px) {

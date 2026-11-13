@@ -53,7 +53,7 @@
 			};
 		}}
 	>
-		<BodyLong style="margin-bottom: var(--ax-space-16);">
+		<BodyLong style="margin-bottom: var(--nais-space-16);">
 			Set the number of replicas for <strong>{page.params.app}</strong> in
 			<strong>{page.params.env}</strong>.
 		</BodyLong>
@@ -95,7 +95,7 @@
 	.wrapper {
 		display: flex;
 		flex-direction: column;
-		gap: var(--ax-space-8);
+		gap: var(--nais-space-8);
 		width: 500px;
 		align-items: flex-start;
 	}
@@ -109,12 +109,12 @@
 	}
 
 	form :global(> *) {
-		margin-bottom: var(--ax-space-16);
+		margin-bottom: var(--nais-space-16);
 	}
 
 	.button-row {
 		display: flex;
-		gap: var(--ax-space-8);
+		gap: var(--nais-space-8);
 		align-items: center;
 	}
 </style>

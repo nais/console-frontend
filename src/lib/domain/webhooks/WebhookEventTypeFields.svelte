@@ -90,7 +90,7 @@
 <style>
 	.event-groups {
 		column-count: 2;
-		column-gap: var(--ax-space-24);
+		column-gap: var(--nais-space-24);
 	}
 
 	.event-options:has(:global(input[value='all']:checked)) + .event-groups {
@@ -100,12 +100,12 @@
 	fieldset {
 		break-inside: avoid;
 		min-width: 0;
-		margin: 0 0 var(--ax-space-24);
-		padding: var(--ax-space-16);
+		margin: 0 0 var(--nais-space-24);
+		padding: var(--nais-space-16);
 		border: var(--sh-border-width) solid var(--border);
 		border-radius: var(--radius-md);
 		display: grid;
-		gap: var(--ax-space-12);
+		gap: var(--nais-space-12);
 		overflow-wrap: anywhere;
 	}
 
@@ -115,8 +115,8 @@
 
 	.group-events {
 		display: grid;
-		gap: var(--ax-space-12);
-		padding-inline-start: var(--ax-space-24);
+		gap: var(--nais-space-12);
+		padding-inline-start: var(--nais-space-24);
 		min-width: 0;
 	}
 

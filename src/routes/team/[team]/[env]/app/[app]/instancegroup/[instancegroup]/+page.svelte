@@ -513,20 +513,20 @@
 
 <style>
 	.group-selector {
-		margin-bottom: var(--ax-space-16);
+		margin-bottom: var(--nais-space-16);
 	}
 
 	.toggle-label {
 		display: flex;
 		flex-direction: column;
 		align-items: flex-start;
-		gap: var(--ax-space-2);
+		gap: var(--nais-space-2);
 	}
 
 	.toggle-role-name {
 		display: flex;
 		align-items: baseline;
-		gap: var(--ax-space-6);
+		gap: var(--nais-space-6);
 	}
 
 	.toggle-role {
@@ -548,7 +548,7 @@
 	.page-content {
 		display: flex;
 		flex-direction: column;
-		gap: var(--ax-space-40);
+		gap: var(--nais-space-40);
 		width: 100%;
 	}
 
@@ -559,13 +559,13 @@
 	.image-line {
 		display: flex;
 		flex-direction: column;
-		gap: var(--ax-space-4);
+		gap: var(--nais-space-4);
 	}
 
 	.image-url {
 		display: flex;
 		align-items: baseline;
-		gap: var(--ax-space-8);
+		gap: var(--nais-space-8);
 	}
 
 	.image-line code {
@@ -577,30 +577,30 @@
 	.main-column {
 		display: flex;
 		flex-direction: column;
-		gap: var(--ax-space-24);
+		gap: var(--nais-space-24);
 	}
 
 	.section {
 		display: flex;
 		flex-direction: column;
-		gap: var(--ax-space-16);
+		gap: var(--nais-space-16);
 		width: 100%;
 	}
 
 	.page :global(code) {
 		font-size: var(--sh-font-size-sm);
-		color: var(--ax-text-neutral);
+		color: var(--foreground);
 	}
 
 	.resource-cards {
 		display: grid;
 		grid-template-columns: 1fr 1fr;
-		gap: var(--ax-space-12);
+		gap: var(--nais-space-12);
 	}
 
 	.kv-label {
 		font-size: var(--sh-font-size-sm);
-		color: var(--ax-text-neutral-subtle);
+		color: var(--muted-foreground);
 	}
 
 	.kv-value {
@@ -610,13 +610,13 @@
 	.scaling-stats {
 		display: flex;
 		flex-wrap: wrap;
-		gap: var(--ax-space-24);
+		gap: var(--nais-space-24);
 	}
 
 	.scaling-stat {
 		display: flex;
 		flex-direction: column;
-		gap: var(--ax-space-4);
+		gap: var(--nais-space-4);
 	}
 
 	@media (max-width: 767px) {
@@ -626,13 +626,13 @@
 	}
 
 	.muted {
-		color: var(--ax-text-neutral-subtle);
+		color: var(--muted-foreground);
 	}
 
 	.instances-list {
 		--instancegroup-list-columns: minmax(0, 3fr) auto minmax(0, 2fr) minmax(0, 2fr);
 		font-size: var(--sh-font-size-sm);
-		color: var(--ax-text-neutral-subtle);
+		color: var(--muted-foreground);
 	}
 
 	.instances-item {
@@ -650,7 +650,7 @@
 	}
 
 	.instance-link {
-		color: var(--ax-text-neutral);
+		color: var(--foreground);
 		overflow-wrap: anywhere;
 		word-break: break-word;
 	}

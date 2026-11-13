@@ -7,7 +7,7 @@
 <span class="error-indicator" role="img" aria-label={label} title={label}>
 	<ExclamationmarkTriangleIcon
 		aria-hidden="true"
-		style="width: var(--ax-space-16); height: var(--ax-space-16)"
+		style="width: var(--nais-space-16); height: var(--nais-space-16)"
 	/>
 </span>
 
@@ -15,7 +15,7 @@
 	.error-indicator {
 		display: inline-flex;
 		align-items: center;
-		color: var(--ax-text-danger);
+		color: var(--destructive);
 		animation: error-pulse 2s ease-in-out infinite;
 	}
 

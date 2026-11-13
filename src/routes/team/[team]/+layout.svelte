@@ -48,13 +48,13 @@
 	.team-workspace {
 		display: flex;
 		flex-direction: column;
-		gap: var(--ax-space-20);
+		gap: var(--nais-space-20);
 		width: 100%;
 		min-width: 0;
 	}
 
 	.team-banner {
-		padding: var(--ax-space-12) var(--ax-space-16);
+		padding: var(--nais-space-12) var(--nais-space-16);
 		border-radius: var(--radius);
 		font-size: var(--sh-font-size-sm);
 		font-weight: 500;
@@ -76,7 +76,7 @@
 	.team-main {
 		display: flex;
 		flex-direction: column;
-		gap: var(--ax-space-20);
+		gap: var(--nais-space-20);
 		min-width: 0;
 	}
 

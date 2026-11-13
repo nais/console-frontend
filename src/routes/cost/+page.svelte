@@ -333,7 +333,7 @@
 	section.graph {
 		display: flex;
 		flex-direction: column;
-		gap: var(--ax-space-16);
+		gap: var(--nais-space-16);
 	}
 
 	.heading {
@@ -353,7 +353,7 @@
 		.heading {
 			flex-direction: column;
 			align-items: flex-start;
-			gap: var(--ax-space-16);
+			gap: var(--nais-space-16);
 		}
 
 		.content {

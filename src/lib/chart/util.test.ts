@@ -202,29 +202,29 @@ describe('chart/util', () => {
 
 	describe('getSegmentFill', () => {
 		test('returns neutral fill for inactive segment', () => {
-			expect(getSegmentFill(10, false, 36)).toBe('var(--ax-border-neutral)');
+			expect(getSegmentFill(10, false, 36)).toBe('var(--border-strong)');
 		});
 
 		test('returns neutral fill when total segments is invalid', () => {
-			expect(getSegmentFill(0, true, 0)).toBe('var(--ax-border-neutral)');
+			expect(getSegmentFill(0, true, 0)).toBe('var(--border-strong)');
 		});
 
 		test('returns success fill below warning threshold', () => {
-			expect(getSegmentFill(0, true, 36)).toBe('var(--ax-text-success-decoration)');
-			expect(getSegmentFill(24, true, 36)).toBe('var(--ax-text-success-decoration)');
+			expect(getSegmentFill(0, true, 36)).toBe('var(--success)');
+			expect(getSegmentFill(24, true, 36)).toBe('var(--success)');
 		});
 
 		test('returns warning fill between warning and danger thresholds', () => {
-			expect(getSegmentFill(28, true, 36)).toBe('var(--ax-text-warning-decoration)');
+			expect(getSegmentFill(28, true, 36)).toBe('var(--warning)');
 		});
 
 		test('returns danger fill above danger threshold', () => {
-			expect(getSegmentFill(35, true, 36)).toBe('var(--ax-text-danger-decoration)');
+			expect(getSegmentFill(35, true, 36)).toBe('var(--destructive)');
 		});
 
 		test('supports custom threshold values', () => {
-			expect(getSegmentFill(7, true, 10, 50, 80)).toBe('var(--ax-text-warning-decoration)');
-			expect(getSegmentFill(9, true, 10, 50, 80)).toBe('var(--ax-text-danger-decoration)');
+			expect(getSegmentFill(7, true, 10, 50, 80)).toBe('var(--warning)');
+			expect(getSegmentFill(9, true, 10, 50, 80)).toBe('var(--destructive)');
 		});
 	});
 });

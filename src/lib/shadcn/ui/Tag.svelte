@@ -92,7 +92,7 @@
 	.sh-ui-tag {
 		display: inline-flex;
 		align-items: center;
-		gap: var(--ax-space-4);
+		gap: var(--nais-space-4);
 		border-radius: var(--radius-xs);
 		font-weight: var(--sh-font-weight-medium);
 		border: var(--sh-border-width) solid transparent;
@@ -101,15 +101,15 @@
 		font-variant-numeric: tabular-nums;
 	}
 	.size-medium {
-		padding: var(--ax-space-2) var(--ax-space-8);
+		padding: var(--nais-space-2) var(--nais-space-8);
 		font-size: var(--sh-font-size-xs);
 	}
 	.size-small {
-		padding: var(--ax-space-2) var(--ax-space-6);
+		padding: var(--nais-space-2) var(--nais-space-6);
 		font-size: var(--sh-font-size-caption);
 	}
 	.size-xsmall {
-		padding: var(--ax-space-1) var(--ax-space-6);
+		padding: var(--nais-space-1) var(--nais-space-6);
 		font-size: var(--sh-font-size-micro);
 	}
 	.tone-secondary {

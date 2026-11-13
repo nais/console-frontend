@@ -423,7 +423,7 @@
 		display: flex;
 		align-items: flex-start;
 		justify-content: center;
-		padding: 10vh var(--ax-space-16) var(--ax-space-32) var(--ax-space-16);
+		padding: 10vh var(--nais-space-16) var(--nais-space-32) var(--nais-space-16);
 	}
 
 	.cmdk-backdrop {

@@ -164,17 +164,17 @@
 	.details {
 		display: flex;
 		flex-direction: column;
-		gap: var(--ax-space-6);
+		gap: var(--nais-space-6);
 		min-width: 0;
 	}
 
 	.workflow-row {
 		display: inline-flex;
 		align-items: center;
-		gap: var(--ax-space-6);
+		gap: var(--nais-space-6);
 		font-size: var(--sh-font-size-sm);
 		line-height: 1.4;
-		padding: var(--ax-space-6) var(--ax-space-10);
+		padding: var(--nais-space-6) var(--nais-space-10);
 		border-radius: var(--radius-md);
 		background-color: color-mix(in srgb, var(--background) 60%, var(--card));
 		border: var(--sh-border-width) solid var(--border);

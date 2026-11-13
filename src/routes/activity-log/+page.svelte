@@ -289,16 +289,16 @@
 
 	.date-range {
 		display: grid;
-		gap: var(--ax-space-8);
+		gap: var(--nais-space-8);
 	}
 
 	.empty-state {
-		color: var(--ax-text-neutral-subtle);
+		color: var(--muted-foreground);
 	}
 
 	@media (max-width: 767px) {
 		.container {
-			gap: var(--ax-space-16);
+			gap: var(--nais-space-16);
 		}
 	}
 </style>

@@ -20,8 +20,8 @@
 	<title>Log in - Nais Console</title>
 	<style>
 		body {
-			background: var(--ax-bg-default);
-			background: linear-gradient(135deg, var(--ax-bg-default) 0%, var(--active-color) 100%);
+			background: var(--card);
+			background: linear-gradient(135deg, var(--card) 0%, var(--active-color) 100%);
 		}
 	</style>
 </svelte:head>
@@ -89,7 +89,7 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		height: calc(100vh - var(--ax-space-16));
+		height: calc(100vh - var(--nais-space-16));
 	}
 
 	.login {
@@ -101,12 +101,12 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		gap: var(--ax-space-12);
-		padding: var(--ax-space-20) var(--ax-space-32);
-		background: var(--ax-bg-success-moderate);
-		color: var(--ax-text-success-subtle);
-		border-radius: var(--ax-radius-8);
-		margin-bottom: var(--ax-space-32);
+		gap: var(--nais-space-12);
+		padding: var(--nais-space-20) var(--nais-space-32);
+		background: var(--success-muted);
+		color: var(--success);
+		border-radius: var(--nais-radius-8);
+		margin-bottom: var(--nais-space-32);
 		font-size: var(--sh-font-size-xl);
 		font-weight: 700;
 		box-shadow: none;
@@ -123,15 +123,15 @@
 	}
 
 	.help {
-		color: var(--ax-text-neutral-subtle);
-		margin-top: var(--ax-space-64);
+		color: var(--muted-foreground);
+		margin-top: var(--nais-space-64);
 		text-align: left;
 	}
 
 	.line {
 		display: flex;
 		align-items: center;
-		gap: var(--ax-space-8);
+		gap: var(--nais-space-8);
 
 		:global(> *:first-child) {
 			flex-grow: 1;
@@ -139,10 +139,10 @@
 	}
 
 	.note {
-		margin-top: var(--ax-space-8);
+		margin-top: var(--nais-space-8);
 		margin-bottom: 0;
 		font-size: var(--sh-font-size-base);
-		color: var(--ax-text-neutral-subtle);
+		color: var(--muted-foreground);
 		text-align: left;
 	}
 </style>

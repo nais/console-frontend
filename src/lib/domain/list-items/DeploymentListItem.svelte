@@ -119,12 +119,12 @@
 	}
 
 	ul {
-		margin: var(--ax-space-4) 0 0 0;
-		padding-left: var(--ax-space-16);
+		margin: var(--nais-space-4) 0 0 0;
+		padding-left: var(--nais-space-16);
 	}
 
 	.kind {
-		color: var(--ax-text-neutral-subtle);
+		color: var(--muted-foreground);
 	}
 
 	.status {
@@ -136,7 +136,7 @@
 	@media (max-width: 767px), (max-height: 500px) {
 		.status {
 			align-items: flex-end;
-			margin-top: var(--ax-space-6);
+			margin-top: var(--nais-space-6);
 		}
 	}
 </style>
