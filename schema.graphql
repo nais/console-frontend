@@ -3722,14 +3722,13 @@ type ImageVulnerabilityConnection {
   """List of edges."""
   edges: [ImageVulnerabilityEdge!]!
 
+  """
+  Facets over all matching findings, ignoring pagination and respecting the current filter.
+  """
+  facets: ImageVulnerabilityFacets
+
   """List of nodes."""
   nodes: [ImageVulnerability!]!
-
-  """
-  Registered PURL types for this image, including suppressed findings.
-  Independent of pagination and vulnerability filters.
-  """
-  packageTypes: [String!]!
 
   """Information to aid in pagination."""
   pageInfo: PageInfo!
@@ -3741,6 +3740,11 @@ type ImageVulnerabilityEdge {
 
   """The image vulnerability."""
   node: ImageVulnerability!
+}
+
+type ImageVulnerabilityFacets {
+  """Distribution of matching findings by PURL type."""
+  packageTypes: [StringFacetItem!]!
 }
 
 """Input for filtering image vulnerabilities."""
