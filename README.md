@@ -55,7 +55,8 @@ When changing layouts, lists, tables, or chart-heavy pages, validate in responsi
 
 ### CSS Architecture
 
-Styles use `@layer` ordering and shared tokens in [shadcn.css](src/styles/shadcn.css) and [app.css](src/styles/app.css):
+Styles use `@layer` ordering and shared [UI tokens](packages/ui/src/lib/tokens.css).
+Console-specific tokens and rules remain in [shadcn.css](src/styles/shadcn.css) and [app.css](src/styles/app.css):
 
 - **Tokens**: Use `--sh-font-*` for typography, `--nais-space-*` for spacing, `--nais-radius-*` and `--radius-*` for radii, and semantic tokens such as `--foreground`, `--card`, `--border`, and `--destructive` for colors. Fixed palette colors use `--nais-blue-*`, `--nais-purple-*`, and `--nais-magenta-*`; breakpoints use `--nais-breakpoint-*`. Typography has one canonical token set; semibold is 600 and bold is 700.
 - **Exact replacements**: Mechanical replacements must use existing, property-appropriate tokens of the same value. Do not round sizes or use spacing tokens for typography. Unmatched values, sizing changes, and new semantic tokens require design review.
@@ -64,6 +65,110 @@ Styles use `@layer` ordering and shared tokens in [shadcn.css](src/styles/shadcn
 - **Utility classes**: `src/styles/app.css` provides `.layout-two-column`, `.layout-sidebar`, `.table-scroll`, `.detail-actions`, `.loading-centered` for common patterns
 - **LayerChart theming**: `src/styles/layerchart.css` maps chart library variables to design tokens. The `.dark` block must mirror the `:root` declarations (tokens resolve differently per scope)
 - **Validation**: Run `pnpm run lint` — ESLint checks missing CSS variables, exact existing token matches for literal `rem` spacing/typography/radii, and unused GraphQL files. Dimensions require semantic review; unmatched lengths and layout constraints are not rejected by the exact-match rule.
+
+### Shared UI package
+
+[packages/ui](packages/ui) is the `@nais/ui` workspace package. Console stays at the
+repository root and consumes it through `workspace:*`; its existing UI barrel also
+preserves the `ShButton` alias. Build, check, dev and browser-test commands build
+the package first. For live package edits, run `pnpm --filter @nais/ui exec svelte-package --watch`
+alongside the app.
+
+Public exports are `Button`, `Modal`, `Theme`, and the types `ButtonProps`, `ModalProps`,
+`ModalHeaderProps`, `ThemeProps`. Existing variants, sizes, compatibility aliases and
+dialog behavior are unchanged. Loader, Heading and Detail are private implementation
+details; Console retains its own existing presenters rather than exposing these
+as shared API in this first extraction.
+
+In another Svelte 5 app, import the components from `@nais/ui` and load CSS once:
+
+```css
+@layer theme, base, components, utilities;
+@import '@nais/ui/tokens.css' layer(components);
+@import '@nais/ui/theme.css';
+```
+
+`tokens.css` contains shared spacing/radius/typography scales, semantic palettes,
+shadows and primitive component dimensions. `theme.css` preserves Lucide sizing in
+the components layer and the unlayered, zero-specificity light/dark color-scheme
+selectors. Console imports tokens through its existing layered `shadcn.css` and
+theme rules through `app.css`. Keep this order and layering when integrating elsewhere.
+Both explicit nested themes and theme-scoped modal portals are supported.
+
+Hosts own box sizing, root font size, font loading, body styling and layout.
+Console's page/sidebar/chart tokens, utility classes, navigation, LayerChart mappings,
+global links and body rules stay in Console. Theme preference persistence is not
+part of the package.
+
+The package requires Svelte `^5.57.3` as a peer; Bits UI and Lucide are declared
+runtime dependencies. `@sveltejs/package` generates distributable Svelte files and
+TypeScript declarations without Console aliases or a SvelteKit runtime dependency.
+
+```bash
+pnpm --filter @nais/ui build
+pnpm --dir packages/ui pack --pack-destination "$TMPDIR"
+pnpm run test:package
+```
+
+`test:package` packs the library, installs the tarball into a temporary copy of the
+[minimal Svelte consumer](tests/package-consumer) outside the workspace, checks
+types, and builds client and SSR outputs. It removes its temporary files on exit.
+No registry publication is performed. Before adopting this in doc, reconcile that
+app's existing component APIs, visual defaults, CSS layers and host styles, then
+validate its own themes and portals. Neither doc nor m8e is migrated here.
+
+#### Versioning and distribution
+
+`@nais/ui` is distributed through the same public Google Artifact Registry as
+`@nais/ds-svelte-community`, not through npmjs.org. Its `publishConfig` pins the
+destination to prevent publishing to the wrong registry.
+
+Consumers need this scope mapping in their project `.npmrc` (already present in Console):
+
+```ini
+@nais:registry=https://europe-north1-npm.pkg.dev/nais-io/nais-public-npm/
+```
+
+Once the first release has been published, doc can replace the pilot tarball with:
+
+```bash
+pnpm add --save-exact @nais/ui@0.1.0
+```
+
+The registry grants public read access; consumers do not need a publishing token.
+Console itself keeps using `workspace:*`.
+
+For changes to the shared package, run `pnpm changeset`, select `@nais/ui`, choose
+the version bump, and commit the generated changeset with the implementation.
+App-only changes do not need a UI changeset. The initial minor changeset moves the
+unpublished `0.0.1` package to `0.1.0`; later fixes use patch bumps, while additive
+features and breaking changes during `0.x` should use minor bumps.
+The CLI stays on Changesets 2 while the release action relies on its `New tag:`
+output to create GitHub releases; validate that integration before upgrading to CLI 3.
+
+[Release UI package](.github/workflows/ui-release.yaml) runs on relevant changes to
+`main` and can also be dispatched manually on `main`. It validates the code and packed
+consumer before using Changesets to create or update a draft release PR. The PR contains
+the package version, changelog, consumed changesets and any lockfile update; it does not
+version or publish the private Console app.
+
+Mark the release PR **Ready for review** as a human after each bot update. This triggers
+the normal PR checks through `ready_for_review`, even though the release PR is created
+with `GITHUB_TOKEN` (bot-created events do not trigger another workflow). Bot updates
+return the PR to draft so the new version is checked again. Review and merge only after
+the checks pass.
+
+After the release PR merges, the next release run publishes unpublished versions and
+creates a package tag/GitHub release, such as `@nais/ui@0.1.0`. Published versions are
+immutable; further changes require another changeset. Re-running the workflow skips
+versions that are already published.
+
+Publishing uses GitHub OIDC and `gh-console-frontend@nais-io.iam.gserviceaccount.com`,
+with `roles/artifactregistry.writer` on `nais-public-npm`. A short-lived access token
+is referenced from a temporary npm config and removed after the action; no static npm
+token or service-account key is stored in the repository. Terraform manages the IAM
+binding; it must be applied before publishing. No package is published merely by
+installing dependencies, building Console, or running `test:package`.
 
 #### AI-Assisted Development
 

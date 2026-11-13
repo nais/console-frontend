@@ -81,7 +81,10 @@ describe('exact rem token matches', () => {
 	});
 
 	it.each(['"', "'"])('respects %s attribute boundaries with the real token catalogue', (quote) => {
-		const catalogue = fs.readFileSync(new URL('../src/styles/shadcn.css', import.meta.url), 'utf8');
+		const catalogue = fs.readFileSync(
+			new URL('../packages/ui/src/lib/tokens.css', import.meta.url),
+			'utf8'
+		);
 		const source = `<div style=${quote}font-size: 0.9rem${quote} title=${quote}1rem${quote} style:margin-top|important=${quote}1rem${quote}></div>`;
 		const matches = findTokenizableRems(source, catalogue, 'Example.svelte');
 		expect(
@@ -189,7 +192,11 @@ describe('exact rem token matches', () => {
 
 	it('allows canonical token definitions but checks regular declarations in token files', () => {
 		const source = ':root { --example: 1rem; } .example { padding: 1rem; }';
-		for (const filename of ['src/styles/shadcn.css', 'src/styles/app.css']) {
+		for (const filename of [
+			'src/styles/shadcn.css',
+			'src/styles/app.css',
+			'packages/ui/src/lib/tokens.css'
+		]) {
 			expect(findTokenizableRems(source, tokens, filename).map((match) => match.property)).toEqual([
 				'padding'
 			]);
@@ -200,7 +207,12 @@ describe('exact rem token matches', () => {
 		const root = fs.mkdtempSync(path.join(os.tmpdir(), 'console-rem-tokens-'));
 		fixtures.push(root);
 		fs.mkdirSync(path.join(root, 'src/styles'), { recursive: true });
-		fs.writeFileSync(path.join(root, 'src/styles/shadcn.css'), `:root { ${tokens} }`);
+		fs.mkdirSync(path.join(root, 'packages/ui/src/lib'), { recursive: true });
+		fs.writeFileSync(path.join(root, 'packages/ui/src/lib/tokens.css'), `:root { ${tokens} }`);
+		fs.writeFileSync(
+			path.join(root, 'packages/ui/src/lib/Example.svelte'),
+			'<style>p { padding: 1rem; }</style>'
+		);
 		fs.writeFileSync(
 			path.join(root, 'src/Example.svelte'),
 			'<style>\np { gap: 0.5rem; padding: 0.3rem; }\n</style>'
@@ -211,7 +223,8 @@ describe('exact rem token matches', () => {
 		listeners['Program:exit']();
 		expect(report.mock.calls.map(([entry]) => entry.message)).toEqual([
 			`${path.join('src', 'Example.svelte')}:2: gap: 0.5rem should use var(--nais-space-8).`,
-			`${path.join('src', 'styles', 'example.css')}:1: font-size: 0.875rem should use var(--sh-font-size-sm).`
+			`${path.join('src', 'styles', 'example.css')}:1: font-size: 0.875rem should use var(--sh-font-size-sm).`,
+			`${path.join('packages', 'ui', 'src', 'lib', 'Example.svelte')}:1: padding: 1rem should use var(--nais-space-16).`
 		]);
 	});
 

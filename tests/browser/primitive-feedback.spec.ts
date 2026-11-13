@@ -4,9 +4,12 @@ import { expect, test, type Locator } from '@playwright/test';
 const themeProperties = [
 	...new Set(
 		[
-			...readFileSync(new URL('../../src/styles/shadcn.css', import.meta.url), 'utf8').matchAll(
-				/(--[\w-]+)\s*:/g
-			)
+			...[
+				readFileSync(new URL('../../src/styles/shadcn.css', import.meta.url), 'utf8'),
+				readFileSync(new URL('../../packages/ui/src/lib/tokens.css', import.meta.url), 'utf8')
+			]
+				.join('\n')
+				.matchAll(/(--[\w-]+)\s*:/g)
 		].map(([, name]) => name)
 	)
 ];

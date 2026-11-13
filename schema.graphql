@@ -885,9 +885,7 @@ type Application implements ActivityLogger & Node & Workload {
   """OpenSearch instance referenced by the workload."""
   openSearch: OpenSearch
 
-  """
-  Postgres references configured in uses.postgres, including their resolved branch.
-  """
+  """Postgres references configured in uses.postgres."""
   postgreses(
     """Get items after this cursor."""
     after: Cursor
@@ -2395,7 +2393,7 @@ type CreateConfigPayload {
 }
 
 input CreateKafkaCredentialsInput {
-  """The environment name that the Kafka topic belongs to."""
+  """The environment to create Kafka credentials for."""
   environmentName: String!
 
   """The team that owns the Kafka topic."""
@@ -2408,6 +2406,9 @@ input CreateKafkaCredentialsInput {
 type CreateKafkaCredentialsPayload {
   """The generated credentials."""
   credentials: KafkaCredentials!
+
+  """The environment the Kafka credentials were created for."""
+  environmentName: String!
 }
 
 input CreateOpenSearchCredentialsInput {
@@ -2482,9 +2483,6 @@ type CreateOpenSearchPayload {
 input CreatePostgresAccessInput {
   """Privileges requested for the personal database role."""
   accessLevel: PostgresAccessLevel!
-
-  """Legacy branch selection. Omit for normal database access."""
-  branch: String
 
   """Environment containing the Postgres."""
   environmentName: String!
@@ -2914,7 +2912,7 @@ type DeleteOpenSearchPayload {
 }
 
 """
-Select the Postgres to delete. All branches and stored data are removed asynchronously by the platform.
+Select the Postgres to delete. Its resources and stored data are removed asynchronously by the platform.
 """
 input DeletePostgresInput {
   """Environment containing the Postgres."""
@@ -4211,9 +4209,6 @@ enum IssueType {
 
   """Postgres database failure."""
   POSTGRES
-
-  """Raised when a Postgres branch has reported a failure."""
-  POSTGRES_BRANCH @deprecated(reason: "Use POSTGRES instead.")
   SQLINSTANCE_STATE
   SQLINSTANCE_VERSION
   UNLEASH_RELEASE_CHANNEL
@@ -4402,9 +4397,7 @@ type Job implements ActivityLogger & Node & Workload {
   """OpenSearch instance referenced by the workload."""
   openSearch: OpenSearch
 
-  """
-  Postgres references configured in uses.postgres, including their resolved branch.
-  """
+  """Postgres references configured in uses.postgres."""
   postgreses(
     """Get items after this cursor."""
     after: Cursor
@@ -5464,14 +5457,12 @@ type Mutation {
   """Create temporary credentials for an OpenSearch instance."""
   createOpenSearchCredentials(input: CreateOpenSearchCredentialsInput!): CreateOpenSearchCredentialsPayload!
 
-  """
-  Create a new Postgres. Its first branch, main, is created and activated by the platform.
-  """
+  """Create a new Postgres database."""
   createPostgres(input: CreatePostgresInput!): CreatePostgresPayload!
 
   """
   EXPERIMENTAL: DO NOT USE
-  Create time-limited personal access to a Postgres branch.
+  Create time-limited personal access to a Postgres database.
   When the access is ready, retrieve its connection materials through PostgresAccess.connection.
   """
   createPostgresAccess(input: CreatePostgresAccessInput!): CreatePostgresAccessPayload!
@@ -5555,7 +5546,7 @@ type Mutation {
   deleteOpenSearch(input: DeleteOpenSearchInput!): DeleteOpenSearchPayload!
 
   """
-  Request deletion of an entire Postgres and all its branches/data. Fails while workloads or bindings reference it; cleanup is asynchronous.
+  Request deletion of a Postgres database and its data. Fails while workloads or bindings reference it; cleanup is asynchronous.
   """
   deletePostgres(input: DeletePostgresInput!): DeletePostgresPayload!
 
@@ -6347,9 +6338,6 @@ interface Persistence implements Node {
 
 """A managed Postgres database."""
 type Postgres implements ActivityLogger & Node {
-  """Currently observed active branch, if selected."""
-  activeBranch: PostgresBranch
-
   """Activity log associated with this Postgres."""
   activityLog(
     """Get items after this cursor."""
@@ -6372,22 +6360,11 @@ type Postgres implements ActivityLogger & Node {
     last: Int
   ): ActivityLogEntryConnection!
 
-  """Branch with this local name in this Postgres."""
-  branch(name: String!): PostgresBranch!
-
-  """Branches belonging to this Postgres."""
-  branches(after: Cursor, before: Cursor, first: Int, last: Int, orderBy: PostgresBranchOrder): PostgresBranchConnection!
-
   """Observed PostgreSQL configuration, when available."""
   configuration: PostgresConfiguration
 
   """When this Postgres was created."""
   createdAt: Time!
-
-  """
-  Branch requested for activation; may differ from the active branch while activation is in progress.
-  """
-  desiredActiveBranch: String
 
   """Earliest point in time covered by available backups, when known."""
   earliestRestoreTime: Time
@@ -6445,9 +6422,7 @@ type Postgres implements ActivityLogger & Node {
   """Team environment containing this Postgres."""
   teamEnvironment: TeamEnvironment!
 
-  """
-  Workloads referencing this Postgres, including references to inactive branches and workloads following the active branch. Each workload is included once.
-  """
+  """Workloads referencing this Postgres. Each workload is included once."""
   workloads(
     """Get items after this cursor."""
     after: Cursor
@@ -6488,9 +6463,6 @@ type PostgresAccess implements Node {
 
   """Postgres selected by this access."""
   postgres: Postgres!
-
-  """Legacy branch view of the database selected by this access."""
-  postgresBranch: PostgresBranch! @deprecated(reason: "Use postgres instead.")
 
   """Connection routing identifier, once available. Contains no credential."""
   relayAccess: String
@@ -6568,79 +6540,6 @@ enum PostgresAccessState {
   READY
 }
 
-"""A named PostgresBranch belonging to a Postgres."""
-type PostgresBranch implements Node & Persistence {
-  """
-  Configured PostgreSQL settings for this branch. Null until configuration is available.
-  """
-  configuration: PostgresConfiguration
-
-  """Time when this branch was created."""
-  createdAt: Time!
-
-  """
-  Earliest time the branch can currently be restored from its archived backups.
-  """
-  earliestRestoreTime: Time
-  id: ID!
-
-  """Issues affecting this branch."""
-  issues(
-    """Get items after this cursor."""
-    after: Cursor
-
-    """Get items before this cursor."""
-    before: Cursor
-
-    """Filtering options for the issues."""
-    filter: ResourceIssueFilter
-
-    """Get the first n items in the connection."""
-    first: Int
-
-    """Get the last n items in the connection."""
-    last: Int
-
-    """Ordering options for the issues."""
-    orderBy: IssueOrder
-  ): IssueConnection!
-
-  """User-defined labels on this branch."""
-  labels: [ResourceLabel!]!
-
-  """Local name of this branch within its Postgres."""
-  name: String!
-
-  """Postgres owning this PostgresBranch."""
-  postgres: Postgres!
-
-  """Current observed state of the branch."""
-  state: PostgresBranchState!
-  team: Team!
-  teamEnvironment: TeamEnvironment!
-
-  """
-  Workloads explicitly using this branch, or following it while it is active.
-  """
-  workloads(
-    """Get items after this cursor."""
-    after: Cursor
-
-    """Get items before this cursor."""
-    before: Cursor
-
-    """
-    Get the first n items in the connection. This can be used in combination with the after parameter.
-    """
-    first: Int
-
-    """
-    Get the last n items in the connection. This can be used in combination with the before parameter.
-    """
-    last: Int
-  ): WorkloadConnection!
-}
-
 """
 A request to activate a Postgres branch was accepted; the switchover may still be pending.
 """
@@ -6667,18 +6566,6 @@ type PostgresBranchActivityLogEntryData {
 
   """Recovery instant, populated for branch creation."""
   targetTime: Time
-}
-
-type PostgresBranchConnection {
-  edges: [PostgresBranchEdge!]!
-
-  """
-  Facets for Postgres branches. Provides distribution counts to help narrow down results.
-  Facet counts are computed over the full result set (ignoring pagination) but respect the current filter.
-  """
-  facets: PostgresBranchFacets
-  nodes: [PostgresBranch!]!
-  pageInfo: PageInfo!
 }
 
 """A Postgres branch was created."""
@@ -6713,90 +6600,7 @@ type PostgresBranchDeletedActivityLogEntry implements ActivityLogEntry & Node {
   teamSlug: Slug!
 }
 
-type PostgresBranchEdge {
-  cursor: Cursor!
-  node: PostgresBranch!
-}
-
-"""
-Facets for Postgres branches, providing distribution counts across different dimensions.
-"""
-type PostgresBranchFacets {
-  """Distribution of branches by environment."""
-  environments: [StringFacetItem!]!
-
-  """Distribution of branches by user-defined labels."""
-  labels: [LabelFacetItem!]!
-
-  """Distribution of branches by state."""
-  states: [PostgresBranchStateFacetItem!]!
-}
-
-"""Input for filtering Postgres branches."""
-input PostgresBranchFilter {
-  """Filter by environments."""
-  environments: [String!]
-
-  """Filter by user-defined labels. All listed labels must match."""
-  labels: [LabelFilter!]
-
-  """Filter by the name of the branch."""
-  name: String
-
-  """Filter by branch state."""
-  states: [PostgresBranchState!]
-}
-
-"""Legacy issue type, no longer returned. Use PostgresIssue instead."""
-type PostgresBranchIssue implements Issue & Node {
-  """The branch that reported the failure."""
-  branch: PostgresBranch! @deprecated(reason: "Use PostgresIssue.postgres instead.")
-
-  """Unique identifier for this issue."""
-  id: ID!
-
-  """Description of the reported failure."""
-  message: String!
-
-  """Severity of the reported failure."""
-  severity: Severity!
-
-  """Team environment containing the affected branch."""
-  teamEnvironment: TeamEnvironment!
-}
-
-input PostgresBranchOrder {
-  direction: OrderDirection!
-  field: PostgresBranchOrderField!
-}
-
-enum PostgresBranchOrderField {
-  ENVIRONMENT
-  NAME
-}
-
-"""Provisioning state and observed health of a PostgresBranch."""
-enum PostgresBranchState {
-  """The branch is healthy and ready."""
-  AVAILABLE
-
-  """The branch has reported a failure."""
-  DEGRADED
-
-  """The branch is provisioning or its state has not been observed yet."""
-  PROGRESSING
-}
-
-"""A single facet item for Postgres branch states."""
-type PostgresBranchStateFacetItem {
-  """Number of matching branches."""
-  count: Int!
-
-  """The Postgres branch state."""
-  state: PostgresBranchState!
-}
-
-"""Configured PostgreSQL settings for a branch."""
+"""Configured PostgreSQL settings for a database."""
 type PostgresConfiguration {
   """
   Explicitly configured PostgreSQL parameters, sorted by name. Implicit default values are not included.
@@ -7127,13 +6931,8 @@ enum PostgresUserRole {
   READWRITE
 }
 
-"""A workload referencing a Postgres and the branch it uses."""
+"""A workload referencing a Postgres database."""
 type PostgresWorkload {
-  """
-  The explicitly referenced branch, or the observed active branch when no branch is specified. Defaults to main when no active branch has been observed; a requested activation does not change this selection until observed.
-  """
-  branch: PostgresBranch!
-
   """The database referenced by this workload."""
   postgres: Postgres!
 
@@ -7142,13 +6941,13 @@ type PostgresWorkload {
 }
 
 """
-A paginated list of workload and branch relationships. Each workload is included once.
+A paginated list of workload and database relationships. Each workload is included once.
 """
 type PostgresWorkloadConnection {
-  """Workload and branch relationships with their pagination cursors."""
+  """Workload and database relationships with their pagination cursors."""
   edges: [PostgresWorkloadEdge!]!
 
-  """Workload and branch relationships on this page."""
+  """Workload and database relationships on this page."""
   nodes: [PostgresWorkload!]!
 
   """
@@ -7157,12 +6956,12 @@ type PostgresWorkloadConnection {
   pageInfo: PageInfo!
 }
 
-"""A workload and branch relationship with its pagination cursor."""
+"""A workload and database relationship with its pagination cursor."""
 type PostgresWorkloadEdge {
   """Cursor for this workload in the connection."""
   cursor: Cursor!
 
-  """The workload and the branch it uses."""
+  """The workload and the database it uses."""
   node: PostgresWorkload!
 }
 
@@ -8097,9 +7896,6 @@ enum ResourceType {
 
   """Postgres database."""
   POSTGRES
-
-  """A branch of a Postgres database."""
-  POSTGRES_BRANCH @deprecated(reason: "Use POSTGRES instead.")
   SQLINSTANCE
   UNLEASH
   VALKEY
@@ -10148,9 +9944,7 @@ type Team implements ActivityLogger & Node {
     orderBy: OpenSearchOrder
   ): OpenSearchConnection!
 
-  """
-  Postgres databases owned by the team, including those without branches.
-  """
+  """Postgres databases owned by the team."""
   postgreses(
     """Get items after this cursor."""
     after: Cursor
@@ -10901,11 +10695,6 @@ type TeamInventoryCountOpenSearches {
   total: Int!
 }
 
-type TeamInventoryCountPostgresBranches {
-  """Total number of Postgres branches."""
-  total: Int!
-}
-
 """Secret inventory count for a team."""
 type TeamInventoryCountSecrets {
   """Total number of secrets."""
@@ -10933,7 +10722,6 @@ type TeamInventoryCounts {
   jobs: TeamInventoryCountJobs!
   kafkaTopics: TeamInventoryCountKafkaTopics!
   openSearches: TeamInventoryCountOpenSearches!
-  postgresBranches: TeamInventoryCountPostgresBranches!
 
   """Secret inventory count for a team."""
   secrets: TeamInventoryCountSecrets!
@@ -13973,9 +13761,7 @@ interface Workload implements ActivityLogger & Node {
   """OpenSearch instance referenced by the workload."""
   openSearch: OpenSearch
 
-  """
-  Postgres references configured in uses.postgres, including their resolved branch.
-  """
+  """Postgres references configured in uses.postgres."""
   postgreses(
     """Get items after this cursor."""
     after: Cursor
@@ -14259,11 +14045,6 @@ enum WorkloadOrderField {
 
 """A Postgres reference from a workload's uses.postgres configuration."""
 type WorkloadPostgres {
-  """
-  The branch this workload resolves to: the explicit branch, observed active branch, or main before an active branch is observed.
-  """
-  branch: PostgresBranch!
-
   """Prefix prepended to the environment variables for this Postgres."""
   envPrefix: String
 
@@ -14293,7 +14074,7 @@ type WorkloadPostgresEdge {
   """Cursor for this Postgres use in the connection."""
   cursor: Cursor!
 
-  """The Postgres use and the branch it resolves to."""
+  """The configured Postgres use."""
   node: WorkloadPostgres!
 }
 

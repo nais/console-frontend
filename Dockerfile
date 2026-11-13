@@ -5,6 +5,7 @@ RUN corepack enable
 WORKDIR /usr/app
 
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml .npmrc ./
+COPY packages/ui/package.json ./packages/ui/package.json
 
 RUN pnpm install --frozen-lockfile
 
@@ -23,6 +24,9 @@ COPY --from=node-with-deps \
 	/usr/app/pnpm-workspace.yaml \
 	/usr/app/.npmrc \
 	./
+
+COPY --from=node-with-deps /usr/app/packages/ui/package.json ./packages/ui/package.json
+COPY --from=node-with-deps /usr/app/packages/ui/dist ./packages/ui/dist
 
 RUN pnpm install --frozen-lockfile --prod --ignore-scripts
 
@@ -43,6 +47,7 @@ ENV NODE_ENV=production
 ENV GRAPHQL_ENDPOINT=http://nais-api/graphql
 
 COPY --from=prod-deps /usr/app/node_modules ./node_modules
+COPY --from=prod-deps /usr/app/packages ./packages
 COPY --from=node-with-deps /usr/app/build ./
 
 RUN addgroup -S appgroup && \

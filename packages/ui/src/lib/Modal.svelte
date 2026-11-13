@@ -1,10 +1,10 @@
 <script lang="ts">
 	import { Dialog, mergeProps } from 'bits-ui';
-	import { XMarkIcon } from '#lib/icons/index.js';
+	import { X as XMarkIcon } from '@lucide/svelte';
 	import type { Component, Snippet } from 'svelte';
 	import type { HTMLAttributes } from 'svelte/elements';
-	import Detail from './Detail.svelte';
-	import Heading from './Heading.svelte';
+	import Detail from './internal/Detail.svelte';
+	import Heading from './internal/Heading.svelte';
 
 	export interface ModalHeaderProps {
 		label?: string;

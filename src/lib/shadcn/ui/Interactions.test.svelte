@@ -3,7 +3,7 @@
 	import ActionMenuItem from './ActionMenuItem.svelte';
 	import { GetAccordionContext } from './Accordion.svelte';
 	import Box from './Box.svelte';
-	import Button from './Button.svelte';
+	import { Button } from '@nais/ui';
 	import CopyButton from './CopyButton.svelte';
 	import Select from './Select.svelte';
 	import Tab from './Tab.svelte';
@@ -12,7 +12,7 @@
 	import Tabs, { GetTabsUiContext } from './Tabs.svelte';
 	import Loader from './Loader.svelte';
 	import NavTabs from './NavTabs.svelte';
-	import Theme from './Theme.svelte';
+	import { Theme } from '@nais/ui';
 	import ToggleGroup from './ToggleGroup.svelte';
 	import ToggleGroupItem from './ToggleGroupItem.svelte';
 	import Tooltip from './Tooltip.svelte';

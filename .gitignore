@@ -9,6 +9,8 @@ node_modules
 /test-results/
 /.svelte-kit
 /package
+/packages/ui/dist/
+/packages/ui/.svelte-kit/
 .env
 .env.*
 .envrc

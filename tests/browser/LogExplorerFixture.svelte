@@ -1,6 +1,6 @@
 <script lang="ts">
 	import LogExplorer from '../../src/lib/domain/logs/LogExplorer.svelte';
-	import Theme from '../../src/lib/shadcn/ui/Theme.svelte';
+	import { Theme } from '@nais/ui';
 </script>
 
 <Theme theme="light">
