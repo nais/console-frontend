@@ -2,7 +2,7 @@
 	import type { Snippet } from 'svelte';
 	import type { HTMLAttributes } from 'svelte/elements';
 
-	interface Props extends HTMLAttributes<HTMLElement> {
+	export interface ThemeProps extends HTMLAttributes<HTMLElement> {
 		theme?: 'light' | 'dark';
 		hasBackground?: boolean;
 		as?: string;
@@ -17,7 +17,7 @@
 		class: className = '',
 		children,
 		...rest
-	}: Props = $props();
+	}: ThemeProps = $props();
 </script>
 
 <svelte:element

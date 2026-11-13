@@ -1,8 +1,8 @@
 <script lang="ts">
 	import { page } from '$app/state';
 	import AppSidebar from '../../src/lib/shadcn/ui/AppSidebar.svelte';
-	import Button from '../../src/lib/shadcn/ui/Button.svelte';
-	import Theme from '../../src/lib/shadcn/ui/Theme.svelte';
+	import { Button } from '@nais/ui';
+	import { Theme } from '@nais/ui';
 	import { tenantNavigation } from '../../src/lib/tenantNavigation.js';
 
 	const params = new URLSearchParams(window.location.search);

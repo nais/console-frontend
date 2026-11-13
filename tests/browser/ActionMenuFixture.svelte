@@ -6,9 +6,9 @@
 	import ActionMenuDivider from '../../src/lib/shadcn/ui/ActionMenuDivider.svelte';
 	import ActionMenuGroup from '../../src/lib/shadcn/ui/ActionMenuGroup.svelte';
 	import ActionMenuCheckboxItem from '../../src/lib/shadcn/ui/ActionMenuCheckboxItem.svelte';
-	import Button from '../../src/lib/shadcn/ui/Button.svelte';
-	import Modal from '../../src/lib/shadcn/ui/Modal.svelte';
-	import Theme from '../../src/lib/shadcn/ui/Theme.svelte';
+	import { Button } from '@nais/ui';
+	import { Modal } from '@nais/ui';
+	import { Theme } from '@nais/ui';
 
 	let open = $state(false);
 	let selected = $state('');

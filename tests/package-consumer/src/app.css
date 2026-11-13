@@ -1,0 +1,9 @@
+@layer theme, base, components, utilities;
+@import '@nais/ui/tokens.css' layer(components);
+@import '@nais/ui/theme.css';
+
+*,
+*::before,
+*::after {
+	box-sizing: border-box;
+}

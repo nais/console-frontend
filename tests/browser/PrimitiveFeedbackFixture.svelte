@@ -3,11 +3,11 @@
 	import Heading from '../../src/lib/shadcn/ui/Heading.svelte';
 	import AddToFavorites from '../../src/lib/ui/AddToFavorites.svelte';
 	import CriticalIndicator from '../../src/lib/ui/CriticalIndicator.svelte';
-	import Theme from '../../src/lib/shadcn/ui/Theme.svelte';
-	import Button from '../../src/lib/shadcn/ui/Button.svelte';
+	import { Theme } from '@nais/ui';
+	import { Button } from '@nais/ui';
 	import ActionMenu from '../../src/lib/shadcn/ui/ActionMenu.svelte';
 	import ActionMenuItem from '../../src/lib/shadcn/ui/ActionMenuItem.svelte';
-	import Modal from '../../src/lib/shadcn/ui/Modal.svelte';
+	import { Modal } from '@nais/ui';
 	import Tooltip from '../../src/lib/shadcn/ui/Tooltip.svelte';
 	import JobRunListItem from '../../src/lib/domain/list-items/JobRunListItem.svelte';
 	import FavoritesListItem from '../../src/lib/domain/list-items/FavoritesListItem.svelte';

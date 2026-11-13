@@ -1,6 +1,6 @@
 <script lang="ts">
 	import type { Component, Snippet } from 'svelte';
-	import Loader from './Loader.svelte';
+	import Loader from './internal/Loader.svelte';
 
 	export interface ButtonProps {
 		as?: 'button' | 'a';
