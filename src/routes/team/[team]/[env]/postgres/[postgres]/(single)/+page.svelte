@@ -1,5 +1,6 @@
 <script lang="ts">
 	import PersistenceActivityCard from '#lib/domain/activity/PersistenceActivityCard.svelte';
+	import { recoveryPending } from '#lib/domain/postgres/recovery.js';
 	import Labels from '#lib/domain/labels/Labels.svelte';
 	import LabelsEditorModal from '#lib/domain/labels/LabelsEditorModal.svelte';
 	import type { Label } from '#lib/domain/labels/labels.js';
@@ -96,11 +97,13 @@
 				document.visibilityState !== 'visible' ||
 				$PostgresOverview.fetching ||
 				!postgres ||
-				branchState !== 'PROGRESSING'
+				(branchState !== 'PROGRESSING' && !recoveryPending(postgres.recovery))
 			) {
 				return;
 			}
-			PostgresOverview.fetch({ policy: 'NetworkOnly' });
+			void PostgresOverview.fetch({ policy: 'NetworkOnly' }).catch(() => {
+				// The next interval retries; query errors are rendered by GraphErrors.
+			});
 		}, 10_000);
 
 		return () => window.clearInterval(interval);
@@ -114,6 +117,23 @@
 		<Loader size="3xlarge" />
 	</div>
 {:else if postgres}
+	{#if postgres.recovery}
+		<div class="provisioning-alert">
+			<Alert
+				variant={postgres.recovery.failureMessage
+					? 'error'
+					: postgres.recovery.completed
+						? 'success'
+						: 'info'}
+			>
+				{#if postgres.recovery.failureMessage}Restoration failed: {postgres.recovery.failureMessage}
+				{:else if postgres.recovery.completed}Restoration completed.
+				{:else}Restoration is in progress. Status updates automatically.{/if}
+				Source: {postgres.recovery.sourcePostgres}. Target time: {postgres.recovery.targetTime.toISOString()}
+				(UTC). The source is unchanged. No applications are automatically moved.
+			</Alert>
+		</div>
+	{/if}
 	{#if branchState === 'PROGRESSING'}
 		<div class="provisioning-alert">
 			<Alert variant="info" size="small">

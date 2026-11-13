@@ -8,3 +8,39 @@ query CreatePostgresEnvironments($team: Slug!) {
 		}
 	}
 }
+
+query PostgresRecoverySources($team: Slug!, $env: String!, $after: Cursor) {
+	team(slug: $team) {
+		postgreses(first: 25, after: $after, filter: { environments: [$env] }) {
+			nodes {
+				id
+				name
+			}
+			pageInfo {
+				hasNextPage
+				endCursor
+			}
+		}
+	}
+}
+
+query PostgresRecoverySource($team: Slug!, $env: String!, $name: String!)
+@cache(policy: NetworkOnly) {
+	team(slug: $team) {
+		environment(name: $env) {
+			postgres(name: $name) {
+				id
+				name
+				majorVersion
+				extensions
+				highAvailability
+				earliestRestoreTime
+				resources {
+					cpu
+					memory
+					diskSize
+				}
+			}
+		}
+	}
+}
