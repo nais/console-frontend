@@ -10,7 +10,7 @@ interface IssueResourceData {
 	workload?: NamedResource & { __typename: string };
 	application?: NamedResource;
 	job?: NamedResource;
-	branch?: NamedResource & { postgres: NamedResource };
+	postgres?: NamedResource;
 	sqlInstance?: NamedResource;
 	openSearch?: NamedResource;
 	valkey?: NamedResource;
@@ -35,12 +35,10 @@ export function issueResource(issue: IssueResourceData | null | undefined): {
 	if (issue?.job) {
 		return { name: issue.job.name, href: href(`job/${issue.job.name}`) };
 	}
-	if (issue?.branch) {
+	if (issue?.postgres) {
 		return {
-			name: `${issue.branch.postgres.name} / ${issue.branch.name}`,
-			href: href(
-				`postgres/${issue.branch.postgres.name}${issue.branch.name === 'main' ? '' : `?branch=${encodeURIComponent(issue.branch.name)}`}`
-			)
+			name: issue.postgres.name,
+			href: href(`postgres/${issue.postgres.name}`)
 		};
 	}
 	if (issue?.sqlInstance) {
