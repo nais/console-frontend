@@ -10790,10 +10790,10 @@ type TeamExternalResources {
   cdn: TeamCDN
 
   """The Entra ID (f.k.a. Azure AD) group for the team."""
-  entraIDGroup: TeamEntraIDGroup
+  entraIDGroup: TeamEntraIDGroup @deprecated(reason: "This field will soon no longer be managed by Nais.")
 
   """The teams GitHub team."""
-  gitHubTeam: TeamGitHubTeam
+  gitHubTeam: TeamGitHubTeam @deprecated(reason: "This field will soon no longer be managed by Nais.")
 
   """Google Artifact Registry."""
   googleArtifactRegistry: TeamGoogleArtifactRegistry
