@@ -4,6 +4,9 @@ import {
 	buildSchema,
 	FieldsOnCorrectTypeRule,
 	getNamedType,
+	isEnumType,
+	isInputObjectType,
+	isObjectType,
 	KnownTypeNamesRule,
 	parse,
 	TypeInfo,
@@ -29,7 +32,7 @@ const documents = readdirSync(new URL('src/', root), { recursive: true, encoding
 	});
 
 // Only historical activity identities and scalar event data may reference branches.
-// Compatibility-only issue types must not be used by active Console documents.
+// Retired read types must not be reintroduced by active Console documents.
 function retiredBranchType(name: string): boolean {
 	return (
 		name.startsWith('PostgresBranch') &&
@@ -38,8 +41,28 @@ function retiredBranchType(name: string): boolean {
 }
 
 describe('branch-free Console GraphQL documents', () => {
+	test('uses the final retired schema without branch read types, fields, or input compatibility', () => {
+		expect(Object.keys(schema.getTypeMap()).filter(retiredBranchType)).toEqual([]);
+		for (const name of ['IssueType', 'ResourceType']) {
+			const type = schema.getType(name);
+			if (!isEnumType(type)) throw new Error(`Missing ${name} enum`);
+			expect(type.getValues().map(({ name }) => name)).not.toContain('POSTGRES_BRANCH');
+		}
+		const postgres = schema.getType('Postgres');
+		if (!isObjectType(postgres)) throw new Error('Missing Postgres type');
+		for (const field of ['branch', 'branches', 'activeBranch', 'desiredActiveBranch']) {
+			expect(postgres.getFields()).not.toHaveProperty(field);
+		}
+		const accessInput = schema.getType('CreatePostgresAccessInput');
+		if (!isInputObjectType(accessInput)) throw new Error('Missing Postgres access input');
+		expect(accessInput.getFields()).not.toHaveProperty('branch');
+		const inventory = schema.getType('TeamInventoryCounts');
+		if (!isObjectType(inventory)) throw new Error('Missing team inventory counts');
+		expect(inventory.getFields()).not.toHaveProperty('postgresBranches');
+	});
+
 	test.each(['PostgresBranch', 'PostgresBranchIssue', 'PostgresBranchConnection'])(
-		'rejects compatibility-only %s query types',
+		'rejects retired %s query types',
 		(name) => {
 			expect(retiredBranchType(name)).toBe(true);
 		}
@@ -52,6 +75,7 @@ describe('branch-free Console GraphQL documents', () => {
 		'PostgresBranchDeletedActivityLogEntry'
 	])('preserves historical %s activity types', (name) => {
 		expect(retiredBranchType(name)).toBe(false);
+		expect(schema.getType(name)).toBeDefined();
 	});
 
 	test('discovers page queries and inline component documents', () => {
