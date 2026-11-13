@@ -19,9 +19,7 @@ describe('Postgres Insights queries', () => {
 			'network'
 		]);
 		expect(charts.map((candidate) => candidate.title)).toEqual([
-			'CPU utilization',
-			'Memory utilization',
-			'Disk utilization',
+			'Resource utilization',
 			'Memory components',
 			'Total memory usage',
 			'Total connections',
@@ -61,17 +59,32 @@ describe('Postgres Insights queries', () => {
 		}
 	});
 
-	test.each(['CPU utilization', 'Memory utilization', 'Disk utilization'])(
-		'%s retains fractional utilization and guards against division by zero',
-		(title) => {
-			expect(chart(title).query).toContain('/ clamp_min(');
-			expect(chart(title).formatYValue?.(0.125)).toBe('12.5%');
+	test('combines three distinctly labelled utilization ratios without capping percentages', () => {
+		const utilization = chart('Resource utilization');
+		expect(sections.find((section) => section.id === 'utilization')?.charts).toHaveLength(1);
+		expect(utilization.query.match(/\/ clamp_min\(/g)).toHaveLength(3);
+		expect(utilization.query.split(' or ')).toHaveLength(3);
+		for (const label of ['CPU', 'Memory', 'Disk']) {
+			expect(utilization.query).toContain(`"series", "${label}"`);
+			expect(utilization.labelFormatter([{ name: 'series', value: label }])).toBe(label);
 		}
-	);
+		for (const metric of [
+			'container_cpu_usage_seconds_total',
+			'container_memory_working_set_bytes',
+			'kube_pod_container_resource_requests',
+			'kubelet_volume_stats_used_bytes',
+			'kubelet_volume_stats_capacity_bytes'
+		]) {
+			expect(utilization.query).toContain(metric);
+		}
+		expect(utilization.query).not.toContain('clamp_max');
+		expect(utilization.formatYValue?.(0.125)).toBe('12.5%');
+		expect(utilization.formatYValue?.(1.25)).toBe('125.0%');
+	});
 
 	test('container metrics join pod identity including the cluster before summing', () => {
 		for (const title of [
-			'CPU utilization',
+			'Resource utilization',
 			'Memory components',
 			'Total memory usage',
 			'Container read/write operations',

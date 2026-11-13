@@ -66,11 +66,15 @@ describe('Postgres Insights page', () => {
 		fixture.url = new URL('https://console.example.com/team/test/dev/postgres/database/insights');
 	});
 
-	test('renders twelve charts under five labelled sections without duplicating the page h1', async () => {
+	test('renders ten charts under five labelled sections without duplicating the page h1', async () => {
 		const { body } = await renderPage();
-		expect(body.match(/class="prometheus-chart-wrapper\b/g)).toHaveLength(12);
+		expect(body.match(/class="prometheus-chart-wrapper\b/g)).toHaveLength(10);
 		expect(body.match(/<h2\b/g)).toHaveLength(5);
-		expect(body.match(/<h3\b/g)).toHaveLength(12);
+		expect(body.match(/<h3\b/g)).toHaveLength(10);
+		expect(body).toContain('Resource utilization');
+		expect(body).not.toContain('CPU utilization');
+		expect(body).not.toContain('Memory utilization');
+		expect(body).not.toContain('Disk utilization');
 		expect(body).not.toContain('<h1');
 		for (const match of body.matchAll(/<section aria-labelledby="([^"]+)"/g)) {
 			expect(body).toContain(`id="${match[1]}"`);
@@ -91,7 +95,7 @@ describe('Postgres Insights page', () => {
 	test('renders database metrics without branch wording', async () => {
 		const { body } = await renderPage();
 		expect(body).not.toContain('branch ');
-		expect(body.match(/class="prometheus-chart-wrapper\b/g)).toHaveLength(12);
+		expect(body.match(/class="prometheus-chart-wrapper\b/g)).toHaveLength(10);
 	});
 
 	test('shows metric query errors instead of an indefinite loading or empty-data state', async () => {
