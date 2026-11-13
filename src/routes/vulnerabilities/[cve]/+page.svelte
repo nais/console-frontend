@@ -519,7 +519,7 @@
 		display: flex;
 		align-items: center;
 		flex-wrap: wrap;
-		gap: var(--ax-space-16);
+		gap: var(--nais-space-16);
 	}
 
 	.workload-groups {
