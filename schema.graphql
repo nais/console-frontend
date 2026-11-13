@@ -1,14 +1,3 @@
-"""
-Directs the executor to defer this fragment when the `if` argument is true or undefined.
-"""
-directive @defer(
-  """Deferred when true or undefined."""
-  if: Boolean = true
-
-  """Unique name"""
-  label: String
-) on FRAGMENT_SPREAD | INLINE_FRAGMENT
-
 enum ActivityLogActivityType {
   """An application was deleted."""
   APPLICATION_DELETED
@@ -1831,7 +1820,7 @@ input CVEWorkloadsFilter {
   teamScope: TeamScopeInput
 
   """Only include workloads owned by these teams."""
-  teamSlugs: [Slug!]
+  teamSlugs: [Slug!] @deprecated(reason: "Use teamScope.teamSlugs instead.")
 }
 
 input ChangeDeploymentKeyInput {
@@ -2551,6 +2540,11 @@ input CreatePostgresInput {
 
   """Name of the Postgres."""
   name: String!
+
+  """
+  Initialize from an existing database in the same team and environment instead of creating an empty database.
+  """
+  recovery: PostgresRecoveryInput
 
   """The team that owns the Postgres."""
   teamSlug: Slug!
@@ -6398,6 +6392,11 @@ type Postgres implements ActivityLogger & Node {
   """Name of this Postgres."""
   name: String!
 
+  """
+  Immutable recovery origin and observed bootstrap progress, if created from a backup.
+  """
+  recovery: PostgresRecovery
+
   """Requested CPU, memory and disk size, when present on this Postgres."""
   resources: PostgresResources!
 
@@ -6828,6 +6827,36 @@ type PostgresPersonalAccessCreatedActivityLogEntryData {
 
   """Identity that owns the new personal access."""
   username: String!
+}
+
+"""The immutable origin and bootstrap progress of a recovered database."""
+type PostgresRecovery {
+  """
+  Recovery is checkpointed and the database has a successful backup of its own.
+  """
+  completed: Boolean!
+
+  """A terminal recovery failure, if reported by the operator."""
+  failureMessage: String
+
+  """
+  Name of the source database at creation; the source may since have been deleted.
+  """
+  sourcePostgres: String!
+
+  """The requested point in time, not the database creation time."""
+  targetTime: Time!
+}
+
+"""An explicit point-in-time recovery source for a new Postgres database."""
+input PostgresRecoveryInput {
+  """Name of the source Postgres in the destination team and environment."""
+  sourcePostgres: String!
+
+  """
+  Restore to this explicit instant. Must be within the available archive and not in the future.
+  """
+  targetTime: Time!
 }
 
 """Resource requests configured on Postgres. Omitted requests are null."""
@@ -8127,7 +8156,7 @@ input SearchFilter {
   teamScope: TeamScopeInput
 
   """Teams to search in. If not specified, all teams will be searched."""
-  teams: [Slug!]
+  teams: [Slug!] @deprecated(reason: "Use teamScope.teamSlugs instead.")
 
   """
   The types of entities to search for. If not specified, all types will be searched.
@@ -11228,7 +11257,7 @@ input TeamVulnerabilitySummaryFilter {
   Deprecated. Use priorities instead. When set, this is treated as a
   single-element priorities list. Ignored if priorities is also set.
   """
-  priority: CVEPriority
+  priority: CVEPriority @deprecated(reason: "Use priorities instead, which accepts a list.")
 }
 
 """Input for filtering team workloads."""
@@ -13344,7 +13373,7 @@ enum WebhookDeliveryStatus {
 }
 
 """Choose exactly one way to select webhook events."""
-input WebhookEventSelection {
+input WebhookEventSelection @oneOf {
   """
   Receive all available event types within the webhook's scope. Must be true.
   """

@@ -2,6 +2,7 @@
 	import { resolve } from '$app/paths';
 	import { page } from '$app/state';
 	import HeaderActions from '#lib/ui/HeaderActions.svelte';
+	import { restorePostgresHref } from '#lib/domain/postgres/recovery.js';
 	import {
 		ActionMenu,
 		ActionMenuDivider,
@@ -71,6 +72,12 @@
 				href={resolve('/team/[team]/[env]/postgres/[postgres]/edit', page.params as never)}
 			>
 				Edit
+			</ActionMenuItem>
+			<ActionMenuDivider />
+			<ActionMenuItem
+				href={restorePostgresHref(page.params.team!, page.params.env!, page.params.postgres!)}
+			>
+				Restore to new database
 			</ActionMenuItem>
 			<ActionMenuDivider />
 			<ActionMenuItem
