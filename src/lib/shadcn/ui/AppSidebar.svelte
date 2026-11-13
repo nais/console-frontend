@@ -8,7 +8,7 @@
 	import { ChevronLeftIcon, ChevronRightIcon } from '#lib/icons/index.js';
 	import { onMount } from 'svelte';
 	import Heading from './Heading.svelte';
-	import Modal from './Modal.svelte';
+	import { Modal } from '@nais/ui';
 	import Tooltip from './Tooltip.svelte';
 
 	interface Props {

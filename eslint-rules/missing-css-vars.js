@@ -73,6 +73,9 @@ function collectMissingCssVars(projectRoot) {
 
 	walkFiles(srcDir, analyzeUsedVars);
 	walkFiles(srcDir, analyzeDefinedVars);
+	const uiDir = path.join(projectRoot, 'packages/ui/src');
+	walkFiles(uiDir, analyzeUsedVars);
+	walkFiles(uiDir, analyzeDefinedVars);
 
 	const missingVars = [];
 	for (const [varName, files] of usedVars.entries()) {

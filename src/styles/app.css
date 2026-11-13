@@ -5,10 +5,7 @@
 @source '../node_modules/layerchart/dist';
 @import './layerchart.css' layer(components);
 @import './shadcn.css' layer(components);
-
-:where(:root, [data-theme='light'], .light, .light-theme) {
-	color-scheme: light;
-}
+@import '@nais/ui/theme.css';
 
 :root {
 	--spacing-layout: var(--nais-space-24);
@@ -31,7 +28,6 @@
 }
 
 :where(html[data-theme='dark'], body[data-theme='dark'], .dark, .dark-theme) {
-	color-scheme: dark;
 	--surface-accent-color: var(--info);
 	--surface-shadow-color: rgba(61, 65, 111, 0.6);
 	--surface-elevated-background: var(--brand-muted);

@@ -1,9 +1,9 @@
 <script lang="ts">
-	import Modal from '../../src/lib/shadcn/ui/Modal.svelte';
-	import Button from '../../src/lib/shadcn/ui/Button.svelte';
+	import { Modal } from '@nais/ui';
+	import { Button } from '@nais/ui';
 	import Select from '../../src/lib/shadcn/ui/Select.svelte';
 	import Heading from '../../src/lib/shadcn/ui/Heading.svelte';
-	import Theme from '../../src/lib/shadcn/ui/Theme.svelte';
+	import { Theme } from '@nais/ui';
 	import CollapsibleSidebar from '../../src/lib/ui/CollapsibleSidebar.svelte';
 
 	let open = $state(false);
