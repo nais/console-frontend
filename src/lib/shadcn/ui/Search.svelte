@@ -87,7 +87,7 @@
 	.sh-search-field {
 		display: flex;
 		flex-direction: column;
-		gap: var(--ax-space-6);
+		gap: var(--nais-space-6);
 		width: 100%;
 	}
 	.sh-search-wrapper {
@@ -98,7 +98,7 @@
 	}
 	.sh-search-icon {
 		position: absolute;
-		left: var(--ax-space-10);
+		left: var(--nais-space-10);
 		display: inline-flex;
 		align-items: center;
 		color: var(--muted-foreground);
@@ -108,8 +108,8 @@
 	.sh-search-input {
 		width: 100%;
 		box-sizing: border-box;
-		height: var(--ax-space-36);
-		padding: 0 var(--ax-space-32) 0 var(--ax-space-32);
+		height: var(--nais-space-36);
+		padding: 0 var(--nais-space-32) 0 var(--nais-space-32);
 		border-radius: var(--radius-sm);
 		border: var(--sh-border-width) solid var(--input);
 		background-color: var(--card);
@@ -119,22 +119,22 @@
 		box-shadow: var(--sh-shadow-xs);
 	}
 	.sh-search-input--small {
-		height: var(--ax-space-32);
+		height: var(--nais-space-32);
 		font-size: var(--sh-font-size-sm);
 	}
 	.sh-search-input:focus-visible {
 		outline: none;
 		border-color: var(--ring);
-		box-shadow: 0 0 0 var(--ax-space-2) color-mix(in srgb, var(--ring) 22%, transparent);
+		box-shadow: 0 0 0 var(--nais-space-2) color-mix(in srgb, var(--ring) 22%, transparent);
 	}
 	.sh-search-clear {
 		position: absolute;
-		right: var(--ax-space-6);
+		right: var(--nais-space-6);
 		display: inline-flex;
 		align-items: center;
 		justify-content: center;
-		width: var(--ax-space-24);
-		height: var(--ax-space-24);
+		width: var(--nais-space-24);
+		height: var(--nais-space-24);
 		border: none;
 		border-radius: var(--radius-2xs);
 		background: transparent;

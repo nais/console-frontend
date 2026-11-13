@@ -33,7 +33,7 @@
 	.pills {
 		display: flex;
 		flex-wrap: wrap;
-		gap: var(--ax-space-6);
+		gap: var(--nais-space-6);
 	}
 
 	.pills.column {

@@ -41,18 +41,18 @@
 <style>
 	.icon {
 		font-size: var(--sh-font-size-title);
-		width: var(--ax-space-32);
-		height: var(--ax-space-32);
+		width: var(--nais-space-32);
+		height: var(--nais-space-32);
 	}
 
 	.persistence {
 		display: flex;
 		width: 850px;
 		flex-direction: row;
-		border-bottom: 1px solid var(--ax-border-neutral-subtle);
+		border-bottom: 1px solid var(--border);
 		align-items: center;
-		gap: var(--ax-space-8);
-		padding: var(--ax-space-4);
+		gap: var(--nais-space-8);
+		padding: var(--nais-space-4);
 	}
 
 	.persistence:last-child {
@@ -66,7 +66,7 @@
 	}
 
 	.content {
-		margin: var(--ax-space-8);
+		margin: var(--nais-space-8);
 		max-width: 80ch;
 	}
 </style>

@@ -31,7 +31,7 @@
 	>
 {/if}
 
-<BodyLong style="margin-bottom: var(--ax-space-16);">
+<BodyLong style="margin-bottom: var(--nais-space-16);">
 	You should remove all references to this OpenSearch instance from your workloads before deletion.
 	See the
 	<ExternalLink href={docURL('/persistence/opensearch/how-to/delete/')}>
@@ -57,6 +57,6 @@
 	}
 
 	form :global(> *) {
-		margin-bottom: var(--ax-space-16);
+		margin-bottom: var(--nais-space-16);
 	}
 </style>

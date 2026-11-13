@@ -346,21 +346,21 @@
 	.resource-grid {
 		display: grid;
 		grid-template-columns: repeat(2, 1fr);
-		gap: var(--ax-space-16);
+		gap: var(--nais-space-16);
 		min-width: 0;
 	}
 
 	.cost-wrapper {
 		display: flex;
-		gap: var(--ax-space-16);
+		gap: var(--nais-space-16);
 		justify-content: center;
 	}
 
 	.cost-amount {
-		background-color: var(--ax-bg-raised);
+		background-color: var(--card);
 		font-size: var(--sh-font-size-xl);
-		padding: var(--ax-space-16) var(--ax-space-32);
-		border-radius: var(--ax-radius-8);
+		padding: var(--nais-space-16) var(--nais-space-32);
+		border-radius: var(--nais-radius-8);
 		display: inline-block;
 		align-items: center;
 	}
@@ -378,8 +378,8 @@
 		}
 
 		.container {
-			gap: var(--ax-space-16);
-			margin-top: var(--ax-space-16);
+			gap: var(--nais-space-16);
+			margin-top: var(--nais-space-16);
 		}
 
 		.resource-grid {
@@ -387,7 +387,7 @@
 		}
 
 		.cost-amount {
-			padding: var(--ax-space-8) var(--ax-space-12);
+			padding: var(--nais-space-8) var(--nais-space-12);
 			font-size: var(--sh-font-size-lg);
 		}
 	}

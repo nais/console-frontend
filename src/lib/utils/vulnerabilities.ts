@@ -131,16 +131,16 @@ export function severityToColor({
 	if (isText) {
 		switch (severity) {
 			case 'critical':
-				return 'var(--ax-text-danger-decoration)';
+				return 'var(--destructive)';
 			case 'high':
-				return 'var(--ax-text-warning-decoration)';
+				return 'var(--warning)';
 			case 'medium':
-				return 'color-mix(in oklab, var(--ax-text-warning-decoration), var(--ax-text-success-decoration))';
+				return 'color-mix(in oklab, var(--warning), var(--success))';
 			case 'low':
-				return 'var(--ax-text-success-decoration)';
+				return 'var(--success)';
 			case 'unassigned':
 			default:
-				return 'var(--ax-text-neutral-subtle)';
+				return 'var(--muted-foreground)';
 		}
 	} else if (isGraph) {
 		switch (severity) {
@@ -159,16 +159,16 @@ export function severityToColor({
 	} else {
 		switch (severity) {
 			case 'critical':
-				return 'var(--ax-text-danger)';
+				return 'var(--destructive)';
 			case 'high':
-				return 'color-mix(in oklab, var(--ax-text-danger), var(--ax-text-warning))';
+				return 'color-mix(in oklab, var(--destructive), var(--warning))';
 			case 'medium':
-				return 'var(--ax-text-warning)';
+				return 'var(--warning)';
 			case 'low':
-				return 'var(--ax-text-success)';
+				return 'var(--success)';
 			case 'unassigned':
 			default:
-				return 'var(--ax-text-neutral-subtle)';
+				return 'var(--muted-foreground)';
 		}
 	}
 }

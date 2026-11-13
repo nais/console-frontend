@@ -34,7 +34,7 @@
 		flex-direction: column;
 		align-items: center;
 		justify-content: center;
-		gap: var(--ax-space-4);
+		gap: var(--nais-space-4);
 		font-size: var(--sh-font-size-base);
 	}
 </style>

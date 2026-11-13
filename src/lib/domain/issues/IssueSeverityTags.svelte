@@ -30,7 +30,7 @@
 <style>
 	.issues-container {
 		display: flex;
-		gap: var(--ax-space-16);
+		gap: var(--nais-space-16);
 		width: 100%;
 	}
 

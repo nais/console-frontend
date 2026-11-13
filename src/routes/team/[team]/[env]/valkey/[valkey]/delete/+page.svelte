@@ -31,7 +31,7 @@
 	>
 {/if}
 
-<BodyLong style="margin-bottom: var(--ax-space-16);">
+<BodyLong style="margin-bottom: var(--nais-space-16);">
 	You should remove all references to this Valkey instance from your workloads before deletion. See
 	the
 	<ExternalLink href={docURL('/persistence/valkey/how-to/delete/')}>
@@ -58,6 +58,6 @@
 	}
 
 	form :global(> *) {
-		margin-bottom: var(--ax-space-16);
+		margin-bottom: var(--nais-space-16);
 	}
 </style>

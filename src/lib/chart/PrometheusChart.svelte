@@ -438,7 +438,7 @@
 <style>
 	.prometheus-chart-wrapper {
 		position: relative;
-		margin-bottom: var(--ax-space-48);
+		margin-bottom: var(--nais-space-48);
 	}
 
 	.prometheus-chart-visualization {
@@ -447,12 +447,12 @@
 	}
 
 	.prometheus-chart-header {
-		margin-bottom: var(--ax-space-8);
-		padding-right: var(--ax-space-40);
+		margin-bottom: var(--nais-space-8);
+		padding-right: var(--nais-space-40);
 	}
 
 	.prometheus-chart-header :global(.prometheus-chart-description) {
-		color: var(--ax-text-neutral-subtle);
+		color: var(--muted-foreground);
 	}
 
 	.prometheus-chart-overlay {
@@ -473,35 +473,35 @@
 		display: flex;
 		flex-direction: column;
 		align-items: center;
-		gap: var(--ax-space-8);
-		padding: var(--ax-space-16);
-		background: var(--ax-bg-sunken);
-		border-radius: var(--ax-radius-8);
+		gap: var(--nais-space-8);
+		padding: var(--nais-space-16);
+		background: var(--background-subtle);
+		border-radius: var(--nais-radius-8);
 		font-weight: 500;
-		color: var(--ax-text-neutral);
+		color: var(--foreground);
 	}
 
 	.prometheus-chart-loading {
 		display: flex;
 		flex-direction: column;
 		align-items: center;
-		gap: var(--ax-space-12);
+		gap: var(--nais-space-12);
 	}
 
 	.query-info-button {
 		position: absolute;
-		top: var(--ax-space-8);
-		right: var(--ax-space-8);
-		background: var(--ax-bg-default);
-		border: 1px solid var(--ax-border-default);
-		border-radius: var(--ax-radius-4);
-		padding: var(--ax-space-8);
+		top: var(--nais-space-8);
+		right: var(--nais-space-8);
+		background: var(--card);
+		border: 1px solid var(--border);
+		border-radius: var(--nais-radius-4);
+		padding: var(--nais-space-8);
 		cursor: pointer;
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		width: var(--ax-space-32);
-		height: var(--ax-space-32);
+		width: var(--nais-space-32);
+		height: var(--nais-space-32);
 		z-index: 15;
 		opacity: 0.7;
 		transition: opacity 0.2s ease;
@@ -509,26 +509,26 @@
 
 	.query-info-button:hover {
 		opacity: 1;
-		background: var(--ax-bg-default);
+		background: var(--card);
 	}
 
 	.query-details {
-		padding: var(--ax-space-24);
+		padding: var(--nais-space-24);
 		display: flex;
 		flex-direction: column;
-		gap: var(--ax-space-24);
+		gap: var(--nais-space-24);
 	}
 
 	.query-section {
 		display: flex;
 		flex-direction: column;
-		gap: var(--ax-space-12);
+		gap: var(--nais-space-12);
 	}
 
 	.query-heading {
 		display: flex;
 		align-items: center;
 		justify-content: space-between;
-		margin-bottom: var(--ax-space-8);
+		margin-bottom: var(--nais-space-8);
 	}
 </style>

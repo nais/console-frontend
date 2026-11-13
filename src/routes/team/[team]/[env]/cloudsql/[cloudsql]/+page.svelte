@@ -24,7 +24,7 @@
 
 {#if $SqlInstance.errors}
 	{#each distinctErrors($SqlInstance.errors) as error (error)}
-		<Alert style="margin-bottom: var(--ax-space-16);" variant="error">
+		<Alert style="margin-bottom: var(--nais-space-16);" variant="error">
 			{error}
 		</Alert>
 	{/each}
@@ -153,21 +153,21 @@
 	.content {
 		display: flex;
 		flex-direction: column;
-		gap: var(--ax-space-24);
+		gap: var(--nais-space-24);
 		min-width: 0;
 	}
 
 	.summary-grid {
 		display: grid;
 		grid-template-columns: repeat(3, 1fr);
-		gap: var(--ax-space-16);
+		gap: var(--nais-space-16);
 		min-width: 0;
 	}
 
 	.links-section {
-		margin-top: var(--ax-space-16);
+		margin-top: var(--nais-space-16);
 		display: grid;
-		gap: var(--ax-space-4);
+		gap: var(--nais-space-4);
 	}
 
 	@media (max-width: 767px) {

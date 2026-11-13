@@ -178,9 +178,7 @@
 								removeBindingOpen = true;
 							}}
 						>
-							{#snippet icon()}<TrashIcon
-									style="color:var(--ax-text-danger-decoration)"
-								/>{/snippet}
+							{#snippet icon()}<TrashIcon style="color:var(--destructive)" />{/snippet}
 						</Button>
 					{/if}
 				</div>
@@ -226,9 +224,7 @@
 								deleteTokenOpen = true;
 							}}
 						>
-							{#snippet icon()}<TrashIcon
-									style="color:var(--ax-text-danger-decoration)"
-								/>{/snippet}
+							{#snippet icon()}<TrashIcon style="color:var(--destructive)" />{/snippet}
 						</Button>
 					{/if}
 				</div>
@@ -312,20 +308,20 @@
 	section {
 		display: flex;
 		flex-direction: column;
-		gap: var(--ax-space-16);
+		gap: var(--nais-space-16);
 	}
 
 	.right {
 		display: flex;
 		align-items: center;
-		gap: var(--ax-space-8);
+		gap: var(--nais-space-8);
 	}
 
 	.meta {
 		display: flex;
 		flex-direction: column;
 		align-items: end;
-		gap: var(--ax-space-2);
+		gap: var(--nais-space-2);
 	}
 
 	@media (max-width: 767px) {

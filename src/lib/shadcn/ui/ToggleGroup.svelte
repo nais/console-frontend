@@ -88,8 +88,8 @@
 	.sh-toggle-group {
 		display: inline-flex;
 		align-items: center;
-		gap: var(--ax-space-2);
-		padding: var(--ax-space-2);
+		gap: var(--nais-space-2);
+		padding: var(--nais-space-2);
 		background-color: var(--muted);
 		border: var(--sh-border-width) solid var(--border);
 		border-radius: var(--radius-sm);

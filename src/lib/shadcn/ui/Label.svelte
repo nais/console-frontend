@@ -42,7 +42,7 @@
 	.sh-label {
 		display: inline-flex;
 		align-items: center;
-		gap: var(--ax-space-4);
+		gap: var(--nais-space-4);
 		font-weight: var(--sh-font-weight-medium);
 		color: var(--foreground);
 		line-height: 1.35;
@@ -54,6 +54,6 @@
 		font-size: var(--sh-font-size-sm);
 	}
 	.sh-label--spacing {
-		margin-bottom: var(--ax-space-6);
+		margin-bottom: var(--nais-space-6);
 	}
 </style>

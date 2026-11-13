@@ -77,7 +77,7 @@
 	.sh-form-field {
 		display: flex;
 		flex-direction: column;
-		gap: var(--ax-space-6);
+		gap: var(--nais-space-6);
 	}
 	.sh-form-field__description {
 		font-size: var(--sh-font-size-xs);
@@ -91,7 +91,7 @@
 		border: var(--sh-border-width) solid var(--input);
 		background-color: var(--card);
 		color: var(--foreground);
-		padding: var(--ax-space-8) var(--ax-space-12);
+		padding: var(--nais-space-8) var(--nais-space-12);
 		font-family: inherit;
 		font-size: var(--sh-font-size-sm);
 		line-height: 1.45;
@@ -100,22 +100,22 @@
 	}
 	.sh-textarea-control--small {
 		font-size: var(--sh-font-size-sm);
-		padding: var(--ax-space-6) var(--ax-space-10);
+		padding: var(--nais-space-6) var(--nais-space-10);
 	}
 	.sh-textarea-control:focus-visible {
 		outline: none;
 		border-color: var(--ring);
-		box-shadow: 0 0 0 var(--ax-space-2) color-mix(in srgb, var(--ring) 22%, transparent);
+		box-shadow: 0 0 0 var(--nais-space-2) color-mix(in srgb, var(--ring) 22%, transparent);
 	}
 	.sh-textarea-control.has-error {
 		border-color: var(--destructive);
 	}
 	.sr-only {
 		position: absolute;
-		width: var(--ax-space-1);
-		height: var(--ax-space-1);
+		width: var(--nais-space-1);
+		height: var(--nais-space-1);
 		padding: 0;
-		margin: calc(-1 * var(--ax-space-1));
+		margin: calc(-1 * var(--nais-space-1));
 		overflow: hidden;
 		clip: rect(0, 0, 0, 0);
 		white-space: nowrap;

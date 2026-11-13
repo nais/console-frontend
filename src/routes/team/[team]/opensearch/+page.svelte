@@ -190,7 +190,7 @@
 											>
 												<WarningIcon
 													aria-label="This instance will be migrated on the 9th of September."
-													style="color: var(--ax-text-warning); font-size: var(--sh-font-size-sm)"
+													style="color: var(--warning); font-size: var(--sh-font-size-sm)"
 												/>
 											</TooltipAlignHack>
 										{/if}

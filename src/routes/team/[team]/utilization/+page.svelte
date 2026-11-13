@@ -259,37 +259,37 @@
 	.content {
 		display: flex;
 		flex-direction: column;
-		gap: var(--ax-space-32);
+		gap: var(--nais-space-32);
 		min-width: 0;
 	}
 
 	.resource-grid {
 		display: grid;
 		grid-template-columns: repeat(2, 1fr);
-		gap: var(--ax-space-16);
-		margin-top: var(--ax-space-16);
+		gap: var(--nais-space-16);
+		margin-top: var(--nais-space-16);
 		min-width: 0;
 	}
 
 	.cost-wrapper {
 		display: flex;
-		gap: var(--ax-space-16);
+		gap: var(--nais-space-16);
 		justify-content: center;
 	}
 
 	.cost-amount {
-		background-color: var(--ax-bg-raised);
+		background-color: var(--card);
 		font-size: var(--sh-font-size-xl);
-		border-radius: var(--ax-radius-4);
+		border-radius: var(--nais-radius-4);
 		display: inline-block;
 		align-items: center;
-		padding: var(--ax-space-8) var(--ax-space-32);
+		padding: var(--nais-space-8) var(--nais-space-32);
 	}
 
 	.chart {
 		height: 350px;
 		min-width: 0;
-		margin-top: var(--ax-space-16);
+		margin-top: var(--nais-space-16);
 	}
 
 	@media (max-width: 767px) {

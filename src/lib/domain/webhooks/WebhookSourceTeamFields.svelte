@@ -215,7 +215,7 @@
 	.team-options,
 	.team-picker {
 		display: grid;
-		gap: var(--ax-space-12);
+		gap: var(--nais-space-12);
 		min-width: 0;
 		overflow-wrap: anywhere;
 	}
@@ -224,7 +224,7 @@
 		display: flex;
 		flex-wrap: wrap;
 		align-items: end;
-		gap: var(--ax-space-12);
+		gap: var(--nais-space-12);
 	}
 
 	.search-results {
@@ -237,6 +237,6 @@
 		display: flex;
 		align-items: center;
 		justify-content: space-between;
-		gap: var(--ax-space-12);
+		gap: var(--nais-space-12);
 	}
 </style>

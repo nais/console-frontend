@@ -162,8 +162,8 @@
 	.wrapper {
 		display: flex;
 		flex-direction: column;
-		padding: var(--ax-space-16);
-		gap: var(--ax-space-16);
+		padding: var(--nais-space-16);
+		gap: var(--nais-space-16);
 	}
 	.details {
 		display: flex;
@@ -172,9 +172,9 @@
 	}
 	.char-count {
 		font-size: var(--sh-font-size-micro);
-		color: var(--ax-text-neutral-subtle);
+		color: var(--muted-foreground);
 		margin: 0;
-		padding-top: var(--ax-space-4);
+		padding-top: var(--nais-space-4);
 	}
 	.field-label {
 		font-size: var(--sh-font-size-caption);
@@ -183,7 +183,7 @@
 	}
 	.textarea {
 		width: 100%;
-		padding: var(--ax-space-8) var(--ax-space-12);
+		padding: var(--nais-space-8) var(--nais-space-12);
 		border-radius: calc(var(--radius) - 2px);
 		border: 1px solid var(--input);
 		background-color: var(--background);

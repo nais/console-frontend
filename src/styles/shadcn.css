@@ -140,96 +140,41 @@
 	--sh-shadow-md: 0 4px 6px -1px rgba(15, 23, 42, 0.06), 0 2px 4px -2px rgba(15, 23, 42, 0.04);
 	--sh-shadow-lg: 0 10px 15px -3px rgba(15, 23, 42, 0.08), 0 4px 6px -4px rgba(15, 23, 42, 0.04);
 
-	/* Bridge Aksel tokens so existing subcomponents harmonize with shadcn light mode */
 	--status-success-fg: var(--success);
 
-	--ax-space-1: 0.0625rem;
-	--ax-space-2: 0.125rem;
-	--ax-space-4: 0.25rem;
-	--ax-space-6: 0.375rem;
-	--ax-space-8: 0.5rem;
-	--ax-space-10: 0.625rem;
-	--ax-space-12: 0.75rem;
-	--ax-space-14: 0.875rem;
-	--ax-space-16: 1rem;
-	--ax-space-18: 1.125rem;
-	--ax-space-20: 1.25rem;
-	--ax-space-24: 1.5rem;
-	--ax-space-28: 1.75rem;
-	--ax-space-32: 2rem;
-	--ax-space-36: 2.25rem;
-	--ax-space-40: 2.5rem;
-	--ax-space-48: 3rem;
-	--ax-space-56: 3.5rem;
-	--ax-space-64: 4rem;
+	--nais-space-1: 0.0625rem;
+	--nais-space-2: 0.125rem;
+	--nais-space-4: 0.25rem;
+	--nais-space-6: 0.375rem;
+	--nais-space-8: 0.5rem;
+	--nais-space-10: 0.625rem;
+	--nais-space-12: 0.75rem;
+	--nais-space-14: 0.875rem;
+	--nais-space-16: 1rem;
+	--nais-space-18: 1.125rem;
+	--nais-space-20: 1.25rem;
+	--nais-space-24: 1.5rem;
+	--nais-space-28: 1.75rem;
+	--nais-space-32: 2rem;
+	--nais-space-36: 2.25rem;
+	--nais-space-40: 2.5rem;
+	--nais-space-48: 3rem;
+	--nais-space-56: 3.5rem;
+	--nais-space-64: 4rem;
 
-	--ax-radius-4: 0.25rem;
-	--ax-radius-8: 0.5rem;
-	--ax-radius-12: 0.75rem;
-	--ax-radius-full: 9999px;
+	--nais-radius-4: 0.25rem;
+	--nais-radius-8: 0.5rem;
+	--nais-radius-12: 0.75rem;
 
-	--ax-breakpoint-sm: 480px;
-	--ax-breakpoint-md: 768px;
+	--nais-breakpoint-sm: 480px;
+	--nais-breakpoint-md: 768px;
 
-	--ax-bg-default: var(--card);
-	--ax-bg-raised: var(--card);
-	--ax-bg-sunken: var(--background-subtle);
-	--ax-bg-neutral-soft: var(--background-subtle);
-	--ax-bg-neutral-moderate: var(--secondary);
-	--ax-bg-neutral-strong: var(--primary);
-	--ax-bg-strong-pressed: var(--primary-hover);
-	--ax-bg-brand-blue-softA: var(--brand-muted);
-	--ax-bg-brand-blue-moderate: var(--info-muted);
-	--ax-bg-info-soft: var(--info-muted);
-	--ax-bg-info-strong: var(--info);
-	--ax-bg-success-moderate: var(--success-muted);
-	--ax-bg-warning-moderate: var(--warning-muted);
-	--ax-bg-warning-moderate-pressed: var(--warning-muted);
-	--ax-bg-warning-strong: var(--warning);
-	--ax-bg-warning-strong-pressed: var(--warning);
-	--ax-bg-danger-moderate: var(--destructive-muted);
-	--ax-bg-danger-strong: var(--destructive);
-	--ax-bg-meta-purple-strong: #7c3aed;
+	--nais-purple-600: #7c3aed;
 
-	--ax-border-default: var(--border);
-	--ax-border-subtle: var(--border-subtle);
-	--ax-border-neutral: var(--border-strong);
-	--ax-border-neutral-subtle: var(--border);
-	--ax-border-neutral-subtleA: var(--border);
-	--ax-border-accent-strong: var(--info);
-	--ax-border-focus: var(--ring);
-	--ax-border-warning: var(--warning-border);
-	--ax-border-danger: var(--destructive-border);
-
-	--ax-text-neutral: var(--foreground);
-	--ax-text-neutral-subtle: var(--muted-foreground);
-	--ax-text-neutral-contrast: var(--primary-foreground);
-	--ax-text-neutral-decoration: var(--muted-foreground);
-	--ax-text-subtle: var(--muted-foreground);
-	--ax-text-accent: var(--info);
-	--ax-text-info: var(--info);
-	--ax-text-brand-blue: var(--info);
-	--ax-text-brand-blue-subtle: var(--info);
-	--ax-text-brand-blue-decoration: var(--info);
-	--ax-text-success: var(--success);
-	--ax-text-success-subtle: var(--success);
-	--ax-text-success-decoration: var(--success);
-	--ax-text-warning: var(--warning);
-	--ax-text-warning-decoration: var(--warning);
-	--ax-text-danger: var(--destructive);
-	--ax-text-danger-decoration: var(--destructive);
-
-	--ax-neutral-000: var(--card);
-	--ax-neutral-100: var(--background-subtle);
-	--ax-neutral-200: var(--secondary);
-	--ax-accent-400: #60a5fa;
-	--ax-brand-blue-200: #bfdbfe;
-	--ax-brand-blue-400: #60a5fa;
-	--ax-brand-blue-600: #2563eb;
-	--ax-brand-magenta-700: #be185d;
-	--ax-success-500: var(--success);
-	--ax-warning-300: var(--warning);
-	--ax-danger-600: var(--destructive);
+	--nais-blue-400: #60a5fa;
+	--nais-blue-200: #bfdbfe;
+	--nais-blue-600: #2563eb;
+	--nais-magenta-700: #be185d;
 }
 
 :where(html[data-theme='dark'], body[data-theme='dark'], .dark, .dark-theme) {
@@ -314,61 +259,7 @@
 	--sh-shadow-md: 0 4px 12px -2px rgba(0, 0, 0, 0.45);
 	--sh-shadow-lg: 0 12px 24px -4px rgba(0, 0, 0, 0.55);
 
-	/* Bridge Aksel tokens so existing subcomponents harmonize with deep navy dark mode */
 	--status-success-fg: var(--success);
-	--ax-bg-default: var(--card);
-	--ax-bg-raised: var(--card);
-	--ax-bg-sunken: var(--background-subtle);
-	--ax-bg-neutral-soft: var(--background-subtle);
-	--ax-bg-neutral-moderate: var(--secondary);
-	--ax-bg-neutral-strong: var(--primary);
-	--ax-bg-strong-pressed: var(--primary-hover);
-	--ax-bg-brand-blue-softA: var(--brand-muted);
-	--ax-bg-brand-blue-moderate: var(--info-muted);
-	--ax-bg-info-soft: var(--info-muted);
-	--ax-bg-info-strong: var(--info);
-	--ax-bg-success-moderate: var(--success-muted);
-	--ax-bg-warning-moderate: var(--warning-muted);
-	--ax-bg-warning-moderate-pressed: var(--warning-muted);
-	--ax-bg-warning-strong: var(--warning);
-	--ax-bg-warning-strong-pressed: var(--warning);
-	--ax-bg-danger-moderate: var(--destructive-muted);
-	--ax-bg-danger-strong: var(--destructive);
-
-	--ax-border-default: var(--border);
-	--ax-border-subtle: var(--border-subtle);
-	--ax-border-neutral: var(--border-strong);
-	--ax-border-neutral-subtle: var(--border);
-	--ax-border-neutral-subtleA: var(--border);
-	--ax-border-accent-strong: var(--info);
-	--ax-border-focus: var(--ring);
-	--ax-border-warning: var(--warning-border);
-	--ax-border-danger: var(--destructive-border);
-
-	--ax-text-neutral: var(--foreground);
-	--ax-text-neutral-subtle: var(--muted-foreground);
-	--ax-text-neutral-contrast: var(--primary-foreground);
-	--ax-text-neutral-decoration: var(--muted-foreground);
-	--ax-text-subtle: var(--muted-foreground);
-	--ax-text-accent: var(--info);
-	--ax-text-info: var(--info);
-	--ax-text-brand-blue: var(--info);
-	--ax-text-brand-blue-subtle: var(--info);
-	--ax-text-brand-blue-decoration: var(--info);
-	--ax-text-success: var(--success);
-	--ax-text-success-subtle: var(--success);
-	--ax-text-success-decoration: var(--success);
-	--ax-text-warning: var(--warning);
-	--ax-text-warning-decoration: var(--warning);
-	--ax-text-danger: var(--destructive);
-	--ax-text-danger-decoration: var(--destructive);
-
-	--ax-neutral-000: var(--card);
-	--ax-neutral-100: var(--background-subtle);
-	--ax-neutral-200: var(--secondary);
-	--ax-success-500: var(--success);
-	--ax-warning-300: var(--warning);
-	--ax-danger-600: var(--destructive);
 }
 
 /* Default Lucide SVG sizing to match 1em inline icons */
@@ -448,8 +339,8 @@ body {
 .sh-badge {
 	display: inline-flex;
 	align-items: center;
-	gap: var(--ax-space-6);
-	padding: var(--ax-space-2) var(--ax-space-8);
+	gap: var(--nais-space-6);
+	padding: var(--nais-space-2) var(--nais-space-8);
 	font-size: var(--sh-font-size-xs);
 	font-weight: 600;
 	line-height: var(--sh-font-line-height-compact);
@@ -504,7 +395,7 @@ body {
 	display: inline-flex;
 	align-items: center;
 	justify-content: center;
-	padding: var(--ax-space-2) var(--ax-space-6);
+	padding: var(--nais-space-2) var(--nais-space-6);
 	font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
 	font-size: var(--sh-font-size-micro);
 	font-weight: 500;

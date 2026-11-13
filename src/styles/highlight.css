@@ -24,8 +24,8 @@ code.hljs {
 	Current colors taken from GitHub's CSS
   */
 .hljs {
-	color: var(--ax-text-neutral);
-	background: var(--ax-bg-default);
+	color: var(--foreground);
+	background: var(--card);
 }
 .hljs-doctag,
 .hljs-keyword,
@@ -43,7 +43,7 @@ code.hljs {
 	color: #d2a8ff;
 }
 .hljs-number {
-	color: var(--ax-brand-magenta-700);
+	color: var(--nais-magenta-700);
 }
 .hljs-attribute,
 .hljs-literal,
@@ -53,12 +53,12 @@ code.hljs {
 .hljs-selector-attr,
 .hljs-selector-class,
 .hljs-selector-id {
-	color: var(--ax-brand-blue-600);
+	color: var(--nais-blue-600);
 }
 .hljs-regexp,
 .hljs-string,
 .hljs-meta .hljs-string {
-	color: var(--ax-brand-blue-600);
+	color: var(--nais-blue-600);
 }
 .hljs-built_in,
 .hljs-symbol {

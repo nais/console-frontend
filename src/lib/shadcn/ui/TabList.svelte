@@ -40,8 +40,8 @@
 	.sh-ui-tablist {
 		display: flex;
 		align-items: center;
-		gap: var(--ax-space-4);
-		border-bottom: var(--ax-space-1) solid var(--border);
+		gap: var(--nais-space-4);
+		border-bottom: var(--nais-space-1) solid var(--border);
 		min-width: 0;
 		overflow-x: auto;
 		overflow-y: hidden;

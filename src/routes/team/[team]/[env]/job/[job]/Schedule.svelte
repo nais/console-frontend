@@ -46,20 +46,20 @@
 	.wrapper {
 		display: flex;
 		flex-direction: column;
-		gap: var(--ax-space-4);
+		gap: var(--nais-space-4);
 		width: 100%;
 	}
 
 	.resource-cards {
 		display: grid;
 		grid-template-columns: 1fr 1fr;
-		gap: var(--ax-space-12);
+		gap: var(--nais-space-12);
 	}
 
 	code {
 		font-family: monospace;
 		font-size: var(--sh-font-size-sm);
-		color: var(--ax-text-neutral);
+		color: var(--foreground);
 	}
 
 	@media (max-width: 800px) {

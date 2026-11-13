@@ -51,8 +51,8 @@
 <style>
 	code {
 		font-family: 'Courier New', Courier, monospace;
-		background-color: var(--ax-bg-neutral-soft);
-		padding: var(--ax-space-2) var(--ax-space-4);
-		border-radius: var(--ax-radius-4);
+		background-color: var(--background-subtle);
+		padding: var(--nais-space-2) var(--nais-space-4);
+		border-radius: var(--nais-radius-4);
 	}
 </style>

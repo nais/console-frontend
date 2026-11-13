@@ -53,7 +53,7 @@
 		letter-spacing: 0.04em;
 	}
 	.sh-detail--spacing {
-		margin-bottom: var(--ax-space-6);
+		margin-bottom: var(--nais-space-6);
 	}
 	.sh-detail--semibold {
 		font-weight: var(--sh-font-weight-semibold);

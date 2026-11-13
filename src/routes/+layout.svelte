@@ -236,9 +236,9 @@
 
 	.update-status {
 		position: fixed;
-		bottom: var(--ax-space-8);
-		right: var(--ax-space-8);
-		max-width: calc(100% - var(--ax-space-16));
+		bottom: var(--nais-space-8);
+		right: var(--nais-space-8);
+		max-width: calc(100% - var(--nais-space-16));
 		z-index: 1000;
 	}
 
@@ -246,13 +246,13 @@
 		display: flex;
 		align-items: center;
 		flex-wrap: wrap;
-		gap: var(--ax-space-12);
+		gap: var(--nais-space-12);
 	}
 
 	.boundary-error {
 		display: flex;
 		flex-direction: column;
 		align-items: center;
-		padding: var(--ax-space-24);
+		padding: var(--nais-space-24);
 	}
 </style>

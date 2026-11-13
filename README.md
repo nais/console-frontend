@@ -57,7 +57,7 @@ When changing layouts, lists, tables, or chart-heavy pages, validate in responsi
 
 Styles use `@layer` ordering and shared tokens in [shadcn.css](src/styles/shadcn.css) and [app.css](src/styles/app.css):
 
-- **Tokens**: Use `--sh-font-*` for typography and `--ax-space-*`, `--ax-radius-*`, `--ax-text-*` for spacing, radii, and colors. Typography has one canonical token set; semibold is 600 and bold is 700.
+- **Tokens**: Use `--sh-font-*` for typography, `--nais-space-*` for spacing, `--nais-radius-*` and `--radius-*` for radii, and semantic tokens such as `--foreground`, `--card`, `--border`, and `--destructive` for colors. Fixed palette colors use `--nais-blue-*`, `--nais-purple-*`, and `--nais-magenta-*`; breakpoints use `--nais-breakpoint-*`. Typography has one canonical token set; semibold is 600 and bold is 700.
 - **Exact replacements**: Mechanical replacements must use existing, property-appropriate tokens of the same value. Do not round sizes or use spacing tokens for typography. Unmatched values, sizing changes, and new semantic tokens require design review.
 - **Dimensions**: Use semantic size tokens for avatars, icons, and controls, not spacing tokens. Keep reviewed component-specific layout constraints as documented exceptions instead of adding single-use variables.
 - **Readability**: Use shared typography tokens instead of page-specific small sizes. Body/table text uses 0.9375rem, controls use 0.9rem, and compact labels use 0.75–0.85rem. Keep text contrast at least 4.5:1 on its actual surface in both themes; `tests/browser/readability.spec.ts` covers shared status colours, tables, inputs, and navigation.

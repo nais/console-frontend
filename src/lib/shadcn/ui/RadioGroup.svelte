@@ -101,13 +101,13 @@
 		border: none;
 		display: flex;
 		flex-direction: column;
-		gap: var(--ax-space-8);
+		gap: var(--nais-space-8);
 	}
 	.sh-radio-group__legend {
 		font-size: var(--sh-font-size-sm);
 		font-weight: var(--sh-font-weight-semibold);
 		color: var(--foreground);
-		margin-bottom: var(--ax-space-4);
+		margin-bottom: var(--nais-space-4);
 	}
 	.sh-radio-group__desc {
 		font-size: var(--sh-font-size-xs);
@@ -116,14 +116,14 @@
 	.sh-radio-group__items {
 		display: flex;
 		flex-direction: column;
-		gap: var(--ax-space-6);
+		gap: var(--nais-space-6);
 	}
 	.sr-only {
 		position: absolute;
-		width: var(--ax-space-1);
-		height: var(--ax-space-1);
+		width: var(--nais-space-1);
+		height: var(--nais-space-1);
 		padding: 0;
-		margin: calc(-1 * var(--ax-space-1));
+		margin: calc(-1 * var(--nais-space-1));
 		overflow: hidden;
 		clip: rect(0, 0, 0, 0);
 		white-space: nowrap;

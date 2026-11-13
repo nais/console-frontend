@@ -42,11 +42,11 @@
 		max-width: min(
 			var(--sh-popover-max-width),
 			var(--bits-popover-content-available-width),
-			calc(100vw - var(--ax-space-24))
+			calc(100vw - var(--nais-space-24))
 		);
 		max-height: var(--bits-popover-content-available-height);
 		overflow-y: auto;
-		padding: var(--ax-space-16);
+		padding: var(--nais-space-16);
 		border: var(--sh-border-width) solid var(--border);
 		border-radius: var(--radius);
 		background-color: var(--popover);

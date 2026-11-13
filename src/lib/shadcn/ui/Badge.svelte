@@ -44,7 +44,7 @@
 	.sh-badge-comp {
 		display: inline-flex;
 		align-items: center;
-		gap: var(--ax-space-6);
+		gap: var(--nais-space-6);
 		border-radius: var(--radius-full);
 		font-weight: var(--sh-font-weight-semibold);
 		border: var(--sh-border-width) solid transparent;
@@ -61,17 +61,17 @@
 	}
 
 	.size-default {
-		padding: var(--ax-space-4) var(--ax-space-10);
+		padding: var(--nais-space-4) var(--nais-space-10);
 		font-size: var(--sh-font-size-xs);
 	}
 
 	.size-sm {
-		padding: var(--ax-space-2) var(--ax-space-8);
+		padding: var(--nais-space-2) var(--nais-space-8);
 		font-size: var(--sh-font-size-caption);
 	}
 
 	.size-xs {
-		padding: var(--ax-space-1) var(--ax-space-6);
+		padding: var(--nais-space-1) var(--nais-space-6);
 		font-size: var(--sh-font-size-micro);
 	}
 
@@ -132,14 +132,14 @@
 	}
 
 	.dot {
-		width: var(--ax-space-6);
-		height: var(--ax-space-6);
+		width: var(--nais-space-6);
+		height: var(--nais-space-6);
 		border-radius: var(--radius-full);
 		background-color: currentColor;
 		flex-shrink: 0;
 	}
 
 	.dot.pulse {
-		box-shadow: 0 0 0 var(--ax-space-2) color-mix(in srgb, currentColor 28%, transparent);
+		box-shadow: 0 0 0 var(--nais-space-2) color-mix(in srgb, currentColor 28%, transparent);
 	}
 </style>

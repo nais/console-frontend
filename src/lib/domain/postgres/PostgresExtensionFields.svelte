@@ -96,22 +96,22 @@
 		padding: 0;
 		border: none;
 		display: grid;
-		gap: var(--ax-space-8);
+		gap: var(--nais-space-8);
 	}
 
 	legend {
-		margin-bottom: var(--ax-space-4);
+		margin-bottom: var(--nais-space-4);
 		font-size: var(--sh-font-size-sm);
 		font-weight: var(--sh-font-weight-semibold);
 	}
 
 	.extension-picker {
 		display: grid;
-		gap: var(--ax-space-8);
+		gap: var(--nais-space-8);
 	}
 
 	.extension-options {
-		max-height: calc(var(--ax-space-64) * 4);
+		max-height: calc(var(--nais-space-64) * 4);
 		overflow-y: auto;
 		overscroll-behavior: contain;
 	}

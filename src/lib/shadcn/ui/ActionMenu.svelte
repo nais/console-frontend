@@ -76,7 +76,7 @@
 		max-width: var(--bits-dropdown-menu-content-available-width);
 		max-height: var(--bits-dropdown-menu-content-available-height);
 		overflow-y: auto;
-		padding: var(--ax-space-4);
+		padding: var(--nais-space-4);
 		border: var(--sh-border-width) solid var(--border);
 		border-radius: var(--radius);
 		background-color: var(--popover);

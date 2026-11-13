@@ -87,7 +87,7 @@
 				<Loader size="3xlarge" />
 			</div>
 		{:else if isNotFoundError($CVEDetails.errors)}
-			<Alert variant="warning" size="medium" style="margin-bottom: var(--ax-space-16);">
+			<Alert variant="warning" size="medium" style="margin-bottom: var(--nais-space-16);">
 				Vulnerability not found. The ID you entered doesn't exist in our database.
 			</Alert>
 		{:else if $CVEDetails.data}
@@ -298,14 +298,14 @@
 	.fix-version-term {
 		display: inline-flex;
 		align-items: center;
-		gap: var(--ax-space-4);
+		gap: var(--nais-space-4);
 	}
 
 	.search-form {
 		display: flex;
-		gap: var(--ax-space-12);
+		gap: var(--nais-space-12);
 		align-items: flex-end;
-		margin-bottom: var(--ax-space-16);
+		margin-bottom: var(--nais-space-16);
 		max-width: 600px;
 	}
 
@@ -332,86 +332,86 @@
 	.wrapper {
 		display: flex;
 		flex-direction: column;
-		gap: var(--ax-space-16);
+		gap: var(--nais-space-16);
 	}
 
 	.header {
 		display: flex;
 		flex-direction: column;
-		gap: var(--ax-space-4);
-		margin-bottom: var(--ax-space-8);
+		gap: var(--nais-space-4);
+		margin-bottom: var(--nais-space-8);
 	}
 
 	.title-row {
 		display: flex;
 		align-items: center;
-		gap: var(--ax-space-12);
+		gap: var(--nais-space-12);
 	}
 
 	.priority-card {
 		display: flex;
 		flex-direction: column;
-		gap: var(--ax-space-16);
-		padding: var(--ax-space-20);
-		border: var(--ax-space-1) solid var(--ax-border-neutral-subtleA);
-		border-left: var(--ax-space-2) solid var(--ax-border-neutral-subtleA);
-		border-radius: var(--ax-radius-8);
-		background: var(--ax-neutral-100);
+		gap: var(--nais-space-16);
+		padding: var(--nais-space-20);
+		border: var(--nais-space-1) solid var(--border);
+		border-left: var(--nais-space-2) solid var(--border);
+		border-radius: var(--nais-radius-8);
+		background: var(--background-subtle);
 	}
 
 	.priority-card.high {
-		border-left-color: var(--ax-border-warning);
+		border-left-color: var(--warning-border);
 	}
 
 	.priority-card.urgent {
-		border-left-color: var(--ax-text-danger-decoration);
+		border-left-color: var(--destructive);
 	}
 
 	.priority-card-header {
 		display: flex;
 		align-items: start;
 		justify-content: space-between;
-		gap: var(--ax-space-16);
+		gap: var(--nais-space-16);
 	}
 
 	.priority-card :global(h2) {
 		display: flex;
 		align-items: center;
 		flex-wrap: wrap;
-		gap: var(--ax-space-8);
-		margin: var(--ax-space-4) 0 0;
+		gap: var(--nais-space-8);
+		margin: var(--nais-space-4) 0 0;
 	}
 
 	.priority-guidance {
 		font-weight: var(--sh-font-weight-semibold);
 		text-align: right;
-		color: var(--ax-text-neutral-subtle);
+		color: var(--muted-foreground);
 	}
 
 	.priority-explanation {
 		display: flex;
 		flex-direction: column;
-		gap: var(--ax-space-4);
+		gap: var(--nais-space-4);
 		max-width: 48ch;
 		text-align: right;
 	}
 
 	.card {
-		padding: var(--ax-space-16);
-		border-radius: var(--ax-radius-8);
+		padding: var(--nais-space-16);
+		border-radius: var(--nais-radius-8);
 	}
 
 	.details-list {
 		display: flex;
 		flex-wrap: wrap;
-		gap: var(--ax-space-24);
+		gap: var(--nais-space-24);
 		margin: 0;
 		align-items: stretch;
 
 		& > div {
 			display: grid;
 			grid-template-rows: auto 1fr;
-			gap: var(--ax-space-4);
+			gap: var(--nais-space-4);
 		}
 
 		& > div :global(dd) {
@@ -425,21 +425,21 @@
 		display: grid;
 		grid-template-columns: auto 1fr;
 		align-items: end;
-		gap: var(--ax-space-24);
+		gap: var(--nais-space-24);
 	}
 
 	.risk-assessment-card {
 		display: flex;
 		flex-direction: column;
-		gap: var(--ax-space-16);
-		background: var(--ax-bg-neutral-soft);
-		border: var(--ax-space-1) solid var(--ax-border-neutral-subtleA);
+		gap: var(--nais-space-16);
+		background: var(--background-subtle);
+		border: var(--nais-space-1) solid var(--border);
 	}
 
 	.risk-assessment-signals {
 		display: flex;
 		flex-direction: column;
-		gap: var(--ax-space-4);
+		gap: var(--nais-space-4);
 	}
 
 	.risk-assessment-signals :global(ul.signals) {
@@ -450,20 +450,20 @@
 	.risk-assessment-signals {
 		display: flex;
 		flex-direction: column;
-		gap: var(--ax-space-4);
+		gap: var(--nais-space-4);
 	}
 
 	.risk-assessment-values {
 		display: flex;
 		flex-wrap: wrap;
 		align-items: center;
-		gap: var(--ax-space-8);
+		gap: var(--nais-space-8);
 	}
 
 	.risk-assessment-content :global(dd) {
 		display: flex;
 		align-items: center;
-		gap: var(--ax-space-8);
+		gap: var(--nais-space-8);
 	}
 
 	@media (max-width: 767px) {
@@ -492,13 +492,13 @@
 		align-items: center;
 		justify-content: space-between;
 		flex-wrap: wrap;
-		gap: var(--ax-space-12);
+		gap: var(--nais-space-12);
 	}
 
 	.workload-groups {
 		display: flex;
 		flex-direction: column;
-		gap: var(--ax-space-24);
+		gap: var(--nais-space-24);
 	}
 
 	.workload-group-header {
@@ -506,10 +506,10 @@
 		align-items: center;
 		justify-content: space-between;
 		flex-wrap: wrap;
-		gap: var(--ax-space-12);
-		padding: var(--ax-space-12) var(--ax-space-24);
-		background: var(--ax-bg-neutral-soft);
-		border-radius: var(--ax-radius-8) var(--ax-radius-8) 0 0;
+		gap: var(--nais-space-12);
+		padding: var(--nais-space-12) var(--nais-space-24);
+		background: var(--background-subtle);
+		border-radius: var(--nais-radius-8) var(--nais-radius-8) 0 0;
 	}
 
 	.workload-group-title {
@@ -521,7 +521,7 @@
 	.workload-container {
 		display: grid;
 		grid-template-columns: minmax(200px, 300px) 1fr;
-		gap: var(--ax-space-24);
+		gap: var(--nais-space-24);
 		align-items: start;
 	}
 
@@ -542,10 +542,10 @@
 	.workload-details {
 		display: flex;
 		flex-direction: column;
-		gap: var(--ax-space-8);
+		gap: var(--nais-space-8);
 		margin: 0;
-		padding-left: var(--ax-space-12);
-		border-left: 2px solid var(--ax-border-subtle);
+		padding-left: var(--nais-space-12);
+		border-left: 2px solid var(--border-subtle);
 	}
 
 	@media (max-width: 767px) {
@@ -558,14 +558,14 @@
 	.detail-row {
 		display: grid;
 		grid-template-columns: 100px 1fr;
-		gap: var(--ax-space-12);
+		gap: var(--nais-space-12);
 		align-items: baseline;
 	}
 
 	@media (max-width: 767px) {
 		.detail-row {
 			grid-template-columns: 1fr;
-			gap: var(--ax-space-4);
+			gap: var(--nais-space-4);
 		}
 	}
 

@@ -59,6 +59,6 @@
 	.setting-option {
 		display: inline-flex;
 		align-items: center;
-		gap: var(--ax-space-8);
+		gap: var(--nais-space-8);
 	}
 </style>

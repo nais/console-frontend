@@ -29,14 +29,14 @@
 
 <style>
 	.sh-error-summary {
-		padding: var(--ax-space-16);
+		padding: var(--nais-space-16);
 		border-radius: var(--radius);
 		border: var(--sh-border-width) solid var(--destructive-border);
 		background-color: var(--destructive-muted);
 		color: var(--destructive);
 		display: flex;
 		flex-direction: column;
-		gap: var(--ax-space-8);
+		gap: var(--nais-space-8);
 	}
 	.sh-error-summary__heading {
 		margin: 0;

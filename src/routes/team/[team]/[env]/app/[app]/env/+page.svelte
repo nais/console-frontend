@@ -69,13 +69,13 @@
 			};
 		}}
 	>
-		<BodyLong style="margin-bottom: var(--ax-space-16);">
+		<BodyLong style="margin-bottom: var(--nais-space-16);">
 			Set environment variables for <strong>{page.params.app}</strong> in
 			<strong>{page.params.env}</strong>. These are plain text values that will be added to the
 			workload.
 		</BodyLong>
 
-		<Alert variant="warning" size="small" style="margin-bottom: var(--ax-space-16);">
+		<Alert variant="warning" size="small" style="margin-bottom: var(--nais-space-16);">
 			These changes are temporary and will be overwritten on next deploy.
 		</Alert>
 
@@ -130,7 +130,7 @@
 	.wrapper {
 		display: flex;
 		flex-direction: column;
-		gap: var(--ax-space-8);
+		gap: var(--nais-space-8);
 		width: 500px;
 		align-items: flex-start;
 	}
@@ -140,18 +140,18 @@
 	}
 
 	form :global(> *) {
-		margin-bottom: var(--ax-space-16);
+		margin-bottom: var(--nais-space-16);
 	}
 
 	.button-row {
 		display: flex;
-		gap: var(--ax-space-8);
+		gap: var(--nais-space-8);
 		align-items: center;
 	}
 
 	.env-row {
 		display: flex;
-		gap: var(--ax-space-8);
+		gap: var(--nais-space-8);
 		align-items: flex-end;
 	}
 

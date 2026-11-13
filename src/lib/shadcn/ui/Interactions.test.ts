@@ -49,11 +49,11 @@ describe('primitive interaction contracts', () => {
 		const { body } = await render(Interactions);
 		const box = body.match(/<div\b[^>]*data-testid="compat-box"[^>]*>/)?.[0];
 		for (const token of [
-			'--ax-space-24',
-			'--ax-radius-12',
-			'--ax-border-neutral-subtleA',
-			'--ax-space-2',
-			'--ax-bg-neutral-soft',
+			'--nais-space-24',
+			'--nais-radius-12',
+			'--border',
+			'--nais-space-2',
+			'--background-subtle',
 			'--sh-shadow-md'
 		]) {
 			expect(box).toContain(`var(${token})`);

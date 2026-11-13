@@ -126,13 +126,13 @@
 <style>
 	form {
 		display: grid;
-		gap: var(--ax-space-24);
+		gap: var(--nais-space-24);
 		min-width: 0;
 	}
 
 	.buttons {
 		display: flex;
-		gap: var(--ax-space-8);
+		gap: var(--nais-space-8);
 		flex-wrap: wrap;
 	}
 </style>

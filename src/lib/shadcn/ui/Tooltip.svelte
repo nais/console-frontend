@@ -211,8 +211,8 @@
 		max-width: var(--bits-tooltip-content-available-width);
 		display: inline-flex;
 		align-items: center;
-		gap: var(--ax-space-6);
-		padding: var(--ax-space-4) var(--ax-space-8);
+		gap: var(--nais-space-6);
+		padding: var(--nais-space-4) var(--nais-space-8);
 		border-radius: var(--radius-xs);
 		background-color: var(--popover);
 		color: var(--popover-foreground);
@@ -225,12 +225,12 @@
 	}
 	.sh-tooltip-keys {
 		display: inline-flex;
-		gap: var(--ax-space-2);
+		gap: var(--nais-space-2);
 	}
 	.sh-tooltip-keys kbd {
-		padding: var(--ax-space-1) var(--ax-space-4);
+		padding: var(--nais-space-1) var(--nais-space-4);
 		border: var(--sh-border-width) solid var(--border);
-		border-radius: var(--ax-space-2);
+		border-radius: var(--nais-space-2);
 		font-size: var(--sh-font-size-caption);
 		font-family: var(--sh-font-family-mono);
 	}

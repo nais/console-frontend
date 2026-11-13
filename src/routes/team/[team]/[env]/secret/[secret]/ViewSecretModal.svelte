@@ -121,27 +121,27 @@
 	.header {
 		display: flex;
 		align-items: center;
-		gap: var(--ax-space-8);
+		gap: var(--nais-space-8);
 	}
 
 	.content {
 		display: flex;
 		flex-direction: column;
-		gap: var(--ax-space-16);
+		gap: var(--nais-space-16);
 		min-width: 400px;
 	}
 
 	.errors {
-		margin-top: var(--ax-space-8);
+		margin-top: var(--nais-space-8);
 	}
 
 	.form {
-		margin-top: var(--ax-space-8);
+		margin-top: var(--nais-space-8);
 	}
 
 	.error-message {
-		color: var(--ax-text-danger);
+		color: var(--destructive);
 		font-size: var(--sh-font-size-sm);
-		margin-top: var(--ax-space-4);
+		margin-top: var(--nais-space-4);
 	}
 </style>
