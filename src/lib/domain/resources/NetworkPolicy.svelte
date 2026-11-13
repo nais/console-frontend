@@ -201,14 +201,14 @@
 		display: flex;
 		align-items: center;
 		justify-content: space-between;
-		gap: var(--ax-space-16);
+		gap: var(--nais-space-16);
 		flex-wrap: wrap;
 	}
 
 	.actions {
 		display: flex;
 		align-items: center;
-		gap: var(--ax-space-4);
+		gap: var(--nais-space-4);
 		flex-shrink: 0;
 	}
 
@@ -224,16 +224,16 @@
 		display: grid;
 		grid-template-columns: auto minmax(0, 1fr) auto;
 		align-items: center;
-		gap: var(--ax-space-16);
-		padding: var(--ax-space-12) var(--ax-space-20);
-		border-bottom: var(--sh-border-width) solid var(--ax-border-neutral-subtleA);
+		gap: var(--nais-space-16);
+		padding: var(--nais-space-12) var(--nais-space-20);
+		border-bottom: var(--sh-border-width) solid var(--border);
 		font-size: var(--sh-font-size-sm);
 		min-width: 0;
 		transition: background-color 120ms ease;
 	}
 
 	.rule:hover {
-		background-color: var(--ax-bg-neutral-soft);
+		background-color: var(--background-subtle);
 	}
 
 	.rule:last-child {
@@ -243,15 +243,15 @@
 	.direction {
 		display: flex;
 		align-items: center;
-		gap: var(--ax-space-2);
-		color: var(--ax-text-neutral-subtle);
+		gap: var(--nais-space-2);
+		color: var(--muted-foreground);
 		font-size: var(--sh-font-size-sm);
 		flex-shrink: 0;
-		width: var(--ax-space-56);
+		width: var(--nais-space-56);
 	}
 
 	.direction.inbound {
-		color: var(--ax-text-accent);
+		color: var(--info);
 	}
 
 	.direction-label {
@@ -276,19 +276,19 @@
 	}
 
 	.wildcard {
-		color: var(--ax-text-neutral-subtle);
+		color: var(--muted-foreground);
 	}
 
 	.empty-state {
-		padding: var(--ax-space-12) var(--ax-space-24);
+		padding: var(--nais-space-12) var(--nais-space-24);
 	}
 
 	@container (max-width: 500px) {
 		.rule {
 			grid-template-columns: auto minmax(0, 1fr);
-			column-gap: var(--ax-space-12);
-			row-gap: var(--ax-space-8);
-			padding-inline: var(--ax-space-16);
+			column-gap: var(--nais-space-12);
+			row-gap: var(--nais-space-8);
+			padding-inline: var(--nais-space-16);
 		}
 
 		.status {

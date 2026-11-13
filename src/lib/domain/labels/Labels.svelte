@@ -48,7 +48,7 @@
 	.labels {
 		display: flex;
 		flex-direction: column;
-		gap: var(--ax-space-4);
+		gap: var(--nais-space-4);
 		min-width: 0;
 	}
 
@@ -58,7 +58,7 @@
 		text-overflow: ellipsis;
 		white-space: nowrap;
 		font-size: var(--sh-font-size-sm);
-		color: var(--ax-text-neutral);
+		color: var(--foreground);
 	}
 
 	.empty {

@@ -132,7 +132,7 @@
 	.instances-cell {
 		display: flex;
 		flex-direction: column;
-		gap: var(--ax-space-4);
+		gap: var(--nais-space-4);
 		min-width: 110px;
 	}
 

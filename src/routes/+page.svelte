@@ -260,10 +260,10 @@
 	}
 	.home,
 	.workspace {
-		gap: var(--ax-space-24);
+		gap: var(--nais-space-24);
 	}
 	.home-section {
-		gap: var(--ax-space-12);
+		gap: var(--nais-space-12);
 		min-width: 0;
 	}
 	.section-heading,
@@ -271,18 +271,18 @@
 	.entry-context {
 		display: flex;
 		align-items: center;
-		gap: var(--ax-space-12);
+		gap: var(--nais-space-12);
 		flex-wrap: wrap;
 	}
 	.section-heading {
 		justify-content: space-between;
 	}
 	.home-header p {
-		margin-top: var(--ax-space-6);
+		margin-top: var(--nais-space-6);
 	}
 	.heading-title,
 	.entry-context {
-		gap: var(--ax-space-8);
+		gap: var(--nais-space-8);
 	}
 	.overview-grid {
 		grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
@@ -290,10 +290,10 @@
 	p {
 		margin: 0;
 		font-size: var(--sh-font-size-sm);
-		color: var(--ax-text-neutral);
+		color: var(--foreground);
 	}
 	.entry {
-		gap: var(--ax-space-6);
+		gap: var(--nais-space-6);
 		min-width: 0;
 		overflow-wrap: anywhere;
 	}
@@ -306,7 +306,7 @@
 	.teams-grid {
 		display: grid;
 		grid-template-columns: repeat(2, minmax(0, 1fr));
-		gap: var(--ax-space-12);
+		gap: var(--nais-space-12);
 	}
 	.workspace {
 		min-width: 0;

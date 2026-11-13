@@ -4,7 +4,11 @@ import { parse, parseCss } from 'svelte/compiler';
 
 const SPACING_PROPERTY =
 	/^(?:(?:margin|padding|inset)(?:-(?:top|right|bottom|left|inline|block)(?:-(?:start|end))?)?|(?:row-|column-)?gap|top|right|bottom|left)$/;
-const TOKEN_FILES = new Set(['src/styles/shadcn.css', 'src/styles/app.css']);
+const TOKEN_FILES = new Set([
+	'src/styles/shadcn.css',
+	'src/styles/app.css',
+	'packages/ui/src/lib/tokens.css'
+]);
 
 function maskComments(source) {
 	return source
@@ -15,8 +19,8 @@ function maskComments(source) {
 function prefixes(property) {
 	if (property === 'font-size') return ['--sh-font-size-'];
 	if (property === 'line-height') return ['--sh-font-line-height-'];
-	if (property.endsWith('radius')) return ['--ax-radius-'];
-	if (SPACING_PROPERTY.test(property)) return ['--ax-space-'];
+	if (property.endsWith('radius')) return ['--nais-radius-'];
+	if (SPACING_PROPERTY.test(property)) return ['--nais-space-'];
 	return [];
 }
 
@@ -145,6 +149,7 @@ function collectMatches(projectRoot, tokenSource) {
 	}
 
 	walk(path.join(projectRoot, 'src'));
+	walk(path.join(projectRoot, 'packages/ui/src'));
 	return matches;
 }
 
@@ -161,7 +166,10 @@ export default {
 		const root = path.dirname(context.filename);
 		return {
 			'Program:exit'() {
-				const tokenSource = fs.readFileSync(path.join(root, 'src/styles/shadcn.css'), 'utf8');
+				const tokenSource = fs.readFileSync(
+					path.join(root, 'packages/ui/src/lib/tokens.css'),
+					'utf8'
+				);
 				for (const match of collectMatches(root, tokenSource)) {
 					context.report({
 						loc: { line: 1, column: 0 },

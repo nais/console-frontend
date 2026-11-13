@@ -86,7 +86,7 @@
 
 	.search-icon {
 		position: absolute;
-		left: var(--ax-space-10);
+		left: var(--nais-space-10);
 		display: flex;
 		align-items: center;
 		pointer-events: none;
@@ -96,8 +96,8 @@
 
 	.search-input {
 		width: 100%;
-		height: var(--ax-space-36);
-		padding: 0 var(--ax-space-32);
+		height: var(--nais-space-36);
+		padding: 0 var(--nais-space-32);
 		border: 1px solid var(--input);
 		border-radius: calc(var(--radius) - 2px);
 		background: var(--card);
@@ -124,7 +124,7 @@
 
 	.clear-button {
 		position: absolute;
-		right: var(--ax-space-6);
+		right: var(--nais-space-6);
 		display: inline-flex;
 		align-items: center;
 		justify-content: center;
@@ -132,7 +132,7 @@
 		height: var(--sh-icon-button-size-sm);
 		padding: 0;
 		border: none;
-		border-radius: var(--ax-radius-4);
+		border-radius: var(--nais-radius-4);
 		background: transparent;
 		color: var(--muted-foreground);
 		font-size: var(--sh-font-size-base);

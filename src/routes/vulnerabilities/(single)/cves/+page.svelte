@@ -124,8 +124,8 @@
 		align-items: center;
 		justify-content: space-between;
 		flex-wrap: wrap;
-		gap: var(--ax-space-8);
-		margin-bottom: var(--ax-space-12);
+		gap: var(--nais-space-8);
+		margin-bottom: var(--nais-space-12);
 	}
 
 	.wrapper {

@@ -34,7 +34,7 @@
 	.resource-kv {
 		display: flex;
 		flex-direction: column;
-		gap: var(--ax-space-4);
+		gap: var(--nais-space-4);
 		margin: 0;
 	}
 
@@ -42,12 +42,12 @@
 		display: flex;
 		justify-content: space-between;
 		align-items: baseline;
-		gap: var(--ax-space-8);
+		gap: var(--nais-space-8);
 	}
 
 	.kv-label {
 		font-size: var(--sh-font-size-sm);
-		color: var(--ax-text-neutral-subtle);
+		color: var(--muted-foreground);
 	}
 
 	.kv-value {
@@ -57,6 +57,6 @@
 	code {
 		font-family: monospace;
 		font-size: var(--sh-font-size-sm);
-		color: var(--ax-text-neutral);
+		color: var(--foreground);
 	}
 </style>

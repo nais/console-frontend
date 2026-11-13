@@ -86,6 +86,6 @@
 
 <style>
 	.empty-state {
-		color: var(--ax-text-neutral-subtle);
+		color: var(--muted-foreground);
 	}
 </style>

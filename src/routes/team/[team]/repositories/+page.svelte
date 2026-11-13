@@ -205,7 +205,7 @@
 											title="Remove repository"
 										>
 											{#snippet icon()}
-												<TrashIcon style="color: var(--ax-text-danger-decoration);" />
+												<TrashIcon style="color: var(--destructive);" />
 											{/snippet}
 										</Button>
 									</div>
@@ -302,7 +302,7 @@
 <style>
 	.right {
 		display: flex;
-		gap: var(--ax-space-6);
+		gap: var(--nais-space-6);
 		align-items: center;
 	}
 
@@ -311,19 +311,19 @@
 		align-items: center;
 		justify-content: space-between;
 		width: 100%;
-		gap: var(--ax-space-8);
+		gap: var(--nais-space-8);
 	}
 
 	.repo-name {
 		display: flex;
 		align-items: center;
-		gap: var(--ax-space-6);
+		gap: var(--nais-space-6);
 	}
 
 	.modal-actions {
 		display: flex;
-		gap: var(--ax-space-8);
-		margin-top: var(--ax-space-16);
+		gap: var(--nais-space-8);
+		margin-top: var(--nais-space-16);
 	}
 
 	code {

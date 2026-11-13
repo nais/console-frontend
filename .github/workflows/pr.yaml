@@ -24,6 +24,8 @@ jobs:
         run: pnpm run lint
       - name: Run tests
         run: pnpm run test -- --run
+      - name: Verify packed UI consumer
+        run: pnpm run test:package
       - name: Helm lint
         run: helm lint --strict ./charts
 

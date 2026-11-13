@@ -61,8 +61,8 @@
 <style>
 	.suggestions-panel {
 		display: grid;
-		gap: var(--ax-space-10);
-		padding: var(--ax-space-12);
+		gap: var(--nais-space-10);
+		padding: var(--nais-space-12);
 		border: 1px solid var(--border);
 		border-radius: calc(var(--radius) - 2px);
 		background-color: var(--background-subtle);
@@ -72,7 +72,7 @@
 	.intro {
 		display: flex;
 		align-items: baseline;
-		gap: var(--ax-space-8);
+		gap: var(--nais-space-8);
 		flex-wrap: wrap;
 	}
 
@@ -84,14 +84,14 @@
 	.prefixes {
 		display: flex;
 		flex-wrap: wrap;
-		gap: var(--ax-space-6);
+		gap: var(--nais-space-6);
 	}
 
 	.scope {
 		display: flex;
 		align-items: center;
-		gap: var(--ax-space-8);
-		padding-top: var(--ax-space-8);
+		gap: var(--nais-space-8);
+		padding-top: var(--nais-space-8);
 		border-top: 1px solid var(--border);
 		color: var(--foreground);
 	}
@@ -105,8 +105,8 @@
 	.prefix {
 		display: inline-flex;
 		align-items: center;
-		gap: var(--ax-space-6);
-		padding: var(--ax-space-4) var(--ax-space-8);
+		gap: var(--nais-space-6);
+		padding: var(--nais-space-4) var(--nais-space-8);
 		border: 1px solid var(--border);
 		border-radius: calc(var(--radius) - 4px);
 		background-color: var(--card);
@@ -132,8 +132,8 @@
 	.hint {
 		display: inline-flex;
 		align-items: center;
-		gap: var(--ax-space-6);
-		padding: var(--ax-space-4) var(--ax-space-8);
+		gap: var(--nais-space-6);
+		padding: var(--nais-space-4) var(--nais-space-8);
 		border: 1px solid var(--border);
 		border-radius: calc(var(--radius) - 4px);
 		background-color: var(--card);

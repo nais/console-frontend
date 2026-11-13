@@ -32,17 +32,14 @@
 						{#if bucket.cascadingDelete}
 							<span class="inline">
 								<TooltipAlignHack content="Cascading delete">
-									<CheckmarkIcon
-										style="color: var(--ax-text-success-subtle)"
-										title="Cascading delete: true"
-									/>
+									<CheckmarkIcon style="color: var(--success)" title="Cascading delete: true" />
 								</TooltipAlignHack>
 								The bucket is deleted with the application only if empty
 							</span>
 						{:else}
 							<span class="inline">
 								<TooltipAlignHack content="Cascading delete: false">
-									<XMarkIcon style="color: var(--ax-text-danger-decoration);" />
+									<XMarkIcon style="color: var(--destructive);" />
 								</TooltipAlignHack>
 								Deleting the application will NOT remove the bucket
 							</span>
@@ -92,14 +89,14 @@
 	.content {
 		display: flex;
 		flex-direction: column;
-		gap: var(--ax-space-24);
+		gap: var(--nais-space-24);
 		min-width: 0;
 	}
 
 	.self-link {
 		display: flex;
 		align-items: center;
-		gap: var(--ax-space-4);
+		gap: var(--nais-space-4);
 	}
 
 	.self-link-value {
@@ -112,13 +109,13 @@
 	.inline {
 		display: flex;
 		align-items: center;
-		gap: var(--ax-space-8);
+		gap: var(--nais-space-8);
 	}
 
 	.links-section {
-		margin-top: var(--ax-space-16);
+		margin-top: var(--nais-space-16);
 		display: grid;
-		gap: var(--ax-space-4);
+		gap: var(--nais-space-4);
 	}
 
 	@media (max-width: 767px) {

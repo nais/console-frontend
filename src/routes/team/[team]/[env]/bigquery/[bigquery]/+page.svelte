@@ -55,10 +55,7 @@
 							>
 								{#snippet icon()}
 									<TooltipAlignHack content="Cascading delete">
-										<CheckmarkIcon
-											style="color: var(--ax-text-success-subtle)"
-											title="CascadingDelete"
-										/>
+										<CheckmarkIcon style="color: var(--success)" title="CascadingDelete" />
 									</TooltipAlignHack>
 								{/snippet}
 							</IconLabel>
@@ -66,7 +63,7 @@
 							<IconLabel label="Deleting the application will NOT remove the dataset.">
 								{#snippet icon()}
 									<TooltipAlignHack content="Cascading delete">
-										<XMarkIcon style="color: var(--ax-text-danger-decoration);" />
+										<XMarkIcon style="color: var(--destructive);" />
 									</TooltipAlignHack>
 								{/snippet}
 							</IconLabel>
@@ -133,7 +130,7 @@
 	.content {
 		display: flex;
 		flex-direction: column;
-		gap: var(--ax-space-24);
+		gap: var(--nais-space-24);
 		min-width: 0;
 	}
 
@@ -141,7 +138,7 @@
 		display: grid;
 		grid-template-columns: minmax(0, 1fr) auto;
 		align-items: center;
-		gap: var(--ax-space-4);
+		gap: var(--nais-space-4);
 		min-width: 0;
 	}
 
@@ -155,7 +152,7 @@
 	.inline {
 		display: flex;
 		align-items: center;
-		gap: var(--ax-space-8);
+		gap: var(--nais-space-8);
 	}
 
 	@media (max-width: 767px) {

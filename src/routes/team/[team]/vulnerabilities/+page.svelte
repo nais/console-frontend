@@ -145,16 +145,16 @@
 	.wrapper {
 		display: grid;
 		grid-template-columns: minmax(0, 1fr);
-		gap: var(--ax-space-32);
+		gap: var(--nais-space-32);
 		min-width: 0;
 	}
 
 	.cve-search-section {
 		display: flex;
 		flex-direction: column;
-		gap: var(--ax-space-8);
-		padding: var(--ax-space-16) var(--ax-space-20);
-		margin-bottom: var(--ax-space-20);
+		gap: var(--nais-space-8);
+		padding: var(--nais-space-16) var(--nais-space-20);
+		margin-bottom: var(--nais-space-20);
 		border-radius: var(--radius-lg);
 		border: var(--sh-border-width) solid var(--border);
 		background-color: var(--card);

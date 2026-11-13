@@ -117,7 +117,7 @@
 	.kv {
 		display: flex;
 		flex-direction: column;
-		gap: var(--ax-space-12);
+		gap: var(--nais-space-12);
 		margin: 0;
 		min-width: 0;
 	}
@@ -125,7 +125,7 @@
 	.kv-row {
 		display: flex;
 		flex-direction: column;
-		gap: var(--ax-space-2);
+		gap: var(--nais-space-2);
 		min-width: 0;
 	}
 
@@ -137,7 +137,7 @@
 	.digest-cell {
 		display: inline-flex;
 		align-items: center;
-		gap: var(--ax-space-4);
+		gap: var(--nais-space-4);
 	}
 
 	code {

@@ -32,8 +32,8 @@
 	.sh-removable-chip {
 		display: inline-flex;
 		align-items: center;
-		gap: var(--ax-space-4);
-		padding: var(--ax-space-4) var(--ax-space-8);
+		gap: var(--nais-space-4);
+		padding: var(--nais-space-4) var(--nais-space-8);
 		border: var(--sh-border-width) solid var(--border);
 		border-radius: var(--radius-full);
 		background: var(--secondary);
@@ -50,8 +50,8 @@
 	}
 
 	.sh-removable-chip :global(svg) {
-		width: var(--ax-space-16);
-		height: var(--ax-space-16);
+		width: var(--nais-space-16);
+		height: var(--nais-space-16);
 		flex-shrink: 0;
 	}
 
@@ -61,7 +61,7 @@
 	}
 
 	.sh-removable-chip:focus-visible {
-		outline: var(--ax-space-2) solid var(--ring);
-		outline-offset: var(--ax-space-2);
+		outline: var(--nais-space-2) solid var(--ring);
+		outline-offset: var(--nais-space-2);
 	}
 </style>

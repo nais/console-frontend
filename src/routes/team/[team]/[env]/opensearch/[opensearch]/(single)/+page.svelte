@@ -362,7 +362,7 @@
 	.content {
 		display: flex;
 		flex-direction: column;
-		gap: var(--ax-space-24);
+		gap: var(--nais-space-24);
 		min-width: 0;
 	}
 
@@ -370,16 +370,16 @@
 		display: flex;
 		align-items: center;
 		justify-content: space-between;
-		gap: var(--ax-space-8);
-		margin-bottom: var(--ax-space-16);
+		gap: var(--nais-space-8);
+		margin-bottom: var(--nais-space-16);
 	}
 
 	.service-maintenance-list-heading {
 		display: flex;
 		align-items: flex-start;
 		justify-content: space-between;
-		margin-bottom: var(--ax-space-16);
-		gap: var(--ax-space-4);
+		margin-bottom: var(--nais-space-16);
+		gap: var(--nais-space-4);
 		flex-wrap: wrap;
 	}
 

@@ -527,24 +527,24 @@
 	.main-column {
 		display: flex;
 		flex-direction: column;
-		gap: var(--ax-space-32);
+		gap: var(--nais-space-32);
 	}
 
 	.settings-list dd {
 		display: flex;
 		align-items: center;
-		gap: var(--ax-space-4);
+		gap: var(--nais-space-4);
 	}
 
 	.danger-zone {
-		padding: var(--ax-space-16);
-		border-radius: var(--ax-radius-8);
-		border: 1px solid var(--ax-border-danger);
+		padding: var(--nais-space-16);
+		border-radius: var(--nais-radius-8);
+		border: 1px solid var(--destructive-border);
 	}
 
 	.deployKey {
 		font-family: monospace;
-		padding-bottom: var(--ax-space-16);
+		padding-bottom: var(--nais-space-16);
 		word-break: break-all;
 		overflow-wrap: break-word;
 	}
@@ -552,12 +552,12 @@
 	.buttons {
 		display: flex;
 		flex-direction: row;
-		gap: var(--ax-space-16);
+		gap: var(--nais-space-16);
 	}
 
 	.deletewrapper {
 		display: flex;
-		gap: var(--ax-space-4);
+		gap: var(--nais-space-4);
 	}
 
 	.deletewrapper div {
@@ -571,7 +571,7 @@
 
 		.deletewrapper {
 			flex-direction: column;
-			gap: var(--ax-space-8);
+			gap: var(--nais-space-8);
 		}
 	}
 </style>

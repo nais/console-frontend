@@ -173,11 +173,11 @@
 		display: flex;
 		flex-direction: column;
 		align-items: start;
-		gap: var(--ax-space-24);
+		gap: var(--nais-space-24);
 	}
 	.search {
 		display: flex;
 		flex-direction: column;
-		gap: var(--ax-space-12);
+		gap: var(--nais-space-12);
 	}
 </style>

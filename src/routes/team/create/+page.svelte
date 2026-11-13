@@ -170,7 +170,7 @@
 			{/snippet}
 		</TextField>
 		{#if teamSlugError !== 'no_error' && teamSlugError !== ''}
-			<p id="team-slug-error" style:color="var(--ax-text-danger)" role="alert">{teamSlugError}</p>
+			<p id="team-slug-error" style:color="var(--destructive)" role="alert">{teamSlugError}</p>
 		{/if}
 		<br />
 		<TextField
@@ -187,7 +187,7 @@
 			{/snippet}
 		</TextField>
 		{#if purposeError !== 'no_error' && purposeError !== ''}
-			<p id="purpose-error" style:color="var(--ax-text-danger)" role="alert">{purposeError}</p>
+			<p id="purpose-error" style:color="var(--destructive)" role="alert">{purposeError}</p>
 		{/if}
 		<br />
 		<TextField
@@ -204,7 +204,7 @@
 			{/snippet}
 		</TextField>
 		{#if slackChannelError !== 'no_error' && slackChannelError !== ''}
-			<p id="slack-channel-error" style:color="var(--ax-text-danger)" role="alert">
+			<p id="slack-channel-error" style:color="var(--destructive)" role="alert">
 				{slackChannelError}
 			</p>
 		{/if}
@@ -215,7 +215,7 @@
 
 <style>
 	.container {
-		padding-top: var(--ax-space-64);
+		padding-top: var(--nais-space-64);
 		margin-inline: auto;
 		max-width: 620px;
 

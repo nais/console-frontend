@@ -57,8 +57,8 @@
 
 	.manifest-surface {
 		min-width: 0;
-		border-radius: var(--ax-radius-8);
+		border-radius: var(--nais-radius-8);
 		overflow: hidden;
-		background: var(--ax-bg-default);
+		background: var(--card);
 	}
 </style>

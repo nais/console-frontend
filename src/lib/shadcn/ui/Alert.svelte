@@ -93,16 +93,16 @@
 		border: var(--sh-border-width) solid var(--border);
 		background-color: var(--card);
 		color: var(--foreground);
-		padding: var(--ax-space-12) var(--ax-space-16);
+		padding: var(--nais-space-12) var(--nais-space-16);
 		display: flex;
 		align-items: flex-start;
-		gap: var(--ax-space-10);
+		gap: var(--nais-space-10);
 		font-size: var(--sh-font-size-body);
 		line-height: 1.45;
 		box-sizing: border-box;
 	}
 	.sh-ui-alert.size-sm {
-		padding: var(--ax-space-8) var(--ax-space-12);
+		padding: var(--nais-space-8) var(--nais-space-12);
 		font-size: var(--sh-font-size-sm);
 	}
 	.sh-ui-alert.full-width {
@@ -111,14 +111,14 @@
 	.sh-ui-alert.inline {
 		background-color: transparent;
 		border: none;
-		padding: var(--ax-space-4) 0;
+		padding: var(--nais-space-4) 0;
 	}
 	.sh-ui-alert__icon {
 		display: inline-flex;
 		align-items: center;
 		justify-content: center;
 		font-size: var(--sh-font-size-base);
-		margin-top: var(--ax-space-2);
+		margin-top: var(--nais-space-2);
 		flex-shrink: 0;
 	}
 	.sh-ui-alert__content {
@@ -127,7 +127,7 @@
 		overflow-wrap: anywhere;
 	}
 	.sh-ui-alert__title {
-		margin: 0 0 var(--ax-space-4);
+		margin: 0 0 var(--nais-space-4);
 		font-weight: var(--sh-font-weight-semibold);
 		font-size: var(--sh-font-size-sm);
 		line-height: 1.3;
@@ -136,8 +136,8 @@
 		display: inline-flex;
 		align-items: center;
 		justify-content: center;
-		width: var(--ax-space-24);
-		height: var(--ax-space-24);
+		width: var(--nais-space-24);
+		height: var(--nais-space-24);
 		border: none;
 		border-radius: var(--radius-2xs);
 		background: transparent;

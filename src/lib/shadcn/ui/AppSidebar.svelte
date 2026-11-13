@@ -8,7 +8,7 @@
 	import { ChevronLeftIcon, ChevronRightIcon } from '#lib/icons/index.js';
 	import { onMount } from 'svelte';
 	import Heading from './Heading.svelte';
-	import Modal from './Modal.svelte';
+	import { Modal } from '@nais/ui';
 	import Tooltip from './Tooltip.svelte';
 
 	interface Props {
@@ -166,8 +166,8 @@
 <style>
 	.sh-sidebar {
 		position: sticky;
-		top: var(--ax-space-56);
-		height: calc(100vh - var(--ax-space-56));
+		top: var(--nais-space-56);
+		height: calc(100vh - var(--nais-space-56));
 		width: var(--sh-sidebar-menu-width);
 		flex-shrink: 0;
 		display: flex;
@@ -185,7 +185,7 @@
 	}
 
 	.sidebar-bottom {
-		padding: var(--ax-space-8);
+		padding: var(--nais-space-8);
 		border-top: var(--sh-border-width) solid var(--sidebar-border);
 		display: flex;
 		justify-content: flex-end;
@@ -198,9 +198,9 @@
 	.collapse-btn {
 		display: inline-flex;
 		align-items: center;
-		gap: var(--ax-space-6);
-		height: var(--ax-space-28);
-		padding: 0 var(--ax-space-8);
+		gap: var(--nais-space-6);
+		height: var(--nais-space-28);
+		padding: 0 var(--nais-space-8);
 		border-radius: var(--radius-xs);
 		border: var(--sh-border-width) solid transparent;
 		background: transparent;
@@ -222,21 +222,21 @@
 	.sidebar-scroll {
 		flex: 1;
 		overflow-y: auto;
-		padding: var(--ax-space-10) var(--ax-space-8) var(--ax-space-16) var(--ax-space-8);
+		padding: var(--nais-space-10) var(--nais-space-8) var(--nais-space-16) var(--nais-space-8);
 		display: flex;
 		flex-direction: column;
-		gap: var(--ax-space-14);
+		gap: var(--nais-space-14);
 		scrollbar-width: thin;
 	}
 
 	.nav-group {
 		display: flex;
 		flex-direction: column;
-		gap: var(--ax-space-2);
+		gap: var(--nais-space-2);
 	}
 
 	.nav-group-label {
-		padding: var(--ax-space-2) var(--ax-space-8);
+		padding: var(--nais-space-2) var(--nais-space-8);
 		font-size: var(--sh-font-size-xs);
 		font-weight: var(--sh-font-weight-medium);
 		color: var(--sidebar-muted);
@@ -248,14 +248,14 @@
 		padding: 0;
 		display: flex;
 		flex-direction: column;
-		gap: var(--ax-space-1);
+		gap: var(--nais-space-1);
 	}
 
 	.nav-item {
 		display: flex;
 		align-items: center;
-		gap: var(--ax-space-8);
-		padding: var(--ax-space-6) var(--ax-space-8);
+		gap: var(--nais-space-8);
+		padding: var(--nais-space-6) var(--nais-space-8);
 		border-radius: var(--radius-xs);
 		color: var(--sidebar-foreground);
 		text-decoration: none;
@@ -272,7 +272,7 @@
 
 	.sh-sidebar.collapsed .nav-item {
 		justify-content: center;
-		padding: var(--ax-space-8);
+		padding: var(--nais-space-8);
 	}
 
 	.nav-item:hover {
@@ -291,8 +291,8 @@
 		display: inline-flex;
 		align-items: center;
 		justify-content: center;
-		width: var(--ax-space-18);
-		height: var(--ax-space-18);
+		width: var(--nais-space-18);
+		height: var(--nais-space-18);
 		font-size: var(--sh-font-size-base);
 		color: var(--sidebar-muted);
 		flex-shrink: 0;
@@ -321,7 +321,7 @@
 		margin: 0;
 		display: flex;
 		width: var(--sh-sidebar-menu-wide-width);
-		max-width: calc(100vw - var(--ax-space-16));
+		max-width: calc(100vw - var(--nais-space-16));
 		height: 100dvh;
 		max-height: 100dvh;
 		flex-direction: column;
@@ -334,19 +334,19 @@
 	:global(.navigation-drawer .sh-modal__body) {
 		flex: 1;
 		min-height: 0;
-		padding: var(--ax-space-16);
+		padding: var(--nais-space-16);
 		overflow-y: auto;
 	}
 
 	.mobile-navigation-content {
 		display: grid;
-		gap: var(--ax-space-24);
+		gap: var(--nais-space-24);
 	}
 
 	.navigation-section {
 		display: flex;
 		flex-direction: column;
-		gap: var(--ax-space-14);
+		gap: var(--nais-space-14);
 		min-width: 0;
 	}
 
@@ -355,7 +355,7 @@
 	}
 
 	.tenant-navigation {
-		padding-bottom: var(--ax-space-24);
+		padding-bottom: var(--nais-space-24);
 		border-bottom: var(--sh-border-width) solid var(--sidebar-border);
 	}
 

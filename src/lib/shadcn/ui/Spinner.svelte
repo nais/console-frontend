@@ -21,25 +21,25 @@
 	.sh-spinner-ring {
 		display: inline-block;
 		border-radius: var(--radius-full);
-		border: var(--ax-space-2) solid var(--border);
+		border: var(--nais-space-2) solid var(--border);
 		border-top-color: var(--muted-foreground);
 		animation: sh-spin 650ms linear infinite;
 	}
 
 	.size-sm .sh-spinner-ring {
-		width: var(--ax-space-14);
-		height: var(--ax-space-14);
+		width: var(--nais-space-14);
+		height: var(--nais-space-14);
 		border-width: var(--sh-border-width);
 	}
 
 	.size-md .sh-spinner-ring {
-		width: var(--ax-space-20);
-		height: var(--ax-space-20);
+		width: var(--nais-space-20);
+		height: var(--nais-space-20);
 	}
 
 	.size-lg .sh-spinner-ring {
-		width: var(--ax-space-24);
-		height: var(--ax-space-24);
+		width: var(--nais-space-24);
+		height: var(--nais-space-24);
 	}
 
 	@keyframes sh-spin {

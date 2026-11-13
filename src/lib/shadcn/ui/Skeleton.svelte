@@ -5,7 +5,7 @@
 		class?: string;
 	}
 
-	let { width = '100%', height = 'var(--ax-space-16)', class: className = '' }: Props = $props();
+	let { width = '100%', height = 'var(--nais-space-16)', class: className = '' }: Props = $props();
 </script>
 
 <span class="sh-skeleton {className}" style:width style:height aria-hidden="true"></span>

@@ -59,17 +59,17 @@
 	.sh-radio {
 		display: flex;
 		flex-direction: column;
-		gap: var(--ax-space-2);
+		gap: var(--nais-space-2);
 	}
 	.sh-radio__row {
 		display: flex;
 		align-items: center;
-		gap: var(--ax-space-8);
+		gap: var(--nais-space-8);
 	}
 	.sh-radio__input {
 		accent-color: var(--primary);
-		width: var(--ax-space-16);
-		height: var(--ax-space-16);
+		width: var(--nais-space-16);
+		height: var(--nais-space-16);
 		margin: 0;
 		cursor: pointer;
 	}
@@ -80,7 +80,7 @@
 		cursor: pointer;
 	}
 	.sh-radio__desc {
-		padding-left: var(--ax-space-24);
+		padding-left: var(--nais-space-24);
 		font-size: var(--sh-font-size-xs);
 		color: var(--muted-foreground);
 	}

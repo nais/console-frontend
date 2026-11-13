@@ -152,6 +152,6 @@
 
 <style>
 	.delivery-content {
-		padding: var(--ax-space-16);
+		padding: var(--nais-space-16);
 	}
 </style>

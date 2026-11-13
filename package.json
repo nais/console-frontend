@@ -7,12 +7,12 @@
 		"#lib/*": "./src/lib/*"
 	},
 	"scripts": {
-		"build": "vite build",
+		"build": "pnpm --filter @nais/ui build && vite build",
 		"check-outdated": "pnpm outdated",
 		"check:watch": "svelte-check --tsconfig ./tsconfig.json --watch",
-		"check": "pnpm exec houdini generate && svelte-check --tsconfig ./tsconfig.json --fail-on-warnings",
-		"dev-live-share": "vite dev --host ::",
-		"dev": "vite dev",
+		"check": "pnpm --filter @nais/ui build && pnpm --filter @nais/ui check && pnpm exec houdini generate && svelte-check --tsconfig ./tsconfig.json --fail-on-warnings",
+		"dev-live-share": "pnpm --filter @nais/ui build && vite dev --host ::",
+		"dev": "pnpm --filter @nais/ui build && vite dev",
 		"eslint": "eslint .",
 		"format": "prettier --write .",
 		"lint-staged": "lint-staged",
@@ -20,7 +20,8 @@
 		"prepare": "svelte-kit sync",
 		"preview": "vite preview",
 		"test": "vitest",
-		"test:browser": "playwright test",
+		"test:browser": "pnpm --filter @nais/ui build && playwright test",
+		"test:package": "node scripts/check-ui-package.mjs",
 		"update-outdated": "pnpm update --latest"
 	},
 	"devDependencies": {
@@ -62,6 +63,7 @@
 	},
 	"type": "module",
 	"dependencies": {
+		"@nais/ui": "workspace:*",
 		"@codemirror/language": "6.13.1",
 		"@codemirror/state": "6.7.6",
 		"@codemirror/theme-one-dark": "6.1.3",

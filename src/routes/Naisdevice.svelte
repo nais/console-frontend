@@ -43,18 +43,18 @@
 		position: fixed;
 		bottom: 0;
 		right: 0;
-		padding: var(--ax-space-8);
+		padding: var(--nais-space-8);
 		z-index: 1000;
 	}
 
 	.naisdevice-banner {
 		display: flex;
 		align-items: center;
-		gap: var(--ax-space-12);
-		padding: var(--ax-space-20) var(--ax-space-32);
-		background: var(--ax-bg-success-moderate);
-		color: var(--ax-text-success-subtle);
-		border-radius: var(--ax-radius-8);
+		gap: var(--nais-space-12);
+		padding: var(--nais-space-20) var(--nais-space-32);
+		background: var(--success-muted);
+		color: var(--success);
+		border-radius: var(--nais-radius-8);
 		font-size: var(--sh-font-size-xl);
 		font-weight: 700;
 		box-shadow: none;
@@ -74,17 +74,17 @@
 		background: none;
 		border: none;
 		cursor: pointer;
-		padding: var(--ax-space-4);
+		padding: var(--nais-space-4);
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		color: var(--ax-text-success-subtle);
-		border-radius: var(--ax-radius-4);
+		color: var(--success);
+		border-radius: var(--nais-radius-4);
 		transition: background-color 0.2s;
 	}
 
 	.close-button:hover {
-		background-color: color-mix(in srgb, var(--ax-bg-success-moderate) 60%, transparent);
+		background-color: color-mix(in srgb, var(--success-muted) 60%, transparent);
 	}
 
 	.close-button :global(svg) {

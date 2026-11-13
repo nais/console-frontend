@@ -27,8 +27,8 @@
 	.empty-state {
 		display: grid;
 		justify-items: center;
-		gap: var(--ax-space-12);
-		padding: var(--ax-space-40) var(--ax-space-24);
+		gap: var(--nais-space-12);
+		padding: var(--nais-space-40) var(--nais-space-24);
 		text-align: center;
 		overflow-wrap: anywhere;
 	}

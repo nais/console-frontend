@@ -1,6 +1,6 @@
 <script lang="ts">
 	import UtilizationChart from '../../src/lib/chart/UtilizationChart.svelte';
-	import Theme from '../../src/lib/shadcn/ui/Theme.svelte';
+	import { Theme } from '@nais/ui';
 
 	const params = new URLSearchParams(window.location.search);
 	const memoryTeams = [

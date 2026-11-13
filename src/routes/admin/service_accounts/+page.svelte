@@ -73,6 +73,6 @@
 
 <style>
 	.actions {
-		margin-bottom: var(--ax-space-16);
+		margin-bottom: var(--nais-space-16);
 	}
 </style>

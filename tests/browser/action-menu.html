@@ -11,6 +11,7 @@
 			import { mount, tick } from 'svelte';
 			import ActionMenuFixture from './ActionMenuFixture.svelte';
 			import '../../src/styles/shadcn.css';
+			import '@nais/ui/theme.css';
 
 			mount(ActionMenuFixture, { target: document.getElementById('app') });
 			await tick();

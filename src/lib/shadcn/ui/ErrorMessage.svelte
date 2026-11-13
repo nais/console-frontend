@@ -44,7 +44,7 @@
 		margin: 0;
 		display: inline-flex;
 		align-items: center;
-		gap: var(--ax-space-6);
+		gap: var(--nais-space-6);
 		color: var(--destructive);
 		font-weight: var(--sh-font-weight-medium);
 		line-height: 1.4;
@@ -56,6 +56,6 @@
 		font-size: var(--sh-font-size-xs);
 	}
 	.sh-error-message--spacing {
-		margin-bottom: var(--ax-space-8);
+		margin-bottom: var(--nais-space-8);
 	}
 </style>

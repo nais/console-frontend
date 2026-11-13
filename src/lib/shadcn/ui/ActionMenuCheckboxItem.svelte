@@ -40,8 +40,8 @@
 		width: 100%;
 		display: flex;
 		align-items: center;
-		gap: var(--ax-space-8);
-		padding: var(--ax-space-6) var(--ax-space-10);
+		gap: var(--nais-space-8);
+		padding: var(--nais-space-6) var(--nais-space-10);
 		border: none;
 		border-radius: var(--radius-2xs);
 		background: transparent;
@@ -60,7 +60,7 @@
 		cursor: not-allowed;
 	}
 	.sh-checkbox-indicator {
-		width: var(--ax-space-16);
+		width: var(--nais-space-16);
 		display: inline-flex;
 		align-items: center;
 		justify-content: center;

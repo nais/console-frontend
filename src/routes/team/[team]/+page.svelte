@@ -70,7 +70,7 @@
 
 <style>
 	.team-purpose-text {
-		margin: 0 0 var(--ax-space-20) 0;
+		margin: 0 0 var(--nais-space-20) 0;
 		font-size: var(--sh-font-size-sm);
 		color: var(--muted-foreground);
 		max-width: 68ch;
@@ -78,13 +78,13 @@
 	}
 
 	.health-strip {
-		margin-bottom: var(--ax-space-20);
+		margin-bottom: var(--nais-space-20);
 	}
 
 	.overview-bento {
 		display: grid;
 		grid-template-columns: minmax(0, 1.2fr) minmax(0, 0.8fr);
-		gap: var(--ax-space-20);
+		gap: var(--nais-space-20);
 		align-items: start;
 	}
 
@@ -95,7 +95,7 @@
 	.overview-bento.no-critical-issues .bento-side {
 		display: grid;
 		grid-template-columns: repeat(2, minmax(0, 1fr));
-		gap: var(--ax-space-20);
+		gap: var(--nais-space-20);
 		align-items: start;
 	}
 
@@ -103,7 +103,7 @@
 	.bento-side {
 		display: flex;
 		flex-direction: column;
-		gap: var(--ax-space-20);
+		gap: var(--nais-space-20);
 		min-width: 0;
 	}
 

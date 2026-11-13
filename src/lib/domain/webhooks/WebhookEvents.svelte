@@ -50,14 +50,14 @@
 	.group-heading {
 		display: inline-flex;
 		align-items: center;
-		gap: var(--ax-space-8);
+		gap: var(--nais-space-8);
 	}
 
 	ul {
 		display: grid;
-		gap: var(--ax-space-8);
+		gap: var(--nais-space-8);
 		margin: 0;
-		padding-left: var(--ax-space-24);
+		padding-left: var(--nais-space-24);
 		font-size: var(--sh-font-size-sm);
 	}
 </style>

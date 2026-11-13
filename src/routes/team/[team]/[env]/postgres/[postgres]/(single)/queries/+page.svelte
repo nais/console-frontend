@@ -154,12 +154,12 @@
 		display: flex;
 		align-items: flex-end;
 		flex-wrap: wrap;
-		gap: var(--ax-space-16);
-		margin-bottom: var(--ax-space-24);
+		gap: var(--nais-space-16);
+		margin-bottom: var(--nais-space-24);
 	}
 	.query-texts {
 		display: grid;
-		gap: var(--ax-space-8);
+		gap: var(--nais-space-8);
 	}
 	code {
 		display: block;

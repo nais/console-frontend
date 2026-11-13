@@ -59,7 +59,7 @@
 
 	.sh-input-icon {
 		position: absolute;
-		left: var(--ax-space-10);
+		left: var(--nais-space-10);
 		display: inline-flex;
 		align-items: center;
 		justify-content: center;
@@ -70,15 +70,15 @@
 
 	.sh-input {
 		width: 100%;
-		height: var(--ax-space-36);
-		padding: 0 var(--ax-space-12);
+		height: var(--nais-space-36);
+		padding: 0 var(--nais-space-12);
 		border-radius: var(--radius-sm);
 		border: var(--sh-border-width) solid var(--input);
 		background-color: var(--card);
 		color: var(--foreground);
 		font-family: inherit;
 		font-size: var(--sh-font-size-sm);
-		line-height: var(--ax-space-20);
+		line-height: var(--nais-space-20);
 		box-shadow: var(--sh-shadow-xs);
 		transition:
 			border-color 120ms ease,
@@ -87,11 +87,11 @@
 	}
 
 	.sh-input-wrap.size-sm .sh-input {
-		height: var(--ax-space-32);
+		height: var(--nais-space-32);
 	}
 
 	.sh-input-wrap.has-icon .sh-input {
-		padding-left: var(--ax-space-32);
+		padding-left: var(--nais-space-32);
 	}
 
 	.sh-input::placeholder {
@@ -101,6 +101,6 @@
 	.sh-input:focus {
 		outline: none;
 		border-color: var(--ring);
-		box-shadow: 0 0 0 var(--ax-space-2) color-mix(in srgb, var(--ring) 18%, transparent);
+		box-shadow: 0 0 0 var(--nais-space-2) color-mix(in srgb, var(--ring) 18%, transparent);
 	}
 </style>

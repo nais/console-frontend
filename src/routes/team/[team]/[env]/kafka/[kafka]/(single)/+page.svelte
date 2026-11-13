@@ -144,7 +144,7 @@
 	.content {
 		display: flex;
 		flex-direction: column;
-		gap: var(--ax-space-24);
+		gap: var(--nais-space-24);
 		min-width: 0;
 	}
 
@@ -154,7 +154,7 @@
 		overflow-x: auto;
 		overscroll-behavior-x: contain;
 		-webkit-overflow-scrolling: touch;
-		padding-bottom: var(--ax-space-4);
+		padding-bottom: var(--nais-space-4);
 	}
 
 	.table-container :global(table) {
@@ -183,7 +183,7 @@
 	}
 
 	.table-container :global(.workload-cell .icon-label--small) {
-		gap: var(--ax-space-2);
+		gap: var(--nais-space-2);
 	}
 
 	.table-container :global(.workload-cell .content) {
@@ -199,7 +199,7 @@
 	}
 
 	.table-pagination {
-		margin-top: var(--ax-space-4);
+		margin-top: var(--nais-space-4);
 	}
 
 	@media (max-width: 767px) {

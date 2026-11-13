@@ -227,15 +227,15 @@
 	.content {
 		display: flex;
 		flex-direction: column;
-		gap: var(--ax-space-4);
+		gap: var(--nais-space-4);
 	}
 
 	.persistence-row {
 		display: flex;
 		align-items: center;
-		gap: var(--ax-space-8);
-		padding: var(--ax-space-6) var(--ax-space-8);
-		margin: 0 calc(-1 * var(--ax-space-8));
+		gap: var(--nais-space-8);
+		padding: var(--nais-space-6) var(--nais-space-8);
+		margin: 0 calc(-1 * var(--nais-space-8));
 		border-radius: calc(var(--radius) - 3px);
 		color: var(--foreground);
 		text-decoration: none;

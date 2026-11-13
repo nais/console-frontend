@@ -83,7 +83,7 @@
 				<option value="OWNER">Owner</option>
 				<option value="MEMBER">Member</option>
 			</Select>
-			<Detail style="margin-top: var(--ax-space-8); color: var(--ax-text-neutral-subtle)">
+			<Detail style="margin-top: var(--nais-space-8); color: var(--muted-foreground)">
 				{#if member.role === 'OWNER'}
 					Full access including member administration
 				{:else}
@@ -96,7 +96,7 @@
 
 <style>
 	p {
-		margin: 0 0 var(--ax-space-16) 0;
+		margin: 0 0 var(--nais-space-16) 0;
 	}
 	.wrapper {
 		min-width: 400px;

@@ -62,15 +62,15 @@
 	.content {
 		display: flex;
 		flex-direction: column;
-		gap: var(--ax-space-64);
+		gap: var(--nais-space-64);
 	}
 
 	.section-header {
 		display: flex;
 		align-items: center;
 		justify-content: space-between;
-		gap: var(--ax-space-8);
-		margin-bottom: var(--ax-space-16);
+		gap: var(--nais-space-8);
+		margin-bottom: var(--nais-space-16);
 	}
 
 	.chart {

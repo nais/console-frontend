@@ -7,7 +7,7 @@
 
 	let duplicates = $derived(duplicateLabelKeys(rows));
 
-	const keyInputStyle = `font-family: monospace; font-size: var(--sh-font-size-sm); padding-left: var(--ax-space-12);`;
+	const keyInputStyle = `font-family: monospace; font-size: var(--sh-font-size-sm); padding-left: var(--nais-space-12);`;
 
 	function addRow() {
 		rows.push({ key: '', value: '' });
@@ -72,12 +72,12 @@
 	.editor {
 		display: flex;
 		flex-direction: column;
-		gap: var(--ax-space-8);
+		gap: var(--nais-space-8);
 	}
 
 	.label-row {
 		display: flex;
-		gap: var(--ax-space-8);
+		gap: var(--nais-space-8);
 		align-items: flex-start;
 	}
 

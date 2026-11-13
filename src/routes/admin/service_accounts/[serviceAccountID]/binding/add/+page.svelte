@@ -234,7 +234,7 @@
 	.page {
 		display: flex;
 		flex-direction: column;
-		gap: var(--ax-space-16);
+		gap: var(--nais-space-16);
 		max-width: 600px;
 	}
 
@@ -244,27 +244,27 @@
 		margin: 0;
 		display: flex;
 		flex-direction: column;
-		gap: var(--ax-space-4);
+		gap: var(--nais-space-4);
 	}
 
 	.result {
 		display: flex;
 		align-items: center;
 		justify-content: space-between;
-		padding: var(--ax-space-8) var(--ax-space-12);
-		border: 1px solid var(--ax-border-neutral-subtleA);
-		border-radius: var(--ax-radius-8);
+		padding: var(--nais-space-8) var(--nais-space-12);
+		border: 1px solid var(--border);
+		border-radius: var(--nais-radius-8);
 	}
 
 	.result-info {
 		display: flex;
 		flex-direction: column;
-		gap: var(--ax-space-2);
+		gap: var(--nais-space-2);
 	}
 
 	.result-label {
 		display: flex;
 		align-items: center;
-		gap: var(--ax-space-8);
+		gap: var(--nais-space-8);
 	}
 </style>

@@ -135,27 +135,27 @@
 	.wrapper {
 		display: flex;
 		flex-direction: column;
-		gap: var(--ax-space-32);
+		gap: var(--nais-space-32);
 	}
 
 	.heading-row {
 		display: flex;
 		align-items: center;
 		justify-content: space-between;
-		gap: var(--ax-space-16);
+		gap: var(--nais-space-16);
 		flex-wrap: wrap;
 	}
 
 	.heading-wrapper {
 		display: flex;
 		align-items: center;
-		gap: var(--ax-space-12);
+		gap: var(--nais-space-12);
 	}
 
 	.actions {
 		display: flex;
 		align-items: center;
-		gap: var(--ax-space-4);
+		gap: var(--nais-space-4);
 		flex-shrink: 0;
 	}
 
@@ -165,13 +165,13 @@
 		margin: 0;
 		display: flex;
 		flex-direction: column;
-		gap: var(--ax-space-4);
+		gap: var(--nais-space-4);
 	}
 
 	.ingress-item {
 		display: flex;
 		align-items: center;
-		gap: var(--ax-space-4);
+		gap: var(--nais-space-4);
 	}
 
 	.ingress-icon {
@@ -180,6 +180,6 @@
 	}
 
 	.empty-state {
-		padding: var(--ax-space-4) 0;
+		padding: var(--nais-space-4) 0;
 	}
 </style>

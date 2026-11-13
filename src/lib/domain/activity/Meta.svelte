@@ -64,7 +64,7 @@
 		font-size: var(--sh-font-size-xs);
 		line-height: 1.4;
 		color: var(--muted-foreground);
-		margin: var(--ax-space-2) 0 0;
+		margin: var(--nais-space-2) 0 0;
 	}
 
 	.meta a {

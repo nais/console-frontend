@@ -94,7 +94,7 @@
 	.sh-tabs-root {
 		display: flex;
 		flex-direction: column;
-		gap: var(--ax-space-20);
+		gap: var(--nais-space-20);
 		min-width: 0;
 	}
 
@@ -113,7 +113,7 @@
 
 	/* Line variant (modern Vercel/Linear style) */
 	.sh-tabs-list.variant-line {
-		gap: var(--ax-space-4);
+		gap: var(--nais-space-4);
 		border-bottom: var(--sh-border-width) solid var(--border);
 		padding-bottom: 0;
 	}
@@ -122,8 +122,8 @@
 		position: relative;
 		display: inline-flex;
 		align-items: center;
-		gap: var(--ax-space-8);
-		padding: var(--ax-space-10) var(--ax-space-14);
+		gap: var(--nais-space-8);
+		padding: var(--nais-space-10) var(--nais-space-14);
 		font-size: var(--sh-font-size-body);
 		font-weight: var(--sh-font-weight-medium);
 		color: var(--muted-foreground);
@@ -152,11 +152,11 @@
 	.variant-line .sh-tab-trigger.active::after {
 		content: '';
 		position: absolute;
-		left: var(--ax-space-8);
-		right: var(--ax-space-8);
+		left: var(--nais-space-8);
+		right: var(--nais-space-8);
 		bottom: 0;
-		height: var(--ax-space-2);
-		border-radius: var(--ax-space-2) var(--ax-space-2) 0 0;
+		height: var(--nais-space-2);
+		border-radius: var(--nais-space-2) var(--nais-space-2) 0 0;
 		background: var(--primary);
 	}
 
@@ -165,8 +165,8 @@
 		display: inline-flex;
 		width: fit-content;
 		max-width: 100%;
-		padding: var(--ax-space-4);
-		gap: var(--ax-space-4);
+		padding: var(--nais-space-4);
+		gap: var(--nais-space-4);
 		background-color: var(--secondary);
 		border: var(--sh-border-width) solid var(--border);
 		border-radius: var(--radius);
@@ -175,8 +175,8 @@
 	.variant-pill .sh-tab-trigger {
 		display: inline-flex;
 		align-items: center;
-		gap: var(--ax-space-6);
-		padding: var(--ax-space-6) var(--ax-space-12);
+		gap: var(--nais-space-6);
+		padding: var(--nais-space-6) var(--nais-space-12);
 		font-size: var(--sh-font-size-sm);
 		font-weight: var(--sh-font-weight-medium);
 		color: var(--muted-foreground);
@@ -219,9 +219,9 @@
 		display: inline-flex;
 		align-items: center;
 		justify-content: center;
-		min-width: var(--ax-space-20);
-		height: var(--ax-space-18);
-		padding: 0 var(--ax-space-6);
+		min-width: var(--nais-space-20);
+		height: var(--nais-space-18);
+		padding: 0 var(--nais-space-6);
 		font-size: var(--sh-font-size-caption);
 		font-weight: var(--sh-font-weight-semibold);
 		border-radius: var(--radius-full);

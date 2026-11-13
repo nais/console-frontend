@@ -48,14 +48,14 @@
 	.issues-list {
 		display: flex;
 		flex-direction: column;
-		gap: var(--ax-space-6);
+		gap: var(--nais-space-6);
 	}
 
 	.loader {
 		display: flex;
 		justify-content: center;
 		align-items: center;
-		min-height: calc(4 * var(--ax-space-40));
+		min-height: calc(4 * var(--nais-space-40));
 	}
 
 	.view-all {
@@ -73,6 +73,6 @@
 	.load-more {
 		display: flex;
 		justify-content: center;
-		padding-top: var(--ax-space-8);
+		padding-top: var(--nais-space-8);
 	}
 </style>

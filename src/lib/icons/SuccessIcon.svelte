@@ -4,4 +4,4 @@
 	const props = $props();
 </script>
 
-<CheckmarkCircleFillIcon {...props} style="color:var(--ax-text-success-decoration);{props.style}" />
+<CheckmarkCircleFillIcon {...props} style="color:var(--success);{props.style}" />

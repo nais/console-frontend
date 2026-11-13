@@ -49,13 +49,13 @@
 	.resource-container {
 		display: flex;
 		flex-direction: column;
-		gap: var(--ax-space-12);
+		gap: var(--nais-space-12);
 	}
 
 	.resource-cards {
 		display: grid;
 		grid-template-columns: 1fr 1fr;
-		gap: var(--ax-space-12);
+		gap: var(--nais-space-12);
 	}
 
 	@media (max-width: 767px) {

@@ -91,6 +91,6 @@
 	.loading {
 		display: flex;
 		justify-content: center;
-		padding: var(--ax-space-12) 0;
+		padding: var(--nais-space-12) 0;
 	}
 </style>

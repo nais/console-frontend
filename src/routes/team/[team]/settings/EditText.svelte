@@ -69,12 +69,12 @@
 		display: inline-flex;
 		flex-direction: row;
 		align-items: center;
-		gap: var(--ax-space-8);
+		gap: var(--nais-space-8);
 	}
 
 	textarea {
 		height: 100%;
-		padding: var(--ax-space-6) var(--ax-space-10);
+		padding: var(--nais-space-6) var(--nais-space-10);
 		border-radius: var(--radius-sm);
 		border: var(--sh-border-width) solid var(--input);
 		background-color: var(--background);
@@ -92,6 +92,6 @@
 		margin: 0;
 	}
 	span.tall {
-		margin: var(--ax-space-8) 0;
+		margin: var(--nais-space-8) 0;
 	}
 </style>

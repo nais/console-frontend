@@ -115,24 +115,24 @@
 <style>
 	.desc {
 		display: flex;
-		gap: var(--ax-space-4);
+		gap: var(--nais-space-4);
 		align-items: center;
 	}
 	.content {
 		display: flex;
 		flex-direction: column;
-		gap: var(--ax-space-2);
+		gap: var(--nais-space-2);
 	}
 	.label-tag-wrapper {
 		display: flex;
 		align-items: center;
-		gap: var(--ax-space-8);
+		gap: var(--nais-space-8);
 	}
 
 	.icon-label {
 		display: flex;
 		align-items: center;
-		gap: var(--ax-space-8);
+		gap: var(--nais-space-8);
 		font-size: var(--sh-font-size-lg);
 
 		> * {
@@ -149,24 +149,24 @@
 
 			&:active,
 			&:focus-visible {
-				color: var(--ac-link-focus-text, var(--ax-text-neutral));
+				color: var(--ac-link-focus-text, var(--foreground));
 			}
 		}
 	}
 	.icon-label--small {
-		gap: var(--ax-space-4);
+		gap: var(--nais-space-4);
 		font-size: var(--sh-font-size-sm);
 	}
 	.icon-label--medium {
-		gap: var(--ax-space-8);
+		gap: var(--nais-space-8);
 	}
 	.icon-label--large {
-		gap: var(--ax-space-8);
+		gap: var(--nais-space-8);
 	}
 	.icon-label--with-desc {
 		font-size: var(--sh-font-size-xl);
 	}
 	.icon-label--large.icon-label--with-desc {
-		gap: var(--ax-space-12);
+		gap: var(--nais-space-12);
 	}
 </style>

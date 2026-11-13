@@ -86,7 +86,7 @@ Generates Svelte Playground link. Ask user first, and NEVER if code was written 
 
 #### Spacing (use these design tokens, not arbitrary values)
 
-- Common tokens include: `--ax-space-1`, `--ax-space-2`, `--ax-space-4`, `--ax-space-6`, `--ax-space-8`, `--ax-space-12`, `--ax-space-16`, `--ax-space-20`, `--ax-space-24`, `--ax-space-32`, `--ax-space-40`, `--ax-space-64`
+- Common tokens include: `--nais-space-1`, `--nais-space-2`, `--nais-space-4`, `--nais-space-6`, `--nais-space-8`, `--nais-space-12`, `--nais-space-16`, `--nais-space-20`, `--nais-space-24`, `--nais-space-32`, `--nais-space-40`, `--nais-space-64`
 - This list is not exhaustive; follow existing spacing tokens in the codebase and rely on the ESLint checks to validate new usages and unused GraphQL files
 
 #### Typography
@@ -101,21 +101,21 @@ Primitive radii, borders, and overlay dimensions use the shared `--radius-*`, `-
 
 #### Colors - Text
 
-- Common tokens: `--ax-text-neutral`, `--ax-text-subtle`, `--ax-text-accent`
-- Semantic colors: `--ax-text-danger`, `--ax-text-danger-decoration`, `--ax-text-success`, `--ax-text-success-decoration`, `--ax-text-success-subtle`, `--ax-text-warning`, `--ax-text-neutral-subtle`
-- Many other text variants exist (`--ax-text-bg-*`, `--ax-text-border-*`, etc.); search the codebase for patterns
+- Common tokens: `--foreground`, `--muted-foreground`, `--info`
+- Semantic colors: `--destructive`, `--success`, `--warning`, `--info`
+- Use the existing semantic tokens directly; search the codebase for patterns
 
 #### Colors - Borders
 
-- `--ax-border-neutral-subtleA`, `--ax-border-warning`
+- `--border`, `--warning-border`
 
 #### Colors - Neutrals (backgrounds)
 
-- `--ax-neutral-000`, `--ax-neutral-100`, `--ax-neutral-200`
+- `--card`, `--background-subtle`, `--secondary`
 
 #### Custom Project Variables
 
-- `--spacing-layout` (defined in app.css, uses `--ax-space-40`)
+- `--spacing-layout` (defined in app.css, uses `--nais-space-40`)
 
 ### Rules for CSS Variables:
 
@@ -123,7 +123,7 @@ Primitive radii, borders, and overlay dimensions use the shared `--radius-*`, `-
 2. **Never invent** CSS variable names; use only tokens defined in `src/styles/shadcn.css` or `src/styles/app.css`.
 3. **For font-family**: Use the defined `--sh-font-family-mono` token for the shared stack; `monospace` is also valid when the generic family is intended.
 4. **For spacing**: Use the predefined spacing scale, not arbitrary values
-5. **For text color**: Prefer `--ax-text-neutral` as the default text color. Only use `--ax-text-subtle` when explicitly asked for subdued/secondary text
+5. **For text color**: Prefer `--foreground` as the default text color. Only use `--muted-foreground` when explicitly asked for subdued/secondary text
 6. **Run validation**: The project's ESLint configuration includes project checks for missing CSS variables and unused GraphQL files
 7. **When in doubt**: Search existing `.svelte` and `.css` files for similar patterns before creating new styles
 8. **Lists are non-exhaustive**: The design system has more tokens than listed here; use the ESLint checks to confirm
@@ -407,11 +407,11 @@ This project layers project-level design conventions on top of our `shadcn-svelt
 Global utility classes defined in `src/styles/app.css` for common page patterns. **Use these instead of writing per-component layout CSS:**
 
 - `.layout-two-column` — two-column grid (`1fr 300px`) with `--spacing-layout` gap. Collapses to single column at `≤1024px` (narrow desktop) and `≤767px` (mobile).
-- `.layout-sidebar` — grid with `--ax-space-24` gap, `align-content: start`. Use for the sidebar column inside `.layout-two-column`.
+- `.layout-sidebar` — grid with `--nais-space-24` gap, `align-content: start`. Use for the sidebar column inside `.layout-two-column`.
 - `.table-scroll` — horizontal scroll wrapper for wide tables. Wrap the `<Table>` with this instead of per-component overflow CSS.
 - `.detail-actions` — right-aligned flex row for action buttons above content (e.g., edit/delete buttons).
 - `.loading-centered` — centered flex container (300px height) for loading spinners.
-- `.settings-list` — grid-based `<dl>` for key-value pairs (`18ch` label column + `1fr` value column). Collapses to stacked layout on mobile. Bold `dt` with `--ax-text-neutral-subtle` color.
+- `.settings-list` — grid-based `<dl>` for key-value pairs (`18ch` label column + `1fr` value column). Collapses to stacked layout on mobile. Bold `dt` with `--muted-foreground` color.
 - `.sidebar-toggle` — hidden by default, shown as `inline-flex` at `≤1024px`. Has `margin-left: auto` to stay right-aligned. Includes a chevron indicator via `::after`.
 
 ### CollapsibleSidebar Pattern
@@ -472,7 +472,7 @@ All list pages use `CollapsibleSidebar` (`#lib/ui/CollapsibleSidebar.svelte`) to
 
 Global CSS custom properties and utility classes defined in `src/styles/app.css`:
 
-- `--surface-accent-color` — brand accent (uses `--ax-text-brand-blue`), with dark mode override
+- `--surface-accent-color` — brand accent (uses `--info`), with dark mode override
 - `--surface-icon-size` / `--surface-icon-glyph-size` — icon container and glyph sizing (default `2.25rem` / `1.5rem`)
 - `--surface-elevated-background` / `--surface-elevated-shadow` — gradient background and layered shadow for elevated cards
 - `--surface-icon-background` / `--surface-icon-shadow` — gradient fill and inset shadow for icon containers
@@ -505,7 +505,7 @@ For content in the main column (left side of `.layout-two-column`):
 
 - Use `<section aria-labelledby>` for WCAG landmark navigation
 - Use `<Heading>` with appropriate level (`h2` for top-level sections, `h3` for subsections)
-- Separate sections with flex gap (`.main-column` with `gap: var(--ax-space-32)`)
+- Separate sections with flex gap (`.main-column` with `gap: var(--nais-space-32)`)
 
 ### Tab Navigation Pattern
 
@@ -524,7 +524,7 @@ Use `Tabs`, `TabList`, `Tab`, and `TabPanel` for switching content within a page
 For vertical timelines with icon nodes:
 
 - Use `.surface-icon.surface-icon-timeline` for each icon node
-- Timeline connector: `::before` pseudo-element on `.activity-item:not(:last-child)` — a 2px vertical line using `--ax-border-neutral-subtleA`
+- Timeline connector: `::before` pseudo-element on `.activity-item:not(:last-child)` — a 2px vertical line using `--border`
 - Hide the connector on the last child and on mobile (`@media (max-width: 767px)`)
 - Override `--surface-icon-size` to `2rem` in compact card contexts
 - Map GraphQL `__typename` to icon components via a shared `Record<string, Component>` (see `src/lib/domain/activity/activity-log-icons.ts`)
@@ -541,12 +541,12 @@ When rendering type-specific content from GraphQL unions:
 ### Key Rules
 
 1. **Components first**: Use `#lib/shadcn/ui/index.js` components (`Button`, `NavTabs`, `Tabs`, `Alert`, `Tooltip`, `Table`, etc.) before building custom HTML
-2. **Tokens first**: Use `--ax-*` and `shadcn` tokens (`--foreground`, `--muted-foreground`, `--border`, `--card`, etc.) for spacing, colors, borders, and radii — never hardcode raw values
+2. **Tokens first**: Use `--nais-space-*`, `--nais-radius-*`, and semantic tokens (`--foreground`, `--muted-foreground`, `--border`, `--card`, etc.) for spacing, colors, borders, and radii — never hardcode raw values
 3. **Utility classes first**: Use the layout utility classes (`.layout-two-column`, `.table-scroll`, etc.) before writing custom layout CSS
-4. **Surface variables compose tokens**: The `--surface-*` variables are project-level abstractions built from `--ax-*` tokens — do not bypass them with raw color values
+4. **Surface variables compose tokens**: The `--surface-*` variables are project-level abstractions built from semantic tokens — do not bypass them with raw color values
 5. **Icons**: Import from `#lib/icons/index.js` — never use inline SVGs
 6. **Dark mode**: The surface system handles dark mode via CSS selectors on the root element; do not add separate dark-mode overrides for surface properties
-7. **No hardcoded values**: Use `gap: var(--ax-space-8)` not `gap: 0.5rem`; use `border-radius: var(--ax-radius-medium)` not `border-radius: 8px`; use `color: var(--ax-text-neutral)` not `color: #333`
+7. **No hardcoded values**: Use `gap: var(--nais-space-8)` not `gap: 0.5rem`; use `border-radius: var(--nais-radius-8)` not `border-radius: 8px`; use `color: var(--foreground)` not `color: #333`
 
 ---
 
@@ -559,12 +559,12 @@ Styles are organized with `@layer` ordering in `src/styles/app.css`:
 ```
 
 - `src/styles/app.css` — global variables, utility classes, surface system
-- `src/styles/layerchart.css` — maps LayerChart `--color-*` variables to `--ax-*` tokens. **Must include a `.dark, .dark-theme` block** re-declaring the same mappings because `--ax-*` tokens resolve to different values inside dark-scoped elements.
+- `src/styles/layerchart.css` — maps LayerChart `--color-*` variables to semantic tokens. **Must include a `.dark, .dark-theme` block** re-declaring the same mappings because semantic tokens resolve to different values inside dark-scoped elements.
 - `src/styles/colors.css` — chart/visualization color palette (raw hex is acceptable here for data visualization)
 
 #### LayerChart Dark Mode
 
-The `layerchart.css` file has both a `:root` and a `.dark, .dark-theme` block with identical-looking declarations. **Do not remove the dark block** — CSS custom properties are scope-dependent. `var(--ax-neutral-000)` resolves to white at `:root` but to dark navy inside `.dark`, because the design system redefines tokens at that scope level.
+The `layerchart.css` file has both a `:root` and a `.dark, .dark-theme` block with identical-looking declarations. **Do not remove the dark block** — CSS custom properties are scope-dependent. `var(--card)` resolves to white at `:root` but to dark navy inside `.dark`, because the design system redefines tokens at that scope level.
 
 ---
 

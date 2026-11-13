@@ -92,8 +92,8 @@
 	.header {
 		display: flex;
 		flex-direction: column;
-		padding: var(--ax-space-16) var(--ax-space-20);
-		gap: var(--ax-space-12);
+		padding: var(--nais-space-16) var(--nais-space-20);
+		gap: var(--nais-space-12);
 		border-bottom: 1px solid var(--border);
 		background-color: var(--card);
 	}
@@ -102,7 +102,7 @@
 		display: flex;
 		justify-content: space-between;
 		align-items: center;
-		gap: var(--ax-space-16);
+		gap: var(--nais-space-16);
 	}
 
 	.header.without-border {
@@ -112,14 +112,14 @@
 	.header-left {
 		display: flex;
 		align-items: center;
-		gap: var(--ax-space-10);
+		gap: var(--nais-space-10);
 		min-width: 0;
 	}
 
 	.title {
 		display: flex;
 		align-items: center;
-		gap: var(--ax-space-8);
+		gap: var(--nais-space-8);
 		font-size: var(--sh-font-size-lg);
 		font-weight: 600;
 		letter-spacing: -0.015em;
@@ -138,9 +138,9 @@
 		display: inline-flex;
 		align-items: center;
 		justify-content: center;
-		min-width: var(--ax-space-24);
+		min-width: var(--nais-space-24);
 		line-height: var(--sh-font-line-height-compact);
-		padding: 0 var(--ax-space-8);
+		padding: 0 var(--nais-space-8);
 		border-radius: 9999px;
 		background: var(--secondary);
 		border: 1px solid var(--border);
@@ -153,7 +153,7 @@
 	.header-right {
 		display: flex;
 		align-items: center;
-		gap: var(--ax-space-8);
+		gap: var(--nais-space-8);
 	}
 
 	.search-slot {
@@ -166,13 +166,13 @@
 		display: flex;
 		justify-content: space-between;
 		align-items: center;
-		gap: var(--ax-space-12);
+		gap: var(--nais-space-12);
 		flex-wrap: wrap;
 	}
 
 	.filters-slot {
 		display: flex;
-		gap: var(--ax-space-8);
+		gap: var(--nais-space-8);
 		flex-wrap: wrap;
 		align-items: center;
 	}
@@ -180,7 +180,7 @@
 	.menu-slot {
 		margin-left: auto;
 		display: flex;
-		gap: var(--ax-space-8);
+		gap: var(--nais-space-8);
 		flex-shrink: 0;
 	}
 
@@ -196,8 +196,8 @@
 
 	@media (max-width: 767px) {
 		.header {
-			padding: var(--ax-space-14) var(--ax-space-16);
-			gap: var(--ax-space-12);
+			padding: var(--nais-space-14) var(--nais-space-16);
+			gap: var(--nais-space-12);
 		}
 
 		.header-row {
@@ -211,7 +211,7 @@
 		.toolbar {
 			flex-direction: column;
 			align-items: stretch;
-			gap: var(--ax-space-8);
+			gap: var(--nais-space-8);
 		}
 
 		.filters-slot {

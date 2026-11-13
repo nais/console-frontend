@@ -161,19 +161,19 @@
 	.resources,
 	.resource-fields {
 		display: grid;
-		gap: var(--ax-space-16);
+		gap: var(--nais-space-16);
 	}
 
 	.resources {
-		padding: var(--ax-space-20);
-		background: var(--ax-bg-neutral-soft);
-		border-radius: var(--ax-radius-8);
+		padding: var(--nais-space-20);
+		background: var(--background-subtle);
+		border-radius: var(--nais-radius-8);
 	}
 
 	.resource-summary {
 		display: grid;
 		grid-template-columns: repeat(3, minmax(0, 1fr));
-		gap: var(--ax-space-16);
+		gap: var(--nais-space-16);
 		margin: 0;
 	}
 

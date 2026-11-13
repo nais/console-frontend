@@ -242,30 +242,30 @@
 	.detail-page {
 		display: flex;
 		flex-direction: column;
-		gap: var(--ax-space-32);
+		gap: var(--nais-space-32);
 	}
 
 	section {
 		display: flex;
 		flex-direction: column;
-		gap: var(--ax-space-12);
+		gap: var(--nais-space-12);
 	}
 
 	.section-header {
 		display: flex;
 		align-items: center;
 		justify-content: space-between;
-		gap: var(--ax-space-8);
+		gap: var(--nais-space-8);
 	}
 
 	.edit-description {
 		display: flex;
 		flex-direction: column;
-		gap: var(--ax-space-8);
+		gap: var(--nais-space-8);
 	}
 
 	.edit-actions {
 		display: flex;
-		gap: var(--ax-space-8);
+		gap: var(--nais-space-8);
 	}
 </style>

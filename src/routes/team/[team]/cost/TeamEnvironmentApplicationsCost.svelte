@@ -185,26 +185,26 @@
 		display: flex;
 		align-items: center;
 		justify-content: space-between;
-		gap: var(--ax-space-8);
-		margin-bottom: var(--ax-space-16);
+		gap: var(--nais-space-8);
+		margin-bottom: var(--nais-space-16);
 	}
 
 	.env-section {
 		display: flex;
 		flex-direction: column;
-		gap: var(--ax-space-12);
+		gap: var(--nais-space-12);
 	}
 
 	.env-section:first-child {
-		margin-top: var(--ax-space-24);
+		margin-top: var(--nais-space-24);
 	}
 
 	.env-section:last-child {
-		padding-bottom: var(--ax-space-32);
+		padding-bottom: var(--nais-space-32);
 	}
 
 	.env-section + .env-section {
-		margin-top: var(--ax-space-64);
+		margin-top: var(--nais-space-64);
 	}
 
 	.chart {

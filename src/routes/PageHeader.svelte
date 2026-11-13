@@ -511,22 +511,22 @@
 <style>
 	.skip-link {
 		position: fixed;
-		inset-block-start: var(--ax-space-8);
-		inset-inline-start: var(--ax-space-8);
+		inset-block-start: var(--nais-space-8);
+		inset-inline-start: var(--nais-space-8);
 		z-index: 100;
-		padding: var(--ax-space-8) var(--ax-space-16);
+		padding: var(--nais-space-8) var(--nais-space-16);
 		border-radius: var(--radius-sm);
 		background-color: var(--primary);
 		color: var(--primary-foreground);
 		font-size: var(--sh-font-size-sm);
 		font-weight: var(--sh-font-weight-semibold);
-		transform: translateY(calc(-100% - var(--ax-space-16)));
+		transform: translateY(calc(-100% - var(--nais-space-16)));
 	}
 
 	.skip-link:focus {
 		transform: translateY(0);
-		outline: var(--ax-space-2) solid var(--ring);
-		outline-offset: var(--ax-space-2);
+		outline: var(--nais-space-2) solid var(--ring);
+		outline-offset: var(--nais-space-2);
 	}
 
 	.sh-shell {
@@ -542,12 +542,12 @@
 		position: sticky;
 		top: 0;
 		z-index: 50;
-		height: var(--ax-space-56);
-		padding: 0 var(--ax-space-20);
+		height: var(--nais-space-56);
+		padding: 0 var(--nais-space-20);
 		display: flex;
 		align-items: center;
 		justify-content: space-between;
-		gap: var(--ax-space-16);
+		gap: var(--nais-space-16);
 		background-color: var(--card);
 		border-bottom: 1px solid var(--border);
 	}
@@ -555,14 +555,14 @@
 	.topnav-left {
 		display: flex;
 		align-items: center;
-		gap: var(--ax-space-8);
+		gap: var(--nais-space-8);
 		min-width: 0;
 	}
 
 	.brand-link {
 		display: inline-flex;
 		align-items: center;
-		gap: var(--ax-space-8);
+		gap: var(--nais-space-8);
 		text-decoration: none;
 		color: var(--foreground);
 		flex-shrink: 0;
@@ -579,7 +579,7 @@
 		color: var(--muted-foreground);
 		font-size: var(--sh-font-size-base);
 		user-select: none;
-		padding: 0 var(--ax-space-2);
+		padding: 0 var(--nais-space-2);
 	}
 
 	/* Team Switcher */
@@ -591,9 +591,9 @@
 	.team-switcher-trigger {
 		display: inline-flex;
 		align-items: center;
-		gap: var(--ax-space-8);
-		height: var(--ax-space-32);
-		padding: 0 var(--ax-space-8) 0 var(--ax-space-6);
+		gap: var(--nais-space-8);
+		height: var(--nais-space-32);
+		padding: 0 var(--nais-space-8) 0 var(--nais-space-6);
 		border-radius: calc(var(--radius) - 2px);
 		border: 1px solid var(--border);
 		background-color: var(--background);
@@ -617,7 +617,7 @@
 		justify-content: center;
 		width: var(--sh-avatar-size-sm);
 		height: var(--sh-avatar-size-sm);
-		border-radius: var(--ax-radius-4);
+		border-radius: var(--nais-radius-4);
 		background: var(--secondary);
 		color: var(--muted-foreground);
 		font-size: var(--sh-font-size-micro);
@@ -654,7 +654,7 @@
 
 	.team-popover {
 		position: absolute;
-		top: calc(100% + var(--ax-space-6));
+		top: calc(100% + var(--nais-space-6));
 		left: 0;
 		width: 17.5rem;
 		max-height: 22rem;
@@ -672,8 +672,8 @@
 	.popover-search-box {
 		display: flex;
 		align-items: center;
-		gap: var(--ax-space-8);
-		padding: var(--ax-space-8) var(--ax-space-10);
+		gap: var(--nais-space-8);
+		padding: var(--nais-space-8) var(--nais-space-10);
 		border-bottom: 1px solid var(--border);
 		color: var(--muted-foreground);
 		font-size: var(--sh-font-size-sm);
@@ -695,17 +695,17 @@
 
 	.popover-list {
 		overflow-y: auto;
-		padding: var(--ax-space-4);
+		padding: var(--nais-space-4);
 		display: flex;
 		flex-direction: column;
-		gap: var(--ax-space-2);
+		gap: var(--nais-space-2);
 	}
 
 	.popover-item {
 		display: flex;
 		align-items: center;
-		gap: var(--ax-space-8);
-		padding: var(--ax-space-6) var(--ax-space-8);
+		gap: var(--nais-space-8);
+		padding: var(--nais-space-6) var(--nais-space-8);
 		border-radius: calc(var(--radius) - 4px);
 		text-decoration: none;
 		color: var(--foreground);
@@ -767,14 +767,14 @@
 	}
 
 	.popover-empty {
-		padding: var(--ax-space-14);
+		padding: var(--nais-space-14);
 		text-align: center;
 		font-size: var(--sh-font-size-sm);
 		color: var(--muted-foreground);
 	}
 
 	.popover-scope {
-		padding: var(--ax-space-8) var(--ax-space-10);
+		padding: var(--nais-space-8) var(--nais-space-10);
 		font-size: var(--sh-font-size-sm);
 		font-weight: var(--sh-font-weight-medium);
 	}
@@ -783,16 +783,16 @@
 	.tenant-nav {
 		display: flex;
 		align-items: center;
-		gap: var(--ax-space-2);
-		margin-left: var(--ax-space-8);
+		gap: var(--nais-space-2);
+		margin-left: var(--nais-space-8);
 	}
 
 	.tenant-nav-link {
 		display: inline-flex;
 		align-items: center;
-		gap: var(--ax-space-6);
-		height: var(--ax-space-32);
-		padding: 0 var(--ax-space-10);
+		gap: var(--nais-space-6);
+		height: var(--nais-space-32);
+		padding: 0 var(--nais-space-10);
 		border-radius: calc(var(--radius) - 2px);
 		font-size: var(--sh-font-size-sm);
 		font-weight: 500;
@@ -820,7 +820,7 @@
 	.topnav-right {
 		display: flex;
 		align-items: center;
-		gap: var(--ax-space-8);
+		gap: var(--nais-space-8);
 		flex-shrink: 0;
 	}
 
@@ -832,17 +832,17 @@
 
 	.jump-to-control > .sh-kbd {
 		position: absolute;
-		inset-inline-end: var(--ax-space-8);
+		inset-inline-end: var(--nais-space-8);
 		pointer-events: none;
 	}
 
 	.jump-to-btn {
 		display: inline-flex;
 		align-items: center;
-		gap: var(--ax-space-8);
-		height: var(--ax-space-32);
+		gap: var(--nais-space-8);
+		height: var(--nais-space-32);
 		min-width: 11.5rem;
-		padding: 0 var(--ax-space-64) 0 var(--ax-space-10);
+		padding: 0 var(--nais-space-64) 0 var(--nais-space-10);
 		border-radius: calc(var(--radius) - 2px);
 		border: 1px solid var(--border);
 		background-color: var(--background);
@@ -868,15 +868,15 @@
 	.external-links-group {
 		display: flex;
 		align-items: center;
-		gap: var(--ax-space-2);
+		gap: var(--nais-space-2);
 	}
 
 	.topnav-tool-link {
 		display: inline-flex;
 		align-items: center;
-		gap: var(--ax-space-4);
-		height: var(--ax-space-32);
-		padding: 0 var(--ax-space-8);
+		gap: var(--nais-space-4);
+		height: var(--nais-space-32);
+		padding: 0 var(--nais-space-8);
 		border-radius: calc(var(--radius) - 2px);
 		color: var(--muted-foreground);
 		font-size: var(--sh-font-size-xs);
@@ -898,8 +898,8 @@
 		display: inline-flex;
 		align-items: center;
 		justify-content: center;
-		width: var(--ax-space-32);
-		height: var(--ax-space-32);
+		width: var(--nais-space-32);
+		height: var(--nais-space-32);
 		border-radius: calc(var(--radius) - 2px);
 		border: 1px solid var(--border);
 		background-color: var(--background);
@@ -918,9 +918,9 @@
 	.user-pill {
 		display: inline-flex;
 		align-items: center;
-		gap: var(--ax-space-8);
-		height: var(--ax-space-32);
-		padding: 0 var(--ax-space-6) 0 var(--ax-space-4);
+		gap: var(--nais-space-8);
+		height: var(--nais-space-32);
+		padding: 0 var(--nais-space-6) 0 var(--nais-space-4);
 		border-radius: 9999px;
 		border: 1px solid var(--border);
 		background-color: var(--background);
@@ -959,8 +959,8 @@
 		display: none;
 		align-items: center;
 		justify-content: center;
-		width: var(--ax-space-32);
-		height: var(--ax-space-32);
+		width: var(--nais-space-32);
+		height: var(--nais-space-32);
 		border-radius: calc(var(--radius) - 2px);
 		border: 1px solid var(--border);
 		background-color: var(--background);
@@ -987,9 +987,9 @@
 		width: 100%;
 		max-width: 1480px;
 		margin: 0 auto;
-		padding: var(--ax-space-24) var(--ax-space-32) var(--ax-space-48) var(--ax-space-32);
+		padding: var(--nais-space-24) var(--nais-space-32) var(--nais-space-48) var(--nais-space-32);
 		box-sizing: border-box;
-		scroll-margin-top: var(--ax-space-64);
+		scroll-margin-top: var(--nais-space-64);
 	}
 
 	@media (max-width: 1600px) {
@@ -1019,22 +1019,22 @@
 		}
 
 		.sh-topnav {
-			padding: 0 var(--ax-space-14);
+			padding: 0 var(--nais-space-14);
 		}
 
 		.sh-content-area {
-			padding: var(--ax-space-16) var(--ax-space-16) var(--ax-space-40) var(--ax-space-16);
+			padding: var(--nais-space-16) var(--nais-space-16) var(--nais-space-40) var(--nais-space-16);
 		}
 	}
 
 	@media (max-width: 640px) {
 		.sh-topnav {
-			gap: var(--ax-space-8);
+			gap: var(--nais-space-8);
 		}
 
 		.topnav-left,
 		.topnav-right {
-			gap: var(--ax-space-4);
+			gap: var(--nais-space-4);
 		}
 
 		.topnav-slash,
@@ -1045,7 +1045,7 @@
 		}
 
 		.jump-to-btn {
-			padding-inline: var(--ax-space-10);
+			padding-inline: var(--nais-space-10);
 		}
 
 		.team-switcher-container {

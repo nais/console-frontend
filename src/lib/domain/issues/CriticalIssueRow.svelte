@@ -196,18 +196,18 @@
 	.issue-content {
 		display: flex;
 		flex-direction: column;
-		gap: var(--ax-space-1);
+		gap: var(--nais-space-1);
 	}
 
 	.issue-row {
-		--surface-accent-color: var(--ax-text-danger);
-		--surface-icon-size: var(--ax-space-32);
+		--surface-accent-color: var(--destructive);
+		--surface-icon-size: var(--nais-space-32);
 		--surface-icon-glyph-size: var(--sh-font-size-lg);
-		--surface-icon-background: color-mix(in srgb, var(--ax-text-danger) 10%, transparent);
+		--surface-icon-background: color-mix(in srgb, var(--destructive) 10%, transparent);
 		--surface-icon-shadow: none;
 		display: flex;
 		align-items: center;
-		gap: var(--ax-space-12);
-		padding: var(--ax-space-12);
+		gap: var(--nais-space-12);
+		padding: var(--nais-space-12);
 	}
 </style>

@@ -20,7 +20,7 @@
 		display: flex;
 		flex-wrap: wrap;
 		align-items: center;
-		gap: var(--ax-space-6);
+		gap: var(--nais-space-6);
 		list-style: none;
 		margin: 0;
 		padding: 0;

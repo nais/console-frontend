@@ -53,21 +53,21 @@
 	.vuln-layout {
 		display: flex;
 		flex-direction: column;
-		gap: var(--ax-space-20);
+		gap: var(--nais-space-20);
 	}
 
 	.vuln-header {
 		display: flex;
 		align-items: flex-end;
 		justify-content: space-between;
-		gap: var(--ax-space-24);
+		gap: var(--nais-space-24);
 		flex-wrap: wrap;
 	}
 
 	.vuln-header-left {
 		display: flex;
 		flex-direction: column;
-		gap: var(--ax-space-4);
+		gap: var(--nais-space-4);
 	}
 
 	.vuln-title {

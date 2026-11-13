@@ -1,6 +1,6 @@
 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-	<circle r="5" fill="var(--ax-bg-meta-purple-strong)" class="pulse" />
-	<circle cx="12" cy="12" r="5" fill="var(--ax-bg-meta-purple-strong)" />
+	<circle r="5" fill="var(--nais-purple-600)" class="pulse" />
+	<circle cx="12" cy="12" r="5" fill="var(--nais-purple-600)" />
 </svg>
 
 <style>

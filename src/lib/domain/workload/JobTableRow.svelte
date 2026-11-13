@@ -116,11 +116,11 @@
 		position: relative;
 		display: inline-flex;
 		align-items: center;
-		gap: var(--ax-space-4);
+		gap: var(--nais-space-4);
 	}
 
 	.run-status :global(svg) {
-		width: var(--ax-space-16);
-		height: var(--ax-space-16);
+		width: var(--nais-space-16);
+		height: var(--nais-space-16);
 	}
 </style>
