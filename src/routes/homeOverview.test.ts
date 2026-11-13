@@ -61,8 +61,6 @@ describe('home queries', () => {
 			const interfaceType = schema.getType(interfaceName);
 			if (!interfaceType || !isInterfaceType(interfaceType)) throw new Error('Missing interface');
 			for (const type of schema.getPossibleTypes(interfaceType)) {
-				// Compatibility-only: the API returns PostgresIssue for all stored Postgres issues.
-				if (type.name === 'PostgresBranchIssue') continue;
 				const concrete = nodes.selectionSet?.selections.find(
 					(field) =>
 						field.kind === Kind.INLINE_FRAGMENT && field.typeCondition?.name.value === type.name
