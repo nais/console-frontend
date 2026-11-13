@@ -3725,6 +3725,12 @@ type ImageVulnerabilityConnection {
   """List of nodes."""
   nodes: [ImageVulnerability!]!
 
+  """
+  Registered PURL types for this image, including suppressed findings.
+  Independent of pagination and vulnerability filters.
+  """
+  packageTypes: [String!]!
+
   """Information to aid in pagination."""
   pageInfo: PageInfo!
 }

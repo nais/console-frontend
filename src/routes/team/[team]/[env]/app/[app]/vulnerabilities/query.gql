@@ -125,6 +125,7 @@ query ApplicationImageDetails($team: Slug!, $env: String!, $app: String!)
 							filter: { hasKevEntry: true }
 							orderBy: { field: SEVERITY_SINCE, direction: DESC }
 						) {
+							packageTypes
 							pageInfo {
 								totalCount
 							}
