@@ -45,7 +45,7 @@ export async function load(event) {
 						before: null,
 						last: null
 					}
-				})
+				}).catch(() => ({ ImagePriorityVulnerabilities: undefined }))
 			: { ImagePriorityVulnerabilities: undefined })
 	};
 }
