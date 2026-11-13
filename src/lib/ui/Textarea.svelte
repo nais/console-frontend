@@ -40,7 +40,7 @@
 	.sh-ui-field {
 		display: flex;
 		flex-direction: column;
-		gap: var(--ax-space-6);
+		gap: var(--nais-space-6);
 	}
 	.field-label {
 		font-size: var(--sh-font-size-sm);
@@ -53,9 +53,9 @@
 	}
 	.textarea {
 		resize: vertical;
-		min-height: var(--ax-space-32);
+		min-height: var(--nais-space-32);
 		width: 100%;
-		padding: var(--ax-space-8) var(--ax-space-12);
+		padding: var(--nais-space-8) var(--nais-space-12);
 		border-radius: var(--radius-sm);
 		border: var(--sh-border-width) solid var(--input);
 		background-color: var(--background);
@@ -66,8 +66,8 @@
 		box-sizing: border-box;
 	}
 	.textarea:focus-visible {
-		outline: var(--ax-space-2) solid var(--ring);
-		outline-offset: var(--ax-space-1);
+		outline: var(--nais-space-2) solid var(--ring);
+		outline-offset: var(--nais-space-1);
 		border-color: var(--ring);
 	}
 </style>

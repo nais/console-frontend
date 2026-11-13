@@ -430,24 +430,24 @@
 	.container {
 		display: flex;
 		flex-direction: column;
-		gap: var(--ax-space-32);
+		gap: var(--nais-space-32);
 	}
 
 	.fix-version-term {
 		display: inline-flex;
 		align-items: center;
-		gap: var(--ax-space-4);
+		gap: var(--nais-space-4);
 	}
 
 	.load-more {
 		display: flex;
 		justify-content: center;
-		margin-top: var(--ax-space-16);
+		margin-top: var(--nais-space-16);
 	}
 
 	.search-form {
 		display: flex;
-		gap: var(--ax-space-12);
+		gap: var(--nais-space-12);
 		align-items: flex-end;
 		max-width: 600px;
 	}
@@ -475,31 +475,31 @@
 	.wrapper {
 		display: flex;
 		flex-direction: column;
-		gap: var(--ax-space-16);
+		gap: var(--nais-space-16);
 	}
 
 	.risk-assessment-content {
 		display: grid;
 		grid-template-columns: auto 1fr;
 		align-items: end;
-		gap: var(--ax-space-24);
+		gap: var(--nais-space-24);
 	}
 
 	.risk-assessment-card {
 		display: flex;
 		flex-direction: column;
-		gap: var(--ax-space-16);
-		padding: var(--ax-space-16);
-		border: var(--ax-space-1) solid var(--ax-border-neutral-subtleA);
-		border-radius: var(--ax-radius-8);
-		background: var(--ax-bg-neutral-soft);
+		gap: var(--nais-space-16);
+		padding: var(--nais-space-16);
+		border: var(--nais-space-1) solid var(--border);
+		border-radius: var(--nais-radius-8);
+		background: var(--background-subtle);
 	}
 
 	.risk-assessment-group,
 	.risk-assessment-signals {
 		display: flex;
 		flex-direction: column;
-		gap: var(--ax-space-4);
+		gap: var(--nais-space-4);
 	}
 
 	.risk-assessment-signals :global(ul.signals) {
@@ -510,7 +510,7 @@
 		display: flex;
 		flex-wrap: wrap;
 		align-items: center;
-		gap: var(--ax-space-8);
+		gap: var(--nais-space-8);
 	}
 
 	@media (max-width: 767px) {
@@ -523,13 +523,13 @@
 	.vulnerability-description {
 		display: flex;
 		flex-direction: column;
-		gap: var(--ax-space-4);
+		gap: var(--nais-space-4);
 	}
 
 	.risk-assessment-content :global(dd) {
 		display: flex;
 		align-items: center;
-		gap: var(--ax-space-8);
+		gap: var(--nais-space-8);
 	}
 
 	.cve-description {
@@ -547,19 +547,19 @@
 		display: flex;
 		align-items: center;
 		justify-content: space-between;
-		gap: var(--ax-space-12);
+		gap: var(--nais-space-12);
 		flex-wrap: wrap;
-		margin-bottom: var(--ax-space-8);
+		margin-bottom: var(--nais-space-8);
 	}
 
 	.select-all-row {
-		margin-bottom: var(--ax-space-8);
+		margin-bottom: var(--nais-space-8);
 	}
 
 	.workload-groups {
 		display: flex;
 		flex-direction: column;
-		gap: var(--ax-space-24);
+		gap: var(--nais-space-24);
 	}
 
 	.workload-group-header {
@@ -567,10 +567,10 @@
 		align-items: center;
 		justify-content: space-between;
 		flex-wrap: wrap;
-		gap: var(--ax-space-12);
-		padding: var(--ax-space-12) var(--ax-space-24);
-		background: var(--ax-bg-neutral-soft);
-		border-radius: var(--ax-radius-8) var(--ax-radius-8) 0 0;
+		gap: var(--nais-space-12);
+		padding: var(--nais-space-12) var(--nais-space-24);
+		background: var(--background-subtle);
+		border-radius: var(--nais-radius-8) var(--nais-radius-8) 0 0;
 	}
 
 	.workload-group-title {
@@ -582,24 +582,24 @@
 	.workload-container {
 		display: grid;
 		grid-template-columns: minmax(0, 1fr) minmax(0, 4fr);
-		gap: var(--ax-space-24);
+		gap: var(--nais-space-24);
 		align-items: start;
 	}
 
 	.workload-identity {
 		display: flex;
 		align-items: center;
-		gap: var(--ax-space-8);
+		gap: var(--nais-space-8);
 		min-width: 0;
 	}
 
 	.workload-details {
 		display: grid;
 		grid-template-columns: auto 1fr;
-		gap: var(--ax-space-8) var(--ax-space-12);
+		gap: var(--nais-space-8) var(--nais-space-12);
 		margin: 0;
-		padding-left: var(--ax-space-12);
-		border-left: var(--ax-space-2) solid var(--ax-border-subtle);
+		padding-left: var(--nais-space-12);
+		border-left: var(--nais-space-2) solid var(--border-subtle);
 	}
 
 	.detail-row {
@@ -618,11 +618,11 @@
 			grid-template-columns: 1fr;
 			padding-left: 0;
 			border-left: none;
-			gap: var(--ax-space-8);
+			gap: var(--nais-space-8);
 		}
 
 		.detail-row {
-			gap: var(--ax-space-4);
+			gap: var(--nais-space-4);
 		}
 	}
 
@@ -635,11 +635,11 @@
 			grid-template-columns: 1fr;
 			padding-left: 0;
 			border-left: none;
-			gap: var(--ax-space-8);
+			gap: var(--nais-space-8);
 		}
 
 		.detail-row {
-			gap: var(--ax-space-4);
+			gap: var(--nais-space-4);
 		}
 	}
 

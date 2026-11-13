@@ -250,7 +250,7 @@
 	.content {
 		display: flex;
 		flex-direction: column;
-		gap: var(--ax-space-12);
+		gap: var(--nais-space-12);
 	}
 
 	.file-upload-hidden {
@@ -267,31 +267,31 @@
 		display: flex;
 		flex-direction: column;
 		align-items: center;
-		gap: var(--ax-space-8);
+		gap: var(--nais-space-8);
 	}
 
 	.separator {
 		display: flex;
 		align-items: center;
-		gap: var(--ax-space-8);
+		gap: var(--nais-space-8);
 		width: 100%;
-		color: var(--ax-text-neutral-subtle);
+		color: var(--muted-foreground);
 		font-size: var(--sh-font-size-sm);
 	}
 
 	.separator hr {
 		flex: 1;
 		border: none;
-		border-top: 1px solid var(--ax-border-neutral-subtleA);
+		border-top: 1px solid var(--border);
 	}
 
 	.file-selected {
 		display: flex;
 		align-items: center;
 		justify-content: space-between;
-		padding: var(--ax-space-8) var(--ax-space-12);
-		background-color: var(--ax-neutral-100);
-		border-radius: var(--ax-radius-4);
+		padding: var(--nais-space-8) var(--nais-space-12);
+		background-color: var(--background-subtle);
+		border-radius: var(--nais-radius-4);
 	}
 
 	.file-selected-name {

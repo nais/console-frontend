@@ -182,23 +182,23 @@
 
 <style>
 	main {
-		padding: var(--ax-space-16);
+		padding: var(--nais-space-16);
 	}
 	.application-chrome {
 		position: fixed;
 		inset: 0 auto auto 0;
-		width: var(--ax-space-8);
-		height: var(--ax-space-8);
+		width: var(--nais-space-8);
+		height: var(--nais-space-8);
 		z-index: 1000;
 		background: var(--muted);
 	}
 	.controls {
 		display: flex;
 		flex-wrap: wrap;
-		gap: var(--ax-space-8);
+		gap: var(--nais-space-8);
 	}
 	form {
 		display: grid;
-		gap: var(--ax-space-16);
+		gap: var(--nais-space-16);
 	}
 </style>

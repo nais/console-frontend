@@ -242,7 +242,7 @@
 
 <style>
 	.content :global(.parameters-accordion) {
-		margin-top: var(--ax-space-24);
+		margin-top: var(--nais-space-24);
 	}
 	.parameters-table :global(table) {
 		width: 100%;
@@ -253,17 +253,17 @@
 		overflow-wrap: anywhere;
 	}
 	.provisioning-alert {
-		margin-bottom: var(--ax-space-24);
+		margin-bottom: var(--nais-space-24);
 	}
 	.state-value {
 		display: flex;
 		align-items: center;
-		gap: var(--ax-space-4);
+		gap: var(--nais-space-4);
 	}
 	.content {
 		display: flex;
 		flex-direction: column;
-		gap: var(--ax-space-24);
+		gap: var(--nais-space-24);
 		min-width: 0;
 	}
 	.workloads-list {
@@ -271,11 +271,11 @@
 		margin: 0;
 		padding: 0;
 		display: grid;
-		gap: var(--ax-space-6);
+		gap: var(--nais-space-6);
 	}
 	.workload-usage {
 		display: grid;
 		justify-items: start;
-		gap: var(--ax-space-2);
+		gap: var(--nais-space-2);
 	}
 </style>

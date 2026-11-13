@@ -110,7 +110,7 @@
 </script>
 
 <form method="POST" use:enhance>
-	<BodyLong style="margin-bottom: var(--ax-space-16);"
+	<BodyLong style="margin-bottom: var(--nais-space-16);"
 		>This will create a new Valkey instance for <span style="font-weight: bold;"
 			>{data.teamSlug}</span
 		>.</BodyLong
@@ -217,7 +217,7 @@
 	{/if}
 
 	{#if tier === ValkeyTier.SINGLE_NODE && memory === ValkeyMemory.GB_1}
-		<Alert variant="warning" size="small" style="margin-bottom: var(--ax-space-16);">
+		<Alert variant="warning" size="small" style="margin-bottom: var(--nais-space-16);">
 			This combination of tier and memory is not recommended for production workloads.<br />
 			Limitations include no guarantees for uptime and availability, no detailed metrics, and limited
 			backups.
@@ -237,6 +237,6 @@
 	}
 
 	form :global(> *) {
-		margin-bottom: var(--ax-space-16);
+		margin-bottom: var(--nais-space-16);
 	}
 </style>

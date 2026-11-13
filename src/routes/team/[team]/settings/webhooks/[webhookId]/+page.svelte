@@ -298,14 +298,14 @@
 <style>
 	.webhook-detail {
 		display: grid;
-		gap: var(--ax-space-32);
+		gap: var(--nais-space-32);
 		min-width: 0;
 	}
 
 	.main-column {
 		display: flex;
 		flex-direction: column;
-		gap: var(--ax-space-32);
+		gap: var(--nais-space-32);
 		min-width: 0;
 	}
 
@@ -318,7 +318,7 @@
 		display: flex;
 		align-items: center;
 		justify-content: space-between;
-		gap: var(--ax-space-16);
+		gap: var(--nais-space-16);
 	}
 
 	.section-heading {
@@ -326,13 +326,13 @@
 	}
 
 	.section-heading {
-		margin-bottom: var(--ax-space-16);
+		margin-bottom: var(--nais-space-16);
 	}
 
 	.endpoint-url {
-		padding: var(--ax-space-16);
-		margin-bottom: var(--ax-space-12);
-		background: var(--ax-neutral-100);
+		padding: var(--nais-space-16);
+		margin-bottom: var(--nais-space-12);
+		background: var(--background-subtle);
 		border: var(--sh-border-width) solid var(--border);
 		border-radius: var(--radius-md);
 	}
@@ -343,13 +343,13 @@
 
 	.metadata {
 		display: grid;
-		gap: var(--ax-space-16);
+		gap: var(--nais-space-16);
 		margin: 0;
 		font-size: var(--sh-font-size-sm);
 	}
 
 	dt {
-		margin-bottom: var(--ax-space-4);
+		margin-bottom: var(--nais-space-4);
 		font-weight: var(--sh-font-weight-bold);
 	}
 
@@ -368,7 +368,7 @@
 	.delete-actions {
 		display: flex;
 		flex-wrap: wrap;
-		gap: var(--ax-space-8);
-		margin-top: var(--ax-space-24);
+		gap: var(--nais-space-8);
+		margin-top: var(--nais-space-24);
 	}
 </style>

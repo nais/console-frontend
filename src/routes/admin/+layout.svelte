@@ -84,7 +84,7 @@
 	}
 
 	.tabs-container {
-		margin: 0 auto var(--ax-space-24);
+		margin: 0 auto var(--nais-space-24);
 		width: 100%;
 		max-width: var(--page-max-width);
 	}

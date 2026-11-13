@@ -12,11 +12,11 @@ afterEach(() => {
 });
 
 const tokens = `
-	--ax-space-6: 0.375rem;
-	--ax-space-8: 0.5rem;
-	--ax-space-16: 1rem;
-	--ax-space-24: 1.5rem;
-	--ax-radius-4: 0.25rem;
+	--nais-space-6: 0.375rem;
+	--nais-space-8: 0.5rem;
+	--nais-space-16: 1rem;
+	--nais-space-24: 1.5rem;
+	--nais-radius-4: 0.25rem;
 	--sh-font-size-sm: 0.875rem;
 	--sh-font-size-base: 1rem;
 	--sh-font-size-micro: 0.75rem;
@@ -32,11 +32,11 @@ describe('exact rem token matches', () => {
 			tokens
 		);
 		expect(matches.map((match) => match.replacement)).toEqual([
-			'var(--ax-space-8)',
-			'var(--ax-space-16)',
+			'var(--nais-space-8)',
+			'var(--nais-space-16)',
 			'var(--sh-font-size-sm)',
 			'var(--sh-font-line-height-large)',
-			'var(--ax-radius-4)'
+			'var(--nais-radius-4)'
 		]);
 		expect(findTokenizableRems('p { font-size: 1.5rem; }', tokens)).toEqual([]);
 	});
@@ -70,14 +70,14 @@ describe('exact rem token matches', () => {
 			findTokenizableRems('p { margin: -0.5rem -0.375rem; }', tokens).map(
 				(match) => match.replacement
 			)
-		).toEqual(['calc(-1 * var(--ax-space-8))', 'calc(-1 * var(--ax-space-6))']);
+		).toEqual(['calc(-1 * var(--nais-space-8))', 'calc(-1 * var(--nais-space-6))']);
 	});
 
 	it('finds inline styles and Svelte style directives', () => {
 		const source = `<div style="padding: 0.5rem; font-size: 0.875rem" style:margin-top="1rem"></div>`;
 		expect(
 			findTokenizableRems(source, tokens, 'Example.svelte').map((match) => match.replacement)
-		).toEqual(['var(--ax-space-8)', 'var(--sh-font-size-sm)', 'var(--ax-space-16)']);
+		).toEqual(['var(--nais-space-8)', 'var(--sh-font-size-sm)', 'var(--nais-space-16)']);
 	});
 
 	it.each(['"', "'"])('respects %s attribute boundaries with the real token catalogue', (quote) => {
@@ -92,7 +92,7 @@ describe('exact rem token matches', () => {
 				value: '0.9rem',
 				replacement: 'var(--sh-font-size-sm)'
 			},
-			{ property: 'margin-top', value: '1rem', replacement: 'var(--ax-space-16)' }
+			{ property: 'margin-top', value: '1rem', replacement: 'var(--nais-space-16)' }
 		]);
 		for (const match of matches) {
 			expect(source.slice(match.start, match.end)).toBe(match.value);
@@ -113,7 +113,7 @@ describe('exact rem token matches', () => {
 		const matches = findTokenizableRems(source, tokens, 'Example.svelte');
 		expect(matches.map((match) => match.replacement)).toEqual([
 			'var(--sh-font-size-sm)',
-			'var(--ax-space-16)'
+			'var(--nais-space-16)'
 		]);
 		for (const match of matches) {
 			expect(source.slice(match.start, match.end)).toBe(match.value);
@@ -125,7 +125,7 @@ describe('exact rem token matches', () => {
 			<div style="{styles}"></div>`;
 		expect(
 			findTokenizableRems(source, tokens, 'Example.svelte').map((match) => match.replacement)
-		).toEqual(['var(--ax-space-8)']);
+		).toEqual(['var(--nais-space-8)']);
 	});
 
 	it('keeps multiline declarations and static parts of dynamic styles in their own context', () => {
@@ -184,7 +184,7 @@ describe('exact rem token matches', () => {
 				'@media (min-width: 1rem) { @container (width < 1rem) { p { padding: 0.5rem; } } }',
 				tokens
 			).map((match) => match.replacement)
-		).toEqual(['var(--ax-space-8)']);
+		).toEqual(['var(--nais-space-8)']);
 	});
 
 	it('allows canonical token definitions but checks regular declarations in token files', () => {
@@ -210,7 +210,7 @@ describe('exact rem token matches', () => {
 		const listeners = rule.create({ filename: path.join(root, 'eslint.config.js'), report });
 		listeners['Program:exit']();
 		expect(report.mock.calls.map(([entry]) => entry.message)).toEqual([
-			`${path.join('src', 'Example.svelte')}:2: gap: 0.5rem should use var(--ax-space-8).`,
+			`${path.join('src', 'Example.svelte')}:2: gap: 0.5rem should use var(--nais-space-8).`,
 			`${path.join('src', 'styles', 'example.css')}:1: font-size: 0.875rem should use var(--sh-font-size-sm).`
 		]);
 	});

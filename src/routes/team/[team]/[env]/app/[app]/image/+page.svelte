@@ -134,7 +134,7 @@
 	.wrapper {
 		display: flex;
 		flex-direction: column;
-		gap: var(--ax-space-8);
+		gap: var(--nais-space-8);
 		max-width: 500px;
 		width: 100%;
 		align-items: flex-start;
@@ -145,14 +145,14 @@
 		width: 100%;
 		display: flex;
 		flex-direction: column;
-		gap: var(--ax-space-16);
+		gap: var(--nais-space-16);
 	}
 
 	.release-label {
 		display: inline-flex;
 		flex-wrap: wrap;
 		align-items: baseline;
-		gap: var(--ax-space-8);
+		gap: var(--nais-space-8);
 	}
 
 	.release-tag {
@@ -160,17 +160,17 @@
 	}
 
 	.release-current {
-		color: var(--ax-text-neutral);
+		color: var(--foreground);
 	}
 
 	.release-time {
-		color: var(--ax-text-subtle);
+		color: var(--muted-foreground);
 		font-size: var(--sh-font-size-sm);
 	}
 
 	.button-row {
 		display: flex;
-		gap: var(--ax-space-8);
+		gap: var(--nais-space-8);
 		align-items: center;
 	}
 </style>

@@ -56,9 +56,9 @@
 	.alarm {
 		display: flex;
 		flex-direction: column;
-		gap: var(--ax-space-16);
-		border-left: var(--ax-space-4) solid var(--ax-border-neutral-subtleA);
-		padding-left: var(--ax-space-16);
+		gap: var(--nais-space-16);
+		border-left: var(--nais-space-4) solid var(--border);
+		padding-left: var(--nais-space-16);
 		min-width: 0;
 		overflow-wrap: anywhere;
 	}
@@ -67,13 +67,13 @@
 		align-items: center;
 		justify-content: space-between;
 		flex-wrap: wrap;
-		gap: var(--ax-space-8);
+		gap: var(--nais-space-8);
 	}
 	.heading-with-tag {
 		display: flex;
 		align-items: center;
 		flex-wrap: wrap;
-		gap: var(--ax-space-8);
+		gap: var(--nais-space-8);
 	}
 
 	.summary {
@@ -81,14 +81,14 @@
 	}
 	.annotations {
 		display: grid;
-		gap: var(--ax-space-4);
+		gap: var(--nais-space-4);
 		margin: 0;
 	}
 	.annotations dt {
 		font-weight: var(--sh-font-weight-semibold);
 	}
 	.annotations dt:not(:first-child) {
-		margin-top: var(--ax-space-12);
+		margin-top: var(--nais-space-12);
 	}
 	.annotations dd {
 		margin: 0;
@@ -97,7 +97,7 @@
 	.metric {
 		display: flex;
 		flex-wrap: wrap;
-		gap: var(--ax-space-8);
+		gap: var(--nais-space-8);
 		margin: 0;
 		font-size: var(--sh-font-size-sm);
 	}
@@ -105,7 +105,7 @@
 		margin: 0;
 	}
 	.since {
-		color: var(--ax-text-neutral);
+		color: var(--foreground);
 		font-size: var(--sh-font-size-sm);
 	}
 </style>

@@ -541,7 +541,7 @@
 											{#if request}
 												<Tooltip.Item
 													label="Request"
-													color="var(--ax-text-warning-decoration)"
+													color="var(--warning)"
 													value={request}
 													format={(v) => {
 														return v.toFixed(3);
@@ -552,7 +552,7 @@
 											{#if limit}
 												<Tooltip.Item
 													label="Limit"
-													color="var(--ax-text-danger-decoration)"
+													color="var(--destructive)"
 													value={limit}
 													format={(v) => {
 														return v.toFixed(3);
@@ -707,7 +707,7 @@
 											{#if request}
 												<Tooltip.Item
 													label="Request"
-													color="var(--ax-text-warning-decoration)"
+													color="var(--warning)"
 													value={request}
 													format={prettyBytes}
 													valueAlign="right"
@@ -716,7 +716,7 @@
 											{#if limit}
 												<Tooltip.Item
 													label="Limit"
-													color="var(--ax-text-danger-decoration)"
+													color="var(--destructive)"
 													value={limit}
 													format={prettyBytes}
 													valueAlign="right"
@@ -777,7 +777,7 @@
 <style>
 	.wrapper {
 		display: grid;
-		gap: var(--ax-space-24);
+		gap: var(--nais-space-24);
 	}
 	.heading-with-toggle {
 		display: flex;
@@ -791,35 +791,35 @@
 	.grid {
 		display: grid;
 		grid-template-columns: repeat(2, 1fr);
-		column-gap: var(--ax-space-16);
-		row-gap: var(--ax-space-16);
+		column-gap: var(--nais-space-16);
+		row-gap: var(--nais-space-16);
 	}
 
 	.cost-wrapper {
 		display: flex;
-		gap: var(--ax-space-16);
+		gap: var(--nais-space-16);
 		justify-content: center;
 	}
 
 	.cost-amount {
-		background-color: var(--ax-bg-raised);
+		background-color: var(--card);
 		font-size: var(--metric-value-font-size);
 		border-radius: var(--radius-sm);
 		display: inline-block;
 		align-items: center;
-		padding: var(--ax-space-8) var(--ax-space-32);
+		padding: var(--nais-space-8) var(--nais-space-32);
 	}
 
 	.chart {
-		margin-top: var(--ax-space-16);
+		margin-top: var(--nais-space-16);
 		padding-inline: var(--spacing-layout);
 
 		:global(.annotation) {
-			background-color: var(--ax-bg-neutral-soft);
+			background-color: var(--background-subtle);
 		}
 
 		:global(.annotation-text) {
-			fill: var(--ax-text-neutral-contrast);
+			fill: var(--primary-foreground);
 			font-size: 10px;
 		}
 	}
@@ -837,7 +837,7 @@
 		.heading-with-toggle {
 			flex-direction: column;
 			align-items: flex-start;
-			gap: var(--ax-space-8);
+			gap: var(--nais-space-8);
 		}
 	}
 </style>

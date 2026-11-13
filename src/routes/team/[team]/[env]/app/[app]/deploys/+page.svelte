@@ -114,11 +114,11 @@
 	.wrapper {
 		display: flex;
 		flex-direction: column;
-		gap: var(--ax-space-24);
+		gap: var(--nais-space-24);
 	}
 
 	.empty-state {
-		padding: var(--ax-space-16) var(--ax-space-24);
+		padding: var(--nais-space-16) var(--nais-space-24);
 	}
 
 	[id] {
@@ -131,8 +131,8 @@
 	}
 
 	.highlight-in {
-		background-color: var(--ax-accent-400);
-		padding-left: var(--ax-space-8);
+		background-color: var(--nais-blue-400);
+		padding-left: var(--nais-space-8);
 		opacity: 1;
 		border-left-width: 4px;
 	}

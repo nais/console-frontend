@@ -4,30 +4,30 @@
 
 	const radii = {
 		'0': '0',
-		'2': 'var(--ax-space-2)',
-		'4': 'var(--ax-radius-4)',
-		'8': 'var(--ax-radius-8)',
-		'12': 'var(--ax-radius-12)',
-		full: 'var(--ax-radius-full)'
+		'2': 'var(--nais-space-2)',
+		'4': 'var(--nais-radius-4)',
+		'8': 'var(--nais-radius-8)',
+		'12': 'var(--nais-radius-12)',
+		full: 'var(--radius-full)'
 	};
 	const borderColors = {
-		neutral: 'var(--ax-border-neutral)',
-		'neutral-subtle': 'var(--ax-border-neutral-subtle)',
-		'neutral-subtleA': 'var(--ax-border-neutral-subtleA)',
+		neutral: 'var(--border-strong)',
+		'neutral-subtle': 'var(--border)',
+		'neutral-subtleA': 'var(--border)',
 		accent: 'var(--primary)',
 		danger: 'var(--destructive)'
 	};
 	const borderWidths = {
 		'0': '0',
 		'1': 'var(--sh-border-width)',
-		'2': 'var(--ax-space-2)',
-		'4': 'var(--ax-space-4)'
+		'2': 'var(--nais-space-2)',
+		'4': 'var(--nais-space-4)'
 	};
 	const backgrounds = {
-		default: 'var(--ax-bg-default)',
-		'neutral-soft': 'var(--ax-bg-neutral-soft)',
-		'neutral-moderate': 'var(--ax-bg-neutral-moderate)',
-		'neutral-strong': 'var(--ax-bg-neutral-strong)'
+		default: 'var(--card)',
+		'neutral-soft': 'var(--background-subtle)',
+		'neutral-moderate': 'var(--secondary)',
+		'neutral-strong': 'var(--primary)'
 	};
 	const shadows = {
 		none: 'none',
@@ -69,7 +69,7 @@
 	this={as}
 	class={['sh-box', className]}
 	{...rest}
-	style:padding={padding === 'space-0' ? '0' : padding ? `var(--ax-${padding})` : undefined}
+	style:padding={padding === 'space-0' ? '0' : padding ? `var(--nais-${padding})` : undefined}
 	style:border-radius={borderRadius ? radii[borderRadius] : undefined}
 	style:border-color={borderColor ? borderColors[borderColor] : undefined}
 	style:border-width={borderWidth ? borderWidths[borderWidth] : undefined}
@@ -81,7 +81,7 @@
 
 <style>
 	.sh-box {
-		padding: var(--ax-space-16);
+		padding: var(--nais-space-16);
 		border: var(--sh-border-width) solid var(--border);
 		border-radius: var(--radius);
 		background-color: var(--card);

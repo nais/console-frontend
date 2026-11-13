@@ -97,8 +97,8 @@
 		display: grid;
 		grid-template-columns: auto minmax(0, 1fr) auto;
 		align-items: center;
-		gap: var(--ax-space-14);
-		padding: var(--ax-space-14) var(--ax-space-16);
+		gap: var(--nais-space-14);
+		padding: var(--nais-space-14) var(--nais-space-16);
 		border-radius: var(--radius-lg);
 		text-decoration: none;
 		color: inherit;
@@ -135,7 +135,7 @@
 	.instance-group-info {
 		display: flex;
 		flex-direction: column;
-		gap: var(--ax-space-4);
+		gap: var(--nais-space-4);
 		flex: 1;
 		min-width: 0;
 	}
@@ -156,7 +156,7 @@
 	.instance-group-meta code {
 		font-family: monospace;
 		font-size: var(--sh-font-size-xs);
-		padding: var(--ax-space-1) var(--ax-space-6);
+		padding: var(--nais-space-1) var(--nais-space-6);
 		border-radius: var(--radius-sm);
 		background-color: var(--secondary);
 		color: var(--foreground);
@@ -166,7 +166,7 @@
 		display: flex;
 		flex-wrap: wrap;
 		justify-content: flex-end;
-		gap: var(--ax-space-6);
+		gap: var(--nais-space-6);
 		justify-self: end;
 	}
 
@@ -187,14 +187,14 @@
 		display: flex;
 		flex-direction: column;
 		align-items: center;
-		gap: var(--ax-space-8);
-		padding: var(--ax-space-24) var(--ax-space-16);
+		gap: var(--nais-space-8);
+		padding: var(--nais-space-24) var(--nais-space-16);
 		color: var(--muted-foreground);
 	}
 
 	.empty-state :global(svg) {
-		width: var(--ax-space-36);
-		height: var(--ax-space-36);
+		width: var(--nais-space-36);
+		height: var(--nais-space-36);
 		opacity: 0.45;
 	}
 

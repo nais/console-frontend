@@ -68,14 +68,14 @@
 	.sh-readmore {
 		display: flex;
 		flex-direction: column;
-		gap: var(--ax-space-6);
+		gap: var(--nais-space-6);
 	}
 	.sh-readmore-btn {
 		display: inline-flex;
 		align-items: center;
-		gap: var(--ax-space-6);
-		padding: var(--ax-space-4) var(--ax-space-6);
-		margin-left: calc(-1 * var(--ax-space-6));
+		gap: var(--nais-space-6);
+		padding: var(--nais-space-4) var(--nais-space-6);
+		margin-left: calc(-1 * var(--nais-space-6));
 		width: fit-content;
 		border: none;
 		border-radius: var(--radius-xs);
@@ -98,8 +98,8 @@
 		transform: rotate(180deg);
 	}
 	.sh-readmore-content {
-		padding-left: var(--ax-space-20);
-		border-left: var(--ax-space-2) solid var(--border);
+		padding-left: var(--nais-space-20);
+		border-left: var(--nais-space-2) solid var(--border);
 		font-size: var(--sh-font-size-body);
 		color: var(--muted-foreground);
 	}

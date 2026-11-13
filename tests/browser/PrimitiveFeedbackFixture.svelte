@@ -223,7 +223,7 @@
 	{#each sizes as size (size)}
 		<Loader {size} title={`Loading ${size}`} />
 	{/each}
-	<Loader title="Styled loading" size="large" style="color: var(--ax-text-accent)" />
+	<Loader title="Styled loading" size="large" style="color: var(--info)" />
 	<section aria-label="Readable controls">
 		<Input ariaLabel="Readability search" placeholder="Search resources" />
 		<span data-testid="critical-dot" aria-hidden="true"><CriticalIndicator /></span>

@@ -56,8 +56,8 @@
 	.sh-toggle-chip {
 		display: inline-flex;
 		align-items: center;
-		gap: var(--ax-space-4);
-		padding: var(--ax-space-4) var(--ax-space-10);
+		gap: var(--nais-space-4);
+		padding: var(--nais-space-4) var(--nais-space-10);
 		border: var(--sh-border-width) solid var(--border);
 		border-radius: var(--radius-full);
 		background-color: var(--card);

@@ -383,8 +383,8 @@
 						<CircleFillIcon
 							fill="currentColor"
 							style="color: {$data?.severity === 'WARNING'
-								? 'var(--ax-bg-warning-strong)'
-								: 'var(--ax-bg-info-strong)'}; font-size: var(--sh-font-size-micro)"
+								? 'var(--warning)'
+								: 'var(--info)'}; font-size: var(--sh-font-size-micro)"
 						/>
 					{/if}
 				</span>
@@ -438,32 +438,32 @@
 	}
 
 	.item {
-		background: var(--ax-bg-default);
-		border-bottom: 1px solid var(--ax-border-neutral-subtleA);
+		background: var(--card);
+		border-bottom: 1px solid var(--border);
 	}
 
 	.head {
 		display: grid;
 		grid-template-columns: 22px 16px 18px minmax(0, auto) minmax(100px, 1fr);
 		align-items: center;
-		gap: var(--ax-space-8);
-		padding: var(--ax-space-12) var(--ax-space-16);
+		gap: var(--nais-space-8);
+		padding: var(--nais-space-12) var(--nais-space-16);
 		cursor: pointer;
 		transition: background-color 120ms ease;
 	}
 
 	.item:not([open]) > summary.head:hover {
-		background: color-mix(in srgb, var(--surface-accent-color) 6%, var(--ax-bg-default));
+		background: color-mix(in srgb, var(--surface-accent-color) 6%, var(--card));
 	}
 
 	.item[open] > summary.head {
-		background: color-mix(in srgb, var(--surface-accent-color) 10%, var(--ax-bg-default));
+		background: color-mix(in srgb, var(--surface-accent-color) 10%, var(--card));
 	}
 
 	.chev {
 		width: 16px;
 		height: 16px;
-		color: var(--ax-text-neutral);
+		color: var(--foreground);
 		transition: transform 0.18s ease;
 	}
 	.item[open] .chev {
@@ -479,13 +479,13 @@
 	.resource-group {
 		display: flex;
 		align-items: center;
-		gap: var(--ax-space-6);
+		gap: var(--nais-space-6);
 		min-width: 0;
 		flex-wrap: wrap;
 	}
 
 	.resource-name {
-		color: var(--ax-text-neutral);
+		color: var(--foreground);
 		font-weight: 500;
 		white-space: nowrap;
 		overflow: hidden;
@@ -508,7 +508,7 @@
 	}
 
 	.issue-title {
-		color: var(--ax-text-neutral);
+		color: var(--foreground);
 		font-weight: 500;
 		white-space: nowrap;
 		overflow: hidden;
@@ -521,46 +521,46 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		color: var(--ax-text-neutral-subtle);
+		color: var(--muted-foreground);
 		font-size: var(--sh-font-size-base);
 	}
 
 	.detail {
-		padding: 12px 14px 14px calc(14px + 22px + var(--ax-space-8));
-		background: var(--ax-bg-default);
-		border-top: 1px dashed var(--ax-border-neutral-subtle);
+		padding: 12px 14px 14px calc(14px + 22px + var(--nais-space-8));
+		background: var(--card);
+		border-top: 1px dashed var(--border);
 	}
 
 	.message {
 		margin: 0;
-		color: var(--ax-text-neutral);
+		color: var(--foreground);
 		font-size: var(--sh-font-size-sm);
 		line-height: var(--sh-font-line-height-large);
 	}
 
 	.extra {
-		margin-top: var(--ax-space-8);
+		margin-top: var(--nais-space-8);
 		font-size: var(--sh-font-size-sm);
-		color: var(--ax-text-neutral);
+		color: var(--foreground);
 		display: flex;
 		flex-direction: column;
-		gap: var(--ax-space-2);
+		gap: var(--nais-space-2);
 	}
 
 	.ingress {
 		word-break: break-word;
-		color: var(--ax-text-neutral-subtle);
+		color: var(--muted-foreground);
 	}
 
 	@media (max-width: 767px), (max-height: 500px) {
 		.head {
 			grid-template-columns: 22px 16px 18px 1fr;
-			gap: var(--ax-space-6);
+			gap: var(--nais-space-6);
 		}
 
 		.issue-title {
 			grid-column: 1 / -1;
-			padding-left: calc(22px + 16px + 18px + var(--ax-space-6) * 3);
+			padding-left: calc(22px + 16px + 18px + var(--nais-space-6) * 3);
 			text-align: left;
 		}
 	}

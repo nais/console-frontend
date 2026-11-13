@@ -20,13 +20,13 @@
 	}: Props = $props();
 
 	const sizeTokens: Record<NonNullable<Props['size']>, string> = {
-		'3xlarge': 'var(--ax-space-48)',
-		'2xlarge': 'var(--ax-space-36)',
-		xlarge: 'var(--ax-space-28)',
-		large: 'var(--ax-space-24)',
-		medium: 'var(--ax-space-18)',
-		small: 'var(--ax-space-16)',
-		xsmall: 'var(--ax-space-12)'
+		'3xlarge': 'var(--nais-space-48)',
+		'2xlarge': 'var(--nais-space-36)',
+		xlarge: 'var(--nais-space-28)',
+		large: 'var(--nais-space-24)',
+		medium: 'var(--nais-space-18)',
+		small: 'var(--nais-space-16)',
+		xsmall: 'var(--nais-space-12)'
 	};
 
 	let dim = $derived(sizeTokens[size] ?? sizeTokens.medium);

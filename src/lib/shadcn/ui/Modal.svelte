@@ -80,10 +80,10 @@
 
 	let widthStyle = $derived.by(() => {
 		if (typeof width === 'number') {
-			return `max-width: min(${width}px, calc(100vw - var(--ax-space-32)));`;
+			return `max-width: min(${width}px, calc(100vw - var(--nais-space-32)));`;
 		}
 		if (typeof width === 'string' && width !== 'small' && width !== 'medium') {
-			return `max-width: min(${width}, calc(100vw - var(--ax-space-32)));`;
+			return `max-width: min(${width}, calc(100vw - var(--nais-space-32)));`;
 		}
 		return undefined;
 	});
@@ -213,7 +213,7 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		padding: var(--ax-space-16);
+		padding: var(--nais-space-16);
 		pointer-events: none;
 	}
 	.sh-modal-layer[hidden] {
@@ -224,13 +224,13 @@
 		padding-top: var(--sh-modal-top-offset);
 	}
 	.sh-modal-layer--top :global(.sh-modal) {
-		max-height: calc(100dvh - var(--sh-modal-top-offset) - var(--ax-space-16));
+		max-height: calc(100dvh - var(--sh-modal-top-offset) - var(--nais-space-16));
 	}
 	:global(.sh-modal-backdrop) {
 		position: fixed;
 		inset: 0;
 		background-color: var(--sh-modal-backdrop);
-		backdrop-filter: blur(var(--ax-space-2));
+		backdrop-filter: blur(var(--nais-space-2));
 	}
 	:global(.sh-modal) {
 		position: relative;
@@ -241,23 +241,23 @@
 		background-color: var(--popover);
 		color: var(--popover-foreground);
 		box-shadow: var(--sh-shadow-lg);
-		max-width: min(var(--sh-modal-max-width), calc(100vw - var(--ax-space-32)));
+		max-width: min(var(--sh-modal-max-width), calc(100vw - var(--nais-space-32)));
 		width: 100%;
-		max-height: calc(100dvh - var(--ax-space-32));
+		max-height: calc(100dvh - var(--nais-space-32));
 		overflow-y: auto;
 	}
 	:global(.sh-modal--small) {
-		max-width: min(var(--sh-modal-small-max-width), calc(100vw - var(--ax-space-32)));
+		max-width: min(var(--sh-modal-small-max-width), calc(100vw - var(--nais-space-32)));
 	}
 	:global(.sh-modal--medium) {
-		max-width: min(var(--sh-modal-medium-max-width), calc(100vw - var(--ax-space-32)));
+		max-width: min(var(--sh-modal-medium-max-width), calc(100vw - var(--nais-space-32)));
 	}
 	.sh-modal__header {
 		display: flex;
 		align-items: flex-start;
 		justify-content: space-between;
-		gap: var(--ax-space-12);
-		padding: var(--ax-space-16) var(--ax-space-20) var(--ax-space-12);
+		gap: var(--nais-space-12);
+		padding: var(--nais-space-16) var(--nais-space-20) var(--nais-space-12);
 		border-bottom: var(--sh-border-width) solid var(--border);
 	}
 	.sh-modal__header-content {
@@ -268,8 +268,8 @@
 		display: inline-flex;
 		align-items: center;
 		justify-content: center;
-		width: var(--ax-space-28);
-		height: var(--ax-space-28);
+		width: var(--nais-space-28);
+		height: var(--nais-space-28);
 		border: none;
 		border-radius: var(--radius-xs);
 		background: transparent;
@@ -282,18 +282,18 @@
 		color: var(--foreground);
 	}
 	.sh-modal__close:focus-visible {
-		outline: var(--ax-space-2) solid var(--ring);
-		outline-offset: var(--ax-space-2);
+		outline: var(--nais-space-2) solid var(--ring);
+		outline-offset: var(--nais-space-2);
 	}
 	.sh-modal__body {
-		padding: var(--ax-space-20);
+		padding: var(--nais-space-20);
 	}
 	.sh-modal__footer {
 		display: flex;
 		align-items: center;
 		justify-content: flex-end;
-		gap: var(--ax-space-8);
-		padding: var(--ax-space-14) var(--ax-space-20);
+		gap: var(--nais-space-8);
+		padding: var(--nais-space-14) var(--nais-space-20);
 		border-top: var(--sh-border-width) solid var(--border);
 		background-color: color-mix(in srgb, var(--secondary) 35%, var(--popover));
 	}

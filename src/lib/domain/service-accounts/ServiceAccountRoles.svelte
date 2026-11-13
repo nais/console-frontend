@@ -154,13 +154,13 @@
 	section {
 		display: flex;
 		flex-direction: column;
-		gap: var(--ax-space-12);
+		gap: var(--nais-space-12);
 	}
 
 	.role-list {
 		display: flex;
 		flex-direction: column;
-		gap: var(--ax-space-8);
+		gap: var(--nais-space-8);
 	}
 
 	.role-item dt {
@@ -169,7 +169,7 @@
 
 	.role-item dd {
 		margin: 0;
-		color: var(--ax-text-neutral);
+		color: var(--foreground);
 		font-size: var(--sh-font-size-sm);
 	}
 </style>

@@ -203,14 +203,14 @@
 
 <style>
 	.reconciler-error {
-		color: var(--ax-text-danger);
+		color: var(--destructive);
 	}
 	.card {
-		margin-bottom: var(--ax-space-16);
-		background-color: var(--ax-bg-sunken);
-		border-radius: var(--ax-radius-12);
+		margin-bottom: var(--nais-space-16);
+		background-color: var(--background-subtle);
+		border-radius: var(--nais-radius-12);
 		align-items: stretch;
-		border: 1px solid var(--ax-border-neutral);
-		padding: var(--ax-space-20);
+		border: 1px solid var(--border-strong);
+		padding: var(--nais-space-20);
 	}
 </style>

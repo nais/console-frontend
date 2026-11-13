@@ -41,8 +41,8 @@
 		display: inline-flex;
 		align-items: center;
 		justify-content: center;
-		gap: var(--ax-space-6);
-		padding: var(--ax-space-4) var(--ax-space-10);
+		gap: var(--nais-space-6);
+		padding: var(--nais-space-4) var(--nais-space-10);
 		border: none;
 		border-radius: var(--radius-2xs);
 		background: transparent;

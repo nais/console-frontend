@@ -137,23 +137,23 @@
 	.facets {
 		display: flex;
 		flex-direction: column;
-		gap: var(--ax-space-16);
+		gap: var(--nais-space-16);
 	}
 
 	.facet-section {
 		display: flex;
 		flex-direction: column;
-		gap: var(--ax-space-8);
+		gap: var(--nais-space-8);
 	}
 
 	.facet-heading {
 		font-size: var(--sh-font-size-sm);
 		font-weight: 500;
-		color: var(--ax-text-neutral-subtle);
+		color: var(--muted-foreground);
 		margin: 0;
 		letter-spacing: 0.01em;
-		border-bottom: 1px solid var(--ax-border-neutral-subtleA);
-		padding-bottom: var(--ax-space-6);
+		border-bottom: 1px solid var(--border);
+		padding-bottom: var(--nais-space-6);
 		cursor: pointer;
 		list-style: none;
 		display: flex;
@@ -188,24 +188,24 @@
 	.facet-item {
 		display: flex;
 		align-items: center;
-		gap: var(--ax-space-8);
-		padding: var(--ax-space-6) 0;
+		gap: var(--nais-space-8);
+		padding: var(--nais-space-6) 0;
 		font-size: var(--sh-font-size-sm);
 		cursor: pointer;
 	}
 
 	.facet-item:hover {
-		color: var(--ax-text-neutral);
+		color: var(--foreground);
 	}
 
 	.facet-item input[type='checkbox'],
 	.facet-item input[type='radio'] {
-		width: var(--ax-space-16);
-		height: var(--ax-space-16);
+		width: var(--nais-space-16);
+		height: var(--nais-space-16);
 		margin: 0;
 		flex-shrink: 0;
 		cursor: pointer;
-		accent-color: var(--ax-text-accent);
+		accent-color: var(--info);
 	}
 
 	.facet-label {
@@ -219,6 +219,6 @@
 	.facet-count {
 		flex-shrink: 0;
 		font-size: var(--sh-font-size-xs);
-		color: var(--ax-text-neutral-subtle);
+		color: var(--muted-foreground);
 	}
 </style>

@@ -56,7 +56,7 @@
 	.sh-switch-wrapper {
 		display: inline-flex;
 		align-items: center;
-		gap: var(--ax-space-8);
+		gap: var(--nais-space-8);
 	}
 	.sh-switch-wrapper.position-right {
 		flex-direction: row-reverse;
@@ -65,8 +65,8 @@
 	.sh-switch-input {
 		appearance: none;
 		position: relative;
-		width: var(--ax-space-36);
-		height: var(--ax-space-20);
+		width: var(--nais-space-36);
+		height: var(--nais-space-20);
 		border-radius: var(--radius-full);
 		background-color: var(--input);
 		border: var(--sh-border-width) solid var(--border-strong);
@@ -75,35 +75,35 @@
 		transition: background-color 140ms ease;
 	}
 	.sh-switch-input.size-small {
-		width: var(--ax-space-28);
-		height: var(--ax-space-16);
+		width: var(--nais-space-28);
+		height: var(--nais-space-16);
 	}
 	.sh-switch-input::after {
 		content: '';
 		position: absolute;
-		top: var(--ax-space-1);
-		left: var(--ax-space-1);
-		width: calc(var(--ax-space-20) - var(--ax-space-4));
-		height: calc(var(--ax-space-20) - var(--ax-space-4));
+		top: var(--nais-space-1);
+		left: var(--nais-space-1);
+		width: calc(var(--nais-space-20) - var(--nais-space-4));
+		height: calc(var(--nais-space-20) - var(--nais-space-4));
 		border-radius: var(--radius-full);
 		background-color: var(--card);
 		box-shadow: var(--sh-shadow-xs);
 		transition: transform 140ms ease;
 	}
 	.sh-switch-input.size-small::after {
-		width: calc(var(--ax-space-16) - var(--ax-space-4));
-		height: calc(var(--ax-space-16) - var(--ax-space-4));
+		width: calc(var(--nais-space-16) - var(--nais-space-4));
+		height: calc(var(--nais-space-16) - var(--nais-space-4));
 	}
 	.sh-switch-input:checked {
 		background-color: var(--primary);
 		border-color: var(--primary);
 	}
 	.sh-switch-input:checked::after {
-		transform: translateX(var(--ax-space-16));
+		transform: translateX(var(--nais-space-16));
 		background-color: var(--primary-foreground);
 	}
 	.sh-switch-input.size-small:checked::after {
-		transform: translateX(calc(var(--ax-space-12) + var(--ax-space-1)));
+		transform: translateX(calc(var(--nais-space-12) + var(--nais-space-1)));
 	}
 	.sh-switch-input:disabled {
 		opacity: 0.5;
@@ -112,7 +112,7 @@
 	.sh-switch-text {
 		display: flex;
 		flex-direction: column;
-		gap: var(--ax-space-2);
+		gap: var(--nais-space-2);
 	}
 	.sh-switch-label {
 		font-size: var(--sh-font-size-sm);
@@ -126,10 +126,10 @@
 	}
 	.sr-only {
 		position: absolute;
-		width: var(--ax-space-1);
-		height: var(--ax-space-1);
+		width: var(--nais-space-1);
+		height: var(--nais-space-1);
 		padding: 0;
-		margin: calc(-1 * var(--ax-space-1));
+		margin: calc(-1 * var(--nais-space-1));
 		overflow: hidden;
 		clip: rect(0, 0, 0, 0);
 		white-space: nowrap;

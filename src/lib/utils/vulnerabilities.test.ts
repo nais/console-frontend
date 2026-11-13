@@ -40,60 +40,54 @@ describe('vulnerabilities', () => {
 	describe('severityToColor', () => {
 		describe('default (background) colors', () => {
 			test('returns correct color for critical severity', () => {
-				expect(severityToColor({ severity: 'critical' })).toBe('var(--ax-text-danger)');
+				expect(severityToColor({ severity: 'critical' })).toBe('var(--destructive)');
 			});
 
 			test('returns correct color for high severity', () => {
 				expect(severityToColor({ severity: 'high' })).toBe(
-					'color-mix(in oklab, var(--ax-text-danger), var(--ax-text-warning))'
+					'color-mix(in oklab, var(--destructive), var(--warning))'
 				);
 			});
 
 			test('returns correct color for medium severity', () => {
-				expect(severityToColor({ severity: 'medium' })).toBe('var(--ax-text-warning)');
+				expect(severityToColor({ severity: 'medium' })).toBe('var(--warning)');
 			});
 
 			test('returns correct color for low severity', () => {
-				expect(severityToColor({ severity: 'low' })).toBe('var(--ax-text-success)');
+				expect(severityToColor({ severity: 'low' })).toBe('var(--success)');
 			});
 
 			test('returns correct color for unassigned severity', () => {
-				expect(severityToColor({ severity: 'unassigned' })).toBe('var(--ax-text-neutral-subtle)');
+				expect(severityToColor({ severity: 'unassigned' })).toBe('var(--muted-foreground)');
 			});
 
 			test('returns neutral color for unknown severity', () => {
-				expect(severityToColor({ severity: 'unknown' })).toBe('var(--ax-text-neutral-subtle)');
+				expect(severityToColor({ severity: 'unknown' })).toBe('var(--muted-foreground)');
 			});
 		});
 
 		describe('text colors', () => {
 			test('returns correct text color for critical severity', () => {
-				expect(severityToColor({ severity: 'critical', isText: true })).toBe(
-					'var(--ax-text-danger-decoration)'
-				);
+				expect(severityToColor({ severity: 'critical', isText: true })).toBe('var(--destructive)');
 			});
 
 			test('returns correct text color for high severity', () => {
-				expect(severityToColor({ severity: 'high', isText: true })).toBe(
-					'var(--ax-text-warning-decoration)'
-				);
+				expect(severityToColor({ severity: 'high', isText: true })).toBe('var(--warning)');
 			});
 
 			test('returns correct text color for medium severity', () => {
 				expect(severityToColor({ severity: 'medium', isText: true })).toBe(
-					'color-mix(in oklab, var(--ax-text-warning-decoration), var(--ax-text-success-decoration))'
+					'color-mix(in oklab, var(--warning), var(--success))'
 				);
 			});
 
 			test('returns correct text color for low severity', () => {
-				expect(severityToColor({ severity: 'low', isText: true })).toBe(
-					'var(--ax-text-success-decoration)'
-				);
+				expect(severityToColor({ severity: 'low', isText: true })).toBe('var(--success)');
 			});
 
 			test('returns correct text color for unassigned severity', () => {
 				expect(severityToColor({ severity: 'unassigned', isText: true })).toBe(
-					'var(--ax-text-neutral-subtle)'
+					'var(--muted-foreground)'
 				);
 			});
 		});
@@ -126,7 +120,7 @@ describe('vulnerabilities', () => {
 
 		describe('edge cases', () => {
 			test('handles empty string severity', () => {
-				expect(severityToColor({ severity: '' })).toBe('var(--ax-text-neutral-subtle)');
+				expect(severityToColor({ severity: '' })).toBe('var(--muted-foreground)');
 			});
 
 			test('text and background colors use same tokens', () => {

@@ -57,17 +57,17 @@
 
 <style>
 	.cm-host :global(.cm-editor) {
-		border-radius: var(--ax-radius-8);
-		border: 1px solid var(--ax-border-neutral-subtle);
-		background: var(--ax-bg-neutral-moderate);
+		border-radius: var(--nais-radius-8);
+		border: 1px solid var(--border);
+		background: var(--secondary);
 		font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
 		font-size: var(--sh-font-size-sm);
 	}
 	.cm-host :global(.cm-editor.cm-focused) {
-		outline: 2px solid var(--ax-border-focus);
+		outline: 2px solid var(--ring);
 		outline-offset: -2px;
 	}
 	.cm-host :global(.cm-content) {
-		padding: var(--ax-space-12);
+		padding: var(--nais-space-12);
 	}
 </style>

@@ -389,7 +389,7 @@ test('Loader sizes override global Lucide sizing and preserve supplied styles', 
 	}
 	const styled = page.getByRole('status', { name: 'Styled loading' });
 	await expect(styled).toHaveCSS('width', '24px');
-	await expect(styled).toHaveAttribute('style', /color: var\(--ax-text-accent\)/);
+	await expect(styled).toHaveAttribute('style', /color: var\(--info\)/);
 });
 
 test('Loader follows rem scaling and scoped spacing token overrides', async ({ page }) => {
@@ -411,14 +411,14 @@ test('Loader follows rem scaling and scoped spacing token overrides', async ({ p
 		await expect(loader).toHaveCSS('height', `${pixels}px`);
 	}
 	await page.locator('main').evaluate((element) => {
-		element.style.setProperty('--ax-space-48', '4rem');
+		element.style.setProperty('--nais-space-48', '4rem');
 	});
 	const largest = page.getByRole('status', { name: 'Loading 3xlarge', exact: true });
 	await expect(largest).toHaveCSS('width', '80px');
 	await expect(largest).toHaveCSS('height', '80px');
 	const styled = page.getByRole('status', { name: 'Styled loading' });
 	await expect(styled).toHaveCSS('width', '30px');
-	await expect(styled).toHaveAttribute('style', /color: var\(--ax-text-accent\)/);
+	await expect(styled).toHaveAttribute('style', /color: var\(--info\)/);
 });
 
 test('shared heading tokens preserve the large weight and font-relative spacing', async ({
@@ -466,8 +466,8 @@ for (const rootTheme of ['light', 'dark']) {
 		const parent = page.getByTestId('dark-parent');
 		await expect(parent).toHaveCSS('background-color', 'rgb(9, 13, 22)');
 		const dark = await themeTokens(parent, properties);
-		expect(dark['--ax-bg-default']).not.toBe(light['--ax-bg-default']);
-		expect(dark['--ax-text-neutral']).not.toBe(light['--ax-text-neutral']);
+		expect(dark['--card']).not.toBe(light['--card']);
+		expect(dark['--foreground']).not.toBe(light['--foreground']);
 		expect(await themeTokens(page.getByTestId('inherited-dark'), properties)).toEqual(dark);
 		expect(await themeTokens(page.getByTestId('nested-theme'), properties)).toEqual(light);
 		expect(await themeTokens(page.getByTestId('inherited-theme'), properties)).toEqual(light);

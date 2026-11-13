@@ -163,13 +163,13 @@
 		display: inline-flex;
 		align-items: center;
 		justify-content: center;
-		gap: var(--ax-space-6);
+		gap: var(--nais-space-6);
 		white-space: nowrap;
 		border-radius: var(--radius-sm);
 		font-family: inherit;
 		font-weight: var(--sh-font-weight-medium);
 		font-size: var(--sh-font-size-sm);
-		line-height: var(--ax-space-20);
+		line-height: var(--nais-space-20);
 		text-decoration: none;
 		border: var(--sh-border-width) solid transparent;
 		cursor: pointer;
@@ -181,8 +181,8 @@
 	}
 
 	.sh-ui-btn:focus-visible {
-		outline: var(--ax-space-2) solid var(--ring);
-		outline-offset: var(--ax-space-2);
+		outline: var(--nais-space-2) solid var(--ring);
+		outline-offset: var(--nais-space-2);
 	}
 
 	.sh-ui-btn:disabled,
@@ -241,39 +241,39 @@
 	}
 
 	.size-default {
-		height: var(--ax-space-36);
-		padding: 0 var(--ax-space-14);
+		height: var(--nais-space-36);
+		padding: 0 var(--nais-space-14);
 		font-size: var(--sh-font-size-sm);
 	}
 	.size-sm {
-		height: var(--ax-space-32);
-		padding: 0 var(--ax-space-10);
+		height: var(--nais-space-32);
+		padding: 0 var(--nais-space-10);
 		font-size: var(--sh-font-size-sm);
 	}
 	.size-xs {
-		height: var(--ax-space-24);
-		padding: 0 var(--ax-space-8);
+		height: var(--nais-space-24);
+		padding: 0 var(--nais-space-8);
 		font-size: var(--sh-font-size-xs);
 		border-radius: var(--radius-xs);
 	}
 	.size-lg {
-		height: var(--ax-space-40);
-		padding: 0 var(--ax-space-20);
+		height: var(--nais-space-40);
+		padding: 0 var(--nais-space-20);
 		font-size: var(--sh-font-size-base);
 	}
 	.size-icon {
-		width: var(--ax-space-32);
-		height: var(--ax-space-32);
+		width: var(--nais-space-32);
+		height: var(--nais-space-32);
 		padding: 0;
 	}
 	.size-icon-sm {
-		width: var(--ax-space-28);
-		height: var(--ax-space-28);
+		width: var(--nais-space-28);
+		height: var(--nais-space-28);
 		padding: 0;
 	}
 	.size-icon-xs {
-		width: var(--ax-space-24);
-		height: var(--ax-space-24);
+		width: var(--nais-space-24);
+		height: var(--nais-space-24);
 		padding: 0;
 	}
 
@@ -288,6 +288,6 @@
 	.sh-ui-btn__label {
 		display: inline-flex;
 		align-items: center;
-		gap: var(--ax-space-6);
+		gap: var(--nais-space-6);
 	}
 </style>

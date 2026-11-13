@@ -85,7 +85,7 @@
 						{width}
 						y={context.yScale(bucket.count)}
 						height={context.yScale(0) - context.yScale(bucket.count)}
-						fill="var(--ax-bg-info-strong)"
+						fill="var(--info)"
 						class="log-volume-bar"
 						aria-hidden="true"
 					/>
@@ -161,7 +161,7 @@
 <style>
 	.visualization {
 		position: relative;
-		height: calc(var(--ax-space-64) * 3);
+		height: calc(var(--nais-space-64) * 3);
 		min-width: 0;
 	}
 
@@ -183,18 +183,18 @@
 		inset: 0;
 		display: grid;
 		place-items: center;
-		padding: var(--ax-space-16);
+		padding: var(--nais-space-16);
 		pointer-events: none;
 	}
 
 	.overlay-content {
 		display: grid;
 		justify-items: center;
-		gap: var(--ax-space-8);
-		padding: var(--ax-space-16);
-		border-radius: var(--ax-radius-8);
-		background: var(--ax-bg-sunken);
-		color: var(--ax-text-neutral);
+		gap: var(--nais-space-8);
+		padding: var(--nais-space-16);
+		border-radius: var(--nais-radius-8);
+		background: var(--background-subtle);
+		color: var(--foreground);
 		text-align: center;
 	}
 </style>

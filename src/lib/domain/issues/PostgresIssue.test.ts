@@ -51,15 +51,15 @@ test.each([
 });
 
 test.each([
-	['WARNING', '--ax-bg-warning-strong'],
-	['TODO', '--ax-bg-info-strong']
+	['WARNING', '--warning'],
+	['TODO', '--info']
 ])('renders a filled %s indicator with its strong semantic colour', async (severity, token) => {
 	fixture.data.severity = severity;
 	const { body } = await render(IssueListItem, { props: { item } });
 	expect(body).toMatch(/<svg\b[^>]*fill="currentColor"[^>]*>/);
 	expect(body).toContain(`color: var(${token})`);
 	expect(body).not.toContain('light-dark(');
-	expect(body).not.toContain('--ax-bg-warning-moderate-pressed');
+	expect(body).not.toContain('--warning-muted');
 });
 
 test('renders only the logical Postgres database in the critical issues card during SSR', async () => {

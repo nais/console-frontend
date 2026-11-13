@@ -38,8 +38,8 @@
 <style>
 	main {
 		display: grid;
-		gap: var(--ax-space-16);
-		padding: var(--ax-space-16);
+		gap: var(--nais-space-16);
+		padding: var(--nais-space-16);
 		background: var(--background);
 		color: var(--foreground);
 	}

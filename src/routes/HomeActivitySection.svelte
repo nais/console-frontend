@@ -85,12 +85,12 @@
 	.section-heading {
 		display: flex;
 		align-items: center;
-		gap: var(--ax-space-12);
+		gap: var(--nais-space-12);
 		flex-wrap: wrap;
 		justify-content: space-between;
 	}
 	.activity-heading {
-		padding: var(--ax-space-12) 0;
+		padding: var(--nais-space-12) 0;
 	}
 	.activity-section {
 		border-top: var(--sh-border-width) solid var(--border);
@@ -98,19 +98,19 @@
 	.activity-feed {
 		display: flex;
 		flex-direction: column;
-		gap: var(--ax-space-12);
+		gap: var(--nais-space-12);
 		min-width: 0;
-		padding-top: var(--ax-space-8);
+		padding-top: var(--nais-space-8);
 	}
 	p {
 		margin: 0;
 		font-size: var(--sh-font-size-sm);
-		color: var(--ax-text-neutral);
+		color: var(--foreground);
 	}
 	.entry {
 		display: flex;
 		flex-direction: column;
-		gap: var(--ax-space-6);
+		gap: var(--nais-space-6);
 		min-width: 0;
 		overflow-wrap: anywhere;
 	}
@@ -118,12 +118,12 @@
 		display: grid;
 		grid-template-columns: auto minmax(0, 1fr);
 		align-items: start;
-		gap: var(--ax-space-12);
+		gap: var(--nais-space-12);
 	}
 	.activity-icon {
-		--surface-icon-size: var(--ax-space-32);
-		--surface-icon-glyph-size: var(--ax-space-16);
-		color: var(--ax-text-neutral);
+		--surface-icon-size: var(--nais-space-32);
+		--surface-icon-glyph-size: var(--nais-space-16);
+		color: var(--foreground);
 	}
 	.activity-message {
 		font-size: var(--sh-font-size-body);
@@ -139,7 +139,7 @@
 		display: flex;
 		align-items: center;
 		flex-wrap: wrap;
-		gap: var(--ax-space-4) var(--ax-space-8);
+		gap: var(--nais-space-4) var(--nais-space-8);
 		font-size: var(--sh-font-size-xs);
 	}
 	.activity-time {
@@ -147,7 +147,7 @@
 	}
 	@media (max-width: 767px) {
 		.activity-entry {
-			gap: var(--ax-space-8);
+			gap: var(--nais-space-8);
 		}
 		.activity-time {
 			margin-left: 0;

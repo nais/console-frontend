@@ -388,21 +388,21 @@
 <style>
 	.description-wrapper {
 		display: flex;
-		gap: var(--ax-space-6);
+		gap: var(--nais-space-6);
 		align-items: center;
 	}
 
 	.result-actions {
 		display: flex;
 		align-items: center;
-		gap: var(--ax-space-8);
+		gap: var(--nais-space-8);
 	}
 
 	.helpers {
 		display: flex;
 		flex-wrap: wrap;
-		gap: var(--ax-space-16);
-		padding: var(--ax-space-10) var(--ax-space-16);
+		gap: var(--nais-space-16);
+		padding: var(--nais-space-10) var(--nais-space-16);
 		border-top: 1px solid var(--border);
 		background-color: var(--background-subtle);
 		font-size: var(--sh-font-size-micro);
@@ -410,7 +410,7 @@
 
 		> div {
 			display: flex;
-			gap: var(--ax-space-6);
+			gap: var(--nais-space-6);
 			align-items: center;
 
 			&:last-child {
@@ -420,7 +420,7 @@
 	}
 
 	.suggestions {
-		padding-bottom: var(--ax-space-10);
+		padding-bottom: var(--nais-space-10);
 	}
 
 	.enter > :global(svg) {
@@ -438,21 +438,21 @@
 		display: grid;
 		grid-template-columns: 1fr auto;
 		align-items: center;
-		gap: var(--ax-space-8);
-		padding: var(--ax-space-12) var(--ax-space-16);
+		gap: var(--nais-space-8);
+		padding: var(--nais-space-12) var(--nais-space-16);
 		border-bottom: 1px solid var(--border);
 	}
 
 	.search-field {
 		display: grid;
-		gap: var(--ax-space-8);
+		gap: var(--nais-space-8);
 	}
 
 	.query-input {
 		display: flex;
 		align-items: center;
-		gap: var(--ax-space-8);
-		min-height: var(--ax-space-36);
+		gap: var(--nais-space-8);
+		min-height: var(--nais-space-36);
 	}
 
 	.search-lead-icon {
@@ -481,9 +481,9 @@
 	.query-token {
 		display: inline-flex;
 		align-items: center;
-		gap: var(--ax-space-6);
+		gap: var(--nais-space-6);
 		flex: none;
-		padding: var(--ax-space-2) var(--ax-space-8);
+		padding: var(--nais-space-2) var(--nais-space-8);
 		border: 1px solid var(--primary-border);
 		border-radius: calc(var(--radius) - 4px);
 		background-color: var(--primary-muted);
@@ -496,9 +496,9 @@
 
 	.results {
 		display: flex;
-		padding: var(--ax-space-8);
+		padding: var(--nais-space-8);
 		flex-direction: column;
-		gap: var(--ax-space-2);
+		gap: var(--nais-space-2);
 		overflow-y: auto;
 
 		a.result {
@@ -515,10 +515,10 @@
 		.result {
 			display: grid;
 			grid-template-columns: 1fr auto;
-			gap: var(--ax-space-12);
+			gap: var(--nais-space-12);
 			align-items: center;
 			border-radius: calc(var(--radius) - 3px);
-			padding: var(--ax-space-8) var(--ax-space-10);
+			padding: var(--nais-space-8) var(--nais-space-10);
 
 			&.selected {
 				background-color: var(--secondary);
@@ -531,7 +531,7 @@
 		flex-direction: column;
 		align-items: center;
 		justify-content: center;
-		padding: var(--ax-space-40) var(--ax-space-16);
+		padding: var(--nais-space-40) var(--nais-space-16);
 		color: var(--muted-foreground);
 		font-size: var(--sh-font-size-caption);
 	}

@@ -49,8 +49,8 @@
 	.updated-fields {
 		display: grid;
 		grid-template-columns: max-content minmax(0, 1fr);
-		gap: var(--ax-space-8);
-		margin: var(--ax-space-8) 0;
+		gap: var(--nais-space-8);
+		margin: var(--nais-space-8) 0;
 	}
 	dt {
 		font-weight: var(--sh-font-weight-semibold);

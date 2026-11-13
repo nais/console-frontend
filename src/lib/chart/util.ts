@@ -25,24 +25,24 @@ export function getSegmentFill(
 	dangerThreshold = 90
 ) {
 	if (!isActive) {
-		return 'var(--ax-border-neutral)';
+		return 'var(--border-strong)';
 	}
 
 	if (totalSegments <= 0) {
-		return 'var(--ax-border-neutral)';
+		return 'var(--border-strong)';
 	}
 
 	const segmentPercent = ((segmentIndex + 1) / totalSegments) * 100;
 
 	if (segmentPercent <= warningThreshold) {
-		return 'var(--ax-text-success-decoration)';
+		return 'var(--success)';
 	}
 
 	if (segmentPercent <= dangerThreshold) {
-		return 'var(--ax-text-warning-decoration)';
+		return 'var(--warning)';
 	}
 
-	return 'var(--ax-text-danger-decoration)';
+	return 'var(--destructive)';
 }
 
 export type ServiceName =

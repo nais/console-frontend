@@ -58,8 +58,8 @@
 		display: inline-flex;
 		flex-shrink: 0;
 		align-items: center;
-		gap: var(--ax-space-6);
-		padding: var(--ax-space-8) var(--ax-space-14);
+		gap: var(--nais-space-6);
+		padding: var(--nais-space-8) var(--nais-space-14);
 		font-size: var(--sh-font-size-body);
 		font-weight: var(--sh-font-weight-medium);
 		color: var(--muted-foreground);
@@ -81,10 +81,10 @@
 	.sh-ui-tab.active::after {
 		content: '';
 		position: absolute;
-		left: var(--ax-space-8);
-		right: var(--ax-space-8);
+		left: var(--nais-space-8);
+		right: var(--nais-space-8);
 		bottom: 0;
-		height: var(--ax-space-2);
+		height: var(--nais-space-2);
 		background: var(--primary);
 	}
 </style>

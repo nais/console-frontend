@@ -45,10 +45,10 @@
 	.surface-card {
 		display: flex;
 		flex-direction: column;
-		gap: var(--ax-space-14);
+		gap: var(--nais-space-14);
 		width: 100%;
 		min-width: 0;
-		padding: var(--ax-space-18) var(--ax-space-20);
+		padding: var(--nais-space-18) var(--nais-space-20);
 		background-color: var(--card);
 		color: var(--card-foreground);
 		border: 1px solid var(--border);
@@ -66,7 +66,7 @@
 		display: flex;
 		justify-content: space-between;
 		align-items: center;
-		gap: var(--ax-space-8);
+		gap: var(--nais-space-8);
 	}
 
 	.card-eyebrow {
@@ -88,20 +88,20 @@
 	.header-aside {
 		display: flex;
 		align-items: center;
-		gap: var(--ax-space-8);
+		gap: var(--nais-space-8);
 	}
 
 	.content {
 		display: flex;
 		flex-direction: column;
-		gap: var(--ax-space-14);
+		gap: var(--nais-space-14);
 		width: 100%;
 		min-width: 0;
 	}
 
 	@media (max-width: 767px), (max-height: 500px) {
 		.surface-card {
-			padding: var(--ax-space-14) var(--ax-space-16);
+			padding: var(--nais-space-14) var(--nais-space-16);
 		}
 	}
 </style>

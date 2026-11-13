@@ -163,7 +163,7 @@
 
 	form {
 		display: flex;
-		gap: var(--ax-space-16);
+		gap: var(--nais-space-16);
 	}
 
 	.field-wrapper {
@@ -173,20 +173,20 @@
 
 	.heading-wrapper {
 		display: flex;
-		gap: var(--ax-space-12);
+		gap: var(--nais-space-12);
 		align-items: baseline;
 	}
 
 	.confirmation-wrapper {
 		display: flex;
 		flex-direction: column;
-		gap: var(--ax-space-8);
-		margin-top: var(--ax-space-16);
+		gap: var(--nais-space-8);
+		margin-top: var(--nais-space-16);
 	}
 	.danger-zone {
-		padding: var(--ax-space-16);
-		border-radius: var(--ax-radius-8);
-		border: 1px solid var(--ax-border-danger);
+		padding: var(--nais-space-16);
+		border-radius: var(--nais-radius-8);
+		border: 1px solid var(--destructive-border);
 	}
 
 	@media (max-width: 767px), (max-height: 500px) {

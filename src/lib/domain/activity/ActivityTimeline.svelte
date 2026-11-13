@@ -37,20 +37,20 @@
 	.timeline {
 		display: flex;
 		flex-direction: column;
-		gap: var(--ax-space-4);
+		gap: var(--nais-space-4);
 		min-width: 0;
 	}
 
 	.empty {
 		text-align: center;
 		color: var(--muted-foreground);
-		padding: var(--ax-space-8) var(--ax-space-4);
+		padding: var(--nais-space-8) var(--nais-space-4);
 		font-size: var(--sh-font-size-sm);
 	}
 
 	.load-more {
 		display: flex;
 		justify-content: center;
-		padding-top: var(--ax-space-8);
+		padding-top: var(--nais-space-8);
 	}
 </style>

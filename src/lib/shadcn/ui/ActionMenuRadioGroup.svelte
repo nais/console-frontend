@@ -29,7 +29,7 @@
 
 <style>
 	:global(.sh-action-menu-group-label) {
-		padding: var(--ax-space-4) var(--ax-space-10);
+		padding: var(--nais-space-4) var(--nais-space-10);
 		font-size: var(--sh-font-size-caption);
 		font-weight: var(--sh-font-weight-semibold);
 		text-transform: uppercase;

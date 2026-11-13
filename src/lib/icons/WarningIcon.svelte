@@ -4,7 +4,4 @@
 	const props = $props();
 </script>
 
-<ExclamationmarkTriangleFillIcon
-	{...props}
-	style="color:var(--ax-text-warning-decoration);{props.style}"
-/>
+<ExclamationmarkTriangleFillIcon {...props} style="color:var(--warning);{props.style}" />

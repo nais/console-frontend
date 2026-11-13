@@ -316,7 +316,7 @@
 </script>
 
 {#if $Unleash.errors}
-	<Alert variant="error" size="small" style="margin-bottom: var(--ax-space-16);">
+	<Alert variant="error" size="small" style="margin-bottom: var(--nais-space-16);">
 		{#each new Set(extractErrorMessages($Unleash.errors)) as error (error)}
 			{error}<br />
 		{/each}
@@ -324,7 +324,7 @@
 {/if}
 
 {#if $UnleashReleaseChannels.errors}
-	<Alert variant="error" size="small" style="margin-bottom: var(--ax-space-16);">
+	<Alert variant="error" size="small" style="margin-bottom: var(--nais-space-16);">
 		{#each new Set(extractErrorMessages($UnleashReleaseChannels.errors)) as error (error)}
 			{error}<br />
 		{/each}
@@ -332,7 +332,7 @@
 {/if}
 
 {#if $createUnleashForTeam.errors}
-	<Alert variant="error" size="small" style="margin-bottom: var(--ax-space-16);">
+	<Alert variant="error" size="small" style="margin-bottom: var(--nais-space-16);">
 		{#each new Set(extractErrorMessages($createUnleashForTeam.errors)) as error (error)}
 			{error}<br />
 		{/each}
@@ -343,7 +343,7 @@
 {/if}
 
 {#if $updateUnleashInstance.errors}
-	<Alert variant="error" size="small" style="margin-bottom: var(--ax-space-16);">
+	<Alert variant="error" size="small" style="margin-bottom: var(--nais-space-16);">
 		{#each new Set(extractErrorMessages($updateUnleashInstance.errors)) as error (error)}
 			{error}<br />
 		{/each}
@@ -354,7 +354,7 @@
 {/if}
 
 {#if $allowTeamAccess.errors}
-	<Alert variant="error" size="small" style="margin-bottom: var(--ax-space-16);">
+	<Alert variant="error" size="small" style="margin-bottom: var(--nais-space-16);">
 		{#each new Set(extractErrorMessages($allowTeamAccess.errors)) as error (error)}
 			{error}<br />
 		{/each}
@@ -365,7 +365,7 @@
 {/if}
 
 {#if $revokeTeamAccess.errors}
-	<Alert variant="error" size="small" style="margin-bottom: var(--ax-space-16);">
+	<Alert variant="error" size="small" style="margin-bottom: var(--nais-space-16);">
 		{#each new Set(extractErrorMessages($revokeTeamAccess.errors)) as error (error)}
 			{error}<br />
 		{/each}
@@ -376,7 +376,7 @@
 {/if}
 
 {#if $deleteUnleashInstance.errors}
-	<Alert variant="error" size="small" style="margin-bottom: var(--ax-space-16);">
+	<Alert variant="error" size="small" style="margin-bottom: var(--nais-space-16);">
 		{#each new Set(extractErrorMessages($deleteUnleashInstance.errors)) as error (error)}
 			{error}<br />
 		{/each}
@@ -387,21 +387,21 @@
 {/if}
 
 {#if deleteError}
-	<Alert variant="error" size="small" style="margin-bottom: var(--ax-space-16);">
+	<Alert variant="error" size="small" style="margin-bottom: var(--nais-space-16);">
 		{deleteError}
 		<Button variant="tertiary" size="small" onclick={() => (deleteError = '')}>Dismiss</Button>
 	</Alert>
 {/if}
 
 {#if accessError}
-	<Alert variant="error" size="small" style="margin-bottom: var(--ax-space-16);">
+	<Alert variant="error" size="small" style="margin-bottom: var(--nais-space-16);">
 		{accessError}
 		<Button variant="tertiary" size="small" onclick={() => (accessError = '')}>Dismiss</Button>
 	</Alert>
 {/if}
 
 {#if !enabled}
-	<Alert style="margin-bottom: var(--ax-space-16);" variant="info">
+	<Alert style="margin-bottom: var(--nais-space-16);" variant="info">
 		Unleash is not enabled for this tenant. Contact your administrator.
 	</Alert>
 {:else if unleash}
@@ -447,7 +447,7 @@
 				<Heading>Delete Unleash Instance</Heading>
 			{/snippet}
 			{#if !canDelete}
-				<Alert variant="warning" size="small" style="margin-bottom: var(--ax-space-8);">
+				<Alert variant="warning" size="small" style="margin-bottom: var(--nais-space-8);">
 					{#if !unleash.ready}
 						The Unleash instance must be ready before it can be deleted.
 					{:else if allowedTeamsCount > 1}
@@ -469,7 +469,7 @@
 					placeholder={unleash.name}
 				/>
 				{#if !deleteConfirmed && deleteConfirmation.length > 0}
-					<Alert variant="error" size="small" style="margin-top: var(--ax-space-4);">
+					<Alert variant="error" size="small" style="margin-top: var(--nais-space-4);">
 						The instance name does not match.
 					</Alert>
 				{/if}
@@ -515,9 +515,7 @@
 					<dt>Status</dt>
 					<dd>
 						{#if unleash.ready}
-							<CheckmarkIcon
-								style="color: var(--ax-text-success-decoration); font-size: var(--sh-font-size-lg)"
-							/>
+							<CheckmarkIcon style="color: var(--success); font-size: var(--sh-font-size-lg)" />
 						{:else}
 							<Tooltip
 								content="Unleash is not ready. It may be starting or applying changes."
@@ -584,7 +582,7 @@
 												/>{/if})
 										{/if}
 									{:else}
-										<span style="color: var(--ax-text-neutral-subtle)">Not set</span>
+										<span style="color: var(--muted-foreground)">Not set</span>
 									{/if}
 								</span>
 								<Tooltip content={editReleaseChannelDisabledReason || 'Change release channel'}>
@@ -641,7 +639,7 @@
 													onclick={() => handleRemoveTeamClick(team.slug)}
 												>
 													{#snippet icon()}
-														<TrashIcon style="color:var(--ax-text-danger-decoration)!important" />
+														<TrashIcon style="color:var(--destructive)!important" />
 													{/snippet}
 												</Button>
 											</Tooltip>
@@ -664,7 +662,7 @@
 						Add team
 					</Button>
 				{/snippet}
-				<div style="margin-top: var(--ax-space-8);">
+				<div style="margin-top: var(--nais-space-8);">
 					{#if addTeamDisabledReason}
 						<Tooltip content={addTeamDisabledReason}>
 							{@render addTeamButton()}
@@ -779,38 +777,38 @@
 	.content {
 		display: flex;
 		flex-direction: column;
-		gap: var(--ax-space-24);
+		gap: var(--nais-space-24);
 		min-width: 0;
 	}
 
 	.settings-list dd {
 		display: flex;
 		align-items: center;
-		gap: var(--ax-space-4);
+		gap: var(--nais-space-4);
 	}
 
 	.release-channel-row {
 		display: flex;
 		align-items: center;
-		gap: var(--ax-space-8);
+		gap: var(--nais-space-8);
 	}
 
 	.channel-date {
 		font-size: var(--sh-font-size-sm);
-		color: var(--ax-text-neutral-subtle);
+		color: var(--muted-foreground);
 	}
 
 	.metrics-list {
 		display: grid;
 		grid-template-columns: 12ch minmax(0, 1fr);
-		gap: var(--ax-space-4) var(--ax-space-8);
+		gap: var(--nais-space-4) var(--nais-space-8);
 		margin: 0;
 		align-items: baseline;
 	}
 
 	.metrics-list dt {
 		font-weight: var(--sh-font-weight-semibold);
-		color: var(--ax-text-neutral-subtle);
+		color: var(--muted-foreground);
 	}
 
 	.metrics-list dd {
@@ -819,12 +817,12 @@
 
 	.utilization-content {
 		display: grid;
-		gap: var(--ax-space-4);
+		gap: var(--nais-space-4);
 	}
 
 	@media (max-width: 767px) {
 		.settings-list dd {
-			margin-bottom: var(--ax-space-8);
+			margin-bottom: var(--nais-space-8);
 		}
 
 		.settings-list dd:last-child {

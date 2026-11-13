@@ -94,12 +94,12 @@
 
 <style>
 	main {
-		padding: var(--ax-space-16);
+		padding: var(--nais-space-16);
 	}
 
 	.clipped-parent {
 		width: var(--sh-popover-max-width);
-		height: var(--ax-space-40);
+		height: var(--nais-space-40);
 		overflow: hidden;
 	}
 

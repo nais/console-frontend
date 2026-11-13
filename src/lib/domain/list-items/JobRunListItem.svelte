@@ -105,6 +105,6 @@
 		display: flex;
 		flex-direction: column;
 		align-items: end;
-		gap: var(--ax-space-2);
+		gap: var(--nais-space-2);
 	}
 </style>

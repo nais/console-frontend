@@ -57,7 +57,7 @@
 
 <style>
 	.sh-th {
-		padding: var(--ax-space-10) var(--ax-space-14);
+		padding: var(--nais-space-10) var(--nais-space-14);
 		font-size: var(--sh-font-size-sm);
 		font-weight: var(--sh-font-weight-semibold);
 		color: var(--muted-foreground);
@@ -65,7 +65,7 @@
 		vertical-align: middle;
 	}
 	:global(.sh-table--small) .sh-th {
-		padding: var(--ax-space-8) var(--ax-space-12);
+		padding: var(--nais-space-8) var(--nais-space-12);
 	}
 	.sh-th.align-center {
 		text-align: center;
@@ -76,9 +76,9 @@
 	.sh-th__sort-btn {
 		display: inline-flex;
 		align-items: center;
-		gap: var(--ax-space-6);
-		padding: var(--ax-space-2) var(--ax-space-6);
-		margin: calc(-1 * var(--ax-space-2)) calc(-1 * var(--ax-space-6));
+		gap: var(--nais-space-6);
+		padding: var(--nais-space-2) var(--nais-space-6);
+		margin: calc(-1 * var(--nais-space-2)) calc(-1 * var(--nais-space-6));
 		border: none;
 		border-radius: var(--radius-2xs);
 		background: transparent;
