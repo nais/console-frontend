@@ -5,10 +5,29 @@ query CVEWorkloads(
 	$after: Cursor
 	$before: Cursor
 	$orderBy: CVEWorkloadOrder
+	$filter: CVEWorkloadsFilter
+	$onlyMyTeams: Boolean!
 ) {
+	me @include(if: $onlyMyTeams) {
+		__typename
+		... on User {
+			teams(first: 1) {
+				pageInfo {
+					totalCount
+				}
+			}
+		}
+	}
 	cve(identifier: $identifier) {
 		id
-		workloads(first: $first, last: $last, after: $after, before: $before, orderBy: $orderBy) {
+		workloads(
+			first: $first
+			last: $last
+			after: $after
+			before: $before
+			orderBy: $orderBy
+			filter: $filter
+		) {
 			impact {
 				...CveImpactFragment
 			}
