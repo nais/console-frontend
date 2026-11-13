@@ -23,7 +23,7 @@ export async function load(event) {
 			variables: {
 				identifier: event.params.cve,
 				orderBy: cveWorkloadOrder(event.url, CVEWorkloadOrderField.TEAM),
-				filter: onlyMyTeams ? { viewerIsMember: true } : null,
+				filter: onlyMyTeams ? { teamScope: { memberOfViewer: true } } : null,
 				onlyMyTeams,
 				...(before ? { before, last: rows } : { after, first: rows })
 			}
