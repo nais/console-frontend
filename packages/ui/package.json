@@ -3,6 +3,15 @@
 	"version": "0.0.1",
 	"type": "module",
 	"license": "MIT",
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/nais/console-frontend.git",
+		"directory": "packages/ui"
+	},
+	"publishConfig": {
+		"registry": "https://europe-north1-npm.pkg.dev/nais-io/nais-public-npm/",
+		"access": "public"
+	},
 	"files": [
 		"dist"
 	],

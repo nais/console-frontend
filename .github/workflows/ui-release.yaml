@@ -1,0 +1,84 @@
+name: Release UI package
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - .changeset/**
+      - packages/ui/**
+      - package.json
+      - pnpm-lock.yaml
+      - pnpm-workspace.yaml
+      - .npmrc
+      - .github/workflows/ui-release.yaml
+      - scripts/check-ui-package.mjs
+      - tests/package-consumer/**
+  workflow_dispatch:
+
+concurrency:
+  group: ui-release
+  cancel-in-progress: false
+
+jobs:
+  release:
+    if: github.ref == 'refs/heads/main'
+    name: Version or publish UI package
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: write
+      pull-requests: write
+      id-token: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # ratchet:actions/checkout@v7
+        with:
+          fetch-depth: 0
+      - uses: jdx/mise-action@6be3c7ed4c21d4f76b208d351d95aac273ebb76d # ratchet:jdx/mise-action@v5
+        with:
+          install_args: node pnpm
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+      - name: Validate UI changesets
+        run: pnpm changeset status
+      - name: Sync SvelteKit
+        run: pnpm exec svelte-kit sync
+      - name: Type check
+        run: pnpm run check
+      - name: Lint
+        run: pnpm run lint
+      - name: Run tests
+        run: pnpm run test -- --run
+      - name: Verify packed UI consumer
+        run: pnpm run test:package
+      - name: Verify validation left tracked files unchanged
+        run: git diff --exit-code
+      - name: Authenticate to Google Cloud
+        id: auth
+        uses: google-github-actions/auth@7c6bc770dae815cd3e89ee6cdf493a5fab2cc093 # ratchet:google-github-actions/auth@v3
+        with:
+          workload_identity_provider: ${{ secrets.NAIS_IO_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: gh-console-frontend@nais-io.iam.gserviceaccount.com
+          token_format: access_token
+          create_credentials_file: false
+      - name: Configure registry authentication
+        run: |
+          cat > "$RUNNER_TEMP/ui-release.npmrc" <<'EOF'
+          @nais:registry=https://europe-north1-npm.pkg.dev/nais-io/nais-public-npm/
+          //europe-north1-npm.pkg.dev/nais-io/nais-public-npm/:_authToken=${NODE_AUTH_TOKEN}
+          //europe-north1-npm.pkg.dev/nais-io/nais-public-npm/:always-auth=true
+          EOF
+      - name: Create release PR or publish UI package
+        uses: changesets/action@a45c4d594aa4e2c509dc14a9f2b3b67ba3780d0d # ratchet:changesets/action@v1
+        with:
+          version: pnpm run release:version
+          publish: pnpm run release:ui
+          title: "ui: release @nais/ui"
+          commit: "ui: release @nais/ui"
+          prDraft: always
+          createGithubReleases: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NODE_AUTH_TOKEN: ${{ steps.auth.outputs.access_token }}
+          NPM_CONFIG_USERCONFIG: ${{ runner.temp }}/ui-release.npmrc
+      - name: Remove registry authentication
+        if: always()
+        run: rm -f "$RUNNER_TEMP/ui-release.npmrc"
