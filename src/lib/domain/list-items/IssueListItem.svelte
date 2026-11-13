@@ -229,7 +229,7 @@
 						}
 						state
 					}
-					... on PostgresBranchIssue {
+					... on PostgresIssue {
 						__typename
 						severity
 						message
@@ -241,11 +241,8 @@
 								slug
 							}
 						}
-						branch {
+						postgres {
 							name
-							postgres {
-								name
-							}
 						}
 					}
 					... on SqlInstanceVersionIssue {
@@ -346,7 +343,7 @@
 		if (
 			typename === 'SqlInstanceStateIssue' ||
 			typename === 'SqlInstanceVersionIssue' ||
-			typename === 'PostgresBranchIssue'
+			typename === 'PostgresIssue'
 		)
 			return DatabaseIcon;
 		if (typename === 'UnleashReleaseChannelIssue') return UnleashIcon;

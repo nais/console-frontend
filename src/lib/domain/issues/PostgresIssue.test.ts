@@ -14,24 +14,27 @@ vi.mock('$houdini', () => ({
 }));
 
 const item = { ' $fragments': { IssueFragment: {}, CriticalIssueRow: {} } };
-const message = 'Postgres branch "failed-restore" of "database" has reported a failure.';
+const message = 'Postgres "database" has reported a failure.';
 
 beforeEach(() => {
 	fixture.data = {
-		__typename: 'PostgresBranchIssue',
-		PostgresBranchIssue: null,
+		__typename: 'PostgresIssue',
+		PostgresIssue: null,
 		severity: 'CRITICAL',
 		message,
 		teamEnvironment: { environment: { name: 'dev-gcp' }, team: { slug: 'nais' } },
-		branch: { name: 'failed-restore', postgres: { name: 'database' } }
+		postgres: { name: 'database' }
 	};
 });
 
-test('renders a named, linked Postgres branch in the issue list during SSR', async () => {
+test('renders only the logical Postgres database in the issue list during SSR', async () => {
 	const { body } = await render(IssueListItem, { props: { item } });
-	expect(body).toContain('database / failed-restore');
-	expect(body).toContain('href="/team/nais/dev-gcp/postgres/database?branch=failed-restore"');
-	expect(body).toContain('Postgres Branch');
+	expect(body).toContain('database');
+	expect(body).toContain('href="/team/nais/dev-gcp/postgres/database"');
+	expect(body).toContain('Postgres');
+	expect(body).not.toContain('Postgres Branch');
+	expect(body).not.toContain('database /');
+	expect(body).not.toContain('branch=');
 	expect(body).toContain('dev-gcp');
 	expect(body).toContain('has reported a failure.');
 	expect(body).not.toContain('Unknown');
@@ -59,10 +62,12 @@ test.each([
 	expect(body).not.toContain('--ax-bg-warning-moderate-pressed');
 });
 
-test('renders a named, linked Postgres branch in the critical issues card during SSR', async () => {
+test('renders only the logical Postgres database in the critical issues card during SSR', async () => {
 	const { body } = await render(CriticalIssueRow, { props: { issue: item } });
-	expect(body).toContain('Postgres branch failure for database / failed-restore in dev-gcp');
-	expect(body).toContain('href="/team/nais/dev-gcp/postgres/database?branch=failed-restore"');
+	expect(body).toContain('Postgres failure for database in dev-gcp');
+	expect(body).toContain('href="/team/nais/dev-gcp/postgres/database"');
+	expect(body).not.toContain('database /');
+	expect(body).not.toContain('branch=');
 	expect(body).toContain('has reported a failure.');
 	expect(body).not.toContain('Unknown');
 });
@@ -70,15 +75,21 @@ test('renders a named, linked Postgres branch in the critical issues card during
 test.each([
 	['issue list', listArtifact],
 	['critical issues', criticalArtifact]
-])('selects all Postgres branch fields in the concrete %s fragment for SSR', (_, artifact) => {
-	const selection = artifact.selection.abstractFields.fields.PostgresBranchIssue;
-	for (const field of ['__typename', 'severity', 'message', 'teamEnvironment', 'branch'] as const) {
+])('selects direct Postgres fields in the concrete %s fragment for SSR', (_, artifact) => {
+	const selection = artifact.selection.abstractFields.fields.PostgresIssue;
+	for (const field of [
+		'__typename',
+		'severity',
+		'message',
+		'teamEnvironment',
+		'postgres'
+	] as const) {
 		expect(selection[field].visible).toBe(true);
 	}
 	expect(selection.teamEnvironment.selection.fields.environment.selection.fields.name.visible).toBe(
 		true
 	);
 	expect(selection.teamEnvironment.selection.fields.team.selection.fields.slug.visible).toBe(true);
-	expect(selection.branch.selection.fields.name.visible).toBe(true);
-	expect(selection.branch.selection.fields.postgres.selection.fields.name.visible).toBe(true);
+	expect(selection.postgres.selection.fields.name.visible).toBe(true);
+	expect(selection).not.toHaveProperty('branch');
 });

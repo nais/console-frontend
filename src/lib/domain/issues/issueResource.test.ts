@@ -5,34 +5,16 @@ const context = {
 };
 
 describe('issueResource', () => {
-	test('uses the flat Postgres branch fields, not the nullable Houdini type key', () => {
+	test('uses the flat Postgres field, not the nullable Houdini type key', () => {
 		const issue = {
 			...context,
-			PostgresBranchIssue: null,
-			branch: {
-				name: 'failed-restore',
-				postgres: { name: 'database' }
-			}
+			PostgresIssue: null,
+			postgres: { name: 'database' }
 		};
 		expect(issueResource(issue)).toEqual({
-			name: 'database / failed-restore',
-			href: '/team/nais/dev-gcp/postgres/database?branch=failed-restore'
+			name: 'database',
+			href: '/team/nais/dev-gcp/postgres/database'
 		});
-	});
-
-	test('links legacy main issues to the database overview', () => {
-		expect(
-			issueResource({ ...context, branch: { name: 'main', postgres: { name: 'database' } } })
-		).toEqual({ name: 'database / main', href: '/team/nais/dev-gcp/postgres/database' });
-	});
-
-	test('preserves and encodes non-main identity rather than linking to a different database', () => {
-		expect(
-			issueResource({
-				...context,
-				branch: { name: 'old&branch=main', postgres: { name: 'database' } }
-			}).href
-		).toBe('/team/nais/dev-gcp/postgres/database?branch=old%26branch%3Dmain');
 	});
 
 	test.each([
@@ -65,8 +47,8 @@ describe('issueResource', () => {
 		expect(
 			issueResource({
 				teamEnvironment: { environment: { name: '' }, team: { slug: 'nais' } },
-				branch: { name: 'restore', postgres: { name: 'database' } }
+				postgres: { name: 'database' }
 			})
-		).toEqual({ name: 'database / restore', href: null });
+		).toEqual({ name: 'database', href: null });
 	});
 });
