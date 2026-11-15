@@ -15,6 +15,10 @@ query TenantTeamPriorityGroups(
 	$noneLast: Int
 	$noneAfter: Cursor
 	$noneBefore: Cursor
+	$coveredFirst: Int
+	$coveredLast: Int
+	$coveredAfter: Cursor
+	$coveredBefore: Cursor
 ) {
 	high: teams(
 		first: $highFirst
@@ -48,7 +52,16 @@ query TenantTeamPriorityGroups(
 		last: $noneLast
 		after: $noneAfter
 		before: $noneBefore
-		filter: { hasWorkloads: true, vulnerabilityPriorityGroup: NONE }
+		filter: { hasWorkloads: true, vulnerabilityPriorityGroup: NONE, hasCompleteSbomCoverage: false }
+	) {
+		...TeamPriorityConnection @mask_disable
+	}
+	covered: teams(
+		first: $coveredFirst
+		last: $coveredLast
+		after: $coveredAfter
+		before: $coveredBefore
+		filter: { hasWorkloads: true, vulnerabilityPriorityGroup: NONE, hasCompleteSbomCoverage: true }
 	) {
 		...TeamPriorityConnection @mask_disable
 	}
@@ -78,6 +91,13 @@ fragment TeamPriorityConnection on TeamConnection {
 				}
 			}
 			vulnerabilitySummary {
+				countsBySeverity {
+					critical
+					high
+					medium
+					low
+					unassigned
+				}
 				countsByPriority {
 					knownExploited
 					highRisk

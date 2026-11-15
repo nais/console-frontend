@@ -18,6 +18,7 @@ export async function load(event) {
 	const elevated = pagination('elevated');
 	const monitor = pagination('monitor');
 	const none = pagination('none');
+	const covered = pagination('covered');
 
 	return {
 		...(await addPageMeta(event, {
@@ -42,7 +43,11 @@ export async function load(event) {
 				noneFirst: none.first,
 				noneLast: none.last,
 				noneAfter: none.after,
-				noneBefore: none.before
+				noneBefore: none.before,
+				coveredFirst: covered.first,
+				coveredLast: covered.last,
+				coveredAfter: covered.after,
+				coveredBefore: covered.before
 			}
 		}))
 	};

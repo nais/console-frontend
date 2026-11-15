@@ -3,7 +3,7 @@ Directs the executor to defer this fragment when the `if` argument is true or un
 """
 directive @defer(
   """Deferred when true or undefined."""
-  if: Boolean = true
+  if: Boolean! = true
 
   """Unique name"""
   label: String
@@ -1831,7 +1831,7 @@ input CVEWorkloadsFilter {
   teamScope: TeamScopeInput
 
   """Only include workloads owned by these teams."""
-  teamSlugs: [Slug!]
+  teamSlugs: [Slug!] @deprecated(reason: "Use teamScope.teamSlugs instead.")
 }
 
 input ChangeDeploymentKeyInput {
@@ -3720,6 +3720,11 @@ type ImageVulnerabilityConnection {
   """List of edges."""
   edges: [ImageVulnerabilityEdge!]!
 
+  """
+  Facets over all matching findings, ignoring pagination and respecting the current filter.
+  """
+  facets: ImageVulnerabilityFacets
+
   """List of nodes."""
   nodes: [ImageVulnerability!]!
 
@@ -3733,6 +3738,14 @@ type ImageVulnerabilityEdge {
 
   """The image vulnerability."""
   node: ImageVulnerability!
+}
+
+"""
+Distribution counts over all matching image findings, ignoring pagination and respecting the current filter.
+"""
+type ImageVulnerabilityFacets {
+  """Distribution of matching findings by PURL type."""
+  packageTypes: [StringFacetItem!]!
 }
 
 """Input for filtering image vulnerabilities."""
@@ -8127,7 +8140,7 @@ input SearchFilter {
   teamScope: TeamScopeInput
 
   """Teams to search in. If not specified, all teams will be searched."""
-  teams: [Slug!]
+  teams: [Slug!] @deprecated(reason: "Use teamScope.teamSlugs instead.")
 
   """
   The types of entities to search for. If not specified, all types will be searched.
@@ -10598,6 +10611,13 @@ type TeamExternalResources {
 
 """Input for filtering teams."""
 input TeamFilter {
+  """
+  Filter by complete usable SBOM coverage across all environments.
+  True requires at least one usable SBOM and 100% coverage; false selects incomplete coverage.
+  Applied before pagination. Missing summaries produce an error.
+  """
+  hasCompleteSbomCoverage: Boolean
+
   """Filter teams by the existence of workloads."""
   hasWorkloads: Boolean
 
@@ -11228,7 +11248,7 @@ input TeamVulnerabilitySummaryFilter {
   Deprecated. Use priorities instead. When set, this is treated as a
   single-element priorities list. Ignored if priorities is also set.
   """
-  priority: CVEPriority
+  priority: CVEPriority @deprecated(reason: "Use priorities instead, which accepts a list.")
 }
 
 """Input for filtering team workloads."""
@@ -13344,7 +13364,7 @@ enum WebhookDeliveryStatus {
 }
 
 """Choose exactly one way to select webhook events."""
-input WebhookEventSelection {
+input WebhookEventSelection @oneOf {
   """
   Receive all available event types within the webhook's scope. Must be true.
   """

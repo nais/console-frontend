@@ -11,7 +11,7 @@
 		const groups = $TenantTeamPriorityGroups.data;
 		return (
 			groups &&
-			(['high', 'elevated', 'monitor', 'none'] as const).some(
+			(['high', 'elevated', 'monitor', 'none', 'covered'] as const).some(
 				(group) => groups[group].pageInfo.totalCount > 0
 			)
 		);
@@ -24,7 +24,7 @@
 		<Heading as="h2" spacing>Team Security Posture</Heading>
 		<BodyLong>
 			A detailed breakdown of teams with workloads, grouped by vulnerability priority. Teams without
-			SBOMs are marked so missing scan data is not mistaken for no priority findings. For teams with
+			SBOMs are shown separately from fully covered teams with no priority findings. For teams with
 			scan data, you can also see risk score, SBOM coverage, and workload count. Vulnerability
 			counts are the number of vulnerabilities, not the number of workloads affected.
 		</BodyLong>
