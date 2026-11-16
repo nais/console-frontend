@@ -86,6 +86,7 @@ and preserves typed option values. Both include labels, descriptions and validat
 messages without depending on Console utility classes. `HelpText` uses a Bits UI
 popover with Escape/outside-click dismissal, focus restoration and viewport collision
 handling. Help and tooltip portals retain their containing dialog and theme.
+Tooltip's `bind:open` reflects hover, focus and dismissal, and supports external updates.
 `ReadMore` supports controlled, bound and default-open state, including SSR.
 `defaultOpen` sets only the initial state; use `open` to control it after mounting.
 Tables support compact sizing, striped rows, sticky headers and sortable headings.

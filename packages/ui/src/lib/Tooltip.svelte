@@ -46,6 +46,27 @@
 		open !== undefined ? open : !dismissed && (hovered || focused || defaultOpen)
 	);
 
+	function updateInteractionOpen() {
+		if (open !== undefined) open = !dismissed && (hovered || focused || defaultOpen);
+	}
+
+	function setHovered(value: boolean) {
+		hovered = value;
+		if (value) dismissed = false;
+		updateInteractionOpen();
+	}
+
+	function setFocused(value: boolean) {
+		focused = value;
+		if (value) dismissed = false;
+		updateInteractionOpen();
+	}
+
+	function dismiss() {
+		dismissed = true;
+		if (open !== undefined) open = false;
+	}
+
 	function describeChildren(element: HTMLSpanElement) {
 		anchorElement = element;
 		const selector = 'button, a[href], input, select, textarea, [tabindex]';
@@ -103,26 +124,17 @@
 	let triggerProps = $derived({
 		title: content,
 		'aria-describedby': isOpen ? uid : undefined,
-		onmouseenter: () => {
-			hovered = true;
-		},
-		onmouseleave: () => {
-			hovered = false;
-		},
-		onfocus: () => {
-			hovered = true;
-		},
-		onblur: () => {
-			hovered = false;
-		}
+		onmouseenter: () => setHovered(true),
+		onmouseleave: () => setHovered(false),
+		onfocus: () => setFocused(true),
+		onblur: () => setFocused(false)
 	});
 </script>
 
 <svelte:window
 	onkeydown={(event) => {
 		if (event.key === 'Escape' && isOpen) {
-			dismissed = true;
-			if (open !== undefined) open = false;
+			dismiss();
 		}
 	}}
 />
@@ -131,10 +143,7 @@
 	<BitsTooltip.Root
 		open={isOpen}
 		onOpenChange={(value) => {
-			if (!value) {
-				dismissed = true;
-				if (open !== undefined) open = false;
-			}
+			if (!value) dismiss();
 		}}
 	>
 		<span
@@ -146,30 +155,28 @@
 			aria-label={interactiveChild === false ? content : undefined}
 			aria-describedby={[descriptionId, isOpen ? uid : undefined].filter(Boolean).join(' ') ||
 				undefined}
-			onmouseenter={() => {
-				hovered = true;
-				dismissed = false;
-			}}
-			onmouseleave={() => (hovered = false)}
-			onfocusin={() => {
-				focused = true;
-				dismissed = false;
-			}}
+			onmouseenter={() => setHovered(true)}
+			onmouseleave={() => setHovered(false)}
+			onfocusin={() => setFocused(true)}
 			onfocusout={(event) => {
 				if (
 					!(event.relatedTarget instanceof Node) ||
 					!event.currentTarget.contains(event.relatedTarget)
 				) {
-					focused = false;
+					setFocused(false);
 				}
 			}}
 			onclick={() => {
-				if (!interactiveChild) dismissed = isOpen;
+				if (!interactiveChild) {
+					dismissed = isOpen;
+					updateInteractionOpen();
+				}
 			}}
 			onkeydown={(event) => {
 				if (!interactiveChild && (event.key === 'Enter' || event.key === ' ')) {
 					event.preventDefault();
 					dismissed = isOpen;
+					updateInteractionOpen();
 				}
 			}}
 		>
@@ -184,8 +191,8 @@
 				side={placement}
 				sideOffset={6}
 				collisionPadding={8}
-				onmouseenter={() => (hovered = true)}
-				onmouseleave={() => (hovered = false)}
+				onmouseenter={() => setHovered(true)}
+				onmouseleave={() => setHovered(false)}
 			>
 				<span>{content}</span>
 				{#if keys?.length}

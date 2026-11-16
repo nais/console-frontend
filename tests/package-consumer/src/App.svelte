@@ -39,6 +39,7 @@
 	let version = $state(1);
 	let detailsOpen = $state(false);
 	let shadeOnHover = $state(true);
+	let tooltipOpen = $state(false);
 	let sort = $state<TableSortState>({ orderBy: 'name', direction: 'ascending' });
 </script>
 
@@ -64,6 +65,11 @@
 			<output aria-label="Clicks">{clicks}</output>
 			<output aria-label="Submissions">{submitted}</output>
 			<output aria-label="Button ref">{buttonRef?.tagName ?? ''}</output>
+			<Tooltip content="Bound tooltip" bind:open={tooltipOpen}>
+				<Button>Bound tooltip target</Button>
+			</Tooltip>
+			<output aria-label="Tooltip open">{String(tooltipOpen)}</output>
+			<Button onclick={() => (tooltipOpen = !tooltipOpen)}>Toggle bound tooltip</Button>
 			<section aria-labelledby="package-fields">
 				<Heading level="2" id="package-fields" size="medium">Upgrade settings</Heading>
 				<TextField
