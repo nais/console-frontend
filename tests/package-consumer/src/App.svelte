@@ -38,6 +38,7 @@
 	let startTime = $state('09:00');
 	let version = $state(1);
 	let detailsOpen = $state(false);
+	let shadeOnHover = $state(true);
 	let sort = $state<TableSortState>({ orderBy: 'name', direction: 'ascending' });
 </script>
 
@@ -112,9 +113,10 @@
 					</Thead>
 					<Tbody>
 						<Tr><Td>Development</Td><Td><Tag variant="success">Done</Tag></Td></Tr>
-						<Tr><Td colspan={2}>No other upgrades</Td></Tr>
+						<Tr {shadeOnHover}><Td colspan={2}>No other upgrades</Td></Tr>
 					</Tbody>
 				</Table>
+				<Button onclick={() => (shadeOnHover = !shadeOnHover)}>Toggle row hover</Button>
 				<Alert variant="error" size="small">Upgrade failed</Alert>
 				<Alert variant="info" contentMaxWidth={false}>Upgrade information</Alert>
 				<Skeleton

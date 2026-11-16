@@ -34,6 +34,7 @@
 		label,
 		description,
 		'aria-describedby': externalDescription,
+		'aria-invalid': externalInvalid,
 		class: className = '',
 		style,
 		...rest
@@ -76,7 +77,7 @@
 		size={htmlSize}
 		bind:value
 		{...rest}
-		aria-invalid={error ? 'true' : undefined}
+		aria-invalid={error ? 'true' : externalInvalid}
 		aria-describedby={describedBy}
 		class={['sh-input-control', `sh-input-control--${size}`, { 'has-error': Boolean(error) }]}
 	/>

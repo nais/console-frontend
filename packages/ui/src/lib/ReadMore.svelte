@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { ChevronDown as ChevronDownIcon } from '@lucide/svelte';
-	import type { Snippet } from 'svelte';
+	import { untrack, type Snippet } from 'svelte';
 	import type { HTMLAttributes } from 'svelte/elements';
 
 	export interface ReadMoreProps extends HTMLAttributes<HTMLDivElement> {
@@ -27,7 +27,7 @@
 	}: ReadMoreProps = $props();
 
 	const contentId = $props.id();
-	let internalOpen = $derived(defaultOpen);
+	let internalOpen = $state(untrack(() => defaultOpen));
 	let isOpen = $derived(open !== undefined ? open : internalOpen);
 
 	function toggle() {

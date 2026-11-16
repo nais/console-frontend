@@ -47,7 +47,9 @@
 	description="Input description"
 	error="Input error"
 	aria-describedby="external-description"
+	aria-invalid="false"
 />
+<TextField label="External validation" id="external-validation" aria-invalid="grammar" />
 <Select
 	label="Test selection"
 	id="test-selection"

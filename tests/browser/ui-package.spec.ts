@@ -75,6 +75,12 @@ test('standalone tables share sort context and provide compact, striped and stic
 		'colspan',
 		'2'
 	);
+	const stripedRow = table.locator('tbody tr').nth(1);
+	await stripedRow.hover();
+	await expect(stripedRow).not.toHaveCSS('background-color', 'rgb(241, 245, 249)');
+	await page.getByRole('button', { name: 'Toggle row hover' }).click();
+	await stripedRow.hover();
+	await expect(stripedRow).toHaveCSS('background-color', 'rgb(241, 245, 249)');
 });
 
 test('standalone disclosures, feedback and loading indicators work without Console styles', async ({

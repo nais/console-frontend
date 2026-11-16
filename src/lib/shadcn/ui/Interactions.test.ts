@@ -41,6 +41,12 @@ describe('primitive interaction contracts', () => {
 		expect(body).toContain('Input error');
 	});
 
+	test('preserves external TextField validation when no component error is supplied', async () => {
+		const { body } = await render(Interactions);
+		const input = body.match(/<input\b[^>]*id="external-validation"[^>]*>/)?.[0];
+		expect(input).toContain('aria-invalid="grammar"');
+	});
+
 	test('keeps only selected tabs and periods in the tab order', async () => {
 		const { body } = await render(Interactions);
 		expect(body).toMatch(/role="tab"[^>]*aria-selected="true"[^>]*tabindex="0"/);

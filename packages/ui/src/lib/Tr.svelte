@@ -44,7 +44,8 @@
 	:global(.sh-tbody) .sh-tr--hover:hover {
 		background-color: color-mix(in srgb, var(--secondary) 55%, transparent);
 	}
-	:global(.sh-table--zebra .sh-tbody) .sh-tr:nth-child(even):not(.sh-tr--selected) {
+	:global(.sh-table--zebra .sh-tbody)
+		.sh-tr:nth-child(even):not(.sh-tr--selected):not(.sh-tr--hover:hover) {
 		background-color: var(--background-subtle);
 	}
 	.sh-tr--selected {
