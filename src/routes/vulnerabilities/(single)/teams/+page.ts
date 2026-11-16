@@ -19,6 +19,7 @@ export async function load(event) {
 	const monitor = pagination('monitor');
 	const none = pagination('none');
 	const covered = pagination('covered');
+	const unprioritized = pagination('unprioritized');
 
 	return {
 		...(await addPageMeta(event, {
@@ -47,7 +48,11 @@ export async function load(event) {
 				coveredFirst: covered.first,
 				coveredLast: covered.last,
 				coveredAfter: covered.after,
-				coveredBefore: covered.before
+				coveredBefore: covered.before,
+				unprioritizedFirst: unprioritized.first,
+				unprioritizedLast: unprioritized.last,
+				unprioritizedAfter: unprioritized.after,
+				unprioritizedBefore: unprioritized.before
 			}
 		}))
 	};

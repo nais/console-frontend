@@ -10618,6 +10618,12 @@ input TeamFilter {
   """
   hasCompleteSbomCoverage: Boolean
 
+  """
+  Filter by the presence of vulnerability findings across all severity levels and environments.
+  Applied before pagination. Missing summaries produce an error.
+  """
+  hasVulnerabilityFindings: Boolean
+
   """Filter teams by the existence of workloads."""
   hasWorkloads: Boolean
 
