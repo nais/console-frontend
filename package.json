@@ -34,7 +34,7 @@
 		"@lucide/svelte": "1.63.0",
 		"@playwright/test": "1.64.1",
 		"@sveltejs/adapter-node": "5.5.7",
-		"@sveltejs/kit": "2.70.3",
+		"@sveltejs/kit": "3.1.1",
 		"@sveltejs/vite-plugin-svelte": "7.3.1",
 		"@tailwindcss/vite": "4.3.3",
 		"@types/d3-array": "3.2.2",
