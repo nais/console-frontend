@@ -2,7 +2,7 @@
 	import { ChevronDownIcon } from '#lib/icons/index.js';
 	import type { Snippet } from 'svelte';
 	import type { HTMLAttributes } from 'svelte/elements';
-	import Heading from './Heading.svelte';
+	import { Heading } from '@nais/ui';
 
 	interface Props extends HTMLAttributes<HTMLDivElement> {
 		open?: boolean;

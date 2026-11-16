@@ -1,24 +1,16 @@
 <script lang="ts">
 	import Loader from '../../src/lib/shadcn/ui/Loader.svelte';
-	import Heading from '../../src/lib/shadcn/ui/Heading.svelte';
 	import AddToFavorites from '../../src/lib/ui/AddToFavorites.svelte';
 	import CriticalIndicator from '../../src/lib/ui/CriticalIndicator.svelte';
-	import { Theme } from '@nais/ui';
-	import { Button } from '@nais/ui';
+	import { Button, Heading, Modal, Tag, Td, Th, Theme, Tooltip, Tr } from '@nais/ui';
 	import ActionMenu from '../../src/lib/shadcn/ui/ActionMenu.svelte';
 	import ActionMenuItem from '../../src/lib/shadcn/ui/ActionMenuItem.svelte';
-	import { Modal } from '@nais/ui';
-	import Tooltip from '../../src/lib/shadcn/ui/Tooltip.svelte';
 	import JobRunListItem from '../../src/lib/domain/list-items/JobRunListItem.svelte';
 	import FavoritesListItem from '../../src/lib/domain/list-items/FavoritesListItem.svelte';
 	import LogResults from '../../src/lib/domain/logs/LogResults.svelte';
 	import LogVolume from '../../src/lib/domain/logs/LogVolume.svelte';
 	import Badge from '../../src/lib/shadcn/ui/Badge.svelte';
 	import Input from '../../src/lib/shadcn/ui/Input.svelte';
-	import Tag from '../../src/lib/shadcn/ui/Tag.svelte';
-	import Td from '../../src/lib/shadcn/ui/Td.svelte';
-	import Th from '../../src/lib/shadcn/ui/Th.svelte';
-	import Tr from '../../src/lib/shadcn/ui/Tr.svelte';
 	import Collection from '../../src/lib/ui/Collection.svelte';
 	import EmptyState from '../../src/lib/ui/EmptyState.svelte';
 	import ExternalLink from '../../src/lib/ui/ExternalLink.svelte';

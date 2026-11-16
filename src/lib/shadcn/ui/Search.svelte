@@ -2,7 +2,7 @@
 	import { MagnifyingGlassIcon, XMarkIcon } from '#lib/icons/index.js';
 	import type { Snippet } from 'svelte';
 	import type { HTMLInputAttributes } from 'svelte/elements';
-	import Label from './Label.svelte';
+	import { Label } from '@nais/ui';
 
 	interface Props extends Omit<HTMLInputAttributes, 'size' | 'value' | 'type' | 'role'> {
 		label: string;

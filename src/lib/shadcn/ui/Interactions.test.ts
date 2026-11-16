@@ -2,6 +2,13 @@ import { render } from 'svelte/server';
 import Interactions from './Interactions.test.svelte';
 
 describe('primitive interaction contracts', () => {
+	test('renders default-open disclosures expanded during SSR', async () => {
+		const { body } = await render(Interactions);
+		expect(body).toMatch(/<button\b[^>]*aria-expanded="true"[^>]*>[\s\S]*?Initial disclosure/);
+		expect(body).toContain('Server-rendered disclosure content');
+		expect(body).not.toMatch(/class="sh-readmore-content closed/);
+	});
+
 	test('passes menu trigger attributes directly to the button', async () => {
 		const { body } = await render(Interactions);
 		expect(body).toMatch(/<button\b[^>]*aria-haspopup="menu"[^>]*>/);
@@ -18,6 +25,26 @@ describe('primitive interaction contracts', () => {
 		expect(body).toContain(
 			'aria-describedby="external-description test-selection-description test-selection-error"'
 		);
+	});
+
+	test('merges external TextField descriptions with its own help and validation', async () => {
+		const { body } = await render(Interactions);
+		const input = body.match(/<input\b[^>]*id="test-input"[^>]*>/)?.[0];
+		expect(input).toContain('aria-invalid="true"');
+		const ids = input?.match(/aria-describedby="([^"]+)"/)?.[1].split(' ');
+		expect(ids).toHaveLength(3);
+		expect(ids?.[0]).toBe('external-description');
+		for (const id of ids ?? []) {
+			expect(body).toContain(`id="${id}"`);
+		}
+		expect(body).toContain('Input description');
+		expect(body).toContain('Input error');
+	});
+
+	test('preserves external TextField validation when no component error is supplied', async () => {
+		const { body } = await render(Interactions);
+		const input = body.match(/<input\b[^>]*id="external-validation"[^>]*>/)?.[0];
+		expect(input).toContain('aria-invalid="grammar"');
 	});
 
 	test('keeps only selected tabs and periods in the tab order', async () => {

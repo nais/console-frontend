@@ -1,10 +1,14 @@
 <script lang="ts">
-	import { ArrowDownIcon, ArrowsUpDownIcon, ArrowUpIcon } from '#lib/icons/index.js';
+	import {
+		ArrowDown as ArrowDownIcon,
+		ArrowUpDown as ArrowsUpDownIcon,
+		ArrowUp as ArrowUpIcon
+	} from '@lucide/svelte';
 	import type { Snippet } from 'svelte';
 	import type { HTMLThAttributes } from 'svelte/elements';
 	import { GetTableContext } from './Table.svelte';
 
-	interface Props extends HTMLThAttributes {
+	export interface ThProps extends HTMLThAttributes {
 		align?: 'left' | 'center' | 'right';
 		sortKey?: string;
 		sortable?: boolean;
@@ -19,7 +23,7 @@
 		class: className = '',
 		children,
 		...rest
-	}: Props = $props();
+	}: ThProps = $props();
 
 	const ctx = GetTableContext();
 </script>

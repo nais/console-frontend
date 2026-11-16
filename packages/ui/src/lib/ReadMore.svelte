@@ -1,9 +1,9 @@
 <script lang="ts">
-	import { ChevronDownIcon } from '#lib/icons/index.js';
-	import type { Snippet } from 'svelte';
+	import { ChevronDown as ChevronDownIcon } from '@lucide/svelte';
+	import { untrack, type Snippet } from 'svelte';
 	import type { HTMLAttributes } from 'svelte/elements';
 
-	interface Props extends HTMLAttributes<HTMLDivElement> {
+	export interface ReadMoreProps extends HTMLAttributes<HTMLDivElement> {
 		header: string | Snippet;
 		defaultOpen?: boolean;
 		open?: boolean;
@@ -24,12 +24,10 @@
 		class: className = '',
 		children,
 		...rest
-	}: Props = $props();
+	}: ReadMoreProps = $props();
 
-	let internalOpen = $state(false);
-	$effect(() => {
-		if (open === undefined) internalOpen = defaultOpen;
-	});
+	const contentId = $props.id();
+	let internalOpen = $state(untrack(() => defaultOpen));
 	let isOpen = $derived(open !== undefined ? open : internalOpen);
 
 	function toggle() {
@@ -47,7 +45,13 @@
 	class={['sh-readmore', `size-${size}`, `variant-${variant}`, { open: isOpen }, className]}
 	{...rest}
 >
-	<button type="button" class="sh-readmore-btn" aria-expanded={isOpen} onclick={toggle}>
+	<button
+		type="button"
+		class="sh-readmore-btn"
+		aria-expanded={isOpen}
+		aria-controls={contentId}
+		onclick={toggle}
+	>
 		<span class="sh-readmore-chevron" class:open={isOpen} aria-hidden="true">
 			<ChevronDownIcon />
 		</span>
@@ -59,7 +63,7 @@
 			{/if}
 		</span>
 	</button>
-	<div class={['sh-readmore-content', { closed: !isOpen }]}>
+	<div id={contentId} class={['sh-readmore-content', { closed: !isOpen }]}>
 		{@render children()}
 	</div>
 </div>
