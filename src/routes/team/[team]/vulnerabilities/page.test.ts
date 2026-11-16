@@ -271,6 +271,51 @@ describe('team vulnerability workload view', () => {
 		expect(loadSeverity).not.toHaveBeenCalled();
 	});
 
+	it.each(['severity', 'priority'])(
+		'forwards the package type in the %s workload view',
+		async (view) => {
+			const result = await load(
+				event(`?view=${view}&packageType=npm&environment=dev&labels=owner%3Aa`)
+			);
+			expect(result.selection).toEqual({
+				view,
+				packageType: 'npm',
+				environmentName: 'dev',
+				labels: [{ key: 'owner', value: 'a' }]
+			});
+			expect(loadSummary).toHaveBeenCalledWith(
+				expect.objectContaining({
+					variables: expect.objectContaining({ packageType: 'npm', packageFiltered: true })
+				})
+			);
+			expect(view === 'priority' ? loadHigh : loadSeverity).toHaveBeenCalledWith(
+				expect.objectContaining({
+					variables: expect.objectContaining({ packageType: 'npm', environmentName: 'dev' })
+				})
+			);
+		}
+	);
+
+	it('keeps registered filter choices visible for a package type with no matches', async () => {
+		const { body } = await render(WorkloadsWithVulnerabilities, {
+			props: {
+				team: 'example',
+				high: new TeamPriorityWorkloadsHighStore(),
+				severity: new TeamSeverityWorkloadsStore(),
+				environmentNames: [],
+				labelFacets: [],
+				packageTypes: [
+					{ value: 'apk', count: 4 },
+					{ value: 'npm', count: 2 }
+				],
+				selection: { environmentName: null, labels: [], packageType: 'unknown', view: 'severity' }
+			}
+		});
+		expect(body).toContain('Package type (unknown)');
+		expect(body).toContain('Vulnerability counts include all package types');
+		expect(body).toContain('Team totals and SBOM coverage are');
+	});
+
 	it('loads the first no-SBOM workload page when the team has missing SBOMs', async () => {
 		summary.missingSbomCount = 2;
 
@@ -543,7 +588,14 @@ describe('team vulnerability workload view', () => {
 		const labels = [{ key: 'owner', value: 'team' }];
 		expect(loadSummary).toHaveBeenCalledWith(
 			expect.objectContaining({
-				variables: { team: 'example', environmentName: 'dev', labels, unfiltered: false }
+				variables: {
+					team: 'example',
+					environmentName: 'dev',
+					labels,
+					unfiltered: false,
+					packageType: null,
+					packageFiltered: false
+				}
 			})
 		);
 		expect(loadNoSbom).toHaveBeenCalledWith(

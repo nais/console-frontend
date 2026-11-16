@@ -3,11 +3,12 @@ query TeamSeverityWorkloads(
 	$orderBy: VulnerabilitySummaryOrder
 	$environmentName: String
 	$labels: [LabelFilter!]
+	$packageType: String
 ) {
 	team(slug: $team) {
 		vulnerabilitySummaries(
 			first: 20
-			filter: { environmentName: $environmentName, labels: $labels }
+			filter: { environmentName: $environmentName, labels: $labels, packageType: $packageType }
 			orderBy: $orderBy
 		) @paginate(mode: SinglePage) {
 			pageInfo {

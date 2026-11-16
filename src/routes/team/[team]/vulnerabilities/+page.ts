@@ -21,6 +21,7 @@ export async function load(event) {
 		event.url.searchParams.get('view') === 'priority' ? 'priority' : 'severity';
 	const environmentName = event.url.searchParams.get('environment') || null;
 	const labels = parseLabelsParam(event.url.searchParams.get('labels')) ?? [];
+	const packageType = event.url.searchParams.get('packageType') || null;
 
 	const teamVulnerabilities = await load_TeamVulnerabilities({
 		event,
@@ -28,6 +29,8 @@ export async function load(event) {
 			team,
 			environmentName,
 			labels,
+			packageType,
+			packageFiltered: packageType !== null,
 			unfiltered: !environmentName && labels.length === 0
 		},
 		blocking: true
@@ -38,7 +41,7 @@ export async function load(event) {
 	const noSboms = workloadCount > 0 && teamData?.teamVulnerabilitySummary?.sbomCount === 0;
 
 	return {
-		selection: { environmentName, labels, view },
+		selection: { environmentName, labels, packageType, view },
 		...(await addPageMeta(event, {
 			title: 'Vulnerabilities',
 			docPath: '/services/vulnerabilities'
@@ -66,6 +69,7 @@ export async function load(event) {
 						team,
 						environmentName,
 						labels,
+						packageType,
 						orderBy: {
 							field: VulnerabilitySummaryOrderByField.VULNERABILITY_RISK_SCORE,
 							direction: OrderDirection.DESC
@@ -81,6 +85,7 @@ export async function load(event) {
 						team,
 						environmentName,
 						labels,
+						packageType,
 						orderBy: {
 							field: VulnerabilitySummaryOrderByField.VULNERABILITY_SEVERITY_CRITICAL,
 							direction: OrderDirection.DESC

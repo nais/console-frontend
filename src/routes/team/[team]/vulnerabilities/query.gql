@@ -3,6 +3,8 @@ query TeamVulnerabilities(
 	$environmentName: String
 	$labels: [LabelFilter!]
 	$unfiltered: Boolean! = true
+	$packageType: String
+	$packageFiltered: Boolean! = false
 ) {
 	team(slug: $team) {
 		applications(first: 1) {
@@ -33,6 +35,49 @@ query TeamVulnerabilities(
 			first: 1
 			filter: { hasKevEntry: true, environmentName: $environmentName, labels: $labels }
 		) {
+			packageTypes {
+				value
+				count
+			}
+			pageInfo {
+				totalCount
+			}
+		}
+		highPackageWorkloads: vulnerabilitySummaries(
+			first: 1
+			filter: {
+				priorities: [HIGH]
+				environmentName: $environmentName
+				labels: $labels
+				packageType: $packageType
+			}
+		) @include(if: $packageFiltered) {
+			pageInfo {
+				totalCount
+			}
+		}
+		elevatedPackageWorkloads: vulnerabilitySummaries(
+			first: 1
+			filter: {
+				priorities: [ELEVATED]
+				environmentName: $environmentName
+				labels: $labels
+				packageType: $packageType
+			}
+		) @include(if: $packageFiltered) {
+			pageInfo {
+				totalCount
+			}
+		}
+		monitorPackageWorkloads: vulnerabilitySummaries(
+			first: 1
+			filter: {
+				priorities: [MONITOR]
+				environmentName: $environmentName
+				labels: $labels
+				packageType: $packageType
+			}
+		) @include(if: $packageFiltered) {
 			pageInfo {
 				totalCount
 			}

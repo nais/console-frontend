@@ -117,15 +117,19 @@
 						severity={TeamSeverityWorkloads}
 						{selection}
 						{labelFacets}
+						packageTypes={$TeamVulnerabilities.data.team.exploitedWorkloads.packageTypes}
 						environmentNames={$TeamVulnerabilities.data.team.environments.map(
 							(env) => env.environment.name
 						)}
-						highWorkloadCount={$TeamVulnerabilities.data.team.vulnerabilitySummary
-							?.highWorkloadCount}
-						elevatedWorkloadCount={$TeamVulnerabilities.data.team.vulnerabilitySummary
-							?.elevatedWorkloadCount}
-						monitorWorkloadCount={$TeamVulnerabilities.data.team.vulnerabilitySummary
-							?.monitorWorkloadCount}
+						highWorkloadCount={selection.packageType
+							? $TeamVulnerabilities.data.team.highPackageWorkloads?.pageInfo.totalCount
+							: $TeamVulnerabilities.data.team.vulnerabilitySummary?.highWorkloadCount}
+						elevatedWorkloadCount={selection.packageType
+							? $TeamVulnerabilities.data.team.elevatedPackageWorkloads?.pageInfo.totalCount
+							: $TeamVulnerabilities.data.team.vulnerabilitySummary?.elevatedWorkloadCount}
+						monitorWorkloadCount={selection.packageType
+							? $TeamVulnerabilities.data.team.monitorPackageWorkloads?.pageInfo.totalCount
+							: $TeamVulnerabilities.data.team.vulnerabilitySummary?.monitorWorkloadCount}
 					/>
 				{/key}
 			</section>
