@@ -1,4 +1,6 @@
 query TenantTeamPriorityGroups(
+	$orderBy: TeamOrder!
+	$teamScope: TeamScopeInput
 	$highFirst: Int
 	$highLast: Int
 	$highAfter: Cursor
@@ -25,47 +27,58 @@ query TenantTeamPriorityGroups(
 	$unprioritizedBefore: Cursor
 ) {
 	high: teams(
+		orderBy: $orderBy
 		first: $highFirst
 		last: $highLast
 		after: $highAfter
 		before: $highBefore
-		filter: { hasWorkloads: true, vulnerabilityPriorityGroup: HIGH }
+		filter: { teamScope: $teamScope, hasWorkloads: true, vulnerabilityPriorityGroup: HIGH }
 	) {
 		...TeamPriorityConnection @mask_disable
 	}
 	elevated: teams(
+		orderBy: $orderBy
 		first: $elevatedFirst
 		last: $elevatedLast
 		after: $elevatedAfter
 		before: $elevatedBefore
-		filter: { hasWorkloads: true, vulnerabilityPriorityGroup: ELEVATED }
+		filter: { teamScope: $teamScope, hasWorkloads: true, vulnerabilityPriorityGroup: ELEVATED }
 	) {
 		...TeamPriorityConnection @mask_disable
 	}
 	monitor: teams(
+		orderBy: $orderBy
 		first: $monitorFirst
 		last: $monitorLast
 		after: $monitorAfter
 		before: $monitorBefore
-		filter: { hasWorkloads: true, vulnerabilityPriorityGroup: MONITOR }
+		filter: { teamScope: $teamScope, hasWorkloads: true, vulnerabilityPriorityGroup: MONITOR }
 	) {
 		...TeamPriorityConnection @mask_disable
 	}
 	none: teams(
+		orderBy: $orderBy
 		first: $noneFirst
 		last: $noneLast
 		after: $noneAfter
 		before: $noneBefore
-		filter: { hasWorkloads: true, vulnerabilityPriorityGroup: NONE, hasCompleteSbomCoverage: false }
+		filter: {
+			teamScope: $teamScope
+			hasWorkloads: true
+			vulnerabilityPriorityGroup: NONE
+			hasCompleteSbomCoverage: false
+		}
 	) {
 		...TeamPriorityConnection @mask_disable
 	}
 	covered: teams(
+		orderBy: $orderBy
 		first: $coveredFirst
 		last: $coveredLast
 		after: $coveredAfter
 		before: $coveredBefore
 		filter: {
+			teamScope: $teamScope
 			hasWorkloads: true
 			vulnerabilityPriorityGroup: NONE
 			hasCompleteSbomCoverage: true
@@ -75,11 +88,13 @@ query TenantTeamPriorityGroups(
 		...TeamPriorityConnection @mask_disable
 	}
 	unprioritized: teams(
+		orderBy: $orderBy
 		first: $unprioritizedFirst
 		last: $unprioritizedLast
 		after: $unprioritizedAfter
 		before: $unprioritizedBefore
 		filter: {
+			teamScope: $teamScope
 			hasWorkloads: true
 			vulnerabilityPriorityGroup: NONE
 			hasCompleteSbomCoverage: true

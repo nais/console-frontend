@@ -1,8 +1,10 @@
 <script lang="ts">
 	import TeamsGroupedByUrgency from '#lib/domain/vulnerability/TeamsGroupedByUrgency.svelte';
 	import GraphErrors from '#lib/ui/GraphErrors.svelte';
+	import OrderByMenu from '#lib/ui/OrderByMenu.svelte';
 	import { changeParams } from '#lib/utils/searchparams.js';
-	import { BodyLong, Heading, Loader } from '#lib/shadcn/ui/index.js';
+	import { BodyLong, Button, Heading, Loader } from '#lib/shadcn/ui/index.js';
+	import { OrderDirection, TeamOrderField } from '$houdini';
 	import type { PageProps } from './$types';
 
 	let { data }: PageProps = $props();
@@ -16,6 +18,15 @@
 			)
 		);
 	});
+
+	const paginationParams = [
+		'high',
+		'elevated',
+		'monitor',
+		'none',
+		'covered',
+		'unprioritized'
+	].flatMap((group) => [`${group}After`, `${group}Before`]);
 </script>
 
 <div class="wrapper">
@@ -35,7 +46,7 @@
 		<div class="loading-centered" role="status" aria-label="Loading">
 			<Loader size="3xlarge" />
 		</div>
-	{:else if hasTeams && $TenantTeamPriorityGroups.data}
+	{:else if $TenantTeamPriorityGroups.data}
 		<TeamsGroupedByUrgency
 			groups={$TenantTeamPriorityGroups.data}
 			fetching={$TenantTeamPriorityGroups.fetching}
@@ -49,13 +60,56 @@
 					{ noScroll: true }
 				);
 			}}
-		/>
+		>
+			<div class="team-controls">
+				<Button
+					size="small"
+					variant={data.onlyMyTeams ? 'primary' : 'secondary'}
+					aria-pressed={data.onlyMyTeams}
+					onclick={() =>
+						changeParams(
+							{
+								myTeams: data.onlyMyTeams ? '' : 'true',
+								...Object.fromEntries(paginationParams.map((param) => [param, '']))
+							},
+							{ noScroll: true }
+						)}
+				>
+					My teams
+				</Button>
+				<OrderByMenu
+					orderField={TeamOrderField}
+					defaultOrderField={TeamOrderField.SBOM_COVERAGE}
+					defaultOrderDirection={OrderDirection.ASC}
+					onlyInclude={[
+						TeamOrderField.RISK_SCORE,
+						TeamOrderField.SLUG,
+						TeamOrderField.SBOM_COVERAGE,
+						TeamOrderField.WORKLOAD_COUNT
+					]}
+					resetParams={paginationParams}
+				/>
+			</div>
+		</TeamsGroupedByUrgency>
+		{#if !hasTeams && !$TenantTeamPriorityGroups.errors?.length}
+			<BodyLong
+				>{data.onlyMyTeams ? 'None of your teams have workloads.' : 'No teams found.'}</BodyLong
+			>
+		{/if}
 	{:else if !$TenantTeamPriorityGroups.errors?.length}
 		<BodyLong>No teams found.</BodyLong>
 	{/if}
 </div>
 
 <style>
+	.team-controls {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		justify-content: flex-end;
+		gap: var(--nais-space-8);
+	}
+
 	.wrapper {
 		display: flex;
 		flex-direction: column;

@@ -1,9 +1,24 @@
 import { addPageMeta } from '#lib/utils/pageMeta.js';
-import { load_TenantTeamPriorityGroups } from '$houdini';
+import { load_TenantTeamPriorityGroups, OrderDirection, TeamOrderField } from '$houdini';
+import { urlToOrderDirection, urlToOrderField } from '#lib/ui/OrderByMenu.svelte';
 
 const rows = 20;
 
 export async function load(event) {
+	const onlyMyTeams = event.url.searchParams.get('myTeams') === 'true';
+	const orderBy = {
+		field: urlToOrderField(
+			{
+				RISK_SCORE: TeamOrderField.RISK_SCORE,
+				SBOM_COVERAGE: TeamOrderField.SBOM_COVERAGE,
+				WORKLOAD_COUNT: TeamOrderField.WORKLOAD_COUNT,
+				SLUG: TeamOrderField.SLUG
+			},
+			TeamOrderField.SBOM_COVERAGE,
+			event.url
+		),
+		direction: urlToOrderDirection(event.url, OrderDirection.ASC)
+	};
 	function pagination(group: string) {
 		const before = event.url.searchParams.get(`${group}Before`) || null;
 		const after = event.url.searchParams.get(`${group}After`) || null;
@@ -22,6 +37,7 @@ export async function load(event) {
 	const unprioritized = pagination('unprioritized');
 
 	return {
+		onlyMyTeams,
 		...(await addPageMeta(event, {
 			title: 'Team Security Posture'
 		})),
@@ -29,6 +45,8 @@ export async function load(event) {
 			event,
 			blocking: true,
 			variables: {
+				orderBy,
+				teamScope: onlyMyTeams ? { memberOfViewer: true } : null,
 				highFirst: high.first,
 				highLast: high.last,
 				highAfter: high.after,
