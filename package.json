@@ -22,9 +22,13 @@
 		"test": "vitest",
 		"test:browser": "pnpm --filter @nais/ui build && playwright test",
 		"test:package": "node scripts/check-ui-package.mjs",
+		"changeset": "changeset",
+		"release:version": "changeset version && pnpm install --lockfile-only --ignore-scripts && prettier --write packages/ui/package.json packages/ui/CHANGELOG.md pnpm-lock.yaml",
+		"release:ui": "pnpm --filter @nais/ui build && changeset publish",
 		"update-outdated": "pnpm update --latest"
 	},
 	"devDependencies": {
+		"@changesets/cli": "2.31.1",
 		"@eslint/compat": "2.1.1",
 		"@eslint/js": "10.0.1",
 		"@lucide/svelte": "1.63.0",

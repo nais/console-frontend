@@ -117,6 +117,59 @@ No registry publication is performed. Before adopting this in doc, reconcile tha
 app's existing component APIs, visual defaults, CSS layers and host styles, then
 validate its own themes and portals. Neither doc nor m8e is migrated here.
 
+#### Versioning and distribution
+
+`@nais/ui` is distributed through the same public Google Artifact Registry as
+`@nais/ds-svelte-community`, not through npmjs.org. Its `publishConfig` pins the
+destination to prevent publishing to the wrong registry.
+
+Consumers need this scope mapping in their project `.npmrc` (already present in Console):
+
+```ini
+@nais:registry=https://europe-north1-npm.pkg.dev/nais-io/nais-public-npm/
+```
+
+Once the first release has been published, doc can replace the pilot tarball with:
+
+```bash
+pnpm add --save-exact @nais/ui@0.1.0
+```
+
+The registry grants public read access; consumers do not need a publishing token.
+Console itself keeps using `workspace:*`.
+
+For changes to the shared package, run `pnpm changeset`, select `@nais/ui`, choose
+the version bump, and commit the generated changeset with the implementation.
+App-only changes do not need a UI changeset. The initial minor changeset moves the
+unpublished `0.0.1` package to `0.1.0`; later fixes use patch bumps, while additive
+features and breaking changes during `0.x` should use minor bumps.
+The CLI stays on Changesets 2 while the release action relies on its `New tag:`
+output to create GitHub releases; validate that integration before upgrading to CLI 3.
+
+[Release UI package](.github/workflows/ui-release.yaml) runs on relevant changes to
+`main` and can also be dispatched manually on `main`. It validates the code and packed
+consumer before using Changesets to create or update a draft release PR. The PR contains
+the package version, changelog, consumed changesets and any lockfile update; it does not
+version or publish the private Console app.
+
+Mark the release PR **Ready for review** as a human after each bot update. This triggers
+the normal PR checks through `ready_for_review`, even though the release PR is created
+with `GITHUB_TOKEN` (bot-created events do not trigger another workflow). Bot updates
+return the PR to draft so the new version is checked again. Review and merge only after
+the checks pass.
+
+After the release PR merges, the next release run publishes unpublished versions and
+creates a package tag/GitHub release, such as `@nais/ui@0.1.0`. Published versions are
+immutable; further changes require another changeset. Re-running the workflow skips
+versions that are already published.
+
+Publishing uses GitHub OIDC and `gh-console-frontend@nais-io.iam.gserviceaccount.com`,
+with `roles/artifactregistry.writer` on `nais-public-npm`. A short-lived access token
+is referenced from a temporary npm config and removed after the action; no static npm
+token or service-account key is stored in the repository. Terraform manages the IAM
+binding; it must be applied before publishing. No package is published merely by
+installing dependencies, building Console, or running `test:package`.
+
 #### AI-Assisted Development
 
 The project is configured with AI assistant guidelines and the Svelte MCP (Model Context Protocol) server:
