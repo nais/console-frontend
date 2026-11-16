@@ -14,16 +14,18 @@
 		memory?: string | null;
 		diskSize?: string | null;
 		highAvailability?: boolean;
+		customizeOpen?: boolean;
 		editing?: boolean;
 		currentDiskSize?: string;
 		errors?: ResourceErrors;
 	}
 
 	let {
-		cpu = '',
-		memory = '',
-		diskSize = '',
-		highAvailability = false,
+		cpu = $bindable(''),
+		memory = $bindable(''),
+		diskSize = $bindable(''),
+		highAvailability = $bindable(false),
+		customizeOpen = $bindable(),
 		editing = false,
 		currentDiskSize,
 		errors = {}
@@ -38,7 +40,7 @@
 	let cpuValue = $derived(cpu ?? '');
 	let memoryValue = $derived(memory ?? '');
 	let diskSizeValue = $derived(diskSize ?? '');
-	let customizeOpen = $derived(Boolean(cpu || memory || diskSize));
+	let resourcesOpen = $derived(customizeOpen ?? Boolean(cpu || memory || diskSize));
 	let touched = $state<Partial<Record<ResourceField, boolean>>>({});
 	let fieldErrors = $derived(
 		configurationErrors(
@@ -55,9 +57,9 @@
 
 	function customizeResources(open: boolean) {
 		if (!open) return;
-		if (!cpuValue.trim()) cpuValue = defaults.cpu;
-		if (!memoryValue.trim()) memoryValue = defaults.memory;
-		if (!diskSizeValue.trim()) diskSizeValue = defaults.diskSize;
+		if (!cpuValue.trim()) cpu = defaults.cpu;
+		if (!memoryValue.trim()) memory = defaults.memory;
+		if (!diskSizeValue.trim()) diskSize = defaults.diskSize;
 	}
 
 	function validateForm(element: HTMLElement) {
@@ -90,7 +92,7 @@
 		description={editing
 			? `Maximum ${postgresResources.cpu.max} cores. Leave blank to keep the current value.`
 			: `Maximum ${postgresResources.cpu.max} cores.`}
-		bind:value={cpuValue}
+		bind:value={() => cpuValue, (value) => (cpu = value)}
 	/>
 	<TextField
 		name="memory"
@@ -101,7 +103,7 @@
 		description={editing
 			? `Maximum ${postgresResources.memory.max} GiB. Leave blank to keep the current value.`
 			: `Maximum ${postgresResources.memory.max} GiB.`}
-		bind:value={memoryValue}
+		bind:value={() => memoryValue, (value) => (memory = value)}
 	/>
 	<TextField
 		name="diskSize"
@@ -112,7 +114,7 @@
 		description={editing
 			? `${postgresResources.diskSize.min}–${postgresResources.diskSize.max} GiB, whole numbers. Leave blank to keep the current value.`
 			: `${postgresResources.diskSize.min}–${postgresResources.diskSize.max} GiB, whole numbers.`}
-		bind:value={diskSizeValue}
+		bind:value={() => diskSizeValue, (value) => (diskSize = value)}
 	/>
 {/snippet}
 
@@ -140,7 +142,7 @@
 		<ReadMore
 			header="Customize resources"
 			size="small"
-			bind:open={customizeOpen}
+			bind:open={() => resourcesOpen, (open) => (customizeOpen = open)}
 			onopenchange={customizeResources}
 		>
 			<div class="resource-fields">
@@ -151,7 +153,7 @@
 {/if}
 <Checkbox
 	name="highAvailability"
-	checked={highAvailability}
+	bind:checked={highAvailability}
 	description="Add a third instance and enable synchronous replication."
 >
 	High availability

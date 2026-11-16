@@ -23,6 +23,11 @@ vi.mock('$app/forms', () => ({
 }));
 
 let component: ReturnType<typeof CreatePage> | undefined;
+beforeEach(() => {
+	page.url = new URL(
+		'https://console.test/team/test/postgres/create?mode=recovery&environment=dev&source=original'
+	);
+});
 afterEach(async () => {
 	if (component) await unmount(component);
 	component = undefined;
@@ -70,6 +75,217 @@ function initialData() {
 		}
 	} as unknown as ComponentProps<typeof CreatePage>['data'];
 }
+
+function mountWithState(
+	data = initialData(),
+	form: ComponentProps<typeof CreatePage>['form'] = null
+) {
+	const state = new SvelteMap<string, unknown>([
+		['data', data],
+		['form', form]
+	]);
+	component = mount(CreatePage, {
+		target: document.body,
+		props: {
+			get data() {
+				return state.get('data') as ComponentProps<typeof CreatePage>['data'];
+			},
+			get form() {
+				return state.get('form') as ComponentProps<typeof CreatePage>['form'];
+			},
+			params: { team: 'test' }
+		}
+	});
+	flushSync();
+	return state;
+}
+
+function edit(name: string, value: string) {
+	const input = document.querySelector<HTMLInputElement | HTMLSelectElement>(`[name="${name}"]`)!;
+	input.value = value;
+	input.dispatchEvent(
+		new Event(input.tagName === 'SELECT' ? 'change' : 'input', { bubbles: true })
+	);
+	flushSync();
+}
+
+test.each([true, false])(
+	'preserves the live resource draft and customization open=%s after action failure and environment navigation clears the form',
+	async (open) => {
+		page.url = new URL('https://console.test/team/test/postgres/create?environment=dev');
+		const data = {
+			...initialData(),
+			recoveryMode: false,
+			CreatePostgresEnvironments: readable({
+				data: {
+					team: {
+						environments: ['dev', 'prod'].map((name) => ({
+							environment: { name },
+							gcpProjectID: 'project'
+						}))
+					}
+				},
+				errors: null
+			}),
+			postgresOptions: ['dev', 'prod'].map((environment) => ({
+				environment,
+				options: {
+					postgresMajorVersions: { values: ['17'], defaultValues: ['17'] },
+					postgresExtensions: { values: ['vector'], defaultValues: [] }
+				}
+			}))
+		} as unknown as ComponentProps<typeof CreatePage>['data'];
+		const state = mountWithState(data);
+		const form = document.querySelector('form')!;
+		const customize = [...form.querySelectorAll('button')].find((button) =>
+			button.textContent?.includes('Customize resources')
+		)!;
+		customize.click();
+		flushSync();
+		edit('name', 'draft-name');
+		edit('cpu', '2');
+		edit('memory', '4');
+		edit('diskSize', '20');
+		form.querySelector<HTMLInputElement>('input[name="highAvailability"]')!.click();
+		flushSync();
+		const complete = enhanced.submit!({ cancel: vi.fn() }) as (input: {
+			result: unknown;
+			update: () => Promise<void>;
+		}) => Promise<void>;
+		const rejected = {
+			...Object.fromEntries(new FormData(form)),
+			mode: 'empty',
+			highAvailability: true,
+			labelRows: [],
+			errors: {},
+			error: 'Name already exists.'
+		};
+		await complete({
+			result: { type: 'failure', data: rejected },
+			update: async () => {
+				state.set('form', rejected);
+			}
+		});
+		flushSync();
+		// Changes made AFTER the action response must be retained, not merely its snapshot.
+		edit('cpu', '3');
+		edit('memory', '6');
+		edit('diskSize', '30');
+		edit('label_key', 'owner');
+		edit('label_value', 'draft-owner');
+		if (!open) {
+			customize.click();
+			flushSync();
+		}
+		let finishNavigation: () => void = () => {};
+		goto.mockImplementation(
+			() =>
+				new Promise<void>((resolve) => {
+					finishNavigation = resolve;
+				})
+		);
+		edit('environment', 'prod');
+		expect(goto.mock.calls[0][0].searchParams.get('environment')).toBe('prod');
+		page.url = goto.mock.calls[0][0];
+		flushSync(() => {
+			state.set('data', { ...data, selectedEnvironment: 'prod' });
+			state.set('form', null);
+		});
+		finishNavigation();
+		await vi.waitFor(() => {
+			flushSync();
+			expect(form.querySelector('select[name="environment"]')?.getAttribute('disabled')).toBeNull();
+		});
+		const submitted = new FormData(form);
+		expect(submitted.get('cpu')).toBe('3');
+		expect(submitted.get('memory')).toBe('6');
+		expect(submitted.get('diskSize')).toBe('30');
+		expect(submitted.has('highAvailability')).toBe(true);
+		expect(submitted.get('name')).toBe('draft-name');
+		expect(submitted.get('label_key')).toBe('owner');
+		expect(submitted.get('label_value')).toBe('draft-owner');
+		expect(customize.getAttribute('aria-expanded')).toBe(String(open));
+	}
+);
+
+test.each([
+	['mode', 'empty', 'recovery'],
+	['environment', 'prod', 'dev'],
+	['sourcePostgres', 'other', 'original']
+])(
+	'blocks submission after rejected %s navigation until a context loads successfully',
+	async (field, attempted, original) => {
+		const data = initialData();
+		data.CreatePostgresEnvironments = readable({
+			data: {
+				team: {
+					environments: ['dev', 'prod'].map((name) => ({
+						environment: { name },
+						gcpProjectID: 'project'
+					}))
+				}
+			},
+			errors: null
+		}) as typeof data.CreatePostgresEnvironments;
+		const state = mountWithState(data);
+		edit('name', 'recovery-draft');
+		edit('targetTime', '2021-01-02T13:00');
+		goto.mockRejectedValueOnce(new Error('offline'));
+		edit(field, attempted);
+		await vi.waitFor(() => {
+			flushSync();
+			expect(document.body.textContent).toContain('Could not load recovery options');
+		});
+		expect(document.querySelector<HTMLButtonElement>('button[type="submit"]')!.disabled).toBe(true);
+		const cancel = vi.fn();
+		expect(enhanced.submit!({ cancel })).toBeUndefined();
+		expect(cancel).toHaveBeenCalledOnce();
+		expect(document.querySelector<HTMLSelectElement>(`select[name="${field}"]`)!.value).toBe(
+			original
+		);
+		let finishNavigation: () => void = () => {};
+		goto.mockImplementation(
+			() =>
+				new Promise<void>((resolve) => {
+					finishNavigation = resolve;
+				})
+		);
+		// Retry using another valid recovery context; errors must remain during the retry.
+		edit('sourcePostgres', 'other');
+		expect(document.body.textContent).toContain('Could not load recovery options');
+		page.url = goto.mock.calls[1][0];
+		const nextSource = data.recoverySource!;
+		flushSync(() => {
+			state.set('data', {
+				...data,
+				recoverySource: {
+					...nextSource,
+					data: {
+						team: {
+							environment: {
+								postgres: { ...nextSource.data!.team.environment.postgres, name: 'other' }
+							}
+						}
+					}
+				}
+			});
+			state.set('form', null);
+		});
+		finishNavigation();
+		await vi.waitFor(() => {
+			flushSync();
+			expect(document.body.textContent).not.toContain('Could not load recovery options');
+		});
+		expect(document.querySelector<HTMLButtonElement>('button[type="submit"]')!.disabled).toBe(
+			false
+		);
+		const submitted = new FormData(document.querySelector('form')!);
+		expect(submitted.get('mode')).toBe('recovery');
+		expect(submitted.get('sourcePostgres')).toBe('other');
+		expect(submitted.get('name')).toBe('recovery-draft');
+		expect(submitted.get('targetTime')).toBe('2021-01-02T13:00');
+	}
+);
 
 test.each(['pagination', 'source'])(
 	'preserves the entered name and UTC target through %s navigation after a validation failure, without submitting',

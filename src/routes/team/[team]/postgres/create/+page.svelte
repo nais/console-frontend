@@ -22,12 +22,25 @@
 	let selectedEnvironment = $derived(form?.environment ?? data.selectedEnvironment);
 	let recovering = $derived(form ? form.mode === 'recovery' : data.recoveryMode);
 	let source = $derived(data.recoverySource?.data?.team.environment.postgres);
+	// Selects may show pending choices, but configuration uses only the loaded context.
+	let modeChoice = $derived(recovering ? 'recovery' : 'empty');
+	let environmentChoice = $derived(selectedEnvironment);
+	let sourceChoice = $derived(source?.name ?? '');
 	let sources = $derived(data.recoverySources?.data?.team.postgreses);
 	let changingSelection = $state(false);
 	let navigationError = $state('');
 	// Navigation clears action data. Keep the user's draft independently of it.
 	let databaseName = $state(untrack(() => form?.name ?? ''));
 	let targetTime = $state(untrack(() => form?.targetTime ?? ''));
+	let resources = $state(
+		untrack(() => ({
+			cpu: form?.cpu ?? '',
+			memory: form?.memory ?? '',
+			diskSize: form?.diskSize ?? '',
+			highAvailability: form?.highAvailability ?? false,
+			customizeOpen: Boolean(form?.cpu || form?.memory || form?.diskSize)
+		}))
+	);
 	let outcomeUnknown = $state(
 		untrack(() => !!form && 'outcomeUnknown' in form && form.outcomeUnknown === true)
 	);
@@ -51,12 +64,15 @@
 			else url.searchParams.delete(key);
 		}
 		changingSelection = true;
-		navigationError = '';
 		try {
 			await goto(url, { replaceState: true, keepFocus: true, noScroll: true });
+			navigationError = '';
 		} catch {
 			navigationError = 'Could not load recovery options. Please try again.';
 		} finally {
+			modeChoice = recovering ? 'recovery' : 'empty';
+			environmentChoice = selectedEnvironment;
+			sourceChoice = source?.name ?? '';
 			changingSelection = false;
 		}
 	}
@@ -81,7 +97,7 @@
 	<form
 		method="POST"
 		use:enhance={({ cancel }) => {
-			if (changingSelection || submitting || outcomeUnknown) {
+			if (changingSelection || navigationError || submitting || outcomeUnknown) {
 				cancel();
 				return;
 			}
@@ -113,7 +129,7 @@
 		<Select
 			label="Create database"
 			name="mode"
-			value={recovering ? 'recovery' : 'empty'}
+			bind:value={modeChoice}
 			disabled={changingSelection || submitting}
 			onchange={(event) => select({ mode: event.currentTarget.value, source: '', after: '' })}
 		>
@@ -130,7 +146,7 @@
 			name="environment"
 			label="Environment"
 			required
-			value={selectedEnvironment}
+			bind:value={environmentChoice}
 			disabled={changingSelection || submitting}
 			onchange={(event) =>
 				select({ environment: event.currentTarget.value, source: '', after: '' })}
@@ -152,7 +168,7 @@
 				name="sourcePostgres"
 				label="Source database"
 				required
-				value={source?.name ?? ''}
+				bind:value={sourceChoice}
 				disabled={changingSelection || submitting}
 				onchange={(event) => select({ source: event.currentTarget.value })}
 			>
@@ -227,10 +243,11 @@
 			{/if}
 			<PostgresConfigurationFields
 				errors={form?.errors}
-				cpu={form?.cpu}
-				memory={form?.memory}
-				diskSize={form?.diskSize}
-				highAvailability={form?.highAvailability}
+				bind:cpu={resources.cpu}
+				bind:memory={resources.memory}
+				bind:diskSize={resources.diskSize}
+				bind:highAvailability={resources.highAvailability}
+				bind:customizeOpen={resources.customizeOpen}
 			/>
 		{/if}
 		<section aria-labelledby="{uid}-labels">
@@ -247,6 +264,7 @@
 			type="submit"
 			loading={submitting}
 			disabled={outcomeUnknown ||
+				!!navigationError ||
 				changingSelection ||
 				labelsInvalid ||
 				(recovering
