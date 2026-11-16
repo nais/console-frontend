@@ -1,8 +1,7 @@
 <script lang="ts">
 	import type { Snippet } from 'svelte';
 	import type { HTMLTextareaAttributes } from 'svelte/elements';
-	import ErrorMessage from './ErrorMessage.svelte';
-	import Label from './Label.svelte';
+	import { ErrorMessage, Label } from '@nais/ui';
 
 	interface Props extends Omit<HTMLTextareaAttributes, 'size'> {
 		value?: string;

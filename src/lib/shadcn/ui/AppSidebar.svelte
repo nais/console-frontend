@@ -7,9 +7,7 @@
 	import ErrorIndicator from '#lib/ui/ErrorIndicator.svelte';
 	import { ChevronLeftIcon, ChevronRightIcon } from '#lib/icons/index.js';
 	import { onMount } from 'svelte';
-	import Heading from './Heading.svelte';
-	import { Modal } from '@nais/ui';
-	import Tooltip from './Tooltip.svelte';
+	import { Heading, Modal, Tooltip } from '@nais/ui';
 
 	interface Props {
 		features?: {

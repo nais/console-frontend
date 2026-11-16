@@ -25,7 +25,7 @@
 	import { setContext, type Snippet } from 'svelte';
 	import type { HTMLTableAttributes } from 'svelte/elements';
 
-	interface Props extends HTMLTableAttributes {
+	export interface TableProps extends HTMLTableAttributes {
 		size?: 'medium' | 'small';
 		zebraStripes?: boolean;
 		stickyHeader?: boolean;
@@ -44,7 +44,7 @@
 		onsortchange,
 		class: className = '',
 		...rest
-	}: Props = $props();
+	}: TableProps = $props();
 
 	const ctx: TableContext = {
 		get size() {

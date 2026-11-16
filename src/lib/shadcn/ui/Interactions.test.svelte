@@ -3,9 +3,9 @@
 	import ActionMenuItem from './ActionMenuItem.svelte';
 	import { GetAccordionContext } from './Accordion.svelte';
 	import Box from './Box.svelte';
-	import { Button } from '@nais/ui';
+	import { Button, ReadMore, TextField } from '@nais/ui';
 	import CopyButton from './CopyButton.svelte';
-	import Select from './Select.svelte';
+	import { Select } from '@nais/ui';
 	import Tab from './Tab.svelte';
 	import TabList from './TabList.svelte';
 	import TabPanel from './TabPanel.svelte';
@@ -15,7 +15,7 @@
 	import { Theme } from '@nais/ui';
 	import ToggleGroup from './ToggleGroup.svelte';
 	import ToggleGroupItem from './ToggleGroupItem.svelte';
-	import Tooltip from './Tooltip.svelte';
+	import { Tooltip } from '@nais/ui';
 	import CollapsibleSidebar from '#lib/ui/CollapsibleSidebar.svelte';
 
 	let selected = $state('');
@@ -34,12 +34,20 @@
 	<ActionMenuItem onselect={() => (selected = 'last')}>Last action</ActionMenuItem>
 </ActionMenu>
 <output aria-label="Selected action">{selected}</output>
+<ReadMore header="Initial disclosure" defaultOpen>Server-rendered disclosure content</ReadMore>
 
 <Tooltip content="Tooltip help"><Button>Tooltip target</Button></Tooltip>
 <Tooltip content="Static help"><span>Information</span></Tooltip>
 <Tooltip content="Unavailable explanation"><Button disabled>Unavailable action</Button></Tooltip>
 
 <p id="external-description">External description</p>
+<TextField
+	label="Test input"
+	id="test-input"
+	description="Input description"
+	error="Input error"
+	aria-describedby="external-description"
+/>
 <Select
 	label="Test selection"
 	id="test-selection"

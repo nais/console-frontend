@@ -394,6 +394,13 @@ Use `#lib/shadcn/ui/index.js` components, not custom implementations:
 - Icons: Import from `#lib/icons/index.js` (backed by `@lucide/svelte`)
 - Always check existing components before creating new ones
 
+Shared primitives are implemented in `packages/ui` and re-exported by the Console
+barrel: `Alert`, `Button`, `ErrorMessage`, `Heading`, `HelpText`, `Label`, `Modal`,
+`ReadMore`, `Select`, `Skeleton`, `Table` and its parts, `Tag`, `TextField`, `Theme`
+and `Tooltip`. Keep these implementations free of Console import aliases and
+global utility CSS. Test shared changes with the isolated package consumer and
+`pnpm run test:browser ui-package`; include a minor Changeset for additive API.
+
 Use `Popover` and `RemovableChip` from `#lib/shadcn/ui/index.js` for settings panels and removable filters. `Popover` uses a trigger snippet and handles focus, Escape, and outside-click dismissal through Bits UI.
 
 ---
