@@ -47,7 +47,7 @@
 	);
 
 	function updateInteractionOpen() {
-		if (open !== undefined) open = !dismissed && (hovered || focused || defaultOpen);
+		open = !dismissed && (hovered || focused || defaultOpen);
 	}
 
 	function setHovered(value: boolean) {
@@ -64,7 +64,7 @@
 
 	function dismiss() {
 		dismissed = true;
-		if (open !== undefined) open = false;
+		open = false;
 	}
 
 	function describeChildren(element: HTMLSpanElement) {

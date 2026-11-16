@@ -29,36 +29,43 @@ test('standalone buttons retain callbacks, refs, aliases, loading, disabled and 
 	await expect(page.getByRole('status', { name: 'Submissions' })).toHaveText('1');
 });
 
-test('bound tooltip state follows hover, focus, Escape and external changes', async ({ page }) => {
-	const trigger = page.getByRole('button', { name: 'Bound tooltip target', exact: true });
-	const tooltip = page.getByRole('tooltip', { name: 'Bound tooltip', exact: true });
-	const state = page.getByRole('status', { name: 'Tooltip open' });
-	await expect(state).toHaveText('false');
-	await trigger.hover();
-	await expect(tooltip).toBeVisible();
-	await expect(state).toHaveText('true');
-	await page.mouse.move(0, 0);
-	await expect(tooltip).toBeHidden();
-	await expect(state).toHaveText('false');
+for (const { content, initial } of [
+	{ content: 'Bound tooltip', initial: 'false' },
+	{ content: 'Initially undefined tooltip', initial: 'undefined' }
+]) {
+	test(`${initial}-initialized tooltip binding follows hover, focus, Escape and external changes`, async ({
+		page
+	}) => {
+		const trigger = page.getByRole('button', { name: `${content} target`, exact: true });
+		const tooltip = page.getByRole('tooltip', { name: content, exact: true });
+		const state = page.getByRole('status', { name: `${content} open` });
+		await expect(state).toHaveText(initial);
+		await trigger.hover();
+		await expect(tooltip).toBeVisible();
+		await expect(state).toHaveText('true');
+		await page.mouse.move(0, 0);
+		await expect(tooltip).toBeHidden();
+		await expect(state).toHaveText('false');
 
-	await trigger.focus();
-	await expect(tooltip).toBeVisible();
-	await expect(state).toHaveText('true');
-	await trigger.hover();
-	await page.mouse.move(0, 0);
-	await expect(tooltip).toBeVisible();
-	await page.keyboard.press('Escape');
-	await expect(tooltip).toBeHidden();
-	await expect(state).toHaveText('false');
+		await trigger.focus();
+		await expect(tooltip).toBeVisible();
+		await expect(state).toHaveText('true');
+		await trigger.hover();
+		await page.mouse.move(0, 0);
+		await expect(tooltip).toBeVisible();
+		await page.keyboard.press('Escape');
+		await expect(tooltip).toBeHidden();
+		await expect(state).toHaveText('false');
 
-	const toggle = page.getByRole('button', { name: 'Toggle bound tooltip' });
-	await toggle.click();
-	await expect(tooltip).toBeVisible();
-	await expect(state).toHaveText('true');
-	await toggle.click();
-	await expect(tooltip).toBeHidden();
-	await expect(state).toHaveText('false');
-});
+		const toggle = page.getByRole('button', { name: `Toggle ${content}` });
+		await toggle.click();
+		await expect(tooltip).toBeVisible();
+		await expect(state).toHaveText('true');
+		await toggle.click();
+		await expect(tooltip).toBeHidden();
+		await expect(state).toHaveText('false');
+	});
+}
 
 test('standalone native fields retain typed bindings, labels, validation and disabled states', async ({
 	page

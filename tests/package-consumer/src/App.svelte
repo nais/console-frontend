@@ -40,6 +40,7 @@
 	let detailsOpen = $state(false);
 	let shadeOnHover = $state(true);
 	let tooltipOpen = $state(false);
+	let undefinedTooltipOpen = $state<boolean>();
 	let sort = $state<TableSortState>({ orderBy: 'name', direction: 'ascending' });
 </script>
 
@@ -68,8 +69,15 @@
 			<Tooltip content="Bound tooltip" bind:open={tooltipOpen}>
 				<Button>Bound tooltip target</Button>
 			</Tooltip>
-			<output aria-label="Tooltip open">{String(tooltipOpen)}</output>
-			<Button onclick={() => (tooltipOpen = !tooltipOpen)}>Toggle bound tooltip</Button>
+			<output aria-label="Bound tooltip open">{String(tooltipOpen)}</output>
+			<Button onclick={() => (tooltipOpen = !tooltipOpen)}>Toggle Bound tooltip</Button>
+			<Tooltip content="Initially undefined tooltip" bind:open={undefinedTooltipOpen}>
+				<Button>Initially undefined tooltip target</Button>
+			</Tooltip>
+			<output aria-label="Initially undefined tooltip open">{String(undefinedTooltipOpen)}</output>
+			<Button onclick={() => (undefinedTooltipOpen = !undefinedTooltipOpen)}
+				>Toggle Initially undefined tooltip</Button
+			>
 			<section aria-labelledby="package-fields">
 				<Heading level="2" id="package-fields" size="medium">Upgrade settings</Heading>
 				<TextField
