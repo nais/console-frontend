@@ -2,7 +2,7 @@
 	import type { Snippet } from 'svelte';
 	import type { HTMLAttributes } from 'svelte/elements';
 
-	interface Props extends HTMLAttributes<HTMLTableRowElement> {
+	export interface TrProps extends HTMLAttributes<HTMLTableRowElement> {
 		selected?: boolean;
 		shadeOnHover?: boolean;
 		children: Snippet;
@@ -16,7 +16,7 @@
 		class: className = '',
 		children,
 		...rest
-	}: Props = $props();
+	}: TrProps = $props();
 </script>
 
 <tr
@@ -43,6 +43,10 @@
 	}
 	:global(.sh-tbody) .sh-tr--hover:hover {
 		background-color: color-mix(in srgb, var(--secondary) 55%, transparent);
+	}
+	:global(.sh-table--zebra .sh-tbody)
+		.sh-tr:nth-child(even):not(.sh-tr--selected):not(.sh-tr--hover:hover) {
+		background-color: var(--background-subtle);
 	}
 	.sh-tr--selected {
 		background-color: var(--accent);

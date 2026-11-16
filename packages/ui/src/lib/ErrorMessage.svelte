@@ -1,9 +1,9 @@
 <script lang="ts">
-	import { ExclamationmarkTriangleFillIcon } from '#lib/icons/index.js';
+	import { TriangleAlert as ExclamationmarkTriangleFillIcon } from '@lucide/svelte';
 	import type { Snippet } from 'svelte';
 	import type { HTMLAttributes } from 'svelte/elements';
 
-	interface Props extends HTMLAttributes<HTMLElement> {
+	export interface ErrorMessageProps extends HTMLAttributes<HTMLElement> {
 		as?: string;
 		size?: 'medium' | 'small';
 		spacing?: boolean;
@@ -20,7 +20,7 @@
 		class: className = '',
 		children,
 		...rest
-	}: Props = $props();
+	}: ErrorMessageProps = $props();
 </script>
 
 <svelte:element

@@ -2,7 +2,7 @@
 	import type { Snippet } from 'svelte';
 	import type { HTMLLabelAttributes } from 'svelte/elements';
 
-	interface Props extends HTMLLabelAttributes {
+	export interface LabelProps extends HTMLLabelAttributes {
 		as?: string;
 		size?: 'medium' | 'small';
 		spacing?: boolean;
@@ -19,7 +19,7 @@
 		class: className = '',
 		children,
 		...rest
-	}: Props = $props();
+	}: LabelProps = $props();
 </script>
 
 <svelte:element
@@ -55,5 +55,16 @@
 	}
 	.sh-label--spacing {
 		margin-bottom: var(--nais-space-6);
+	}
+	.sr-only {
+		position: absolute;
+		width: var(--nais-space-1);
+		height: var(--nais-space-1);
+		padding: 0;
+		margin: calc(-1 * var(--nais-space-1));
+		overflow: hidden;
+		clip: rect(0, 0, 0, 0);
+		white-space: nowrap;
+		border: 0;
 	}
 </style>

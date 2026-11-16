@@ -1,59 +1,53 @@
 <script lang="ts">
 	import type { Snippet } from 'svelte';
-	import type { HTMLInputAttributes } from 'svelte/elements';
+	import type { HTMLSelectAttributes } from 'svelte/elements';
 	import ErrorMessage from './ErrorMessage.svelte';
 	import Label from './Label.svelte';
 
-	interface Props extends Omit<HTMLInputAttributes, 'size'> {
-		value?: unknown;
-		htmlSize?: number;
+	export interface SelectProps extends Omit<HTMLSelectAttributes, 'size'> {
+		label: string | Snippet;
 		hideLabel?: boolean;
-		error?: string;
-		errorId?: string;
+		style?: string;
 		size?: 'medium' | 'small';
 		disabled?: boolean;
+		error?: string;
+		value?: unknown;
+		children: Snippet;
+		description?: Snippet | string;
+		readonly?: boolean;
+		readOnlyIconText?: string;
 		id?: string;
-		type?: Exclude<HTMLInputAttributes['type'], 'object'>;
-		label: string | Snippet;
-		description?: string | Snippet;
 		[key: string]: unknown;
 	}
 
 	const uid = $props.id();
 
 	let {
-		value = $bindable(),
-		id = `tf-${uid}`,
+		label,
 		hideLabel = false,
-		type = 'text',
-		error = '',
-		errorId = `tf-err-${uid}`,
+		style,
 		size = 'medium',
 		disabled = false,
-		htmlSize,
-		label,
+		error,
+		'aria-describedby': externalDescription,
+		value = $bindable(),
+		children,
 		description,
+		readonly = false,
+		id = `sel-${uid}`,
 		class: className = '',
-		style,
 		...rest
-	}: Props = $props();
-
-	const descId = $derived(`tf-desc-${id}`);
-	const describedBy = $derived(
-		[
-			rest['aria-describedby'] as string | undefined,
-			description ? descId : null,
-			error ? errorId : null
-		]
+	}: SelectProps = $props();
+	let descriptionId = $derived(`${id}-description`);
+	let errorId = $derived(`${id}-error`);
+	let describedBy = $derived(
+		[externalDescription, description ? descriptionId : undefined, error ? errorId : undefined]
 			.filter(Boolean)
 			.join(' ') || undefined
 	);
 </script>
 
-<div
-	class={['sh-form-field', `sh-form-field--${size}`, className]}
-	style={style as string | undefined}
->
+<div class={['sh-select-field', className]} {style}>
 	<Label for={id} {size} visuallyHidden={hideLabel}>
 		{#if typeof label === 'string'}
 			{label}
@@ -63,7 +57,7 @@
 	</Label>
 
 	{#if description}
-		<div id={descId} class="sh-form-field__description" class:sr-only={hideLabel}>
+		<div id={descriptionId} class={['sh-select-field__description', { 'sr-only': hideLabel }]}>
 			{#if typeof description === 'string'}
 				{description}
 			{:else}
@@ -72,69 +66,61 @@
 		</div>
 	{/if}
 
-	<input
-		{type}
+	<select
 		{id}
-		{disabled}
-		size={htmlSize}
+		disabled={disabled || readonly}
 		bind:value
+		class={['sh-select-control', `sh-select-control--${size}`, { 'has-error': Boolean(error) }]}
+		{...rest}
 		aria-invalid={error ? 'true' : undefined}
 		aria-describedby={describedBy}
-		class={['sh-input-control', `sh-input-control--${size}`, { 'has-error': Boolean(error) }]}
-		{...rest}
-	/>
+	>
+		{@render children()}
+	</select>
 
 	{#if error}
-		<div id={errorId} class="sh-form-field__error" aria-live="polite">
-			<ErrorMessage {size} showIcon>{error}</ErrorMessage>
-		</div>
+		<div id={errorId} aria-live="polite"><ErrorMessage {size} showIcon>{error}</ErrorMessage></div>
 	{/if}
 </div>
 
 <style>
-	.sh-form-field {
+	.sh-select-field {
 		display: flex;
 		flex-direction: column;
 		gap: var(--nais-space-6);
 	}
-	.sh-form-field__description {
+	.sh-select-field__description {
 		font-size: var(--sh-font-size-xs);
 		color: var(--muted-foreground);
-		line-height: 1.4;
 	}
-	.sh-input-control {
+	.sh-select-control {
 		width: 100%;
 		box-sizing: border-box;
 		border-radius: var(--radius-sm);
 		border: var(--sh-border-width) solid var(--input);
 		background-color: var(--card);
 		color: var(--foreground);
-		padding: 0 var(--nais-space-12);
+		padding: 0 var(--nais-space-32) 0 var(--nais-space-12);
 		font-family: inherit;
 		font-size: var(--sh-font-size-sm);
 		height: var(--nais-space-36);
 		box-shadow: var(--sh-shadow-xs);
-		transition:
-			border-color 120ms ease,
-			box-shadow 120ms ease;
+		cursor: pointer;
 	}
-	.sh-input-control--small {
+	.sh-select-control--small {
 		height: var(--nais-space-32);
-		padding: 0 var(--nais-space-10);
+		padding: 0 var(--nais-space-28) 0 var(--nais-space-10);
 		font-size: var(--sh-font-size-sm);
 	}
-	.sh-input-control:focus-visible {
+	.sh-select-control:focus-visible {
 		outline: none;
 		border-color: var(--ring);
 		box-shadow: 0 0 0 var(--nais-space-2) color-mix(in srgb, var(--ring) 22%, transparent);
 	}
-	.sh-input-control:disabled,
-	.sh-input-control[readonly] {
+	.sh-select-control:disabled {
 		opacity: 0.6;
 		background-color: var(--muted);
-	}
-	.sh-input-control.has-error {
-		border-color: var(--destructive);
+		cursor: not-allowed;
 	}
 	.sr-only {
 		position: absolute;

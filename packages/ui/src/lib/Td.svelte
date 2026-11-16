@@ -2,13 +2,13 @@
 	import type { Snippet } from 'svelte';
 	import type { HTMLTdAttributes } from 'svelte/elements';
 
-	interface Props extends HTMLTdAttributes {
+	export interface TdProps extends HTMLTdAttributes {
 		align?: 'left' | 'center' | 'right';
 		children?: Snippet;
 		[key: string]: unknown;
 	}
 
-	let { align = 'left', class: className = '', children, ...rest }: Props = $props();
+	let { align = 'left', class: className = '', children, ...rest }: TdProps = $props();
 </script>
 
 <td class={['sh-td', `align-${align}`, className]} {...rest}>

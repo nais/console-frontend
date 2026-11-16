@@ -1,15 +1,15 @@
 <script lang="ts">
 	import {
-		CheckmarkCircleIcon,
-		ExclamationmarkTriangleIcon,
-		InformationSquareIcon,
-		XMarkIcon,
-		XMarkOctagonIcon
-	} from '#lib/icons/index.js';
+		CircleCheck as CheckmarkCircleIcon,
+		TriangleAlert as ExclamationmarkTriangleIcon,
+		Info as InformationSquareIcon,
+		X as XMarkIcon,
+		OctagonX as XMarkOctagonIcon
+	} from '@lucide/svelte';
 	import type { Snippet } from 'svelte';
 	import type { HTMLAttributes } from 'svelte/elements';
 
-	interface Props extends HTMLAttributes<HTMLDivElement> {
+	export interface AlertProps extends HTMLAttributes<HTMLDivElement> {
 		variant?: 'error' | 'warning' | 'info' | 'success' | 'default' | 'destructive';
 		size?: 'medium' | 'small' | 'default' | 'sm';
 		title?: string;
@@ -30,13 +30,14 @@
 		title,
 		fullWidth = false,
 		inline = false,
+		contentMaxWidth = false,
 		closeButton = false,
 		closeButtonIconText = 'Close',
 		onclose,
 		class: className = '',
 		children,
 		...rest
-	}: Props = $props();
+	}: AlertProps = $props();
 
 	let normalizedVariant = $derived(variant === 'error' ? 'destructive' : variant);
 	let isSmall = $derived(size === 'small' || size === 'sm');
@@ -67,7 +68,7 @@
 			<InformationSquareIcon />
 		{/if}
 	</span>
-	<div class="sh-ui-alert__content">
+	<div class="sh-ui-alert__content" class:sh-ui-alert__content--limited={contentMaxWidth}>
 		{#if title}
 			<h5 class="sh-ui-alert__title">{title}</h5>
 		{/if}
@@ -86,6 +87,9 @@
 </div>
 
 <style>
+	.sh-ui-alert__content--limited {
+		max-width: 65ch;
+	}
 	.sh-ui-alert {
 		position: relative;
 		width: 100%;

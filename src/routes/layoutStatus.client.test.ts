@@ -36,7 +36,7 @@ vi.mock('./PageHeader.svelte', async () => ({
 	default: (await import('#lib/shadcn/ui/Page.svelte')).default
 }));
 vi.mock('./Naisdevice.svelte', async () => ({
-	default: (await import('#lib/shadcn/ui/Heading.svelte')).default,
+	default: (await import('@nais/ui')).Heading,
 	isNaisdevice: () => false
 }));
 

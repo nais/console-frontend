@@ -74,11 +74,24 @@ preserves the `ShButton` alias. Build, check, dev and browser-test commands buil
 the package first. For live package edits, run `pnpm --filter @nais/ui exec svelte-package --watch`
 alongside the app.
 
-Public exports are `Button`, `Modal`, `Theme`, and the types `ButtonProps`, `ModalProps`,
-`ModalHeaderProps`, `ThemeProps`. Existing variants, sizes, compatibility aliases and
-dialog behavior are unchanged. Loader, Heading and Detail are private implementation
-details; Console retains its own existing presenters rather than exposing these
-as shared API in this first extraction.
+Public components are `Alert`, `Button`, `ErrorMessage`, `Heading`, `HelpText`,
+`Label`, `Modal`, `ReadMore`, `Select`, `Skeleton`, `Table`, `Tag`, `Tbody`, `Td`,
+`TextField`, `Th`, `Thead`, `Theme`, `Tooltip` and `Tr`. Each exports a corresponding
+`*Props` type; `ModalHeaderProps`, `TableSortState` and `TagVariant` are also public.
+Console's existing UI barrel re-exports these implementations and retains the
+`ShAlert`, `ShButton` and `ShSkeleton` aliases. Loader and Detail remain private.
+
+`TextField` supports native text, numeric and time inputs; `Select` stays native
+and preserves typed option values. Both include labels, descriptions and validation
+messages without depending on Console utility classes. `HelpText` uses a Bits UI
+popover with Escape/outside-click dismissal, focus restoration and viewport collision
+handling. Help and tooltip portals retain their containing dialog and theme.
+Tooltip's `bind:open` reflects hover, focus and dismissal, and supports external updates.
+`ReadMore` supports controlled, bound and default-open state, including SSR.
+`defaultOpen` sets only the initial state; use `open` to control it after mounting.
+Tables support compact sizing, striped rows, sticky headers and sortable headings.
+`Skeleton` accepts dimensions, HTML attributes and text/circle/rectangle variants,
+and disables animation when reduced motion is requested.
 
 In another Svelte 5 app, import the components from `@nais/ui` and load CSS once:
 
@@ -113,9 +126,11 @@ pnpm run test:package
 `test:package` packs the library, installs the tarball into a temporary copy of the
 [minimal Svelte consumer](tests/package-consumer) outside the workspace, checks
 types, and builds client and SSR outputs. It removes its temporary files on exit.
-No registry publication is performed. Before adopting this in doc, reconcile that
-app's existing component APIs, visual defaults, CSS layers and host styles, then
-validate its own themes and portals. Neither doc nor m8e is migrated here.
+The same consumer is exercised by `pnpm run test:browser ui-package` without Console
+CSS, covering form bindings, table styling, feedback and themed dialog overlays.
+No registry publication is performed. Consumers must reconcile existing component
+APIs, visual defaults, CSS layers and host styles, then validate their own themes
+and portals. The library extension does not migrate doc or m8e.
 
 #### Versioning and distribution
 

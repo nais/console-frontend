@@ -15,14 +15,14 @@ import HomePage from './+page.svelte';
 vi.mock('$app/env', () => ({ browser: false, dev: false }));
 vi.mock('$app/environment', () => ({ browser: false, building: false }));
 vi.mock('./Onboarding.svelte', async () => ({
-	default: (await import('#lib/shadcn/ui/Heading.svelte')).default
+	default: (await import('@nais/ui')).Heading
 }));
 vi.mock('#lib/ui/PageModal.svelte', async () => ({
-	default: (await import('#lib/shadcn/ui/Heading.svelte')).default,
+	default: (await import('@nais/ui')).Heading,
 	pageModalClick: vi.fn()
 }));
 vi.mock('./team/create/+page.svelte', async () => ({
-	default: (await import('#lib/shadcn/ui/Heading.svelte')).default
+	default: (await import('@nais/ui')).Heading
 }));
 
 beforeEach(() => favorites.setFavorites([]));

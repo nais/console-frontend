@@ -18,7 +18,7 @@
 <script lang="ts">
 	import { setContext, type Snippet } from 'svelte';
 	import type { HTMLAttributes } from 'svelte/elements';
-	import Label from './Label.svelte';
+	import { Label } from '@nais/ui';
 
 	interface Props extends Omit<HTMLAttributes<HTMLDivElement>, 'onchange'> {
 		value: string;

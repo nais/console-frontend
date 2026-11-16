@@ -20,7 +20,7 @@
 <script lang="ts">
 	import { setContext, type Snippet } from 'svelte';
 	import type { HTMLFieldsetAttributes } from 'svelte/elements';
-	import ErrorMessage from './ErrorMessage.svelte';
+	import { ErrorMessage } from '@nais/ui';
 
 	interface Props extends HTMLFieldsetAttributes {
 		value?: unknown[];
