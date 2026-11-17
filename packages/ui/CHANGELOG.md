@@ -1,5 +1,11 @@
 # @nais/ui
 
+## 0.2.2
+
+### Patch Changes
+
+- db5e106: Align native Select chevrons with consistent spacing while preserving native selection behavior.
+
 ## 0.2.1
 
 ### Patch Changes
