@@ -92,11 +92,13 @@
 	let postgresState = $derived(postgres?.state ?? 'PROGRESSING');
 
 	// Completion is only news for a short while; failures and progress stay visible.
-	let showRecoveryCompleted = $state(true);
-	let recoveryCompleted = $derived(!!postgres?.recovery?.completed);
+	// SvelteKit reuses this component across databases, so track dismissal per database.
+	let dismissedRecoveryNotice = $state<string>();
+	let recoveryCompletedId = $derived(postgres?.recovery?.completed ? postgres.id : undefined);
 	$effect(() => {
-		if (!recoveryCompleted) return;
-		const timeout = window.setTimeout(() => (showRecoveryCompleted = false), 30_000);
+		const id = recoveryCompletedId;
+		if (!id) return;
+		const timeout = window.setTimeout(() => (dismissedRecoveryNotice = id), 30_000);
 		return () => window.clearTimeout(timeout);
 	});
 
@@ -126,7 +128,7 @@
 		<Loader size="3xlarge" />
 	</div>
 {:else if postgres}
-	{#if postgres.recovery && (!postgres.recovery.completed || showRecoveryCompleted)}
+	{#if postgres.recovery && (!postgres.recovery.completed || dismissedRecoveryNotice !== postgres.id)}
 		<div class="provisioning-alert" role="status" aria-live="polite">
 			<Alert
 				variant={postgres.recovery.failureMessage
