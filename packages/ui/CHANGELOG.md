@@ -1,5 +1,11 @@
 # @nais/ui
 
+## 0.2.1
+
+### Patch Changes
+
+- 779b446: Update Lucide icons and Bits UI dependencies.
+
 ## 0.2.0
 
 ### Minor Changes
