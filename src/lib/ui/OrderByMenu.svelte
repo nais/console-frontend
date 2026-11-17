@@ -77,7 +77,7 @@
 		LOW_VULNERABILITIES: 140,
 		UNASSIGNED_VULNERABILITIES: 150,
 		SBOM_COVERAGE: 160,
-		WORKLOAD_COUNT: 165,
+		VULNERABILITY_SUMMARY_WORKLOAD_COUNT: 165,
 		SLUG: 170
 	};
 
@@ -136,8 +136,8 @@
 				return 'Unassigned vulnerabilities';
 			case 'SBOM_COVERAGE':
 				return 'SBOM coverage';
-			case 'WORKLOAD_COUNT':
-				return 'Workloads';
+			case 'VULNERABILITY_SUMMARY_WORKLOAD_COUNT':
+				return 'Summary workloads';
 			case 'SLUG':
 				return 'Team';
 			case 'ACCUMULATED_COST':

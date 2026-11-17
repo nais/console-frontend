@@ -6366,6 +6366,11 @@ type Postgres implements ActivityLogger & Node {
   """Observed PostgreSQL configuration, when available."""
   configuration: PostgresConfiguration
 
+  """
+  The cost for this Postgres. Billing data is delayed by at least two days.
+  """
+  cost: PostgresCost!
+
   """When this Postgres was created."""
   createdAt: Time!
 
@@ -6619,6 +6624,33 @@ type PostgresConnection {
   facets: PostgresFacets!
   nodes: [Postgres!]!
   pageInfo: PageInfo!
+}
+
+"""The cost for a Postgres."""
+type PostgresCost {
+  """
+  Daily cost in ascending date order. Dates without cost data are omitted. Null when there is no cost data in the period.
+  """
+  daily(
+    """Start date of the period, inclusive."""
+    from: Date!
+
+    """End date of the period, inclusive; must not be in the future."""
+    to: Date!
+  ): PostgresCostPeriod
+
+  """
+  Monthly cost for the last 12 months, newest first. The date is the last day with cost data in the month. Null when there is no cost data.
+  """
+  monthly: PostgresCostPeriod
+}
+
+type PostgresCostPeriod {
+  """The cost series."""
+  series: [ServiceCostSeries!]!
+
+  """The total cost in euros for the period."""
+  sum: Float!
 }
 
 """Activity log entry for a Postgres that was created."""
@@ -9260,7 +9292,7 @@ type ServiceCostSeries {
   """
   date: Date!
 
-  """The cost for the services used by the workload."""
+  """The cost for the services used by the resource."""
   services: [ServiceCostSample!]!
 
   """The sum of the cost across all services."""
@@ -10990,7 +11022,7 @@ enum TeamOrderField {
   UNASSIGNED_VULNERABILITIES
 
   """The number of workloads included in the team's vulnerability summary."""
-  WORKLOAD_COUNT
+  VULNERABILITY_SUMMARY_WORKLOAD_COUNT
 }
 
 """

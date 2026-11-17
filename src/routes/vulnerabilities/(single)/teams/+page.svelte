@@ -81,7 +81,7 @@
 						TeamOrderField.RISK_SCORE,
 						TeamOrderField.SLUG,
 						TeamOrderField.SBOM_COVERAGE,
-						TeamOrderField.WORKLOAD_COUNT
+						TeamOrderField.VULNERABILITY_SUMMARY_WORKLOAD_COUNT
 					]}
 					resetParams={paginationParams}
 				/>
