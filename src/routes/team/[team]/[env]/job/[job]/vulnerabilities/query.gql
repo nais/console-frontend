@@ -103,6 +103,14 @@ query JobImageDetails($team: Slug!, $env: String!, $job: String!) @cache(policy:
 								}
 							}
 						}
+						packageTypeFacets: vulnerabilities(first: 1) {
+							facets {
+								packageTypes {
+									value
+									count
+								}
+							}
+						}
 						handleFirst: vulnerabilities(
 							first: 50
 							filter: { hasKevEntry: true }
