@@ -7,13 +7,15 @@
 
 	let {
 		data,
-		height = '300px'
+		height = '300px',
+		period = 'day'
 	}: {
 		data: {
 			date: Date;
 			[key: string]: number | Date;
 		}[];
 		height?: `${number}px`;
+		period?: 'day' | 'month';
 	} = $props();
 
 	let legendContext = $state<LegendContext>();
@@ -90,7 +92,17 @@
 					}
 				},
 				xAxis: {
-					format: 'day'
+					ticks: period === 'month' ? data.map((item) => item.date) : undefined,
+					tickOcclusion: period === 'month',
+					format:
+						period === 'month'
+							? (value: Date) =>
+									value.toLocaleDateString('en-GB', {
+										month: 'short',
+										year: '2-digit',
+										timeZone: 'UTC'
+									})
+							: 'day'
 				}
 			}}
 		/>

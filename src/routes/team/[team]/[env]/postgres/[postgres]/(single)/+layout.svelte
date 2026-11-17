@@ -22,6 +22,8 @@
 		params.delete('branch');
 		if (routeId.endsWith('/insights') || routeId.endsWith('/queries')) {
 			params.set('interval', page.data.interval);
+		} else if (routeId.endsWith('/cost')) {
+			params.delete('interval');
 		}
 		const search = params.toString();
 		return search ? `?${search}` : '';
@@ -49,6 +51,11 @@
 			value: '/team/[team]/[env]/postgres/[postgres]/(single)/logs',
 			label: 'Logs',
 			href: resolve('/team/[team]/[env]/postgres/[postgres]/(single)/logs', page.params as never)
+		},
+		{
+			value: '/team/[team]/[env]/postgres/[postgres]/(single)/cost',
+			label: 'Cost',
+			href: resolve('/team/[team]/[env]/postgres/[postgres]/(single)/cost', page.params as never)
 		}
 	]);
 </script>
