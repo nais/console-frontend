@@ -35,14 +35,14 @@
 		"svelte": "^5.57.3"
 	},
 	"dependencies": {
-		"@lucide/svelte": "1.63.0",
-		"bits-ui": "2.20.2"
+		"@lucide/svelte": "1.67.0",
+		"bits-ui": "2.20.3"
 	},
 	"devDependencies": {
 		"@sveltejs/package": "3.0.2",
 		"@sveltejs/vite-plugin-svelte": "7.3.1",
 		"svelte": "5.57.3",
-		"svelte-check": "4.7.7",
+		"svelte-check": "4.7.8",
 		"typescript": "6.0.3",
 		"vite": "8.3.5"
 	}
