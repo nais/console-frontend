@@ -282,6 +282,39 @@ test('native Select supports keyboard typeahead, native callbacks and external u
 	await expect(page.getByRole('status', { name: 'Selection', exact: true })).toHaveText('three');
 });
 
+for (const width of [375, 1280]) {
+	test(`native Select chevrons are inset, centered and do not intercept input at ${width}px`, async ({
+		page
+	}) => {
+		await page.setViewportSize({ width, height: 900 });
+		for (const name of ['Test selection', 'Hidden selection label']) {
+			const select = page.getByRole('combobox', { name, exact: true });
+			const chevron = select.locator('..').locator('.sh-select-chevron');
+			await expect(select).toHaveCSS('appearance', 'none');
+			await expect(chevron).toHaveAttribute('aria-hidden', 'true');
+			await select.scrollIntoViewIfNeeded();
+			const control = await select.boundingBox();
+			const icon = await chevron.locator('svg').boundingBox();
+			if (!control || !icon) throw new Error('Select or chevron has no bounding box');
+			const padding = await select.evaluate((element) =>
+				Number.parseFloat(getComputedStyle(element).paddingInlineStart)
+			);
+			expect(control.x + control.width - icon.x - icon.width).toBeCloseTo(padding, 0);
+			expect(icon.y + icon.height / 2).toBeCloseTo(control.y + control.height / 2, 0);
+			expect(
+				await select.evaluate(
+					(element, point) => document.elementFromPoint(point.x, point.y) === element,
+					{ x: icon.x + icon.width / 2, y: icon.y + icon.height / 2 }
+				)
+			).toBe(true);
+		}
+		const multiple = page.getByRole('listbox', { name: 'Multiple selection' });
+		await expect(multiple.locator('..').locator('.sh-select-chevron')).toHaveCount(0);
+		const disabled = page.getByRole('combobox', { name: 'Disabled selection' });
+		await expect(disabled.locator('..').locator('.sh-select-chevron')).toHaveCSS('opacity', '0.6');
+	});
+}
+
 test('native Select preserves numeric, object and multiple value bindings', async ({ page }) => {
 	await page.getByRole('combobox', { name: 'Number selection' }).selectOption('2');
 	await expect(page.getByRole('status', { name: 'Number value' })).toHaveText('number:2');

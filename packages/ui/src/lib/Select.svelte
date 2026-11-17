@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { ChevronDown as ChevronDownIcon } from '@lucide/svelte';
 	import type { Snippet } from 'svelte';
 	import type { HTMLSelectAttributes } from 'svelte/elements';
 	import ErrorMessage from './ErrorMessage.svelte';
@@ -66,17 +67,24 @@
 		</div>
 	{/if}
 
-	<select
-		{id}
-		disabled={disabled || readonly}
-		bind:value
-		class={['sh-select-control', `sh-select-control--${size}`, { 'has-error': Boolean(error) }]}
-		{...rest}
-		aria-invalid={error ? 'true' : undefined}
-		aria-describedby={describedBy}
-	>
-		{@render children()}
-	</select>
+	<div class={['sh-select-input', `sh-select-input--${size}`]}>
+		<select
+			{id}
+			disabled={disabled || readonly}
+			bind:value
+			class={['sh-select-control', `sh-select-control--${size}`, { 'has-error': Boolean(error) }]}
+			{...rest}
+			aria-invalid={error ? 'true' : undefined}
+			aria-describedby={describedBy}
+		>
+			{@render children()}
+		</select>
+		{#if !rest.multiple}
+			<span class="sh-select-chevron" aria-hidden="true">
+				<ChevronDownIcon size="var(--nais-space-16)" />
+			</span>
+		{/if}
+	</div>
 
 	{#if error}
 		<div id={errorId} aria-live="polite"><ErrorMessage {size} showIcon>{error}</ErrorMessage></div>
@@ -93,6 +101,21 @@
 		font-size: var(--sh-font-size-xs);
 		color: var(--muted-foreground);
 	}
+	.sh-select-input {
+		position: relative;
+		color: var(--foreground);
+	}
+	.sh-select-chevron {
+		position: absolute;
+		inset-block: 0;
+		inset-inline-end: var(--nais-space-12);
+		display: flex;
+		align-items: center;
+		pointer-events: none;
+	}
+	.sh-select-input--small .sh-select-chevron {
+		inset-inline-end: var(--nais-space-10);
+	}
 	.sh-select-control {
 		width: 100%;
 		box-sizing: border-box;
@@ -107,10 +130,17 @@
 		box-shadow: var(--sh-shadow-xs);
 		cursor: pointer;
 	}
+	.sh-select-control:not([multiple]) {
+		appearance: none;
+		padding-inline: var(--nais-space-12) var(--nais-space-40);
+	}
 	.sh-select-control--small {
 		height: var(--nais-space-32);
 		padding: 0 var(--nais-space-28) 0 var(--nais-space-10);
 		font-size: var(--sh-font-size-sm);
+	}
+	.sh-select-control--small:not([multiple]) {
+		padding-inline: var(--nais-space-10) var(--nais-space-36);
 	}
 	.sh-select-control:focus-visible {
 		outline: none;
@@ -121,6 +151,9 @@
 		opacity: 0.6;
 		background-color: var(--muted);
 		cursor: not-allowed;
+	}
+	.sh-select-control:disabled + .sh-select-chevron {
+		opacity: 0.6;
 	}
 	.sr-only {
 		position: absolute;
