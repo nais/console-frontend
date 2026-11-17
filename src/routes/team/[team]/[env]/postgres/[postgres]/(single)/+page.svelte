@@ -26,8 +26,8 @@
 	} from '#lib/shadcn/ui/index.js';
 	import { onMount } from 'svelte';
 	import type { PageProps } from './$types';
-	import BranchStateIndicator from './BranchStateIndicator.svelte';
-	import { branchStateLabel } from './branchStateLabel.js';
+	import StateIndicator from './StateIndicator.svelte';
+	import { stateLabel } from './stateLabel.js';
 
 	let { data }: PageProps = $props();
 	let { PostgresOverview } = $derived(data);
@@ -89,7 +89,16 @@
 			(usage) => usage.workload.__typename === 'Application' || usage.workload.__typename === 'Job'
 		)
 	);
-	let branchState = $derived(postgres?.state ?? 'PROGRESSING');
+	let postgresState = $derived(postgres?.state ?? 'PROGRESSING');
+
+	// Completion is only news for a short while; failures and progress stay visible.
+	let showRecoveryCompleted = $state(true);
+	let recoveryCompleted = $derived(!!postgres?.recovery?.completed);
+	$effect(() => {
+		if (!recoveryCompleted) return;
+		const timeout = window.setTimeout(() => (showRecoveryCompleted = false), 30_000);
+		return () => window.clearTimeout(timeout);
+	});
 
 	onMount(() => {
 		const interval = window.setInterval(() => {
@@ -97,7 +106,7 @@
 				document.visibilityState !== 'visible' ||
 				$PostgresOverview.fetching ||
 				!postgres ||
-				(branchState !== 'PROGRESSING' && !recoveryPending(postgres.recovery))
+				(postgresState !== 'PROGRESSING' && !recoveryPending(postgres.recovery))
 			) {
 				return;
 			}
@@ -117,7 +126,7 @@
 		<Loader size="3xlarge" />
 	</div>
 {:else if postgres}
-	{#if postgres.recovery}
+	{#if postgres.recovery && (!postgres.recovery.completed || showRecoveryCompleted)}
 		<div class="provisioning-alert" role="status" aria-live="polite">
 			<Alert
 				variant={postgres.recovery.failureMessage
@@ -134,7 +143,7 @@
 			</Alert>
 		</div>
 	{/if}
-	{#if branchState === 'PROGRESSING' && !postgres.recovery}
+	{#if postgresState === 'PROGRESSING' && !postgres.recovery}
 		<div class="provisioning-alert">
 			<Alert variant="info" size="small">
 				Postgres is being prepared. Status updates automatically.
@@ -148,8 +157,8 @@
 				<dl class="settings-list">
 					<dt>State</dt>
 					<dd class="state-value">
-						<BranchStateIndicator state={branchState} />
-						{branchStateLabel(branchState)}
+						<StateIndicator state={postgresState} />
+						{stateLabel(postgresState)}
 					</dd>
 					<dt>High availability</dt>
 					<dd>
