@@ -17,14 +17,6 @@ query TenantTeamPriorityGroups(
 	$noneLast: Int
 	$noneAfter: Cursor
 	$noneBefore: Cursor
-	$coveredFirst: Int
-	$coveredLast: Int
-	$coveredAfter: Cursor
-	$coveredBefore: Cursor
-	$unprioritizedFirst: Int
-	$unprioritizedLast: Int
-	$unprioritizedAfter: Cursor
-	$unprioritizedBefore: Cursor
 ) {
 	high: teams(
 		orderBy: $orderBy
@@ -62,44 +54,7 @@ query TenantTeamPriorityGroups(
 		last: $noneLast
 		after: $noneAfter
 		before: $noneBefore
-		filter: {
-			teamScope: $teamScope
-			hasWorkloads: true
-			vulnerabilityPriorityGroup: NONE
-			hasCompleteSbomCoverage: false
-		}
-	) {
-		...TeamPriorityConnection @mask_disable
-	}
-	covered: teams(
-		orderBy: $orderBy
-		first: $coveredFirst
-		last: $coveredLast
-		after: $coveredAfter
-		before: $coveredBefore
-		filter: {
-			teamScope: $teamScope
-			hasWorkloads: true
-			vulnerabilityPriorityGroup: NONE
-			hasCompleteSbomCoverage: true
-			hasVulnerabilityFindings: false
-		}
-	) {
-		...TeamPriorityConnection @mask_disable
-	}
-	unprioritized: teams(
-		orderBy: $orderBy
-		first: $unprioritizedFirst
-		last: $unprioritizedLast
-		after: $unprioritizedAfter
-		before: $unprioritizedBefore
-		filter: {
-			teamScope: $teamScope
-			hasWorkloads: true
-			vulnerabilityPriorityGroup: NONE
-			hasCompleteSbomCoverage: true
-			hasVulnerabilityFindings: true
-		}
+		filter: { teamScope: $teamScope, hasWorkloads: true, vulnerabilityPriorityGroup: NONE }
 	) {
 		...TeamPriorityConnection @mask_disable
 	}

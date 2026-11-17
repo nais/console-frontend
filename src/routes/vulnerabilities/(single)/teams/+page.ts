@@ -33,8 +33,6 @@ export async function load(event) {
 	const elevated = pagination('elevated');
 	const monitor = pagination('monitor');
 	const none = pagination('none');
-	const covered = pagination('covered');
-	const unprioritized = pagination('unprioritized');
 
 	return {
 		onlyMyTeams,
@@ -62,15 +60,7 @@ export async function load(event) {
 				noneFirst: none.first,
 				noneLast: none.last,
 				noneAfter: none.after,
-				noneBefore: none.before,
-				coveredFirst: covered.first,
-				coveredLast: covered.last,
-				coveredAfter: covered.after,
-				coveredBefore: covered.before,
-				unprioritizedFirst: unprioritized.first,
-				unprioritizedLast: unprioritized.last,
-				unprioritizedAfter: unprioritized.after,
-				unprioritizedBefore: unprioritized.before
+				noneBefore: none.before
 			}
 		}))
 	};

@@ -13,20 +13,16 @@
 		const groups = $TenantTeamPriorityGroups.data;
 		return (
 			groups &&
-			(['high', 'elevated', 'monitor', 'none', 'covered', 'unprioritized'] as const).some(
+			(['high', 'elevated', 'monitor', 'none'] as const).some(
 				(group) => groups[group].pageInfo.totalCount > 0
 			)
 		);
 	});
 
-	const paginationParams = [
-		'high',
-		'elevated',
-		'monitor',
-		'none',
-		'covered',
-		'unprioritized'
-	].flatMap((group) => [`${group}After`, `${group}Before`]);
+	const paginationParams = ['high', 'elevated', 'monitor', 'none'].flatMap((group) => [
+		`${group}After`,
+		`${group}Before`
+	]);
 </script>
 
 <div class="wrapper">
@@ -34,10 +30,10 @@
 	<div>
 		<Heading as="h2" spacing>Team Security Posture</Heading>
 		<BodyLong>
-			A detailed breakdown of teams with workloads, grouped by vulnerability priority. Teams without
-			SBOMs are shown separately from fully covered teams with no findings. Complete SBOM coverage
-			does not mean a team has no vulnerabilities. For teams with scan data, you can also see risk
-			score, SBOM coverage, and workload count. Vulnerability counts are the number of
+			A detailed breakdown of teams with workloads, grouped by vulnerability priority. Not
+			prioritized includes teams without SBOMs and teams with no prioritized findings. Complete SBOM
+			coverage does not mean a team has no vulnerabilities. For teams with scan data, you can also
+			see risk score, SBOM coverage, and workload count. Vulnerability counts are the number of
 			vulnerabilities, not the number of workloads affected.
 		</BodyLong>
 	</div>
