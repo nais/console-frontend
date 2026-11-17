@@ -14,8 +14,8 @@ export async function load(event) {
 
 	return {
 		interval,
-		from,
-		to,
+		from: new Date(Date.UTC(from.getFullYear(), from.getMonth(), from.getDate())),
+		to: new Date(Date.UTC(to.getFullYear(), to.getMonth(), to.getDate())),
 		...(await addPageMeta(event, { title: 'Cost', pageHeaderTitle: event.params.postgres })),
 		...(await load_PostgresCosts({
 			event,
