@@ -2514,12 +2514,12 @@ type CreatePostgresAccessPayload {
 """Input for creating a Postgres."""
 input CreatePostgresInput {
   """
-  Requested CPU, for example '100m'. If omitted during recovery, inherits the source's configured request; otherwise the platform default is used. An explicit value overrides the inherited request.
+  Requested CPU, for example '100m'. If omitted, the platform default is used, or the source's value when restoring.
   """
   cpu: String
 
   """
-  Requested disk size, for example '10Gi'. If omitted during recovery, inherits the source's configured size; otherwise the platform default is used. An explicit recovery size must be at least the source's configured size.
+  Requested disk size, for example '10Gi'. If omitted, the platform default is used, or the source's value when restoring. Must not be smaller than the source's.
   """
   diskSize: String
 
@@ -2527,12 +2527,12 @@ input CreatePostgresInput {
   environmentName: String!
 
   """
-  Extensions to make available to databases in this Postgres instance. Select values from environment.availableValues.postgresExtensions. If omitted during recovery, inherits the source's configured extensions; an explicit recovery list must include all source extensions and may add available extensions. If omitted for an empty database, no extensions are requested.
+  Extensions to make available to databases in this Postgres instance. Select values from environment.availableValues.postgresExtensions. When restoring, defaults to the source's extensions and must include them all.
   """
   extensions: [String!]
 
   """
-  Add a third instance and enable synchronous replication. If omitted during recovery, inherits the source's setting; otherwise defaults to false. An explicit true or false overrides the inherited setting.
+  Add a third instance and enable synchronous replication. Defaults to false, or to the source's setting when restoring.
   """
   highAvailability: Boolean
 
@@ -2540,12 +2540,12 @@ input CreatePostgresInput {
   labels: [ResourceLabelInput!]
 
   """
-  PostgreSQL major version, selected from the environment's availableValues.postgresMajorVersions.values. For recovery, this must match the source database's major version.
+  PostgreSQL major version, selected from the environment's availableValues.postgresMajorVersions.values. Must match the source when restoring.
   """
   majorVersion: String!
 
   """
-  Requested memory, for example '512Mi'. If omitted during recovery, inherits the source's configured request; otherwise the platform default is used. An explicit value overrides the inherited request.
+  Requested memory, for example '512Mi'. If omitted, the platform default is used, or the source's value when restoring.
   """
   memory: String
 
@@ -2553,7 +2553,7 @@ input CreatePostgresInput {
   name: String!
 
   """
-  Initialize from an existing database in the same team and environment instead of creating an empty database. Omitted availability, resource and extension settings inherit from the source; explicitly supplied settings override them subject to the recovery constraints described on each field.
+  Initialize from an existing database in the same team and environment instead of creating an empty database. Omitted availability, resource and extension settings are taken from the source.
   """
   recovery: PostgresRecoveryInput
 
@@ -6371,6 +6371,11 @@ type Postgres implements ActivityLogger & Node {
   """Observed PostgreSQL configuration, when available."""
   configuration: PostgresConfiguration
 
+  """
+  The cost for this Postgres. Billing data is delayed by at least two days.
+  """
+  cost: PostgresCost!
+
   """When this Postgres was created."""
   createdAt: Time!
 
@@ -6417,7 +6422,7 @@ type Postgres implements ActivityLogger & Node {
   name: String!
 
   """
-  Immutable recovery origin and observed bootstrap progress, if created from a backup.
+  Where this database was restored from, if it was created by a recovery.
   """
   recovery: PostgresRecovery
 
@@ -6629,6 +6634,33 @@ type PostgresConnection {
   facets: PostgresFacets!
   nodes: [Postgres!]!
   pageInfo: PageInfo!
+}
+
+"""The cost for a Postgres."""
+type PostgresCost {
+  """
+  Daily cost in ascending date order. Dates without cost data are omitted. Null when there is no cost data in the period.
+  """
+  daily(
+    """Start date of the period, inclusive."""
+    from: Date!
+
+    """End date of the period, inclusive; must not be in the future."""
+    to: Date!
+  ): PostgresCostPeriod
+
+  """
+  Monthly cost for the last 12 months, newest first. The date is the last day with cost data in the month. Null when there is no cost data.
+  """
+  monthly: PostgresCostPeriod
+}
+
+type PostgresCostPeriod {
+  """The cost series."""
+  series: [ServiceCostSeries!]!
+
+  """The total cost in euros for the period."""
+  sum: Float!
 }
 
 """Activity log entry for a Postgres that was created."""
@@ -6853,22 +6885,20 @@ type PostgresPersonalAccessCreatedActivityLogEntryData {
   username: String!
 }
 
-"""The immutable origin and bootstrap progress of a recovered database."""
+"""Origin and progress of a database created by recovery."""
 type PostgresRecovery {
   """
-  Recovery is checkpointed and the database has a successful backup of its own.
+  True once the database is independent of the source and has its own backup.
   """
   completed: Boolean!
 
-  """A terminal recovery failure, if reported by the operator."""
+  """Why recovery failed, if it did."""
   failureMessage: String
 
-  """
-  Name of the source database at creation; the source may since have been deleted.
-  """
+  """Name of the source database. It may have been deleted since."""
   sourcePostgres: String!
 
-  """The requested point in time, not the database creation time."""
+  """The point in time restored to."""
   targetTime: Time!
 }
 
@@ -6878,7 +6908,7 @@ input PostgresRecoveryInput {
   sourcePostgres: String!
 
   """
-  Restore to this explicit instant. Must be within the available archive and not in the future.
+  Point in time to restore to, in whole seconds. Must be within the available backups and not in the future.
   """
   targetTime: Time!
 }
@@ -9300,7 +9330,7 @@ type ServiceCostSeries {
   """
   date: Date!
 
-  """The cost for the services used by the workload."""
+  """The cost for the services used by the resource."""
   services: [ServiceCostSample!]!
 
   """The sum of the cost across all services."""
