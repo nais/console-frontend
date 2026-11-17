@@ -118,7 +118,7 @@
 	</div>
 {:else if postgres}
 	{#if postgres.recovery}
-		<div class="provisioning-alert">
+		<div class="provisioning-alert" role="status" aria-live="polite">
 			<Alert
 				variant={postgres.recovery.failureMessage
 					? 'error'
@@ -134,7 +134,7 @@
 			</Alert>
 		</div>
 	{/if}
-	{#if branchState === 'PROGRESSING'}
+	{#if branchState === 'PROGRESSING' && !postgres.recovery}
 		<div class="provisioning-alert">
 			<Alert variant="info" size="small">
 				Postgres is being prepared. Status updates automatically.
