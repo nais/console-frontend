@@ -20,11 +20,11 @@ updates:
           - "patch"
     ignore:
       - dependency-name: "@sveltejs/kit"
-        update-types: ["version-update:semver-major"]
+        versions: [">=3.0.0"]
       - dependency-name: "@sveltejs/adapter-node"
-        update-types: ["version-update:semver-major"]
+        versions: [">=6.0.0"]
       - dependency-name: "typescript"
-        update-types: ["version-update:semver-major"]
+        versions: [">=6.1.0"]
 
   - package-ecosystem: github-actions
     directory: "/"
