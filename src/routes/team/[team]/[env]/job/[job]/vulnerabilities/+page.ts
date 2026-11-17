@@ -45,7 +45,10 @@ export async function load(event) {
 						before: null,
 						last: null
 					}
-				}).catch(() => ({ ImagePriorityVulnerabilities: undefined }))
+				}).catch((error) => {
+					console.error('Unable to load initial job vulnerability findings:', error);
+					return { ImagePriorityVulnerabilities: undefined };
+				})
 			: { ImagePriorityVulnerabilities: undefined })
 	};
 }
