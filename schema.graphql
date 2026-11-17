@@ -11020,9 +11020,6 @@ enum TeamOrderField {
   The accumulated number of unassigned vulnerabilities of the teams workloads.
   """
   UNASSIGNED_VULNERABILITIES
-
-  """The number of workloads included in the team's vulnerability summary."""
-  VULNERABILITY_SUMMARY_WORKLOAD_COUNT
 }
 
 """

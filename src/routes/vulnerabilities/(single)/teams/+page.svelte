@@ -80,8 +80,7 @@
 					onlyInclude={[
 						TeamOrderField.RISK_SCORE,
 						TeamOrderField.SLUG,
-						TeamOrderField.SBOM_COVERAGE,
-						TeamOrderField.VULNERABILITY_SUMMARY_WORKLOAD_COUNT
+						TeamOrderField.SBOM_COVERAGE
 					]}
 					resetParams={paginationParams}
 				/>

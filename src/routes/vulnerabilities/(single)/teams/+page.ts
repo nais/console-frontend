@@ -11,7 +11,6 @@ export async function load(event) {
 			{
 				RISK_SCORE: TeamOrderField.RISK_SCORE,
 				SBOM_COVERAGE: TeamOrderField.SBOM_COVERAGE,
-				VULNERABILITY_SUMMARY_WORKLOAD_COUNT: TeamOrderField.VULNERABILITY_SUMMARY_WORKLOAD_COUNT,
 				SLUG: TeamOrderField.SLUG
 			},
 			TeamOrderField.SBOM_COVERAGE,
