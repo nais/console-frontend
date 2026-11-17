@@ -110,6 +110,16 @@ function edit(name: string, value: string) {
 	flushSync();
 }
 
+function timeToggle() {
+	return [...document.querySelectorAll<HTMLButtonElement>('button[aria-expanded]')].find(
+		(element) => element.textContent?.includes('Specify time')
+	)!;
+}
+function toggleTime() {
+	timeToggle().click();
+	flushSync();
+}
+
 function tab(label: string) {
 	return [...document.querySelectorAll<HTMLButtonElement>('[role="tab"]')].find((element) =>
 		element.textContent?.includes(label)
@@ -240,6 +250,7 @@ test.each([
 		}) as typeof data.CreatePostgresEnvironments;
 		const state = mountWithState(data);
 		edit('name', 'recovery-draft');
+		toggleTime();
 		edit('targetTime', '2021-01-02T13:00');
 		goto.mockRejectedValueOnce(new Error('offline'));
 		if (field === 'mode') clickTab('Empty database');
@@ -482,26 +493,71 @@ describe('clone tabs and local time', () => {
 		expect(tab('Empty database').tabIndex).toBe(-1);
 		expect(tab('Empty database').tagName).toBe('BUTTON');
 	});
-	test('sends the absolute instant for the typed local time and allows an empty time', () => {
+	test('keeps the time disclosure collapsed by default and submits no target time', () => {
 		mountWithState();
+		expect(timeToggle().getAttribute('aria-expanded')).toBe('false');
+		expect(document.querySelector('input[name="targetTime"]')).toBeNull();
+		expect(document.querySelector('input[name="targetInstant"]')).toBeNull();
+		expect(document.body.textContent).not.toContain('Earliest clone time');
+		expect(document.body.textContent).toContain('latest available point');
+		const submitted = new FormData(document.querySelector('form')!);
+		expect(submitted.has('targetTime')).toBe(false);
+		expect(submitted.has('targetInstant')).toBe(false);
+		expect(document.querySelector<HTMLButtonElement>('button[type="submit"]')!.disabled).toBe(
+			false
+		);
+	});
+	test('sends the absolute instant for the typed time once expanded', () => {
+		mountWithState();
+		toggleTime();
+		expect(timeToggle().getAttribute('aria-expanded')).toBe('true');
 		const instant = () =>
 			document.querySelector<HTMLInputElement>('input[name="targetInstant"]')!.value;
 		expect(document.querySelector<HTMLInputElement>('input[name="targetTime"]')!.required).toBe(
 			false
 		);
+		expect(document.body.textContent).toContain('Earliest clone time');
 		expect(instant()).toBe('');
 		edit('targetTime', '2021-01-02T13:00');
-		// The test environment runs in UTC until the component reads the browser zone on mount.
 		const zone = Intl.DateTimeFormat().resolvedOptions().timeZone;
 		const expected = parseLocalDateTime('2021-01-02T13:00', zone);
 		expect(instant()).toBe('instant' in expected ? expected.instant.toISOString() : 'x');
 		expect(document.querySelector<HTMLButtonElement>('button[type="submit"]')!.disabled).toBe(
 			false
 		);
-		edit('targetTime', '');
-		expect(instant()).toBe('');
-		expect(document.querySelector<HTMLButtonElement>('button[type="submit"]')!.disabled).toBe(
-			false
+	});
+	test('collapsing after typing discards the time so no stale value is submitted', () => {
+		mountWithState();
+		toggleTime();
+		edit('targetTime', '2021-01-02T13:00');
+		toggleTime();
+		const submitted = new FormData(document.querySelector('form')!);
+		expect(submitted.has('targetTime')).toBe(false);
+		expect(submitted.has('targetInstant')).toBe(false);
+		toggleTime();
+		expect(document.querySelector<HTMLInputElement>('input[name="targetTime"]')!.value).toBe('');
+		expect(document.querySelector<HTMLInputElement>('input[name="targetInstant"]')!.value).toBe('');
+	});
+	test('starts expanded with the draft when a time was entered before a failed submit', () => {
+		mountWithState(initialData(), {
+			mode: 'clone',
+			name: 'x',
+			environment: 'dev',
+			majorVersion: '17',
+			sourcePostgres: 'original',
+			targetTime: '2021-01-01T12:00',
+			extensions: undefined,
+			labelRows: [],
+			cpu: '',
+			memory: '',
+			diskSize: '',
+			highAvailability: false,
+			errors: {},
+			error: 'Name already exists.'
+		} as ComponentProps<typeof CreatePage>['form']);
+		expect(timeToggle().getAttribute('aria-expanded')).toBe('true');
+		expect(document.querySelector<HTMLInputElement>('input[name="targetTime"]')!.value).toBe(
+			'2021-01-01T12:00'
 		);
 	});
 	test('disables submit with a field error when the default is before the earliest time', () => {
@@ -512,7 +568,9 @@ describe('clone tabs and local time', () => {
 			data: { team: { environment: { postgres: future } } }
 		} as typeof data.recoverySource;
 		mountWithState(data);
-		expect(document.body.textContent).toContain('earliest clone time');
+		// The error stays visible although the disclosure is collapsed.
+		expect(timeToggle().getAttribute('aria-expanded')).toBe('false');
+		expect(document.querySelector('[role="alert"]')?.textContent).toContain('earliest clone time');
 		expect(document.querySelector<HTMLButtonElement>('button[type="submit"]')!.disabled).toBe(true);
 	});
 });

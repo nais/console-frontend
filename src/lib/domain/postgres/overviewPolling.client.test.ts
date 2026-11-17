@@ -124,7 +124,7 @@ test.each(['completed', 'failed'])(
 		});
 		flushSync();
 		expect(document.body.textContent).toContain('Cloning is in progress');
-		expect(document.body.textContent).toMatch(/Cloned as of .*\d{4}, \d{2}:\d{2}:\d{2} \S+\./);
+		expect(document.body.textContent).toMatch(/Cloned as of .*\d{4}, \d{2}:\d{2}:\d{2}\./);
 		expect(document.body.textContent).toContain('original');
 		await vi.advanceTimersByTimeAsync(10_000);
 		expect(fetch).toHaveBeenCalledTimes(1);

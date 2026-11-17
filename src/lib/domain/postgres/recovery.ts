@@ -104,7 +104,7 @@ export function recoveryTimeMinimum(earliest: Date | null | undefined, timeZone?
 	return formatLocalInput(new Date(Math.ceil(earliest.getTime() / 60_000) * 60_000), timeZone);
 }
 
-/** Human readable time in the given zone with an explicit zone indicator, e.g. "1 Jan 2026, 13:00:01 CET". */
+/** Human readable time in the given zone, e.g. "1 Jan 2026, 13:00:01" (no zone name). */
 export function formatLocalTime(date: Date, timeZone = browserTimeZone()): string {
 	return new Intl.DateTimeFormat('en-GB', {
 		timeZone,
@@ -114,8 +114,7 @@ export function formatLocalTime(date: Date, timeZone = browserTimeZone()): strin
 		day: 'numeric',
 		hour: '2-digit',
 		minute: '2-digit',
-		second: '2-digit',
-		timeZoneName: 'short'
+		second: '2-digit'
 	}).format(date);
 }
 
@@ -139,7 +138,7 @@ export function resolveCloneTarget(
 		const target = defaultCloneTime(now);
 		return target < earliest
 			? {
-					error: `The latest available point (about ${CLONE_LATEST_POINT_BUFFER_MINUTES} minutes ago) is before the earliest clone time, ${earliestText}. Try again later or enter a target time.`
+					error: `The latest available point (about ${CLONE_LATEST_POINT_BUFFER_MINUTES} minutes ago) is before the earliest clone time, ${earliestText}. Try again later or specify a time.`
 				}
 			: { target };
 	}
@@ -163,7 +162,7 @@ export function recoveryTimeError(
 		const parsed = parseLocalDateTime(value, timeZone);
 		if ('error' in parsed) {
 			return parsed.error === 'nonexistent'
-				? 'This local time does not exist (daylight saving time change). Choose another time.'
+				? 'This time does not exist because of a clock change. Choose another time.'
 				: 'Enter a valid target time.';
 		}
 		explicit = parsed.instant;

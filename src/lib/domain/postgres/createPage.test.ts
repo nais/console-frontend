@@ -228,10 +228,13 @@ describe('shared recovery creation flow', () => {
 		);
 		expect(body).toMatch(/<input(?=[^>]*type="hidden")(?=[^>]*name="mode")(?=[^>]*value="clone")/);
 		expect(body).toMatch(/<option[^>]*value="original"[^>]*selected/);
-		expect(body).toContain('Earliest clone time: 1 Jan 2026, 12:00:01 UTC');
-		expect(body).toContain('Target time (optional');
-		expect(body).toContain('approximately 10 minutes ago');
-		expect(body).toContain('min="2026-01-01T12:01"');
+		expect(body).toContain('Specify time');
+		expect(body).toMatch(/<button(?=[^>]*aria-expanded="false")[^>]*>[\s\S]*?Specify time/);
+		expect(body).toMatch(/about\s*(<!---->)?10(<!---->)?\s*minutes ago/);
+		expect(body).not.toContain('Earliest clone time');
+		expect(body).not.toContain('name="targetTime"');
+		expect(body).not.toContain('name="targetInstant"');
+		expect(body).not.toMatch(/time zone|UTC/i);
 		expect(body).not.toMatch(/<input(?=[^>]*name="targetTime")[^>]*required/);
 		expect(body).not.toContain('name="extensions"');
 		expect(body).not.toContain('name="diskSize"');

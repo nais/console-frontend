@@ -18,6 +18,8 @@
 	import PostgresExtensionFields from '#lib/domain/postgres/PostgresExtensionFields.svelte';
 	import GraphErrors from '#lib/ui/GraphErrors.svelte';
 	import {
+		Accordion,
+		AccordionItem,
 		Alert,
 		BodyShort,
 		Button,
@@ -52,6 +54,9 @@
 	// Navigation clears action data. Keep the user's draft independently of it.
 	let databaseName = $state(untrack(() => form?.name ?? ''));
 	let targetTime = $state(untrack(() => form?.targetTime ?? ''));
+	// Collapsed unless a time was already entered. Collapsing clears the typed time, so a hidden
+	// stale value can never be submitted.
+	let timeOpen = $state(untrack(() => !!form?.targetTime));
 	let resources = $state(
 		untrack(() => ({
 			cpu: form?.cpu ?? '',
@@ -66,7 +71,7 @@
 	);
 	let submissionError = $state('');
 	let now = $state<Date>();
-	// Local time zone of the browser; UTC until mounted so server and client markup agree.
+	// Browser time zone (never shown); UTC until mounted so server and client markup agree.
 	let timeZone = $state('UTC');
 	let timeError = $derived(
 		now ? recoveryTimeError(targetTime, source?.earliestRestoreTime, now, timeZone) : undefined
@@ -240,22 +245,44 @@
 								>
 								{#if source.earliestRestoreTime}
 									<BodyShort
-										>Earliest clone time: {formatLocalTime(
-											source.earliestRestoreTime,
-											timeZone
-										)}.</BodyShort
+										>Clones from the latest available point (about {CLONE_LATEST_POINT_BUFFER_MINUTES}
+										minutes ago) unless you specify a time.</BodyShort
 									>
-									<input type="hidden" name="targetInstant" value={targetInstant} />
-									<TextField
-										name="targetTime"
-										type="datetime-local"
-										label="Target time (optional, your local time: {timeZone})"
-										description="Leave empty to clone from approximately {CLONE_LATEST_POINT_BUFFER_MINUTES} minutes ago (the latest point that is safely archived). Times are in your local time zone ({timeZone})."
-										min={recoveryTimeMinimum(source.earliestRestoreTime, timeZone)}
-										max={now ? formatLocalInput(now, timeZone) : undefined}
-										bind:value={targetTime}
-										error={timeError}
-									/>
+									<Accordion>
+										<AccordionItem
+											heading="Specify time"
+											open={timeOpen}
+											onOpenChange={(next) => {
+												timeOpen = next;
+												if (!next) targetTime = '';
+											}}
+										>
+											{#if timeOpen}
+												<div class="stack">
+													{#if now}
+														<BodyShort
+															>Earliest clone time: {formatLocalTime(
+																source.earliestRestoreTime,
+																timeZone
+															)}.</BodyShort
+														>
+													{/if}
+													<input type="hidden" name="targetInstant" value={targetInstant} />
+													<TextField
+														name="targetTime"
+														type="datetime-local"
+														label="Target time"
+														min={recoveryTimeMinimum(source.earliestRestoreTime, timeZone)}
+														max={now ? formatLocalInput(now, timeZone) : undefined}
+														bind:value={targetTime}
+														error={timeError}
+													/>
+												</div>
+											{/if}
+										</AccordionItem>
+									</Accordion>
+									{#if !timeOpen && timeError}<Alert variant="error" role="alert">{timeError}</Alert
+										>{/if}
 								{:else}<Alert variant="warning">This source has no available recovery window.</Alert
 									>{/if}
 							{/if}

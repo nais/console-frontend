@@ -46,12 +46,13 @@ describe('local time parsing', () => {
 		expect(iso(parseLocalDateTime('2026-10-25T02:30', oslo))).toBe('2026-10-25T00:30:00.000Z');
 		expect(iso(parseLocalDateTime('2026-10-25T03:00', oslo))).toBe('2026-10-25T02:00:00.000Z');
 	});
-	test('formats instants as local input values and labelled display times', () => {
+	test('formats instants as local input values and display times without zone names', () => {
 		const instant = new Date('2026-07-15T10:00:01Z');
 		expect(formatLocalInput(instant, oslo)).toBe('2026-07-15T12:00');
-		expect(formatLocalTime(instant, oslo)).toMatch(/15 Jul 2026.*12:00:01 (CEST|GMT\+2)/);
+		expect(formatLocalTime(instant, oslo)).toBe('15 Jul 2026, 12:00:01');
+		expect(formatLocalTime(instant, oslo)).not.toMatch(/CEST|GMT|UTC|time zone/i);
 		expect(formatLocalTime(instant, 'UTC')).toContain('10:00:01');
-		expect(formatLocalTime(instant, 'UTC')).toContain('UTC');
+		expect(formatLocalTime(instant, 'UTC')).not.toContain('UTC');
 	});
 	test('rounds the earliest selectable minute up, in local time', () => {
 		expect(recoveryTimeMinimum(new Date('2026-01-01T12:00:01Z'), oslo)).toBe('2026-01-01T13:01');
