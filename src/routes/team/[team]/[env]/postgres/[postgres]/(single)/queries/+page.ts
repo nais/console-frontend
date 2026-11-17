@@ -8,10 +8,10 @@ import { postgresQueryInsightsQuery } from '#lib/domain/postgres/queryInsights.j
 import { addPageMeta } from '#lib/utils/pageMeta.js';
 import { get } from 'svelte/store';
 import type { PageLoad } from './$types';
-import { requireMainBranch } from '#lib/domain/postgres/branchCompatibility.js';
+import { rejectRetiredBranchLinks } from '#lib/domain/postgres/legacyLinks.js';
 
 export const load: PageLoad = async (event) => {
-	requireMainBranch(event.url);
+	rejectRetiredBranchLinks(event.url);
 	const requestedInterval = event.url.searchParams.get('interval');
 	const interval =
 		Object.values(PrometheusChartQueryInterval).find((value) => value === requestedInterval) ??

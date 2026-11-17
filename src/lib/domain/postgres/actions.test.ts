@@ -1,17 +1,29 @@
 import { vi } from 'vitest';
 
-const { access, create, update, remove, environmentCheck, currentResources, availableValues } =
-	vi.hoisted(() => ({
-		access: { fetch: vi.fn() },
-		create: { mutate: vi.fn() },
-		update: { mutate: vi.fn() },
-		remove: { mutate: vi.fn() },
-		environmentCheck: { fetch: vi.fn() },
-		currentResources: { fetch: vi.fn() },
-		availableValues: { fetch: vi.fn() }
-	}));
+const {
+	access,
+	create,
+	update,
+	remove,
+	environmentCheck,
+	currentResources,
+	availableValues,
+	recoverySource
+} = vi.hoisted(() => ({
+	access: { fetch: vi.fn() },
+	create: { mutate: vi.fn() },
+	update: { mutate: vi.fn() },
+	remove: { mutate: vi.fn() },
+	environmentCheck: { fetch: vi.fn() },
+	currentResources: { fetch: vi.fn() },
+	availableValues: { fetch: vi.fn() },
+	recoverySource: { fetch: vi.fn() }
+}));
 
 vi.mock('$houdini', () => ({
+	PostgresRecoverySourceStore: class {
+		fetch = recoverySource.fetch;
+	},
 	PostgresAvailableValuesStore: class {
 		fetch = availableValues.fetch;
 	},
@@ -100,6 +112,92 @@ beforeEach(() => {
 });
 
 describe('Postgres management actions', () => {
+	test.each(['empty', 'throw'])(
+		'does not encourage blind retries when the mutation outcome is %s',
+		async (outcome) => {
+			if (outcome === 'throw') create.mutate.mockRejectedValue(new Error('Connection lost'));
+			else create.mutate.mockResolvedValue({ data: null });
+			const result = await createActions.default(
+				createEvent({ name: 'database', environment: 'dev', majorVersion: '18' })
+			);
+			expect(result).toMatchObject({ status: 502, data: { outcomeUnknown: true } });
+			expect(result?.data.error).toContain('Check whether the database exists before retrying');
+			expect(create.mutate).toHaveBeenCalledTimes(1);
+		}
+	);
+	test('restores with a UTC Date, source version and safe inherited configuration', async () => {
+		recoverySource.fetch.mockResolvedValue({
+			data: {
+				team: {
+					environment: {
+						postgres: {
+							name: 'original',
+							majorVersion: '17',
+							earliestRestoreTime: new Date('2020-01-01T00:00:00Z')
+						}
+					}
+				}
+			}
+		});
+		create.mutate.mockResolvedValue({
+			data: {
+				createPostgres: {
+					postgres: {
+						id: 'restored',
+						name: 'restored',
+						teamEnvironment: { environment: { name: 'dev' } }
+					}
+				}
+			}
+		});
+		await expect(
+			createActions.default(
+				createEvent({
+					mode: 'recovery',
+					name: 'restored',
+					environment: 'dev',
+					sourcePostgres: 'original',
+					targetTime: '2021-01-01T12:00',
+					majorVersion: '18',
+					extensionsPresent: 'true',
+					diskSize: '5'
+				})
+			)
+		).rejects.toMatchObject({ status: 303 });
+		const input = create.mutate.mock.calls[0][0].input;
+		expect(input).toMatchObject({
+			majorVersion: '17',
+			recovery: { sourcePostgres: 'original', targetTime: new Date('2021-01-01T12:00:00Z') }
+		});
+		for (const field of ['cpu', 'memory', 'diskSize', 'highAvailability'])
+			expect(input).not.toHaveProperty(field);
+		expect(input.extensions).toBeUndefined();
+	});
+	test.each([
+		{ name: 'original', targetTime: '2021-01-01T12:00' },
+		{ name: 'restored', targetTime: '2019-01-01T12:00' },
+		{ name: 'restored', targetTime: '2021-02-30T12:00' },
+		{ name: 'restored', targetTime: '9999-01-01T12:00' }
+	])('rejects unsafe recovery input %s without creating a database', async (fields) => {
+		recoverySource.fetch.mockResolvedValue({
+			data: {
+				team: {
+					environment: {
+						postgres: {
+							name: 'original',
+							majorVersion: '17',
+							earliestRestoreTime: new Date('2020-01-01T00:00:00Z')
+						}
+					}
+				}
+			}
+		});
+		const result = await createActions.default(
+			createEvent({ mode: 'recovery', environment: 'dev', sourcePostgres: 'original', ...fields })
+		);
+		expect(result).toMatchObject({ status: 400 });
+		expect(create.mutate).not.toHaveBeenCalled();
+	});
 	test('creates with platform defaults and redirects to the returned database', async () => {
 		create.mutate.mockResolvedValue({
 			data: {

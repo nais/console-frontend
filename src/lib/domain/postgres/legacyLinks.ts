@@ -1,7 +1,7 @@
 import { error } from '@sveltejs/kit';
 
 /** Old main links remain valid; never silently display main for another database. */
-export function requireMainBranch(url: URL) {
+export function rejectRetiredBranchLinks(url: URL) {
 	if (url.searchParams.getAll('branch').some((branch) => branch !== 'main')) {
 		error(
 			400,

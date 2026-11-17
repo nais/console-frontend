@@ -87,3 +87,56 @@ test('polls direct progressing state in visible tabs, pauses for fetching/readin
 	await vi.advanceTimersByTimeAsync(30_000);
 	expect(fetch).toHaveBeenCalledTimes(2);
 });
+
+test.each(['completed', 'failed'])(
+	'polls an AVAILABLE database while recovery is pending, then stops when %s',
+	async (outcome) => {
+		vi.useFakeTimers();
+		vi.spyOn(document, 'visibilityState', 'get').mockReturnValue('visible');
+		const recovery = {
+			sourcePostgres: 'original',
+			targetTime: new Date('2026-01-01T12:00:00Z'),
+			completed: false,
+			failureMessage: null as string | null
+		};
+		const snapshot = () => ({
+			fetching: false,
+			errors: null,
+			data: {
+				team: {
+					environment: { postgres: { ...database, state: 'AVAILABLE', recovery: { ...recovery } } }
+				}
+			}
+		});
+		const store = writable(snapshot());
+		const fetch = vi.fn().mockResolvedValue({});
+		component = mount(Overview, {
+			target: document.body,
+			props: {
+				data: {
+					teamSlug: 'test',
+					viewerIsMember: false,
+					isAdmin: false,
+					PostgresOverview: { subscribe: store.subscribe, fetch }
+				} as unknown as ComponentProps<typeof Overview>['data'],
+				params: { team: 'test', env: 'dev', postgres: 'database' }
+			}
+		});
+		flushSync();
+		expect(document.body.textContent).toContain('Restoration is in progress');
+		expect(document.body.textContent).toContain('original');
+		await vi.advanceTimersByTimeAsync(10_000);
+		expect(fetch).toHaveBeenCalledTimes(1);
+		if (outcome === 'completed') recovery.completed = true;
+		else recovery.failureMessage = 'Required WAL is unavailable';
+		store.set(snapshot());
+		flushSync();
+		expect(document.body.textContent).toContain(
+			outcome === 'completed'
+				? 'Restoration completed'
+				: 'Restoration failed: Required WAL is unavailable'
+		);
+		await vi.advanceTimersByTimeAsync(20_000);
+		expect(fetch).toHaveBeenCalledTimes(1);
+	}
+);

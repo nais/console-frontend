@@ -14,6 +14,12 @@ query PostgresOverview($team: Slug!, $env: String!, $name: String!) {
 				extensions
 				highAvailability
 				state
+				recovery {
+					sourcePostgres
+					targetTime
+					completed
+					failureMessage
+				}
 				resources {
 					cpu
 					memory

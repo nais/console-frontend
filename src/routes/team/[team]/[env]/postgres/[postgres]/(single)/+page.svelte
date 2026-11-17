@@ -1,5 +1,6 @@
 <script lang="ts">
 	import PersistenceActivityCard from '#lib/domain/activity/PersistenceActivityCard.svelte';
+	import { recoveryPending } from '#lib/domain/postgres/recovery.js';
 	import Labels from '#lib/domain/labels/Labels.svelte';
 	import LabelsEditorModal from '#lib/domain/labels/LabelsEditorModal.svelte';
 	import type { Label } from '#lib/domain/labels/labels.js';
@@ -25,8 +26,8 @@
 	} from '#lib/shadcn/ui/index.js';
 	import { onMount } from 'svelte';
 	import type { PageProps } from './$types';
-	import BranchStateIndicator from './BranchStateIndicator.svelte';
-	import { branchStateLabel } from './branchStateLabel.js';
+	import StateIndicator from './StateIndicator.svelte';
+	import { stateLabel } from './stateLabel.js';
 
 	let { data }: PageProps = $props();
 	let { PostgresOverview } = $derived(data);
@@ -88,7 +89,18 @@
 			(usage) => usage.workload.__typename === 'Application' || usage.workload.__typename === 'Job'
 		)
 	);
-	let branchState = $derived(postgres?.state ?? 'PROGRESSING');
+	let postgresState = $derived(postgres?.state ?? 'PROGRESSING');
+
+	// Completion is only news for a short while; failures and progress stay visible.
+	// SvelteKit reuses this component across databases, so track dismissal per database.
+	let dismissedRecoveryNotice = $state<string>();
+	let recoveryCompletedId = $derived(postgres?.recovery?.completed ? postgres.id : undefined);
+	$effect(() => {
+		const id = recoveryCompletedId;
+		if (!id) return;
+		const timeout = window.setTimeout(() => (dismissedRecoveryNotice = id), 30_000);
+		return () => window.clearTimeout(timeout);
+	});
 
 	onMount(() => {
 		const interval = window.setInterval(() => {
@@ -96,11 +108,13 @@
 				document.visibilityState !== 'visible' ||
 				$PostgresOverview.fetching ||
 				!postgres ||
-				branchState !== 'PROGRESSING'
+				(postgresState !== 'PROGRESSING' && !recoveryPending(postgres.recovery))
 			) {
 				return;
 			}
-			PostgresOverview.fetch({ policy: 'NetworkOnly' });
+			void PostgresOverview.fetch({ policy: 'NetworkOnly' }).catch(() => {
+				// The next interval retries; query errors are rendered by GraphErrors.
+			});
 		}, 10_000);
 
 		return () => window.clearInterval(interval);
@@ -114,7 +128,24 @@
 		<Loader size="3xlarge" />
 	</div>
 {:else if postgres}
-	{#if branchState === 'PROGRESSING'}
+	{#if postgres.recovery && (!postgres.recovery.completed || dismissedRecoveryNotice !== postgres.id)}
+		<div class="provisioning-alert" role="status" aria-live="polite">
+			<Alert
+				variant={postgres.recovery.failureMessage
+					? 'error'
+					: postgres.recovery.completed
+						? 'success'
+						: 'info'}
+			>
+				{#if postgres.recovery.failureMessage}Restoration failed: {postgres.recovery.failureMessage}
+				{:else if postgres.recovery.completed}Restoration completed.
+				{:else}Restoration is in progress. Status updates automatically.{/if}
+				Source: {postgres.recovery.sourcePostgres}. Target time: {postgres.recovery.targetTime.toISOString()}
+				(UTC). The source is unchanged. No applications are automatically moved.
+			</Alert>
+		</div>
+	{/if}
+	{#if postgresState === 'PROGRESSING' && !postgres.recovery}
 		<div class="provisioning-alert">
 			<Alert variant="info" size="small">
 				Postgres is being prepared. Status updates automatically.
@@ -128,8 +159,8 @@
 				<dl class="settings-list">
 					<dt>State</dt>
 					<dd class="state-value">
-						<BranchStateIndicator state={branchState} />
-						{branchStateLabel(branchState)}
+						<StateIndicator state={postgresState} />
+						{stateLabel(postgresState)}
 					</dd>
 					<dt>High availability</dt>
 					<dd>

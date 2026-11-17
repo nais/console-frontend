@@ -1,11 +1,11 @@
-import { requireMainBranch } from './branchCompatibility.js';
+import { rejectRetiredBranchLinks } from './legacyLinks.js';
 import { load as loadBranches } from '../../../routes/team/[team]/[env]/postgres/[postgres]/(single)/branches/+page.js';
 import { load as loadLayout } from '../../../routes/team/[team]/[env]/postgres/[postgres]/+layout.js';
 
 describe('retired Postgres branch links', () => {
 	test.each(['', '?branch=main'])('accepts default and explicit main: %s', async (search) => {
 		const url = new URL(`https://console.test/team/test/dev/postgres/database${search}`);
-		expect(() => requireMainBranch(url)).not.toThrow();
+		expect(() => rejectRetiredBranchLinks(url)).not.toThrow();
 		await expect(
 			loadLayout({
 				url,
@@ -18,7 +18,7 @@ describe('retired Postgres branch links', () => {
 		'rejects unsupported branches: %s',
 		(branch) => {
 			const url = new URL(`https://console.test/?branch=${branch}`);
-			expect(() => requireMainBranch(url)).toThrow(
+			expect(() => rejectRetiredBranchLinks(url)).toThrow(
 				expect.objectContaining({
 					status: 400,
 					body: { message: expect.stringContaining('Only main is supported') }

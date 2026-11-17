@@ -1,12 +1,12 @@
-import { branchStateLabel } from './branchStateLabel.js';
+import { stateLabel } from './stateLabel.js';
 
-describe('branchStateLabel', () => {
+describe('stateLabel', () => {
 	test.each([
 		['PROGRESSING', 'Preparing'],
 		['AVAILABLE', 'Ready'],
 		['DEGRADED', 'Degraded'],
 		['UNKNOWN_STATE', 'UNKNOWN_STATE']
 	])('maps %s to %s', (state, label) => {
-		expect(branchStateLabel(state)).toBe(label);
+		expect(stateLabel(state)).toBe(label);
 	});
 });

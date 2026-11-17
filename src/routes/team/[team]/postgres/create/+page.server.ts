@@ -1,4 +1,5 @@
-import { graphql, PostgresAvailableValuesStore } from '$houdini';
+import { graphql, PostgresAvailableValuesStore, PostgresRecoverySourceStore } from '$houdini';
+import { parseRecoveryTime, recoveryTimeError } from '#lib/domain/postgres/recovery.js';
 import { labelRowsHaveErrors, rowsFromArrays, toLabelInput } from '#lib/domain/labels/labels.js';
 import { requirePostgresAccess } from '#lib/domain/postgres/access.server.js';
 import {
@@ -50,6 +51,9 @@ export const actions = {
 			data.getAll('label_value').map((value) => (typeof value === 'string' ? value : ''))
 		);
 		const values = {
+			mode: formString(data, 'mode'),
+			sourcePostgres: formString(data, 'sourcePostgres'),
+			targetTime: formString(data, 'targetTime'),
 			name: formString(data, 'name'),
 			environment: formString(data, 'environment'),
 			majorVersion: formString(data, 'majorVersion'),
@@ -61,7 +65,8 @@ export const actions = {
 		if (labelRowsHaveErrors(labelRows)) {
 			return fail(400, { ...values, errors, error: 'Check the label fields below.' });
 		}
-		if (!values.name || !values.environment || !values.majorVersion) {
+		const recovering = values.mode === 'recovery';
+		if (!values.name || !values.environment || (!recovering && !values.majorVersion)) {
 			return fail(400, { ...values, errors, error: 'Name, environment and version are required.' });
 		}
 		const environmentsResult = await environmentsQuery.fetch({
@@ -93,48 +98,101 @@ export const actions = {
 				error: 'Postgres is only available in GCP environments.'
 			});
 		}
-		const available = await new PostgresAvailableValuesStore().fetch({
-			event,
-			variables: { team: event.params.team, env: values.environment },
-			policy: 'NetworkOnly'
-		});
-		if (available.errors?.length || !available.data) {
-			return fail(500, {
+		let recovery: { sourcePostgres: string; targetTime: Date } | undefined;
+		if (recovering) {
+			if (!values.sourcePostgres || values.name === values.sourcePostgres) {
+				return fail(400, {
+					...values,
+					errors,
+					error: 'Select a source and a distinct new database name.'
+				});
+			}
+			const result = await new PostgresRecoverySourceStore().fetch({
+				event,
+				policy: 'NetworkOnly',
+				variables: { team: event.params.team, env: values.environment, name: values.sourcePostgres }
+			});
+			const source = result.data?.team.environment.postgres;
+			if (result.errors?.length || !source) {
+				return fail(400, {
+					...values,
+					errors,
+					error: 'Could not verify the recovery source. Select a source and try again.'
+				});
+			}
+			const timeError = recoveryTimeError(
+				values.targetTime,
+				source.earliestRestoreTime,
+				new Date()
+			);
+			if (timeError) return fail(400, { ...values, errors, error: timeError });
+			values.majorVersion = source.majorVersion;
+			recovery = { sourcePostgres: source.name, targetTime: parseRecoveryTime(values.targetTime)! };
+		} else {
+			const available = await new PostgresAvailableValuesStore().fetch({
+				event,
+				variables: { team: event.params.team, env: values.environment },
+				policy: 'NetworkOnly'
+			});
+			if (available.errors?.length || !available.data) {
+				return fail(500, {
+					...values,
+					errors,
+					error: available.errors?.length
+						? available.errors.map((item) => item.message).join('. ')
+						: 'Could not load Postgres options for this environment.'
+				});
+			}
+			const options = available.data.team.environment.environment.availableValues;
+			const extensionError = extensionSelectionError(
+				values.extensions,
+				options.postgresExtensions.values
+			);
+			if (!options.postgresMajorVersions.values.includes(values.majorVersion) || extensionError) {
+				return fail(400, {
+					...values,
+					errors,
+					error: extensionError ?? 'Select a PostgreSQL version available in this environment.'
+				});
+			}
+			if (Object.keys(errors).length)
+				return fail(400, { ...values, errors, error: 'Check the resource fields below.' });
+		}
+		const unknownOutcome = () =>
+			fail(502, {
 				...values,
 				errors,
-				error: available.errors?.length
-					? available.errors.map((item) => item.message).join('. ')
-					: 'Could not load Postgres options for this environment.'
+				outcomeUnknown: true,
+				error:
+					'The creation outcome could not be confirmed. Check whether the database exists before retrying.'
 			});
+		let result: Awaited<ReturnType<typeof mutation.mutate>>;
+		try {
+			result = await mutation.mutate(
+				{
+					input: {
+						name: values.name,
+						teamSlug: event.params.team,
+						environmentName: values.environment,
+						majorVersion: values.majorVersion,
+						extensions: recovering ? undefined : values.extensions,
+						recovery,
+						labels: toLabelInput(labelRows),
+						...(!recovering ? resourceInput(values) : {})
+					}
+				},
+				{ event }
+			);
+		} catch {
+			return unknownOutcome();
 		}
-		const options = available.data.team.environment.environment.availableValues;
-		const extensionError = extensionSelectionError(
-			values.extensions,
-			options.postgresExtensions.values
-		);
-		if (!options.postgresMajorVersions.values.includes(values.majorVersion) || extensionError) {
-			return fail(400, {
-				...values,
-				errors,
-				error: extensionError ?? 'Select a PostgreSQL version available in this environment.'
-			});
+		const postgres = result.data?.createPostgres?.postgres;
+		if (postgres?.id && postgres.name && postgres.teamEnvironment?.environment?.name) {
+			redirect(
+				303,
+				`/team/${event.params.team}/${postgres.teamEnvironment.environment.name}/postgres/${postgres.name}`
+			);
 		}
-		if (Object.keys(errors).length)
-			return fail(400, { ...values, errors, error: 'Check the resource fields below.' });
-		const result = await mutation.mutate(
-			{
-				input: {
-					name: values.name,
-					teamSlug: event.params.team,
-					environmentName: values.environment,
-					majorVersion: values.majorVersion,
-					extensions: values.extensions,
-					labels: toLabelInput(labelRows),
-					...resourceInput(values)
-				}
-			},
-			{ event }
-		);
 		if (result.errors?.length) {
 			return fail(400, {
 				...values,
@@ -142,17 +200,6 @@ export const actions = {
 				error: result.errors.map((item) => item.message).join('. ')
 			});
 		}
-		if (!result.data) {
-			return fail(500, {
-				...values,
-				errors,
-				error: 'Could not create Postgres. Please try again.'
-			});
-		}
-		const postgres = result.data.createPostgres.postgres;
-		redirect(
-			303,
-			`/team/${event.params.team}/${postgres.teamEnvironment.environment.name}/postgres/${postgres.name}`
-		);
+		return unknownOutcome();
 	}
 } satisfies Actions;
