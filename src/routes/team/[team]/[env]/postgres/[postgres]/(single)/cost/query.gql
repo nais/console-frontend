@@ -1,0 +1,29 @@
+query PostgresCosts($team: Slug!, $env: String!, $name: String!, $from: Date!, $to: Date!) {
+	team(slug: $team) {
+		environment(name: $env) {
+			postgres(name: $name) {
+				id
+				cost {
+					daily(from: $from, to: $to) {
+						sum
+						series {
+							date
+							sum
+							services {
+								service
+								cost
+							}
+						}
+					}
+					monthly {
+						sum
+						series {
+							date
+							sum
+						}
+					}
+				}
+			}
+		}
+	}
+}
