@@ -125,7 +125,7 @@ describe('Postgres management actions', () => {
 			expect(create.mutate).toHaveBeenCalledTimes(1);
 		}
 	);
-	test('restores with a UTC Date, source version and safe inherited configuration', async () => {
+	test('clones with the absolute instant, source version and safe inherited configuration', async () => {
 		recoverySource.fetch.mockResolvedValue({
 			data: {
 				team: {
@@ -157,7 +157,8 @@ describe('Postgres management actions', () => {
 					name: 'restored',
 					environment: 'dev',
 					sourcePostgres: 'original',
-					targetTime: '2021-01-01T12:00',
+					targetTime: '2021-01-01T13:00',
+					targetInstant: '2021-01-01T12:00:00.000Z',
 					majorVersion: '18',
 					extensionsPresent: 'true',
 					diskSize: '5'
@@ -174,10 +175,11 @@ describe('Postgres management actions', () => {
 		expect(input.extensions).toBeUndefined();
 	});
 	test.each([
-		{ name: 'original', targetTime: '2021-01-01T12:00' },
-		{ name: 'restored', targetTime: '2019-01-01T12:00' },
-		{ name: 'restored', targetTime: '2021-02-30T12:00' },
-		{ name: 'restored', targetTime: '9999-01-01T12:00' }
+		{ name: 'original', targetTime: '2021-01-01T12:00', targetInstant: '2021-01-01T12:00:00.000Z' },
+		{ name: 'restored', targetTime: '2019-01-01T12:00', targetInstant: '2019-01-01T12:00:00.000Z' },
+		{ name: 'restored', targetTime: '2021-02-30T12:00', targetInstant: '2021-02-30T12:00:00.000Z' },
+		{ name: 'restored', targetTime: '9999-01-01T12:00', targetInstant: '9999-01-01T12:00:00.000Z' },
+		{ name: 'restored', targetTime: '2021-01-01T12:00', targetInstant: '' }
 	])('rejects unsafe recovery input %s without creating a database', async (fields) => {
 		recoverySource.fetch.mockResolvedValue({
 			data: {
@@ -197,6 +199,84 @@ describe('Postgres management actions', () => {
 		);
 		expect(result).toMatchObject({ status: 400 });
 		expect(create.mutate).not.toHaveBeenCalled();
+	});
+	test('uses now minus ten minutes, truncated to whole seconds, when the time is empty', async () => {
+		vi.useFakeTimers({ now: new Date('2026-01-01T13:00:30.750Z') });
+		try {
+			recoverySource.fetch.mockResolvedValue({
+				data: {
+					team: {
+						environment: {
+							postgres: {
+								name: 'original',
+								majorVersion: '17',
+								earliestRestoreTime: new Date('2026-01-01T12:00:00Z')
+							}
+						}
+					}
+				}
+			});
+			create.mutate.mockResolvedValue({
+				data: {
+					createPostgres: {
+						postgres: {
+							id: 'c',
+							name: 'clone',
+							teamEnvironment: { environment: { name: 'dev' } }
+						}
+					}
+				}
+			});
+			await expect(
+				createActions.default(
+					createEvent({
+						mode: 'clone',
+						name: 'clone',
+						environment: 'dev',
+						sourcePostgres: 'original',
+						targetTime: ''
+					})
+				)
+			).rejects.toMatchObject({ status: 303 });
+			expect(create.mutate.mock.calls[0][0].input.recovery).toEqual({
+				sourcePostgres: 'original',
+				targetTime: new Date('2026-01-01T12:50:30.000Z')
+			});
+		} finally {
+			vi.useRealTimers();
+		}
+	});
+	test('rejects a default target before the earliest restore time instead of submitting', async () => {
+		vi.useFakeTimers({ now: new Date('2026-01-01T12:05:00Z') });
+		try {
+			recoverySource.fetch.mockResolvedValue({
+				data: {
+					team: {
+						environment: {
+							postgres: {
+								name: 'original',
+								majorVersion: '17',
+								earliestRestoreTime: new Date('2026-01-01T12:00:00Z')
+							}
+						}
+					}
+				}
+			});
+			const result = await createActions.default(
+				createEvent({
+					mode: 'clone',
+					name: 'clone',
+					environment: 'dev',
+					sourcePostgres: 'original',
+					targetTime: ''
+				})
+			);
+			expect(result).toMatchObject({ status: 400 });
+			expect(result?.data.error).toContain('earliest clone time');
+			expect(create.mutate).not.toHaveBeenCalled();
+		} finally {
+			vi.useRealTimers();
+		}
 	});
 	test('creates with platform defaults and redirects to the returned database', async () => {
 		create.mutate.mockResolvedValue({

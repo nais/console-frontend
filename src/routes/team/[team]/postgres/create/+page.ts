@@ -5,6 +5,7 @@ import {
 	load_PostgresRecoverySource
 } from '$houdini';
 import { addPageMeta } from '#lib/utils/pageMeta.js';
+import { parseCloneMode } from '#lib/domain/postgres/recovery.js';
 import { error } from '@sveltejs/kit';
 import { get } from 'svelte/store';
 
@@ -44,7 +45,7 @@ export async function load(event) {
 		supported[0]?.environment.name ??
 		'';
 	const sourceName = event.url.searchParams.get('source') ?? '';
-	const recoveryMode = event.url.searchParams.get('mode') === 'recovery';
+	const recoveryMode = parseCloneMode(event.url.searchParams.get('mode')) === 'clone';
 	const sources =
 		selectedEnvironment && recoveryMode
 			? await load_PostgresRecoverySources({

@@ -1,5 +1,5 @@
 import { graphql, PostgresAvailableValuesStore, PostgresRecoverySourceStore } from '$houdini';
-import { parseRecoveryTime, recoveryTimeError } from '#lib/domain/postgres/recovery.js';
+import { parseCloneMode, parseInstant, resolveCloneTarget } from '#lib/domain/postgres/recovery.js';
 import { labelRowsHaveErrors, rowsFromArrays, toLabelInput } from '#lib/domain/labels/labels.js';
 import { requirePostgresAccess } from '#lib/domain/postgres/access.server.js';
 import {
@@ -65,7 +65,7 @@ export const actions = {
 		if (labelRowsHaveErrors(labelRows)) {
 			return fail(400, { ...values, errors, error: 'Check the label fields below.' });
 		}
-		const recovering = values.mode === 'recovery';
+		const recovering = parseCloneMode(values.mode) === 'clone';
 		if (!values.name || !values.environment || (!recovering && !values.majorVersion)) {
 			return fail(400, { ...values, errors, error: 'Name, environment and version are required.' });
 		}
@@ -120,14 +120,16 @@ export const actions = {
 					error: 'Could not verify the recovery source. Select a source and try again.'
 				});
 			}
-			const timeError = recoveryTimeError(
-				values.targetTime,
-				source.earliestRestoreTime,
-				new Date()
-			);
-			if (timeError) return fail(400, { ...values, errors, error: timeError });
+			// The browser sends the absolute instant for its local-time input; the server's own time
+			// zone is never used to interpret the typed value.
+			const explicit = values.targetTime ? parseInstant(formString(data, 'targetInstant')) : null;
+			if (values.targetTime && !explicit) {
+				return fail(400, { ...values, errors, error: 'Enter a valid target time.' });
+			}
+			const resolved = resolveCloneTarget(explicit, source.earliestRestoreTime, new Date());
+			if ('error' in resolved) return fail(400, { ...values, errors, error: resolved.error });
 			values.majorVersion = source.majorVersion;
-			recovery = { sourcePostgres: source.name, targetTime: parseRecoveryTime(values.targetTime)! };
+			recovery = { sourcePostgres: source.name, targetTime: resolved.target };
 		} else {
 			const available = await new PostgresAvailableValuesStore().fetch({
 				event,

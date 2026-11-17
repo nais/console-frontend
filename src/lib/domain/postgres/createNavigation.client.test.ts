@@ -2,6 +2,7 @@ import type { ComponentProps } from 'svelte';
 import { flushSync, mount, unmount } from 'svelte';
 import { SvelteMap } from 'svelte/reactivity';
 import { readable } from 'svelte/store';
+import { parseLocalDateTime } from './recovery.js';
 import CreatePage from '../../../routes/team/[team]/postgres/create/+page.svelte';
 
 const { goto, enhanced, page } = vi.hoisted(() => ({
@@ -9,7 +10,7 @@ const { goto, enhanced, page } = vi.hoisted(() => ({
 	enhanced: { submit: undefined as ((input: { cancel: () => void }) => unknown) | undefined },
 	page: {
 		url: new URL(
-			'https://console.test/team/test/postgres/create?mode=recovery&environment=dev&source=original'
+			'https://console.test/team/test/postgres/create?mode=clone&environment=dev&source=original'
 		)
 	}
 }));
@@ -25,7 +26,7 @@ vi.mock('$app/forms', () => ({
 let component: ReturnType<typeof CreatePage> | undefined;
 beforeEach(() => {
 	page.url = new URL(
-		'https://console.test/team/test/postgres/create?mode=recovery&environment=dev&source=original'
+		'https://console.test/team/test/postgres/create?mode=clone&environment=dev&source=original'
 	);
 });
 afterEach(async () => {
@@ -106,6 +107,16 @@ function edit(name: string, value: string) {
 	input.dispatchEvent(
 		new Event(input.tagName === 'SELECT' ? 'change' : 'input', { bubbles: true })
 	);
+	flushSync();
+}
+
+function tab(label: string) {
+	return [...document.querySelectorAll<HTMLButtonElement>('[role="tab"]')].find((element) =>
+		element.textContent?.includes(label)
+	)!;
+}
+function clickTab(label: string) {
+	tab(label).click();
 	flushSync();
 }
 
@@ -209,7 +220,7 @@ test.each([true, false])(
 );
 
 test.each([
-	['mode', 'empty', 'recovery'],
+	['mode', 'empty', 'clone'],
 	['environment', 'prod', 'dev'],
 	['sourcePostgres', 'other', 'original']
 ])(
@@ -231,18 +242,25 @@ test.each([
 		edit('name', 'recovery-draft');
 		edit('targetTime', '2021-01-02T13:00');
 		goto.mockRejectedValueOnce(new Error('offline'));
-		edit(field, attempted);
+		if (field === 'mode') clickTab('Empty database');
+		else edit(field, attempted);
 		await vi.waitFor(() => {
 			flushSync();
-			expect(document.body.textContent).toContain('Could not load recovery options');
+			expect(document.body.textContent).toContain('Could not load clone options');
 		});
 		expect(document.querySelector<HTMLButtonElement>('button[type="submit"]')!.disabled).toBe(true);
 		const cancel = vi.fn();
 		expect(enhanced.submit!({ cancel })).toBeUndefined();
 		expect(cancel).toHaveBeenCalledOnce();
-		expect(document.querySelector<HTMLSelectElement>(`select[name="${field}"]`)!.value).toBe(
-			original
-		);
+		if (field === 'mode') {
+			expect(
+				tab(original === 'clone' ? 'Clone existing database' : 'Empty database')
+			).toHaveProperty('ariaSelected', 'true');
+		} else {
+			expect(document.querySelector<HTMLSelectElement>(`select[name="${field}"]`)!.value).toBe(
+				original
+			);
+		}
 		let finishNavigation: () => void = () => {};
 		goto.mockImplementation(
 			() =>
@@ -252,7 +270,7 @@ test.each([
 		);
 		// Retry using another valid recovery context; errors must remain during the retry.
 		edit('sourcePostgres', 'other');
-		expect(document.body.textContent).toContain('Could not load recovery options');
+		expect(document.body.textContent).toContain('Could not load clone options');
 		page.url = goto.mock.calls[1][0];
 		const nextSource = data.recoverySource!;
 		flushSync(() => {
@@ -274,13 +292,20 @@ test.each([
 		finishNavigation();
 		await vi.waitFor(() => {
 			flushSync();
-			expect(document.body.textContent).not.toContain('Could not load recovery options');
+			expect(document.body.textContent).not.toContain('Could not load clone options');
 		});
 		expect(document.querySelector<HTMLButtonElement>('button[type="submit"]')!.disabled).toBe(
 			false
 		);
 		const submitted = new FormData(document.querySelector('form')!);
-		expect(submitted.get('mode')).toBe('recovery');
+		expect(submitted.get('mode')).toBe('clone');
+		const local = parseLocalDateTime(
+			'2021-01-02T13:00',
+			Intl.DateTimeFormat().resolvedOptions().timeZone
+		);
+		expect(submitted.get('targetInstant')).toBe(
+			'instant' in local ? local.instant.toISOString() : ''
+		);
 		expect(submitted.get('sourcePostgres')).toBe('other');
 		expect(submitted.get('name')).toBe('recovery-draft');
 		expect(submitted.get('targetTime')).toBe('2021-01-02T13:00');
@@ -288,7 +313,7 @@ test.each([
 );
 
 test.each(['pagination', 'source'])(
-	'preserves the entered name and UTC target through %s navigation after a validation failure, without submitting',
+	'preserves the entered name and local target through %s navigation after a validation failure, without submitting',
 	async (navigation) => {
 		const data = initialData();
 		const state = new SvelteMap<string, unknown>([
@@ -296,7 +321,7 @@ test.each(['pagination', 'source'])(
 			[
 				'form',
 				{
-					mode: 'recovery',
+					mode: 'clone',
 					name: 'rejected-name',
 					environment: 'dev',
 					majorVersion: '17',
@@ -428,3 +453,66 @@ test.each(['transport', 'action'])(
 		expect(cancel).toHaveBeenCalledOnce();
 	}
 );
+
+describe('clone tabs and local time', () => {
+	test('opens on the clone tab for the legacy recovery deep link and keeps the selected source', () => {
+		page.url = new URL(
+			'https://console.test/team/test/postgres/create?mode=recovery&environment=dev&source=original'
+		);
+		mountWithState();
+		expect(tab('Clone existing database').getAttribute('aria-selected')).toBe('true');
+		expect(tab('Empty database').getAttribute('aria-selected')).toBe('false');
+		expect(document.querySelector<HTMLSelectElement>('select[name="sourcePostgres"]')!.value).toBe(
+			'original'
+		);
+		expect(document.body.textContent).not.toContain('Restore');
+	});
+	test('switching tabs navigates with the mode as query state and clears the source', () => {
+		goto.mockReturnValue(new Promise(() => {}));
+		mountWithState();
+		clickTab('Empty database');
+		const url = goto.mock.calls[0][0] as URL;
+		expect(url.searchParams.get('mode')).toBe('empty');
+		expect(url.searchParams.has('source')).toBe(false);
+	});
+	test('tabs are keyboard operable buttons in a tablist with only the active tab tabbable', () => {
+		mountWithState();
+		expect(document.querySelector('[role="tablist"]')).not.toBeNull();
+		expect(tab('Clone existing database').tabIndex).toBe(0);
+		expect(tab('Empty database').tabIndex).toBe(-1);
+		expect(tab('Empty database').tagName).toBe('BUTTON');
+	});
+	test('sends the absolute instant for the typed local time and allows an empty time', () => {
+		mountWithState();
+		const instant = () =>
+			document.querySelector<HTMLInputElement>('input[name="targetInstant"]')!.value;
+		expect(document.querySelector<HTMLInputElement>('input[name="targetTime"]')!.required).toBe(
+			false
+		);
+		expect(instant()).toBe('');
+		edit('targetTime', '2021-01-02T13:00');
+		// The test environment runs in UTC until the component reads the browser zone on mount.
+		const zone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+		const expected = parseLocalDateTime('2021-01-02T13:00', zone);
+		expect(instant()).toBe('instant' in expected ? expected.instant.toISOString() : 'x');
+		expect(document.querySelector<HTMLButtonElement>('button[type="submit"]')!.disabled).toBe(
+			false
+		);
+		edit('targetTime', '');
+		expect(instant()).toBe('');
+		expect(document.querySelector<HTMLButtonElement>('button[type="submit"]')!.disabled).toBe(
+			false
+		);
+	});
+	test('disables submit with a field error when the default is before the earliest time', () => {
+		const data = initialData();
+		const postgres = data.recoverySource!.data!.team.environment.postgres;
+		const future = { ...postgres, earliestRestoreTime: new Date(Date.now() + 3_600_000) };
+		data.recoverySource = {
+			data: { team: { environment: { postgres: future } } }
+		} as typeof data.recoverySource;
+		mountWithState(data);
+		expect(document.body.textContent).toContain('earliest clone time');
+		expect(document.querySelector<HTMLButtonElement>('button[type="submit"]')!.disabled).toBe(true);
+	});
+});

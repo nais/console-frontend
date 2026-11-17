@@ -2,7 +2,7 @@
 	import { resolve } from '$app/paths';
 	import { page } from '$app/state';
 	import HeaderActions from '#lib/ui/HeaderActions.svelte';
-	import { restorePostgresHref } from '#lib/domain/postgres/recovery.js';
+	import { clonePostgresHref } from '#lib/domain/postgres/recovery.js';
 	import {
 		ActionMenu,
 		ActionMenuDivider,
@@ -82,9 +82,9 @@
 			</ActionMenuItem>
 			<ActionMenuDivider />
 			<ActionMenuItem
-				href={restorePostgresHref(page.params.team!, page.params.env!, page.params.postgres!)}
+				href={clonePostgresHref(page.params.team!, page.params.env!, page.params.postgres!)}
 			>
-				Restore to new database
+				Clone database
 			</ActionMenuItem>
 			<ActionMenuDivider />
 			<ActionMenuItem

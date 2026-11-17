@@ -1,6 +1,6 @@
 <script lang="ts">
 	import PersistenceActivityCard from '#lib/domain/activity/PersistenceActivityCard.svelte';
-	import { recoveryPending } from '#lib/domain/postgres/recovery.js';
+	import { formatLocalTime, recoveryPending } from '#lib/domain/postgres/recovery.js';
 	import Labels from '#lib/domain/labels/Labels.svelte';
 	import LabelsEditorModal from '#lib/domain/labels/LabelsEditorModal.svelte';
 	import type { Label } from '#lib/domain/labels/labels.js';
@@ -102,7 +102,10 @@
 		return () => window.clearTimeout(timeout);
 	});
 
+	// UTC until mounted so server and client markup agree; then the browser's local time zone.
+	let timeZone = $state('UTC');
 	onMount(() => {
+		timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC';
 		const interval = window.setInterval(() => {
 			if (
 				document.visibilityState !== 'visible' ||
@@ -137,11 +140,13 @@
 						? 'success'
 						: 'info'}
 			>
-				{#if postgres.recovery.failureMessage}Restoration failed: {postgres.recovery.failureMessage}
-				{:else if postgres.recovery.completed}Restoration completed.
-				{:else}Restoration is in progress. Status updates automatically.{/if}
-				Source: {postgres.recovery.sourcePostgres}. Target time: {postgres.recovery.targetTime.toISOString()}
-				(UTC). The source is unchanged. No applications are automatically moved.
+				{#if postgres.recovery.failureMessage}Cloning failed: {postgres.recovery.failureMessage}
+				{:else if postgres.recovery.completed}Cloning completed.
+				{:else}Cloning is in progress. Status updates automatically.{/if}
+				Source: {postgres.recovery.sourcePostgres}. Cloned as of {formatLocalTime(
+					postgres.recovery.targetTime,
+					timeZone
+				)}. The source is unchanged. No applications are automatically moved.
 			</Alert>
 		</div>
 	{/if}
