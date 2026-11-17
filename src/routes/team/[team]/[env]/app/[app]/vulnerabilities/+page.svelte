@@ -6,7 +6,12 @@
 
 	let { data }: PageProps = $props();
 
-	let { ApplicationImageDetails, viewerIsMember } = $derived(data);
+	let {
+		ApplicationImageDetails,
+		ImagePriorityVulnerabilities,
+		initialFindingsStatus,
+		viewerIsMember
+	} = $derived(data);
 
 	$effect(() => {
 		const workload = $ApplicationImageDetails.data?.team.environment.workload;
@@ -29,6 +34,8 @@
 {#if $ApplicationImageDetails.data}
 	<WorkloadVulnerabilitiesPage
 		data={$ApplicationImageDetails.data}
+		initialFindings={ImagePriorityVulnerabilities}
+		{initialFindingsStatus}
 		{viewerIsMember}
 		hasPagination
 		onLoadNextPage={() => ApplicationImageDetails.loadNextPage({ first: 10 })}
