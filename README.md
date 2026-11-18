@@ -59,7 +59,8 @@ tabs opened before this change; those still need a refresh after their old pods 
 Version detection deliberately requests `/_app/version.json` from the tenant's
 server, not the release-pinned CDN. After navigation, a different version enables
 the update notification. Failed navigation can trigger a full page load, limited
-to once per loaded version per tab to avoid reload loops during rolling updates.
+to once per loaded version per tab, even if requests alternate between builds
+during a rolling update.
 
 ### Mobile responsiveness
 

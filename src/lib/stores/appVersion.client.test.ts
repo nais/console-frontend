@@ -12,6 +12,7 @@ const assign = vi.fn();
 beforeEach(async () => {
 	vi.resetModules();
 	environment.dev = false;
+	environment.version = 'build-a';
 	fetchVersion.mockReset();
 	assign.mockReset();
 	sessionStorage.clear();
@@ -75,6 +76,26 @@ it('reloads the intended URL only once per loaded build and tab', async () => {
 	appVersion.reloadForUpdate(target);
 
 	expect(assign).toHaveBeenCalledExactlyOnceWith(target.href);
+});
+
+it('does not reload an already attempted build when deployments alternate in the same tab', async () => {
+	const target = new URL('https://console.example.com/team/nais');
+
+	for (const [loaded, served, attempts] of [
+		['build-a', 'build-b', 1],
+		['build-b', 'build-a', 2],
+		['build-a', 'build-b', 2],
+		['build-b', 'build-a', 2]
+	] as const) {
+		vi.resetModules();
+		environment.version = loaded;
+		fetchVersion.mockResolvedValue(Response.json({ version: served }));
+		const build = await import('./appVersion.js');
+
+		expect(await build.checkForUpdate()).toBe(true);
+		build.reloadForUpdate(target);
+		expect(assign).toHaveBeenCalledTimes(attempts);
+	}
 });
 
 it('does not reload without an update or navigate to another origin', async () => {

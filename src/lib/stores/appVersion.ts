@@ -46,9 +46,9 @@ export function reloadForUpdate(url: URL): void {
 	if (!browser || dev || !get(appVersionUpdated) || url.origin !== location.origin) return;
 
 	try {
-		const key = 'console:last-version-reload';
-		if (sessionStorage.getItem(key) === version) return;
-		sessionStorage.setItem(key, version);
+		const key = `console:version-reload:${version}`;
+		if (sessionStorage.getItem(key) !== null) return;
+		sessionStorage.setItem(key, '1');
 		location.assign(url.href);
 	} catch (error) {
 		console.warn('Unable to reload Console after a version update:', error);
