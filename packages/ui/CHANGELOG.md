@@ -1,5 +1,13 @@
 # @nais/ui
 
+## 0.3.0
+
+### Minor Changes
+
+- c4bca83: Add StatusIndicator with semantic tones, optional accessible labels and tooltips,
+  and compact layout without changing the standard dot size. Loading indicators
+  now respect reduced motion preferences.
+
 ## 0.2.2
 
 ### Patch Changes
