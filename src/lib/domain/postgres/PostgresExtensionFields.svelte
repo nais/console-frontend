@@ -4,11 +4,14 @@
 	let {
 		available,
 		selected,
-		initial
+		initial,
+		locked = []
 	}: {
 		available: readonly string[];
 		selected: readonly string[];
 		initial?: readonly string[];
+		/** Extensions that are always kept (e.g. inherited from a clone source): checked and disabled. */
+		locked?: readonly string[];
 	} = $props();
 
 	let search = $state('');
@@ -16,14 +19,15 @@
 	let incomingSelection = $derived(selected);
 	let draft = $state.raw<{ source: readonly string[]; values: readonly string[] }>();
 	let selection = $derived(draft?.source === incomingSelection ? draft.values : incomingSelection);
-	let options = $derived([...new Set([...available, ...incomingSelection])]);
+	let options = $derived([...new Set([...locked, ...available, ...incomingSelection])]);
 	let normalizedSearch = $derived(search.trim().toLowerCase());
 	let matches = $derived(
 		options.filter((extension) => extension.toLowerCase().includes(normalizedSearch))
 	);
+	let effective = $derived([...new Set([...locked, ...selection])]);
 	let summary = $derived(
-		selection.length
-			? `${selection.length} selected: ${selection.slice(0, 3).join(', ')}${selection.length > 3 ? `, +${selection.length - 3} more` : ''}`
+		effective.length
+			? `${effective.length} selected: ${effective.slice(0, 3).join(', ')}${effective.length > 3 ? `, +${effective.length - 3} more` : ''}`
 			: 'None selected'
 	);
 
@@ -64,15 +68,21 @@
 				<div class="extension-options">
 					{#each options as extension (extension)}
 						<div hidden={!matches.includes(extension)}>
+							{#if locked.includes(extension)}
+								<input type="hidden" name="extensions" value={extension} />
+							{/if}
 							<Checkbox
-								name="extensions"
+								name={locked.includes(extension) ? undefined : 'extensions'}
 								value={extension}
 								size="small"
-								checked={selection.includes(extension)}
+								checked={locked.includes(extension) || selection.includes(extension)}
+								disabled={locked.includes(extension)}
 								onchange={(event) => toggleExtension(extension, event.currentTarget.checked)}
-								description={available.includes(extension)
-									? undefined
-									: 'Already configured, but no longer available for new selections. Kept unless you remove it.'}
+								description={locked.includes(extension)
+									? 'From the source.'
+									: available.includes(extension)
+										? undefined
+										: 'Already configured, but no longer available for new selections. Kept unless you remove it.'}
 							>
 								{extension}
 							</Checkbox>

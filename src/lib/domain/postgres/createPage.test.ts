@@ -201,12 +201,19 @@ describe('Postgres creation loading', () => {
 });
 
 describe('shared recovery creation flow', () => {
-	test('offers empty and recovery modes from the normal create entry point', async () => {
+	test('offers empty and clone modes as accessible tabs from the normal create entry point', async () => {
 		const { body } = await renderPage();
-		expect(body).toContain('Empty database');
-		expect(body).toContain('Restore from an existing database');
+		expect(body).toContain('role="tablist"');
+		expect(body).toMatch(
+			/<button(?=[^>]*role="tab")(?=[^>]*aria-selected="true")[^>]*>(?:(?!<\/button>)[\s\S])*Empty database/
+		);
+		expect(body).toMatch(
+			/<button(?=[^>]*role="tab")(?=[^>]*aria-selected="false")(?=[^>]*tabindex="-1")[^>]*>(?:(?!<\/button>)[\s\S])*Clone existing database/
+		);
+		expect(body).toMatch(/<input(?=[^>]*type="hidden")(?=[^>]*name="mode")(?=[^>]*value="empty")/);
+		expect(body).not.toContain('Restore');
 	});
-	test('renders preset source with locked inherited configuration and explicit UTC time', async () => {
+	test('opens the clone tab with the source preselected, optional local time and wording', async () => {
 		const { body } = await renderPage({
 			recovery: true,
 			source: {
@@ -216,16 +223,34 @@ describe('shared recovery creation flow', () => {
 				earliestRestoreTime: new Date('2026-01-01T12:00:01Z')
 			}
 		});
+		expect(body).toMatch(
+			/<button(?=[^>]*role="tab")(?=[^>]*aria-selected="true")[^>]*>(?:(?!<\/button>)[\s\S])*Clone existing database/
+		);
+		expect(body).toMatch(/<input(?=[^>]*type="hidden")(?=[^>]*name="mode")(?=[^>]*value="clone")/);
 		expect(body).toMatch(/<option[^>]*value="original"[^>]*selected/);
-		expect(body).toContain('Target time (UTC)');
-		expect(body).toContain('min="2026-01-01T12:01"');
-		expect(body).not.toContain('name="extensions"');
-		expect(body).not.toContain('name="diskSize"');
+		expect(body).toContain('Specify time');
+		expect(body).toMatch(/<button(?=[^>]*aria-expanded="false")[^>]*>[\s\S]*?Specify time/);
+		expect(body).toMatch(/about\s*(<!---->)?10(<!---->)?\s*minutes ago/);
+		expect(body).not.toContain('Earliest clone time');
+		expect(body).not.toContain('name="targetTime"');
+		expect(body).not.toContain('name="targetInstant"');
+		expect(body).not.toMatch(/time zone|UTC/i);
+		expect(body).not.toMatch(/<input(?=[^>]*name="targetTime")[^>]*required/);
+		expect(body).not.toContain('name="majorVersion"');
+		expect(body).toMatch(/PostgreSQL\s*(<!---->)?\s*17/);
+		expect(body).toContain('Customize resources');
+		expect(body).toContain('Starts from the source');
+		expect(body).toContain('name="diskSize"');
+		expect(body).toMatch(
+			/<input(?=[^>]*type="hidden")(?=[^>]*name="extensions")(?=[^>]*value="vector")/
+		);
+		expect(body).not.toContain('inherited from the source');
 		expect(body).toContain('No applications are automatically moved');
-		expect(body).toContain('restoration can fail');
+		expect(body).toContain('cloning can fail');
+		expect(body).toContain('>Clone database<');
 		expect(body).toContain('More sources');
 	});
-	test('disables restoration when the recovery window is unavailable', async () => {
+	test('disables cloning when the recovery window is unavailable', async () => {
 		const { body } = await renderPage({
 			recovery: true,
 			source: { name: 'original', majorVersion: '17', extensions: [], earliestRestoreTime: null }

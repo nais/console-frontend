@@ -58,8 +58,8 @@
 		display: inline-flex;
 		flex-shrink: 0;
 		align-items: center;
-		gap: var(--nais-space-6);
-		padding: var(--nais-space-8) var(--nais-space-14);
+		gap: var(--nais-space-8);
+		padding: var(--nais-space-10) var(--nais-space-14);
 		font-size: var(--sh-font-size-body);
 		font-weight: var(--sh-font-weight-medium);
 		color: var(--muted-foreground);
@@ -69,6 +69,9 @@
 		border-radius: var(--radius-xs) var(--radius-xs) 0 0;
 		white-space: nowrap;
 		cursor: pointer;
+		transition:
+			color 130ms ease,
+			background-color 130ms ease;
 	}
 	.sh-ui-tab:hover {
 		color: var(--foreground);
@@ -85,6 +88,7 @@
 		right: var(--nais-space-8);
 		bottom: 0;
 		height: var(--nais-space-2);
+		border-radius: var(--nais-space-2) var(--nais-space-2) 0 0;
 		background: var(--primary);
 	}
 </style>
