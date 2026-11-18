@@ -157,9 +157,11 @@
 			};
 		}}
 	>
-		<BodyShort
-			>Create a Postgres database for {data.teamSlug}. Provisioning is asynchronous.</BodyShort
-		>
+		<div class="intro">
+			<BodyShort
+				>Create a Postgres database for {data.teamSlug}. Provisioning is asynchronous.</BodyShort
+			>
+		</div>
 		<input type="hidden" name="mode" value={recovering ? 'clone' : 'empty'} />
 		<Tabs
 			value={modeChoice}
@@ -174,13 +176,8 @@
 				<Tab value="empty" disabled={changingSelection || submitting}>Empty database</Tab>
 				<Tab value="clone" disabled={changingSelection || submitting}>Clone existing database</Tab>
 			</TabList>
-			<div class="stack">
-				<TextField
-					name="name"
-					label={recovering ? 'Name of the clone' : 'Database name'}
-					required
-					bind:value={databaseName}
-				/>
+			<div class="stack tab-content">
+				<TextField name="name" label="Database name" required bind:value={databaseName} />
 				<Select
 					name="environment"
 					label="Environment"
@@ -367,6 +364,9 @@
 <style>
 	form {
 		max-width: var(--nais-breakpoint-sm);
+	}
+	.intro {
+		margin-bottom: var(--nais-space-16);
 	}
 	.stack {
 		display: grid;
