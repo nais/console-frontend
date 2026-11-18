@@ -18,6 +18,11 @@
 		editing?: boolean;
 		currentDiskSize?: string;
 		errors?: ResourceErrors;
+		/**
+		 * Clone mode: values are prefilled from the source and blank means "inherit from the source".
+		 * `diskSizeMin` is the source's size in whole GiB; `unset` lists fields the source has no value for.
+		 */
+		inherit?: { diskSizeMin?: number; unset: readonly ResourceField[] };
 	}
 
 	let {
@@ -28,7 +33,8 @@
 		customizeOpen = $bindable(),
 		editing = false,
 		currentDiskSize,
-		errors = {}
+		errors = {},
+		inherit
 	}: Props = $props();
 
 	const defaults = {
@@ -51,9 +57,14 @@
 					diskSize: diskSizeValue
 				},
 				editing ? currentDiskSize : undefined
-			)
+			),
+			inherit?.diskSizeMin
 		)
 	);
+
+	function note(field: ResourceField, text: string) {
+		return inherit?.unset.includes(field) ? `${text} Not set on the source; blank inherits.` : text;
+	}
 
 	function customizeResources(open: boolean) {
 		if (!open) return;
@@ -89,9 +100,11 @@
 		inputmode="decimal"
 		onblur={() => (touched.cpu = true)}
 		error={touched.cpu || errors.cpu ? fieldErrors.cpu : undefined}
-		description={editing
-			? `Maximum ${postgresResources.cpu.max} cores. Leave blank to keep the current value.`
-			: `Maximum ${postgresResources.cpu.max} cores.`}
+		description={inherit
+			? note('cpu', `Maximum ${postgresResources.cpu.max} cores.`)
+			: editing
+				? `Maximum ${postgresResources.cpu.max} cores. Leave blank to keep the current value.`
+				: `Maximum ${postgresResources.cpu.max} cores.`}
 		bind:value={() => cpuValue, (value) => (cpu = value)}
 	/>
 	<TextField
@@ -100,9 +113,11 @@
 		inputmode="decimal"
 		onblur={() => (touched.memory = true)}
 		error={touched.memory || errors.memory ? fieldErrors.memory : undefined}
-		description={editing
-			? `Maximum ${postgresResources.memory.max} GiB. Leave blank to keep the current value.`
-			: `Maximum ${postgresResources.memory.max} GiB.`}
+		description={inherit
+			? note('memory', `Maximum ${postgresResources.memory.max} GiB.`)
+			: editing
+				? `Maximum ${postgresResources.memory.max} GiB. Leave blank to keep the current value.`
+				: `Maximum ${postgresResources.memory.max} GiB.`}
 		bind:value={() => memoryValue, (value) => (memory = value)}
 	/>
 	<TextField
@@ -111,14 +126,19 @@
 		inputmode="numeric"
 		onblur={() => (touched.diskSize = true)}
 		error={touched.diskSize || errors.diskSize ? fieldErrors.diskSize : undefined}
-		description={editing
-			? `${postgresResources.diskSize.min}–${postgresResources.diskSize.max} GiB, whole numbers. Leave blank to keep the current value.`
-			: `${postgresResources.diskSize.min}–${postgresResources.diskSize.max} GiB, whole numbers.`}
+		description={inherit
+			? note(
+					'diskSize',
+					`${inherit.diskSizeMin ?? postgresResources.diskSize.min}–${postgresResources.diskSize.max} GiB, whole numbers. Not smaller than the source.`
+				)
+			: editing
+				? `${postgresResources.diskSize.min}–${postgresResources.diskSize.max} GiB, whole numbers. Leave blank to keep the current value.`
+				: `${postgresResources.diskSize.min}–${postgresResources.diskSize.max} GiB, whole numbers.`}
 		bind:value={() => diskSizeValue, (value) => (diskSize = value)}
 	/>
 {/snippet}
 
-{#if editing}
+{#if editing || inherit}
 	<div class="resource-fields" {@attach validateForm}>
 		{@render resourceFields()}
 	</div>
@@ -154,7 +174,9 @@
 <Checkbox
 	name="highAvailability"
 	bind:checked={highAvailability}
-	description="Add a third instance and enable synchronous replication."
+	description={inherit
+		? 'Add a third instance and enable synchronous replication. Starts as on the source.'
+		: 'Add a third instance and enable synchronous replication.'}
 >
 	High availability
 </Checkbox>

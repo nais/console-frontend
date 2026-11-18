@@ -3,6 +3,11 @@ import { parseCloneMode, parseInstant, resolveCloneTarget } from '#lib/domain/po
 import { labelRowsHaveErrors, rowsFromArrays, toLabelInput } from '#lib/domain/labels/labels.js';
 import { requirePostgresAccess } from '#lib/domain/postgres/access.server.js';
 import {
+	cloneBaseline,
+	cloneOverrides,
+	extensionDelta
+} from '#lib/domain/postgres/cloneConfiguration.js';
+import {
 	configurationErrors,
 	extensionSelectionError,
 	formExtensions,
@@ -61,7 +66,7 @@ export const actions = {
 			labelRows,
 			...postgresConfiguration(data)
 		};
-		const errors = configurationErrors(values);
+		let errors = configurationErrors(values);
 		if (labelRowsHaveErrors(labelRows)) {
 			return fail(400, { ...values, errors, error: 'Check the label fields below.' });
 		}
@@ -99,6 +104,7 @@ export const actions = {
 			});
 		}
 		let recovery: { sourcePostgres: string; targetTime: Date } | undefined;
+		let cloneInput: ReturnType<typeof cloneOverrides> | undefined;
 		if (recovering) {
 			if (!values.sourcePostgres || values.name === values.sourcePostgres) {
 				return fail(400, {
@@ -129,6 +135,42 @@ export const actions = {
 			const resolved = resolveCloneTarget(explicit, source.earliestRestoreTime, new Date());
 			if ('error' in resolved) return fail(400, { ...values, errors, error: resolved.error });
 			values.majorVersion = source.majorVersion;
+			// Only what differs from the source is sent; everything else is inherited by the API.
+			const baseline = cloneBaseline(source);
+			errors = configurationErrors(values, baseline.diskSizeMin);
+			if (Object.keys(errors).length) {
+				return fail(400, { ...values, errors, error: 'Check the resource fields below.' });
+			}
+			const { added, missing } = extensionDelta(values.extensions ?? baseline.extensions, [
+				...baseline.extensions
+			]);
+			if (missing.length) {
+				return fail(400, {
+					...values,
+					errors,
+					error: `Extensions from the source cannot be removed: ${missing.join(', ')}.`
+				});
+			}
+			if (added.length) {
+				const available = await new PostgresAvailableValuesStore().fetch({
+					event,
+					variables: { team: event.params.team, env: values.environment },
+					policy: 'NetworkOnly'
+				});
+				if (available.errors?.length || !available.data) {
+					return fail(500, {
+						...values,
+						errors,
+						error: 'Could not load Postgres options for this environment.'
+					});
+				}
+				const extensionError = extensionSelectionError(
+					added,
+					available.data.team.environment.environment.availableValues.postgresExtensions.values
+				);
+				if (extensionError) return fail(400, { ...values, errors, error: extensionError });
+			}
+			cloneInput = cloneOverrides(values, values.extensions, baseline);
 			recovery = { sourcePostgres: source.name, targetTime: resolved.target };
 		} else {
 			const available = await new PostgresAvailableValuesStore().fetch({
@@ -177,10 +219,17 @@ export const actions = {
 						teamSlug: event.params.team,
 						environmentName: values.environment,
 						majorVersion: values.majorVersion,
-						extensions: recovering ? undefined : values.extensions,
+						extensions: recovering ? cloneInput?.extensions : values.extensions,
 						recovery,
 						labels: toLabelInput(labelRows),
-						...(!recovering ? resourceInput(values) : {})
+						...(recovering
+							? {
+									cpu: cloneInput?.cpu,
+									memory: cloneInput?.memory,
+									diskSize: cloneInput?.diskSize,
+									highAvailability: cloneInput?.highAvailability
+								}
+							: resourceInput(values))
 					}
 				},
 				{ event }

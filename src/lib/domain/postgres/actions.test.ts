@@ -160,8 +160,7 @@ describe('Postgres management actions', () => {
 					targetTime: '2021-01-01T13:00',
 					targetInstant: '2021-01-01T12:00:00.000Z',
 					majorVersion: '18',
-					extensionsPresent: 'true',
-					diskSize: '5'
+					extensionsPresent: 'true'
 				})
 			)
 		).rejects.toMatchObject({ status: 303 });
@@ -171,7 +170,7 @@ describe('Postgres management actions', () => {
 			recovery: { sourcePostgres: 'original', targetTime: new Date('2021-01-01T12:00:00Z') }
 		});
 		for (const field of ['cpu', 'memory', 'diskSize', 'highAvailability'])
-			expect(input).not.toHaveProperty(field);
+			expect(input[field]).toBeUndefined();
 		expect(input.extensions).toBeUndefined();
 	});
 	test.each([
@@ -277,6 +276,124 @@ describe('Postgres management actions', () => {
 		} finally {
 			vi.useRealTimers();
 		}
+	});
+	describe('clone configuration', () => {
+		const source = {
+			name: 'original',
+			majorVersion: '17',
+			extensions: ['vector'],
+			highAvailability: false,
+			earliestRestoreTime: new Date('2020-01-01T00:00:00Z'),
+			resources: { cpu: '500m', memory: '2Gi', diskSize: '20480Mi' }
+		};
+		beforeEach(() => {
+			recoverySource.fetch.mockResolvedValue({
+				data: { team: { environment: { postgres: source } } }
+			});
+			create.mutate.mockResolvedValue({
+				data: {
+					createPostgres: {
+						postgres: { id: 'c', name: 'c', teamEnvironment: { environment: { name: 'dev' } } }
+					}
+				}
+			});
+		});
+		async function clone(fields: Record<string, string | string[]> = {}) {
+			const outcome = await createActions
+				.default(
+					createEvent({
+						mode: 'clone',
+						name: 'c',
+						environment: 'dev',
+						sourcePostgres: 'original',
+						targetTime: '',
+						extensionsPresent: 'true',
+						extensions: ['vector'],
+						...fields
+					})
+				)
+				.then(
+					(result) => result,
+					(thrown) => thrown
+				);
+			return outcome;
+		}
+		const sent = () => create.mutate.mock.calls[0][0].input;
+
+		test('sends only the recovery when nothing differs from the source (equal quantities)', async () => {
+			// 0,5 cores == 500m, 2 GiB == 2Gi, 20 GiB == 20480Mi
+			expect(
+				await clone({ cpu: '0,5', memory: '2.0', diskSize: '20', majorVersion: '18' })
+			).toMatchObject({ status: 303 });
+			const input = sent();
+			for (const field of ['cpu', 'memory', 'diskSize', 'highAvailability', 'extensions'])
+				expect(input[field]).toBeUndefined();
+			expect(input.majorVersion).toBe('17');
+			expect(input.recovery.sourcePostgres).toBe('original');
+		});
+		test('sends only the changed cpu, memory, storage and high availability', async () => {
+			await clone({ cpu: '2', memory: '4', diskSize: '30', highAvailability: 'on' });
+			expect(sent()).toMatchObject({
+				cpu: '2',
+				memory: '4096Mi',
+				diskSize: '30Gi',
+				highAvailability: true
+			});
+			expect(sent().extensions).toBeUndefined();
+			create.mutate.mockClear();
+			await clone({ cpu: '0.5', memory: '3' });
+			expect(sent()).toMatchObject({ memory: '3072Mi' });
+			expect(sent().cpu).toBeUndefined();
+			expect(sent().diskSize).toBeUndefined();
+		});
+		test('sends the full extension list only when one was added', async () => {
+			await clone({ extensions: ['vector', 'pgcrypto'] });
+			expect(sent().extensions).toEqual(['vector', 'pgcrypto']);
+			expect(availableValues.fetch).toHaveBeenCalledTimes(1);
+		});
+		test('omits extensions when the source list is submitted unchanged or not at all', async () => {
+			await clone({ extensions: ['vector'] });
+			expect(sent().extensions).toBeUndefined();
+			create.mutate.mockClear();
+			await clone({ extensionsPresent: [], extensions: [] });
+			expect(sent().extensions).toBeUndefined();
+		});
+		test('rejects removing a source extension and unavailable additions', async () => {
+			const removed = await clone({ extensions: [] });
+			expect(removed).toMatchObject({ status: 400 });
+			expect(removed.data.error).toContain('cannot be removed: vector');
+			const unavailable = await clone({ extensions: ['vector', 'unknown'] });
+			expect(unavailable).toMatchObject({ status: 400 });
+			expect(unavailable.data.error).toContain('unknown');
+			expect(create.mutate).not.toHaveBeenCalled();
+		});
+		test.each(['19', '5', '19.9', '-1', 'abc'])(
+			'rejects storage %s below the source',
+			async (diskSize) => {
+				const result = await clone({ diskSize });
+				expect(result).toMatchObject({ status: 400 });
+				expect(result.data.errors.diskSize).toContain('between 20 and 1000');
+				expect(create.mutate).not.toHaveBeenCalled();
+			}
+		);
+		test('applies the same format rules as the empty tab', async () => {
+			const result = await clone({ cpu: '9', memory: 'x' });
+			expect(result.data.errors).toMatchObject({
+				cpu: expect.stringContaining('no greater than 8'),
+				memory: expect.stringContaining('positive decimal')
+			});
+		});
+		test('accepts an explicit value when the source has no configured resources', async () => {
+			recoverySource.fetch.mockResolvedValue({
+				data: { team: { environment: { postgres: { ...source, resources: null } } } }
+			});
+			await clone({ diskSize: '5', cpu: '1' });
+			expect(sent()).toMatchObject({ diskSize: '5Gi', cpu: '1' });
+		});
+		test('ignores empty-tab fields for the version', async () => {
+			await clone({ majorVersion: '18' });
+			expect(sent().majorVersion).toBe('17');
+		});
 	});
 	test('creates with platform defaults and redirects to the returned database', async () => {
 		create.mutate.mockResolvedValue({

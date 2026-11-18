@@ -15,6 +15,7 @@
 	import LabelRows from '#lib/domain/labels/LabelRows.svelte';
 	import { labelRowsHaveErrors, type LabelRow } from '#lib/domain/labels/labels.js';
 	import PostgresConfigurationFields from '#lib/domain/postgres/PostgresConfigurationFields.svelte';
+	import PostgresCloneConfiguration from '#lib/domain/postgres/PostgresCloneConfiguration.svelte';
 	import PostgresExtensionFields from '#lib/domain/postgres/PostgresExtensionFields.svelte';
 	import GraphErrors from '#lib/ui/GraphErrors.svelte';
 	import {
@@ -233,13 +234,20 @@
 								>{/if}
 							<GraphErrors errors={data.recoverySource?.errors} />
 							{#if source && !changingSelection && !data.recoverySource?.errors?.length}
-								<input type="hidden" name="majorVersion" value={source.majorVersion} />
-								<BodyShort
-									>PostgreSQL {source.majorVersion}. Version, extensions ({source.extensions.join(
-										', '
-									) || 'none'}), CPU, memory, storage and high availability are inherited from the
-									source.</BodyShort
-								>
+								<!-- Keyed by source: changing the source resets the clone configuration to the new
+									source's values. -->
+								{#key source.name}
+									<PostgresCloneConfiguration
+										{source}
+										availableExtensions={options?.postgresExtensions.values}
+										draft={form &&
+										parseCloneMode(form.mode) === 'clone' &&
+										form.sourcePostgres === source.name
+											? form
+											: null}
+										errors={form?.errors}
+									/>
+								{/key}
 								{#if source.earliestRestoreTime}
 									<BodyShort
 										>Clones from the latest available point (about {CLONE_LATEST_POINT_BUFFER_MINUTES}

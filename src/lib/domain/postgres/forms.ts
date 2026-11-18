@@ -66,7 +66,8 @@ export function withoutUnchangedStorage<T extends { diskSize: string }>(
 }
 
 export function configurationErrors(
-	values: Pick<ReturnType<typeof postgresConfiguration>, ResourceField>
+	values: Pick<ReturnType<typeof postgresConfiguration>, ResourceField>,
+	diskSizeMin: number = postgresResources.diskSize.min
 ) {
 	const errors: ResourceErrors = {};
 	for (const [field, name, max] of [
@@ -92,10 +93,10 @@ export function configurationErrors(
 	if (
 		diskSize &&
 		(!/^\d+$/.test(diskSize) ||
-			BigInt(diskSize) < BigInt(postgresResources.diskSize.min) ||
+			BigInt(diskSize) < BigInt(diskSizeMin) ||
 			BigInt(diskSize) > BigInt(postgresResources.diskSize.max))
 	) {
-		errors.diskSize = `Storage (GiB) must be a whole number between ${postgresResources.diskSize.min} and ${postgresResources.diskSize.max}.`;
+		errors.diskSize = `Storage (GiB) must be a whole number between ${diskSizeMin} and ${postgresResources.diskSize.max}.`;
 	}
 	return errors;
 }

@@ -236,8 +236,15 @@ describe('shared recovery creation flow', () => {
 		expect(body).not.toContain('name="targetInstant"');
 		expect(body).not.toMatch(/time zone|UTC/i);
 		expect(body).not.toMatch(/<input(?=[^>]*name="targetTime")[^>]*required/);
-		expect(body).not.toContain('name="extensions"');
-		expect(body).not.toContain('name="diskSize"');
+		expect(body).toMatch(
+			/<input(?=[^>]*type="hidden")(?=[^>]*name="majorVersion")(?=[^>]*value="17")/
+		);
+		expect(body).toContain('Starts from the source');
+		expect(body).toContain('name="diskSize"');
+		expect(body).toMatch(
+			/<input(?=[^>]*type="hidden")(?=[^>]*name="extensions")(?=[^>]*value="vector")/
+		);
+		expect(body).not.toContain('inherited from the source');
 		expect(body).toContain('No applications are automatically moved');
 		expect(body).toContain('cloning can fail');
 		expect(body).toContain('>Clone database<');

@@ -574,3 +574,147 @@ describe('clone tabs and local time', () => {
 		expect(document.querySelector<HTMLButtonElement>('button[type="submit"]')!.disabled).toBe(true);
 	});
 });
+
+describe('clone configuration', () => {
+	const options = {
+		postgresMajorVersions: { values: ['17', '18'], defaultValues: ['18'] },
+		postgresExtensions: { values: ['pgcrypto', 'vector'], defaultValues: [] }
+	};
+	function sourceData(
+		overrides: Record<string, unknown> = {},
+		name = 'original'
+	): ComponentProps<typeof CreatePage>['data'] {
+		const data = initialData();
+		const postgres = {
+			...data.recoverySource!.data!.team.environment.postgres,
+			name,
+			id: name,
+			highAvailability: false,
+			resources: { cpu: '500m', memory: '2Gi', diskSize: '20480Mi' },
+			...overrides
+		};
+		return {
+			...data,
+			postgresOptions: [{ environment: 'dev', options, errors: null }],
+			recoverySource: { data: { team: { environment: { postgres } } } }
+		} as unknown as ComponentProps<typeof CreatePage>['data'];
+	}
+	const form = () => document.querySelector('form')!;
+	const field = (name: string) =>
+		document.querySelector<HTMLInputElement>(`input[name="${name}"]`)!;
+	const checkbox = (value: string) =>
+		document.querySelector<HTMLInputElement>(`input[type="checkbox"][value="${value}"]`)!;
+	const submitted = () => new FormData(form());
+
+	test('prefills the shared fields from the source with locked version and extensions', () => {
+		mountWithState(sourceData({ highAvailability: true }));
+		expect(field('cpu').value).toBe('0.5');
+		expect(field('memory').value).toBe('2');
+		expect(field('diskSize').value).toBe('20');
+		expect(field('highAvailability').checked).toBe(true);
+		const version = document.querySelector<HTMLSelectElement>('select[disabled]')!;
+		expect(version.value).toBe('17');
+		expect(submitted().get('majorVersion')).toBe('17');
+		expect(checkbox('vector').checked).toBe(true);
+		expect(checkbox('vector').disabled).toBe(true);
+		expect(checkbox('pgcrypto').checked).toBe(false);
+		expect(checkbox('pgcrypto').disabled).toBe(false);
+		expect(submitted().getAll('extensions')).toEqual(['vector']);
+		expect(document.body.textContent).toContain("Starts from the source's configuration");
+		expect(document.body.textContent).not.toContain('inherited from the source');
+	});
+	test('leaves fields empty when the source has no configured resources', () => {
+		mountWithState(sourceData({ resources: null }));
+		for (const name of ['cpu', 'memory', 'diskSize']) expect(field(name).value).toBe('');
+		expect(document.body.textContent).toContain('Not set on the source; blank inherits.');
+	});
+	test('adding an extension posts source plus added; the locked one cannot be removed', () => {
+		mountWithState(sourceData());
+		checkbox('vector').click();
+		checkbox('pgcrypto').click();
+		flushSync();
+		expect(checkbox('vector').checked).toBe(true);
+		expect(submitted().getAll('extensions').sort()).toEqual(['pgcrypto', 'vector']);
+	});
+	test('blocks submit when storage is below the source (20Gi), accepts equal or larger', () => {
+		mountWithState(sourceData());
+		const submit = () => {
+			const event = new SubmitEvent('submit', { bubbles: true, cancelable: true });
+			form().dispatchEvent(event);
+			flushSync();
+			return event.defaultPrevented;
+		};
+		edit('diskSize', '19');
+		expect(submit()).toBe(true);
+		expect(document.body.textContent).toContain('between 20 and 1000');
+		edit('diskSize', '20');
+		expect(submit()).toBe(false);
+		edit('diskSize', '21');
+		expect(submit()).toBe(false);
+	});
+	test('changing the source resets the configuration to the new source', () => {
+		const state = mountWithState(sourceData());
+		edit('cpu', '4');
+		edit('diskSize', '50');
+		checkbox('pgcrypto').click();
+		flushSync();
+		page.url = new URL(
+			'https://console.test/team/test/postgres/create?mode=clone&environment=dev&source=other'
+		);
+		state.set(
+			'data',
+			sourceData(
+				{ resources: { cpu: '1', memory: '1Gi', diskSize: '8Gi' }, extensions: [] },
+				'other'
+			)
+		);
+		flushSync();
+		expect(field('cpu').value).toBe('1');
+		expect(field('diskSize').value).toBe('8');
+		expect(checkbox('pgcrypto').checked).toBe(false);
+		expect(submitted().getAll('extensions')).toEqual([]);
+	});
+	test('does not leak values between the empty and clone tabs', () => {
+		const state = mountWithState(sourceData());
+		edit('cpu', '4');
+		edit('name', 'shared-name');
+		page.url = new URL('https://console.test/team/test/postgres/create?mode=empty&environment=dev');
+		state.set('data', { ...sourceData(), recoveryMode: false, recoverySource: null });
+		flushSync();
+		expect(tab('Empty database').getAttribute('aria-selected')).toBe('true');
+		const empty = submitted();
+		expect(empty.get('cpu') ?? '').toBe('');
+		expect(empty.has('sourcePostgres')).toBe(false);
+		expect(empty.has('targetTime')).toBe(false);
+		expect(empty.getAll('extensions')).not.toContain('vector');
+		expect(empty.get('name')).toBe('shared-name');
+		page.url = new URL(
+			'https://console.test/team/test/postgres/create?mode=clone&environment=dev&source=original'
+		);
+		state.set('data', sourceData());
+		flushSync();
+		expect(field('cpu').value).toBe('0.5');
+	});
+	test('keeps the edited configuration after a failed submit', () => {
+		mountWithState(sourceData(), {
+			mode: 'clone',
+			name: 'x',
+			environment: 'dev',
+			majorVersion: '17',
+			sourcePostgres: 'original',
+			targetTime: '',
+			extensions: ['vector', 'pgcrypto'],
+			labelRows: [],
+			cpu: '3',
+			memory: '2',
+			diskSize: '40',
+			highAvailability: true,
+			errors: {},
+			error: 'Name already exists.'
+		} as ComponentProps<typeof CreatePage>['form']);
+		expect(field('cpu').value).toBe('3');
+		expect(field('diskSize').value).toBe('40');
+		expect(field('highAvailability').checked).toBe(true);
+		expect(checkbox('pgcrypto').checked).toBe(true);
+	});
+});
