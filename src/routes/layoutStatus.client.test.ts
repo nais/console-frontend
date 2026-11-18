@@ -1,9 +1,19 @@
 import { AdminReconcilerStatusStore, UserInfoStore } from '$houdini';
+import { afterNavigate } from '$app/navigation';
+import { appVersionUpdated, checkForUpdate, reloadForUpdate } from '#lib/stores/appVersion.js';
 import { createRawSnippet, flushSync, mount, unmount } from 'svelte';
 import { fromStore, get, readable, writable } from 'svelte/store';
 import { afterEach, beforeEach, expect, it, vi } from 'vitest';
 import type { LayoutProps } from './$types';
 import Layout from './+layout.svelte';
+
+const { pageState } = vi.hoisted(() => ({
+	pageState: {
+		data: { meta: {} },
+		status: 200,
+		url: new URL('https://console.example.com/team/nais')
+	}
+}));
 
 vi.mock('$app/env', () => ({ browser: true, dev: false }));
 vi.mock('$app/environment', () => ({ browser: true, building: false }));
@@ -12,7 +22,7 @@ vi.mock('$app/navigation', () => ({
 	beforeNavigate: vi.fn()
 }));
 vi.mock('$app/state', () => ({
-	page: { data: { meta: {} } },
+	page: pageState,
 	navigating: { to: null },
 	updated: { current: false }
 }));
@@ -32,6 +42,14 @@ vi.mock('#lib/authentication.js', () => ({
 	isUnauthenticated: () => false
 }));
 vi.mock('#lib/stores/theme.svelte.js', () => ({ themeSwitch: { theme: 'light' } }));
+vi.mock('#lib/stores/appVersion.js', async () => {
+	const { writable } = await import('svelte/store');
+	return {
+		appVersionUpdated: writable(false),
+		checkForUpdate: vi.fn().mockResolvedValue(false),
+		reloadForUpdate: vi.fn()
+	};
+});
 vi.mock('./PageHeader.svelte', async () => ({
 	default: (await import('#lib/shadcn/ui/Page.svelte')).default
 }));
@@ -45,6 +63,10 @@ let component: ReturnType<typeof Layout> | undefined;
 
 beforeEach(() => {
 	vi.useFakeTimers();
+	appVersionUpdated.set(false);
+	pageState.status = 200;
+	vi.mocked(checkForUpdate).mockReset().mockResolvedValue(false);
+	vi.mocked(reloadForUpdate).mockClear();
 	vi.spyOn(console, 'error').mockImplementation(() => {});
 });
 
@@ -96,6 +118,41 @@ function renderLayout(initialData: LayoutProps['data']) {
 	flushSync();
 	return current;
 }
+
+it('shows the update notification when the tenant has a different version', () => {
+	renderLayout(data(new AdminReconcilerStatusStore()));
+	expect(document.body.textContent).not.toContain('New version available');
+
+	flushSync(() => appVersionUpdated.set(true));
+
+	expect(document.body.textContent).toContain('New version available');
+});
+
+it.each([200, 500])(
+	'only reloads a failed navigation when a different tenant version is detected (status %i)',
+	async (status) => {
+		renderLayout(data(new AdminReconcilerStatusStore()));
+		pageState.status = status;
+		vi.mocked(checkForUpdate).mockResolvedValue(true);
+		const callback = vi.mocked(afterNavigate).mock.calls.at(-1)?.[0];
+		if (!callback) throw new Error('Layout did not register afterNavigate');
+
+		callback({
+			type: 'enter',
+			from: null,
+			to: { params: {}, route: { id: null }, url: pageState.url, scroll: { x: 0, y: 0 } },
+			willUnload: false,
+			complete: Promise.resolve()
+		});
+		await Promise.resolve();
+
+		if (status >= 400) {
+			expect(reloadForUpdate).toHaveBeenCalledExactlyOnceWith(pageState.url);
+		} else {
+			expect(reloadForUpdate).not.toHaveBeenCalled();
+		}
+	}
+);
 
 it('retries the administrator fallback store and clears the initial load error after recovery', async () => {
 	const store = new AdminReconcilerStatusStore();

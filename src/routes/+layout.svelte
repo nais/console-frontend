@@ -7,6 +7,7 @@
 	import { localizeLayerChart } from '#lib/chart/util.js';
 	import '#lib/font.css';
 	import { themeSwitch } from '#lib/stores/theme.svelte.js';
+	import { appVersionUpdated, checkForUpdate, reloadForUpdate } from '#lib/stores/appVersion.js';
 	import { hasReconcilerErrors, loadRemainingReconcilerPages } from '#lib/reconcilerStatus.js';
 	import GraphErrors from '#lib/ui/GraphErrors.svelte';
 	import ProgressBar from '#lib/ui/ProgressBar.svelte';
@@ -122,8 +123,13 @@
 		}
 	});
 
-	afterNavigate(() => {
+	afterNavigate(({ to }) => {
 		loading = false;
+		void checkForUpdate().then((hasUpdate) => {
+			if (hasUpdate && page.status >= 400 && to?.url.href === page.url.href) {
+				reloadForUpdate(to.url);
+			}
+		});
 	});
 
 	const title = $derived.by(() => {
@@ -165,7 +171,7 @@
 					{searchTeams}
 				>
 					<div role="status" aria-live="polite">
-						{#if updated.current && !updateDismissed && !isNaisdevice()}
+						{#if (updated.current || $appVersionUpdated) && !updateDismissed && !isNaisdevice()}
 							<div class="update-status">
 								<Alert
 									variant="info"
