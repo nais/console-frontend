@@ -3,22 +3,10 @@
 	import ChartBoundary from '#lib/chart/ChartBoundary.svelte';
 	import CostAreaChart from '#lib/chart/CostAreaChart.svelte';
 	import type { CostInterval } from '#lib/domain/cost/dateUtils.js';
-	import {
-		Accordion,
-		AccordionItem,
-		BodyShort,
-		Heading,
-		Table,
-		Tbody,
-		Td,
-		Th,
-		Thead,
-		ToggleGroup,
-		ToggleGroupItem,
-		Tr
-	} from '#lib/shadcn/ui/index.js';
+	import { BodyShort, Heading, ToggleGroup, ToggleGroupItem } from '#lib/shadcn/ui/index.js';
 	import { euroValueFormatter } from '#lib/utils/formatters.js';
 	import { changeParams } from '#lib/utils/searchparams.js';
+	import { dailyCostData, monthlyCostData } from './costSeries.js';
 
 	let {
 		cost,
@@ -40,23 +28,14 @@
 			year: 'numeric',
 			timeZone: 'UTC'
 		});
-	let dailyData = $derived(
-		cost.daily?.series.map((item) => ({
-			date: item.date,
-			...Object.fromEntries(item.services.map((service) => [service.service, service.cost]))
-		})) ?? []
-	);
-	let monthlyData = $derived(
-		[...(cost.monthly?.series ?? [])]
-			.sort((a, b) => a.date.getTime() - b.date.getTime())
-			.map((item) => ({ date: item.date, Total: item.sum }))
-	);
+	let dailyData = $derived(dailyCostData(cost.daily, from, to));
+	let monthlyData = $derived(monthlyCostData(cost.monthly));
 </script>
 
 <section aria-labelledby="{uid}-heading">
 	<Heading as="h2" id="{uid}-heading" size="medium" spacing>Cost</Heading>
 	<BodyShort>
-		Actual billed costs in EUR, delayed by at least two days. Missing dates are omitted, not zero.
+		Actual billed costs in EUR, delayed by at least two days. Missing dates are shown as zero.
 		Monthly totals may be incomplete.
 	</BodyShort>
 	<div class="section-header">
@@ -81,25 +60,6 @@
 			<ChartBoundary fillHeight={false}>
 				<CostAreaChart data={dailyData} />
 			</ChartBoundary>
-			<Accordion size="small">
-				<AccordionItem>
-					{#snippet heading()}Daily cost data{/snippet}
-					<div class="table-scroll">
-						<Table size="small" aria-labelledby="{uid}-daily">
-							<Thead><Tr><Th scope="col">Date</Th><Th scope="col">Cost (EUR)</Th></Tr></Thead>
-							<Tbody>
-								{#each cost.daily.series as item (item.date.getTime())}
-									<Tr
-										><Th scope="row">{dateLabel(item.date)}</Th><Td
-											>{euroValueFormatter(item.sum)}</Td
-										></Tr
-									>
-								{/each}
-							</Tbody>
-						</Table>
-					</div>
-				</AccordionItem>
-			</Accordion>
 		{:else}
 			<BodyShort>No daily cost data available for this period.</BodyShort>
 		{/if}
@@ -116,37 +76,6 @@
 			<ChartBoundary fillHeight={false}>
 				<CostAreaChart data={monthlyData} period="month" />
 			</ChartBoundary>
-			<Accordion size="small">
-				<AccordionItem>
-					{#snippet heading()}Monthly cost data{/snippet}
-					<div class="table-scroll">
-						<Table size="small" aria-labelledby="{uid}-monthly">
-							<Thead
-								><Tr
-									><Th scope="col">Month</Th><Th scope="col">Data through</Th><Th scope="col"
-										>Cost (EUR)</Th
-									></Tr
-								></Thead
-							>
-							<Tbody>
-								{#each monthlyData as item (item.date.getTime())}
-									<Tr>
-										<Th scope="row"
-											>{item.date.toLocaleDateString('en-GB', {
-												month: 'long',
-												year: 'numeric',
-												timeZone: 'UTC'
-											})}</Th
-										>
-										<Td>{dateLabel(item.date)}</Td>
-										<Td>{euroValueFormatter(item.Total)}</Td>
-									</Tr>
-								{/each}
-							</Tbody>
-						</Table>
-					</div>
-				</AccordionItem>
-			</Accordion>
 		{:else}
 			<BodyShort>No monthly cost data available.</BodyShort>
 		{/if}
