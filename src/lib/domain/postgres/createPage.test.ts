@@ -236,9 +236,9 @@ describe('shared recovery creation flow', () => {
 		expect(body).not.toContain('name="targetInstant"');
 		expect(body).not.toMatch(/time zone|UTC/i);
 		expect(body).not.toMatch(/<input(?=[^>]*name="targetTime")[^>]*required/);
-		expect(body).toMatch(
-			/<input(?=[^>]*type="hidden")(?=[^>]*name="majorVersion")(?=[^>]*value="17")/
-		);
+		expect(body).not.toContain('name="majorVersion"');
+		expect(body).toMatch(/PostgreSQL\s*(<!---->)?\s*17/);
+		expect(body).toContain('Customize resources');
 		expect(body).toContain('Starts from the source');
 		expect(body).toContain('name="diskSize"');
 		expect(body).toMatch(

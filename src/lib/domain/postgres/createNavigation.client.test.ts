@@ -600,6 +600,10 @@ describe('clone configuration', () => {
 		} as unknown as ComponentProps<typeof CreatePage>['data'];
 	}
 	const form = () => document.querySelector('form')!;
+	const customize = () =>
+		[...document.querySelectorAll<HTMLButtonElement>('button[aria-expanded]')].find((button) =>
+			button.textContent?.includes('Customize resources')
+		)!;
 	const field = (name: string) =>
 		document.querySelector<HTMLInputElement>(`input[name="${name}"]`)!;
 	const checkbox = (value: string) =>
@@ -612,9 +616,11 @@ describe('clone configuration', () => {
 		expect(field('memory').value).toBe('2');
 		expect(field('diskSize').value).toBe('20');
 		expect(field('highAvailability').checked).toBe(true);
-		const version = document.querySelector<HTMLSelectElement>('select[disabled]')!;
-		expect(version.value).toBe('17');
-		expect(submitted().get('majorVersion')).toBe('17');
+		// The version is plain text only: no control, and nothing posted for it.
+		expect(document.querySelector('select[name="majorVersion"], select[disabled]')).toBeNull();
+		expect(document.querySelector('input[name="majorVersion"]')).toBeNull();
+		expect(submitted().has('majorVersion')).toBe(false);
+		expect(document.body.textContent).toContain('(PostgreSQL 17)');
 		expect(checkbox('vector').checked).toBe(true);
 		expect(checkbox('vector').disabled).toBe(true);
 		expect(checkbox('pgcrypto').checked).toBe(false);
@@ -622,6 +628,40 @@ describe('clone configuration', () => {
 		expect(submitted().getAll('extensions')).toEqual(['vector']);
 		expect(document.body.textContent).toContain("Starts from the source's configuration");
 		expect(document.body.textContent).not.toContain('inherited from the source');
+	});
+	test('collapses Customize resources by default and keeps unchanged values posted', () => {
+		mountWithState(sourceData());
+		expect(customize().getAttribute('aria-expanded')).toBe('false');
+		expect(document.body.textContent).toContain('Resources');
+		expect(submitted().get('cpu')).toBe('0.5');
+	});
+	test('expands Customize resources for a differing draft or a validation error', () => {
+		const draft = (fields: Record<string, unknown>, errors = {}) =>
+			({
+				mode: 'clone',
+				name: 'x',
+				environment: 'dev',
+				majorVersion: '17',
+				sourcePostgres: 'original',
+				targetTime: '',
+				extensions: ['vector'],
+				labelRows: [],
+				cpu: '0.5',
+				memory: '2',
+				diskSize: '20',
+				highAvailability: false,
+				errors,
+				error: 'Failed.',
+				...fields
+			}) as ComponentProps<typeof CreatePage>['form'];
+		mountWithState(sourceData(), draft({ cpu: '3' }));
+		expect(customize().getAttribute('aria-expanded')).toBe('true');
+		document.body.replaceChildren();
+		mountWithState(sourceData(), draft({}, { diskSize: 'invalid' }));
+		expect(customize().getAttribute('aria-expanded')).toBe('true');
+		document.body.replaceChildren();
+		mountWithState(sourceData(), draft({}));
+		expect(customize().getAttribute('aria-expanded')).toBe('false');
 	});
 	test('leaves fields empty when the source has no configured resources', () => {
 		mountWithState(sourceData({ resources: null }));

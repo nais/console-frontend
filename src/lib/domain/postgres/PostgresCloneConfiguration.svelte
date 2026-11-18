@@ -4,7 +4,7 @@
 	import PostgresConfigurationFields from './PostgresConfigurationFields.svelte';
 	import PostgresExtensionFields from './PostgresExtensionFields.svelte';
 	import type { ResourceErrors, ResourceField } from './forms.js';
-	import { BodyShort, Select } from '#lib/shadcn/ui/index.js';
+	import { BodyShort } from '#lib/shadcn/ui/index.js';
 
 	interface Props {
 		source: CloneSource;
@@ -31,21 +31,27 @@
 	let highAvailability = $state(
 		untrack(() => draft?.highAvailability ?? baseline.highAvailability)
 	);
+	// Expanded when there is something non-default to see: a draft that differs from the source or
+	// a validation error, so errors are never hidden.
+	const differs = untrack(
+		() =>
+			cpu !== baseline.cpu ||
+			memory !== baseline.memory ||
+			diskSize !== baseline.diskSize ||
+			highAvailability !== baseline.highAvailability
+	);
+	let customizeOpen = $state(untrack(() => differs || Object.keys(errors ?? {}).length > 0));
+	$effect.pre(() => {
+		if (Object.keys(errors ?? {}).length > 0) customizeOpen = true;
+	});
 	let unset = $derived(
 		(['cpu', 'memory', 'diskSize'] as ResourceField[]).filter((field) => !baseline[field])
 	);
 </script>
 
-<BodyShort>Starts from the source's configuration. Adjust to override.</BodyShort>
-<input type="hidden" name="majorVersion" value={source.majorVersion} />
-<Select
-	label="PostgreSQL version"
-	disabled
-	value={source.majorVersion}
-	description="Must match the source."
+<BodyShort
+	>Starts from the source's configuration (PostgreSQL {source.majorVersion}). Adjust to override.</BodyShort
 >
-	<option value={source.majorVersion}>{source.majorVersion}</option>
-</Select>
 <PostgresExtensionFields
 	available={availableExtensions}
 	locked={baseline.extensions}
@@ -58,4 +64,5 @@
 	bind:memory
 	bind:diskSize
 	bind:highAvailability
+	bind:customizeOpen
 />

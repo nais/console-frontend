@@ -62,12 +62,15 @@
 		)
 	);
 
+	const inheritedLabel = 'Inherited';
+
 	function note(field: ResourceField, text: string) {
 		return inherit?.unset.includes(field) ? `${text} Not set on the source; blank inherits.` : text;
 	}
 
 	function customizeResources(open: boolean) {
-		if (!open) return;
+		// When cloning, blank means "inherit from the source", so no defaults are filled in.
+		if (!open || inherit) return;
 		if (!cpuValue.trim()) cpu = defaults.cpu;
 		if (!memoryValue.trim()) memory = defaults.memory;
 		if (!diskSizeValue.trim()) diskSize = defaults.diskSize;
@@ -138,7 +141,7 @@
 	/>
 {/snippet}
 
-{#if editing || inherit}
+{#if editing}
 	<div class="resource-fields" {@attach validateForm}>
 		{@render resourceFields()}
 	</div>
@@ -148,15 +151,15 @@
 		<dl class="resource-summary">
 			<div>
 				<dt>CPU (cores)</dt>
-				<dd>{cpuValue || defaults.cpu}</dd>
+				<dd>{cpuValue || (inherit ? inheritedLabel : defaults.cpu)}</dd>
 			</div>
 			<div>
 				<dt>Memory (GiB)</dt>
-				<dd>{memoryValue || defaults.memory}</dd>
+				<dd>{memoryValue || (inherit ? inheritedLabel : defaults.memory)}</dd>
 			</div>
 			<div>
 				<dt>Storage (GiB)</dt>
-				<dd>{diskSizeValue || defaults.diskSize}</dd>
+				<dd>{diskSizeValue || (inherit ? inheritedLabel : defaults.diskSize)}</dd>
 			</div>
 		</dl>
 		<ReadMore
