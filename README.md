@@ -92,6 +92,12 @@ Tooltip's `bind:open` reflects hover, focus and dismissal, and supports external
 Tables support compact sizing, striped rows, sticky headers and sortable headings.
 `Skeleton` accepts dimensions, HTML attributes and text/circle/rectangle variants,
 and disables animation when reduced motion is requested.
+`StatusIndicator` provides static status dots with `success`, `danger`, `warning`,
+`info` and `neutral` tones. Supply `label` for an accessible description and a
+keyboard-accessible tooltip; omit it when adjacent text describes the decorative
+dot. `compact` removes the surrounding layout space without changing the 8px core
+or 2px muted ring, and `tone={null}` renders nothing. Applications own status-to-tone
+mapping and wording.
 
 In another Svelte 5 app, import the components from `@nais/ui` and load CSS once:
 

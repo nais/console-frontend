@@ -217,9 +217,9 @@ for (const theme of ['light', 'dark']) {
 			}
 			const input = controls.getByRole('textbox', { name: 'Readability search' });
 			await expect(input).toHaveCSS('font-size', '14.4px');
-			const criticalDot = controls.getByTestId('critical-dot').locator('svg');
-			await expect(criticalDot).toHaveCSS('width', '12px');
-			await expect(criticalDot).toHaveCSS('height', '12px');
+			const criticalDot = controls.getByTestId('critical-dot').locator('.status-indicator');
+			await expect(criticalDot).toHaveCSS('width', '8px');
+			await expect(criticalDot).toHaveCSS('height', '8px');
 			expect(await contrast(input, 'borderTopColor')).toBeGreaterThanOrEqual(3);
 			expect(await contrast(input, 'color', '::placeholder')).toBeGreaterThanOrEqual(4.5);
 			expect(await controls.evaluate((element) => element.scrollWidth <= element.clientWidth)).toBe(

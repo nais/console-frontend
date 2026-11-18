@@ -16,22 +16,5 @@
 		display: inline-flex;
 		align-items: center;
 		color: var(--destructive);
-		animation: error-pulse 2s ease-in-out infinite;
-	}
-
-	@keyframes error-pulse {
-		0%,
-		100% {
-			transform: scale(1);
-		}
-		50% {
-			transform: scale(1.15);
-		}
-	}
-
-	@media (prefers-reduced-motion: reduce) {
-		.error-indicator {
-			animation: none;
-		}
 	}
 </style>

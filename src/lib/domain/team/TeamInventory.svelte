@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { graphql } from '$houdini';
-	import { ShSpinner } from '#lib/shadcn/ui/index.js';
+	import { ShSpinner, StatusIndicator } from '#lib/shadcn/ui/index.js';
 	import SurfaceCard from '#lib/ui/SurfaceCard.svelte';
 	import { BriefcaseClockIcon, PackageIcon } from '#lib/icons/index.js';
 
@@ -192,17 +192,17 @@
 					<div class="state-legend">
 						{#if appStates.running > 0}
 							<span class="legend-item"
-								><span class="dot running"></span> {appStates.running} running</span
+								><StatusIndicator tone="success" compact /> {appStates.running} running</span
 							>
 						{/if}
 						{#if appStates.notRunning > 0}
 							<span class="legend-item"
-								><span class="dot not-running"></span> {appStates.notRunning} not running</span
+								><StatusIndicator tone="danger" compact /> {appStates.notRunning} not running</span
 							>
 						{/if}
 						{#if appStates.unknown > 0}
 							<span class="legend-item"
-								><span class="dot unknown"></span> {appStates.unknown} unknown</span
+								><StatusIndicator tone="neutral" compact /> {appStates.unknown} unknown</span
 							>
 						{/if}
 					</div>
@@ -249,22 +249,22 @@
 					<div class="state-legend">
 						{#if jobStates.running > 0}
 							<span class="legend-item"
-								><span class="dot job-running"></span> {jobStates.running} running</span
+								><StatusIndicator tone="info" compact /> {jobStates.running} running</span
 							>
 						{/if}
 						{#if jobStates.completed > 0}
 							<span class="legend-item"
-								><span class="dot completed"></span> {jobStates.completed} completed</span
+								><StatusIndicator tone="success" compact /> {jobStates.completed} completed</span
 							>
 						{/if}
 						{#if jobStates.failed > 0}
 							<span class="legend-item"
-								><span class="dot not-running"></span> {jobStates.failed} failed</span
+								><StatusIndicator tone="danger" compact /> {jobStates.failed} failed</span
 							>
 						{/if}
 						{#if jobStates.unknown > 0}
 							<span class="legend-item"
-								><span class="dot unknown"></span> {jobStates.unknown} unknown</span
+								><StatusIndicator tone="neutral" compact /> {jobStates.unknown} unknown</span
 							>
 						{/if}
 					</div>
@@ -404,33 +404,6 @@
 		font-size: var(--sh-font-size-sm);
 		color: var(--muted-foreground);
 		font-variant-numeric: tabular-nums;
-	}
-
-	.dot {
-		display: inline-block;
-		width: 7px;
-		height: 7px;
-		border-radius: 50%;
-	}
-
-	.dot.running {
-		background: var(--success);
-	}
-
-	.dot.completed {
-		background: var(--success);
-	}
-
-	.dot.not-running {
-		background: var(--destructive);
-	}
-
-	.dot.job-running {
-		background: var(--info);
-	}
-
-	.dot.unknown {
-		background: var(--muted-foreground);
 	}
 
 	.resources {

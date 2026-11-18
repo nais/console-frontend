@@ -1,20 +1,41 @@
-<script lang="ts">
-	import TooltipAlignHack from './TooltipAlignHack.svelte';
+<script lang="ts" module>
+	export type StatusIndicatorTone = 'success' | 'danger' | 'warning' | 'info' | 'neutral';
 
-	type Tone = 'success' | 'danger' | 'warning' | 'info' | 'neutral';
-
-	let { label, tone }: { label: string; tone: Tone | null } = $props();
+	export interface StatusIndicatorProps {
+		label?: string;
+		tone: StatusIndicatorTone | null;
+		compact?: boolean;
+	}
 </script>
 
+<script lang="ts">
+	import Tooltip from './Tooltip.svelte';
+
+	let { label, tone, compact = false }: StatusIndicatorProps = $props();
+</script>
+
+{#snippet indicator()}
+	<span
+		class={['status-indicator', tone, { compact }]}
+		role={label ? 'img' : undefined}
+		aria-label={label}
+		aria-hidden={label ? undefined : true}
+	></span>
+{/snippet}
+
 {#if tone}
-	<TooltipAlignHack content={label}>
-		<span class={['status-indicator', tone]} role="img" aria-label={label}></span>
-	</TooltipAlignHack>
+	{#if label}
+		<Tooltip content={label} style="line-height: 0">
+			{@render indicator()}
+		</Tooltip>
+	{:else}
+		{@render indicator()}
+	{/if}
 {/if}
 
 <style>
 	.status-indicator {
-		display: flex;
+		display: inline-flex;
 		align-items: center;
 		justify-content: center;
 		width: var(--nais-space-24);
@@ -26,8 +47,12 @@
 			width: var(--nais-space-8);
 			height: var(--nais-space-8);
 			border-radius: var(--radius-full);
-			transition: box-shadow 150ms ease;
 		}
+	}
+
+	.compact {
+		width: var(--nais-space-8);
+		height: var(--nais-space-8);
 	}
 
 	.success::after {

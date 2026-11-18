@@ -3,11 +3,10 @@
 	import { envTagVariant } from '#lib/envTagVariant.js';
 	import ErrorIcon from '#lib/icons/ErrorIcon.svelte';
 	import SuccessIcon from '#lib/icons/SuccessIcon.svelte';
-	import StatusIndicator from '#lib/ui/StatusIndicator.svelte';
 	import Time from '#lib/ui/Time.svelte';
 	import { countIssuesBySeverity } from '#lib/utils/issueCounts.js';
 	import { JobState, type JobRunState$options } from '$houdini';
-	import { Loader, Tag, Td, Tr } from '#lib/shadcn/ui/index.js';
+	import { Loader, StatusIndicator, Tag, Td, Tr } from '#lib/shadcn/ui/index.js';
 
 	const {
 		job

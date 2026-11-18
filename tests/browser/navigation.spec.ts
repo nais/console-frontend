@@ -18,9 +18,7 @@ test('mobile Admin navigation reflects reconciler errors and clears recovered st
 	const indicator = admin.getByRole('img', { name: 'Reconcilers have errors' });
 	await expect(indicator).toBeVisible();
 	await page.emulateMedia({ reducedMotion: 'no-preference' });
-	await expect(indicator).not.toHaveCSS('animation-name', 'none');
-	await expect(indicator).toHaveCSS('animation-duration', '2s');
-	await expect(indicator).toHaveCSS('animation-iteration-count', 'infinite');
+	await expect(indicator).toHaveCSS('animation-name', 'none');
 	await page.emulateMedia({ reducedMotion: 'reduce' });
 	await expect(indicator).toHaveCSS('animation-name', 'none');
 	await expect(indicator).toBeVisible();

@@ -37,6 +37,7 @@ export { default as Search } from './Search.svelte';
 export { Select } from '@nais/ui';
 export { Skeleton, Skeleton as ShSkeleton } from '@nais/ui';
 export { default as Spinner, default as ShSpinner } from './Spinner.svelte';
+export { StatusIndicator, type StatusIndicatorProps, type StatusIndicatorTone } from '@nais/ui';
 export { default as Switch } from './Switch.svelte';
 export { default as Tab } from './Tab.svelte';
 export { default as TabList } from './TabList.svelte';

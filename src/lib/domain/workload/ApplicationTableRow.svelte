@@ -1,7 +1,6 @@
 <script lang="ts">
 	import IssuePills from '#lib/domain/issues/IssuePills.svelte';
-	import { Badge, Td, Tr } from '#lib/shadcn/ui/index.js';
-	import StatusIndicator from '#lib/ui/StatusIndicator.svelte';
+	import { Badge, StatusIndicator, Td, Tr } from '#lib/shadcn/ui/index.js';
 	import Time from '#lib/ui/Time.svelte';
 	import { countIssuesBySeverity } from '#lib/utils/issueCounts.js';
 

@@ -8,6 +8,7 @@
 		ReadMore,
 		Select,
 		Skeleton,
+		StatusIndicator,
 		Table,
 		Tag,
 		Tbody,
@@ -21,6 +22,8 @@
 		type ButtonProps,
 		type ModalHeaderProps,
 		type ModalProps,
+		type StatusIndicatorProps,
+		type StatusIndicatorTone,
 		type TableSortState,
 		type ThemeProps
 	} from '@nais/ui';
@@ -42,10 +45,28 @@
 	let tooltipOpen = $state(false);
 	let undefinedTooltipOpen = $state<boolean>();
 	let sort = $state<TableSortState>({ orderBy: 'name', direction: 'ascending' });
+	const statusTones: StatusIndicatorTone[] = ['success', 'danger', 'warning', 'info', 'neutral'];
+	const labelledStatus: StatusIndicatorProps = { tone: 'warning', label: 'Upgrade in progress' };
 </script>
 
 <main>
 	<h1>UI package consumer</h1>
+	<section aria-labelledby="package-status">
+		<Heading level="2" id="package-status">Status indicators</Heading>
+		{#each ['light', 'dark'] as theme (theme)}
+			<Theme theme={theme === 'dark' ? 'dark' : 'light'} data-testid={`package-status-${theme}`}>
+				{#each statusTones as tone (tone)}
+					<span data-testid={`status-${tone}`}
+						><StatusIndicator {tone} label={`${tone} status`} /></span
+					>
+					<span data-testid={`compact-status-${tone}`}><StatusIndicator {tone} compact /></span>
+				{/each}
+				<span data-testid="labelled-status"><StatusIndicator {...labelledStatus} compact /></span>
+				<span data-testid="absent-status"><StatusIndicator tone={null} label="Not rendered" /></span
+				>
+			</Theme>
+		{/each}
+	</section>
 	<Theme theme="dark" data-testid="outer-dark">
 		<Button>Dark button</Button>
 		<Theme {theme} data-testid="inner-light">

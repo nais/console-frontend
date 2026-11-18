@@ -12,10 +12,17 @@
 	import OrderByMenu from '#lib/ui/OrderByMenu.svelte';
 	import ResourceTable from '#lib/ui/ResourceTable.svelte';
 	import Pagination from '#lib/ui/Pagination.svelte';
-	import StatusIndicator from '#lib/ui/StatusIndicator.svelte';
 	import { countIssuesBySeverity } from '#lib/utils/issueCounts.js';
 	import { changeParams } from '#lib/utils/searchparams.js';
-	import { Loader, Tag, Td, Th, Tr, type TableSortState } from '#lib/shadcn/ui/index.js';
+	import {
+		Loader,
+		StatusIndicator,
+		Tag,
+		Td,
+		Th,
+		Tr,
+		type TableSortState
+	} from '#lib/shadcn/ui/index.js';
 	import { DatabaseIcon } from '#lib/icons/index.js';
 	import type { PageProps } from './$types';
 
