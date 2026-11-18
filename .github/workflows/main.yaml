@@ -11,6 +11,8 @@ env:
   IMAGE_REPOSITORY: oci://europe-north1-docker.pkg.dev/nais-io/nais
 jobs:
   build_push:
+    env:
+      ASSET_PREFIX: console/${{ github.run_id }}-${{ github.run_attempt }}
     outputs:
       version: ${{ steps.build-push-sign.outputs.version }}
     permissions:
@@ -44,6 +46,57 @@ jobs:
           build_args: |
             NODE_VERSION=${{ steps.node_version.outputs.node_version }}
             APK_REFRESH=${{ github.run_id }}-${{ github.run_attempt }}
+            ASSET_BASE_URL=https://cdn.nais.io/${{ env.ASSET_PREFIX }}
+      - name: Extract client assets from published image
+        env:
+          IMAGE: ${{ steps.build-push-sign.outputs.image }}
+        run: |
+          set -euo pipefail
+          docker pull "$IMAGE"
+          container=$(docker create "$IMAGE")
+          trap 'docker rm "$container"' EXIT
+          docker cp "$container:/usr/app/client/." "$RUNNER_TEMP/console-assets"
+      - name: Authenticate asset publisher
+        id: asset-auth
+        uses: google-github-actions/auth@7c6bc770dae815cd3e89ee6cdf493a5fab2cc093 # ratchet:google-github-actions/auth@v3
+        with:
+          workload_identity_provider: ${{ secrets.NAIS_IO_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: gh-console-frontend-assets@nais-io.iam.gserviceaccount.com
+          export_environment_variables: false
+      - name: Set up Google Cloud SDK
+        uses: google-github-actions/setup-gcloud@aa5489c8933f4cc7a4f7d45035b3b1440c9c10db # ratchet:google-github-actions/setup-gcloud@v3
+      - name: Upload client assets
+        env:
+          CLOUDSDK_AUTH_CREDENTIAL_FILE_OVERRIDE: ${{ steps.asset-auth.outputs.credentials_file_path }}
+        run: |
+          gcloud storage rsync "$RUNNER_TEMP/console-assets" "gs://nais-io-cdn-assets/$ASSET_PREFIX" \
+            --recursive \
+            --exclude='.*\.(br|gz|map)$' \
+            --cache-control='public,max-age=31536000,immutable' \
+            --if-generation-match=0
+      - name: Verify published asset through CDN
+        run: |
+          set -euo pipefail
+          asset_dir="$RUNNER_TEMP/console-assets"
+          entry=$(find "$asset_dir/_app/immutable/entry" -name 'start.*.js' -type f -print -quit)
+          if [[ -z "$entry" ]]; then
+            echo "::error::No client entry point found in the published image."
+            exit 1
+          fi
+          curl --fail --silent --show-error --retry 5 --retry-all-errors --retry-delay 5 \
+            --header 'Origin: https://console.nav.cloud.nais.io' \
+            --dump-header "$RUNNER_TEMP/cdn-entry.headers" \
+            --output "$RUNNER_TEMP/cdn-entry.js" \
+            "https://cdn.nais.io/$ASSET_PREFIX/${entry#"$asset_dir/"}"
+          cmp "$entry" "$RUNNER_TEMP/cdn-entry.js"
+          if ! grep -Eiq '^access-control-allow-origin:[[:space:]]*\*' "$RUNNER_TEMP/cdn-entry.headers"; then
+            echo "::error::CDN response does not allow cross-origin module loading."
+            exit 1
+          fi
+          if ! grep -Eiq '^content-type:[[:space:]]*(application|text)/(javascript|ecmascript)' "$RUNNER_TEMP/cdn-entry.headers"; then
+            echo "::error::CDN entry point does not have a JavaScript content type."
+            exit 1
+          fi
       - uses: azure/setup-helm@2f5e7bc67f1f9972ab16657bb795f36d8f04de0e # ratchet:azure/setup-helm@v5
         name: "Setup Helm"
         with:

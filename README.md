@@ -40,6 +40,28 @@ To run the home SSR/hydration network regression against an already-running cons
 use `CONSOLE_E2E_URL=http://127.0.0.1:5173 pnpm run test:browser home-network`. This runs only the live
 home test, without starting the isolated fixture server, and requires a user with team memberships.
 
+### Production assets
+
+Production builds use `ASSET_BASE_URL` to load client assets from
+`https://cdn.nais.io/console/<run-id>-<run-attempt>`. Without this build argument,
+assets are served locally as before.
+
+The main workflow extracts `client/` from the published Docker image and uploads
+it to `gs://nais-io-cdn-assets/console/<run-id>-<run-attempt>` using the dedicated
+`gh-console-frontend-assets` identity. Uploads are create-only and retain previous
+releases. Precompressed files and source maps are excluded. All uploaded files use
+long-lived immutable caching because each build has its own prefix.
+
+Chart publication is blocked until upload succeeds and a client entry point fetched
+through the CDN matches the image's file. The first CDN-backed release cannot repair
+tabs opened before this change; those still need a refresh after their old pods stop.
+
+Version detection deliberately requests `/_app/version.json` from the tenant's
+server, not the release-pinned CDN. After navigation, a different version enables
+the update notification. Failed navigation can trigger a full page load, limited
+to once per loaded version per tab, even if requests alternate between builds
+during a rolling update.
+
 ### Mobile responsiveness
 
 The console should remain usable at small viewport widths, with `375px` as the baseline mobile target.

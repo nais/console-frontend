@@ -4,8 +4,16 @@ import tailwindcss from '@tailwindcss/vite';
 import houdini from 'houdini/vite';
 import { defineConfig, loadEnv } from 'vite';
 
+function isAssetBaseUrl(value: string): value is '' | `http://${string}` | `https://${string}` {
+	return value === '' || value.startsWith('http://') || value.startsWith('https://');
+}
+
 export default defineConfig((mode) => {
 	const env = loadEnv(mode.mode, process.cwd());
+	const assets = process.env.ASSET_BASE_URL ?? '';
+	if (!isAssetBaseUrl(assets)) {
+		throw new Error('ASSET_BASE_URL must be an absolute HTTP(S) URL');
+	}
 	if (env.VITE_SCHEMA_ENDPOINT) {
 		process.env.VITE_SCHEMA_ENDPOINT ??= env.VITE_SCHEMA_ENDPOINT;
 	}
@@ -31,6 +39,9 @@ export default defineConfig((mode) => {
 			houdini(),
 			sveltekit({
 				adapter: adapter(),
+				paths: {
+					assets
+				},
 				alias: {
 					$houdini: '.houdini/'
 				},

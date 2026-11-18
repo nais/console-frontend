@@ -11,6 +11,7 @@ RUN pnpm install --frozen-lockfile
 
 COPY . ./
 
+ARG ASSET_BASE_URL=""
 RUN pnpm run build
 
 
