@@ -15,13 +15,20 @@
 	import ResourceTable from '#lib/ui/ResourceTable.svelte';
 	import PageModal, { pageModalClick } from '#lib/ui/PageModal.svelte';
 	import Pagination from '#lib/ui/Pagination.svelte';
-	import StatusIndicator from '#lib/ui/StatusIndicator.svelte';
 	import SurfaceCard from '#lib/ui/SurfaceCard.svelte';
 	import TooltipAlignHack from '#lib/ui/TooltipAlignHack.svelte';
 	import { capitalizeFirstLetter } from '#lib/utils/formatters.js';
 	import { countIssuesBySeverity } from '#lib/utils/issueCounts.js';
 	import { changeParams } from '#lib/utils/searchparams.js';
-	import { Button, Tag, Td, Th, Tr, type TableSortState } from '#lib/shadcn/ui/index.js';
+	import {
+		Button,
+		StatusIndicator,
+		Tag,
+		Td,
+		Th,
+		Tr,
+		type TableSortState
+	} from '#lib/shadcn/ui/index.js';
 	import { FunnelIcon, PlusIcon } from '#lib/icons/index.js';
 	import CreatePage from '../opensearch/create/+page.svelte';
 	import type { PageProps } from './$types';

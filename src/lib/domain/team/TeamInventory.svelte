@@ -1,8 +1,7 @@
 <script lang="ts">
 	import { graphql } from '$houdini';
-	import { ShSpinner } from '#lib/shadcn/ui/index.js';
+	import { ShSpinner, StatusIndicator } from '#lib/shadcn/ui/index.js';
 	import SurfaceCard from '#lib/ui/SurfaceCard.svelte';
-	import StatusIndicator from '#lib/ui/StatusIndicator.svelte';
 	import { BriefcaseClockIcon, PackageIcon } from '#lib/icons/index.js';
 
 	interface Props {

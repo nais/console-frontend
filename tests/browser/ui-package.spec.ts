@@ -5,6 +5,55 @@ test.beforeEach(async ({ page }) => {
 	await expect(page.locator('html')).toHaveAttribute('data-ready', 'true');
 });
 
+for (const theme of ['light', 'dark']) {
+	test(`standalone status indicators preserve size, semantics and tooltips in ${theme} mode`, async ({
+		page
+	}) => {
+		const scope = page.getByTestId(`package-status-${theme}`);
+		for (const tone of ['success', 'danger', 'warning', 'info', 'neutral']) {
+			const labelled = scope.getByTestId(`status-${tone}`).getByRole('img');
+			await expect(labelled).toHaveAccessibleName(`${tone} status`);
+			await expect(labelled).toHaveCSS('width', '24px');
+			const decorative = scope.getByTestId(`compact-status-${tone}`);
+			await expect(decorative.locator('.status-indicator')).toHaveCSS('width', '8px');
+			await expect(decorative.locator('.status-indicator')).toHaveAttribute('aria-hidden', 'true');
+			await expect(decorative.locator('[tabindex]')).toHaveCount(0);
+			const appearances = await scope.locator(`.status-indicator.${tone}`).evaluateAll((elements) =>
+				elements.map((element) => {
+					const core = getComputedStyle(element, '::after');
+					return {
+						width: core.width,
+						height: core.height,
+						color: core.backgroundColor,
+						ring: core.boxShadow,
+						animation: core.animationName
+					};
+				})
+			);
+			expect(appearances).toHaveLength(tone === 'warning' ? 3 : 2);
+			for (const appearance of appearances) {
+				expect(appearance).toEqual(appearances[0]);
+				expect(appearance.width).toBe('8px');
+				expect(appearance.height).toBe('8px');
+				expect(appearance.color).not.toBe('rgba(0, 0, 0, 0)');
+				expect(appearance.ring).toMatch(/ 0px 0px 0px 2px$/);
+				expect(appearance.animation).toBe('none');
+			}
+		}
+		await expect(scope.getByTestId('absent-status').locator('*')).toHaveCount(0);
+		const trigger = scope.getByTestId('labelled-status').getByRole('button');
+		const tooltip = page.getByRole('tooltip', { name: 'Upgrade in progress', exact: true });
+		await trigger.hover();
+		await expect(tooltip).toBeVisible();
+		await page.mouse.move(0, 0);
+		await expect(tooltip).toHaveCount(0);
+		await trigger.focus();
+		await expect(tooltip).toBeVisible();
+		await page.keyboard.press('Escape');
+		await expect(tooltip).toHaveCount(0);
+	});
+}
+
 test('standalone buttons retain callbacks, refs, aliases, loading, disabled and form behavior', async ({
 	page
 }) => {

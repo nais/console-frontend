@@ -5,10 +5,9 @@
 	import OpenSearchIcon from '#lib/icons/OpenSearchIcon.svelte';
 	import UnleashIcon from '#lib/icons/UnleashIcon.svelte';
 	import ValkeyIcon from '#lib/icons/ValkeyIcon.svelte';
-	import StatusIndicator from '#lib/ui/StatusIndicator.svelte';
 	import { issueTypeLabel } from '#lib/utils/issueTypeLabel.js';
 	import { capitalizeFirstLetter } from '#lib/utils/formatters.js';
-	import { Tag } from '#lib/shadcn/ui/index.js';
+	import { StatusIndicator, Tag } from '#lib/shadcn/ui/index.js';
 	import {
 		BriefcaseClockIcon,
 		ChevronRightIcon,

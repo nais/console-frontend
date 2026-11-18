@@ -1,10 +1,20 @@
 <script lang="ts">
 	import Loader from '../../src/lib/shadcn/ui/Loader.svelte';
 	import AddToFavorites from '../../src/lib/ui/AddToFavorites.svelte';
-	import StatusIndicator from '../../src/lib/ui/StatusIndicator.svelte';
 	import ErrorIndicator from '../../src/lib/ui/ErrorIndicator.svelte';
 	import StateIndicator from '../../src/routes/team/[team]/[env]/postgres/[postgres]/(single)/StateIndicator.svelte';
-	import { Button, Heading, Modal, Tag, Td, Th, Theme, Tooltip, Tr } from '@nais/ui';
+	import {
+		Button,
+		Heading,
+		Modal,
+		StatusIndicator,
+		Tag,
+		Td,
+		Th,
+		Theme,
+		Tooltip,
+		Tr
+	} from '@nais/ui';
 	import ActionMenu from '../../src/lib/shadcn/ui/ActionMenu.svelte';
 	import ActionMenuItem from '../../src/lib/shadcn/ui/ActionMenuItem.svelte';
 	import JobRunListItem from '../../src/lib/domain/list-items/JobRunListItem.svelte';

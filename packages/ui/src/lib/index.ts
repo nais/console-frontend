@@ -8,6 +8,11 @@ export { default as Modal, type ModalProps, type ModalHeaderProps } from './Moda
 export { default as ReadMore, type ReadMoreProps } from './ReadMore.svelte';
 export { default as Select, type SelectProps } from './Select.svelte';
 export { default as Skeleton, type SkeletonProps } from './Skeleton.svelte';
+export {
+	default as StatusIndicator,
+	type StatusIndicatorProps,
+	type StatusIndicatorTone
+} from './StatusIndicator.svelte';
 export { default as Table, type TableProps, type TableSortState } from './Table.svelte';
 export { default as Tag, type TagProps, type TagVariant } from './Tag.svelte';
 export { default as Tbody, type TbodyProps } from './Tbody.svelte';

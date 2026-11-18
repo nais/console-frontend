@@ -11,10 +11,19 @@
 	import Collection from '#lib/ui/Collection.svelte';
 	import ResourceTable from '#lib/ui/ResourceTable.svelte';
 	import Pagination from '#lib/ui/Pagination.svelte';
-	import StatusIndicator from '#lib/ui/StatusIndicator.svelte';
 	import SurfaceCard from '#lib/ui/SurfaceCard.svelte';
 	import { changeParams } from '#lib/utils/searchparams.js';
-	import { Alert, Button, Checkbox, Loader, Tag, Td, Th, Tr } from '#lib/shadcn/ui/index.js';
+	import {
+		Alert,
+		Button,
+		Checkbox,
+		Loader,
+		StatusIndicator,
+		Tag,
+		Td,
+		Th,
+		Tr
+	} from '#lib/shadcn/ui/index.js';
 	import { FunnelIcon } from '#lib/icons/index.js';
 	import type { PageProps } from './$types';
 

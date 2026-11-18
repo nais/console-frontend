@@ -1,13 +1,17 @@
+<script lang="ts" module>
+	export type StatusIndicatorTone = 'success' | 'danger' | 'warning' | 'info' | 'neutral';
+
+	export interface StatusIndicatorProps {
+		label?: string;
+		tone: StatusIndicatorTone | null;
+		compact?: boolean;
+	}
+</script>
+
 <script lang="ts">
-	import TooltipAlignHack from './TooltipAlignHack.svelte';
+	import Tooltip from './Tooltip.svelte';
 
-	type Tone = 'success' | 'danger' | 'warning' | 'info' | 'neutral';
-
-	let {
-		label,
-		tone,
-		compact = false
-	}: { label?: string; tone: Tone | null; compact?: boolean } = $props();
+	let { label, tone, compact = false }: StatusIndicatorProps = $props();
 </script>
 
 {#snippet indicator()}
@@ -21,9 +25,9 @@
 
 {#if tone}
 	{#if label}
-		<TooltipAlignHack content={label}>
+		<Tooltip content={label} style="line-height: 0">
 			{@render indicator()}
-		</TooltipAlignHack>
+		</Tooltip>
 	{:else}
 		{@render indicator()}
 	{/if}

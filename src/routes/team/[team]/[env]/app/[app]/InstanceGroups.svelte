@@ -1,7 +1,6 @@
 <script lang="ts">
 	import { type AppInstanceGroups$result } from '$houdini';
-	import { Badge, Loader } from '#lib/shadcn/ui/index.js';
-	import StatusIndicator from '#lib/ui/StatusIndicator.svelte';
+	import { Badge, Loader, StatusIndicator } from '#lib/shadcn/ui/index.js';
 	import SurfaceCard from '#lib/ui/SurfaceCard.svelte';
 	import Time from '#lib/ui/Time.svelte';
 	import { formatImageVersion } from '#lib/utils/image.js';

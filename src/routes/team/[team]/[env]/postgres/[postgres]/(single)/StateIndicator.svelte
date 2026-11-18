@@ -1,6 +1,5 @@
 <script lang="ts">
-	import StatusIndicator from '#lib/ui/StatusIndicator.svelte';
-	import { Loader } from '#lib/shadcn/ui/index.js';
+	import { Loader, StatusIndicator } from '#lib/shadcn/ui/index.js';
 
 	let { state }: { state: string } = $props();
 </script>
