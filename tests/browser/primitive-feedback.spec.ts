@@ -19,6 +19,86 @@ test.beforeEach(async ({ page }) => {
 	await expect(page.locator('html')).toHaveAttribute('data-ready', 'true');
 });
 
+for (const width of [320, 1200]) {
+	for (const theme of ['light', 'dark']) {
+		test(`status dots stay uniform and static in ${theme} mode at ${width}px`, async ({ page }) => {
+			await page.setViewportSize({ width, height: 900 });
+			await page.locator('html').evaluate((element, theme) => {
+				element.dataset.theme = theme;
+				element.classList.toggle('dark', theme === 'dark');
+			}, theme);
+
+			for (const tone of ['success', 'danger', 'warning', 'info', 'neutral']) {
+				const reference = page.getByTestId(`status-${tone}`).locator('.status-indicator');
+				await expect(reference).toHaveRole('img');
+				await expect(reference).toHaveAccessibleName(`${tone} status`);
+				await expect(reference).toHaveCSS('width', '24px');
+				for (const prefix of ['status', 'compact-status']) {
+					const dot = page.getByTestId(`${prefix}-${tone}`).locator('.status-indicator');
+					const appearance = await dot.evaluate((element) => {
+						const core = getComputedStyle(element, '::after');
+						return {
+							width: core.width,
+							height: core.height,
+							shadow: core.boxShadow,
+							animations: element.getAnimations({ subtree: true }).length
+						};
+					});
+					expect(appearance.width).toBe('8px');
+					expect(appearance.height).toBe('8px');
+					expect(appearance.shadow).toMatch(/ 0px 0px 0px 2px$/);
+					expect(appearance.animations).toBe(0);
+				}
+				const decorative = page.getByTestId(`compact-status-${tone}`);
+				await expect(decorative.locator('.status-indicator')).toHaveAttribute(
+					'aria-hidden',
+					'true'
+				);
+				await expect(decorative.getByRole('button')).toHaveCount(0);
+			}
+
+			for (const [state, tone] of [
+				['AVAILABLE', 'success'],
+				['DEGRADED', 'danger'],
+				['UNKNOWN', 'neutral']
+			]) {
+				const dot = page.getByTestId(`postgres-${state}`).locator(`.status-indicator.${tone}`);
+				await expect(dot).toHaveCount(1);
+				expect(
+					await dot.evaluate((element) => element.getAnimations({ subtree: true }).length)
+				).toBe(0);
+			}
+			await expect(page.getByTestId('postgres-PROGRESSING').locator('.sh-loader')).toBeVisible();
+			expect(
+				await page
+					.getByTestId('error-indicator')
+					.evaluate((element) => element.getAnimations({ subtree: true }).length)
+			).toBe(0);
+		});
+	}
+}
+
+test('status labels remain available on hover and focus, and loaders respect reduced motion', async ({
+	page
+}) => {
+	const trigger = page.getByTestId('status-warning').getByRole('button');
+	const tooltip = page.getByRole('tooltip', { name: 'warning status', exact: true });
+	await trigger.hover();
+	await expect(tooltip).toBeVisible();
+	await page.mouse.move(0, 0);
+	await expect(tooltip).toHaveCount(0);
+	await trigger.focus();
+	await expect(tooltip).toBeVisible();
+	await page.keyboard.press('Escape');
+	await expect(tooltip).toHaveCount(0);
+
+	const loader = page.getByTestId('postgres-PROGRESSING').locator('.sh-loader');
+	await expect(loader).not.toHaveCSS('animation-name', 'none');
+	await page.emulateMedia({ reducedMotion: 'reduce' });
+	await expect(loader).toHaveCSS('animation-name', 'none');
+	await expect(loader).toBeVisible();
+});
+
 test('native scrollbar colour schemes follow the root and nested themes', async ({ page }) => {
 	for (const theme of ['light', 'dark', 'light']) {
 		await page.locator('html').evaluate((element, theme) => {

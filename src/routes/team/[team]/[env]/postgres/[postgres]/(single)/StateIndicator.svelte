@@ -1,5 +1,5 @@
 <script lang="ts">
-	import RunningIndicator from '#lib/ui/RunningIndicator.svelte';
+	import StatusIndicator from '#lib/ui/StatusIndicator.svelte';
 	import { Loader } from '#lib/shadcn/ui/index.js';
 
 	let { state }: { state: string } = $props();
@@ -7,11 +7,11 @@
 
 <span class="status-indicator" aria-hidden="true">
 	{#if state === 'AVAILABLE'}
-		<span><RunningIndicator /></span>
+		<StatusIndicator tone="success" />
 	{:else if state === 'PROGRESSING'}
 		<Loader size="xsmall" />
 	{:else}
-		<span class={['status-dot', { degraded: state === 'DEGRADED' }]}></span>
+		<StatusIndicator tone={state === 'DEGRADED' ? 'danger' : 'neutral'} />
 	{/if}
 </span>
 
@@ -23,17 +23,5 @@
 		width: var(--nais-space-24);
 		height: var(--nais-space-24);
 		flex-shrink: 0;
-	}
-	.status-indicator > span {
-		display: inline-flex;
-	}
-	.status-dot {
-		width: var(--nais-space-8);
-		height: var(--nais-space-8);
-		border-radius: var(--radius-full);
-		background-color: var(--muted-foreground);
-	}
-	.status-dot.degraded {
-		background-color: var(--destructive);
 	}
 </style>

@@ -3,18 +3,35 @@
 
 	type Tone = 'success' | 'danger' | 'warning' | 'info' | 'neutral';
 
-	let { label, tone }: { label: string; tone: Tone | null } = $props();
+	let {
+		label,
+		tone,
+		compact = false
+	}: { label?: string; tone: Tone | null; compact?: boolean } = $props();
 </script>
 
+{#snippet indicator()}
+	<span
+		class={['status-indicator', tone, { compact }]}
+		role={label ? 'img' : undefined}
+		aria-label={label}
+		aria-hidden={label ? undefined : true}
+	></span>
+{/snippet}
+
 {#if tone}
-	<TooltipAlignHack content={label}>
-		<span class={['status-indicator', tone]} role="img" aria-label={label}></span>
-	</TooltipAlignHack>
+	{#if label}
+		<TooltipAlignHack content={label}>
+			{@render indicator()}
+		</TooltipAlignHack>
+	{:else}
+		{@render indicator()}
+	{/if}
 {/if}
 
 <style>
 	.status-indicator {
-		display: flex;
+		display: inline-flex;
 		align-items: center;
 		justify-content: center;
 		width: var(--nais-space-24);
@@ -26,8 +43,12 @@
 			width: var(--nais-space-8);
 			height: var(--nais-space-8);
 			border-radius: var(--radius-full);
-			transition: box-shadow 150ms ease;
 		}
+	}
+
+	.compact {
+		width: var(--nais-space-8);
+		height: var(--nais-space-8);
 	}
 
 	.success::after {

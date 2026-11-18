@@ -1,7 +1,9 @@
 <script lang="ts">
 	import Loader from '../../src/lib/shadcn/ui/Loader.svelte';
 	import AddToFavorites from '../../src/lib/ui/AddToFavorites.svelte';
-	import CriticalIndicator from '../../src/lib/ui/CriticalIndicator.svelte';
+	import StatusIndicator from '../../src/lib/ui/StatusIndicator.svelte';
+	import ErrorIndicator from '../../src/lib/ui/ErrorIndicator.svelte';
+	import StateIndicator from '../../src/routes/team/[team]/[env]/postgres/[postgres]/(single)/StateIndicator.svelte';
 	import { Button, Heading, Modal, Tag, Td, Th, Theme, Tooltip, Tr } from '@nais/ui';
 	import ActionMenu from '../../src/lib/shadcn/ui/ActionMenu.svelte';
 	import ActionMenuItem from '../../src/lib/shadcn/ui/ActionMenuItem.svelte';
@@ -31,6 +33,7 @@
 	const sizes = ['3xlarge', '2xlarge', 'xlarge', 'large', 'medium', 'small', 'xsmall'] as const;
 	const headingSizes = ['xlarge', 'large', 'medium', 'small', 'xsmall'] as const;
 	const statusVariants = ['success', 'warning', 'destructive', 'info'] as const;
+	const statusTones = ['success', 'danger', 'warning', 'info', 'neutral'] as const;
 	let nestedTheme = $state<'light' | 'dark'>('light');
 	let dialogOpen = $state(false);
 	let deletedRun = $state('');
@@ -218,7 +221,7 @@
 	<Loader title="Styled loading" size="large" style="color: var(--info)" />
 	<section aria-label="Readable controls">
 		<Input ariaLabel="Readability search" placeholder="Search resources" />
-		<span data-testid="critical-dot" aria-hidden="true"><CriticalIndicator /></span>
+		<span data-testid="critical-dot"><StatusIndicator tone="danger" compact /></span>
 		{#each statusVariants as variant (variant)}
 			<Badge {variant} size="sm">{variant} badge</Badge>
 			<Tag variant={variant === 'destructive' ? 'error' : variant} size="small">{variant} tag</Tag>
@@ -231,6 +234,20 @@
 				<Td><span class="table-meta">Recently updated</span></Td>
 			</Tr>
 		</ResourceTable>
+	</section>
+	<section aria-label="Status indicators">
+		{#each statusTones as tone (tone)}
+			<span data-testid={`status-${tone}`}>
+				<StatusIndicator {tone} label={`${tone} status`} />
+			</span>
+			<span data-testid={`compact-status-${tone}`}>
+				<StatusIndicator {tone} compact />
+			</span>
+		{/each}
+		{#each ['AVAILABLE', 'DEGRADED', 'UNKNOWN', 'PROGRESSING'] as state (state)}
+			<span data-testid={`postgres-${state}`}><StateIndicator {state} /></span>
+		{/each}
+		<span data-testid="error-indicator"><ErrorIndicator label="Navigation error" /></span>
 	</section>
 	<section aria-label="Token sizing">
 		<SearchField label="Token search" value="cache" />

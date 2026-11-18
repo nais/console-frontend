@@ -1,9 +1,7 @@
 <script lang="ts">
 	import { type AppInstanceGroups$result } from '$houdini';
-	import { Badge } from '#lib/shadcn/ui/index.js';
-	import CriticalIndicator from '#lib/ui/CriticalIndicator.svelte';
-	import IncomingIndicator from '#lib/ui/IncomingIndicator.svelte';
-	import RunningIndicator from '#lib/ui/RunningIndicator.svelte';
+	import { Badge, Loader } from '#lib/shadcn/ui/index.js';
+	import StatusIndicator from '#lib/ui/StatusIndicator.svelte';
 	import SurfaceCard from '#lib/ui/SurfaceCard.svelte';
 	import Time from '#lib/ui/Time.svelte';
 	import { formatImageVersion } from '#lib/utils/image.js';
@@ -54,11 +52,9 @@
 		>
 			<div class="instance-group-icon">
 				{#if role === 'incoming'}
-					<IncomingIndicator />
-				{:else if isUnhealthy}
-					<CriticalIndicator />
+					<Loader size="xsmall" title="Incoming instance group" />
 				{:else}
-					<RunningIndicator />
+					<StatusIndicator tone={isUnhealthy ? 'danger' : 'success'} />
 				{/if}
 			</div>
 			<div class="instance-group-info">

@@ -27,6 +27,11 @@ test('standalone buttons retain callbacks, refs, aliases, loading, disabled and 
 	);
 	await page.getByRole('button', { name: 'Submit button' }).click();
 	await expect(page.getByRole('status', { name: 'Submissions' })).toHaveText('1');
+	const loader = page.getByRole('status', { name: 'Loading...' });
+	await expect(loader).not.toHaveCSS('animation-name', 'none');
+	await page.emulateMedia({ reducedMotion: 'reduce' });
+	await expect(loader).toHaveCSS('animation-name', 'none');
+	await expect(loader).toBeVisible();
 });
 
 for (const { content, initial } of [

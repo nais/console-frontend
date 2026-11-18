@@ -41,26 +41,21 @@ test('renders only the logical Postgres database in the issue list during SSR', 
 });
 
 test.each([
-	['CRITICAL', 'Critical'],
-	['WARNING', 'Warning'],
-	['TODO', 'Todo']
-])('labels the %s severity tooltip during SSR', async (severity, label) => {
-	fixture.data.severity = severity;
-	const { body } = await render(IssueListItem, { props: { item } });
-	expect(body).toMatch(new RegExp(`<span class="sr-only">Severity: ${label}</span>`));
-});
-
-test.each([
-	['WARNING', '--warning'],
-	['TODO', '--info']
-])('renders a filled %s indicator with its strong semantic colour', async (severity, token) => {
-	fixture.data.severity = severity;
-	const { body } = await render(IssueListItem, { props: { item } });
-	expect(body).toMatch(/<svg\b[^>]*fill="currentColor"[^>]*>/);
-	expect(body).toContain(`color: var(${token})`);
-	expect(body).not.toContain('light-dark(');
-	expect(body).not.toContain('--warning-muted');
-});
+	['CRITICAL', 'Critical', 'danger'],
+	['WARNING', 'Warning', 'warning'],
+	['TODO', 'Todo', 'info']
+])(
+	'labels the %s severity indicator with its semantic tone during SSR',
+	async (severity, label, tone) => {
+		fixture.data.severity = severity;
+		const { body } = await render(IssueListItem, { props: { item } });
+		expect(body).toMatch(
+			new RegExp(
+				`<span\\b[^>]*class="status-indicator ${tone} compact\\b[^"]*"[^>]*role="img"[^>]*aria-label="Severity: ${label}"`
+			)
+		);
+	}
+);
 
 test('renders only the logical Postgres database in the critical issues card during SSR', async () => {
 	const { body } = await render(CriticalIssueRow, { props: { issue: item } });

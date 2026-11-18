@@ -5,14 +5,13 @@
 	import OpenSearchIcon from '#lib/icons/OpenSearchIcon.svelte';
 	import UnleashIcon from '#lib/icons/UnleashIcon.svelte';
 	import ValkeyIcon from '#lib/icons/ValkeyIcon.svelte';
-	import CriticalIndicator from '#lib/ui/CriticalIndicator.svelte';
+	import StatusIndicator from '#lib/ui/StatusIndicator.svelte';
 	import { issueTypeLabel } from '#lib/utils/issueTypeLabel.js';
 	import { capitalizeFirstLetter } from '#lib/utils/formatters.js';
-	import { Tag, Tooltip } from '#lib/shadcn/ui/index.js';
+	import { Tag } from '#lib/shadcn/ui/index.js';
 	import {
 		BriefcaseClockIcon,
 		ChevronRightIcon,
-		CircleFillIcon,
 		DatabaseIcon,
 		PackageIcon
 	} from '#lib/icons/index.js';
@@ -370,25 +369,15 @@
 			<ChevronRightIcon />
 		</div>
 		<div class="severity-dot">
-			<Tooltip
-				content="Severity: {capitalizeFirstLetter($data?.severity?.toLowerCase() ?? 'unknown')}"
-			>
-				<span class="sr-only"
-					>Severity: {capitalizeFirstLetter($data?.severity?.toLowerCase() ?? 'unknown')}</span
-				>
-				<span aria-hidden="true">
-					{#if $data?.severity === 'CRITICAL'}
-						<CriticalIndicator />
-					{:else}
-						<CircleFillIcon
-							fill="currentColor"
-							style="color: {$data?.severity === 'WARNING'
-								? 'var(--warning)'
-								: 'var(--info)'}; font-size: var(--sh-font-size-micro)"
-						/>
-					{/if}
-				</span>
-			</Tooltip>
+			<StatusIndicator
+				compact
+				label="Severity: {capitalizeFirstLetter($data?.severity?.toLowerCase() ?? 'unknown')}"
+				tone={$data?.severity === 'CRITICAL'
+					? 'danger'
+					: $data?.severity === 'WARNING'
+						? 'warning'
+						: 'info'}
+			/>
 		</div>
 		<div class="resource-icon">
 			<ResourceIcon />

@@ -59,4 +59,10 @@
 			transform: rotate(360deg);
 		}
 	}
+
+	@media (prefers-reduced-motion: reduce) {
+		:global(.sh-loader) {
+			animation: none;
+		}
+	}
 </style>
