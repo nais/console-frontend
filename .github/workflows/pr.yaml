@@ -13,7 +13,7 @@ jobs:
       contents: read
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # ratchet:actions/checkout@v7
-      - uses: jdx/mise-action@6be3c7ed4c21d4f76b208d351d95aac273ebb76d # ratchet:jdx/mise-action@v5
+      - uses: jdx/mise-action@236a21c3b91f5db6d4e174b348674a0f0caac06d # ratchet:jdx/mise-action@v5
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
       - name: Sync SvelteKit
@@ -36,14 +36,14 @@ jobs:
     permissions:
       contents: read
     container:
-      image: mcr.microsoft.com/playwright:v1.64.1-noble
+      image: mcr.microsoft.com/playwright:v1.64.1-noble@sha256:2f05f8a734509a7b3f26a912639488ee08f58a7b292d14d62271bcff9038768f # ratchet:mcr.microsoft.com/playwright:v1.64.1-noble
       options: --ipc=host --init
     defaults:
       run:
         shell: bash
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # ratchet:actions/checkout@v7
-      - uses: jdx/mise-action@6be3c7ed4c21d4f76b208d351d95aac273ebb76d # ratchet:jdx/mise-action@v5
+      - uses: jdx/mise-action@236a21c3b91f5db6d4e174b348674a0f0caac06d # ratchet:jdx/mise-action@v5
         with:
           install_args: node pnpm
       - name: Install dependencies
@@ -78,10 +78,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # ratchet:actions/checkout@v7
-      - uses: jdx/mise-action@6be3c7ed4c21d4f76b208d351d95aac273ebb76d # ratchet:jdx/mise-action@v5
+      - uses: jdx/mise-action@236a21c3b91f5db6d4e174b348674a0f0caac06d # ratchet:jdx/mise-action@v5
       - id: node_version
         run: echo "node_version=$(mise current node)" >> $GITHUB_OUTPUT
-      - uses: nais/platform-build-push-sign@07a21e2293624a78499c79eeea3ce6d314f8a8d9 # ratchet:nais/platform-build-push-sign@main
+      - uses: nais/platform-build-push-sign@0f74f19fb291a0563f7d30e23fb83de3c4c7c851 # ratchet:nais/platform-build-push-sign@main
         id: build-push-sign
         with:
           name: ${{ env.NAME }}
@@ -91,7 +91,7 @@ jobs:
           build_args: |
             NODE_VERSION=${{ steps.node_version.outputs.node_version }}
             APK_REFRESH=${{ github.run_id }}-${{ github.run_attempt }}
-      - uses: azure/setup-helm@9bc31f4ebc9c6b171d7bfbaa5d006ae7abdb4310 # ratchet:azure/setup-helm@v5
+      - uses: azure/setup-helm@2f5e7bc67f1f9972ab16657bb795f36d8f04de0e # ratchet:azure/setup-helm@v5
         name: "Setup Helm"
         with:
           version: "3.8.0"
