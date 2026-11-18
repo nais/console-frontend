@@ -758,3 +758,123 @@ describe('clone configuration', () => {
 		expect(checkbox('pgcrypto').checked).toBe(true);
 	});
 });
+
+describe('clone configuration drafts across navigation', () => {
+	const sourceData = (name: string, cpu: string) => {
+		const data = initialData();
+		const postgres = {
+			...data.recoverySource!.data!.team.environment.postgres,
+			name,
+			id: name,
+			highAvailability: false,
+			resources: { cpu, memory: '2Gi', diskSize: '20480Mi' }
+		};
+		return {
+			...data,
+			postgresOptions: [
+				{
+					environment: 'dev',
+					options: {
+						postgresMajorVersions: { values: ['17'], defaultValues: ['17'] },
+						postgresExtensions: { values: ['vector'], defaultValues: [] }
+					}
+				}
+			],
+			recoverySource: { data: { team: { environment: { postgres } } } }
+		} as unknown as ComponentProps<typeof CreatePage>['data'];
+	};
+	const cpu = () => document.querySelector<HTMLInputElement>('input[name="cpu"]')!;
+	const more = () =>
+		[...document.querySelectorAll('button')].find((b) => b.textContent?.includes('More sources'))!;
+
+	test('keeps drafts through pagination and a failed navigation, inert while loading', async () => {
+		const state = mountWithState(sourceData('original', '500m'));
+		edit('cpu', '4');
+		let fail: (error: Error) => void = () => {};
+		goto.mockImplementation(
+			() =>
+				new Promise<void>((_, reject) => {
+					fail = reject;
+				})
+		);
+		const element = cpu();
+		more().click();
+		flushSync();
+		expect(goto.mock.calls[0][0].searchParams.get('after')).toBe('next-page');
+		// Still mounted, same element, draft intact, but inert.
+		expect(cpu()).toBe(element);
+		expect(cpu().value).toBe('4');
+		expect(cpu().closest('fieldset')!.disabled).toBe(true);
+		// Pagination data for the same source arrives.
+		state.set('data', sourceData('original', '500m'));
+		flushSync();
+		expect(cpu()).toBe(element);
+		fail(new Error('offline'));
+		await vi.waitFor(() => {
+			flushSync();
+			expect(document.body.textContent).toContain('Could not load clone options');
+		});
+		expect(cpu()).toBe(element);
+		expect(cpu().value).toBe('4');
+		expect(cpu().closest('fieldset')!.disabled).toBe(false);
+	});
+	test('resets drafts only when the source changes', () => {
+		const state = mountWithState(sourceData('original', '500m'));
+		edit('cpu', '4');
+		state.set('data', sourceData('original', '500m'));
+		flushSync();
+		expect(cpu().value).toBe('4');
+		state.set('data', sourceData('other', '1'));
+		flushSync();
+		expect(cpu().value).toBe('1');
+	});
+	test('has no max on the target time (repeated hour) and relies on instant validation', () => {
+		mountWithState(sourceData('original', '500m'));
+		toggleTime();
+		const input = document.querySelector<HTMLInputElement>('input[name="targetTime"]')!;
+		expect(input.hasAttribute('max')).toBe(false);
+	});
+});
+
+describe('clone configuration disclosure', () => {
+	test('errors arriving after the user collapsed it reopen it; no errors leaves the choice', () => {
+		const data = initialData();
+		data.postgresOptions = [
+			{
+				environment: 'dev',
+				options: {
+					postgresMajorVersions: { values: ['17'], defaultValues: ['17'] },
+					postgresExtensions: { values: ['vector'], defaultValues: [] }
+				}
+			}
+		] as unknown as typeof data.postgresOptions;
+		const state = mountWithState(data);
+		const toggle = () =>
+			[...document.querySelectorAll<HTMLButtonElement>('button[aria-expanded]')].find((b) =>
+				b.textContent?.includes('Customize resources')
+			)!;
+		toggle().click();
+		flushSync();
+		expect(toggle().getAttribute('aria-expanded')).toBe('true');
+		toggle().click();
+		flushSync();
+		expect(toggle().getAttribute('aria-expanded')).toBe('false');
+		state.set('form', {
+			mode: 'clone',
+			name: 'x',
+			environment: 'dev',
+			majorVersion: '17',
+			sourcePostgres: 'original',
+			targetTime: '',
+			labelRows: [],
+			cpu: '',
+			memory: '',
+			diskSize: '',
+			highAvailability: false,
+			errors: { cpu: 'invalid' },
+			error: 'Failed.'
+		});
+		flushSync();
+		expect(toggle().getAttribute('aria-expanded')).toBe('true');
+	});
+});

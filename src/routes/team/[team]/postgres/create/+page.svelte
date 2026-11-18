@@ -4,7 +4,6 @@
 	import { page } from '$app/state';
 	import {
 		CLONE_LATEST_POINT_BUFFER_MINUTES,
-		formatLocalInput,
 		formatLocalTime,
 		parseCloneMode,
 		parseLocalDateTime,
@@ -233,63 +232,67 @@
 									>More sources</Button
 								>{/if}
 							<GraphErrors errors={data.recoverySource?.errors} />
-							{#if source && !changingSelection && !data.recoverySource?.errors?.length}
-								<!-- Keyed by source: changing the source resets the clone configuration to the new
-									source's values. -->
-								{#key source.name}
-									<PostgresCloneConfiguration
-										{source}
-										availableExtensions={options?.postgresExtensions.values}
-										draft={form &&
-										parseCloneMode(form.mode) === 'clone' &&
-										form.sourcePostgres === source.name
-											? form
-											: null}
-										errors={form?.errors}
-									/>
-								{/key}
-								{#if source.earliestRestoreTime}
-									<BodyShort
-										>Clones from the latest available point (about {CLONE_LATEST_POINT_BUFFER_MINUTES}
-										minutes ago) unless you specify a time.</BodyShort
-									>
-									<Accordion>
-										<AccordionItem
-											heading="Specify time"
-											open={timeOpen}
-											onOpenChange={(next) => {
-												timeOpen = next;
-												if (!next) targetTime = '';
-											}}
+							{#if source && !data.recoverySource?.errors?.length}
+								<!-- Stays mounted while a navigation is in flight so drafts survive pagination and a
+									failed navigation; inert meanwhile so stale fields cannot be edited. The key below
+									resets the configuration only when the source itself changes. -->
+								<fieldset class="stack clone-fields" disabled={changingSelection}>
+									{#key source.name}
+										<PostgresCloneConfiguration
+											{source}
+											availableExtensions={options?.postgresExtensions.values}
+											draft={form &&
+											parseCloneMode(form.mode) === 'clone' &&
+											form.sourcePostgres === source.name
+												? form
+												: null}
+											errors={form?.errors}
+										/>
+									{/key}
+									{#if source.earliestRestoreTime}
+										<BodyShort
+											>Clones from the latest available point (about {CLONE_LATEST_POINT_BUFFER_MINUTES}
+											minutes ago) unless you specify a time.</BodyShort
 										>
-											{#if timeOpen}
-												<div class="stack">
-													{#if now}
-														<BodyShort
-															>Earliest clone time: {formatLocalTime(
-																source.earliestRestoreTime,
-																timeZone
-															)}.</BodyShort
-														>
-													{/if}
-													<input type="hidden" name="targetInstant" value={targetInstant} />
-													<TextField
-														name="targetTime"
-														type="datetime-local"
-														label="Target time"
-														min={recoveryTimeMinimum(source.earliestRestoreTime, timeZone)}
-														max={now ? formatLocalInput(now, timeZone) : undefined}
-														bind:value={targetTime}
-														error={timeError}
-													/>
-												</div>
-											{/if}
-										</AccordionItem>
-									</Accordion>
-									{#if !timeOpen && timeError}<Alert variant="error" role="alert">{timeError}</Alert
+										<Accordion>
+											<AccordionItem
+												heading="Specify time"
+												open={timeOpen}
+												onOpenChange={(next) => {
+													timeOpen = next;
+													if (!next) targetTime = '';
+												}}
+											>
+												{#if timeOpen}
+													<div class="stack">
+														{#if now}
+															<BodyShort
+																>Earliest clone time: {formatLocalTime(
+																	source.earliestRestoreTime,
+																	timeZone
+																)}.</BodyShort
+															>
+														{/if}
+														<input type="hidden" name="targetInstant" value={targetInstant} />
+														<TextField
+															name="targetTime"
+															type="datetime-local"
+															label="Target time"
+															min={recoveryTimeMinimum(source.earliestRestoreTime, timeZone)}
+															bind:value={targetTime}
+															error={timeError}
+														/>
+													</div>
+												{/if}
+											</AccordionItem>
+										</Accordion>
+										{#if !timeOpen && timeError}<Alert variant="error" role="alert"
+												>{timeError}</Alert
+											>{/if}
+									{:else}<Alert variant="warning"
+											>This source has no available recovery window.</Alert
 										>{/if}
-								{:else}<Alert variant="warning">This source has no available recovery window.</Alert
-									>{/if}
+								</fieldset>
 							{/if}
 							<Alert variant="warning"
 								>Recent write-ahead logs (WAL) may not be archived yet. A time before now is not a
@@ -375,6 +378,12 @@
 	}
 	.intro {
 		margin-bottom: var(--nais-space-16);
+	}
+	.clone-fields {
+		border: 0;
+		margin: 0;
+		padding: 0;
+		min-width: 0;
 	}
 	.stack {
 		display: grid;

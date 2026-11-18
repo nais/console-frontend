@@ -90,6 +90,28 @@ describe('clone target resolution', () => {
 		expect('error' in result && result.error).toContain('about 10 minutes ago');
 		expect('error' in result && result.error).toMatch(/13:00:01/);
 	});
+	test('omits the earliest time from errors when no zone is given (server) and keeps it with one', () => {
+		const early = new Date('2026-01-01T12:05:00Z');
+		const withoutZone = [
+			resolveCloneTarget(null, earliest, early),
+			resolveCloneTarget(new Date('2026-01-01T12:00:00Z'), earliest, now)
+		].map((result) => ('error' in result ? result.error : ''));
+		expect(withoutZone).toEqual([
+			'The latest available point (about 10 minutes ago) is before the earliest clone time. Try again later or specify a time.',
+			'Target time must not be before the earliest clone time.'
+		]);
+		const withZone = resolveCloneTarget(new Date('2026-01-01T12:00:00Z'), earliest, now, oslo);
+		expect('error' in withZone && withZone.error).toBe(
+			'Target time must not be before the earliest clone time, 1 Jan 2026, 13:00:01.'
+		);
+	});
+	test('accepts a past time in the repeated autumn hour and rejects a future one (Oslo)', () => {
+		const old = new Date('2026-01-01T00:00:00Z');
+		// 02:15 CET (01:15Z) on 25 Oct 2026; 02:30 first occurs at 00:30Z (CEST), in the past.
+		const clock = new Date('2026-10-25T01:15:00Z');
+		expect(recoveryTimeError('2026-10-25T02:30', old, clock, 'Europe/Oslo')).toBeUndefined();
+		expect(recoveryTimeError('2026-10-25T03:30', old, clock, 'Europe/Oslo')).toContain('future');
+	});
 	test('compares explicit absolute instants against the window', () => {
 		expect(resolveCloneTarget(new Date('2026-01-01T12:00:00Z'), earliest, now)).toHaveProperty(
 			'error'

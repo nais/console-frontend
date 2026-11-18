@@ -40,10 +40,11 @@
 			diskSize !== baseline.diskSize ||
 			highAvailability !== baseline.highAvailability
 	);
-	let customizeOpen = $state(untrack(() => differs || Object.keys(errors ?? {}).length > 0));
-	$effect.pre(() => {
-		if (Object.keys(errors ?? {}).length > 0) customizeOpen = true;
-	});
+	// The user's own disclosure choice; initially open when there is a differing draft to show.
+	let customizeChoice = $state(untrack(() => differs));
+	// Validation errors force the disclosure open so they are never hidden.
+	let hasErrors = $derived(Object.keys(errors ?? {}).length > 0);
+	let customizeOpen = $derived(customizeChoice || hasErrors);
 	let unset = $derived(
 		(['cpu', 'memory', 'diskSize'] as ResourceField[]).filter((field) => !baseline[field])
 	);
@@ -64,5 +65,5 @@
 	bind:memory
 	bind:diskSize
 	bind:highAvailability
-	bind:customizeOpen
+	bind:customizeOpen={() => customizeOpen, (next) => (customizeChoice = next)}
 />

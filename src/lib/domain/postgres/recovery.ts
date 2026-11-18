@@ -123,6 +123,7 @@ export type CloneTarget = { target: Date } | { error: string };
 /**
  * Resolves the absolute target instant. `explicit` is null when the user left the time empty, in
  * which case the default (now minus buffer) is used. All comparisons are between absolute instants.
+ * Error messages include the earliest time only when `timeZone` is supplied (client-side use).
  */
 export function resolveCloneTarget(
 	explicit: Date | null,
@@ -133,18 +134,20 @@ export function resolveCloneTarget(
 	if (!earliest || !Number.isFinite(earliest.getTime())) {
 		return { error: 'The source has no available recovery window.' };
 	}
-	const earliestText = formatLocalTime(earliest, timeZone);
+	// Without a zone (the server action) the server's own zone would be used, which can disagree
+	// with the user's picker. Only name the earliest time when it is formatted in the user's zone.
+	const earliestText = timeZone ? `, ${formatLocalTime(earliest, timeZone)}` : '';
 	if (!explicit) {
 		const target = defaultCloneTime(now);
 		return target < earliest
 			? {
-					error: `The latest available point (about ${CLONE_LATEST_POINT_BUFFER_MINUTES} minutes ago) is before the earliest clone time, ${earliestText}. Try again later or specify a time.`
+					error: `The latest available point (about ${CLONE_LATEST_POINT_BUFFER_MINUTES} minutes ago) is before the earliest clone time${earliestText}. Try again later or specify a time.`
 				}
 			: { target };
 	}
 	const target = truncateToSeconds(explicit);
 	if (target < earliest) {
-		return { error: `Target time must not be before the earliest clone time, ${earliestText}.` };
+		return { error: `Target time must not be before the earliest clone time${earliestText}.` };
 	}
 	if (target > now) return { error: 'Target time must not be in the future.' };
 	return { target };
