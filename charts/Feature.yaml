@@ -48,3 +48,8 @@ values:
     displayName: Number of replicas
     config:
       type: int
+  alerts.cdn.enabled:
+    displayName: Enable Console CDN monitoring
+    description: Enable in exactly one management environment with Alloy and Alertmanager.
+    config:
+      type: bool
