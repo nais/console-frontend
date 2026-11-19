@@ -1,7 +1,6 @@
 <script lang="ts">
 	import VulnerabilitySummary from '#lib/domain/vulnerability/VulnerabilitySummary.svelte';
 	import { resolve } from '$app/paths';
-	import VulnerabilityHistory from '../VulnerabilityHistory.svelte';
 	import VulnerabilityLeaderBoard from '../VulnerabilityLeaderBoard.svelte';
 	import type { PageProps } from './$types';
 
@@ -22,8 +21,6 @@
 			knownExploitedWorkloadCount={exploitedWorkloadCount}
 		/>
 	{/if}
-
-	<VulnerabilityHistory />
 
 	<VulnerabilityLeaderBoard />
 </div>

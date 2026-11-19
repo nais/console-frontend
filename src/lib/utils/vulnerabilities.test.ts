@@ -1,12 +1,10 @@
 import { readFileSync } from 'node:fs';
 import { parse } from 'svelte/compiler';
 import {
-	allSeverities,
 	formatFixVersion,
 	formatProcessingDuration,
 	sbomStatusDetails,
-	severityToColor,
-	severityToRiskScore
+	severityToColor
 } from './vulnerabilities';
 
 function remediationGuidance(node: unknown): string[] {
@@ -133,43 +131,6 @@ describe('vulnerabilities', () => {
 				const graphCritical = severityToColor({ severity: 'Critical', isGraph: true });
 				expect(graphCritical).toMatch(/^#[0-9a-f]{6}$/i);
 			});
-		});
-	});
-
-	describe('severityToRiskScore', () => {
-		test('assigns correct risk scores', () => {
-			expect(severityToRiskScore.Critical).toBe(10);
-			expect(severityToRiskScore.High).toBe(5);
-			expect(severityToRiskScore.Medium).toBe(3);
-			expect(severityToRiskScore.Low).toBe(1);
-			expect(severityToRiskScore.Unassigned).toBe(5);
-		});
-
-		test('Critical has highest risk score', () => {
-			const scores = Object.values(severityToRiskScore);
-			expect(Math.max(...scores)).toBe(severityToRiskScore.Critical);
-		});
-
-		test('Low has lowest risk score', () => {
-			const scores = Object.values(severityToRiskScore);
-			expect(Math.min(...scores)).toBe(severityToRiskScore.Low);
-		});
-	});
-
-	describe('allSeverities', () => {
-		test('contains all severity levels', () => {
-			expect(allSeverities).toEqual(['Critical', 'High', 'Medium', 'Low', 'Unassigned']);
-		});
-
-		test('has exactly 5 severity levels', () => {
-			expect(allSeverities).toHaveLength(5);
-		});
-
-		test('severities are ordered by risk (descending)', () => {
-			const scores = allSeverities.map((s) => severityToRiskScore[s]);
-			// Documents the actual order: Critical(10), High(5), Medium(3), Low(1), Unassigned(5)
-			// Note: Not strictly descending because Unassigned (5) comes after Low (1)
-			expect(scores).toEqual([10, 5, 3, 1, 5]);
 		});
 	});
 
