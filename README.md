@@ -62,6 +62,19 @@ the update notification. Failed navigation can trigger a full page load, limited
 to once per loaded version per tab, even if requests alternate between builds
 during a rolling update.
 
+#### CDN monitoring
+
+Set `alerts.cdn.enabled: true` in Fasit for exactly one management environment
+with Alloy and Alertmanager. The chart adds a probe of
+`https://cdn.nais.io/console/health.js` every minute and alerts after three minutes
+of failures or ten minutes without metrics. Check that the selected environment
+reports `probe_success` for `probe/nais-system/<release>-cdn`. The alerts use
+standard Alertmanager routing without an explicit on-call ping.
+
+The shared `http_2xx` module checks HTTPS availability from that environment.
+It does not check the body marker, CORS, or files from the active release. CI
+still verifies the published entry point before releasing the chart.
+
 ### Mobile responsiveness
 
 The console should remain usable at small viewport widths, with `375px` as the baseline mobile target.

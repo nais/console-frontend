@@ -24,3 +24,5 @@ replicaCount: 2
 
 alerts:
   enabled: true
+  cdn:
+    enabled: false

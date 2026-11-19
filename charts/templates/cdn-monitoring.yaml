@@ -1,0 +1,54 @@
+{{- if .Values.alerts.cdn.enabled }}
+{{- $name := printf "%s-cdn" .Release.Name }}
+{{- $url := "https://cdn.nais.io/console/health.js" }}
+{{- $job := printf "probe/%s/%s" .Release.Namespace $name }}
+apiVersion: monitoring.coreos.com/v1
+kind: Probe
+metadata:
+  name: {{ $name }}
+  labels:
+    nais.io/prometheus: "nais"
+spec:
+  interval: 60s
+  module: http_2xx
+  prober:
+    url: alloy:12345
+    path: /api/v0/component/prometheus.exporter.blackbox.blackbox_exporter/probe
+  targets:
+    staticConfig:
+      static:
+        - {{ $url | quote }}
+---
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: {{ $name }}
+  labels:
+    nais.io/prometheus: "nais"
+spec:
+  groups:
+    - name: {{ $name }}-alerts
+      rules:
+        - alert: ConsoleCDNProbeFailing
+          expr: |
+            max(probe_success{job={{ $job | quote }}}) == 0
+          for: 3m
+          labels:
+            namespace: {{ .Release.Namespace | quote }}
+            severity: critical
+          annotations:
+            summary: Console CDN health probe is failing.
+            consequence: Users across tenants may be unable to load Console even if /isReady is healthy.
+            action: 'Check {{ $url }}, DNS, TLS, the CDN and bucket access.'
+        - alert: ConsoleCDNProbeMetricsMissing
+          expr: |
+            absent(probe_success{job={{ $job | quote }}})
+          for: 10m
+          labels:
+            namespace: {{ .Release.Namespace | quote }}
+            severity: warning
+          annotations:
+            summary: Console CDN probe metrics are missing.
+            consequence: Console CDN availability cannot be monitored.
+            action: 'Check the {{ $name }} Probe, Alloy scraping and metrics ingestion. Verify {{ $url }} separately.'
+{{- end }}
