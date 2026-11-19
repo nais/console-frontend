@@ -1,5 +1,13 @@
 import { readFileSync } from 'node:fs';
-import { buildSchema, Kind, NoUnusedFragmentsRule, parse, specifiedRules, validate } from 'graphql';
+import {
+	buildSchema,
+	Kind,
+	NoUnusedFragmentsRule,
+	parse,
+	specifiedRules,
+	validate,
+	visit
+} from 'graphql';
 import { render } from 'svelte/server';
 import { readable } from 'svelte/store';
 import { vi } from 'vitest';
@@ -129,11 +137,44 @@ test('renders the empty state when neither source has metadata', async () => {
 	expect(body).toContain('No deployment metadata found for workload.');
 });
 
+test('ignores cached legacy deployments while retaining activity metadata when disabled', async () => {
+	fixture.data.deployments = { nodes: [legacyDeployment(new Date('2026-10-23T12:00:00Z'))] };
+	fixture.data.activityLog = { nodes: [activityEntry()] };
+	const { body } = await render(WorkloadDeploy, {
+		props: { workload, legacyDeployDisabled: true }
+	});
+	expect(body).toContain('nais/current');
+	expect(body).not.toContain('legacy-user');
+	expect(body).not.toContain('Success');
+});
+
+test('renders without legacy data when the legacy field was skipped', async () => {
+	delete fixture.data.deployments;
+	fixture.data.activityLog = { nodes: [activityEntry()] };
+	const { body } = await render(WorkloadDeploy, {
+		props: { workload, legacyDeployDisabled: true }
+	});
+	expect(body).toContain('nais/current');
+});
+
+test('does not fall back to cached legacy data when disabled and activity is empty', async () => {
+	fixture.data.deployments = { nodes: [legacyDeployment()] };
+	const { body } = await render(WorkloadDeploy, {
+		props: { workload, legacyDeployDisabled: true }
+	});
+	expect(body).toContain('No deployment metadata');
+	expect(body).not.toContain('legacy-user');
+});
+
 test('selects shared workload and activity metadata with deployment-specific trigger data', () => {
 	const source = readFileSync(new URL('./WorkloadDeploy.svelte', import.meta.url), 'utf8');
 	const fragmentSource = source.match(/graphql\(\s*`([\s\S]*?)`\s*\)/)?.[1];
 	if (!fragmentSource) throw new Error('WorkloadDeploy fragment not found');
-	const document = parse(fragmentSource);
+	const document = visit(parse(fragmentSource), {
+		Directive(node) {
+			return node.name.value === 'arguments' ? null : undefined;
+		}
+	});
 	const schema = buildSchema(
 		readFileSync(new URL('../../../../schema.graphql', import.meta.url), 'utf8'),
 		{ assumeValid: true }

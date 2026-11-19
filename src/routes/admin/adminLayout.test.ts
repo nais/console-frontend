@@ -22,6 +22,7 @@ vi.mock('$app/state', () => ({
 function data(totalCount: number): LayoutProps['data'] {
 	const store = new AdminReconcilerStatusStore();
 	return {
+		legacyDeployDisabled: false,
 		tenantName: 'test',
 		githubOrganization: 'test',
 		theme: 'light',

@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { page } from '$app/state';
 	import Meta from '../../Meta.svelte';
 
 	import { activityLogResourceLink } from '../../utils';
@@ -19,7 +20,7 @@
 </script>
 
 <div>
-	{#if triggerURL && data.environmentName}
+	{#if triggerURL && data.environmentName && !page.data.legacyDeployDisabled}
 		<a
 			href="/team/{data.teamSlug}/{data.environmentName}/{workloadType}/{data.resourceName}/deploys?deployId={id}"
 			>Deployed</a

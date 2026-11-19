@@ -61,6 +61,7 @@ function pageData({
 }: HomePageOptions = {}): PageProps['data'] {
 	return {
 		tenantName: 'test',
+		legacyDeployDisabled: false,
 		isAdmin: false,
 		AdminReconcilerStatus: null,
 		reconcilerStatusError: null,

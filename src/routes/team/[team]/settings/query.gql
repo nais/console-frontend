@@ -1,10 +1,10 @@
-query TeamSettings($team: Slug!, $viewerIsMember: Boolean!) {
+query TeamSettings($team: Slug!, $viewerIsMember: Boolean!, $legacyDeployDisabled: Boolean!) {
 	team(slug: $team) {
 		slug
 		lastSuccessfulSync
 		purpose
 		slackChannel
-		deploymentKey @include(if: $viewerIsMember) {
+		deploymentKey @include(if: $viewerIsMember) @skip(if: $legacyDeployDisabled) {
 			created
 			expires
 			key

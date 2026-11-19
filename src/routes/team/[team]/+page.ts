@@ -7,6 +7,7 @@ import {
 import { addPageMeta } from '#lib/utils/pageMeta.js';
 
 export async function load(event) {
+	const { legacyDeployDisabled } = await event.parent();
 	const to = new Date();
 	to.setDate(to.getDate() - 2);
 	const from = new Date(to);
@@ -24,7 +25,8 @@ export async function load(event) {
 		...(await load_TeamOverview({
 			event,
 			variables: {
-				team: event.params.team
+				team: event.params.team,
+				legacyDeployDisabled
 			}
 		})),
 		...(await load_TeamSummaryVulnerabilities({

@@ -84,6 +84,7 @@ function data(
 ): LayoutProps['data'] {
 	const userInfo = new UserInfoStore();
 	return {
+		legacyDeployDisabled: false,
 		UserInfo: Object.assign(
 			userInfo,
 			readable({

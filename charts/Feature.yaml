@@ -6,6 +6,9 @@ dependencies:
 environmentKinds:
   - management
 values:
+  legacyDeployDisabled:
+    computed:
+      template: '{{ .Env.legacyDeployDisabled | default "false" }}'
   host:
     displayName: hostname override
     computed:

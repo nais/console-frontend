@@ -3,6 +3,7 @@ image:
   name: console-frontend
 host: ""
 tenantDomain: ""
+legacyDeployDisabled: false
 
 fasit:
   tenant:

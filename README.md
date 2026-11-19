@@ -40,6 +40,16 @@ To run the home SSR/hydration network regression against an already-running cons
 use `CONSOLE_E2E_URL=http://127.0.0.1:5173 pnpm run test:browser home-network`. This runs only the live
 home test, without starting the isolated fixture server, and requires a user with team memberships.
 
+### Legacy deploy
+
+Fasit's management environment value `legacyDeployDisabled` is passed to Console as
+`LEGACY_DEPLOY_DISABLED`. Missing or empty values default to `false`; otherwise only
+`true` and `false` are accepted.
+
+When `true`, Console hides legacy deploy keys and deployment history, omits legacy
+GraphQL fields, and redirects team and workload deployment-history routes to their
+overviews. Activity logs and modern deployment metadata remain available.
+
 ### Production assets
 
 Production builds use `ASSET_BASE_URL` to load client assets from

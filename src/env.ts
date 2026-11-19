@@ -11,6 +11,7 @@ const optional = {
 };
 
 export const variables = defineEnvVars({
+	LEGACY_DEPLOY_DISABLED: { schema: optional },
 	GRAPHQL_ENDPOINT: { schema: optional },
 	TENANT_NAME: { schema: optional },
 	GITHUB_ORGANIZATION: { schema: optional },

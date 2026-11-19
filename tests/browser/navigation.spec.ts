@@ -7,6 +7,25 @@ async function visit(page: Page, params: Record<string, string> = {}) {
 
 test.use({ viewport: { width: 800, height: 900 } });
 
+test('legacy flag hides deployment navigation on desktop and mobile', async ({ page }) => {
+	for (const width of [1280, 375]) {
+		await page.setViewportSize({ width, height: 900 });
+		for (const disabled of [false, true]) {
+			await visit(page, disabled ? { 'legacy-disabled': 'true' } : {});
+			if (width === 375) {
+				await page.getByRole('button', { name: 'Open navigation' }).click();
+			}
+			const navigation = width === 375 ? page.getByRole('dialog') : page.getByRole('complementary');
+			await expect(navigation.getByRole('link', { name: 'Deployments', exact: true })).toHaveCount(
+				disabled ? 0 : 1
+			);
+			await expect(
+				navigation.getByRole('link', { name: 'Activity Log', exact: true }).last()
+			).toBeVisible();
+		}
+	}
+});
+
 test('mobile Admin navigation reflects reconciler errors and clears recovered status', async ({
 	page
 }) => {
