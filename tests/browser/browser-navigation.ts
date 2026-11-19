@@ -3,6 +3,9 @@ import { onMount } from 'svelte';
 const pathname = new URLSearchParams(window.location.search).get('path') ?? '/team/nais';
 
 export const page = {
+	data: {
+		legacyDeployDisabled: new URLSearchParams(window.location.search).has('legacy-disabled')
+	},
 	url: new URL(pathname, window.location.origin),
 	params: { team: pathname.startsWith('/team/') ? pathname.split('/')[2] : undefined }
 };

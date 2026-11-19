@@ -8,6 +8,16 @@ const features = {
 };
 
 describe('menuItems', () => {
+	test('hides only legacy deployment navigation when disabled', () => {
+		const enabled = menuItems({ path: '/team/devteam', features }).flat();
+		const disabled = menuItems({
+			path: '/team/devteam',
+			features,
+			legacyDeployDisabled: true
+		}).flat();
+		expect(disabled).toEqual(enabled.filter((item) => item.href !== '/team/devteam/deploy'));
+	});
+
 	describe('team menu', () => {
 		test('full', () => {
 			expect(

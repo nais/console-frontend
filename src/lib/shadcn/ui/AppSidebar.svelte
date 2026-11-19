@@ -36,6 +36,7 @@
 		if (!currentTeamSlug) return [];
 		const raw = menuItems({
 			path: page.url.pathname,
+			legacyDeployDisabled: page.data.legacyDeployDisabled,
 			features
 		});
 		const labels = [

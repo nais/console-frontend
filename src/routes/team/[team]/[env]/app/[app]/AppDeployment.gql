@@ -1,8 +1,8 @@
-query AppDeployment($app: String!, $team: Slug!, $env: String!) {
+query AppDeployment($app: String!, $team: Slug!, $env: String!, $legacyDeployDisabled: Boolean!) {
 	team(slug: $team) {
 		environment(name: $env) {
 			application(name: $app) {
-				...WorkloadDeploy
+				...WorkloadDeploy @with(legacyDeployDisabled: $legacyDeployDisabled)
 			}
 		}
 	}

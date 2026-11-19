@@ -4,6 +4,7 @@ import { addPageMeta } from '#lib/utils/pageMeta.js';
 const rows = 6;
 
 export async function load(event) {
+	const { legacyDeployDisabled } = await event.parent();
 	const after = event.url.searchParams.get('after') || '';
 	const before = event.url.searchParams.get('before') || '';
 
@@ -15,6 +16,7 @@ export async function load(event) {
 				team: event.params.team,
 				env: event.params.env,
 				job: event.params.job,
+				legacyDeployDisabled,
 				...(before ? { before, last: rows } : { after, first: rows })
 			}
 		})),
@@ -23,7 +25,8 @@ export async function load(event) {
 			variables: {
 				team: event.params.team,
 				env: event.params.env,
-				job: event.params.job
+				job: event.params.job,
+				legacyDeployDisabled
 			}
 		}))
 	};

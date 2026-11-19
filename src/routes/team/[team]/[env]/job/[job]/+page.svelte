@@ -160,7 +160,7 @@
 				{/if}
 			</div>
 			<div class="layout-sidebar">
-				<WorkloadDeploy workload={job} />
+				<WorkloadDeploy workload={job} legacyDeployDisabled={data.legacyDeployDisabled} />
 				<Persistence workload={job} />
 				{#if jobName && environment}
 					<Configs workload={jobName} {environment} {teamSlug} />

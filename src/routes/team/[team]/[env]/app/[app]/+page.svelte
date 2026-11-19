@@ -104,7 +104,7 @@
 				{/if}
 			</div>
 			<div class="side-section">
-				<WorkloadDeploy workload={app} />
+				<WorkloadDeploy workload={app} legacyDeployDisabled={data.legacyDeployDisabled} />
 				<Persistence workload={app} />
 				{#if environment}
 					<Configs {environment} workload={app?.name ?? ''} {teamSlug} />

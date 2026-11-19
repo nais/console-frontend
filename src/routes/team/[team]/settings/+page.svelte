@@ -199,7 +199,7 @@
 				<GraphErrors errors={slackChannelsErrors} size="small" />
 			</section>
 
-			{#if viewerIsMember}
+			{#if viewerIsMember && !data.legacyDeployDisabled}
 				<section aria-labelledby="deploy-key-heading">
 					<Heading as="h2" size="small" id="deploy-key-heading">Deploy Key</Heading>
 					<BodyShort>
@@ -395,59 +395,61 @@
 	</div>
 {/if}
 {#if browser}
-	<Modal bind:open={showRotateKey} closeButton={false}>
-		{#snippet header()}
-			<Heading as="h2" size="medium">Rotate deploy key</Heading>
-		{/snippet}
-		<BodyShort spacing>Are you sure you want to rotate the deploy key?</BodyShort>
+	{#if viewerIsMember && !data.legacyDeployDisabled}
+		<Modal bind:open={showRotateKey} closeButton={false}>
+			{#snippet header()}
+				<Heading as="h2" size="medium">Rotate deploy key</Heading>
+			{/snippet}
+			<BodyShort spacing>Are you sure you want to rotate the deploy key?</BodyShort>
 
-		{#snippet footer()}
-			<Button
-				variant="danger"
-				onclick={async () => {
-					//rotateClicked = false;
-					showRotateKey = !showRotateKey;
-					await rotateKey.mutate({ team: teamSlug });
-					//rotateClicked = true;
-				}}>Rotate key</Button
-			>
-			<Button
-				variant="secondary-neutral"
-				onclick={() => {
-					showRotateKey = !showRotateKey;
-				}}>Cancel</Button
-			>
-		{/snippet}
-	</Modal>
+			{#snippet footer()}
+				<Button
+					variant="danger"
+					onclick={async () => {
+						//rotateClicked = false;
+						showRotateKey = !showRotateKey;
+						await rotateKey.mutate({ team: teamSlug });
+						//rotateClicked = true;
+					}}>Rotate key</Button
+				>
+				<Button
+					variant="secondary-neutral"
+					onclick={() => {
+						showRotateKey = !showRotateKey;
+					}}>Cancel</Button
+				>
+			{/snippet}
+		</Modal>
 
-	<Modal bind:open={showCreateKey} closeButton={false}>
-		{#snippet header()}
-			<Heading as="h2" size="medium">Create deploy key</Heading>
-		{/snippet}
-		<BodyShort spacing>
-			Are you sure you need to create a deploy key? <br />
-			If you deploy through GitHub,
-			<a href={resolve('/team/[team]/repositories', { team: teamSlug })}>
-				add a repository instead
-			</a>.
-		</BodyShort>
+		<Modal bind:open={showCreateKey} closeButton={false}>
+			{#snippet header()}
+				<Heading as="h2" size="medium">Create deploy key</Heading>
+			{/snippet}
+			<BodyShort spacing>
+				Are you sure you need to create a deploy key? <br />
+				If you deploy through GitHub,
+				<a href={resolve('/team/[team]/repositories', { team: teamSlug })}>
+					add a repository instead
+				</a>.
+			</BodyShort>
 
-		{#snippet footer()}
-			<Button
-				variant="primary"
-				onclick={async () => {
-					showCreateKey = !showCreateKey;
-					await rotateKey.mutate({ team: teamSlug });
-				}}>Create key</Button
-			>
-			<Button
-				variant="secondary-neutral"
-				onclick={() => {
-					showCreateKey = !showCreateKey;
-				}}>Cancel</Button
-			>
-		{/snippet}
-	</Modal>
+			{#snippet footer()}
+				<Button
+					variant="primary"
+					onclick={async () => {
+						showCreateKey = !showCreateKey;
+						await rotateKey.mutate({ team: teamSlug });
+					}}>Create key</Button
+				>
+				<Button
+					variant="secondary-neutral"
+					onclick={() => {
+						showCreateKey = !showCreateKey;
+					}}>Cancel</Button
+				>
+			{/snippet}
+		</Modal>
+	{/if}
 
 	<Modal bind:open={showDeleteTeam}>
 		{#snippet header()}

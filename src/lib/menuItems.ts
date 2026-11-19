@@ -1,8 +1,10 @@
 export const menuItems = ({
 	path,
-	features
+	features,
+	legacyDeployDisabled = false
 }: {
 	path: string;
+	legacyDeployDisabled?: boolean;
 	features?: {
 		unleash: { enabled: boolean };
 		valkey: { enabled: boolean };
@@ -52,7 +54,7 @@ export const menuItems = ({
 		[
 			menuItem('Alerts', 'alerts'),
 			menuItem('Issues', 'issues'),
-			menuItem('Deployments', 'deploy'),
+			...(legacyDeployDisabled ? [] : [menuItem('Deployments', 'deploy')]),
 			menuItem('Cost', 'cost'),
 			menuItem('Utilization', 'utilization'),
 			menuItem('Vulnerabilities', 'vulnerabilities')

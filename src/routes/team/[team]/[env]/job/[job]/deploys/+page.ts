@@ -1,9 +1,15 @@
 import { load_JobDeploys } from '$houdini';
 import { addPageMeta } from '#lib/utils/pageMeta.js';
+import { resolve } from '$app/paths';
+import { redirect } from '@sveltejs/kit';
 
 const rows = 25;
 
 export async function load(event) {
+	if ((await event.parent()).legacyDeployDisabled) {
+		redirect(307, resolve('/team/[team]/[env]/job/[job]', event.params));
+	}
+
 	const after = event.url.searchParams.get('after') || '';
 	const before = event.url.searchParams.get('before') || '';
 

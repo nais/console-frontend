@@ -14,16 +14,18 @@
 
 	interface Props {
 		workload: WorkloadDeploy;
+		legacyDeployDisabled?: boolean;
 	}
 
-	let { workload }: Props = $props();
+	let { workload, legacyDeployDisabled = false }: Props = $props();
 
 	let data = $derived(
 		workload
 			? fragment(
 					workload,
 					graphql(`
-						fragment WorkloadDeploy on Workload {
+						fragment WorkloadDeploy on Workload
+						@arguments(legacyDeployDisabled: { type: "Boolean!" }) {
 							__typename
 							activityLog(
 								first: 1
@@ -52,7 +54,7 @@
 									}
 								}
 							}
-							deployments(first: 1) {
+							deployments(first: 1) @skip(if: $legacyDeployDisabled) {
 								nodes {
 									createdAt
 									repository
@@ -72,7 +74,7 @@
 	);
 
 	let deploymentInfo = $derived.by(() => {
-		const deployment = $data?.deployments.nodes[0];
+		const deployment = legacyDeployDisabled ? null : $data?.deployments?.nodes[0];
 		const entry = $data?.activityLog.nodes.at(0);
 		if (entry && (!deployment || entry.createdAt > deployment.createdAt)) {
 			const claims = entry.gitHubActorClaims;

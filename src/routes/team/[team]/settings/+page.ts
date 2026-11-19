@@ -9,7 +9,8 @@ export async function load(event) {
 			event,
 			variables: {
 				team: event.params.team,
-				viewerIsMember: parent.viewerIsMember ?? false
+				viewerIsMember: parent.viewerIsMember ?? false,
+				legacyDeployDisabled: parent.legacyDeployDisabled
 			}
 		}))
 	};
