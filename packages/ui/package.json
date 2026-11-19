@@ -35,8 +35,8 @@
 		"svelte": "^5.57.3"
 	},
 	"dependencies": {
-		"@lucide/svelte": "1.67.0",
-		"bits-ui": "2.20.3"
+		"@lucide/svelte": "1.68.0",
+		"bits-ui": "2.20.5"
 	},
 	"devDependencies": {
 		"@sveltejs/package": "3.0.2",
