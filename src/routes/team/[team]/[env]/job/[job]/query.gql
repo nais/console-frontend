@@ -47,13 +47,6 @@ query Job($job: String!, $team: Slug!, $env: String!, $legacyDeployDisabled: Boo
 						name
 					}
 				}
-				recentRuns: runs(first: 10) {
-					nodes {
-						status {
-							state
-						}
-					}
-				}
 				resources {
 					requests {
 						cpu

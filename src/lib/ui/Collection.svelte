@@ -3,6 +3,7 @@
 
 	const {
 		title,
+		headingId,
 		icon: Icon,
 		count,
 		headerless = false,
@@ -16,6 +17,7 @@
 		actions
 	}: {
 		title?: string;
+		headingId?: string;
 		icon?: Component;
 		count?: number;
 		headerless?: boolean;
@@ -36,7 +38,12 @@
 			<div class="header-row">
 				<div class="header-left">
 					{#if title}
-						<svelte:element this={level} class="title" class:small={size === 'small'}>
+						<svelte:element
+							this={level}
+							id={headingId}
+							class="title"
+							class:small={size === 'small'}
+						>
 							{#if Icon}
 								<Icon aria-hidden="true" />
 							{/if}

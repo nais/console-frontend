@@ -209,12 +209,15 @@
 	<Collection title="Job runs" count={1}>
 		<JobRunListItem
 			run={{
+				id: 'fixture-run-id',
 				name: 'fixture-run',
 				startTime: null,
 				duration: 82,
 				status: { state: 'SUCCEEDED', message: 'Succeeded' },
-				trigger: { type: 'AUTOMATIC', actor: null }
+				trigger: { type: 'AUTOMATIC', actor: null },
+				instances: { pageInfo: { totalCount: 0 } }
 			}}
+			jobPath="/team/feedback-fixture/dev/job/fixture"
 			ondelete={(name) => (deletedRun = name)}
 		/>
 	</Collection>
