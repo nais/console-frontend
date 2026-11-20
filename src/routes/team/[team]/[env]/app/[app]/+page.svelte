@@ -8,6 +8,7 @@
 	import Configs from '#lib/domain/resources/Configs.svelte';
 	import Secrets from '#lib/domain/resources/Secrets.svelte';
 	import ServiceAccountBinding from '#lib/domain/resources/ServiceAccountBinding.svelte';
+	import RecentWorkloadEvents from '#lib/domain/workload/RecentWorkloadEvents.svelte';
 	import WorkloadDeploy from '#lib/domain/workload/WorkloadDeploy.svelte';
 	import WorkloadHealth from '#lib/domain/workload/WorkloadHealth.svelte';
 	import { ShAlert, ShSpinner } from '#lib/shadcn/ui/index.js';
@@ -20,7 +21,7 @@
 	import InstanceGroups from './InstanceGroups.svelte';
 
 	let { data }: PageProps = $props();
-	let { App, AppInstanceGroups, AppDeployment, teamSlug } = $derived(data);
+	let { App, AppInstanceGroups, AppDeployment, AppWorkloadEvents, teamSlug } = $derived(data);
 
 	const refetchPolled = () => {
 		AppInstanceGroups.fetch({ policy: 'CacheAndNetwork' });
@@ -105,6 +106,12 @@
 			</div>
 			<div class="side-section">
 				<WorkloadDeploy workload={app} legacyDeployDisabled={data.legacyDeployDisabled} />
+				<RecentWorkloadEvents
+					events={$AppWorkloadEvents.data?.team.environment?.application?.events}
+					fetching={$AppWorkloadEvents.fetching}
+					failed={Boolean($AppWorkloadEvents.errors?.length)}
+					viewAllRoute="/team/[team]/[env]/app/[app]/events"
+				/>
 				<Persistence workload={app} />
 				{#if environment}
 					<Configs {environment} workload={app?.name ?? ''} {teamSlug} />

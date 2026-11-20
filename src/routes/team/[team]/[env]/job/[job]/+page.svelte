@@ -10,6 +10,7 @@
 	import Secrets from '#lib/domain/resources/Secrets.svelte';
 	import ServiceAccountBinding from '#lib/domain/resources/ServiceAccountBinding.svelte';
 	import JobResources from '#lib/domain/workload/JobResources.svelte';
+	import RecentWorkloadEvents from '#lib/domain/workload/RecentWorkloadEvents.svelte';
 	import WorkloadDeploy from '#lib/domain/workload/WorkloadDeploy.svelte';
 	import WorkloadHealth from '#lib/domain/workload/WorkloadHealth.svelte';
 	import Confirm from '#lib/ui/Confirm.svelte';
@@ -24,7 +25,7 @@
 	import Schedule from './Schedule.svelte';
 
 	let { data }: PageProps = $props();
-	let { Job, JobDeployment, teamSlug, viewerIsMember } = $derived(data);
+	let { Job, JobDeployment, JobWorkloadEvents, teamSlug, viewerIsMember } = $derived(data);
 
 	onMount(() => {
 		const interval = setInterval(() => {
@@ -161,6 +162,12 @@
 			</div>
 			<div class="layout-sidebar">
 				<WorkloadDeploy workload={job} legacyDeployDisabled={data.legacyDeployDisabled} />
+				<RecentWorkloadEvents
+					events={$JobWorkloadEvents.data?.team.environment?.job?.events}
+					fetching={$JobWorkloadEvents.fetching}
+					failed={Boolean($JobWorkloadEvents.errors?.length)}
+					viewAllRoute="/team/[team]/[env]/job/[job]/events"
+				/>
 				<Persistence workload={job} />
 				{#if jobName && environment}
 					<Configs workload={jobName} {environment} {teamSlug} />

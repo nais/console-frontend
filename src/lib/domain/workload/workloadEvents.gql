@@ -1,0 +1,73 @@
+fragment WorkloadEventsFields on WorkloadEventConnection {
+	nodes {
+		__typename
+		... on WorkloadWarningEvent {
+			id
+			kind
+			message
+			instance
+			count
+			firstSeenAt
+			triggeredAt
+		}
+		... on WorkloadKillingEvent {
+			id
+			message
+			triggeredAt
+		}
+		... on WorkloadSuccessfulRescaleEvent {
+			id
+			message
+			triggeredAt
+		}
+	}
+	pageInfo {
+		startCursor
+		endCursor
+		hasNextPage
+		hasPreviousPage
+		pageStart
+		pageEnd
+		totalCount
+	}
+}
+
+query AppWorkloadEvents(
+	$team: Slug!
+	$env: String!
+	$app: String!
+	$first: Int
+	$after: Cursor
+	$last: Int
+	$before: Cursor
+) {
+	team(slug: $team) {
+		environment(name: $env) {
+			application(name: $app) {
+				events(first: $first, after: $after, last: $last, before: $before) {
+					...WorkloadEventsFields @mask_disable
+				}
+			}
+		}
+	}
+}
+
+query JobWorkloadEvents(
+	$team: Slug!
+	$env: String!
+	$job: String!
+	$first: Int
+	$after: Cursor
+	$last: Int
+	$before: Cursor
+) {
+	team(slug: $team) {
+		environment(name: $env) {
+			job(name: $job) {
+				events(first: $first, after: $after, last: $last, before: $before) {
+					...WorkloadEventsFields @mask_disable
+				}
+			}
+		}
+	}
+}
