@@ -58,9 +58,9 @@
 	let criticalEdges = $derived(
 		job?.issues.edges.filter((e) => e.node.severity === 'CRITICAL') ?? []
 	);
-	let totalRuns = $derived(job?.recentRuns.nodes.length ?? 0);
-	let succeededRuns = $derived(
-		job?.recentRuns.nodes.filter((n) => n.status.state === 'SUCCEEDED').length ?? 0
+	const recentRuns = $derived($JobRunsList.data?.team?.environment?.job?.runs.edges.slice(0, 10));
+	const succeededRuns = $derived(
+		recentRuns?.filter(({ node }) => node.status.state === 'SUCCEEDED').length
 	);
 
 	let deleteConfirmOpen = $state(false);
@@ -128,7 +128,7 @@
 					criticalIssues={job?.criticalIssues.pageInfo.totalCount ?? 0}
 					warningIssues={job?.warningIssues.pageInfo.totalCount ?? 0}
 					todoIssues={job?.todoIssues.pageInfo.totalCount ?? 0}
-					{totalRuns}
+					totalRuns={recentRuns?.length}
 					{succeededRuns}
 					loading={jobFetching}
 				/>

@@ -1,4 +1,5 @@
 <script lang="ts">
+	import type { JobRunsList$result } from '$houdini';
 	import SuccessIcon from '#lib/icons/SuccessIcon.svelte';
 	import JobRunDiagnostics from '#lib/domain/workload/JobRunDiagnostics.svelte';
 	import IconLabel from '#lib/ui/IconLabel.svelte';
@@ -9,20 +10,14 @@
 	import { QuestionmarkIcon, TimerIcon, TrashIcon } from '#lib/icons/index.js';
 	import ErrorIcon from '../../icons/ErrorIcon.svelte';
 
+	type JobRun = JobRunsList$result['team']['environment']['job']['runs']['edges'][number]['node'];
+
 	const {
 		run,
 		jobPath,
 		ondelete
 	}: {
-		run: {
-			id: string;
-			name: string;
-			startTime: Date | null;
-			duration: number;
-			status: { state: string; message: string };
-			trigger: { type: 'MANUAL' | 'AUTOMATIC'; actor: string | null };
-			instances: { pageInfo: { totalCount: number } };
-		};
+		run: JobRun;
 		jobPath: string;
 		ondelete?: (runName: string) => void;
 	} = $props();
@@ -53,19 +48,11 @@
 		<div class="run-header">
 			<IconLabel size="large" label={run.name} as="h3">
 				{#snippet description()}
-					{#if run.trigger.type === 'MANUAL'}
-						Manually triggered
-						{#if run.startTime}
-							<Time time={run.startTime} distance={true} />
-						{/if}
-						by {run.trigger.actor}.
-					{:else}
-						Automatically triggered
-						{#if run.startTime}
-							<Time time={run.startTime} distance={true} />
-						{/if}
-						by cron schedule.
+					{run.trigger.type === 'MANUAL' ? 'Manually triggered' : 'Automatically triggered'}
+					{#if run.startTime}
+						<Time time={run.startTime} distance />
 					{/if}
+					by {run.trigger.type === 'MANUAL' ? run.trigger.actor : 'cron schedule'}.
 				{/snippet}
 				{#snippet icon()}
 					{#if run.status.state === 'RUNNING'}

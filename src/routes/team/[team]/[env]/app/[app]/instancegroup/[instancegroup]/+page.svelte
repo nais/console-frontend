@@ -5,6 +5,7 @@
 	import { ValueEncoding } from '$houdini';
 	import Resource from '#lib/domain/resources/Resource.svelte';
 	import { applicationInstanceStatus } from '#lib/domain/workload/applicationReadiness.js';
+	import { instanceLastExit } from '#lib/domain/workload/instanceLastExit.js';
 	import GraphErrors from '#lib/ui/GraphErrors.svelte';
 	import Collection from '#lib/ui/Collection.svelte';
 	import SurfaceCard from '#lib/ui/SurfaceCard.svelte';
@@ -332,6 +333,7 @@
 								<Tbody role="rowgroup">
 									{#each group.instances as instance (instance.id)}
 										{const status = $derived(applicationInstanceStatus(instance.status))}
+										{const exit = $derived(instanceLastExit(instance.status))}
 										<Tr class="instance-row" role="row" shadeOnHover={false}>
 											<Th scope="row" role="rowheader" class="instance-name">
 												<a
@@ -348,15 +350,10 @@
 													{#if instance.status.message}
 														<p>{instance.status.message}</p>
 													{/if}
-													{#if instance.status.lastExitReason && instance.restarts > 0}
+													{#if exit}
 														<p class="exit-info">
-															Last exit: {instance.status
-																.lastExitReason}{#if instance.status.lastExitCode != null}
-																(code {instance.status
-																	.lastExitCode}){/if}{#if instance.status.lastExitTimestamp}, <Time
-																	time={instance.status.lastExitTimestamp}
-																	distance
-																/>{/if}
+															Last exit: {exit.description}{#if exit.timestamp}{#if exit.description},
+																{/if}<Time time={exit.timestamp} distance />{/if}
 														</p>
 													{/if}
 												</div>

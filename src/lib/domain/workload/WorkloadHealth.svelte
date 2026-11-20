@@ -39,7 +39,7 @@
 		todoIssues = 0,
 		readyInstances,
 		desiredInstances = 0,
-		totalRuns = 0,
+		totalRuns,
 		succeededRuns = 0,
 		loading = false
 	}: Props = $props();
@@ -241,9 +241,9 @@
 	);
 	let instancesDanger = $derived(readyInstances === 0 && desiredInstances > 0);
 
-	let runsHealthy = $derived(totalRuns > 0 && succeededRuns === totalRuns);
-	let runsDanger = $derived(totalRuns > 0 && succeededRuns === 0);
-	let runsWarning = $derived(totalRuns > 0 && succeededRuns > 0 && succeededRuns < totalRuns);
+	const runsHealthy = $derived(!!totalRuns && succeededRuns === totalRuns);
+	const runsDanger = $derived(!!totalRuns && succeededRuns === 0);
+	const runsWarning = $derived(!!totalRuns && succeededRuns > 0 && succeededRuns < totalRuns);
 
 	let basePath = $derived(`/team/${teamSlug}/${environment}/${workloadType}/${workload}`);
 	let title = $derived(workloadType === 'app' ? 'Application health' : 'Job health');
@@ -353,12 +353,14 @@
 						<BriefcaseClockIcon />
 					</div>
 					<div class="metric-body">
-						{#if totalRuns > 0}
+						{#if totalRuns}
 							<span class="metric-value">{succeededRuns}/{totalRuns}</span>
 							<span class="metric-label">Runs succeeded</span>
 						{:else}
 							<span class="metric-value">—</span>
-							<span class="metric-label">No recent runs</span>
+							<span class="metric-label">
+								{totalRuns === undefined ? 'Recent runs unavailable' : 'No recent runs'}
+							</span>
 						{/if}
 					</div>
 				</span>

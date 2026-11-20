@@ -30,9 +30,6 @@
 	}
 
 	let runs = $derived($runsQuery.data?.team?.environment?.job?.runs);
-	let runEdges = $derived(runs?.edges ?? []);
-	let totalCount = $derived(runs?.pageInfo?.totalCount ?? runEdges.length);
-	let hasNextPage = $derived(runs?.pageInfo?.hasNextPage ?? false);
 	let loadingMore = $state(false);
 	let paginationErrors = $state<{ message: string }[] | null>(null);
 	let loadError = $state<string | null>(null);
@@ -42,7 +39,7 @@
 		loadingMore = true;
 		paginationErrors = null;
 		try {
-			paginationErrors = (await runsQuery.loadNextPage({ first: 20 })).errors;
+			paginationErrors = (await runsQuery.loadNextPage()).errors;
 		} catch {
 			paginationErrors = [{ message: 'Could not load more job runs.' }];
 		} finally {
@@ -51,11 +48,11 @@
 	}
 </script>
 
-<Collection title="Job runs" count={runs ? totalCount : undefined} level="h2">
+<Collection title="Job runs" count={runs?.pageInfo.totalCount} level="h2">
 	{#if errors?.length}
 		<div class="empty-state"><GraphErrors size="small" {errors} /></div>
 	{/if}
-	{#each runEdges as { node } (node.id)}
+	{#each runs?.edges ?? [] as { node } (node.id)}
 		<JobRunListItem run={node} {jobPath} {ondelete} />
 	{:else}
 		{#if $runsQuery.fetching && !errors?.length}
@@ -69,7 +66,7 @@
 		{/if}
 	{/each}
 </Collection>
-{#if hasNextPage}
+{#if runs?.pageInfo.hasNextPage}
 	<div class="load-more">
 		<GraphErrors size="small" errors={paginationErrors} />
 		<Button

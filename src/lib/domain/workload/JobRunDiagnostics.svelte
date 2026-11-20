@@ -5,16 +5,17 @@
 	import Time from '#lib/ui/Time.svelte';
 	import { formatImageRef } from '#lib/utils/image.js';
 	import { onMount } from 'svelte';
+	import { instanceLastExit } from './instanceLastExit.js';
 
 	let { runId, jobPath, active }: { runId: string; jobPath: string; active: boolean } = $props();
 
 	const details = graphql(`
-		query JobRunDiagnostics($id: ID!, $first: Int!) {
+		query JobRunDiagnostics($id: ID!) {
 			node(id: $id) {
 				__typename
 				... on JobRun {
 					id
-					instances(first: $first) @paginate(mode: Infinite) {
+					instances(first: 10) @paginate(mode: Infinite) {
 						edges {
 							node {
 								id
@@ -44,7 +45,6 @@
 		}
 	`);
 
-	const rows = 10;
 	let initialLoad = $state(true);
 	let loadError = $state<string | null>(null);
 	onMount(() => {
@@ -63,7 +63,7 @@
 		try {
 			await details.fetch({
 				policy: 'NetworkOnly',
-				...(initial ? { variables: { id: runId, first: rows } } : {})
+				...(initial ? { variables: { id: runId } } : {})
 			});
 			loadError = null;
 		} catch {
@@ -79,7 +79,7 @@
 		loadingMore = true;
 		paginationErrors = null;
 		try {
-			paginationErrors = (await details.loadNextPage({ first: rows })).errors;
+			paginationErrors = (await details.loadNextPage()).errors;
 		} catch {
 			paginationErrors = [{ message: 'Could not load more run instances.' }];
 		} finally {
@@ -109,6 +109,7 @@
 		<ul role="list" aria-label="Run instances">
 			{#each instances.edges as { node: instance } (instance.id)}
 				{const status = $derived(statuses[instance.status.state] ?? statuses.UNKNOWN)}
+				{const exit = $derived(instanceLastExit(instance.status))}
 				<li>
 					<div class="instance-heading">
 						<strong>{instance.name}</strong>
@@ -128,17 +129,14 @@
 							<dt>Restarts</dt>
 							<dd>{instance.restarts}</dd>
 						</div>
-						{#if instance.status.lastExitReason || instance.status.lastExitCode !== null || instance.status.lastExitTimestamp}
+						{#if exit}
 							<div>
 								<dt>Last exit</dt>
 								<dd>
-									{instance.status.lastExitReason}
-									{#if instance.status.lastExitCode !== null}
-										(code {instance.status.lastExitCode})
-									{/if}
-									{#if instance.status.lastExitTimestamp}
-										&middot;
-										<Time time={instance.status.lastExitTimestamp} dateFormat="d MMM, HH:mm:ss" />
+									{exit.description}
+									{#if exit.timestamp}
+										{#if exit.description}&middot;{/if}
+										<Time time={exit.timestamp} dateFormat="d MMM, HH:mm:ss" />
 									{/if}
 								</dd>
 							</div>

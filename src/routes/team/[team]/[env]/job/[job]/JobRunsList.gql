@@ -1,8 +1,8 @@
-query JobRunsList($team: Slug!, $env: String!, $job: String!, $first: Int!) {
+query JobRunsList($team: Slug!, $env: String!, $job: String!) {
 	team(slug: $team) {
 		environment(name: $env) {
 			job(name: $job) {
-				runs(first: $first) @paginate(mode: Infinite, name: "All_Runs") {
+				runs(first: 20) @paginate(mode: Infinite, name: "All_Runs") {
 					edges {
 						node {
 							id
