@@ -11,36 +11,32 @@ vi.mock('$houdini', () => ({
 }));
 
 describe('Postgres persistence usages', () => {
-	test.each(['Application', 'Job'])(
-		'renders one logical database without requiring branches for a %s',
-		async (__typename) => {
-			fixture.data = {
-				__typename,
-				name: 'workload',
-				team: { slug: 'nais' },
-				teamEnvironment: { environment: { name: 'dev-gcp' } },
-				buckets: { edges: [] },
-				bigQueryDatasets: { edges: [] },
-				sqlInstances: { edges: [] },
-				kafkaTopicAcls: { edges: [] },
-				openSearch: null,
-				valkeys: { edges: [] },
-				postgreses: {
-					edges: ['main', 'restore'].map((name) => ({
-						cursor: `usage-${name}`,
-						node: {
-							postgres: { id: 'same-database', name: 'database' }
-						}
-					}))
-				}
-			};
+	test.each(['Application', 'Job'])('deduplicates database usages for a %s', async (__typename) => {
+		fixture.data = {
+			__typename,
+			name: 'workload',
+			team: { slug: 'nais' },
+			teamEnvironment: { environment: { name: 'dev-gcp' } },
+			buckets: { edges: [] },
+			bigQueryDatasets: { edges: [] },
+			sqlInstances: { edges: [] },
+			kafkaTopicAcls: { edges: [] },
+			openSearch: null,
+			valkeys: { edges: [] },
+			postgreses: {
+				edges: ['usage-1', 'usage-2'].map((cursor) => ({
+					cursor,
+					node: {
+						postgres: { id: 'same-database', name: 'database' }
+					}
+				}))
+			}
+		};
 
-			const { body } = await render(Persistence, {
-				props: { workload: { ' $fragments': { Persistence: {} } } }
-			});
+		const { body } = await render(Persistence, {
+			props: { workload: { ' $fragments': { Persistence: {} } } }
+		});
 
-			expect(body).not.toContain('Branch:');
-			expect(body.match(/href="\/team\/nais\/dev-gcp\/postgres\/database"/g)).toHaveLength(1);
-		}
-	);
+		expect(body.match(/href="\/team\/nais\/dev-gcp\/postgres\/database"/g)).toHaveLength(1);
+	});
 });

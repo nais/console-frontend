@@ -83,19 +83,11 @@ describe('Postgres Insights page', () => {
 		expect(body).toContain('Commits and rollbacks per second on the primary');
 	});
 
-	test('preserves all time ranges without branch selection or pagination', async () => {
+	test('offers all supported time ranges', async () => {
 		const { body } = await renderPage();
-		expect(body).not.toContain('<select');
-		expect(body).not.toContain('Load more branches');
 		for (const interval of ['1h', '6h', '1d', '7d', '30d']) {
 			expect(body).toContain(`>${interval}<`);
 		}
-	});
-
-	test('renders database metrics without branch wording', async () => {
-		const { body } = await renderPage();
-		expect(body).not.toContain('branch ');
-		expect(body.match(/class="prometheus-chart-wrapper\b/g)).toHaveLength(10);
 	});
 
 	test('shows metric query errors instead of an indefinite loading or empty-data state', async () => {

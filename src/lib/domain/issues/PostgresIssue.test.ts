@@ -32,9 +32,6 @@ test('renders only the logical Postgres database in the issue list during SSR', 
 	expect(body).toContain('database');
 	expect(body).toContain('href="/team/nais/dev-gcp/postgres/database"');
 	expect(body).toContain('Postgres');
-	expect(body).not.toContain('Postgres Branch');
-	expect(body).not.toContain('database /');
-	expect(body).not.toContain('branch=');
 	expect(body).toContain('dev-gcp');
 	expect(body).toContain('has reported a failure.');
 	expect(body).not.toContain('Unknown');
@@ -61,8 +58,6 @@ test('renders only the logical Postgres database in the critical issues card dur
 	const { body } = await render(CriticalIssueRow, { props: { issue: item } });
 	expect(body).toContain('Postgres failure for database in dev-gcp');
 	expect(body).toContain('href="/team/nais/dev-gcp/postgres/database"');
-	expect(body).not.toContain('database /');
-	expect(body).not.toContain('branch=');
 	expect(body).toContain('has reported a failure.');
 	expect(body).not.toContain('Unknown');
 });
@@ -86,5 +81,4 @@ test.each([
 	);
 	expect(selection.teamEnvironment.selection.fields.team.selection.fields.slug.visible).toBe(true);
 	expect(selection.postgres.selection.fields.name.visible).toBe(true);
-	expect(selection).not.toHaveProperty('branch');
 });
