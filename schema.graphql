@@ -800,6 +800,12 @@ type Application implements ActivityLogger & Node & Workload {
   """The container image of the application."""
   image: ContainerImage!
 
+  """Get the vulnerability summary history for application."""
+  imageVulnerabilityHistory(
+    """Get vulnerability summary from given date until today."""
+    from: Date!
+  ): ImageVulnerabilityHistory! @deprecated(reason: "No longer used by Console. Retained for compatibility while consumer usage is assessed.")
+
   """List of ingresses for the application."""
   ingresses: [Ingress!]!
 
@@ -951,6 +957,9 @@ type Application implements ActivityLogger & Node & Workload {
     """Ordering options for items returned from the connection."""
     orderBy: ValkeyOrder
   ): ValkeyConnection!
+
+  """Get the mean time to fix history for an application."""
+  vulnerabilityFixHistory(from: Date!): VulnerabilityFixHistory! @deprecated(reason: "No longer used by Console. Retained for compatibility while consumer usage is assessed.")
 }
 
 """Authentication integrations for the application."""
@@ -3853,6 +3862,11 @@ input ImageVulnerabilityFilter {
   severitySince: Time
 }
 
+type ImageVulnerabilityHistory {
+  """Vulnerability summary samples."""
+  samples: [ImageVulnerabilitySample!]!
+}
+
 """Ordering options when fetching teams."""
 input ImageVulnerabilityOrder {
   """The direction to order items by."""
@@ -3885,6 +3899,14 @@ enum ImageVulnerabilityOrderField {
 
   """Order by whether the vulnerability is suppressed."""
   SUPPRESSED
+}
+
+type ImageVulnerabilitySample {
+  """Timestamp of the vulnerability summary."""
+  date: Time!
+
+  """The historic image vulnerability summary"""
+  summary: ImageVulnerabilitySummary!
 }
 
 enum ImageVulnerabilitySeverity {
@@ -4412,6 +4434,12 @@ type Job implements ActivityLogger & Node & Workload {
   """The container image of the job."""
   image: ContainerImage!
 
+  """Get the vulnerability summary history for job."""
+  imageVulnerabilityHistory(
+    """Get vulnerability summary from given date until today."""
+    from: Date!
+  ): ImageVulnerabilityHistory! @deprecated(reason: "No longer used by Console. Retained for compatibility while consumer usage is assessed.")
+
   """Issues that affect the job."""
   issues(
     """Get items after this cursor."""
@@ -4556,6 +4584,9 @@ type Job implements ActivityLogger & Node & Workload {
     """Ordering options for items returned from the connection."""
     orderBy: ValkeyOrder
   ): ValkeyConnection!
+
+  """Get the mean time to fix history for a job."""
+  vulnerabilityFixHistory(from: Date!): VulnerabilityFixHistory! @deprecated(reason: "No longer used by Console. Retained for compatibility while consumer usage is assessed.")
 }
 
 union JobAuthIntegrations = EntraIDAuthIntegration | MaskinportenAuthIntegration
@@ -7333,6 +7364,12 @@ type Query {
     last: Int
   ): WebhookSubscriptionConnection!
 
+  """Get the vulnerability summary history for all teams."""
+  imageVulnerabilityHistory(
+    """Get vulnerability summary from given date until today."""
+    from: Date!
+  ): ImageVulnerabilityHistory! @deprecated(reason: "No longer used by Console. Retained for compatibility while consumer usage is assessed.")
+
   """
   Issues across teams in the tenant, ordered by severity unless otherwise specified.
   """
@@ -7533,6 +7570,9 @@ type Query {
     """Ordering options for items returned from the connection."""
     orderBy: UserOrder
   ): UserConnection!
+
+  """Get the mean time to fix history for all teams."""
+  vulnerabilityFixHistory(from: Date!): VulnerabilityFixHistory! @deprecated(reason: "No longer used by Console. Retained for compatibility while consumer usage is assessed.")
 
   """List per-workload vulnerability summaries across all teams."""
   vulnerabilitySummaries(
@@ -9993,6 +10033,12 @@ type Team implements ActivityLogger & Node {
   """The globally unique ID of the team."""
   id: ID!
 
+  """Get the vulnerability summary history for team."""
+  imageVulnerabilityHistory(
+    """Get vulnerability summary from given date until today."""
+    from: Date!
+  ): ImageVulnerabilityHistory! @deprecated(reason: "No longer used by Console. Retained for compatibility while consumer usage is assessed.")
+
   """Overall inventory of resources for the team."""
   inventoryCounts: TeamInventoryCounts!
 
@@ -10273,6 +10319,9 @@ type Team implements ActivityLogger & Node {
 
   """Whether or not the viewer is an owner of the team."""
   viewerIsOwner: Boolean!
+
+  """Get the mean time to fix history for a team."""
+  vulnerabilityFixHistory(from: Date!): VulnerabilityFixHistory! @deprecated(reason: "No longer used by Console. Retained for compatibility while consumer usage is assessed.")
 
   """Fetch vulnerability summaries for workloads in the team."""
   vulnerabilitySummaries(
@@ -13165,6 +13214,36 @@ type VulnerabilityActivityLogEntryData {
   severity: ImageVulnerabilitySeverity!
 }
 
+"""Trend of mean time to fix vulnerabilities grouped by severity."""
+type VulnerabilityFixHistory {
+  """Mean time to fix samples."""
+  samples: [VulnerabilityFixSample!]!
+}
+
+"""One MTTR sample for a severity at a point in time."""
+type VulnerabilityFixSample {
+  """Snapshot date of the sample."""
+  date: Time!
+
+  """Mean time to fix in days."""
+  days: Int!
+
+  """Earliest time a vulnerability was fixed in this sample."""
+  firstFixedAt: Time
+
+  """Number of vulnerabilities fixed in this sample."""
+  fixedCount: Int!
+
+  """Latest time a vulnerability was fixed in this sample."""
+  lastFixedAt: Time
+
+  """Severity of vulnerabilities in this sample."""
+  severity: ImageVulnerabilitySeverity!
+
+  """Total number of workloads with this severity of vulnerabilities."""
+  totalWorkloads: Int!
+}
+
 """
 Package version information that helps remediate an image vulnerability.
 """
@@ -13847,6 +13926,12 @@ interface Workload implements ActivityLogger & Node {
   """The container image of the workload."""
   image: ContainerImage!
 
+  """Get the vulnerability summary history for workload."""
+  imageVulnerabilityHistory(
+    """Get vulnerability summary from given date until today."""
+    from: Date!
+  ): ImageVulnerabilityHistory! @deprecated(reason: "No longer used by Console. Retained for compatibility while consumer usage is assessed.")
+
   """Issues that affect the workload."""
   issues(
     """Get items after this cursor."""
@@ -13966,6 +14051,9 @@ interface Workload implements ActivityLogger & Node {
     """Ordering options for items returned from the connection."""
     orderBy: ValkeyOrder
   ): ValkeyConnection!
+
+  """Get the mean time to fix history for a workload."""
+  vulnerabilityFixHistory(from: Date!): VulnerabilityFixHistory! @deprecated(reason: "No longer used by Console. Retained for compatibility while consumer usage is assessed.")
 }
 
 """Workload connection."""
