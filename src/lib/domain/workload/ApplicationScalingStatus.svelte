@@ -10,6 +10,7 @@
 		scaling,
 		resizeHref
 	}: { scaling: ApplicationScalingDiagnostics$data; resizeHref?: string } = $props();
+	const headingId = $props.id();
 
 	const statuses = {
 		ACTIVE: { label: 'Active', variant: 'success' },
@@ -27,36 +28,38 @@
 	);
 </script>
 
-<Collection title="Automatic scaling" level="h2">
-	<div class="scaling">
-		{#if status}
-			<div><Tag size="small" variant={presentation.variant}>{presentation.label}</Tag></div>
-			<p>{status.message}</p>
-		{:else}
-			<p>Automatic scaling is not set up for this application.</p>
-		{/if}
-
-		<dl>
+<section aria-labelledby={headingId}>
+	<Collection title="Automatic scaling" level="h2" {headingId}>
+		<div class="scaling">
 			{#if status}
-				<div>
-					<dt>Currently running</dt>
-					<dd>{status.currentInstances}</dd>
-				</div>
-				<div>
-					<dt>Autoscaler target</dt>
-					<dd>{status.desiredInstances}</dd>
-				</div>
+				<div><Tag size="small" variant={presentation.variant}>{presentation.label}</Tag></div>
+				<p>{status.message}</p>
+			{:else}
+				<p>Automatic scaling is not set up for this application.</p>
 			{/if}
-			<div>
-				<dt>Configured range</dt>
-				<dd>{scaling.minInstances} &ndash; {scaling.maxInstances}</dd>
-			</div>
-		</dl>
-		{#if status?.state === 'LIMITED_BY_MAXIMUM' && resizeHref}
-			<a href={resizeHref}>Review scaling limits</a>
-		{/if}
-	</div>
-</Collection>
+
+			<dl>
+				{#if status}
+					<div>
+						<dt>Currently running</dt>
+						<dd>{status.currentInstances}</dd>
+					</div>
+					<div>
+						<dt>Autoscaler target</dt>
+						<dd>{status.desiredInstances}</dd>
+					</div>
+				{/if}
+				<div>
+					<dt>Configured range</dt>
+					<dd>{scaling.minInstances} &ndash; {scaling.maxInstances}</dd>
+				</div>
+			</dl>
+			{#if status?.state === 'LIMITED_BY_MAXIMUM' && resizeHref}
+				<a href={resizeHref}>Review scaling limits</a>
+			{/if}
+		</div>
+	</Collection>
+</section>
 
 <style>
 	.scaling {
