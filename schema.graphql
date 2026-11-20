@@ -804,7 +804,7 @@ type Application implements ActivityLogger & Node & Workload {
   imageVulnerabilityHistory(
     """Get vulnerability summary from given date until today."""
     from: Date!
-  ): ImageVulnerabilityHistory!
+  ): ImageVulnerabilityHistory! @deprecated(reason: "No longer used by Console. Retained for compatibility while consumer usage is assessed.")
 
   """List of ingresses for the application."""
   ingresses: [Ingress!]!
@@ -959,7 +959,7 @@ type Application implements ActivityLogger & Node & Workload {
   ): ValkeyConnection!
 
   """Get the mean time to fix history for an application."""
-  vulnerabilityFixHistory(from: Date!): VulnerabilityFixHistory!
+  vulnerabilityFixHistory(from: Date!): VulnerabilityFixHistory! @deprecated(reason: "No longer used by Console. Retained for compatibility while consumer usage is assessed.")
 }
 
 """Authentication integrations for the application."""
@@ -1111,6 +1111,11 @@ type ApplicationInstanceEdge {
 
 enum ApplicationInstanceState {
   FAILING
+
+  """
+  The instance is waiting to be placed on a server, for example because there is not enough CPU or memory available.
+  """
+  PENDING
   RUNNING
   STARTING
   TERMINATED
@@ -1138,7 +1143,8 @@ type ApplicationInstanceStatus {
   message: String!
 
   """
-  Whether the container is passing its readiness check and can receive traffic.
+  Whether the instance is passing its readiness check and can receive traffic.
+  An instance does not receive traffic while a component added by the platform is failing.
   """
   ready: Boolean!
   state: ApplicationInstanceState!
@@ -1251,6 +1257,40 @@ type ApplicationRestartedActivityLogEntry implements ActivityLogEntry & Node {
   teamSlug: Slug!
 }
 
+"""
+An issue raised when a new version of an application is not being rolled out.
+"""
+type ApplicationRolloutStuckIssue implements Issue & Node {
+  """Unique identifier for this issue."""
+  id: ID!
+
+  """A human-readable description of the issue."""
+  message: String!
+
+  """Why the rollout is stuck."""
+  reason: ApplicationRolloutStuckReason!
+
+  """The severity of the issue."""
+  severity: Severity!
+
+  """The team environment where the issue was detected."""
+  teamEnvironment: TeamEnvironment!
+
+  """The workload whose rollout is stuck."""
+  workload: Workload!
+}
+
+"""Why a rollout of a new application version is stuck."""
+enum ApplicationRolloutStuckReason {
+  """
+  Instances of the new version could not be created, for example because of a quota or a platform policy.
+  """
+  INSTANCE_CREATION_FAILED
+
+  """The new version did not become ready within the allowed time."""
+  TIMED_OUT
+}
+
 type ApplicationScaledActivityLogEntry implements ActivityLogEntry & Node {
   """
   The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
@@ -1298,8 +1338,51 @@ type ApplicationScaling {
   """The minimum number of application instances."""
   minInstances: Int!
 
+  """
+  The current state of automatic scaling for the application.
+  Null if automatic scaling is not set up for the application in the environment.
+  """
+  status: ApplicationScalingStatus
+
   """Scaling strategies for the application."""
   strategies: [ScalingStrategy!]!
+}
+
+"""The state of automatic scaling for an application."""
+enum ApplicationScalingState {
+  """Automatic scaling is working as expected."""
+  ACTIVE
+
+  """
+  Automatic scaling is turned off because the application has been scaled down to zero instances.
+  """
+  DISABLED
+
+  """The application needs more instances than the configured maximum."""
+  LIMITED_BY_MAXIMUM
+
+  """
+  The metrics used for automatic scaling cannot be read, so the number of instances is not adjusted.
+  """
+  METRICS_UNAVAILABLE
+
+  """The platform is currently unable to change the number of instances."""
+  UNABLE_TO_SCALE
+}
+
+"""The current state of automatic scaling for an application."""
+type ApplicationScalingStatus {
+  """The number of instances currently running."""
+  currentInstances: Int!
+
+  """The number of instances that automatic scaling wants to run."""
+  desiredInstances: Int!
+
+  """A user-friendly description of the current state."""
+  message: String!
+
+  """The state of automatic scaling."""
+  state: ApplicationScalingState!
 }
 
 enum ApplicationState {
@@ -4201,6 +4284,9 @@ type IssueTeamFacetItem {
 enum IssueType {
   """Raised when an application is stuck in a restart loop."""
   APPLICATION_RESTART_LOOP
+
+  """Raised when a new version of an application is not being rolled out."""
+  APPLICATION_ROLLOUT_STUCK
   DEPRECATED_INGRESS
   DEPRECATED_REGISTRY
 
@@ -4352,7 +4438,7 @@ type Job implements ActivityLogger & Node & Workload {
   imageVulnerabilityHistory(
     """Get vulnerability summary from given date until today."""
     from: Date!
-  ): ImageVulnerabilityHistory!
+  ): ImageVulnerabilityHistory! @deprecated(reason: "No longer used by Console. Retained for compatibility while consumer usage is assessed.")
 
   """Issues that affect the job."""
   issues(
@@ -4500,7 +4586,7 @@ type Job implements ActivityLogger & Node & Workload {
   ): ValkeyConnection!
 
   """Get the mean time to fix history for a job."""
-  vulnerabilityFixHistory(from: Date!): VulnerabilityFixHistory!
+  vulnerabilityFixHistory(from: Date!): VulnerabilityFixHistory! @deprecated(reason: "No longer used by Console. Retained for compatibility while consumer usage is assessed.")
 }
 
 union JobAuthIntegrations = EntraIDAuthIntegration | MaskinportenAuthIntegration
@@ -4751,11 +4837,23 @@ type JobRunEdge {
 }
 
 type JobRunInstance implements Node {
+  """The time the job run instance was created."""
+  created: Time!
+
   """The globally unique ID of the job run instance."""
   id: ID!
 
+  """The container image of the job run instance."""
+  image: ContainerImage!
+
   """The name of the job run instance."""
   name: String!
+
+  """The number of times the job run instance has been restarted."""
+  restarts: Int!
+
+  """The current status of the job run instance."""
+  status: JobRunInstanceStatus!
 }
 
 type JobRunInstanceConnection {
@@ -4775,6 +4873,57 @@ type JobRunInstanceEdge {
 
   """The instance."""
   node: JobRunInstance!
+}
+
+"""The state of a job run instance."""
+enum JobRunInstanceState {
+  """
+  The job run instance has a problem that prevents it from running or completing successfully.
+  """
+  FAILING
+
+  """
+  The job run instance is waiting to be placed on a server, for example because there is not enough CPU or memory available.
+  """
+  PENDING
+
+  """The job run instance is running."""
+  RUNNING
+
+  """The job run instance is starting."""
+  STARTING
+
+  """The job run instance completed successfully."""
+  SUCCEEDED
+
+  """The state of the job run instance is unknown."""
+  UNKNOWN
+}
+
+"""The status of a job run instance."""
+type JobRunInstanceStatus {
+  """
+  The exit code from the last termination of the job run instance, if applicable.
+  """
+  lastExitCode: Int
+
+  """
+  The reason the job run instance last terminated, if applicable.
+  This is populated even when the instance is currently running, to help debug restarts.
+  """
+  lastExitReason: String
+
+  """
+  The timestamp of the last termination of the job run instance, if applicable.
+  This is populated even when the instance is currently running, to help debug restarts.
+  """
+  lastExitTimestamp: Time
+
+  """A user-friendly description of the current state."""
+  message: String!
+
+  """The current state of the job run instance."""
+  state: JobRunInstanceState!
 }
 
 enum JobRunState {
@@ -7219,7 +7368,7 @@ type Query {
   imageVulnerabilityHistory(
     """Get vulnerability summary from given date until today."""
     from: Date!
-  ): ImageVulnerabilityHistory!
+  ): ImageVulnerabilityHistory! @deprecated(reason: "No longer used by Console. Retained for compatibility while consumer usage is assessed.")
 
   """
   Issues across teams in the tenant, ordered by severity unless otherwise specified.
@@ -7423,7 +7572,7 @@ type Query {
   ): UserConnection!
 
   """Get the mean time to fix history for all teams."""
-  vulnerabilityFixHistory(from: Date!): VulnerabilityFixHistory!
+  vulnerabilityFixHistory(from: Date!): VulnerabilityFixHistory! @deprecated(reason: "No longer used by Console. Retained for compatibility while consumer usage is assessed.")
 
   """List per-workload vulnerability summaries across all teams."""
   vulnerabilitySummaries(
@@ -9888,7 +10037,7 @@ type Team implements ActivityLogger & Node {
   imageVulnerabilityHistory(
     """Get vulnerability summary from given date until today."""
     from: Date!
-  ): ImageVulnerabilityHistory!
+  ): ImageVulnerabilityHistory! @deprecated(reason: "No longer used by Console. Retained for compatibility while consumer usage is assessed.")
 
   """Overall inventory of resources for the team."""
   inventoryCounts: TeamInventoryCounts!
@@ -10172,7 +10321,7 @@ type Team implements ActivityLogger & Node {
   viewerIsOwner: Boolean!
 
   """Get the mean time to fix history for a team."""
-  vulnerabilityFixHistory(from: Date!): VulnerabilityFixHistory!
+  vulnerabilityFixHistory(from: Date!): VulnerabilityFixHistory! @deprecated(reason: "No longer used by Console. Retained for compatibility while consumer usage is assessed.")
 
   """Fetch vulnerability summaries for workloads in the team."""
   vulnerabilitySummaries(
@@ -13781,7 +13930,7 @@ interface Workload implements ActivityLogger & Node {
   imageVulnerabilityHistory(
     """Get vulnerability summary from given date until today."""
     from: Date!
-  ): ImageVulnerabilityHistory!
+  ): ImageVulnerabilityHistory! @deprecated(reason: "No longer used by Console. Retained for compatibility while consumer usage is assessed.")
 
   """Issues that affect the workload."""
   issues(
@@ -13904,7 +14053,7 @@ interface Workload implements ActivityLogger & Node {
   ): ValkeyConnection!
 
   """Get the mean time to fix history for a workload."""
-  vulnerabilityFixHistory(from: Date!): VulnerabilityFixHistory!
+  vulnerabilityFixHistory(from: Date!): VulnerabilityFixHistory! @deprecated(reason: "No longer used by Console. Retained for compatibility while consumer usage is assessed.")
 }
 
 """Workload connection."""
@@ -14328,6 +14477,76 @@ type WorkloadVulnerabilitySummaryEdge {
 
   """The workload vulnerability summary."""
   node: WorkloadVulnerabilitySummary!
+}
+
+"""
+A problem detected while running the workload.
+Repeated occurrences of the same problem are combined into a single event.
+"""
+type WorkloadWarningEvent implements Node & WorkloadEvent {
+  """Number of times the problem has been observed."""
+  count: Int!
+
+  """When the problem was first observed."""
+  firstSeenAt: Time!
+
+  """Unique event identifier."""
+  id: ID!
+
+  """
+  Name of the affected instance, if the problem concerns a single instance.
+  """
+  instance: String
+
+  """The kind of problem."""
+  kind: WorkloadWarningEventKind!
+
+  """Description of the problem."""
+  message: String!
+
+  """When the problem was last observed."""
+  triggeredAt: Time!
+}
+
+"""The kind of problem reported by a warning event."""
+enum WorkloadWarningEventKind {
+  """The instance keeps crashing and is restarted with increasing delay."""
+  CRASH_LOOP
+
+  """A readiness, liveness or startup check failed."""
+  HEALTH_CHECK_FAILED
+
+  """The container image could not be downloaded."""
+  IMAGE_PULL_FAILED
+
+  """
+  New instances could not be created, for example because of a quota or a platform policy.
+  """
+  INSTANCE_CREATION_FAILED
+
+  """
+  The instance was stopped by the platform, for example to free up resources.
+  """
+  INSTANCE_STOPPED
+
+  """Files or storage could not be mounted into the instance."""
+  MOUNT_FAILED
+
+  """
+  No server with enough available resources was found to run the instance.
+  """
+  PLACEMENT_FAILED
+
+  """A job run failed permanently."""
+  RUN_FAILED
+
+  """Automatic scaling is unable to adjust the number of instances."""
+  SCALING_FAILED
+
+  """
+  The instance could not be started, for example because of missing configuration.
+  """
+  START_FAILED
 }
 
 """A workload affected by a specific vulnerability."""
