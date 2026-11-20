@@ -4,8 +4,7 @@ query ResizeApplicationData($team: Slug!, $env: String!, $app: String!) {
 			application(name: $app) {
 				resources {
 					scaling {
-						minInstances
-						maxInstances
+						...ApplicationScalingDiagnostics @mask_disable
 					}
 				}
 			}

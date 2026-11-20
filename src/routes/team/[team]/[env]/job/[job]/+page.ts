@@ -1,4 +1,4 @@
-import { load_Job, load_JobDeployment, load_JobWorkloadEvents } from '$houdini';
+import { load_Job, load_JobDeployment, load_JobRunsList, load_JobWorkloadEvents } from '$houdini';
 import { recentWorkloadEventCount } from '#lib/domain/workload/workloadEventPagination.js';
 import { addPageMeta } from '#lib/utils/pageMeta.js';
 
@@ -10,7 +10,7 @@ export async function load(event) {
 	const before = event.url.searchParams.get('before') || '';
 	const { team, env, job } = event.params;
 	const variables = { team, env, job };
-	const [overview, deployment, events] = await Promise.all([
+	const [overview, deployment, events, runs] = await Promise.all([
 		load_Job({
 			event,
 			variables: {
@@ -20,13 +20,15 @@ export async function load(event) {
 			}
 		}),
 		load_JobDeployment({ event, variables: { ...variables, legacyDeployDisabled } }),
-		load_JobWorkloadEvents({ event, variables: { ...variables, first: recentWorkloadEventCount } })
+		load_JobWorkloadEvents({ event, variables: { ...variables, first: recentWorkloadEventCount } }),
+		load_JobRunsList({ event, variables: { ...variables, first: 20 } })
 	]);
 
 	return {
 		...(await addPageMeta(event, { title: job })),
 		...overview,
 		...deployment,
-		...events
+		...events,
+		...runs
 	};
 }

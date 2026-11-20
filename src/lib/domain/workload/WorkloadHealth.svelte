@@ -37,7 +37,7 @@
 		criticalIssues = 0,
 		warningIssues = 0,
 		todoIssues = 0,
-		readyInstances = 0,
+		readyInstances,
 		desiredInstances = 0,
 		totalRuns = 0,
 		succeededRuns = 0,
@@ -236,7 +236,9 @@
 					: $jobVulnQuery?.fetching || $jobCostQuery?.fetching))
 	);
 
-	let instancesHealthy = $derived(readyInstances >= desiredInstances && desiredInstances > 0);
+	let instancesHealthy = $derived(
+		readyInstances !== undefined && readyInstances >= desiredInstances && desiredInstances > 0
+	);
 	let instancesDanger = $derived(readyInstances === 0 && desiredInstances > 0);
 
 	let runsHealthy = $derived(totalRuns > 0 && succeededRuns === totalRuns);
@@ -329,8 +331,10 @@
 						<PackageIcon />
 					</div>
 					<div class="metric-body">
-						<span class="metric-value">{readyInstances}/{desiredInstances}</span>
-						<span class="metric-label">Instances</span>
+						<span class="metric-value">
+							{readyInstances === undefined ? '—' : `${readyInstances}/${desiredInstances}`}
+						</span>
+						<span class="metric-label">Instances ready</span>
 					</div>
 				</a>
 			{:else}

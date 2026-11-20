@@ -25,7 +25,8 @@
 	import Schedule from './Schedule.svelte';
 
 	let { data }: PageProps = $props();
-	let { Job, JobDeployment, JobWorkloadEvents, teamSlug, viewerIsMember } = $derived(data);
+	let { Job, JobDeployment, JobRunsList, JobWorkloadEvents, teamSlug, viewerIsMember } =
+		$derived(data);
 
 	onMount(() => {
 		const interval = setInterval(() => {
@@ -131,17 +132,14 @@
 					{succeededRuns}
 					loading={jobFetching}
 				/>
-				<SurfaceCard>
-					{#if teamSlug && environment && jobName}
-						<Runs
-							bind:this={runsComponent}
-							{teamSlug}
-							{environment}
-							{jobName}
-							ondelete={viewerIsMember ? handleDeleteRun : undefined}
-						/>
-					{/if}
-				</SurfaceCard>
+				{#if teamSlug && environment && jobName}
+					<Runs
+						bind:this={runsComponent}
+						runsQuery={JobRunsList}
+						jobPath="/team/{teamSlug}/{environment}/job/{jobName}"
+						ondelete={viewerIsMember ? handleDeleteRun : undefined}
+					/>
+				{/if}
 				<SurfaceCard>
 					<div class="configuration-section">
 						<Heading as="h2">Configuration</Heading>

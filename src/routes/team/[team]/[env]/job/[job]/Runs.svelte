@@ -1,73 +1,32 @@
 <script lang="ts">
-	import { graphql } from '$houdini';
+	import type { JobRunsListStore } from '$houdini';
 	import JobRunListItem from '#lib/domain/list-items/JobRunListItem.svelte';
 	import Collection from '#lib/ui/Collection.svelte';
+	import GraphErrors from '#lib/ui/GraphErrors.svelte';
 	import ListItem from '#lib/ui/ListItem.svelte';
-	import { Button } from '#lib/shadcn/ui/index.js';
+	import { Button, ShSpinner } from '#lib/shadcn/ui/index.js';
 	import { onMount } from 'svelte';
 
 	interface Props {
-		teamSlug: string;
-		environment: string;
-		jobName: string;
+		runsQuery: JobRunsListStore;
+		jobPath: string;
 		ondelete?: (runName: string) => void;
 	}
 
-	let { teamSlug, environment, jobName, ondelete }: Props = $props();
+	let { runsQuery, jobPath, ondelete }: Props = $props();
 
 	onMount(() => {
 		const interval = setInterval(() => refetch(), 10_000);
 		return () => clearInterval(interval);
 	});
 
-	const runsQuery = graphql(`
-		query JobRunsList($team: Slug!, $env: String!, $job: String!, $first: Int!) {
-			team(slug: $team) {
-				environment(name: $env) {
-					job(name: $job) {
-						runs(first: $first) @paginate(mode: Infinite, name: "All_Runs") {
-							edges {
-								node {
-									id
-									name
-									startTime
-									completionTime
-									duration
-									instances {
-										pageInfo {
-											totalCount
-										}
-									}
-									status {
-										message
-										state
-									}
-									trigger {
-										type
-										actor
-									}
-								}
-							}
-							pageInfo {
-								hasNextPage
-								totalCount
-							}
-						}
-					}
-				}
-			}
+	export async function refetch() {
+		try {
+			await runsQuery.fetch({ policy: 'NetworkOnly' });
+			loadError = null;
+		} catch {
+			loadError = 'Could not refresh job runs.';
 		}
-	`);
-
-	$effect(() => {
-		runsQuery.fetch({ variables: { team: teamSlug, env: environment, job: jobName, first: 5 } });
-	});
-
-	export function refetch() {
-		runsQuery.fetch({
-			variables: { team: teamSlug, env: environment, job: jobName, first: 20 },
-			policy: 'NoCache'
-		});
 	}
 
 	let runs = $derived($runsQuery.data?.team?.environment?.job?.runs);
@@ -75,45 +34,52 @@
 	let totalCount = $derived(runs?.pageInfo?.totalCount ?? runEdges.length);
 	let hasNextPage = $derived(runs?.pageInfo?.hasNextPage ?? false);
 	let loadingMore = $state(false);
+	let loadError = $state<string | null>(null);
+	const errors = $derived(loadError ? [{ message: loadError }] : $runsQuery.errors);
 
 	async function loadMore() {
 		loadingMore = true;
-		await runsQuery.loadNextPage({ first: 20 });
-		loadingMore = false;
+		try {
+			await runsQuery.loadNextPage({ first: 20 });
+			loadError = null;
+		} catch {
+			loadError = 'Could not load more job runs.';
+		} finally {
+			loadingMore = false;
+		}
 	}
 </script>
 
-{#if runEdges.length > 0 || $runsQuery.fetching}
-	<Collection title="Job runs" count={totalCount} level="h2">
-		{#each runEdges as run (run.node.id)}
-			{#if run.node.instances.pageInfo.totalCount > 0}
-				<JobRunListItem
-					run={run.node}
-					urlBase="/team/{teamSlug}/{environment}/job/{jobName}/logs?instance="
-					{ondelete}
-				/>
-			{:else}
-				<JobRunListItem run={run.node} {ondelete} />
-			{/if}
-		{:else}
+<Collection title="Job runs" count={runs ? totalCount : undefined} level="h2">
+	{#if errors?.length}
+		<div class="empty-state"><GraphErrors size="small" {errors} /></div>
+	{/if}
+	{#each runEdges as { node } (node.id)}
+		<JobRunListItem run={node} {jobPath} {ondelete} />
+	{:else}
+		{#if $runsQuery.fetching && !errors?.length}
+			<div class="empty-state" role="status" aria-label="Loading job runs">
+				<ShSpinner size="sm" />
+			</div>
+		{:else if !errors?.length}
 			<ListItem>
 				<span class="empty-state">No runs found</span>
 			</ListItem>
-		{/each}
-	</Collection>
-	{#if hasNextPage}
-		<div class="load-more">
-			<Button variant="tertiary" size="small" onclick={loadMore} loading={loadingMore}
-				>Load more</Button
-			>
-		</div>
-	{/if}
-{:else if !$runsQuery.fetching}
-	<Collection title="Job runs" count={0} level="h2">
-		<ListItem>
-			<span class="empty-state">No runs found</span>
-		</ListItem>
-	</Collection>
+		{/if}
+	{/each}
+</Collection>
+{#if hasNextPage}
+	<div class="load-more">
+		<Button
+			variant="tertiary"
+			size="small"
+			onclick={loadMore}
+			loading={loadingMore}
+			disabled={$runsQuery.fetching}
+		>
+			Load more runs
+		</Button>
+	</div>
 {/if}
 
 <style>

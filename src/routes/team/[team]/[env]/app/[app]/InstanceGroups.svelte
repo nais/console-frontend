@@ -1,10 +1,14 @@
 <script lang="ts">
-	import { type AppInstanceGroups$result } from '$houdini';
-	import { Badge, Loader, StatusIndicator } from '#lib/shadcn/ui/index.js';
+	import type { AppInstanceGroups$result, ApplicationRolloutStuckReason$options } from '$houdini';
+	import { CloudSlashIcon } from '#lib/icons/index.js';
+	import {
+		countReadyInstances,
+		summarizeUnreadyInstances
+	} from '#lib/domain/workload/applicationReadiness.js';
+	import { Alert, Badge, Heading, Loader, StatusIndicator, Tag } from '#lib/shadcn/ui/index.js';
 	import SurfaceCard from '#lib/ui/SurfaceCard.svelte';
 	import Time from '#lib/ui/Time.svelte';
 	import { formatImageVersion } from '#lib/utils/image.js';
-	import { CloudSlashIcon } from '#lib/icons/index.js';
 	import { slide } from 'svelte/transition';
 
 	type InstanceGroups =
@@ -14,83 +18,143 @@
 		teamSlug: string;
 		environmentName: string;
 		appName: string;
-		instanceGroups: AppInstanceGroups$result['team']['environment']['application']['instanceGroups'];
+		instanceGroups: InstanceGroups;
+		readyInstances: number;
+		rolloutIssue?: { reason: ApplicationRolloutStuckReason$options; message: string };
 	}
 
-	let { instanceGroups, teamSlug, environmentName, appName }: Props = $props();
+	let { instanceGroups, teamSlug, environmentName, appName, readyInstances, rolloutIssue }: Props =
+		$props();
+
+	const appPath = $derived(`/team/${teamSlug}/${environmentName}/app/${appName}`);
 
 	const incoming = $derived.by(() => {
-		if (instanceGroups.length <= 1) {
+		if (instanceGroups.length <= 1 || rolloutIssue?.reason === 'INSTANCE_CREATION_FAILED') {
 			return null;
 		}
 
 		return instanceGroups.reduce((newest, group) =>
-			new Date(group.created) > new Date(newest.created) ? group : newest
+			group.created > newest.created ? group : newest
 		);
 	});
 
-	function groupRole(group: InstanceGroups[0]) {
-		if (incoming && group.id === incoming.id) return 'incoming';
-		return 'current';
-	}
+	const onlyGroup = $derived(instanceGroups.length === 1 ? instanceGroups[0] : undefined);
+
+	const rolloutTitle: Record<ApplicationRolloutStuckReason$options, string> = {
+		INSTANCE_CREATION_FAILED: 'Instances could not be created',
+		TIMED_OUT: 'New version did not become ready in time'
+	};
 </script>
+
+{#if rolloutIssue}
+	<Alert variant="warning" size="small">
+		<div class="rollout-notice">
+			<Heading as="h2" size="small">
+				Rollout stuck{rolloutTitle[rolloutIssue.reason]
+					? `: ${rolloutTitle[rolloutIssue.reason]}`
+					: ''}
+			</Heading>
+			<p>{rolloutIssue.message}</p>
+			{#if readyInstances > 0}
+				<p>
+					{readyInstances === 1
+						? '1 instance is still ready to receive traffic.'
+						: `${readyInstances} instances are still ready to receive traffic.`}
+				</p>
+			{/if}
+			{#if incoming && incoming.instances.length === 0}
+				<p>There are no instances to inspect in the incoming group.</p>
+			{/if}
+			<div class="rollout-links">
+				{#if incoming?.instances.length}
+					<a href="{appPath}/instancegroup/{incoming.name}">Inspect incoming instances</a>
+				{:else if rolloutIssue.reason !== 'INSTANCE_CREATION_FAILED' && onlyGroup?.instances.some((instance) => !instance.status.ready)}
+					<a href="{appPath}/instancegroup/{onlyGroup.name}">Inspect available instances</a>
+				{/if}
+				<a href="{appPath}/events">View workload events</a>
+			</div>
+		</div>
+	</Alert>
+{/if}
 
 <SurfaceCard title="Instance groups" eyebrow={false}>
 	{#each instanceGroups as group (group.id)}
-		{const role = $derived(groupRole(group))}
-		{const hasFailing = $derived(
-			group.instances.some((instance) => instance.status.state === 'FAILING')
-		)}
-		{const isUnhealthy = $derived(hasFailing || group.readyInstances < group.desiredInstances)}
+		{const isIncoming = $derived(group.id === incoming?.id)}
+		{const isStuck = $derived(isIncoming && Boolean(rolloutIssue))}
+		{const ready = $derived(countReadyInstances(group.instances))}
+		{const unready = $derived(summarizeUnreadyInstances(group.instances))}
+		{const isUnhealthy = $derived(ready < group.desiredInstances || unready.size > 0)}
 
 		<a
-			href="/team/{teamSlug}/{environmentName}/app/{appName}/instancegroup/{group.name}"
-			class="instance-group-link"
-			class:incoming={role === 'incoming'}
+			href="{appPath}/instancegroup/{group.name}"
+			class={['instance-group-link', { incoming: isIncoming && !isStuck, stuck: isStuck }]}
 			transition:slide
 		>
 			<div class="instance-group-icon">
-				{#if role === 'incoming'}
+				{#if isIncoming && !isStuck && !isUnhealthy}
 					<Loader size="xsmall" title="Incoming instance group" />
 				{:else}
-					<StatusIndicator tone={isUnhealthy ? 'danger' : 'success'} />
+					<StatusIndicator tone={isStuck || isUnhealthy ? 'warning' : 'success'} />
 				{/if}
 			</div>
 			<div class="instance-group-info">
-				<span class="instance-group-status"
-					>{group.readyInstances}/{group.desiredInstances} running</span
-				>
+				<div class="instance-group-heading">
+					<span class="instance-group-status">{ready}/{group.desiredInstances} ready</span>
+					{#if isStuck}
+						<Badge variant="warning">Rollout stuck</Badge>
+					{:else if isIncoming}
+						<Badge variant="info">Incoming</Badge>
+					{:else if incoming}
+						<Badge variant="secondary">Previous</Badge>
+					{/if}
+				</div>
 				<span class="instance-group-meta">
 					<code>{formatImageVersion(group.image)}</code> &middot; Updated
 					<Time time={group.created} distance />
 				</span>
-			</div>
-			<div class="instance-group-tags">
-				{#if hasFailing}
-					<Badge variant="destructive" dot>Failing</Badge>
-				{/if}
-				{#if incoming}
-					{#if role === 'incoming'}
-						<Badge variant="info" dot>Incoming</Badge>
-					{:else}
-						<Badge variant="secondary">Current</Badge>
-					{/if}
+				{#if unready.size}
+					<ul class="instance-problems" role="list">
+						{#each unready as [key, status] (key)}
+							<li>
+								<Tag size="small" variant={status.variant}>{status.count} · {status.label}</Tag>
+								{#if status.message}<span>{status.message}</span>{/if}
+							</li>
+						{/each}
+					</ul>
+				{:else if group.desiredInstances > 0 && !group.instances.length}
+					<span class="instance-group-meta">No instances in this group.</span>
 				{/if}
 			</div>
 		</a>
 	{:else}
 		<div class="empty-state">
 			<CloudSlashIcon />
-			<span class="empty-title">No running instances</span>
-			<span class="empty-description">This application has no active instance groups</span>
+			<span class="empty-title">No active instance groups</span>
+			<span class="empty-description">There are no instances to inspect for this application.</span>
 		</div>
 	{/each}
 </SurfaceCard>
 
 <style>
+	.rollout-notice {
+		display: grid;
+		gap: var(--nais-space-4);
+	}
+
+	.rollout-notice p {
+		margin: 0;
+	}
+
+	.rollout-links {
+		display: flex;
+		flex-wrap: wrap;
+		gap: var(--nais-space-4) var(--nais-space-16);
+		margin-block-start: var(--nais-space-4);
+	}
+
 	.instance-group-link {
 		display: grid;
-		grid-template-columns: auto minmax(0, 1fr) auto;
+		grid-template-columns: auto minmax(0, 1fr);
 		align-items: center;
 		gap: var(--nais-space-14);
 		padding: var(--nais-space-14) var(--nais-space-16);
@@ -117,6 +181,27 @@
 		border-color: var(--info-border);
 	}
 
+	.instance-group-link.stuck {
+		border-color: var(--warning-border);
+	}
+
+	.instance-problems {
+		display: grid;
+		gap: var(--nais-space-8);
+		list-style: none;
+		margin: var(--nais-space-6) 0 0;
+		padding: 0;
+		font-size: var(--sh-font-size-sm);
+		color: var(--muted-foreground);
+		overflow-wrap: anywhere;
+	}
+
+	.instance-problems li {
+		display: grid;
+		justify-items: start;
+		gap: var(--nais-space-2);
+	}
+
 	.instance-group-icon {
 		display: inline-flex;
 		align-items: center;
@@ -124,7 +209,7 @@
 		width: var(--surface-icon-size);
 		height: var(--surface-icon-size);
 		flex-shrink: 0;
-		align-self: center;
+		align-self: start;
 	}
 
 	.instance-group-info {
@@ -133,6 +218,14 @@
 		gap: var(--nais-space-4);
 		flex: 1;
 		min-width: 0;
+	}
+
+	.instance-group-heading {
+		display: flex;
+		flex-wrap: wrap;
+		justify-content: space-between;
+		align-items: baseline;
+		gap: var(--nais-space-4) var(--nais-space-8);
 	}
 
 	.instance-group-status {
@@ -157,24 +250,9 @@
 		color: var(--foreground);
 	}
 
-	.instance-group-tags {
-		display: flex;
-		flex-wrap: wrap;
-		justify-content: flex-end;
-		gap: var(--nais-space-6);
-		justify-self: end;
-	}
-
 	@media (max-width: 767px), (max-height: 500px) {
 		.instance-group-link {
-			grid-template-columns: auto 1fr;
-			align-items: flex-start;
-		}
-
-		.instance-group-tags {
-			grid-column: 2;
-			justify-self: start;
-			justify-content: flex-start;
+			gap: var(--nais-space-8);
 		}
 	}
 

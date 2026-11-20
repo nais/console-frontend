@@ -193,6 +193,25 @@
 							name
 						}
 					}
+					... on ApplicationRolloutStuckIssue {
+						__typename
+						severity
+						message
+						teamEnvironment {
+							environment {
+								name
+							}
+							team {
+								slug
+							}
+						}
+						workload {
+							__typename
+							... on Application {
+								name
+							}
+						}
+					}
 					... on OpenSearchIssue {
 						__typename
 						severity

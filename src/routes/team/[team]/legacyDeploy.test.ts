@@ -19,6 +19,7 @@ const queries = vi.hoisted(() => ({
 	load_AppWorkloadEvents: vi.fn().mockResolvedValue({}),
 	load_Job: vi.fn().mockResolvedValue({}),
 	load_JobDeployment: vi.fn().mockResolvedValue({}),
+	load_JobRunsList: vi.fn().mockResolvedValue({}),
 	load_JobWorkloadEvents: vi.fn().mockResolvedValue({}),
 	load_TeamOverview: vi.fn().mockResolvedValue({}),
 	load_TeamHealth: vi.fn().mockResolvedValue({}),

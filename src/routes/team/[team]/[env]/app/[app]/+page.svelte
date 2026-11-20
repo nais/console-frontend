@@ -8,6 +8,8 @@
 	import Configs from '#lib/domain/resources/Configs.svelte';
 	import Secrets from '#lib/domain/resources/Secrets.svelte';
 	import ServiceAccountBinding from '#lib/domain/resources/ServiceAccountBinding.svelte';
+	import ApplicationScalingStatus from '#lib/domain/workload/ApplicationScalingStatus.svelte';
+	import { countReadyInstances } from '#lib/domain/workload/applicationReadiness.js';
 	import RecentWorkloadEvents from '#lib/domain/workload/RecentWorkloadEvents.svelte';
 	import WorkloadDeploy from '#lib/domain/workload/WorkloadDeploy.svelte';
 	import WorkloadHealth from '#lib/domain/workload/WorkloadHealth.svelte';
@@ -37,8 +39,17 @@
 	let appErrors = $derived(App ? $App.errors : undefined);
 	let appFetching = $derived(App ? $App.fetching : false);
 	let app = $derived(appData?.team?.environment?.application ?? null);
-	let appInstanceGroups = $derived(
-		$AppInstanceGroups.data?.team?.environment?.application?.instanceGroups ?? []
+	const instanceDiagnostics = $derived($AppInstanceGroups.data?.team?.environment?.application);
+	const rolloutIssue = $derived(
+		instanceDiagnostics?.rolloutIssues.nodes.find(
+			(issue) => issue.__typename === 'ApplicationRolloutStuckIssue'
+		)
+	);
+	const readyInstances = $derived(
+		instanceDiagnostics?.instanceGroups.reduce(
+			(sum, group) => sum + countReadyInstances(group.instances),
+			0
+		)
 	);
 	let criticalEdges = $derived(
 		app?.issues.edges.filter((e) => e.node.severity === 'CRITICAL') ?? []
@@ -80,8 +91,11 @@
 			criticalIssues={app?.criticalIssues.pageInfo.totalCount ?? 0}
 			warningIssues={app?.warningIssues.pageInfo.totalCount ?? 0}
 			todoIssues={app?.todoIssues.pageInfo.totalCount ?? 0}
-			readyInstances={appInstanceGroups.reduce((sum, g) => sum + g.readyInstances, 0) ?? 0}
-			desiredInstances={appInstanceGroups.reduce((sum, g) => sum + g.desiredInstances, 0) ?? 0}
+			{readyInstances}
+			desiredInstances={instanceDiagnostics?.instanceGroups.reduce(
+				(sum, group) => sum + group.desiredInstances,
+				0
+			)}
 			loading={appFetching}
 		/>
 
@@ -95,12 +109,27 @@
 					/>
 				{/if}
 				{#if environment}
-					<InstanceGroups
-						appName={app.name}
-						environmentName={environment}
-						{teamSlug}
-						instanceGroups={appInstanceGroups}
-					/>
+					<GraphErrors errors={$AppInstanceGroups.errors} />
+					{#if instanceDiagnostics && readyInstances !== undefined}
+						<InstanceGroups
+							appName={app.name}
+							environmentName={environment}
+							{teamSlug}
+							instanceGroups={instanceDiagnostics.instanceGroups}
+							{readyInstances}
+							{rolloutIssue}
+						/>
+						<ApplicationScalingStatus
+							scaling={instanceDiagnostics.resources.scaling}
+							resizeHref={data.viewerIsMember
+								? `/team/${teamSlug}/${environment}/app/${app.name}/resize`
+								: undefined}
+						/>
+					{:else if $AppInstanceGroups.fetching}
+						<div role="status" aria-label="Loading instance groups">
+							<ShSpinner size="sm" />
+						</div>
+					{/if}
 					<CostOverviewChart workload={app.name} {environment} {teamSlug} />
 				{/if}
 			</div>
