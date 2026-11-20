@@ -1,7 +1,7 @@
 import { readFileSync, readdirSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import {
-	buildSchema,
+	buildASTSchema,
 	FieldsOnCorrectTypeRule,
 	getNamedType,
 	isEnumType,
@@ -11,14 +11,25 @@ import {
 	parse,
 	TypeInfo,
 	validate,
+	ValuesOfCorrectTypeRule,
 	visit,
 	visitWithTypeInfo
 } from 'graphql';
 
 const root = new URL('../../../../', import.meta.url);
-const schema = buildSchema(readFileSync(new URL('schema.graphql', root), 'utf8'), {
-	assumeValid: true
-});
+// Model nais/api#636 until the generated schema is refreshed from the API.
+// This also works once the retired definitions are absent from schema.graphql.
+const schema = buildASTSchema(
+	visit(parse(readFileSync(new URL('schema.graphql', root), 'utf8')), {
+		ObjectTypeDefinition(node) {
+			if (retiredBranchType(node.name.value)) return null;
+		},
+		EnumValueDefinition(node) {
+			if (node.name.value.startsWith('POSTGRES_BRANCH')) return null;
+		}
+	}),
+	{ assumeValid: true }
+);
 
 const documents = readdirSync(new URL('src/', root), { recursive: true, encoding: 'utf8' })
 	.filter((path) => /\.(?:gql|graphql|svelte|ts|js)$/.test(path) && !path.includes('.test.'))
@@ -31,13 +42,9 @@ const documents = readdirSync(new URL('src/', root), { recursive: true, encoding
 		}));
 	});
 
-// Only historical activity identities and scalar event data may reference branches.
-// Retired read types must not be reintroduced by active Console documents.
+// Both branch read types and historical activity types are retired.
 function retiredBranchType(name: string): boolean {
-	return (
-		name.startsWith('PostgresBranch') &&
-		!/^PostgresBranch(?:Created|Activated|Deleted)?ActivityLogEntry(?:Data)?$/.test(name)
-	);
+	return name.startsWith('PostgresBranch');
 }
 
 describe('branch-free Console GraphQL documents', () => {
@@ -61,21 +68,27 @@ describe('branch-free Console GraphQL documents', () => {
 		expect(inventory.getFields()).not.toHaveProperty('postgresBranches');
 	});
 
-	test.each(['PostgresBranch', 'PostgresBranchIssue', 'PostgresBranchConnection'])(
-		'rejects retired %s query types',
-		(name) => {
-			expect(retiredBranchType(name)).toBe(true);
-		}
-	);
-
 	test.each([
+		'PostgresBranch',
+		'PostgresBranchIssue',
+		'PostgresBranchConnection',
 		'PostgresBranchActivityLogEntryData',
 		'PostgresBranchCreatedActivityLogEntry',
 		'PostgresBranchActivatedActivityLogEntry',
 		'PostgresBranchDeletedActivityLogEntry'
-	])('preserves historical %s activity types', (name) => {
-		expect(retiredBranchType(name)).toBe(false);
-		expect(schema.getType(name)).toBeDefined();
+	])('rejects retired %s types', (name) => {
+		expect(retiredBranchType(name)).toBe(true);
+		expect(schema.getType(name)).toBeUndefined();
+	});
+
+	test('removes branch activity filters while retaining database activity filters', () => {
+		const type = schema.getType('ActivityLogActivityType');
+		if (!isEnumType(type)) throw new Error('Missing activity type enum');
+		const values = type.getValues().map(({ name }) => name);
+		expect(values.filter((name) => name.startsWith('POSTGRES_BRANCH'))).toEqual([]);
+		expect(values).toEqual(
+			expect.arrayContaining(['POSTGRES_CREATED', 'POSTGRES_UPDATED', 'POSTGRES_DELETED'])
+		);
 	});
 
 	test('discovers page queries and inline component documents', () => {
@@ -89,9 +102,11 @@ describe('branch-free Console GraphQL documents', () => {
 		const document = parse(source);
 		// Keep the test useful after the obsolete fields/types disappear from the schema.
 		expect(
-			validate(schema, document, [FieldsOnCorrectTypeRule, KnownTypeNamesRule]).map(
-				(error) => error.message
-			)
+			validate(schema, document, [
+				FieldsOnCorrectTypeRule,
+				KnownTypeNamesRule,
+				ValuesOfCorrectTypeRule
+			]).map((error) => error.message)
 		).toEqual([]);
 
 		const dependencies: string[] = [];
@@ -114,7 +129,7 @@ describe('branch-free Console GraphQL documents', () => {
 							'postgresBranch',
 							'postgresBranches'
 						].includes(field) ||
-						(field === 'branch' && parent !== 'PostgresBranchActivityLogEntryData') ||
+						field === 'branch' ||
 						(type && retiredBranchType(getNamedType(type).name))
 					) {
 						dependencies.push(`${parent}.${field}`);

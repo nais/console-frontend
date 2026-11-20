@@ -222,36 +222,6 @@ query HomeActivity($from: Time!) {
 				resourceType
 				teamSlug
 			}
-			... on PostgresBranchActivatedActivityLogEntry {
-				id
-				createdAt
-				actor
-				message
-				environmentName
-				resourceName
-				resourceType
-				teamSlug
-			}
-			... on PostgresBranchCreatedActivityLogEntry {
-				id
-				createdAt
-				actor
-				message
-				environmentName
-				resourceName
-				resourceType
-				teamSlug
-			}
-			... on PostgresBranchDeletedActivityLogEntry {
-				id
-				createdAt
-				actor
-				message
-				environmentName
-				resourceName
-				resourceType
-				teamSlug
-			}
 			... on PostgresCreatedActivityLogEntry {
 				id
 				createdAt
