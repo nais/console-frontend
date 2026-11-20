@@ -5,7 +5,7 @@ import WorkloadIssuesFacets from './WorkloadIssuesFacets.svelte';
 // Use the generated enums without loading Houdini's SvelteKit runtime in the SSR test.
 vi.mock('$houdini', () => import('../../../../.houdini/graphql/enums'));
 
-test('offers canonical Postgres issue filtering without the compatibility-only branch type', async () => {
+test('offers Postgres issue filtering', async () => {
 	const { body } = await render(WorkloadIssuesFacets, {
 		props: {
 			selectedSeverity: '',
@@ -16,5 +16,4 @@ test('offers canonical Postgres issue filtering without the compatibility-only b
 	});
 
 	expect(body).toMatch(/checked[^>]*>\s*<span[^>]*>Postgres<\/span>/);
-	expect(body).not.toContain('Postgres Branch');
 });

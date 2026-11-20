@@ -86,11 +86,11 @@ describe('LogExplorer', () => {
 		const { body } = await render(LogExplorer, {
 			props: {
 				...props,
-				filters: createRawSnippet(() => ({ render: () => '<span>Branch controls</span>' }))
+				filters: createRawSnippet(() => ({ render: () => '<span>Resource filters</span>' }))
 			}
 		});
-		expect(body).toContain('Branch controls');
-		expect(body.indexOf('Branch controls')).toBeLessThan(body.indexOf('Log level'));
+		expect(body).toContain('Resource filters');
+		expect(body.indexOf('Resource filters')).toBeLessThan(body.indexOf('Log level'));
 	});
 
 	it('keeps raw Postgres pod values while formatting their instance suggestions', async () => {

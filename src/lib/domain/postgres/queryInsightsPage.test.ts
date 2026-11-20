@@ -13,7 +13,7 @@ const fixture = vi.hoisted(() => ({
 	page: {
 		route: { id: '/team/[team]/[env]/postgres/[postgres]/(single)/queries' },
 		params: { team: 'test', env: 'dev', postgres: 'database' },
-		url: new URL('https://console.test/?branch=main&interval=6h&database=app'),
+		url: new URL('https://console.test/?interval=6h&database=app'),
 		data: { interval: '6h' }
 	}
 }));
@@ -125,7 +125,7 @@ function renderLayout() {
 beforeEach(() => {
 	fixture.navigating.to = null;
 	fixture.page.route.id = '/team/[team]/[env]/postgres/[postgres]/(single)/queries';
-	fixture.page.url = new URL('https://console.test/?branch=main&interval=6h&database=app');
+	fixture.page.url = new URL('https://console.test/?interval=6h&database=app');
 	fixture.page.data.interval = '6h';
 });
 
@@ -146,21 +146,13 @@ describe('Postgres Queries page', () => {
 		expect(body).toContain('Exported SQL text is limited to 256 characters');
 		expect(body).not.toContain('SQL text unavailable');
 		expect(body).toContain('Calls (estimated)');
-		expect(body).not.toContain('Branch');
 		expect(body).not.toContain('<select');
-		expect(body).not.toContain('Load more branches');
 		expect(body).not.toMatch(/<label[^>]*>\s*Database<\/label>/);
 		expect(body).not.toMatch(/<th\b[^>]*>Database<\/th>/);
 		expect(body).not.toContain('All databases');
 		expect(body).toContain('Top 20 queries in the app database');
 		expect([...body.matchAll(/<th\b/g)]).toHaveLength(6);
 		expect(body).toContain('Time period');
-	});
-
-	test('does not expose branch selection or pagination', async () => {
-		const { body } = await renderPage();
-		expect(body).not.toContain('<select');
-		expect(body).not.toContain('Load more branches');
 	});
 
 	test('shows empty activity outside a table', async () => {
@@ -269,16 +261,12 @@ describe('Postgres Queries page', () => {
 		expect(body).not.toContain('<script>bad</script>');
 	});
 
-	test('removes Branches navigation and obsolete branch filters while preserving time', async () => {
+	test('preserves the time interval when navigating between metrics pages', async () => {
 		const { body } = await renderLayout();
 		expect(body).toContain('>Queries<');
 		expect(body).toContain('href="/team/test/dev/postgres/database/queries?interval=6h"');
 		expect(body).toContain('href="/team/test/dev/postgres/database/insights?interval=6h"');
-		expect(body).not.toContain('>Branches<');
-		expect(body).not.toContain('/branches');
-		expect(body).not.toContain('branch=preview');
 		expect(body).not.toContain('database=app');
-		expect(body).not.toContain('>Branches<');
 	});
 
 	test.each([

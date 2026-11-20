@@ -9,7 +9,7 @@ const fixture = vi.hoisted(() => ({ overview: {} }));
 
 vi.mock('$app/paths', () => ({
 	resolve: (_route: string, params: { team: string; env: string; postgres: string }) =>
-		`/team/${params.team}/${params.env}/postgres/${params.postgres}/branches`
+		`/team/${params.team}/${params.env}/postgres/${params.postgres}`
 }));
 vi.mock('$app/state', () => ({
 	page: { params: { team: 'test', env: 'dev', postgres: 'database' } }

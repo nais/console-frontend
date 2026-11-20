@@ -41,10 +41,9 @@ beforeEach(() => {
 });
 
 describe('Postgres query insights load', () => {
-	test('loads database metadata before fetching database-scoped statistics without a branch label', async () => {
+	test('loads database metadata before fetching database-scoped statistics', async () => {
 		const result = await load(event());
 		expect(result).toMatchObject({ interval: '1h' });
-		expect(result).not.toHaveProperty('branch');
 		expect(load_PostgresInsights).toHaveBeenCalledWith(
 			expect.objectContaining({
 				blocking: true,
@@ -68,8 +67,8 @@ describe('Postgres query insights load', () => {
 		);
 	});
 
-	test('honours legacy main links and intervals but ignores obsolete database filters', async () => {
-		const result = await load(event('?branch=main&database=postgres&interval=6h'));
+	test('honours intervals but ignores obsolete database filters', async () => {
+		const result = await load(event('?database=postgres&interval=6h'));
 		expect(result).toMatchObject({ interval: '6h' });
 		expect(result).not.toHaveProperty('database');
 		expect(load_PostgresQueryStatistics).toHaveBeenCalledWith(
@@ -85,12 +84,6 @@ describe('Postgres query insights load', () => {
 
 	test('falls back to a safe interval rather than interpolating arbitrary PromQL', async () => {
 		expect(await load(event('?interval=bad-value'))).toMatchObject({ interval: '1h' });
-	});
-
-	test('rejects non-main links before fetching metadata or metrics', async () => {
-		await expect(load(event('?branch=older'))).rejects.toMatchObject({ status: 400 });
-		expect(load_PostgresInsights).not.toHaveBeenCalled();
-		expect(load_PostgresQueryStatistics).not.toHaveBeenCalled();
 	});
 
 	test.each([

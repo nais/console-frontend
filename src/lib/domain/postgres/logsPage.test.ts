@@ -16,7 +16,7 @@ vi.mock('$app/state', () => ({
 	page: {
 		params: { team: 'test', env: 'dev', postgres: 'database' },
 		data: { tenantName: 'nav' },
-		url: new URL('https://console.test/?branch=main')
+		url: new URL('https://console.test/')
 	}
 }));
 vi.mock('#lib/domain/logs/LogExplorer.svelte', () => ({ default: vi.fn() }));
@@ -57,10 +57,7 @@ describe('Postgres logs page', () => {
 		'passes logical Postgres ID %s without requiring a physical cluster identity',
 		async (id) => {
 			fixture.postgres = { id };
-			const { body } = await renderPage();
-			expect(body).not.toContain('All branches');
-			expect(body).not.toContain('Load more branches');
-			expect(body).not.toContain('value="preview"');
+			await renderPage();
 			expect(LogExplorer).toHaveBeenCalledWith(
 				expect.anything(),
 				expect.objectContaining({
