@@ -28,6 +28,28 @@ query HomeAttention {
 					}
 				}
 			}
+			... on ApplicationRolloutStuckIssue {
+				id
+				message
+				teamEnvironment {
+					team {
+						slug
+					}
+					environment {
+						name
+					}
+				}
+				workload {
+					... on Application {
+						__typename
+						name
+					}
+					... on Job {
+						__typename
+						name
+					}
+				}
+			}
 			... on DeprecatedIngressIssue {
 				id
 				message

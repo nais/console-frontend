@@ -150,6 +150,17 @@ describe('home navigation and search', () => {
 		);
 	});
 
+	test('links stuck rollout issues directly to the affected application', () => {
+		const issue: HomeIssue = {
+			__typename: 'ApplicationRolloutStuckIssue',
+			id: 'rollout-issue',
+			message: 'Rollout timed out',
+			teamEnvironment: context,
+			workload: { __typename: 'Application', name: 'workload' }
+		};
+		expect(homeIssueResource(issue).href).toBe('/team/my-team/prod-gcp/app/workload');
+	});
+
 	test('links Postgres issues directly to the logical database overview', () => {
 		expect(
 			homeIssueResource({

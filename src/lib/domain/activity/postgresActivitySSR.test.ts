@@ -15,9 +15,8 @@ vi.mock('$app/state', () => ({
 
 describe('Postgres activity SSR team mapping', () => {
 	test.each([
-		['PostgresBranchCreatedActivityLogEntry', 'POSTGRES_BRANCH_CREATED'],
-		['PostgresBranchActivatedActivityLogEntry', 'POSTGRES_BRANCH_ACTIVATED'],
-		['PostgresBranchDeletedActivityLogEntry', 'POSTGRES_BRANCH_DELETED'],
+		['PostgresCreatedActivityLogEntry', 'POSTGRES_CREATED'],
+		['PostgresUpdatedActivityLogEntry', 'POSTGRES_UPDATED'],
 		['PostgresDeletedActivityLogEntry', 'POSTGRES_DELETED'],
 		['PostgresGrantAccessActivityLogEntry', 'POSTGRES_GRANT_ACCESS']
 	])(
@@ -32,7 +31,7 @@ describe('Postgres activity SSR team mapping', () => {
 				resourceName: 'database',
 				resourceType: 'POSTGRES',
 				postgresTeamSlug: 'nais',
-				postgresBranch: { branch: 'restore', sourceBranch: null, targetTime: null },
+				postgresUpdated: { updatedFields: [] },
 				postgresGrantAccessData: {
 					grantee: 'user@example.com',
 					until: new Date('2026-10-08T12:00:00Z')

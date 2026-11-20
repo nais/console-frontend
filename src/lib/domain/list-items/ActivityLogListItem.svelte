@@ -156,50 +156,6 @@
 							}
 						}
 					}
-					... on PostgresBranchCreatedActivityLogEntry {
-						__typename
-						id
-						createdAt
-						actor
-						environmentName
-						message
-						resourceName
-						resourceType
-						postgresTeamSlug: teamSlug
-						postgresBranch: data {
-							branch
-							sourceBranch
-							targetTime
-						}
-					}
-					... on PostgresBranchActivatedActivityLogEntry {
-						__typename
-						id
-						createdAt
-						actor
-						environmentName
-						message
-						resourceName
-						resourceType
-						postgresTeamSlug: teamSlug
-						postgresBranch: data {
-							branch
-						}
-					}
-					... on PostgresBranchDeletedActivityLogEntry {
-						__typename
-						id
-						createdAt
-						actor
-						environmentName
-						message
-						resourceName
-						resourceType
-						postgresTeamSlug: teamSlug
-						postgresBranch: data {
-							branch
-						}
-					}
 					... on PostgresCreatedActivityLogEntry {
 						id
 						createdAt
