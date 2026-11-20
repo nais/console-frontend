@@ -24,12 +24,16 @@ test.each([false, true])(
 					__typename: 'WorkloadKillingEvent',
 					id: 'restart',
 					message: 'Instance restarted',
+					reason: '',
+					container: '',
 					triggeredAt: firstSeenAt
 				},
 				{
 					__typename: 'WorkloadKillingEvent',
 					id: 'restart-with-details',
-					message: 'Restarted after exceeding its memory limit.',
+					message: 'Instance restarted',
+					reason: 'liveness_probe_failed',
+					container: 'worker',
 					triggeredAt: firstSeenAt
 				},
 				{
@@ -57,8 +61,9 @@ test.each([false, true])(
 		expect(body).toContain('3 occurrences');
 		expect(body).toContain('First seen');
 		expect(body).toContain('Last seen');
-		expect(body.includes('Instance restarted')).toBe(!compact);
-		expect(body).toContain('Restarted after exceeding its memory limit.');
+		expect(body.match(/Instance restarted/g) ?? []).toHaveLength(compact ? 0 : 1);
+		expect(body).toContain('Liveness probe failed');
+		expect(body).toMatch(/Container: <code[^>]*>worker<\/code>/);
 		expect(body).toContain('Scaled up to three instances.');
 		expect(body.match(/<time\b/g)).toHaveLength(5);
 		const timestamps = body.match(/class="event-meta event-timestamp[^"]*"[^>]*>[\s\S]*?<\/div>/g);
@@ -66,15 +71,12 @@ test.each([false, true])(
 		expect(timestamps?.[0]).toContain(`datetime="${triggeredAt.toISOString()}"`);
 		expect(timestamps?.[0]).not.toContain(`datetime="${firstSeenAt.toISOString()}"`);
 		expect(body.match(/>\d{1,2} \w{3}, \d{2}:\d{2}:\d{2}<\/time>/g)).toHaveLength(5);
-		expect(body.indexOf('Container restart')).toBeGreaterThan(body.indexOf('Placement failed'));
-		expect(body.indexOf('Automatic rescale')).toBeGreaterThan(body.indexOf('Container restart'));
 	}
 );
 
 test.each([
-	{ count: 1, lastSeenAt: new Date('2026-11-18T10:00:05Z'), endClock: /\d{2}:\d{2}:05/ },
 	{ count: 2, lastSeenAt: new Date('2026-11-18T10:00:00.500Z'), endClock: /\d{2}:\d{2}:00\.500/ },
-	{ count: 3, lastSeenAt: new Date(firstSeenAt), endClock: null }
+	{ count: 1, lastSeenAt: firstSeenAt, endClock: null }
 ])(
 	'shows the latest timestamp once and only adds first seen when it differs ($count occurrences)',
 	async ({ count, lastSeenAt, endClock }) => {

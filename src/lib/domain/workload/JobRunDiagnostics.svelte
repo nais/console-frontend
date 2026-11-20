@@ -74,13 +74,14 @@
 	}
 
 	let loadingMore = $state(false);
+	let paginationErrors = $state<{ message: string }[] | null>(null);
 	async function loadMore() {
 		loadingMore = true;
+		paginationErrors = null;
 		try {
-			await details.loadNextPage({ first: rows });
-			loadError = null;
+			paginationErrors = (await details.loadNextPage({ first: rows })).errors;
 		} catch {
-			loadError = 'Could not load more run instances.';
+			paginationErrors = [{ message: 'Could not load more run instances.' }];
 		} finally {
 			loadingMore = false;
 		}
@@ -153,6 +154,7 @@
 			{/each}
 		</ul>
 		{#if instances.pageInfo.hasNextPage}
+			<GraphErrors size="small" errors={paginationErrors} />
 			<Button
 				variant="tertiary"
 				size="small"

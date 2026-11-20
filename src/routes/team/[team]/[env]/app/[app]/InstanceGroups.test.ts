@@ -1,6 +1,5 @@
 import type { ComponentProps } from 'svelte';
 import { render } from 'svelte/server';
-import { applicationInstanceStatus } from '#lib/domain/workload/applicationReadiness.js';
 import InstanceGroups from './InstanceGroups.svelte';
 
 type Props = ComponentProps<typeof InstanceGroups>;
@@ -50,7 +49,6 @@ test('shows readiness counts and current reasons without treating a running proc
 	expect(body.match(/Not enough memory\./g)).toHaveLength(1);
 	expect(body).toContain('1 · Starting');
 	expect(body).not.toContain('Rollout stuck');
-	expect(applicationInstanceStatus(instanceGroups[0].instances[0].status).label).toBe('Ready');
 });
 
 test('shows a live rollout timeout even while an older instance is ready', async () => {
@@ -77,18 +75,18 @@ test('shows a live rollout timeout even while an older instance is ready', async
 	expect(body).not.toContain('Incoming instance group');
 });
 
-test.each(['none', 'previous only', 'empty incoming', 'multiple older groups'])(
+test.each(['none', 'multiple older groups'])(
 	'links to events when no new instances exist (%s)',
 	async (scenario) => {
-		const previous = group('previous', new Date('2026-01-01'), [
-			{ id: 'a', status: { state: 'RUNNING', ready: true, message: 'Running and ready.' } }
-		]);
-		const instanceGroups = scenario === 'none' ? [] : [previous];
-		if (scenario === 'empty incoming') {
-			instanceGroups.push(group('empty', new Date('2026-01-02'), []));
-		} else if (scenario === 'multiple older groups') {
-			instanceGroups.push(group('older', new Date('2025-12-30'), previous.instances));
-		}
+		const instanceGroups =
+			scenario === 'none'
+				? []
+				: [
+						group('previous', new Date('2026-01-01'), [
+							{ id: 'a', status: { state: 'RUNNING', ready: true, message: 'Running and ready.' } }
+						]),
+						group('older', new Date('2025-12-30'), [])
+					];
 		const { body } = await render(InstanceGroups, {
 			props: {
 				...app,

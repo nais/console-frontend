@@ -34,16 +34,17 @@
 	let totalCount = $derived(runs?.pageInfo?.totalCount ?? runEdges.length);
 	let hasNextPage = $derived(runs?.pageInfo?.hasNextPage ?? false);
 	let loadingMore = $state(false);
+	let paginationErrors = $state<{ message: string }[] | null>(null);
 	let loadError = $state<string | null>(null);
 	const errors = $derived(loadError ? [{ message: loadError }] : $runsQuery.errors);
 
 	async function loadMore() {
 		loadingMore = true;
+		paginationErrors = null;
 		try {
-			await runsQuery.loadNextPage({ first: 20 });
-			loadError = null;
+			paginationErrors = (await runsQuery.loadNextPage({ first: 20 })).errors;
 		} catch {
-			loadError = 'Could not load more job runs.';
+			paginationErrors = [{ message: 'Could not load more job runs.' }];
 		} finally {
 			loadingMore = false;
 		}
@@ -70,6 +71,7 @@
 </Collection>
 {#if hasNextPage}
 	<div class="load-more">
+		<GraphErrors size="small" errors={paginationErrors} />
 		<Button
 			variant="tertiary"
 			size="small"
@@ -89,7 +91,8 @@
 
 	.load-more {
 		display: flex;
-		justify-content: center;
+		flex-direction: column;
+		align-items: center;
 		padding-top: var(--nais-space-8);
 	}
 </style>

@@ -59,6 +59,16 @@
 {#if entries.length > 0}
 	<ol class={['timeline', { compact }]} role="list">
 		{#each entries as { event, seenFormat } (event.id)}
+			{const restartReason = $derived(
+				event.__typename === 'WorkloadKillingEvent'
+					? event.reason === 'liveness_probe_failed'
+						? 'Liveness probe failed'
+						: event.reason.trim()
+					: ''
+			)}
+			{const restartContainer = $derived(
+				event.__typename === 'WorkloadKillingEvent' ? event.container.trim() : ''
+			)}
 			<li class="event">
 				<div
 					class={['surface-icon', { warning: event.__typename === 'WorkloadWarningEvent' }]}
@@ -90,8 +100,16 @@
 							<Time time={event.triggeredAt} dateFormat={seenFormat ?? 'd MMM, HH:mm:ss'} />
 						</div>
 					</div>
-					{#if !compact || event.__typename !== 'WorkloadKillingEvent' || event.message.trim() !== 'Instance restarted'}
+					{#if event.__typename !== 'WorkloadKillingEvent' || event.message.trim() !== 'Instance restarted' || (!compact && !restartReason && !restartContainer)}
 						<p class="event-message">{event.message}</p>
+					{/if}
+					{#if restartReason || restartContainer}
+						<div class="event-meta">
+							{#if restartReason}<span>{restartReason}</span>{/if}
+							{#if restartContainer}
+								<span>Container: <code>{restartContainer}</code></span>
+							{/if}
+						</div>
 					{/if}
 					{#if event.__typename === 'WorkloadWarningEvent' && (seenFormat || event.count > 1 || event.instance)}
 						<div class="event-meta">
@@ -227,7 +245,7 @@
 		flex-basis: 100%;
 	}
 
-	.event-instance code {
+	.event-meta code {
 		font-family: var(--sh-font-family-mono);
 		font-size: inherit;
 	}

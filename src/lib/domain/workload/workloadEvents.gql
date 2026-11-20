@@ -13,6 +13,8 @@ fragment WorkloadEventsFields on WorkloadEventConnection {
 		... on WorkloadKillingEvent {
 			id
 			message
+			reason
+			container
 			triggeredAt
 		}
 		... on WorkloadSuccessfulRescaleEvent {
