@@ -114,12 +114,12 @@
 		display: flex;
 		flex-direction: column;
 		gap: var(--nais-space-8);
-		width: min(100%, 500px);
+		width: min(100%, var(--sh-modal-small-max-width));
 		align-items: flex-start;
 	}
 
 	form {
-		width: min(100%, 600px);
+		width: min(100%, var(--sh-modal-medium-max-width));
 	}
 
 	form :global(:is(.sh-form-field, .sh-select-field)) {
