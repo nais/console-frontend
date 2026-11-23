@@ -85,10 +85,6 @@ query CVEWorkloads(
 					remediation {
 						fixVersion
 					}
-					riskAssessment {
-						epssScore
-						hasKevEntry
-					}
 					suppression {
 						state
 					}

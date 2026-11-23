@@ -7,7 +7,6 @@ query CVEDetails($identifier: String!) {
 		detailsLink
 		riskAssessment {
 			cvssScore
-			priority
 			epssScore
 			hasKevEntry
 		}

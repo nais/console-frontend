@@ -2,7 +2,6 @@
 	import BulkSuppressCVE, {
 		type BulkSuppressWorkload
 	} from '#lib/domain/vulnerability/BulkSuppressCVE.svelte';
-	import PriorityBadge from '#lib/domain/vulnerability/priority/PriorityBadge.svelte';
 	import CveImpact from '#lib/domain/vulnerability/CveImpact.svelte';
 	import { cveWorkloadOrder } from '#lib/domain/vulnerability/cveWorkloadOrder.js';
 	import {
@@ -15,7 +14,6 @@
 	import { CVEWorkloadOrderField } from '$houdini';
 	import { page } from '$app/state';
 	import PrioritySignals from '#lib/domain/vulnerability/priority/PrioritySignals.svelte';
-	import { priorityDetails } from '#lib/domain/vulnerability/priority/priority.js';
 	import WorkloadLink from '#lib/domain/workload/WorkloadLink.svelte';
 	import ExternalLink from '#lib/ui/ExternalLink.svelte';
 	import GraphErrors from '#lib/ui/GraphErrors.svelte';
@@ -182,7 +180,6 @@
 		</Alert>
 	{:else if $TeamCVEPage.data}
 		{const cve = $derived($TeamCVEPage.data.cve)}
-		{const priority = $derived(priorityDetails(cve.riskAssessment.priority))}
 		<div class="wrapper">
 			{#if cve.title}
 				<div class="vulnerability-type">
@@ -191,18 +188,10 @@
 				</div>
 			{/if}
 
-			<section class="risk-assessment-card" aria-labelledby="cve-details">
-				<Heading as="h2" size="small" id="cve-details"
-					>Priority, severity and threat signals</Heading
+			<section class="risk-assessment-card" aria-labelledby={`${uid}-cve-details`}>
+				<Heading as="h2" size="small" id={`${uid}-cve-details`}>Severity and threat signals</Heading
 				>
 				<div class="risk-assessment-content">
-					<div class="risk-assessment-group">
-						<Detail as="p">Operational priority</Detail>
-						<div class="risk-assessment-values">
-							<PriorityBadge priority={cve.riskAssessment.priority} />
-						</div>
-						<BodyShort size="small">{priority.guidance}</BodyShort>
-					</div>
 					<div class="risk-assessment-group">
 						<Detail as="p">Severity and CVSS</Detail>
 						<div class="risk-assessment-values">
@@ -359,14 +348,6 @@
 																</span>
 															</Detail>
 															<BodyShort as="dd"><code>{fixVersion}</code></BodyShort>
-														</div>
-													{/if}
-													{#if vuln.remediation.latestVersion}
-														<div class="detail-row">
-															<Detail as="dt">Latest version</Detail>
-															<BodyShort as="dd"
-																><code>{vuln.remediation.latestVersion}</code></BodyShort
-															>
 														</div>
 													{/if}
 													<div class="detail-row">

@@ -2,6 +2,7 @@ import {
 	CVEWorkloadOrderField,
 	TeamCVEPageStore,
 	TeamCVEWorkloadsStore,
+	type TeamCVEPage$result,
 	type TeamCVEWorkloads$result
 } from '$houdini';
 import type { ComponentProps } from 'svelte';
@@ -57,7 +58,7 @@ function finding(name: string, environment: string, vulnerabilityId = 'shared'):
 			identifier: 'CVE-2022-22965',
 			severity: 'HIGH',
 			package: 'pkg:maven/example@1.0',
-			remediation: { fixVersion: '2.0', latestVersion: '3.0' },
+			remediation: { fixVersion: '2.0' },
 			suppression: null
 		}
 	};
@@ -65,13 +66,23 @@ function finding(name: string, environment: string, vulnerabilityId = 'shared'):
 
 afterEach(() => vi.restoreAllMocks());
 
-async function renderFindings(sort: string, nodes: Finding[], viewerIsMember = false) {
+async function renderFindings(
+	sort: string,
+	nodes: Finding[],
+	viewerIsMember = false,
+	riskAssessment: TeamCVEPage$result['cve']['riskAssessment'] = {
+		cvssScore: null,
+		hasKevEntry: false,
+		epssScore: null
+	}
+) {
 	pageUrl.search = `?sort=${sort}`;
 	const details = new TeamCVEPageStore();
 	const initialDetails = get(details);
 	vi.spyOn(details, 'subscribe').mockImplementation(
 		readable<typeof initialDetails>({
 			...initialDetails,
+			fetching: false,
 			data: {
 				cve: {
 					id: 'cve',
@@ -80,12 +91,7 @@ async function renderFindings(sort: string, nodes: Finding[], viewerIsMember = f
 					description: '',
 					severity: 'HIGH',
 					detailsLink: '',
-					riskAssessment: {
-						priority: 'MONITOR',
-						cvssScore: null,
-						hasKevEntry: false,
-						epssScore: null
-					}
+					riskAssessment
 				},
 				team: { viewerIsMember }
 			}
@@ -129,6 +135,36 @@ async function renderFindings(sort: string, nodes: Finding[], viewerIsMember = f
 }
 
 describe('team CVE grouping', () => {
+	it('keeps remediation without operational priority or latest version', async () => {
+		const { body } = await renderFindings('PACKAGE-ASC', [finding('alpha', 'dev')]);
+		expect(body).toContain('Fixed in');
+		expect(body).toContain('2.0');
+		expect(body).not.toContain('Operational priority');
+		expect(body).not.toContain('Latest version');
+	});
+
+	it.each([0, 7.5])('keeps CVSS %s and zero EPSS alongside KEV', async (cvssScore) => {
+		const { body } = await renderFindings('PACKAGE-ASC', [finding('alpha', 'dev')], false, {
+			cvssScore,
+			hasKevEntry: true,
+			epssScore: 0
+		});
+		expect(body).toContain('Severity: HIGH');
+		expect(body).toContain(`CVSS: ${cvssScore.toFixed(1)}`);
+		expect(body).toContain('Known exploited');
+		expect(body).toContain('EPSS 0.0%');
+		expect(body).not.toContain('Operational priority');
+		expect(body).not.toContain('Priority:');
+	});
+
+	it('does not invent missing CVSS or exploitation signals', async () => {
+		const { body } = await renderFindings('PACKAGE-ASC', []);
+		expect(body).toContain('Severity: HIGH');
+		expect(body).not.toContain('CVSS:');
+		expect(body).not.toContain('Known exploited');
+		expect(body).not.toContain('EPSS 0.0%');
+	});
+
 	it.each([
 		['WORKLOAD-ASC', [finding('alpha', 'dev'), finding('beta', 'dev')], ['alpha', 'beta']],
 		['WORKLOAD-DESC', [finding('beta', 'dev'), finding('alpha', 'dev')], ['beta', 'alpha']],
@@ -170,7 +206,7 @@ describe('team CVE grouping', () => {
 			},
 			vulnerability: {
 				...other.vulnerability,
-				remediation: { fixVersion: '4.0', latestVersion: '5.0' }
+				remediation: { fixVersion: '4.0' }
 			}
 		};
 		const { body } = await renderFindings('PACKAGE-ASC', [first, second]);
