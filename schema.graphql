@@ -2588,6 +2588,11 @@ type CreatePostgresAccessPayload {
 """Input for creating a Postgres."""
 input CreatePostgresInput {
   """
+  How many days back in time the database can be recovered to, from 2 to 30. If omitted, the platform default is used.
+  """
+  backupRetentionDays: Int
+
+  """
   Requested CPU, for example '100m'. If omitted, the platform default is used, or the source's value when restoring.
   """
   cpu: String
@@ -6507,6 +6512,12 @@ type Postgres implements ActivityLogger & Node {
     """
     last: Int
   ): ActivityLogEntryConnection!
+
+  """
+  How many days back in time the database can be recovered to. Backups older than this are removed periodically,
+  and the backup preceding the window is kept, so data up to a day older may remain.
+  """
+  backupRetentionDays: Int!
 
   """Observed PostgreSQL configuration, when available."""
   configuration: PostgresConfiguration
@@ -12075,6 +12086,11 @@ type UpdateOpenSearchPayload {
 
 """Input for updating a Postgres. Omitted fields are left unchanged."""
 input UpdatePostgresInput {
+  """
+  How many days back in time the database can be recovered to, from 2 to 30. Shortening it makes older backups unavailable and they are removed periodically; this cannot be undone. When omitted or null, the current value is left unchanged.
+  """
+  backupRetentionDays: Int
+
   """Requested CPU, for example '100m'."""
   cpu: String
 

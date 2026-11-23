@@ -1,10 +1,15 @@
 import { graphql } from '$houdini';
 import { requirePostgresAccess } from '#lib/domain/postgres/access.server.js';
 import {
+	backupRetentionError,
+	parseBackupRetention
+} from '#lib/domain/postgres/backupRetention.js';
+import {
 	configurationErrors,
 	changedExtensions,
 	extensionSelectionError,
 	formExtensions,
+	formString,
 	postgresConfiguration,
 	resourceInput,
 	quantityInUnits,
@@ -20,6 +25,7 @@ const mutation = graphql(`
 				id
 				name
 				highAvailability
+				backupRetentionDays
 				extensions
 				resources {
 					cpu
@@ -44,6 +50,7 @@ const resourcesQuery = graphql(`
 				}
 				postgres(name: $name) {
 					extensions
+					backupRetentionDays
 					resources {
 						diskSize
 					}
@@ -59,6 +66,7 @@ export const actions = {
 		const data = await event.request.formData();
 		const values = {
 			...postgresConfiguration(data),
+			backupRetentionDays: formString(data, 'backupRetentionDays'),
 			extensions: formExtensions(data),
 			initialExtensions: formExtensions(data, 'initialExtensions')
 		};
@@ -85,6 +93,13 @@ export const actions = {
 			values.extensions,
 			values.initialExtensions ?? current.data.team.environment.postgres.extensions
 		);
+		const retentionError = backupRetentionError(values.backupRetentionDays);
+		if (retentionError) return fail(400, { ...values, errors, error: retentionError });
+		const requestedRetention = parseBackupRetention(values.backupRetentionDays);
+		const backupRetentionDays =
+			requestedRetention === current.data.team.environment.postgres.backupRetentionDays
+				? undefined
+				: requestedRetention;
 		const extensionError = extensionSelectionError(
 			extensions,
 			current.data.team.environment.environment.availableValues.postgresExtensions.values,
@@ -100,7 +115,8 @@ export const actions = {
 					teamSlug: event.params.team,
 					environmentName: event.params.env,
 					...resourceInput(changes),
-					extensions
+					extensions,
+					backupRetentionDays
 				}
 			},
 			{ event }

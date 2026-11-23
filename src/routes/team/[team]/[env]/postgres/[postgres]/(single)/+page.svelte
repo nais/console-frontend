@@ -4,6 +4,8 @@
 	import Labels from '#lib/domain/labels/Labels.svelte';
 	import LabelsEditorModal from '#lib/domain/labels/LabelsEditorModal.svelte';
 	import type { Label } from '#lib/domain/labels/labels.js';
+	import { format } from 'date-fns';
+	import { pluralize } from '#lib/utils/formatters.js';
 	import WorkloadLink from '#lib/domain/workload/WorkloadLink.svelte';
 	import GraphErrors from '#lib/ui/GraphErrors.svelte';
 	import SectionBoundary from '#lib/ui/SectionBoundary.svelte';
@@ -22,6 +24,7 @@
 		Td,
 		Th,
 		Thead,
+		Tooltip,
 		Tr
 	} from '#lib/shadcn/ui/index.js';
 	import { onMount } from 'svelte';
@@ -181,6 +184,25 @@
 							<code class="parameter-text">{postgres.extensions.join(', ')}</code>
 						{:else}
 							None
+						{/if}
+					</dd>
+					<dt>Point-in-time recovery window</dt>
+					<dd>
+						{#if postgres.earliestRestoreTime}
+							<Tooltip
+								content="Earliest restore point: {format(
+									postgres.earliestRestoreTime,
+									'd MMM yyyy, HH:mm:ss'
+								)}"
+							>
+								<span>
+									{postgres.backupRetentionDays}
+									{pluralize(postgres.backupRetentionDays, 'day')}
+								</span>
+							</Tooltip>
+						{:else}
+							{postgres.backupRetentionDays}
+							{pluralize(postgres.backupRetentionDays, 'day')}
 						{/if}
 					</dd>
 					<dt>CPU</dt>

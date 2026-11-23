@@ -107,6 +107,7 @@ describe('Postgres creation page', () => {
 				diskSize: '',
 				highAvailability: false,
 				labelRows: [],
+				backupRetentionDays: '2',
 				errors: { cpu: 'Invalid CPU' },
 				error: 'Check the resource fields below.'
 			}

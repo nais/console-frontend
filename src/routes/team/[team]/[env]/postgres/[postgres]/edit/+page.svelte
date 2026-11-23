@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
 	import PostgresConfigurationFields from '#lib/domain/postgres/PostgresConfigurationFields.svelte';
+	import PostgresBackupRetentionField from '#lib/domain/postgres/PostgresBackupRetentionField.svelte';
 	import PostgresExtensionFields from '#lib/domain/postgres/PostgresExtensionFields.svelte';
 	import { quantityInUnits } from '#lib/domain/postgres/forms.js';
 	import GraphErrors from '#lib/ui/GraphErrors.svelte';
@@ -14,6 +15,9 @@
 		$EditPostgres.data?.team.environment.environment.availableValues.postgresExtensions.values
 	);
 	let submitting = $state(false);
+	let backupRetentionDays = $derived(
+		form?.backupRetentionDays ?? String(postgres?.backupRetentionDays ?? '')
+	);
 </script>
 
 <GraphErrors errors={$EditPostgres.errors} />
@@ -47,6 +51,11 @@
 			available={availableExtensions}
 			selected={form?.extensions ?? postgres.extensions}
 			initial={form?.initialExtensions ?? postgres.extensions}
+		/>
+		<PostgresBackupRetentionField
+			editing
+			bind:value={backupRetentionDays}
+			diskSizeGiB={Number(quantityInUnits(postgres.resources.diskSize, 'GiB')) || undefined}
 		/>
 		{#if form?.error}<Alert variant="error">{form.error}</Alert>{/if}
 		<Button type="submit" loading={submitting}>Save changes</Button>
