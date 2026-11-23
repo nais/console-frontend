@@ -1,11 +1,9 @@
 import {
-	load_TeamPriorityWorkloadsHigh,
 	load_TeamSeverityWorkloads,
 	load_TeamNoSbomWorkloads,
 	load_TeamVulnerabilities,
 	OrderDirection,
 	SBOMStatus,
-	TeamPriorityWorkloadsHighStore,
 	TeamNoSbomWorkloadsStore,
 	TeamSeverityWorkloadsStore,
 	VulnerabilitySummaryOrderByField,
@@ -17,8 +15,6 @@ import { parseLabelsParam } from '#lib/domain/labels/labels.js';
 
 export async function load(event) {
 	const team = event.params.team;
-	const view: 'priority' | 'severity' =
-		event.url.searchParams.get('view') === 'priority' ? 'priority' : 'severity';
 	const environmentName = event.url.searchParams.get('environment') || null;
 	const labels = parseLabelsParam(event.url.searchParams.get('labels')) ?? [];
 
@@ -38,7 +34,7 @@ export async function load(event) {
 	const noSboms = workloadCount > 0 && teamData?.teamVulnerabilitySummary?.sbomCount === 0;
 
 	return {
-		selection: { environmentName, labels, view },
+		selection: { environmentName, labels },
 		...(await addPageMeta(event, {
 			title: 'Vulnerabilities',
 			docPath: '/services/vulnerabilities'
@@ -58,22 +54,7 @@ export async function load(event) {
 					}
 				})
 			: { TeamNoSbomWorkloads: new TeamNoSbomWorkloadsStore() }),
-		...(view === 'priority' && !noSboms
-			? await load_TeamPriorityWorkloadsHigh({
-					event,
-					blocking: true,
-					variables: {
-						team,
-						environmentName,
-						labels,
-						orderBy: {
-							field: VulnerabilitySummaryOrderByField.VULNERABILITY_RISK_SCORE,
-							direction: OrderDirection.DESC
-						}
-					}
-				})
-			: { TeamPriorityWorkloadsHigh: new TeamPriorityWorkloadsHighStore() }),
-		...(view === 'severity' && !noSboms
+		...(!noSboms
 			? await load_TeamSeverityWorkloads({
 					event,
 					blocking: true,
