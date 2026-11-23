@@ -39,6 +39,7 @@
 		"@tailwindcss/vite": "4.3.4",
 		"@types/d3-array": "3.2.2",
 		"@types/d3-time": "3.0.4",
+		"@types/jsdom": "30.0.0",
 		"@types/sortablejs": "1.15.9",
 		"bits-ui": "2.20.3",
 		"date-fns": "4.4.0",
