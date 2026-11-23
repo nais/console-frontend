@@ -50,6 +50,9 @@
 					name: $jobName
 				}
 			) {
+				job @refetch {
+					id
+				}
 				jobRun {
 					id
 					name
@@ -69,7 +72,6 @@
 						type
 						actor
 					}
-					...All_Runs_insert @prepend
 				}
 			}
 		}

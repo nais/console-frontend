@@ -15,7 +15,7 @@ const schema = new GraphQLSchema({
 });
 
 describe('TriggerJobFromActions', () => {
-	test('generates a valid mutation including the run insertion fragment', () => {
+	test('generates a valid trigger mutation', () => {
 		expect(validate(schema, parse(triggerJob.raw))).toEqual([]);
 	});
 
