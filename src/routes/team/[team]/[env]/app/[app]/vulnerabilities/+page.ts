@@ -1,7 +1,7 @@
 import {
 	ImageVulnerabilityOrderField,
 	load_ApplicationImageDetails,
-	load_ImagePriorityVulnerabilities,
+	load_ImageFindings,
 	OrderDirection
 } from '$houdini';
 import { addPageMeta } from '#lib/utils/pageMeta.js';
@@ -32,14 +32,13 @@ export async function load(event) {
 		...details,
 		initialFindingsStatus: image?.sbom.status,
 		...(hasFindings
-			? await load_ImagePriorityVulnerabilities({
+			? await load_ImageFindings({
 					event,
 					blocking: true,
 					variables: {
 						team: event.params.team,
 						environment: event.params.env,
 						workload: event.params.app,
-						priorities: null,
 						packageType: null,
 						orderBy: {
 							field: ImageVulnerabilityOrderField.SEVERITY,
@@ -52,8 +51,8 @@ export async function load(event) {
 					}
 				}).catch((error) => {
 					console.error('Unable to load initial application vulnerability findings:', error);
-					return { ImagePriorityVulnerabilities: undefined };
+					return { ImageFindings: undefined };
 				})
-			: { ImagePriorityVulnerabilities: undefined })
+			: { ImageFindings: undefined })
 	};
 }

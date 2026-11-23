@@ -47,16 +47,12 @@ query JobImageDetails($team: Slug!, $env: String!, $job: String!) @cache(policy:
 						vulnerabilitySummary {
 							countsByPriority {
 								knownExploited
-								highRisk
-								elevatedRisk
-								monitor
 							}
 							critical
 							high
 							medium
 							low
 							unassigned
-							riskScore
 							lastUpdated
 							staleImageTag
 						}
@@ -114,7 +110,7 @@ query JobImageDetails($team: Slug!, $env: String!, $job: String!) @cache(policy:
 						handleFirst: vulnerabilities(
 							first: 50
 							filter: { hasKevEntry: true }
-							orderBy: { field: SEVERITY_SINCE, direction: DESC }
+							orderBy: { field: SEVERITY, direction: DESC }
 						) {
 							pageInfo {
 								totalCount
@@ -124,36 +120,11 @@ query JobImageDetails($team: Slug!, $env: String!, $job: String!) @cache(policy:
 									id
 									identifier
 									package
-									severitySince
 									riskAssessment {
-										priority
 										epssScore
 										hasKevEntry
 									}
-									remediation {
-										fixVersion
-										latestVersion
-									}
 								}
-							}
-						}
-						knownExploitedHigh: vulnerabilities(filter: { priorities: [HIGH], hasKevEntry: true }) {
-							pageInfo {
-								totalCount
-							}
-						}
-						knownExploitedElevated: vulnerabilities(
-							filter: { priorities: [ELEVATED], hasKevEntry: true }
-						) {
-							pageInfo {
-								totalCount
-							}
-						}
-						knownExploitedMonitor: vulnerabilities(
-							filter: { priorities: [MONITOR], hasKevEntry: true }
-						) {
-							pageInfo {
-								totalCount
 							}
 						}
 					}
