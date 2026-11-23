@@ -139,9 +139,7 @@
 							<Detail as="p">Threat signals</Detail>
 							<PrioritySignals
 								hasKevEntry={cve.riskAssessment.hasKevEntry}
-								knownRansomwareUse={cve.riskAssessment.knownRansomwareUse}
 								epssScore={cve.riskAssessment.epssScore}
-								epssPercentile={cve.riskAssessment.epssPercentile}
 							/>
 						</div>
 					</div>

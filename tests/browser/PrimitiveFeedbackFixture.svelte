@@ -26,7 +26,7 @@
 	import Collection from '../../src/lib/ui/Collection.svelte';
 	import EmptyState from '../../src/lib/ui/EmptyState.svelte';
 	import ExternalLink from '../../src/lib/ui/ExternalLink.svelte';
-	import PriorityAlertBar from '../../src/lib/domain/vulnerability/PriorityAlertBar.svelte';
+	import KnownExploitedSummary from '../../src/lib/domain/vulnerability/KnownExploitedSummary.svelte';
 	import TeamSummary from '../../src/lib/domain/team/TeamSummary.svelte';
 	import ResourceTable from '../../src/lib/ui/ResourceTable.svelte';
 	import CostChart from '../../src/lib/chart/CostChart.svelte';
@@ -305,9 +305,9 @@
 			</div>
 		{/each}
 	</section>
-	<section aria-label="Priority colours">
-		<PriorityAlertBar knownExploited={31} high={162} elevated={99} monitor={1092} />
-		<PriorityAlertBar knownExploited={31} high={162} elevated={99} monitor={1092} compact />
+	<section aria-label="Known exploitation">
+		<KnownExploitedSummary knownExploited={31} urgentCount={2} />
+		<KnownExploitedSummary knownExploited={31} urgentCount={2} compact />
 	</section>
 	<Collection title="Cloud SQL" count={0}>
 		<EmptyState

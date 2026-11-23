@@ -9,9 +9,7 @@ query CVEDetails($identifier: String!) {
 			cvssScore
 			priority
 			epssScore
-			epssPercentile
 			hasKevEntry
-			knownRansomwareUse
 		}
 	}
 }

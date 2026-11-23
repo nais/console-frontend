@@ -84,9 +84,7 @@ async function renderFindings(sort: string, nodes: Finding[], viewerIsMember = f
 						priority: 'MONITOR',
 						cvssScore: null,
 						hasKevEntry: false,
-						knownRansomwareUse: false,
-						epssScore: null,
-						epssPercentile: null
+						epssScore: null
 					}
 				},
 				team: { viewerIsMember }

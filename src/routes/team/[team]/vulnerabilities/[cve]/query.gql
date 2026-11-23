@@ -10,9 +10,7 @@ query TeamCVEPage($identifier: String!, $team: Slug!) {
 			priority
 			cvssScore
 			hasKevEntry
-			knownRansomwareUse
 			epssScore
-			epssPercentile
 		}
 	}
 	team(slug: $team) {
