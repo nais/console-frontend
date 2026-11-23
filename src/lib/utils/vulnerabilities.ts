@@ -173,18 +173,6 @@ export function severityToColor({
 	}
 }
 
-export type Severity = 'Critical' | 'High' | 'Medium' | 'Low' | 'Unassigned';
-
-export const allSeverities: Severity[] = ['Critical', 'High', 'Medium', 'Low', 'Unassigned'];
-
-export const severityToRiskScore: Record<Severity, number> = {
-	Critical: 10,
-	High: 5,
-	Medium: 3,
-	Low: 1,
-	Unassigned: 5
-};
-
 export const suppressionStateLabels: Record<ImageVulnerabilitySuppressionState$options, string> = {
 	FALSE_POSITIVE: 'False Positive',
 	NOT_AFFECTED: 'Not Affected',

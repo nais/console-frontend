@@ -1,8 +1,6 @@
 <script lang="ts">
 	import { docURL } from '#lib/doc.js';
 	import TeamCveSearch from '#lib/domain/vulnerability/TeamCveSearch.svelte';
-	import TeamMeanTimeToFixHistoryGraph from '#lib/domain/vulnerability/TeamMeanTimeToFixHistoryGraph.svelte';
-	import TeamVulnerabilityHistoryGraph from '#lib/domain/vulnerability/TeamVulnerabilityHistoryGraph.svelte';
 	import VulnerabilitySummary from '#lib/domain/vulnerability/VulnerabilitySummary.svelte';
 	import WorkloadsWithoutSbom from '#lib/domain/vulnerability/WorkloadsWithoutSbom.svelte';
 	import WorkloadsWithVulnerabilities from '#lib/domain/vulnerability/WorkloadsWithVulnerabilities.svelte';
@@ -128,14 +126,6 @@
 							?.monitorWorkloadCount}
 					/>
 				{/key}
-			</section>
-
-			<section aria-label="Vulnerability History">
-				<TeamVulnerabilityHistoryGraph {teamSlug} />
-			</section>
-
-			<section aria-label="Mean Time to Fix">
-				<TeamMeanTimeToFixHistoryGraph {teamSlug} />
 			</section>
 		{/if}
 	</div>
