@@ -80,7 +80,11 @@ beforeEach(() => {
 					environment: {
 						availableValues: { postgresExtensions: { values: ['pgcrypto', 'vector'] } }
 					},
-					postgres: { extensions: ['pgcrypto'], resources: { diskSize: '10Gi' } }
+					postgres: {
+						extensions: ['pgcrypto'],
+						backupRetentionDays: 7,
+						resources: { diskSize: '10Gi' }
+					}
 				}
 			}
 		}
@@ -544,6 +548,78 @@ describe('Postgres management actions', () => {
 			},
 			expect.any(Object)
 		);
+	});
+
+	describe('point-in-time recovery window', () => {
+		const created = {
+			data: {
+				createPostgres: {
+					postgres: {
+						id: 'pg',
+						name: 'database',
+						teamEnvironment: { environment: { name: 'dev' } }
+					}
+				}
+			}
+		};
+
+		test('is sent when creating', async () => {
+			create.mutate.mockResolvedValue(created);
+			await expect(
+				createActions.default(
+					createEvent({
+						name: 'database',
+						environment: 'dev',
+						majorVersion: '18',
+						backupRetentionDays: '14'
+					})
+				)
+			).rejects.toMatchObject({ status: 303 });
+			expect(create.mutate.mock.calls[0][0].input.backupRetentionDays).toBe(14);
+		});
+
+		test('is left to the platform when creating without a value', async () => {
+			create.mutate.mockResolvedValue(created);
+			await expect(
+				createActions.default(
+					createEvent({ name: 'database', environment: 'dev', majorVersion: '18' })
+				)
+			).rejects.toMatchObject({ status: 303 });
+			expect(create.mutate.mock.calls[0][0].input.backupRetentionDays).toBeUndefined();
+		});
+
+		test.each(['1', '31', 'abc', '7.5'])('rejects %s without calling the API', async (days) => {
+			expect(
+				await createActions.default(
+					createEvent({
+						name: 'database',
+						environment: 'dev',
+						majorVersion: '18',
+						backupRetentionDays: days
+					})
+				)
+			).toMatchObject({
+				status: 400,
+				data: { error: expect.stringContaining('between 2 and 30') }
+			});
+			expect(await updateActions.default(updateEvent({ backupRetentionDays: days }))).toMatchObject(
+				{ status: 400, data: { error: expect.stringContaining('between 2 and 30') } }
+			);
+			expect(create.mutate).not.toHaveBeenCalled();
+			expect(update.mutate).not.toHaveBeenCalled();
+		});
+
+		test('is sent when updated and omitted when unchanged', async () => {
+			update.mutate.mockResolvedValue({ data: { updatePostgres: { postgres: { id: 'pg' } } } });
+			await expect(
+				updateActions.default(updateEvent({ backupRetentionDays: '21' }))
+			).rejects.toMatchObject({ status: 303 });
+			expect(update.mutate.mock.calls[0][0].input.backupRetentionDays).toBe(21);
+			await expect(
+				updateActions.default(updateEvent({ backupRetentionDays: '7' }))
+			).rejects.toMatchObject({ status: 303 });
+			expect(update.mutate.mock.calls[1][0].input.backupRetentionDays).toBeUndefined();
+		});
 	});
 
 	test.each(['0.6', '0,6'])(

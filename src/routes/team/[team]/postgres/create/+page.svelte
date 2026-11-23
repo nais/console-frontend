@@ -13,6 +13,9 @@
 	} from '#lib/domain/postgres/recovery.js';
 	import LabelRows from '#lib/domain/labels/LabelRows.svelte';
 	import { labelRowsHaveErrors, type LabelRow } from '#lib/domain/labels/labels.js';
+	import PostgresBackupRetentionField from '#lib/domain/postgres/PostgresBackupRetentionField.svelte';
+	import { backupRetention } from '#lib/domain/postgres/backupRetention.js';
+	import { quantityInUnits, postgresResources } from '#lib/domain/postgres/forms.js';
 	import PostgresConfigurationFields from '#lib/domain/postgres/PostgresConfigurationFields.svelte';
 	import PostgresCloneConfiguration from '#lib/domain/postgres/PostgresCloneConfiguration.svelte';
 	import PostgresExtensionFields from '#lib/domain/postgres/PostgresExtensionFields.svelte';
@@ -119,6 +122,17 @@
 		retainedForm?.majorVersion ?? options?.postgresMajorVersions.defaultValues?.[0] ?? ''
 	);
 	let submitting = $state(false);
+	let backupRetentionDays = $state(
+		untrack(() => form?.backupRetentionDays ?? String(backupRetention.default))
+	);
+	// The size of a clone is its source's unless changed; either way only a rough stand-in.
+	let estimateDiskSize = $derived(
+		Number(
+			(recovering
+				? quantityInUnits(source?.resources?.diskSize, 'GiB')
+				: resources.diskSize.trim()) || postgresResources.diskSize.default
+		)
+	);
 	let labelRows = $state<LabelRow[]>(untrack(() => form?.labelRows ?? [{ key: '', value: '' }]));
 	let labelsInvalid = $derived(labelRowsHaveErrors(labelRows));
 	const uid = $props.id();
@@ -343,6 +357,10 @@
 						</div>
 					</TabPanel>
 				{/if}
+				<PostgresBackupRetentionField
+					bind:value={backupRetentionDays}
+					diskSizeGiB={estimateDiskSize}
+				/>
 				<section aria-labelledby="{uid}-labels">
 					<Heading as="h2" size="small" id="{uid}-labels" spacing>Labels</Heading>
 					<LabelRows bind:rows={labelRows} />

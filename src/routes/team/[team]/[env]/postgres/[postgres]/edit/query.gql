@@ -12,6 +12,7 @@ query EditPostgres($team: Slug!, $env: String!, $name: String!) {
 				id
 				name
 				highAvailability
+				backupRetentionDays
 				extensions
 				resources {
 					cpu

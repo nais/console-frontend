@@ -3,6 +3,10 @@ import { parseCloneMode, parseInstant, resolveCloneTarget } from '#lib/domain/po
 import { labelRowsHaveErrors, rowsFromArrays, toLabelInput } from '#lib/domain/labels/labels.js';
 import { requirePostgresAccess } from '#lib/domain/postgres/access.server.js';
 import {
+	backupRetentionError,
+	parseBackupRetention
+} from '#lib/domain/postgres/backupRetention.js';
+import {
 	cloneBaseline,
 	cloneOverrides,
 	extensionDelta
@@ -64,9 +68,12 @@ export const actions = {
 			majorVersion: formString(data, 'majorVersion'),
 			extensions: formExtensions(data),
 			labelRows,
+			backupRetentionDays: formString(data, 'backupRetentionDays'),
 			...postgresConfiguration(data)
 		};
 		let errors = configurationErrors(values);
+		const retentionError = backupRetentionError(values.backupRetentionDays);
+		if (retentionError) return fail(400, { ...values, errors, error: retentionError });
 		if (labelRowsHaveErrors(labelRows)) {
 			return fail(400, { ...values, errors, error: 'Check the label fields below.' });
 		}
@@ -222,6 +229,7 @@ export const actions = {
 						extensions: recovering ? cloneInput?.extensions : values.extensions,
 						recovery,
 						labels: toLabelInput(labelRows),
+						backupRetentionDays: parseBackupRetention(values.backupRetentionDays),
 						...(recovering
 							? {
 									cpu: cloneInput?.cpu,

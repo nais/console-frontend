@@ -14,6 +14,8 @@ query PostgresOverview($team: Slug!, $env: String!, $name: String!) {
 				extensions
 				highAvailability
 				state
+				backupRetentionDays
+				earliestRestoreTime
 				recovery {
 					sourcePostgres
 					targetTime
