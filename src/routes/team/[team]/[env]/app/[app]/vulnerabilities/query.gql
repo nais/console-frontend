@@ -64,16 +64,12 @@ query ApplicationImageDetails($team: Slug!, $env: String!, $app: String!)
 						vulnerabilitySummary {
 							countsByPriority {
 								knownExploited
-								highRisk
-								elevatedRisk
-								monitor
 							}
 							critical
 							high
 							medium
 							low
 							unassigned
-							riskScore
 							lastUpdated
 							staleImageTag
 						}
@@ -131,7 +127,7 @@ query ApplicationImageDetails($team: Slug!, $env: String!, $app: String!)
 						handleFirst: vulnerabilities(
 							first: 50
 							filter: { hasKevEntry: true }
-							orderBy: { field: SEVERITY_SINCE, direction: DESC }
+							orderBy: { field: SEVERITY, direction: DESC }
 						) {
 							pageInfo {
 								totalCount
@@ -141,36 +137,11 @@ query ApplicationImageDetails($team: Slug!, $env: String!, $app: String!)
 									id
 									identifier
 									package
-									severitySince
 									riskAssessment {
-										priority
 										epssScore
 										hasKevEntry
 									}
-									remediation {
-										fixVersion
-										latestVersion
-									}
 								}
-							}
-						}
-						knownExploitedHigh: vulnerabilities(filter: { priorities: [HIGH], hasKevEntry: true }) {
-							pageInfo {
-								totalCount
-							}
-						}
-						knownExploitedElevated: vulnerabilities(
-							filter: { priorities: [ELEVATED], hasKevEntry: true }
-						) {
-							pageInfo {
-								totalCount
-							}
-						}
-						knownExploitedMonitor: vulnerabilities(
-							filter: { priorities: [MONITOR], hasKevEntry: true }
-						) {
-							pageInfo {
-								totalCount
 							}
 						}
 					}
