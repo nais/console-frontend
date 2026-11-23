@@ -18,6 +18,7 @@ update:
     - "@sveltejs/adapter-node"
     - typescript
 minimumReleaseAgeExclude:
+  - "esrap@2.4.2"
   - "houdini*"
   - "svelte"
   - "@sveltejs/*"
