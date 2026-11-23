@@ -1,16 +1,18 @@
 # Overlevering: prioriteringsgrupper for team
 
-Implementer API-støtte i `nais/api` for korrekte, paginerte prioriteringsgrupper av team i Console.
+**Status: erstattet.** Console går over til en vanlig, paginert teamliste uten prioriteringsgrupper, risikoscore eller trend. Denne overleveringen er ikke lenger et implementeringsoppdrag til `nais/api`; frontend-forenklingen bruker dagens API.
 
-## Bakgrunn
+Teamlisten beholder severity, KEV, SBOM-dekning, workload-antall og markering av manglende SBOM. Team sorteres alfabetisk på serveren, og globalt antall samt fremover-/bakoverpaginering beholdes. Den separate «Most Vulnerable Teams»-rangeringen fjernes; Urgent/Issues og eksisterende backendberegninger endres ikke.
 
-Console henter i dag 20 team sortert etter KEV-antall og grupperer deretter denne siden i High/Elevated/Monitor. Det gir misvisende grupper og antall som bare gjelder den aktuelle siden. Vi ønsker å beholde den grupperte layouten, ikke gå over til en flat liste.
+Dagens frontend:
 
-Frontend-koden som bruker dataene:
-
-- [Team-query](<../src/routes/vulnerabilities/(single)/query.gql>)
+- [Team-query](<../src/routes/vulnerabilities/(single)/teams/query.gql>)
 - [Load-funksjon](<../src/routes/vulnerabilities/(single)/teams/+page.ts>)
-- [Gruppering](../src/lib/domain/vulnerability/TeamsGroupedByUrgency.svelte)
+- [Teamliste](../src/lib/domain/vulnerability/TeamVulnerabilityList.svelte)
+
+## Historisk bakgrunn og forslag
+
+Det opprinnelige forslaget nedenfor tok utgangspunkt i klientgruppering av 20 KEV-sorterte team. Prioriteringsgruppene fikk senere egen serverpaginering, men fjernes nå fra Console. Kravene nedenfor er bevart som historikk, ikke som gjeldende produktkrav.
 
 ## Ønsket kontrakt
 
