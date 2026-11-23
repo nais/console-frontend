@@ -355,29 +355,22 @@ for (const theme of ['light', 'dark']) {
 }
 
 for (const theme of ['light', 'dark']) {
-	test(`Monitor uses the same blue-grey colour in bars and legends in ${theme} mode`, async ({
+	test(`known exploitation keeps Urgent signals without priority bars in ${theme} mode`, async ({
 		page
 	}) => {
 		await page.evaluate((theme) => {
 			document.documentElement.classList.toggle('dark', theme === 'dark');
 		}, theme);
-		const summaries = page.getByRole('region', { name: 'Priority colours' });
-		const expectedColour = theme === 'light' ? 'rgb(203, 213, 225)' : 'rgb(51, 65, 85)';
-		const bars = summaries.getByRole('img', {
-			name: 'High: 162, Elevated: 99, Monitor: 1092',
-			exact: true
-		});
-		await expect(bars).toHaveCount(2);
-		for (let index = 0; index < 2; index++) {
-			await expect(summaries.locator('.segment.monitor').nth(index)).toHaveCSS(
-				'background-color',
-				expectedColour
-			);
-			await expect(summaries.locator('.swatch.monitor').nth(index)).toHaveCSS(
-				'background-color',
-				expectedColour
-			);
-		}
+		const summaries = page.getByRole('region', { name: 'Known exploitation' });
+		await expect(summaries.getByText('Known exploited', { exact: true })).toHaveCount(2);
+		await expect(
+			summaries.getByText('Urgent · internet-facing issues', { exact: true })
+		).toBeVisible();
+		await expect(
+			summaries.getByText('Urgent · internet-facing findings', { exact: true })
+		).toBeVisible();
+		await expect(summaries.locator('.bar')).toHaveCount(0);
+		await expect(summaries.getByText('What does priority mean?', { exact: true })).toHaveCount(0);
 	});
 }
 

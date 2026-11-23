@@ -65,9 +65,7 @@ fragment CvePriorityConnection on CVEConnection {
 				priority
 				cvssScore
 				epssScore
-				epssPercentile
 				hasKevEntry
-				knownRansomwareUse
 			}
 			workloads {
 				pageInfo {

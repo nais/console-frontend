@@ -145,9 +145,7 @@ query ApplicationImageDetails($team: Slug!, $env: String!, $app: String!)
 									riskAssessment {
 										priority
 										epssScore
-										epssPercentile
 										hasKevEntry
-										knownRansomwareUse
 									}
 									remediation {
 										fixVersion

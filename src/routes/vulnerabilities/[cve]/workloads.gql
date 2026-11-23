@@ -87,9 +87,7 @@ query CVEWorkloads(
 					}
 					riskAssessment {
 						epssScore
-						epssPercentile
 						hasKevEntry
-						knownRansomwareUse
 					}
 					suppression {
 						state

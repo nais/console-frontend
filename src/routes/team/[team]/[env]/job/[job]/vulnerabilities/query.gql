@@ -128,9 +128,7 @@ query JobImageDetails($team: Slug!, $env: String!, $job: String!) @cache(policy:
 									riskAssessment {
 										priority
 										epssScore
-										epssPercentile
 										hasKevEntry
-										knownRansomwareUse
 									}
 									remediation {
 										fixVersion
