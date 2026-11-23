@@ -90,8 +90,6 @@ vi.mock('$app/state', () => ({
 import { load } from './+page';
 import TeamVulnerabilityPage from './+page.svelte';
 import WorkloadsWithoutSbom from '#lib/domain/vulnerability/WorkloadsWithoutSbom.svelte';
-import WorkloadsWithVulnerabilities from '#lib/domain/vulnerability/WorkloadsWithVulnerabilities.svelte';
-import { TeamPriorityWorkloadsHighStore, TeamSeverityWorkloadsStore } from '$houdini';
 
 function event(query = ''): Parameters<typeof load>[0] {
 	return {
@@ -111,31 +109,6 @@ afterEach(() => {
 });
 
 describe('team vulnerability workload view', () => {
-	it.each([
-		{ environmentName: 'dev', labels: [] },
-		{ environmentName: null, labels: [{ key: 'owner', value: 'team' }] },
-		{ environmentName: 'dev', labels: [{ key: 'owner', value: 'team' }] }
-	])('shows filtered priority totals before group rows are loaded: %j', async (filters) => {
-		const { body } = await render(WorkloadsWithVulnerabilities, {
-			props: {
-				team: 'example',
-				high: new TeamPriorityWorkloadsHighStore(),
-				severity: new TeamSeverityWorkloadsStore(),
-				environmentNames: ['dev'],
-				labelFacets: [],
-				selection: { ...filters, view: 'priority' },
-				highWorkloadCount: 7,
-				elevatedWorkloadCount: 3,
-				monitorWorkloadCount: 0
-			}
-		});
-
-		expect(body).toMatch(/7\s+workloads/);
-		expect(body).toMatch(/3\s+workloads/);
-		expect(body).toMatch(/0\s+workloads/);
-		expect(body).not.toMatch(/…\s+workloads/);
-	});
-
 	it('requests the number of workloads with no SBOM', () => {
 		const query = parse(readFileSync(new URL('./query.gql', import.meta.url), 'utf8'));
 		const operation = query.definitions.find(
@@ -263,12 +236,26 @@ describe('team vulnerability workload view', () => {
 		expect(loadHigh).not.toHaveBeenCalled();
 	});
 
-	it('loads priority groups when the view is selected', async () => {
-		await load(event('?view=priority'));
+	it('loads the ordinary list for old priority-view links while preserving filters', async () => {
+		const result = await load(event('?view=priority&environment=dev&labels=owner%3Ateam'));
 
-		expect(loadHigh).toHaveBeenCalledOnce();
-		expect(loadHigh).toHaveBeenCalledWith(expect.objectContaining({ blocking: true }));
-		expect(loadSeverity).not.toHaveBeenCalled();
+		expect(loadHigh).not.toHaveBeenCalled();
+		expect(loadSeverity).toHaveBeenCalledOnce();
+		expect(loadSeverity).toHaveBeenCalledWith(
+			expect.objectContaining({
+				blocking: true,
+				variables: {
+					team: 'example',
+					environmentName: 'dev',
+					labels: [{ key: 'owner', value: 'team' }],
+					orderBy: { field: 'VULNERABILITY_SEVERITY_CRITICAL', direction: 'DESC' }
+				}
+			})
+		);
+		expect(result.selection).toEqual({
+			environmentName: 'dev',
+			labels: [{ key: 'owner', value: 'team' }]
+		});
 	});
 
 	it('loads the first no-SBOM workload page when the team has missing SBOMs', async () => {
@@ -333,8 +320,7 @@ describe('team vulnerability workload view', () => {
 					teamSlug: 'mango-panda',
 					selection: {
 						environmentName: 'dev-fss',
-						labels: [{ key: 'owner', value: 'retired' }],
-						view: 'severity'
+						labels: [{ key: 'owner', value: 'retired' }]
 					},
 					TeamVulnerabilities: writable({
 						data: {
@@ -397,8 +383,7 @@ describe('team vulnerability workload view', () => {
 					teamSlug: 'mango-panda',
 					selection: {
 						environmentName: null,
-						labels: [],
-						view: 'severity'
+						labels: []
 					},
 					TeamVulnerabilities: writable({
 						data: {
@@ -559,12 +544,12 @@ describe('team vulnerability workload view', () => {
 				}
 			})
 		);
-		expect(loadHigh).toHaveBeenCalledWith(
+		expect(loadSeverity).toHaveBeenCalledWith(
 			expect.objectContaining({
 				variables: expect.objectContaining({
 					environmentName: 'dev',
 					labels,
-					orderBy: { field: 'VULNERABILITY_RISK_SCORE', direction: 'DESC' }
+					orderBy: { field: 'VULNERABILITY_SEVERITY_CRITICAL', direction: 'DESC' }
 				})
 			})
 		);
@@ -598,7 +583,6 @@ describe('team vulnerability workload view', () => {
 			});
 			await load(event(`?${params}`));
 
-			const loader = view === 'priority' ? loadHigh : loadSeverity;
 			expect(loadSummary).toHaveBeenCalledWith(
 				expect.objectContaining({
 					variables: expect.objectContaining({
@@ -611,8 +595,9 @@ describe('team vulnerability workload view', () => {
 					})
 				})
 			);
-			expect(loader).toHaveBeenCalledOnce();
-			expect(loader).toHaveBeenCalledWith(
+			expect(loadSeverity).toHaveBeenCalledOnce();
+			expect(loadHigh).not.toHaveBeenCalled();
+			expect(loadSeverity).toHaveBeenCalledWith(
 				expect.objectContaining({
 					blocking: true,
 					variables: expect.objectContaining({
@@ -622,10 +607,7 @@ describe('team vulnerability workload view', () => {
 							{ key: 'empty', value: '' }
 						],
 						orderBy: {
-							field:
-								view === 'priority'
-									? 'VULNERABILITY_RISK_SCORE'
-									: 'VULNERABILITY_SEVERITY_CRITICAL',
+							field: 'VULNERABILITY_SEVERITY_CRITICAL',
 							direction: 'DESC'
 						}
 					})

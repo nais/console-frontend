@@ -1,55 +1,47 @@
 <script lang="ts">
-	import TeamsGroupedByUrgency from '#lib/domain/vulnerability/TeamsGroupedByUrgency.svelte';
+	import TeamVulnerabilityList from '#lib/domain/vulnerability/TeamVulnerabilityList.svelte';
 	import GraphErrors from '#lib/ui/GraphErrors.svelte';
 	import { changeParams } from '#lib/utils/searchparams.js';
 	import { BodyLong, Heading, Loader } from '#lib/shadcn/ui/index.js';
 	import type { PageProps } from './$types';
 
 	let { data }: PageProps = $props();
-	let { TenantTeamPriorityGroups } = $derived(data);
-	const hasTeams = $derived.by(() => {
-		const groups = $TenantTeamPriorityGroups.data;
-		return (
-			groups &&
-			(['high', 'elevated', 'monitor', 'none'] as const).some(
-				(group) => groups[group].pageInfo.totalCount > 0
-			)
-		);
-	});
+	let { TenantVulnerabilityTeams } = $derived(data);
+	const teams = $derived($TenantVulnerabilityTeams.data?.teams);
 </script>
 
 <div class="wrapper">
-	<GraphErrors errors={$TenantTeamPriorityGroups.errors} />
+	<GraphErrors errors={$TenantVulnerabilityTeams.errors} />
 	<div>
 		<Heading as="h2" spacing>Team Security Posture</Heading>
 		<BodyLong>
-			A detailed breakdown of teams with workloads, grouped by vulnerability priority. Teams without
-			SBOMs are marked so missing scan data is not mistaken for no priority findings. For teams with
-			scan data, you can also see risk score, SBOM coverage, and workload count. Vulnerability
-			counts are the number of vulnerabilities, not the number of workloads affected.
+			Teams with workloads, listed alphabetically with CVSS severity counts, known exploited
+			vulnerabilities, SBOM coverage, and workload count. Teams without usable SBOMs are marked so
+			missing scan data is not mistaken for no vulnerabilities. Vulnerability counts are the number
+			of vulnerabilities, not the number of workloads affected.
 		</BodyLong>
 	</div>
 
-	{#if $TenantTeamPriorityGroups.fetching && !$TenantTeamPriorityGroups.data}
+	{#if $TenantVulnerabilityTeams.fetching && !$TenantVulnerabilityTeams.data}
 		<div class="loading-centered" role="status" aria-label="Loading">
 			<Loader size="3xlarge" />
 		</div>
-	{:else if hasTeams && $TenantTeamPriorityGroups.data}
-		<TeamsGroupedByUrgency
-			groups={$TenantTeamPriorityGroups.data}
-			fetching={$TenantTeamPriorityGroups.fetching}
-			loadPage={(group, direction) => {
-				const page = $TenantTeamPriorityGroups.data?.[group].pageInfo;
+	{:else if teams && teams.pageInfo.totalCount > 0}
+		<TeamVulnerabilityList
+			{teams}
+			fetching={$TenantVulnerabilityTeams.fetching}
+			loadPage={(direction) => {
+				const page = teams?.pageInfo;
 				return changeParams(
 					{
-						[`${group}After`]: direction === 'next' ? (page?.endCursor ?? '') : '',
-						[`${group}Before`]: direction === 'previous' ? (page?.startCursor ?? '') : ''
+						after: direction === 'next' ? (page?.endCursor ?? '') : '',
+						before: direction === 'previous' ? (page?.startCursor ?? '') : ''
 					},
 					{ noScroll: true }
 				);
 			}}
 		/>
-	{:else if !$TenantTeamPriorityGroups.errors?.length}
+	{:else if !$TenantVulnerabilityTeams.errors?.length}
 		<BodyLong>No teams found.</BodyLong>
 	{/if}
 </div>

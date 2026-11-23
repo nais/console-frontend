@@ -1,8 +1,6 @@
 <script lang="ts">
 	import { docURL } from '#lib/doc.js';
 	import TeamCveSearch from '#lib/domain/vulnerability/TeamCveSearch.svelte';
-	import TeamMeanTimeToFixHistoryGraph from '#lib/domain/vulnerability/TeamMeanTimeToFixHistoryGraph.svelte';
-	import TeamVulnerabilityHistoryGraph from '#lib/domain/vulnerability/TeamVulnerabilityHistoryGraph.svelte';
 	import VulnerabilitySummary from '#lib/domain/vulnerability/VulnerabilitySummary.svelte';
 	import WorkloadsWithoutSbom from '#lib/domain/vulnerability/WorkloadsWithoutSbom.svelte';
 	import WorkloadsWithVulnerabilities from '#lib/domain/vulnerability/WorkloadsWithVulnerabilities.svelte';
@@ -10,30 +8,17 @@
 	import { mergeWorkloadLabelFacets } from '#lib/domain/vulnerability/workloadLabels.js';
 	import GraphErrors from '#lib/ui/GraphErrors.svelte';
 	import { Alert, BodyLong, Heading } from '#lib/shadcn/ui/index.js';
-	import { page } from '$app/state';
-	import { SvelteURLSearchParams } from 'svelte/reactivity';
 	import type { PageProps } from './$types';
 
 	let { data }: PageProps = $props();
-	let {
-		TeamVulnerabilities,
-		TeamNoSbomWorkloads,
-		TeamPriorityWorkloadsHigh,
-		TeamSeverityWorkloads,
-		teamSlug,
-		selection
-	} = $derived(data);
+	let { TeamVulnerabilities, TeamNoSbomWorkloads, TeamSeverityWorkloads, teamSlug, selection } =
+		$derived(data);
 	const labelFacets = $derived(
 		mergeWorkloadLabelFacets(
 			$TeamVulnerabilities.data?.team.applications.facets?.labels ?? [],
 			$TeamVulnerabilities.data?.team.jobs.facets?.labels ?? []
 		)
 	);
-	const priorityHref = $derived.by(() => {
-		const params = new SvelteURLSearchParams(page.url.searchParams);
-		params.set('view', 'priority');
-		return `?${params}#priority-groups`;
-	});
 </script>
 
 <GraphErrors errors={$TeamVulnerabilities.errors} />
@@ -90,7 +75,7 @@
 			)}
 			<VulnerabilitySummary
 				vulnerabilitySummary={$TeamVulnerabilities.data.team.vulnerabilitySummary}
-				knownExploitedHref={priorityHref}
+				knownExploitedHref="#workload-list"
 				{urgentCount}
 				knownExploitedWorkloadCount={exploitedWorkloadCount}
 			/>
@@ -113,29 +98,14 @@
 				{#key teamSlug}
 					<WorkloadsWithVulnerabilities
 						team={teamSlug}
-						high={TeamPriorityWorkloadsHigh}
 						severity={TeamSeverityWorkloads}
 						{selection}
 						{labelFacets}
 						environmentNames={$TeamVulnerabilities.data.team.environments.map(
 							(env) => env.environment.name
 						)}
-						highWorkloadCount={$TeamVulnerabilities.data.team.vulnerabilitySummary
-							?.highWorkloadCount}
-						elevatedWorkloadCount={$TeamVulnerabilities.data.team.vulnerabilitySummary
-							?.elevatedWorkloadCount}
-						monitorWorkloadCount={$TeamVulnerabilities.data.team.vulnerabilitySummary
-							?.monitorWorkloadCount}
 					/>
 				{/key}
-			</section>
-
-			<section aria-label="Vulnerability History">
-				<TeamVulnerabilityHistoryGraph {teamSlug} />
-			</section>
-
-			<section aria-label="Mean Time to Fix">
-				<TeamMeanTimeToFixHistoryGraph {teamSlug} />
 			</section>
 		{/if}
 	</div>

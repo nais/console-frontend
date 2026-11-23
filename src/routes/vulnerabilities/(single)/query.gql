@@ -1,67 +1,13 @@
-query TenantVulnerabilites(
-	$first: Int
-	$last: Int
-	$before: Cursor
-	$after: Cursor
-	$orderBy: TeamOrder
-) {
-	teams(
-		first: $first
-		last: $last
-		before: $before
-		after: $after
-		orderBy: $orderBy
-		filter: { hasWorkloads: true }
-	) @paginate(mode: SinglePage) {
-		pageInfo {
-			endCursor
-			hasNextPage
-			hasPreviousPage
-			pageEnd
-			pageStart
-			startCursor
-			totalCount
-		}
-		edges {
-			node {
-				slug
-				workloads {
-					pageInfo {
-						totalCount
-					}
-				}
-				vulnerabilitySummary {
-					countsByPriority {
-						knownExploited
-						highRisk
-						elevatedRisk
-						monitor
-					}
-					critical
-					high
-					medium
-					low
-					unassigned
-					riskScore
-					riskScoreTrend
-					coverage
-				}
-			}
-		}
-	}
+query TenantVulnerabilites {
 	vulnerabilitySummary {
 		countsByPriority {
 			knownExploited
-			highRisk
-			elevatedRisk
-			monitor
 		}
 		critical
 		high
 		medium
 		low
 		unassigned
-		riskScore
 		coverage
 		sbomCount
 	}

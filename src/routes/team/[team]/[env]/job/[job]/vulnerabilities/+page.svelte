@@ -6,8 +6,7 @@
 
 	let { data }: PageProps = $props();
 
-	let { JobImageDetails, ImagePriorityVulnerabilities, initialFindingsStatus, viewerIsMember } =
-		$derived(data);
+	let { JobImageDetails, ImageFindings, initialFindingsStatus, viewerIsMember } = $derived(data);
 
 	$effect(() => {
 		const workload = $JobImageDetails.data?.team.environment.workload;
@@ -30,7 +29,7 @@
 {#if $JobImageDetails.data}
 	<WorkloadVulnerabilitiesPage
 		data={$JobImageDetails.data}
-		initialFindings={ImagePriorityVulnerabilities}
+		initialFindings={ImageFindings}
 		{initialFindingsStatus}
 		{viewerIsMember}
 	/>

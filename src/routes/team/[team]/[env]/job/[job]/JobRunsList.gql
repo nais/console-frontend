@@ -9,7 +9,7 @@ query JobRunsList($team: Slug!, $env: String!, $job: String!) {
 							name
 							startTime
 							duration
-							instances(first: 1) {
+							instances {
 								pageInfo {
 									totalCount
 								}
