@@ -7,10 +7,7 @@ export async function load(event) {
 			title: 'Vulnerabilities'
 		})),
 		...(await load_TenantVulnerabilites({
-			event,
-			variables: {
-				first: 1 // We only need the summary, not the teams list
-			}
+			event
 		}))
 	};
 }
