@@ -1,0 +1,10 @@
+fragment ApplicationScalingDiagnostics on ApplicationScaling {
+	minInstances
+	maxInstances
+	status {
+		state
+		message
+		currentInstances
+		desiredInstances
+	}
+}

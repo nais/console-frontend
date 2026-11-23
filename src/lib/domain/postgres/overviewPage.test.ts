@@ -14,7 +14,7 @@ const fixture = vi.hoisted(() => ({ overview: {} }));
 
 vi.mock('$app/paths', () => ({
 	resolve: (_route: string, params: { team: string; env: string; postgres: string }) =>
-		`/team/${params.team}/${params.env}/postgres/${params.postgres}/branches`
+		`/team/${params.team}/${params.env}/postgres/${params.postgres}`
 }));
 vi.mock('$app/state', () => ({
 	page: { params: { team: 'test', env: 'dev', postgres: 'database' } }
@@ -97,7 +97,7 @@ function parameterPanel(body: string) {
 
 describe('Postgres overview', () => {
 	test.each(['Application', 'Job'] as const)(
-		'keeps %s workload links without branch labels or navigation',
+		'links to the consuming %s workload',
 		async (__typename) => {
 			const { body } = await renderPage({
 				workloads: [
@@ -115,9 +115,7 @@ describe('Postgres overview', () => {
 			});
 			const kind = __typename === 'Job' ? 'job' : 'app';
 			expect(body).toContain(`href="/team/test/dev/${kind}/worker"`);
-			expect(body).not.toContain('Branch:');
 			expect(body).not.toContain('Not used by any workloads.');
-			expect(body).not.toContain('/branches');
 		}
 	);
 
@@ -142,7 +140,6 @@ describe('Postgres overview', () => {
 	test('preserves resource configuration with collapsed, labelled PostgreSQL parameters', async () => {
 		const { body } = await renderPage();
 		expect(body).not.toContain('<h1');
-		expect(body).not.toContain('/branches');
 		for (const value of ['Ready', '100m', '512Mi', '10Gi', 'Postgres version']) {
 			expect(body).toContain(value);
 		}
@@ -169,7 +166,7 @@ describe('Postgres overview', () => {
 		);
 	});
 
-	test('shows unavailable parameters while provisioning without a branch resource', async () => {
+	test('shows unavailable parameters while provisioning', async () => {
 		const { body } = await renderPage({ state: 'PROGRESSING', configuration: null });
 		expect(body).toContain('Postgres is being prepared. Status updates automatically.');
 		expect(body).toContain('Preparing');
@@ -179,18 +176,11 @@ describe('Postgres overview', () => {
 		expect(html).not.toContain('<select');
 	});
 
-	test('shows degraded direct state without branch controls', async () => {
+	test('shows degraded state with available parameters', async () => {
 		const { body } = await renderPage({ state: 'DEGRADED' });
 		expect(body).toContain('Degraded');
-		expect(body).not.toContain('Activation requested');
-		expect(body).not.toContain('Active branch');
 		const { html } = parameterPanel(body);
 		expect(html).toContain('16MB');
-		expect(html).not.toContain('preview');
-		expect(html).not.toContain('main');
-		expect(html).not.toContain('Active branch');
-		expect(html).not.toContain('activeBranch');
-		expect(html).not.toContain('<select');
 	});
 
 	test('renders names and raw values with units in server order', async () => {
@@ -236,16 +226,10 @@ describe('Postgres overview', () => {
 		[false, false],
 		[true, false],
 		[false, true]
-	])(
-		'is read-only with no branch label or dropdown for member=%s admin=%s',
-		async (viewerIsMember, isAdmin) => {
-			const { body } = await renderPage({ viewerIsMember, isAdmin });
-			const { html } = parameterPanel(body);
-			expect(html).toContain('work_mem');
-			expect(html).not.toMatch(/<(button|input|select|textarea|form)\b/);
-			expect(html).not.toContain('Active branch');
-			expect(html).not.toContain('activeBranch');
-			expect(html).not.toContain('Load more branches');
-		}
-	);
+	])('parameters are read-only for member=%s admin=%s', async (viewerIsMember, isAdmin) => {
+		const { body } = await renderPage({ viewerIsMember, isAdmin });
+		const { html } = parameterPanel(body);
+		expect(html).toContain('work_mem');
+		expect(html).not.toMatch(/<(button|input|select|textarea|form)\b/);
+	});
 });

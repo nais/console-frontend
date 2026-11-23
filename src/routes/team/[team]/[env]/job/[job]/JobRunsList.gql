@@ -1,0 +1,35 @@
+query JobRunsList($team: Slug!, $env: String!, $job: String!) {
+	team(slug: $team) {
+		environment(name: $env) {
+			job(name: $job) {
+				runs(first: 20) @paginate(mode: Infinite, name: "All_Runs") {
+					edges {
+						node {
+							id
+							name
+							startTime
+							duration
+							instances(first: 1) {
+								pageInfo {
+									totalCount
+								}
+							}
+							status {
+								message
+								state
+							}
+							trigger {
+								type
+								actor
+							}
+						}
+					}
+					pageInfo {
+						hasNextPage
+						totalCount
+					}
+				}
+			}
+		}
+	}
+}

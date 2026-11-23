@@ -32,7 +32,6 @@ describe('Postgres query insights PromQL', () => {
 			expect(query).toContain('namespace="a\\"b"');
 			expect(query).toContain('team="a\\"b"');
 			expect(query).toContain('postgres="c\\\\d"');
-			expect(query).not.toContain('branch=');
 			expect(query).toContain('datname="app"');
 			expect(query).toContain(`[${interval}]`);
 		}

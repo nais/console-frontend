@@ -10,6 +10,7 @@
 	import Secrets from '#lib/domain/resources/Secrets.svelte';
 	import ServiceAccountBinding from '#lib/domain/resources/ServiceAccountBinding.svelte';
 	import JobResources from '#lib/domain/workload/JobResources.svelte';
+	import RecentWorkloadEvents from '#lib/domain/workload/RecentWorkloadEvents.svelte';
 	import WorkloadDeploy from '#lib/domain/workload/WorkloadDeploy.svelte';
 	import WorkloadHealth from '#lib/domain/workload/WorkloadHealth.svelte';
 	import Confirm from '#lib/ui/Confirm.svelte';
@@ -24,7 +25,8 @@
 	import Schedule from './Schedule.svelte';
 
 	let { data }: PageProps = $props();
-	let { Job, JobDeployment, teamSlug, viewerIsMember } = $derived(data);
+	let { Job, JobDeployment, JobRunsList, JobWorkloadEvents, teamSlug, viewerIsMember } =
+		$derived(data);
 
 	onMount(() => {
 		const interval = setInterval(() => {
@@ -56,9 +58,9 @@
 	let criticalEdges = $derived(
 		job?.issues.edges.filter((e) => e.node.severity === 'CRITICAL') ?? []
 	);
-	let totalRuns = $derived(job?.recentRuns.nodes.length ?? 0);
-	let succeededRuns = $derived(
-		job?.recentRuns.nodes.filter((n) => n.status.state === 'SUCCEEDED').length ?? 0
+	const recentRuns = $derived($JobRunsList.data?.team?.environment?.job?.runs.edges.slice(0, 10));
+	const succeededRuns = $derived(
+		recentRuns?.filter(({ node }) => node.status.state === 'SUCCEEDED').length
 	);
 
 	let deleteConfirmOpen = $state(false);
@@ -126,21 +128,18 @@
 					criticalIssues={job?.criticalIssues.pageInfo.totalCount ?? 0}
 					warningIssues={job?.warningIssues.pageInfo.totalCount ?? 0}
 					todoIssues={job?.todoIssues.pageInfo.totalCount ?? 0}
-					{totalRuns}
+					totalRuns={recentRuns?.length}
 					{succeededRuns}
 					loading={jobFetching}
 				/>
-				<SurfaceCard>
-					{#if teamSlug && environment && jobName}
-						<Runs
-							bind:this={runsComponent}
-							{teamSlug}
-							{environment}
-							{jobName}
-							ondelete={viewerIsMember ? handleDeleteRun : undefined}
-						/>
-					{/if}
-				</SurfaceCard>
+				{#if teamSlug && environment && jobName}
+					<Runs
+						bind:this={runsComponent}
+						runsQuery={JobRunsList}
+						jobPath="/team/{teamSlug}/{environment}/job/{jobName}"
+						ondelete={viewerIsMember ? handleDeleteRun : undefined}
+					/>
+				{/if}
 				<SurfaceCard>
 					<div class="configuration-section">
 						<Heading as="h2">Configuration</Heading>
@@ -161,6 +160,12 @@
 			</div>
 			<div class="layout-sidebar">
 				<WorkloadDeploy workload={job} legacyDeployDisabled={data.legacyDeployDisabled} />
+				<RecentWorkloadEvents
+					events={$JobWorkloadEvents.data?.team.environment?.job?.events}
+					fetching={$JobWorkloadEvents.fetching}
+					failed={Boolean($JobWorkloadEvents.errors?.length)}
+					viewAllRoute="/team/[team]/[env]/job/[job]/events"
+				/>
 				<Persistence workload={job} />
 				{#if jobName && environment}
 					<Configs workload={jobName} {environment} {teamSlug} />

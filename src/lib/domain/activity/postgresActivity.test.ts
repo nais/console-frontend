@@ -4,7 +4,8 @@ import PostgreSQLIcon from '#lib/icons/PostgreSQLIcon.svelte';
 import { icons } from './activity-log-icons';
 import { activityTooltip } from './activity-log-tooltip';
 import { activityTextComponent } from './activityTextComponents';
-import PostgresBranchActivityLogEntryText from './shared/texts/PostgresBranchActivityLogEntryText.svelte';
+import PostgresCreatedActivityLogEntryText from './shared/texts/PostgresCreatedActivityLogEntryText.svelte';
+import PostgresDeletedActivityLogEntryText from './shared/texts/PostgresDeletedActivityLogEntryText.svelte';
 import PostgresUpdatedActivityLogEntryText from './shared/texts/PostgresUpdatedActivityLogEntryText.svelte';
 import type { ActivityLogEntry } from './shared/texts/types';
 
@@ -18,31 +19,19 @@ vi.mock('$app/state', () => ({
 	}
 }));
 
-const branchTypes = [
-	['PostgresBranchCreatedActivityLogEntry', 'created', 'POSTGRES_BRANCH_CREATED'],
-	['PostgresBranchActivatedActivityLogEntry', 'requested as active', 'POSTGRES_BRANCH_ACTIVATED'],
-	['PostgresBranchDeletedActivityLogEntry', 'deleted', 'POSTGRES_BRANCH_DELETED']
-] as const;
-
-function entry(
-	__typename: (typeof branchTypes)[number][0]
-): ActivityLogEntry<'PostgresBranchCreatedActivityLogEntry'> {
+function entry(): ActivityLogEntry<'PostgresUpdatedActivityLogEntry'> {
 	return {
-		__typename,
-		id: 'branch-event',
+		__typename: 'PostgresUpdatedActivityLogEntry',
+		id: 'postgres-event',
 		actor: 'user@example.com',
 		createdAt: new Date('2026-10-07T12:00:00Z'),
 		environmentName: 'dev-gcp',
-		message: 'Branch event',
+		message: 'Database updated',
 		resourceName: 'database',
 		resourceType: 'POSTGRES',
 		teamSlug: 'nais',
 		postgresTeamSlug: 'nais',
-		postgresBranch: {
-			branch: 'restore',
-			sourceBranch: null,
-			targetTime: null
-		}
+		postgresUpdated: { updatedFields: [] }
 	};
 }
 
@@ -60,8 +49,7 @@ describe('Postgres update activity', () => {
 		const { body } = await render(PostgresUpdatedActivityLogEntryText, {
 			props: {
 				data: {
-					...entry('PostgresBranchCreatedActivityLogEntry'),
-					__typename: 'PostgresUpdatedActivityLogEntry',
+					...entry(),
 					postgresUpdated: { updatedFields: [{ field: 'labels', oldValue, newValue }] }
 				},
 				mode: 'full'
@@ -75,8 +63,7 @@ describe('Postgres update activity', () => {
 		const { body } = await render(PostgresUpdatedActivityLogEntryText, {
 			props: {
 				data: {
-					...entry('PostgresBranchCreatedActivityLogEntry'),
-					__typename: 'PostgresUpdatedActivityLogEntry',
+					...entry(),
 					postgresUpdated: {
 						updatedFields: [{ field: 'labels', oldValue: '', newValue: 'owner=team' }]
 					}
@@ -89,66 +76,27 @@ describe('Postgres update activity', () => {
 	});
 });
 
-describe('Postgres branch activity', () => {
-	test.each(branchTypes)('registers an icon, tooltip and presenter for %s', (type) => {
+describe('Postgres database activity', () => {
+	test.each([
+		['PostgresCreatedActivityLogEntry', PostgresCreatedActivityLogEntryText],
+		['PostgresUpdatedActivityLogEntry', PostgresUpdatedActivityLogEntryText],
+		['PostgresDeletedActivityLogEntry', PostgresDeletedActivityLogEntryText]
+	] as const)('registers an icon, tooltip and presenter for %s', (type, presenter) => {
 		expect(icons[type]).toBe(PostgreSQLIcon);
 		expect(activityTooltip(type)).toBe('Postgres');
-		expect(activityTextComponent(type)).toBe(PostgresBranchActivityLogEntryText);
+		expect(activityTextComponent(type)).toBe(presenter);
 	});
 
-	test.each(branchTypes)(
-		'renders %s with metadata and a sidebar link',
-		async (type, label, activityType) => {
-			const { body } = await render(PostgresBranchActivityLogEntryText, {
-				props: { data: entry(type), mode: 'sidebar' }
-			});
-			expect(body).toContain('<strong>restore</strong>');
-			expect(body).toContain(label);
-			expect(body).toContain('<strong>database</strong>');
-			expect(body).toContain('in dev-gcp');
-			expect(body).toContain('user@example.com');
-			expect(body).toContain(`/team/nais/activity-log?activityTypes=${activityType}`);
-			expect(body).toContain('resourceTypes=POSTGRES');
-			expect(body).toContain('id=branch-event');
-			expect(body).not.toContain('Source:');
-			expect(body).not.toContain('Recovered to');
-		}
-	);
-
-	test('renders creation source and recovery timestamp in UTC', async () => {
-		const data = entry('PostgresBranchCreatedActivityLogEntry');
-		const { body } = await render(PostgresBranchActivityLogEntryText, {
-			props: {
-				data: {
-					...data,
-					postgresBranch: {
-						branch: 'restore',
-						sourceBranch: 'main',
-						targetTime: new Date('2026-10-06T08:15:00Z')
-					}
-				}
-			}
+	test('renders database updates with metadata and a sidebar link', async () => {
+		const { body } = await render(PostgresUpdatedActivityLogEntryText, {
+			props: { data: entry(), mode: 'sidebar' }
 		});
-		expect(body).toContain('Source: <strong>main</strong>');
-		expect(body).toContain('datetime="2026-10-06T08:15:00.000Z"');
-		expect(body).toContain('2026-10-06 08:15:00 UTC');
-	});
-
-	test('renders activation without creation-specific fields or an environment', async () => {
-		const { body } = await render(PostgresBranchActivityLogEntryText, {
-			props: {
-				data: {
-					...entry('PostgresBranchActivatedActivityLogEntry'),
-					environmentName: null,
-					postgresBranch: { branch: 'main' }
-				}
-			}
-		});
-		expect(body).toContain('<strong>main</strong>');
-		expect(body).toContain('requested as active');
-		expect(body).not.toContain('activated');
-		expect(body).not.toContain('in dev-gcp');
-		expect(body).not.toContain('Source:');
-		expect(body).not.toContain('Recovered to');
+		expect(body).toContain('<strong>database</strong>');
+		expect(body).toContain('updated');
+		expect(body).toContain('in dev-gcp');
+		expect(body).toContain('user@example.com');
+		expect(body).toContain('/team/nais/activity-log?activityTypes=POSTGRES_UPDATED');
+		expect(body).toContain('resourceTypes=POSTGRES');
+		expect(body).toContain('id=postgres-event');
 	});
 });

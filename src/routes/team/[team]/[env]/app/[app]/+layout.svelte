@@ -54,6 +54,11 @@
 				href: resolve('/team/[team]/[env]/app/[app]/logs', page.params as never)
 			},
 			{
+				value: '/team/[team]/[env]/app/[app]/events',
+				label: 'Events',
+				href: resolve('/team/[team]/[env]/app/[app]/events', page.params as never)
+			},
+			{
 				value: '/team/[team]/[env]/app/[app]/activity-log',
 				label: 'Activity Log',
 				href: resolve('/team/[team]/[env]/app/[app]/activity-log', page.params as never)

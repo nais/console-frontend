@@ -244,14 +244,14 @@ describe('buildLokiLogQuery', () => {
 	it('keeps the generic prefix filter available for other workloads', () => {
 		const query = buildLokiLogQuery({
 			team: 'my-team',
-			workload: 'roger',
-			container: 'postgres',
+			workload: 'my-app',
+			container: 'my-app',
 			instances: [],
-			podNamePrefix: 'pg-roger-'
+			podNamePrefix: 'my-app-'
 		});
 		const podPattern = new RegExp(JSON.parse(query.split('k8s_pod_name=~')[1]));
-		for (const branch of ['main', 'test', 'test-feature']) {
-			expect(podPattern.test(`pg-roger-${branch}-f222277b-1`)).toBe(true);
+		for (const suffix of ['abc123-1', 'def456-2', 'ghi789-3']) {
+			expect(podPattern.test(`my-app-${suffix}`)).toBe(true);
 		}
 	});
 

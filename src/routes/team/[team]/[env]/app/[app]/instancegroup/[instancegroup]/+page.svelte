@@ -4,6 +4,8 @@
 	import type { InstanceGroupDetail$result, ValueEncoding$options } from '$houdini';
 	import { ValueEncoding } from '$houdini';
 	import Resource from '#lib/domain/resources/Resource.svelte';
+	import { applicationInstanceStatus } from '#lib/domain/workload/applicationReadiness.js';
+	import { instanceLastExit } from '#lib/domain/workload/instanceLastExit.js';
 	import GraphErrors from '#lib/ui/GraphErrors.svelte';
 	import Collection from '#lib/ui/Collection.svelte';
 	import SurfaceCard from '#lib/ui/SurfaceCard.svelte';
@@ -14,9 +16,15 @@
 		CopyButton,
 		Heading,
 		Loader,
+		Table,
 		Tag,
+		Tbody,
+		Td,
+		Th,
+		Thead,
 		ToggleGroup,
-		ToggleGroupItem
+		ToggleGroupItem,
+		Tr
 	} from '#lib/shadcn/ui/index.js';
 	import prettyBytes from 'pretty-bytes';
 	import { SvelteMap } from 'svelte/reactivity';
@@ -238,21 +246,6 @@
 		return n >= lowerBound && n <= upperBound;
 	}
 
-	function stateName(state: string): string {
-		switch (state) {
-			case 'RUNNING':
-				return 'Running';
-			case 'FAILING':
-				return 'Failing';
-			case 'STARTING':
-				return 'Starting';
-			case 'TERMINATED':
-				return 'Terminated';
-			default:
-				return state;
-		}
-	}
-
 	function downloadMountedFile(filePath: string, content: string, encoding: string) {
 		const fileName = filePath.split('/').pop() ?? filePath;
 		const isBinary = encoding === ValueEncoding.BASE64;
@@ -324,62 +317,60 @@
 				{#if group.instances.length > 0}
 					<section class="section">
 						<Collection title="Instances" count={group.instances.length} level="h3">
-							<ul class="instancegroup-list instances-list">
-								{#each group.instances as instance (instance.id)}
-									<li class="instancegroup-list-item instances-item">
-										<div class="instancegroup-list-cell">
-											<span class="instancegroup-list-label">Name</span>
-											<a href="{baseUrl}/logs?instance={instance.name}" class="instance-link">
-												{instance.name}
-											</a>
-										</div>
-
-										<div class="instancegroup-list-cell">
-											<span class="instancegroup-list-label">Status</span>
-											<Tag
-												size="small"
-												variant={instance.status.state === 'RUNNING'
-													? 'success'
-													: instance.status.state === 'FAILING'
-														? 'error'
-														: instance.status.state === 'TERMINATED'
-															? 'neutral'
-															: 'info'}
-											>
-												{stateName(instance.status.state)}
-											</Tag>
-										</div>
-
-										<div class="instancegroup-list-cell">
-											<span class="instancegroup-list-label">Message</span>
-											{#if instance.status.lastExitReason && instance.restarts > 0}
-												<span class="exit-info">
-													Last exit: {instance.status
-														.lastExitReason}{#if instance.status.lastExitCode !== null && instance.status.lastExitCode !== undefined}
-														(code {instance.status
-															.lastExitCode}){/if}{#if instance.status.lastExitTimestamp}, <Time
-															time={instance.status.lastExitTimestamp}
-															distance
-														/>{/if}
-												</span>
-											{:else if instance.status.message && instance.status.message.toLowerCase() !== instance.status.state.toLowerCase()}
-												{instance.status.message}
-											{:else}
-												<span class="muted">—</span>
-											{/if}
-										</div>
-
-										<div class="instancegroup-list-cell instance-meta">
-											<span class="instancegroup-list-label">Restarts &amp; age</span>
-											<span class="meta-text">
-												{#if instance.restarts > 0}{instance.restarts}
-													{instance.restarts === 1 ? 'restart' : 'restarts'} ·{/if}
-												Started <Time time={instance.created} distance />
-											</span>
-										</div>
-									</li>
-								{/each}
-							</ul>
+							<Table size="small" class="instances-table" aria-label="Instances" role="table">
+								<Thead class="instances-header" role="rowgroup">
+									<Tr role="row">
+										<Th scope="col" role="columnheader" class="instance-heading">Instance</Th>
+										<Th scope="col" role="columnheader">Status</Th>
+										<Th scope="col" role="columnheader" align="right" class="restarts-heading">
+											Restarts
+										</Th>
+										<Th scope="col" role="columnheader" align="right" class="created-heading">
+											Created
+										</Th>
+									</Tr>
+								</Thead>
+								<Tbody role="rowgroup">
+									{#each group.instances as instance (instance.id)}
+										{const status = $derived(applicationInstanceStatus(instance.status))}
+										{const exit = $derived(instanceLastExit(instance.status))}
+										<Tr class="instance-row" role="row" shadeOnHover={false}>
+											<Th scope="row" role="rowheader" class="instance-name">
+												<a
+													href="{baseUrl}/logs?{new URLSearchParams({ instance: instance.name })}"
+													aria-label="{instance.name} logs"
+													class="instance-link"
+												>
+													{instance.name}
+												</a>
+											</Th>
+											<Td class="instance-status" role="cell">
+												<div class="diagnosis">
+													<Tag size="small" variant={status.variant}>{status.label}</Tag>
+													{#if instance.status.message}
+														<p>{instance.status.message}</p>
+													{/if}
+													{#if exit}
+														<p class="exit-info">
+															Last exit: {exit.description}{#if exit.timestamp}{#if exit.description},
+																{/if}<Time time={exit.timestamp} distance />{/if}
+														</p>
+													{/if}
+												</div>
+											</Td>
+											<Td align="right" class="instance-restarts" role="cell">
+												{instance.restarts}<span class="mobile-label" aria-hidden="true"
+													>{instance.restarts === 1 ? ' restart' : ' restarts'}</span
+												>
+											</Td>
+											<Td align="right" class="instance-created" role="cell">
+												<span class="mobile-label" aria-hidden="true">Created </span>
+												<Time time={instance.created} distance />
+											</Td>
+										</Tr>
+									{/each}
+								</Tbody>
+							</Table>
 						</Collection>
 					</section>
 				{/if}
@@ -625,34 +616,99 @@
 		}
 	}
 
-	.muted {
+	:global(.instances-table) {
+		table-layout: fixed;
+	}
+
+	:global(.instances-table .instance-heading) {
+		width: 27%;
+	}
+
+	:global(.instances-table .restarts-heading) {
+		width: 10ch;
+	}
+
+	:global(.instances-table .created-heading) {
+		width: 22ch;
+	}
+
+	:global(.instances-table .instance-row > *) {
+		padding-block: var(--nais-space-12);
+		vertical-align: top;
+		overflow-wrap: anywhere;
+	}
+
+	.diagnosis {
+		display: grid;
+		justify-items: start;
+		gap: var(--nais-space-4);
+		line-height: var(--sh-font-line-height-compact);
+	}
+
+	.diagnosis p {
+		margin: 0;
+	}
+
+	.exit-info,
+	:global(.instances-table .instance-restarts),
+	:global(.instances-table .instance-created) {
 		color: var(--muted-foreground);
 	}
 
-	.instances-list {
-		--instancegroup-list-columns: minmax(0, 3fr) auto minmax(0, 2fr) minmax(0, 2fr);
-		font-size: var(--sh-font-size-sm);
-		color: var(--muted-foreground);
-	}
-
-	.instances-item {
-		align-items: center;
-	}
-
-	.meta-text {
-		overflow-wrap: anywhere;
-		word-break: break-word;
-	}
-
-	.exit-info {
-		overflow-wrap: anywhere;
-		word-break: break-word;
+	:global(.instances-table :is(.instance-restarts, .instance-created)) {
+		font-variant-numeric: tabular-nums;
 	}
 
 	.instance-link {
-		color: var(--foreground);
-		overflow-wrap: anywhere;
-		word-break: break-word;
+		color: var(--link);
+		font-weight: var(--sh-font-weight-medium);
+		text-decoration: underline;
+	}
+
+	.mobile-label {
+		display: none;
+	}
+
+	@container (max-width: 620px) {
+		:global(.instances-table),
+		:global(.instances-table tbody) {
+			display: block;
+		}
+
+		:global(.instances-table .instances-header) {
+			position: absolute;
+			width: 1px;
+			height: 1px;
+			padding: 0;
+			margin: -1px;
+			overflow: hidden;
+			clip-path: inset(50%);
+			white-space: nowrap;
+		}
+
+		:global(.instances-table .instance-row) {
+			display: grid;
+			grid-template-columns: auto minmax(0, 1fr);
+			column-gap: var(--nais-space-12);
+			row-gap: var(--nais-space-6);
+			padding: var(--nais-space-12);
+		}
+
+		:global(.instances-table .instance-row > *) {
+			padding: 0;
+		}
+
+		:global(.instances-table :is(.instance-name, .instance-status)) {
+			grid-column: 1 / -1;
+		}
+
+		:global(.instances-table .instance-restarts) {
+			text-align: left;
+		}
+
+		.mobile-label {
+			display: inline;
+		}
 	}
 
 	.loading {

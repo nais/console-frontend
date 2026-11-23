@@ -56,7 +56,7 @@ describe('Postgres table', () => {
 		['AVAILABLE', 'success', 'available'],
 		['DEGRADED', 'danger', 'degraded'],
 		['PROGRESSING', 'warning', 'progressing']
-	])('shows direct Postgres state=%s without branch resources', async (state, tone, label) => {
+	])('shows Postgres state=%s', async (state, tone, label) => {
 		fixture.nodes = [
 			{
 				id: 'database',

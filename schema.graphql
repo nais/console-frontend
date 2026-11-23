@@ -73,19 +73,10 @@ enum ActivityLogActivityType {
   """OpenSearch was updated."""
   OPENSEARCH_UPDATED
 
-  """A Postgres branch was activated."""
-  POSTGRES_BRANCH_ACTIVATED
-
-  """A Postgres branch was created."""
-  POSTGRES_BRANCH_CREATED
-
-  """A Postgres branch was deleted."""
-  POSTGRES_BRANCH_DELETED
-
   """A Postgres was created"""
   POSTGRES_CREATED
 
-  """A Postgres branch was deleted (historical entries without branch name)"""
+  """A Postgres was deleted"""
   POSTGRES_DELETED
 
   """
@@ -804,7 +795,7 @@ type Application implements ActivityLogger & Node & Workload {
   imageVulnerabilityHistory(
     """Get vulnerability summary from given date until today."""
     from: Date!
-  ): ImageVulnerabilityHistory! @deprecated(reason: "No longer used by Console. Retained for compatibility while consumer usage is assessed.")
+  ): ImageVulnerabilityHistory!
 
   """List of ingresses for the application."""
   ingresses: [Ingress!]!
@@ -959,7 +950,7 @@ type Application implements ActivityLogger & Node & Workload {
   ): ValkeyConnection!
 
   """Get the mean time to fix history for an application."""
-  vulnerabilityFixHistory(from: Date!): VulnerabilityFixHistory! @deprecated(reason: "No longer used by Console. Retained for compatibility while consumer usage is assessed.")
+  vulnerabilityFixHistory(from: Date!): VulnerabilityFixHistory!
 }
 
 """Authentication integrations for the application."""
@@ -4438,7 +4429,7 @@ type Job implements ActivityLogger & Node & Workload {
   imageVulnerabilityHistory(
     """Get vulnerability summary from given date until today."""
     from: Date!
-  ): ImageVulnerabilityHistory! @deprecated(reason: "No longer used by Console. Retained for compatibility while consumer usage is assessed.")
+  ): ImageVulnerabilityHistory!
 
   """Issues that affect the job."""
   issues(
@@ -4586,7 +4577,7 @@ type Job implements ActivityLogger & Node & Workload {
   ): ValkeyConnection!
 
   """Get the mean time to fix history for a job."""
-  vulnerabilityFixHistory(from: Date!): VulnerabilityFixHistory! @deprecated(reason: "No longer used by Console. Retained for compatibility while consumer usage is assessed.")
+  vulnerabilityFixHistory(from: Date!): VulnerabilityFixHistory!
 }
 
 union JobAuthIntegrations = EntraIDAuthIntegration | MaskinportenAuthIntegration
@@ -6707,66 +6698,6 @@ enum PostgresAccessState {
   READY
 }
 
-"""
-A request to activate a Postgres branch was accepted; the switchover may still be pending.
-"""
-type PostgresBranchActivatedActivityLogEntry implements ActivityLogEntry & Node {
-  actor: String!
-  createdAt: Time!
-  data: PostgresBranchActivityLogEntryData!
-  environmentName: String
-  gitHubActorClaims: GitHubActorClaims
-  id: ID!
-  message: String!
-
-  """Name of the Postgres containing the branch."""
-  resourceName: String!
-  resourceType: ActivityLogEntryResourceType!
-  teamSlug: Slug!
-}
-
-type PostgresBranchActivityLogEntryData {
-  branch: String!
-
-  """Source branch, populated for branch creation."""
-  sourceBranch: String
-
-  """Recovery instant, populated for branch creation."""
-  targetTime: Time
-}
-
-"""A Postgres branch was created."""
-type PostgresBranchCreatedActivityLogEntry implements ActivityLogEntry & Node {
-  actor: String!
-  createdAt: Time!
-  data: PostgresBranchActivityLogEntryData!
-  environmentName: String
-  gitHubActorClaims: GitHubActorClaims
-  id: ID!
-  message: String!
-
-  """Name of the Postgres containing the branch."""
-  resourceName: String!
-  resourceType: ActivityLogEntryResourceType!
-  teamSlug: Slug!
-}
-
-"""A Postgres branch was deleted."""
-type PostgresBranchDeletedActivityLogEntry implements ActivityLogEntry & Node {
-  actor: String!
-  createdAt: Time!
-  data: PostgresBranchActivityLogEntryData!
-  environmentName: String
-  gitHubActorClaims: GitHubActorClaims
-  id: ID!
-  message: String!
-
-  """Name of the Postgres containing the branch."""
-  resourceName: String!
-  resourceType: ActivityLogEntryResourceType!
-  teamSlug: Slug!
-}
-
 """Configured PostgreSQL settings for a database."""
 type PostgresConfiguration {
   """
@@ -7007,7 +6938,7 @@ type PostgresPersonalAccessCreatedActivityLogEntry implements ActivityLogEntry &
   """Message that summarizes the entry."""
   message: String!
 
-  """Name of the affected Postgres branch."""
+  """Name of the affected Postgres."""
   resourceName: String!
 
   """Type of the affected resource."""
@@ -7368,7 +7299,7 @@ type Query {
   imageVulnerabilityHistory(
     """Get vulnerability summary from given date until today."""
     from: Date!
-  ): ImageVulnerabilityHistory! @deprecated(reason: "No longer used by Console. Retained for compatibility while consumer usage is assessed.")
+  ): ImageVulnerabilityHistory!
 
   """
   Issues across teams in the tenant, ordered by severity unless otherwise specified.
@@ -7572,7 +7503,7 @@ type Query {
   ): UserConnection!
 
   """Get the mean time to fix history for all teams."""
-  vulnerabilityFixHistory(from: Date!): VulnerabilityFixHistory! @deprecated(reason: "No longer used by Console. Retained for compatibility while consumer usage is assessed.")
+  vulnerabilityFixHistory(from: Date!): VulnerabilityFixHistory!
 
   """List per-workload vulnerability summaries across all teams."""
   vulnerabilitySummaries(
@@ -10037,7 +9968,7 @@ type Team implements ActivityLogger & Node {
   imageVulnerabilityHistory(
     """Get vulnerability summary from given date until today."""
     from: Date!
-  ): ImageVulnerabilityHistory! @deprecated(reason: "No longer used by Console. Retained for compatibility while consumer usage is assessed.")
+  ): ImageVulnerabilityHistory!
 
   """Overall inventory of resources for the team."""
   inventoryCounts: TeamInventoryCounts!
@@ -10321,7 +10252,7 @@ type Team implements ActivityLogger & Node {
   viewerIsOwner: Boolean!
 
   """Get the mean time to fix history for a team."""
-  vulnerabilityFixHistory(from: Date!): VulnerabilityFixHistory! @deprecated(reason: "No longer used by Console. Retained for compatibility while consumer usage is assessed.")
+  vulnerabilityFixHistory(from: Date!): VulnerabilityFixHistory!
 
   """Fetch vulnerability summaries for workloads in the team."""
   vulnerabilitySummaries(
@@ -13930,7 +13861,7 @@ interface Workload implements ActivityLogger & Node {
   imageVulnerabilityHistory(
     """Get vulnerability summary from given date until today."""
     from: Date!
-  ): ImageVulnerabilityHistory! @deprecated(reason: "No longer used by Console. Retained for compatibility while consumer usage is assessed.")
+  ): ImageVulnerabilityHistory!
 
   """Issues that affect the workload."""
   issues(
@@ -14053,7 +13984,7 @@ interface Workload implements ActivityLogger & Node {
   ): ValkeyConnection!
 
   """Get the mean time to fix history for a workload."""
-  vulnerabilityFixHistory(from: Date!): VulnerabilityFixHistory! @deprecated(reason: "No longer used by Console. Retained for compatibility while consumer usage is assessed.")
+  vulnerabilityFixHistory(from: Date!): VulnerabilityFixHistory!
 }
 
 """Workload connection."""

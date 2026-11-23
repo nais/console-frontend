@@ -33,15 +33,11 @@ describe('Postgres Insights queries', () => {
 		expect(new Set(charts.map((candidate) => candidate.title)).size).toBe(charts.length);
 	});
 
-	test.each(charts)(
-		'$title is scoped to the selected team and database without a branch label',
-		({ query }) => {
-			expect(query).toContain('namespace="my-team"');
-			expect(query).toContain('team="my-team"');
-			expect(query).toContain('postgres="my-database"');
-			expect(query).not.toContain('branch=');
-		}
-	);
+	test.each(charts)('$title is scoped to the selected team and database', ({ query }) => {
+		expect(query).toContain('namespace="my-team"');
+		expect(query).toContain('team="my-team"');
+		expect(query).toContain('postgres="my-database"');
+	});
 
 	test('escapes label values without changing their meaning', () => {
 		const scoped = postgresInsightsSections('a"b', 'c\\d');

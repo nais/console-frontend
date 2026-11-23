@@ -1,4 +1,6 @@
 export const issueTypeLabel = (type: string) => {
+	if (type === 'APPLICATION_ROLLOUT_STUCK') return 'Rollout stuck';
+
 	return type
 		.split('_')
 		.map((part) => {

@@ -2,8 +2,17 @@
 	import { applyAction, enhance } from '$app/forms';
 	import { goto } from '$app/navigation';
 	import { page } from '$app/state';
+	import ApplicationScalingStatus from '#lib/domain/workload/ApplicationScalingStatus.svelte';
+	import GraphErrors from '#lib/ui/GraphErrors.svelte';
 	import { isPossiblyInModal } from '#lib/ui/PageModal.svelte';
-	import { Alert, BodyLong, Button, ErrorMessage, TextField } from '#lib/shadcn/ui/index.js';
+	import {
+		Alert,
+		BodyLong,
+		Button,
+		ErrorMessage,
+		ShSpinner,
+		TextField
+	} from '#lib/shadcn/ui/index.js';
 	import { tick } from 'svelte';
 	import type { PageProps } from './$types';
 
@@ -36,7 +45,7 @@
 		<Alert variant="success" size="small">{successMessage}</Alert>
 		<Button variant="tertiary" size="small" onclick={close} bind:ref={closeButtonEl}>Close</Button>
 	</div>
-{:else}
+{:else if scaling}
 	<form
 		method="POST"
 		action="/team/{page.params.team}/{page.params.env}/app/{page.params.app}/resize"
@@ -57,6 +66,8 @@
 			Set the number of replicas for <strong>{page.params.app}</strong> in
 			<strong>{page.params.env}</strong>.
 		</BodyLong>
+
+		<ApplicationScalingStatus {scaling} />
 
 		<TextField
 			size="small"
@@ -89,6 +100,13 @@
 			<Button variant="tertiary" size="small" type="button" onclick={close}>Cancel</Button>
 		</div>
 	</form>
+{:else if $ResizeApplicationData.fetching}
+	<div role="status" aria-label="Loading scaling settings"><ShSpinner size="sm" /></div>
+{:else}
+	<GraphErrors errors={$ResizeApplicationData.errors} />
+	{#if !$ResizeApplicationData.errors?.length}
+		<Alert variant="warning" size="small">Scaling settings are unavailable.</Alert>
+	{/if}
 {/if}
 
 <style>
@@ -96,12 +114,12 @@
 		display: flex;
 		flex-direction: column;
 		gap: var(--nais-space-8);
-		width: 500px;
+		width: min(100%, var(--sh-modal-small-max-width));
 		align-items: flex-start;
 	}
 
 	form {
-		width: 600px;
+		width: min(100%, var(--sh-modal-medium-max-width));
 	}
 
 	form :global(:is(.sh-form-field, .sh-select-field)) {
