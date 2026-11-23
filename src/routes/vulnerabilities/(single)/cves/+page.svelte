@@ -4,6 +4,7 @@
 	import OrderByMenu from '#lib/ui/OrderByMenu.svelte';
 	import Pagination from '#lib/ui/Pagination.svelte';
 	import { changeParams } from '#lib/utils/searchparams.js';
+	import { numberFormatter } from '#lib/utils/formatters.js';
 	import { BodyLong, Heading, Loader } from '#lib/shadcn/ui/index.js';
 	import type { PageProps } from './$types';
 	import {
@@ -23,7 +24,12 @@
 	<GraphErrors errors={query?.errors} />
 	<div>
 		<div class="cve-header">
-			<Heading as="h2">CVE Database</Heading>
+			<Heading as="h2">
+				CVE Database
+				{#if connection}
+					({numberFormatter(connection.pageInfo.totalCount)})
+				{/if}
+			</Heading>
 			<OrderByMenu
 				orderField={cveOrderFields}
 				defaultOrderField={defaultCveOrder.field}
