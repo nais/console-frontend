@@ -1,29 +1,22 @@
 <script lang="ts">
-	import CvesGroupedByPriority from '#lib/domain/vulnerability/CvesGroupedByPriority.svelte';
+	import CveListView from '#lib/domain/vulnerability/CveList.svelte';
 	import GraphErrors from '#lib/ui/GraphErrors.svelte';
 	import OrderByMenu from '#lib/ui/OrderByMenu.svelte';
 	import Pagination from '#lib/ui/Pagination.svelte';
 	import { changeParams } from '#lib/utils/searchparams.js';
-	import { CVEOrderField, OrderDirection } from '$houdini';
 	import { BodyLong, Heading, Loader } from '#lib/shadcn/ui/index.js';
 	import type { PageProps } from './$types';
-	import { cvePageParams, cvePaginationParams } from './pagination.js';
+	import {
+		cveOrderFields,
+		cvePageParams,
+		cvePaginationParams,
+		defaultCveOrder
+	} from './pagination.js';
 
 	let { data }: PageProps = $props();
-	let { CvePriorityGroups, CveList } = $derived(data);
-	const query = $derived(data.grouped ? $CvePriorityGroups : $CveList);
-	const flatConnection = $derived($CveList?.data?.cves);
-	const priorityGroups = $derived([
-		{ key: 'high', priority: 'HIGH', connection: $CvePriorityGroups?.data?.high },
-		{ key: 'elevated', priority: 'ELEVATED', connection: $CvePriorityGroups?.data?.elevated },
-		{ key: 'monitor', priority: 'MONITOR', connection: $CvePriorityGroups?.data?.monitor }
-	] as const);
-	const groups = $derived(
-		data.cveOrder === 'PRIORITY-DESC' ? priorityGroups.toReversed() : priorityGroups
-	);
-	const hasCves = $derived(
-		groups.some((group) => (group.connection?.pageInfo.totalCount ?? 0) > 0)
-	);
+	let { CveList } = $derived(data);
+	const query = $derived($CveList);
+	const connection = $derived(query.data?.cves);
 </script>
 
 <div class="wrapper">
@@ -32,9 +25,9 @@
 		<div class="cve-header">
 			<Heading as="h2">CVE Database</Heading>
 			<OrderByMenu
-				orderField={CVEOrderField}
-				defaultOrderField={CVEOrderField.PRIORITY}
-				defaultOrderDirection={OrderDirection.ASC}
+				orderField={cveOrderFields}
+				defaultOrderField={defaultCveOrder.field}
+				defaultOrderDirection={defaultCveOrder.direction}
 				resetParams={cvePaginationParams}
 			/>
 		</div>
@@ -49,66 +42,20 @@
 		<div class="loading-centered" role="status" aria-label="Loading">
 			<Loader size="3xlarge" />
 		</div>
-	{:else if data.grouped && hasCves}
-		{#each groups as group (group.key)}
-			{#if group.connection && group.connection.pageInfo.totalCount > 0}
-				<CvesGroupedByPriority
-					cves={group.connection.edges}
-					priorityGroup={{
-						priority: group.priority,
-						totalCount: group.connection.pageInfo.totalCount
-					}}
-				>
-					{#snippet pagination()}
-						<Pagination
-							page={group.connection?.pageInfo}
-							fetching={query?.fetching}
-							loaders={{
-								loadPreviousPage: () =>
-									changeParams(
-										cvePageParams(
-											group.key,
-											'previous',
-											group.connection?.pageInfo.startCursor ?? null,
-											data.cveOrder
-										),
-										{ noScroll: true }
-									),
-								loadNextPage: () =>
-									changeParams(
-										cvePageParams(
-											group.key,
-											'next',
-											group.connection?.pageInfo.endCursor ?? null,
-											data.cveOrder
-										),
-										{ noScroll: true }
-									)
-							}}
-						/>
-					{/snippet}
-				</CvesGroupedByPriority>
-			{/if}
-		{/each}
-	{:else if !data.grouped && flatConnection && flatConnection.pageInfo.totalCount > 0}
-		<CvesGroupedByPriority cves={flatConnection.edges} flat />
+	{:else if connection && connection.pageInfo.totalCount > 0}
+		<CveListView cves={connection.edges} />
 		<Pagination
-			page={flatConnection.pageInfo}
+			page={connection.pageInfo}
 			fetching={query?.fetching}
 			loaders={{
 				loadPreviousPage: () =>
 					changeParams(
-						cvePageParams(
-							'all',
-							'previous',
-							flatConnection?.pageInfo.startCursor ?? null,
-							data.cveOrder
-						),
+						cvePageParams('previous', connection?.pageInfo.startCursor ?? null, data.cveOrder),
 						{ noScroll: true }
 					),
 				loadNextPage: () =>
 					changeParams(
-						cvePageParams('all', 'next', flatConnection?.pageInfo.endCursor ?? null, data.cveOrder),
+						cvePageParams('next', connection?.pageInfo.endCursor ?? null, data.cveOrder),
 						{ noScroll: true }
 					)
 			}}
