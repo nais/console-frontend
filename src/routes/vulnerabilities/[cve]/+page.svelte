@@ -1,5 +1,4 @@
 <script lang="ts">
-	import PriorityBadge from '#lib/domain/vulnerability/priority/PriorityBadge.svelte';
 	import CveImpact from '#lib/domain/vulnerability/CveImpact.svelte';
 	import { cveWorkloadOrder } from '#lib/domain/vulnerability/cveWorkloadOrder.js';
 	import {
@@ -8,7 +7,6 @@
 		groupCveWorkloads
 	} from '#lib/domain/vulnerability/cveWorkloadGroups.js';
 	import PrioritySignals from '#lib/domain/vulnerability/priority/PrioritySignals.svelte';
-	import { priorityDetails } from '#lib/domain/vulnerability/priority/priority.js';
 	import WorkloadLink from '#lib/domain/workload/WorkloadLink.svelte';
 	import ExternalLink from '#lib/ui/ExternalLink.svelte';
 	import GraphErrors from '#lib/ui/GraphErrors.svelte';
@@ -92,7 +90,6 @@
 			</Alert>
 		{:else if $CVEDetails.data}
 			{const cve = $derived($CVEDetails.data.cve)}
-			{const priority = $derived(priorityDetails(cve.riskAssessment.priority))}
 			<div class="wrapper">
 				<div class="header">
 					<div class="title-row">
@@ -104,25 +101,10 @@
 					{/if}
 				</div>
 
-				<section
-					class="priority-card {cve.riskAssessment.priority.toLowerCase()}"
-					aria-labelledby="priority-heading"
-				>
-					<div class="priority-card-header">
-						<div>
-							<Detail as="p">Operational priority</Detail>
-							<Heading as="h2" size="medium" id="priority-heading">
-								<PriorityBadge priority={cve.riskAssessment.priority} />
-							</Heading>
-						</div>
-						<div class="priority-explanation">
-							<BodyShort size="small" class="priority-guidance">{priority.guidance}</BodyShort>
-						</div>
-					</div>
-				</section>
-
-				<div class="card risk-assessment-card">
-					<Heading as="h2" size="small">Severity and threat signals</Heading>
+				<section class="card risk-assessment-card" aria-labelledby={`${uid}-cve-details`}>
+					<Heading as="h2" size="small" id={`${uid}-cve-details`}
+						>Severity and threat signals</Heading
+					>
 					<div class="risk-assessment-content">
 						<div class="risk-assessment-group">
 							<Detail as="p">Severity and CVSS</Detail>
@@ -143,9 +125,9 @@
 							/>
 						</div>
 					</div>
-				</div>
-				<div class="card">
-					<Heading as="h2" size="small" spacing>Details</Heading>
+				</section>
+				<section class="card" aria-labelledby={`${uid}-cve-references`}>
+					<Heading as="h2" size="small" spacing id={`${uid}-cve-references`}>Details</Heading>
 					<BodyShort>
 						{#if hasDetailsLink(cve.detailsLink)}
 							<ExternalLink href={cve.detailsLink}>View the CVE details</ExternalLink>
@@ -153,7 +135,7 @@
 							No link available
 						{/if}
 					</BodyShort>
-				</div>
+				</section>
 			</div>
 		{:else if hasOtherErrors($CVEDetails.errors)}
 			<GraphErrors errors={$CVEDetails.errors} />
@@ -366,77 +348,9 @@
 		gap: var(--nais-space-12);
 	}
 
-	.priority-card {
-		display: flex;
-		flex-direction: column;
-		gap: var(--nais-space-16);
-		padding: var(--nais-space-20);
-		border: var(--nais-space-1) solid var(--border);
-		border-left: var(--nais-space-2) solid var(--border);
-		border-radius: var(--nais-radius-8);
-		background: var(--background-subtle);
-	}
-
-	.priority-card.high {
-		border-left-color: var(--warning-border);
-	}
-
-	.priority-card.urgent {
-		border-left-color: var(--destructive);
-	}
-
-	.priority-card-header {
-		display: flex;
-		align-items: start;
-		justify-content: space-between;
-		gap: var(--nais-space-16);
-	}
-
-	.priority-card :global(h2) {
-		display: flex;
-		align-items: center;
-		flex-wrap: wrap;
-		gap: var(--nais-space-8);
-		margin: var(--nais-space-4) 0 0;
-	}
-
-	.priority-guidance {
-		font-weight: var(--sh-font-weight-semibold);
-		text-align: right;
-		color: var(--muted-foreground);
-	}
-
-	.priority-explanation {
-		display: flex;
-		flex-direction: column;
-		gap: var(--nais-space-4);
-		max-width: 48ch;
-		text-align: right;
-	}
-
 	.card {
 		padding: var(--nais-space-16);
 		border-radius: var(--nais-radius-8);
-	}
-
-	.details-list {
-		display: flex;
-		flex-wrap: wrap;
-		gap: var(--nais-space-24);
-		margin: 0;
-		align-items: stretch;
-
-		& > div {
-			display: grid;
-			grid-template-rows: auto 1fr;
-			gap: var(--nais-space-4);
-		}
-
-		& > div :global(dd) {
-			display: flex;
-			align-items: center;
-			margin: 0;
-		}
 	}
 
 	.risk-assessment-content {
@@ -491,15 +405,6 @@
 	}
 
 	@media (max-width: 767px) {
-		.priority-card-header {
-			flex-direction: column;
-		}
-
-		.priority-explanation {
-			max-width: none;
-			text-align: left;
-		}
-
 		.risk-assessment-content {
 			grid-template-columns: 1fr;
 		}
@@ -553,14 +458,6 @@
 	@media (max-width: 767px) {
 		.workload-container {
 			grid-template-columns: 1fr;
-		}
-
-		.priority-card-header {
-			flex-direction: column;
-		}
-
-		.priority-guidance {
-			text-align: left;
 		}
 	}
 
