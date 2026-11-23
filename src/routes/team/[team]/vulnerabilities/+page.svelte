@@ -8,30 +8,17 @@
 	import { mergeWorkloadLabelFacets } from '#lib/domain/vulnerability/workloadLabels.js';
 	import GraphErrors from '#lib/ui/GraphErrors.svelte';
 	import { Alert, BodyLong, Heading } from '#lib/shadcn/ui/index.js';
-	import { page } from '$app/state';
-	import { SvelteURLSearchParams } from 'svelte/reactivity';
 	import type { PageProps } from './$types';
 
 	let { data }: PageProps = $props();
-	let {
-		TeamVulnerabilities,
-		TeamNoSbomWorkloads,
-		TeamPriorityWorkloadsHigh,
-		TeamSeverityWorkloads,
-		teamSlug,
-		selection
-	} = $derived(data);
+	let { TeamVulnerabilities, TeamNoSbomWorkloads, TeamSeverityWorkloads, teamSlug, selection } =
+		$derived(data);
 	const labelFacets = $derived(
 		mergeWorkloadLabelFacets(
 			$TeamVulnerabilities.data?.team.applications.facets?.labels ?? [],
 			$TeamVulnerabilities.data?.team.jobs.facets?.labels ?? []
 		)
 	);
-	const priorityHref = $derived.by(() => {
-		const params = new SvelteURLSearchParams(page.url.searchParams);
-		params.set('view', 'priority');
-		return `?${params}#priority-groups`;
-	});
 </script>
 
 <GraphErrors errors={$TeamVulnerabilities.errors} />
@@ -88,7 +75,7 @@
 			)}
 			<VulnerabilitySummary
 				vulnerabilitySummary={$TeamVulnerabilities.data.team.vulnerabilitySummary}
-				knownExploitedHref={priorityHref}
+				knownExploitedHref="#workload-list"
 				{urgentCount}
 				knownExploitedWorkloadCount={exploitedWorkloadCount}
 			/>
@@ -111,19 +98,12 @@
 				{#key teamSlug}
 					<WorkloadsWithVulnerabilities
 						team={teamSlug}
-						high={TeamPriorityWorkloadsHigh}
 						severity={TeamSeverityWorkloads}
 						{selection}
 						{labelFacets}
 						environmentNames={$TeamVulnerabilities.data.team.environments.map(
 							(env) => env.environment.name
 						)}
-						highWorkloadCount={$TeamVulnerabilities.data.team.vulnerabilitySummary
-							?.highWorkloadCount}
-						elevatedWorkloadCount={$TeamVulnerabilities.data.team.vulnerabilitySummary
-							?.elevatedWorkloadCount}
-						monitorWorkloadCount={$TeamVulnerabilities.data.team.vulnerabilitySummary
-							?.monitorWorkloadCount}
 					/>
 				{/key}
 			</section>

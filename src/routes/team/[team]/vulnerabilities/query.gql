@@ -59,23 +59,14 @@ query TeamVulnerabilities(
 		vulnerabilitySummary(filter: { environmentName: $environmentName, labels: $labels }) {
 			sbomCount
 			coverage
-			highWorkloadCount
-			elevatedWorkloadCount
-			monitorWorkloadCount
 			countsByPriority {
 				knownExploited
-				highRisk
-				elevatedRisk
-				monitor
 			}
 			critical
 			high
 			medium
 			low
 			unassigned
-			riskScore
-			riskScoreTrend @include(if: $unfiltered)
-			lastUpdated
 		}
 	}
 }

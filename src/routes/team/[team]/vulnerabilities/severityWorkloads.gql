@@ -84,7 +84,6 @@ query TeamSeverityWorkloads(
 						countsByPriority {
 							knownExploited
 						}
-						riskScore
 						lastUpdated
 						staleImageTag
 					}
