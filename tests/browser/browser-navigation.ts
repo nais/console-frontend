@@ -10,6 +10,10 @@ export const page = {
 	params: { team: pathname.startsWith('/team/') ? pathname.split('/')[2] : undefined }
 };
 
+export function goto(): never {
+	throw new Error('SvelteKit navigation is not available in standalone browser fixtures.');
+}
+
 export function afterNavigate(callback: () => void) {
 	onMount(() => {
 		callback();

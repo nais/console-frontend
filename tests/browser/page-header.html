@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Page header browser tests</title>
+	</head>
+	<body>
+		<div id="app"></div>
+		<script type="module">
+			import { mount, tick } from 'svelte';
+			import PageHeader from '../../src/routes/PageHeader.svelte';
+			import '../../src/lib/font.css';
+			import '../../src/styles/app.css';
+
+			mount(PageHeader, { target: document.getElementById('app'), props: { user: undefined } });
+			await tick();
+			document.documentElement.dataset.ready = 'true';
+		</script>
+	</body>
+</html>

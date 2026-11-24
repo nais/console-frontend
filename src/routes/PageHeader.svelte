@@ -8,7 +8,7 @@
 	import GrafanaIcon from '#lib/icons/GrafanaIcon.svelte';
 	import AppSidebar from '#lib/shadcn/ui/AppSidebar.svelte';
 	import { tenantNavigation } from '#lib/tenantNavigation.js';
-	import { Button, Theme } from '#lib/shadcn/ui/index.js';
+	import { ActionMenu, ActionMenuItem, Button, Theme } from '#lib/shadcn/ui/index.js';
 	import GraphErrors from '#lib/ui/GraphErrors.svelte';
 	import ErrorIndicator from '#lib/ui/ErrorIndicator.svelte';
 	import { themeSwitch } from '#lib/stores/theme.svelte.js';
@@ -21,6 +21,7 @@
 		CogIcon,
 		LineGraphIcon,
 		MagnifyingGlassIcon,
+		MenuElipsisVerticalIcon,
 		MenuHamburgerIcon,
 		PersonGroupIcon
 	} from '#lib/icons/index.js';
@@ -447,6 +448,46 @@
 				</a>
 			</div>
 
+			<div class="external-links-menu">
+				<ActionMenu>
+					{#snippet trigger(props)}
+						<Button
+							{...props}
+							variant="tertiary"
+							size="small"
+							aria-label="External tools"
+							title="External tools"
+						>
+							<MenuElipsisVerticalIcon aria-hidden="true" />
+						</Button>
+					{/snippet}
+					<ActionMenuItem
+						href={docURL()}
+						target="_blank"
+						rel="noopener noreferrer"
+						icon={BooksIcon}
+					>
+						Docs
+					</ActionMenuItem>
+					<ActionMenuItem
+						href={apmServicesURL()}
+						target="_blank"
+						rel="noopener noreferrer"
+						icon={LineGraphIcon}
+					>
+						APM
+					</ActionMenuItem>
+					<ActionMenuItem
+						href={tenantURL('grafana')}
+						target="_blank"
+						rel="noopener noreferrer"
+						icon={GrafanaIcon}
+					>
+						Grafana
+					</ActionMenuItem>
+				</ActionMenu>
+			</div>
+
 			<button
 				type="button"
 				class="topnav-icon-btn"
@@ -871,6 +912,10 @@
 		gap: var(--nais-space-2);
 	}
 
+	.external-links-menu {
+		display: none;
+	}
+
 	.topnav-tool-link {
 		display: inline-flex;
 		align-items: center;
@@ -996,6 +1041,10 @@
 		.external-links-group,
 		.user-name {
 			display: none;
+		}
+
+		.external-links-menu {
+			display: inline-flex;
 		}
 
 		.jump-to-btn {
