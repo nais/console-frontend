@@ -116,6 +116,21 @@ describe.each(['application', 'job'] as const)('%s log viewer fallback', (kind) 
 		expect(body).not.toContain('Open Team Logs');
 	});
 
+	it.each(['LogDestinationGeneric', 'LogDestinationLoki'])(
+		'passes the workload environment to APM for %s',
+		async (__typename) => {
+			const { body } = await view([{ __typename }]);
+			const href = body.match(/href="([^"]*\/a\/nais-apm-app\/services\/[^"]*)"/)?.[1];
+			expect(href).toBeDefined();
+			const url = new URL(href!.replaceAll('&amp;', '&'));
+			expect(url.pathname).toBe(
+				`/a/nais-apm-app/services/team/${kind === 'application' ? 'app' : 'job'}`
+			);
+			expect(url.searchParams.get('environment')).toBe('dev-gcp');
+			expect(url.searchParams.get('tab')).toBe('traces');
+		}
+	);
+
 	it.each([false, true])(
 		'preserves the legacy viewer with Team Logs present: %s',
 		async (secure) => {
