@@ -38,6 +38,7 @@ afterEach(async () => {
 	vi.useRealTimers();
 	vi.restoreAllMocks();
 	vi.clearAllMocks();
+	page.data.tenantName = 'nav';
 });
 
 function renderHeader() {
@@ -123,6 +124,30 @@ it('keeps appearance settings available without user profile data', () => {
 	const settings = element<HTMLButtonElement>('button[aria-label="User settings"]');
 	expect(settings.getAttribute('aria-haspopup')).toBe('menu');
 	expect(document.querySelector('a[aria-label="Log out"]')).toBeNull();
+});
+
+it.each(['nav', 'novari'])('provides external tools in the compact menu for %s', async (tenant) => {
+	page.data.tenantName = tenant;
+	renderHeader();
+	const opener = element<HTMLButtonElement>('button[aria-label="External tools"]');
+	opener.click();
+	flushSync();
+	await vi.waitFor(() => expect(document.querySelector('[role="menu"]')).not.toBeNull());
+	const links = [...document.querySelectorAll<HTMLAnchorElement>('[role="menuitem"]')];
+	expect(links.map((link) => link.textContent?.trim())).toEqual(['Docs', 'APM', 'Grafana']);
+	expect(links.map((link) => link.getAttribute('href'))).toEqual([
+		tenant === 'nav' ? 'https://docs.nais.io' : `https://docs.${tenant}.cloud.nais.io`,
+		`https://grafana.${tenant}.cloud.nais.io/a/nais-apm-app/services`,
+		`https://grafana.${tenant}.cloud.nais.io`
+	]);
+	for (const link of links) {
+		expect(link.tagName).toBe('A');
+		expect(link.getAttribute('target')).toBe('_blank');
+		expect(link.getAttribute('rel')).toBe('noopener noreferrer');
+	}
+	links[0].dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }));
+	flushSync();
+	await vi.waitFor(() => expect(opener.getAttribute('aria-expanded')).toBe('false'));
 });
 
 it('updates the Admin error indicator without hiding the link when errors clear', () => {
