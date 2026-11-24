@@ -68,6 +68,7 @@ function assertLinkRanges() {
 	const tracesURL = new URL(traces!.href);
 	expect(tracesURL.pathname).toBe('/a/nais-apm-app/services/team/app');
 	expect(tracesURL.searchParams.get('tab')).toBe('traces');
+	expect(tracesURL.searchParams.get('environment')).toBe('dev-gcp');
 	expect(tracesURL.searchParams.get('from')).toBe(String(from));
 	expect(tracesURL.searchParams.get('to')).toBe(String(to));
 	const query = decodeURIComponent(new URL(teamLogs!.href).pathname.split(';query=')[1]);

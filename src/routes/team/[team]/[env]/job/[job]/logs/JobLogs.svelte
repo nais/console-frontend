@@ -59,7 +59,12 @@
 			initialInstanceIsPrefix={selectedInstance !== null}
 			{hasLoki}
 			{grafanaURL}
-			tracesURL={apmURL(page.params.team!, page.params.job!, 'traces')}
+			tracesURL={apmURL(
+				page.params.team!,
+				page.params.job!,
+				team.environment.environment.name,
+				'traces'
+			)}
 		>
 			{#snippet externalLinks(range)}
 				{#if hasSecureLogs}
@@ -79,7 +84,12 @@
 			workload={team.environment.job.name}
 			{instances}
 			{initialInstances}
-			tracesURL={apmURL(page.params.team!, page.params.job!, 'traces')}
+			tracesURL={apmURL(
+				page.params.team!,
+				page.params.job!,
+				team.environment.environment.name,
+				'traces'
+			)}
 		/>
 	{:else}
 		<Alert variant="info">No standard log destination is configured for this workload.</Alert>
