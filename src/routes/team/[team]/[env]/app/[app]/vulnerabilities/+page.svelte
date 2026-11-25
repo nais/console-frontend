@@ -34,12 +34,15 @@
 <Heading as="h2" size="medium" spacing>Vulnerabilities</Heading>
 
 {#if data.v0sVulnerabilities}
-	<WorkloadFindings
-		team={page.params.team ?? ''}
-		environment={page.params.env ?? ''}
-		workload={page.params.app ?? ''}
-		authorized={viewerIsMember}
-	/>
+	{#key data.WorkloadFindings}
+		<WorkloadFindings
+			store={data.WorkloadFindings}
+			team={page.params.team ?? ''}
+			environment={page.params.env ?? ''}
+			workload={page.params.app ?? ''}
+			authorized={viewerIsMember}
+		/>
+	{/key}
 {:else}
 	<GraphErrors errors={$ApplicationImageDetails?.errors} />
 
