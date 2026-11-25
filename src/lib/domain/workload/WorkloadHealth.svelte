@@ -237,18 +237,13 @@
 		return { current, previous, change };
 	});
 
-	let hasData = $derived(
-		workloadType === 'app'
-			? !!$vulnQuery?.data && !!$costQuery?.data
-			: !!$jobVulnQuery?.data && !!$jobCostQuery?.data
+	const vulnerabilityResult = $derived(
+		v0sHealth ? $v0sHealth : workloadType === 'app' ? $vulnQuery : $jobVulnQuery
 	);
-
-	let dataLoading = $derived(
-		loading ||
-			(!hasData &&
-				(workloadType === 'app'
-					? $vulnQuery?.fetching || $costQuery?.fetching
-					: $jobVulnQuery?.fetching || $jobCostQuery?.fetching))
+	const costResult = $derived(workloadType === 'app' ? $costQuery : $jobCostQuery);
+	const hasData = $derived(!!vulnerabilityResult?.data && !!costResult?.data);
+	const dataLoading = $derived(
+		loading || (!hasData && (vulnerabilityResult?.fetching || costResult?.fetching))
 	);
 
 	let instancesHealthy = $derived(
