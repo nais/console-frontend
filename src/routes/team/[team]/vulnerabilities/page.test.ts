@@ -1,11 +1,11 @@
-import { Kind, parse } from 'graphql';
+import { Kind, parse, print } from 'graphql';
 import { readFileSync } from 'node:fs';
 import type { ComponentProps } from 'svelte';
 import { render } from 'svelte/server';
 import { writable } from 'svelte/store';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
-const { loadHigh, loadSeverity, loadNoSbom, loadSummary, summary } = vi.hoisted(() => {
+const { loadHigh, loadSeverity, loadNoSbom, loadSummary, loadV0s, summary } = vi.hoisted(() => {
 	const summary = {
 		missingSbomCount: 0,
 		sbomCount: 1,
@@ -18,6 +18,7 @@ const { loadHigh, loadSeverity, loadNoSbom, loadSummary, summary } = vi.hoisted(
 		loadHigh: vi.fn(async () => ({})),
 		loadSeverity: vi.fn(async () => ({})),
 		loadNoSbom: vi.fn(async () => ({})),
+		loadV0s: vi.fn(async () => ({ TeamV0sOverview: {} })),
 		loadSummary: vi.fn(async (params: { blocking?: boolean }) => {
 			if (params.blocking) await summary.wait?.();
 			return {
@@ -54,6 +55,7 @@ vi.mock('$houdini', async () => {
 	return {
 		graphql: () => new EmptyWorkloadStore(),
 		load_TeamVulnerabilities: loadSummary,
+		load_TeamV0sOverview: loadV0s,
 		load_TeamPriorityWorkloadsHigh: loadHigh,
 		load_TeamSeverityWorkloads: loadSeverity,
 		load_TeamNoSbomWorkloads: loadNoSbom,
@@ -91,10 +93,11 @@ import { load } from './+page';
 import TeamVulnerabilityPage from './+page.svelte';
 import WorkloadsWithoutSbom from '#lib/domain/vulnerability/WorkloadsWithoutSbom.svelte';
 
-function event(query = ''): Parameters<typeof load>[0] {
+function event(query = '', v0sVulnerabilities = false): Parameters<typeof load>[0] {
 	return {
 		params: { team: 'example' },
 		url: new URL(`https://console.example.com/team/example/vulnerabilities${query}`),
+		parent: async () => ({ v0sVulnerabilities }),
 		untrack: (fn: () => unknown) => fn()
 	} as Parameters<typeof load>[0];
 }
@@ -109,6 +112,70 @@ afterEach(() => {
 });
 
 describe('team vulnerability workload view', () => {
+	it('loads only v0s with the selected environment, labels and server sort', async () => {
+		await load(
+			event(
+				'?environment=dev&labels=owner%3Ateam&workloadSort=VULNERABILITY_UNIQUE_HIGH&workloadDirection=ASC&v0sWorkloadsAfter=next',
+				true
+			)
+		);
+
+		expect(loadV0s).toHaveBeenCalledWith(
+			expect.objectContaining({
+				blocking: true,
+				variables: {
+					team: 'example',
+					environments: ['dev'],
+					labels: [{ key: 'owner', value: 'team' }],
+					orderBy: { field: 'VULNERABILITY_UNIQUE_HIGH', direction: 'ASC' },
+					first: 20,
+					last: null,
+					after: 'next',
+					before: null
+				}
+			})
+		);
+		expect(loadSummary).not.toHaveBeenCalled();
+		expect(loadSeverity).not.toHaveBeenCalled();
+		expect(loadNoSbom).not.toHaveBeenCalled();
+	});
+
+	it('keeps the legacy team loader when v0s is disabled', async () => {
+		await load(event());
+		expect(loadSummary).toHaveBeenCalled();
+		expect(loadV0s).not.toHaveBeenCalled();
+	});
+
+	it('uses the same environment and labels for the v0s summary and workload selection', () => {
+		const query = parse(readFileSync(new URL('./overview-v0s.gql', import.meta.url), 'utf8'));
+		const operation = query.definitions.find((node) => node.kind === Kind.OPERATION_DEFINITION);
+		const team = operation?.selectionSet.selections.find(
+			(node) => node.kind === Kind.FIELD && node.name.value === 'team'
+		);
+		if (team?.kind !== Kind.FIELD) throw new Error('Missing team selection');
+		const filter = (field: string, arg: string) => {
+			const node = team.selectionSet?.selections.find(
+				(selection) => selection.kind === Kind.FIELD && selection.name.value === field
+			);
+			return node?.kind === Kind.FIELD
+				? node.arguments?.find(({ name }) => name.value === arg)?.value
+				: undefined;
+		};
+		const workloadFilter = filter('workloads', 'filter');
+		expect(workloadFilter).toMatchObject({
+			kind: Kind.OBJECT,
+			fields: [
+				{
+					name: { value: 'environments' },
+					value: { kind: Kind.VARIABLE, name: { value: 'environments' } }
+				},
+				{ name: { value: 'labels' }, value: { kind: Kind.VARIABLE, name: { value: 'labels' } } }
+			]
+		});
+		const summaryFilter = filter('vulnerabilityFindings', 'workloadFilter');
+		if (!summaryFilter || !workloadFilter) throw new Error('Missing workload scope');
+		expect(print(summaryFilter)).toBe(print(workloadFilter));
+	});
 	it('requests the number of workloads with no SBOM', () => {
 		const query = parse(readFileSync(new URL('./query.gql', import.meta.url), 'utf8'));
 		const operation = query.definitions.find(

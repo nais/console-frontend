@@ -1,9 +1,10 @@
 <script lang="ts">
 	import IssuePills from '#lib/domain/issues/IssuePills.svelte';
+	import { measuredCount, scanStatusLabel } from '#lib/domain/vulnerability/v0sOverview.js';
 	import { ShBadge, ShSpinner, Tooltip } from '#lib/shadcn/ui/index.js';
 
 	import SurfaceCard from '#lib/ui/SurfaceCard.svelte';
-	import { graphql } from '$houdini';
+	import { graphql, type WorkloadHealthV0sStore } from '$houdini';
 
 	import {
 		BriefcaseClockIcon,
@@ -19,6 +20,7 @@
 		environment: string;
 		workload: string;
 		workloadType: 'app' | 'job';
+		v0sHealth?: WorkloadHealthV0sStore;
 		criticalIssues?: number;
 		warningIssues?: number;
 		todoIssues?: number;
@@ -34,6 +36,7 @@
 		environment,
 		workload,
 		workloadType,
+		v0sHealth,
 		criticalIssues = 0,
 		warningIssues = 0,
 		todoIssues = 0,
@@ -149,12 +152,14 @@
 		const to = subDays(new Date(), 2);
 		const from = subDays(to, 60);
 		if (workloadType === 'app') {
-			vulnQuery.fetch({ variables: { team: teamSlug, env: environment, app: workload } });
+			if (!v0sHealth)
+				vulnQuery.fetch({ variables: { team: teamSlug, env: environment, app: workload } });
 			costQuery.fetch({
 				variables: { team: teamSlug, env: environment, app: workload, from, to }
 			});
 		} else {
-			jobVulnQuery.fetch({ variables: { team: teamSlug, env: environment, job: workload } });
+			if (!v0sHealth)
+				jobVulnQuery.fetch({ variables: { team: teamSlug, env: environment, job: workload } });
 			jobCostQuery.fetch({
 				variables: { team: teamSlug, env: environment, job: workload, from, to }
 			});
@@ -168,7 +173,7 @@
 	);
 
 	let urgentVulnerabilityCount = $derived.by(() => {
-		if (workloadType !== 'app') return undefined;
+		if (v0sHealth || workloadType !== 'app') return undefined;
 		const issue =
 			$vulnQuery?.data?.team?.environment?.application?.urgentVulnerabilityIssues?.edges[0]?.node;
 		return issue?.__typename === 'ExternalIngressUrgentVulnerabilityIssue'
@@ -181,10 +186,25 @@
 	// Prefer the internet-facing+known-exploited (urgent) count when there is
 	// one; otherwise fall back to the plain known-exploited count.
 	let showingUrgent = $derived((urgentVulnerabilityCount ?? 0) > 0);
-	let vulnerabilityValue = $derived(
-		showingUrgent ? urgentVulnerabilityCount : (knownExploitedCount ?? undefined)
+	const v0sWorkload = $derived($v0sHealth?.data?.team.environment.workload);
+	const v0sOverview = $derived(
+		v0sWorkload && 'vulnerabilityOverview' in v0sWorkload
+			? v0sWorkload.vulnerabilityOverview
+			: undefined
 	);
-	let sbomProcessing = $derived(imageData?.sbom?.status === 'PROCESSING');
+	const v0sScan = $derived(v0sOverview?.coverage);
+	const v0sError = $derived(!!$v0sHealth?.errors?.length);
+	let vulnerabilityValue = $derived(
+		v0sHealth
+			? measuredCount(
+					v0sError ? undefined : v0sScan?.status,
+					v0sOverview?.knownExploitedVulnerabilityCount
+				)
+			: showingUrgent
+				? urgentVulnerabilityCount
+				: (knownExploitedCount ?? undefined)
+	);
+	let sbomProcessing = $derived(!v0sHealth && imageData?.sbom?.status === 'PROCESSING');
 
 	$effect(() => {
 		if (!sbomProcessing) return;
@@ -302,7 +322,17 @@
 							<ShBadge size="xs" variant="warning">Known exploited</ShBadge>
 						</span>
 					{:else}
-						<span class="metric-label">Known exploited</span>
+						<span class="metric-label">
+							{#if v0sError}
+								Vulnerability data unavailable
+							{:else if v0sHealth && $v0sHealth?.fetching && !v0sScan}
+								Loading scan coverage…
+							{:else if v0sScan && v0sScan.status !== 'SCANNED'}
+								{scanStatusLabel(v0sScan.status)}
+							{:else}
+								Known exploited
+							{/if}
+						</span>
 					{/if}
 				</div>
 				{#if sbomProcessing}

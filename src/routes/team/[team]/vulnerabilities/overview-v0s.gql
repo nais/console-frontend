@@ -1,0 +1,97 @@
+query TeamV0sOverview(
+	$team: Slug!
+	$environments: [String!]
+	$labels: [LabelFilter!]
+	$first: Int
+	$last: Int
+	$after: Cursor
+	$before: Cursor
+	$orderBy: WorkloadOrder!
+) {
+	team(slug: $team) {
+		applications(first: 1) {
+			facets {
+				labels {
+					key
+					value
+					count
+				}
+			}
+		}
+		jobs(first: 1) {
+			facets {
+				labels {
+					key
+					value
+					count
+				}
+			}
+		}
+		environments {
+			id
+			environment {
+				name
+			}
+		}
+		vulnerabilityFindings(
+			first: 1
+			workloadFilter: { environments: $environments, labels: $labels }
+		) {
+			summary {
+				...V0sSelectionSummary @mask_disable
+			}
+		}
+		workloads(
+			first: $first
+			last: $last
+			after: $after
+			before: $before
+			filter: { environments: $environments, labels: $labels }
+			orderBy: $orderBy
+		) {
+			pageInfo {
+				hasNextPage
+				hasPreviousPage
+				startCursor
+				endCursor
+				pageStart
+				pageEnd
+				totalCount
+			}
+			nodes {
+				... on Application {
+					__typename
+					id
+					name
+					team {
+						slug
+					}
+					teamEnvironment {
+						environment {
+							name
+						}
+					}
+					vulnerabilityOverview {
+						...V0sWorkloadOverview @mask_disable
+					}
+				}
+				... on Job {
+					__typename
+					id
+					name
+					team {
+						slug
+					}
+					teamEnvironment {
+						environment {
+							name
+						}
+					}
+					vulnerabilityOverview {
+						...V0sWorkloadOverview @mask_disable
+					}
+				}
+			}
+		}
+	}
+}
