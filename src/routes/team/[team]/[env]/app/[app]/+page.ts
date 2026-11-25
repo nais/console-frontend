@@ -1,9 +1,9 @@
 import {
 	load_App,
 	load_AppDeployment,
+	load_AppHealthV0s,
 	load_AppInstanceGroups,
-	load_AppWorkloadEvents,
-	load_WorkloadHealthV0s
+	load_AppWorkloadEvents
 } from '$houdini';
 import { recentWorkloadEventCount } from '#lib/domain/workload/workloadEventPagination.js';
 import { addPageMeta } from '#lib/utils/pageMeta.js';
@@ -17,9 +17,7 @@ export async function load(event) {
 		load_AppInstanceGroups({ event, variables }),
 		load_AppDeployment({ event, variables: { ...variables, legacyDeployDisabled } }),
 		load_AppWorkloadEvents({ event, variables: { ...variables, first: recentWorkloadEventCount } }),
-		v0sVulnerabilities
-			? load_WorkloadHealthV0s({ event, variables: { team, env, workload: app } })
-			: { WorkloadHealthV0s: undefined }
+		v0sVulnerabilities ? load_AppHealthV0s({ event, variables }) : { AppHealthV0s: undefined }
 	]);
 
 	return {

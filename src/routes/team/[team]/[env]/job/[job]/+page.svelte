@@ -125,7 +125,7 @@
 					environment={environment ?? ''}
 					workload={job?.name ?? ''}
 					workloadType="job"
-					v0sHealth={data.WorkloadHealthV0s}
+					v0sHealth={data.JobHealthV0s}
 					criticalIssues={job?.criticalIssues.pageInfo.totalCount ?? 0}
 					warningIssues={job?.warningIssues.pageInfo.totalCount ?? 0}
 					todoIssues={job?.todoIssues.pageInfo.totalCount ?? 0}

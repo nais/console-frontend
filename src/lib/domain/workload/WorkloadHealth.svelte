@@ -4,7 +4,7 @@
 	import { ShBadge, ShSpinner, Tooltip } from '#lib/shadcn/ui/index.js';
 
 	import SurfaceCard from '#lib/ui/SurfaceCard.svelte';
-	import { graphql, type WorkloadHealthV0sStore } from '$houdini';
+	import { graphql, type AppHealthV0sStore, type JobHealthV0sStore } from '$houdini';
 
 	import {
 		BriefcaseClockIcon,
@@ -20,7 +20,7 @@
 		environment: string;
 		workload: string;
 		workloadType: 'app' | 'job';
-		v0sHealth?: WorkloadHealthV0sStore;
+		v0sHealth?: AppHealthV0sStore | JobHealthV0sStore;
 		criticalIssues?: number;
 		warningIssues?: number;
 		todoIssues?: number;
@@ -186,12 +186,7 @@
 	// Prefer the internet-facing+known-exploited (urgent) count when there is
 	// one; otherwise fall back to the plain known-exploited count.
 	let showingUrgent = $derived((urgentVulnerabilityCount ?? 0) > 0);
-	const v0sWorkload = $derived($v0sHealth?.data?.team.environment.workload);
-	const v0sOverview = $derived(
-		v0sWorkload && 'vulnerabilityOverview' in v0sWorkload
-			? v0sWorkload.vulnerabilityOverview
-			: undefined
-	);
+	const v0sOverview = $derived($v0sHealth?.data?.team.environment.workload.vulnerabilityOverview);
 	const v0sScan = $derived(v0sOverview?.coverage);
 	const v0sError = $derived(!!$v0sHealth?.errors?.length);
 	let vulnerabilityValue = $derived(

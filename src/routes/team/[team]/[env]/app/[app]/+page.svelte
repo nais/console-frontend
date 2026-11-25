@@ -88,7 +88,7 @@
 			environment={environment ?? ''}
 			workload={app?.name ?? ''}
 			workloadType="app"
-			v0sHealth={data.WorkloadHealthV0s}
+			v0sHealth={data.AppHealthV0s}
 			criticalIssues={app?.criticalIssues.pageInfo.totalCount ?? 0}
 			warningIssues={app?.warningIssues.pageInfo.totalCount ?? 0}
 			todoIssues={app?.todoIssues.pageInfo.totalCount ?? 0}

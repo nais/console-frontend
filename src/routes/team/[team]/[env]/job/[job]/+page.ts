@@ -1,9 +1,9 @@
 import {
 	load_Job,
 	load_JobDeployment,
+	load_JobHealthV0s,
 	load_JobRunsList,
-	load_JobWorkloadEvents,
-	load_WorkloadHealthV0s
+	load_JobWorkloadEvents
 } from '$houdini';
 import { recentWorkloadEventCount } from '#lib/domain/workload/workloadEventPagination.js';
 import { addPageMeta } from '#lib/utils/pageMeta.js';
@@ -17,9 +17,7 @@ export async function load(event) {
 		load_JobDeployment({ event, variables: { ...variables, legacyDeployDisabled } }),
 		load_JobWorkloadEvents({ event, variables: { ...variables, first: recentWorkloadEventCount } }),
 		load_JobRunsList({ event, variables }),
-		v0sVulnerabilities
-			? load_WorkloadHealthV0s({ event, variables: { team, env, workload: job } })
-			: { WorkloadHealthV0s: undefined }
+		v0sVulnerabilities ? load_JobHealthV0s({ event, variables }) : { JobHealthV0s: undefined }
 	]);
 
 	return {

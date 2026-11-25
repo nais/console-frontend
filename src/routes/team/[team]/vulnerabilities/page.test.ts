@@ -1,8 +1,10 @@
 import { Kind, parse, print } from 'graphql';
+import { JSDOM } from 'jsdom';
 import { readFileSync } from 'node:fs';
 import type { ComponentProps } from 'svelte';
 import { render } from 'svelte/server';
-import { writable } from 'svelte/store';
+import { get, writable } from 'svelte/store';
+import type { TeamV0sOverview$result } from '$houdini';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
 const { loadHigh, loadSeverity, loadNoSbom, loadSummary, loadV0s, summary } = vi.hoisted(() => {
@@ -92,6 +94,7 @@ vi.mock('$app/state', () => ({
 import { load } from './+page';
 import TeamVulnerabilityPage from './+page.svelte';
 import WorkloadsWithoutSbom from '#lib/domain/vulnerability/WorkloadsWithoutSbom.svelte';
+import TeamV0sWorkloads from '#lib/domain/vulnerability/TeamV0sWorkloads.svelte';
 
 function event(query = '', v0sVulnerabilities = false): Parameters<typeof load>[0] {
 	return {
@@ -145,6 +148,69 @@ describe('team vulnerability workload view', () => {
 		expect(loadSummary).toHaveBeenCalled();
 		expect(loadV0s).not.toHaveBeenCalled();
 	});
+
+	it.each([
+		{ totalCount: 0, message: 'No workloads match the selection.' },
+		{ totalCount: 5, message: 'No workloads on this page.' }
+	])(
+		'renders the correct empty state with $totalCount matching workloads',
+		async ({ totalCount, message }) => {
+			const { TeamV0sOverviewStore } = await vi.importActual<typeof import('$houdini')>('$houdini');
+			const store = new TeamV0sOverviewStore();
+			const data: TeamV0sOverview$result = {
+				team: {
+					applications: { facets: null },
+					jobs: { facets: null },
+					environments: [],
+					vulnerabilityFindings: {
+						summary: {
+							' $fragments': { V0sSelectionSummary: {} },
+							countsBySeverity: { critical: 0, high: 0, medium: 0, low: 0, unknown: 0 },
+							knownExploitedVulnerabilityCount: 0,
+							knownExploitedWorkloadCount: 0,
+							coverage: {
+								totalWorkloads: totalCount,
+								scanned: 0,
+								noSbom: 0,
+								pending: totalCount,
+								failed: 0,
+								unresolvedImage: 0
+							}
+						}
+					},
+					workloads: {
+						nodes: [],
+						pageInfo: {
+							totalCount,
+							hasPreviousPage: totalCount > 0,
+							hasNextPage: false,
+							pageStart: 0,
+							pageEnd: 0,
+							startCursor: null,
+							endCursor: null
+						}
+					}
+				}
+			};
+			const { body } = await render(TeamV0sWorkloads, {
+				props: {
+					store: Object.assign(store, writable({ ...get(store), data, fetching: false })),
+					team: 'example',
+					selection: { environmentName: null, labels: [] },
+					orderBy: { field: 'NAME', direction: 'ASC' }
+				}
+			});
+			expect(body).toContain(message);
+			const previous = JSDOM.fragment(body).querySelector('button[aria-label="Previous page"]');
+			if (totalCount > 0) {
+				expect(body).not.toContain('No workloads match the selection.');
+				expect(previous).not.toBeNull();
+				expect(previous?.getAttribute('aria-disabled')).toBeNull();
+			} else {
+				expect(previous).toBeNull();
+			}
+		}
+	);
 
 	it('uses the same environment and labels for the v0s summary and workload selection', () => {
 		const query = parse(readFileSync(new URL('./overview-v0s.gql', import.meta.url), 'utf8'));

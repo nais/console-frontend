@@ -1,0 +1,15 @@
+query AppHealthV0s($team: Slug!, $env: String!, $app: String!) {
+	team(slug: $team) {
+		environment(name: $env) {
+			workload: application(name: $app) {
+				vulnerabilityOverview {
+					knownExploitedVulnerabilityCount
+					coverage {
+						status
+						error
+					}
+				}
+			}
+		}
+	}
+}
