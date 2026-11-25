@@ -8,6 +8,12 @@ import { addPageMeta } from '#lib/utils/pageMeta.js';
 import { get } from 'svelte/store';
 
 export async function load(event) {
+	if ((await event.parent()).v0sVulnerabilities) {
+		return {
+			...(await addPageMeta(event, { title: 'Vulnerabilities' })),
+			v0sVulnerabilities: true as const
+		};
+	}
 	const details = await load_JobImageDetails({
 		event,
 		blocking: true,
@@ -25,6 +31,7 @@ export async function load(event) {
 	return {
 		...(await addPageMeta(event, { title: 'Vulnerabilities' })),
 		...details,
+		v0sVulnerabilities: false as const,
 		initialFindingsStatus: image?.sbom.status,
 		...(hasFindings
 			? await load_ImageFindings({

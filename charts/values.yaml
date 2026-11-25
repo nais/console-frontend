@@ -4,6 +4,7 @@ image:
 host: ""
 tenantDomain: ""
 legacyDeployDisabled: false
+v0sVulnerabilitiesEnabled: false
 
 fasit:
   tenant:

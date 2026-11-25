@@ -1,8 +1,13 @@
 import type {
 	ImageVulnerabilitySuppressionState$options,
-	SBOMStatus$options
+	SBOMStatus$options,
+	VulnerabilitySuppressionState$options
 } from '$houdini/graphql/enums';
-import { ImageVulnerabilitySuppressionState, SBOMStatus } from '$houdini/graphql/enums';
+import {
+	ImageVulnerabilitySuppressionState,
+	SBOMStatus,
+	VulnerabilitySuppressionState
+} from '$houdini/graphql/enums';
 
 export type SbomStatus = SBOMStatus$options;
 
@@ -189,4 +194,21 @@ export const suppressionStateOptions: Array<{
 	{ value: ImageVulnerabilitySuppressionState.RESOLVED, text: 'Resolved' },
 	{ value: ImageVulnerabilitySuppressionState.FALSE_POSITIVE, text: 'False Positive' },
 	{ value: ImageVulnerabilitySuppressionState.NOT_AFFECTED, text: 'Not Affected' }
+];
+
+export const workloadSuppressionStateLabels: Record<VulnerabilitySuppressionState$options, string> =
+	{
+		NOT_AFFECTED: 'Not Affected',
+		FALSE_POSITIVE: 'False Positive',
+		ACCEPTED_RISK: 'Accepted Risk'
+	};
+
+export const workloadSuppressionStateOptions: Array<{
+	value: VulnerabilitySuppressionState$options | '';
+	text: string;
+}> = [
+	{ value: '', text: 'Suppress Reason' },
+	{ value: VulnerabilitySuppressionState.NOT_AFFECTED, text: 'Not Affected' },
+	{ value: VulnerabilitySuppressionState.FALSE_POSITIVE, text: 'False Positive' },
+	{ value: VulnerabilitySuppressionState.ACCEPTED_RISK, text: 'Accepted Risk' }
 ];

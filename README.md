@@ -50,6 +50,14 @@ When `true`, Console hides legacy deploy keys and deployment history, omits lega
 GraphQL fields, and redirects team and workload deployment-history routes to their
 overviews. Activity logs and modern deployment metadata remain available.
 
+### v0s workload vulnerabilities
+
+Fasit's `v0sVulnerabilitiesEnabled` is passed to Console as `V0S_VULNERABILITIES_ENABLED`, with
+the same accepted values. When `true`, application and job vulnerability pages read findings,
+coverage and suppressions from v0s and suppress through `setVulnerabilitySuppressions` and
+`deleteVulnerabilitySuppressions`. Enable it together with nais-api's `v0s.suppressionsEnabled`.
+Other vulnerability views still use v13s.
+
 ### Production assets
 
 Production builds use `ASSET_BASE_URL` to load client assets from

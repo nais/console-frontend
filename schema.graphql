@@ -219,6 +219,12 @@ enum ActivityLogActivityType {
   """Valkey was updated."""
   VALKEY_UPDATED
 
+  """A workload vulnerability assessment was deleted."""
+  VULNERABILITY_SUPPRESSION_DELETED
+
+  """A workload vulnerability assessment was set."""
+  VULNERABILITY_SUPPRESSION_UPDATED
+
   """Activity log entry for when a vulnerability is updated."""
   VULNERABILITY_UPDATED
 
@@ -381,6 +387,9 @@ enum ActivityLogEntryResourceType {
   All activity log entries related to vulnerabilities will use this resource type.
   """
   VULNERABILITY
+
+  """A workload vulnerability assessment."""
+  VULNERABILITY_SUPPRESSION
 
   """A webhook subscription."""
   WEBHOOK
@@ -949,8 +958,38 @@ type Application implements ActivityLogger & Node & Workload {
     orderBy: ValkeyOrder
   ): ValkeyConnection!
 
+  """Scan coverage of the currently deployed image."""
+  vulnerabilityCoverage: VulnerabilityCoverage!
+
+  """Current vulnerability findings in the deployed image."""
+  vulnerabilityFindings(
+    """Continue after this cursor, using the same filter and ordering."""
+    after: Cursor
+
+    """Filter this application's findings."""
+    filter: VulnerabilityFindingFilter
+
+    """Get the first n findings, between 1 and 200. Defaults to 20."""
+    first: Int
+
+    """
+    Sort the full selection before pagination. Omitted: identifier and package URL ascending.
+    """
+    orderBy: VulnerabilityFindingOrder
+  ): VulnerabilityFindingConnection!
+
   """Get the mean time to fix history for an application."""
   vulnerabilityFixHistory(from: Date!): VulnerabilityFixHistory!
+
+  """
+  Server-aggregated counts for this application's current image. Missing or outdated scan inventory gives zero known findings and PENDING coverage, not a clean result.
+  """
+  vulnerabilityOverview(
+    """
+    Filter findings before counting unique vulnerabilities and selecting their highest known severity.
+    """
+    filter: VulnerabilityFindingFilter
+  ): VulnerabilityWorkloadOverview!
 }
 
 """Authentication integrations for the application."""
@@ -3098,6 +3137,21 @@ type DeleteValkeyPayload {
   valkeyDeleted: Boolean
 }
 
+"""An atomic batch of assessments to delete for one team."""
+input DeleteVulnerabilitySuppressionsInput {
+  """The assessments to delete. Missing assessments are ignored."""
+  keys: [VulnerabilitySuppressionKeyInput!]!
+
+  """The team owning every assessment in the batch."""
+  team: Slug!
+}
+
+"""The assessments that existed and were deleted by the batch."""
+type DeleteVulnerabilitySuppressionsPayload {
+  """The deleted assessments."""
+  deleted: [VulnerabilitySuppressionSnapshot!]!
+}
+
 """Input for deleting a webhook subscription."""
 input DeleteWebhookInput {
   """The ID of the webhook subscription to delete."""
@@ -4581,8 +4635,38 @@ type Job implements ActivityLogger & Node & Workload {
     orderBy: ValkeyOrder
   ): ValkeyConnection!
 
+  """Scan coverage of the currently deployed image."""
+  vulnerabilityCoverage: VulnerabilityCoverage!
+
+  """Current vulnerability findings in the deployed image."""
+  vulnerabilityFindings(
+    """Continue after this cursor, using the same filter and ordering."""
+    after: Cursor
+
+    """Filter this job's findings."""
+    filter: VulnerabilityFindingFilter
+
+    """Get the first n findings, between 1 and 200. Defaults to 20."""
+    first: Int
+
+    """
+    Sort the full selection before pagination. Omitted: identifier and package URL ascending.
+    """
+    orderBy: VulnerabilityFindingOrder
+  ): VulnerabilityFindingConnection!
+
   """Get the mean time to fix history for a job."""
   vulnerabilityFixHistory(from: Date!): VulnerabilityFixHistory!
+
+  """
+  Server-aggregated counts for this job's current image. Missing or outdated scan inventory gives zero known findings and PENDING coverage, not a clean result.
+  """
+  vulnerabilityOverview(
+    """
+    Filter findings before counting unique vulnerabilities and selecting their highest known severity.
+    """
+    filter: VulnerabilityFindingFilter
+  ): VulnerabilityWorkloadOverview!
 }
 
 union JobAuthIntegrations = EntraIDAuthIntegration | MaskinportenAuthIntegration
@@ -5727,6 +5811,14 @@ type Mutation {
   deleteValkey(input: DeleteValkeyInput!): DeleteValkeyPayload!
 
   """
+  Delete workload assessments atomically. Until assessment writes are enabled, use updateImageVulnerability.
+  """
+  deleteVulnerabilitySuppressions(
+    """The team and assessments to delete."""
+    input: DeleteVulnerabilitySuppressionsInput!
+  ): DeleteVulnerabilitySuppressionsPayload!
+
+  """
   Delete a webhook subscription.
   
   All associated delivery records will also be deleted.
@@ -5798,6 +5890,14 @@ type Mutation {
   The user must already be a member of the team for this mutation to succeed.
   """
   setTeamMemberRole(input: SetTeamMemberRoleInput!): SetTeamMemberRolePayload!
+
+  """
+  Set workload assessments atomically. Until assessment writes are enabled, use updateImageVulnerability.
+  """
+  setVulnerabilitySuppressions(
+    """The team and assessments to update."""
+    input: SetVulnerabilitySuppressionsInput!
+  ): SetVulnerabilitySuppressionsPayload!
 
   """Start maintenance updates for an OpenSearch instance."""
   startOpenSearchMaintenance(input: StartOpenSearchMaintenanceInput!): StartOpenSearchMaintenancePayload
@@ -5918,6 +6018,20 @@ type NetworkPolicyRule {
   targetTeamSlug: Slug!
   targetWorkload: Workload
   targetWorkloadName: String!
+}
+
+"""An assessment to set for a workload."""
+input NewVulnerabilitySuppressionInput {
+  """
+  The workload, image repository, package and vulnerability being assessed.
+  """
+  key: VulnerabilitySuppressionKeyInput!
+
+  """A non-empty explanation for the assessment."""
+  reason: String!
+
+  """The workload owner's assessment."""
+  state: VulnerabilitySuppressionState!
 }
 
 type NoRunningInstancesIssue implements Issue & Node {
@@ -7499,6 +7613,9 @@ type Query {
     """Get items before this cursor."""
     before: Cursor
 
+    """Filter the list of users."""
+    filter: UserFilter
+
     """
     Get the first n items in the connection. This can be used in combination with the after parameter.
     """
@@ -7512,6 +7629,33 @@ type Query {
     """Ordering options for items returned from the connection."""
     orderBy: UserOrder
   ): UserConnection!
+
+  """
+  Advisory details for a vulnerability identifier or alias. Unknown identifiers return null.
+  """
+  vulnerability(
+    """
+    The vulnerability identifier or an alias identifying exactly one vulnerability.
+    """
+    identifier: String!
+  ): Vulnerability
+
+  """Current vulnerability findings for deployed applications and jobs."""
+  vulnerabilityFindings(
+    """Continue after this cursor, using the same filter and ordering."""
+    after: Cursor
+
+    """Filter the full finding selection."""
+    filter: VulnerabilityFindingFilter
+
+    """Get the first n findings, between 1 and 200. Defaults to 20."""
+    first: Int
+
+    """
+    Sort the full selection before pagination. Omitted: environment, team, workload, identifier and package URL ascending.
+    """
+    orderBy: VulnerabilityFindingOrder
+  ): VulnerabilityFindingConnection!
 
   """Get the mean time to fix history for all teams."""
   vulnerabilityFixHistory(from: Date!): VulnerabilityFixHistory!
@@ -7546,6 +7690,20 @@ type Query {
     """Filter the aggregate."""
     filter: TenantVulnerabilitySummaryFilter
   ): TenantVulnerabilitySummary!
+
+  """
+  Current assessments for existing workloads, including assessments without active findings.
+  """
+  vulnerabilitySuppressions(
+    """Continue after this cursor, using the same filter."""
+    after: Cursor
+
+    """Filter the assessment selection."""
+    filter: VulnerabilitySuppressionFilter
+
+    """Get the first n assessments, between 1 and 200. Defaults to 20."""
+    first: Int
+  ): VulnerabilitySuppressionConnection!
 
   """
   List all supported webhook event types with human-readable descriptions and grouping.
@@ -9483,6 +9641,23 @@ type SetTeamMemberRolePayload {
   member: TeamMember
 }
 
+"""An atomic batch of assessments for one team."""
+input SetVulnerabilitySuppressionsInput {
+  """The assessments to set. At least one item is required."""
+  items: [NewVulnerabilitySuppressionInput!]!
+
+  """The team owning every assessment in the batch."""
+  team: Slug!
+}
+
+"""
+The assessments set by the batch, using canonical package and vulnerability identifiers.
+"""
+type SetVulnerabilitySuppressionsPayload {
+  """The assessments as stored."""
+  suppressions: [VulnerabilitySuppression!]!
+}
+
 enum Severity {
   CRITICAL
   TODO
@@ -9775,6 +9950,18 @@ type Subscription {
   name(s).
   """
   workloadLog(filter: WorkloadLogSubscriptionFilter!): WorkloadLogLine!
+}
+
+"""How workload assessments affect the finding selection."""
+enum SuppressedFilter {
+  """Exclude findings with an assessment."""
+  EXCLUDE
+
+  """Include both assessed and unassessed findings."""
+  INCLUDE
+
+  """Include only findings with an assessment."""
+  ONLY
 }
 
 """
@@ -10262,6 +10449,23 @@ type Team implements ActivityLogger & Node {
   """Whether or not the viewer is an owner of the team."""
   viewerIsOwner: Boolean!
 
+  """Current vulnerability findings for this team's workloads."""
+  vulnerabilityFindings(
+    """Continue after this cursor, using the same filter and ordering."""
+    after: Cursor
+
+    """Filter the full finding selection."""
+    filter: VulnerabilityFindingFilter
+
+    """Get the first n findings, between 1 and 200. Defaults to 20."""
+    first: Int
+
+    """
+    Sort the full selection before pagination. Omitted: environment, team, workload, identifier and package URL ascending.
+    """
+    orderBy: VulnerabilityFindingOrder
+  ): VulnerabilityFindingConnection!
+
   """Get the mean time to fix history for a team."""
   vulnerabilityFixHistory(from: Date!): VulnerabilityFixHistory!
 
@@ -10295,6 +10499,18 @@ type Team implements ActivityLogger & Node {
     """Filter the aggregate by environment, priority, KEV or user labels."""
     filter: TeamVulnerabilitySummaryFilter
   ): TeamVulnerabilitySummary!
+
+  """Current assessments for existing workloads in this team."""
+  vulnerabilitySuppressions(
+    """Continue after this cursor, using the same filter."""
+    after: Cursor
+
+    """Filter the assessment selection."""
+    filter: VulnerabilitySuppressionFilter
+
+    """Get the first n assessments, between 1 and 200. Defaults to 20."""
+    first: Int
+  ): VulnerabilitySuppressionConnection!
 
   """Webhook subscriptions registered for this team."""
   webhooks(
@@ -10677,6 +10893,37 @@ type TeamEnvironment implements Node {
 
   """Valkey instance in the team environment."""
   valkey(name: String!): Valkey!
+
+  """
+  Current vulnerability findings for this team's workloads in the environment.
+  """
+  vulnerabilityFindings(
+    """Continue after this cursor, using the same filter and ordering."""
+    after: Cursor
+
+    """Filter the full finding selection."""
+    filter: VulnerabilityFindingFilter
+
+    """Get the first n findings, between 1 and 200. Defaults to 20."""
+    first: Int
+
+    """
+    Sort the full selection before pagination. Omitted: environment, team, workload, identifier and package URL ascending.
+    """
+    orderBy: VulnerabilityFindingOrder
+  ): VulnerabilityFindingConnection!
+
+  """Current assessments for existing workloads in this team environment."""
+  vulnerabilitySuppressions(
+    """Continue after this cursor, using the same filter."""
+    after: Cursor
+
+    """Filter the assessment selection."""
+    filter: VulnerabilitySuppressionFilter
+
+    """Get the first n assessments, between 1 and 200. Defaults to 20."""
+    first: Int
+  ): VulnerabilitySuppressionConnection!
 
   """Workload in the team environment."""
   workload(
@@ -11415,6 +11662,9 @@ input TeamWorkloadsFilter {
 
   """Only return workloads with the given SBOM pipeline status."""
   sbomStatus: SBOMStatus
+
+  """Only return workloads with one of these vulnerability scan statuses."""
+  vulnerabilityCoverageStatuses: [VulnerabilityCoverageStatus!]
 }
 
 """Filtering options for activity log entries across teams."""
@@ -12391,6 +12641,11 @@ type User implements Node {
   """The full name of the user."""
   name: String!
 
+  """
+  Whether this is a tenant user or a Nais user. Null if the source has not been recorded yet.
+  """
+  source: UserSource
+
   """List of teams the user is connected to."""
   teams(
     """Get items after this cursor."""
@@ -12477,6 +12732,14 @@ type UserEdge {
   node: User!
 }
 
+"""Filters for the list of users."""
+input UserFilter {
+  """
+  Include users from any of these categories. Omit this field to include all users, even those without a recorded source. An empty list matches no users.
+  """
+  sources: [UserSource!]
+}
+
 """Ordering options when fetching users."""
 input UserOrder {
   """The direction to order items by."""
@@ -12493,6 +12756,15 @@ enum UserOrderField {
 
   """The name of the user."""
   NAME
+}
+
+"""The category of a user."""
+enum UserSource {
+  """A user belonging to Nais."""
+  NAIS
+
+  """A user belonging to the tenant."""
+  TENANT
 }
 
 """Interface for user sync log entries."""
@@ -13144,6 +13416,35 @@ type ViewSecretValuesPayload {
   values: [SecretValue!]!
 }
 
+"""Advisory information shared by findings for the same vulnerability."""
+type Vulnerability implements Node {
+  """Alternative identifiers for this vulnerability."""
+  aliases: [String!]!
+
+  """The advisory description."""
+  description: String!
+
+  """The estimated probability of exploitation, if available."""
+  epss: VulnerabilityEpss
+
+  """The globally unique identifier of the advisory."""
+  id: ID!
+
+  """The canonical vulnerability identifier."""
+  identifier: String!
+
+  """
+  Known exploited according to CISA KEV. False is not proof of no exploitation.
+  """
+  knownExploited: Boolean!
+
+  """Reference URLs supplied by the advisory sources."""
+  references: [String!]!
+
+  """The advisory title."""
+  title: String!
+}
+
 type VulnerabilityActivityLogEntryData {
   """The unique identifier of the vulnerability. E.g. CVE-****-****."""
   identifier: String!
@@ -13159,6 +13460,248 @@ type VulnerabilityActivityLogEntryData {
 
   """The severity of the vulnerability."""
   severity: ImageVulnerabilitySeverity!
+}
+
+"""Scan coverage of one workload's currently deployed image."""
+type VulnerabilityCoverage {
+  """The latest resolution, fetching or scanning error, if any."""
+  error: String
+
+  """The resolved image manifest digest, if known."""
+  imageDigest: String
+
+  """The resolved image repository name, if known."""
+  imageName: String
+
+  """The last successful scan time, if available."""
+  scannedAt: Time
+
+  """How far the deployed image has progressed towards a completed scan."""
+  status: VulnerabilityCoverageStatus!
+}
+
+"""Coverage counts for the selected, currently deployed workloads."""
+type VulnerabilityCoverageCounts {
+  """
+  Workloads whose image has not been scanned successfully because of an error.
+  """
+  failed: Int!
+
+  """Workloads whose image has no package inventory."""
+  noSbom: Int!
+
+  """Workloads waiting for inventory, a package inventory or a scan."""
+  pending: Int!
+
+  """
+  Workloads with a completed scan. This does not mean they have no vulnerabilities.
+  """
+  scanned: Int!
+
+  """The total number of workloads in the selection."""
+  totalWorkloads: Int!
+
+  """Workloads whose deployed image could not be resolved."""
+  unresolvedImage: Int!
+}
+
+"""
+How far a deployed image has progressed towards vulnerability findings.
+"""
+enum VulnerabilityCoverageStatus {
+  """An error prevented the image's first successful scan."""
+  FAILED
+
+  """No package inventory was found for the image."""
+  NO_SBOM
+
+  """Waiting for inventory, a package inventory or a scan."""
+  PENDING
+
+  """
+  A scan completed. Findings from the last successful scan survive a failed rescan.
+  """
+  SCANNED
+
+  """The deployed image could not be resolved."""
+  UNRESOLVED_IMAGE
+}
+
+"""An exploitation probability supplied by FIRST EPSS."""
+type VulnerabilityEpss {
+  """The date of the probability estimate."""
+  date: Date!
+
+  """The estimated probability of exploitation, between zero and one."""
+  score: Float!
+}
+
+"""A vulnerability affecting one package in a workload's deployed image."""
+type VulnerabilityFinding implements Node {
+  """The advisory source supplying the finding."""
+  dataSource: String!
+
+  """The estimated probability of exploitation, if available."""
+  epss: VulnerabilityEpss
+
+  """The first known fixed version, if provided by the source."""
+  fixedVersion: String
+
+  """The globally unique identifier of this finding."""
+  id: ID!
+
+  """The deployed image in which the finding was detected."""
+  image: VulnerabilityImage!
+
+  """The installed package version."""
+  installedVersion: String!
+
+  """
+  Known exploited according to CISA KEV. False is not proof of no exploitation.
+  """
+  knownExploited: Boolean!
+
+  """The package URL without version, qualifiers or subpath."""
+  packageKey: String!
+
+  """The full package URL identifying the affected component."""
+  purl: String!
+
+  """Severity selected by the scanner for this finding."""
+  severity: VulnerabilitySeverity!
+
+  """The source supplying the severity."""
+  severitySource: String!
+
+  """
+  The current assessment for this workload, image repository, package and vulnerability.
+  """
+  suppression: VulnerabilitySuppression
+
+  """Advisory details, if the vulnerability is still known."""
+  vulnerability: Vulnerability
+
+  """The canonical vulnerability identifier."""
+  vulnerabilityIdentifier: String!
+
+  """The workload affected by the finding."""
+  workload: Workload!
+}
+
+"""A forward-paginated selection of vulnerability findings."""
+type VulnerabilityFindingConnection {
+  """Findings and their continuation cursors."""
+  edges: [VulnerabilityFindingEdge!]!
+
+  """Counts over the full filtered selection, regardless of pagination."""
+  facets: VulnerabilityFindingFacets!
+
+  """The findings in the same order as edges."""
+  nodes: [VulnerabilityFinding!]!
+
+  """Pagination information and the full filtered total."""
+  pageInfo: PageInfo!
+
+  """
+  Server-aggregated counts across the full filtered selection, independent of finding pagination and ordering. Coverage includes all workloads in scope, regardless of finding filters.
+  """
+  summary: VulnerabilitySelectionSummary!
+
+  """
+  Unique vulnerabilities across the full filtered workload selection, independent of the finding page and ordering.
+  """
+  vulnerabilities(
+    """
+    Continue after this cursor with the same scope, filter and vulnerability ordering.
+    """
+    after: Cursor
+
+    """Get the first n vulnerabilities, between 1 and 200. Defaults to 20."""
+    first: Int
+
+    """
+    Order the full vulnerability selection. Defaults to severity descending, with UNKNOWN last and identifier ascending for ties.
+    """
+    orderBy: VulnerabilityOverviewOrder
+  ): VulnerabilityOverviewConnection!
+}
+
+"""A vulnerability finding and the cursor immediately after it."""
+type VulnerabilityFindingEdge {
+  """
+  A cursor for continuing after this finding with the same filter and ordering.
+  """
+  cursor: Cursor!
+
+  """The vulnerability finding."""
+  node: VulnerabilityFinding!
+}
+
+"""Counts over the full filtered selection of current findings."""
+type VulnerabilityFindingFacets {
+  """Finding counts by severity."""
+  countsBySeverity: VulnerabilitySeverityCounts!
+
+  """The number of findings with a known fixed version."""
+  fixableFindings: Int!
+
+  """The number of findings whose vulnerability is listed in CISA KEV."""
+  knownExploitedFindings: Int!
+
+  """
+  Finding counts by package ecosystem across the full filtered selection, including any selected package type.
+  """
+  packageTypes: [StringFacetItem!]!
+}
+
+"""Filters applied before finding pagination and aggregation."""
+input VulnerabilityFindingFilter {
+  """Include only vulnerabilities listed in CISA KEV."""
+  onlyKnownExploited: Boolean = false
+
+  """Include only findings with a known fixed version."""
+  onlyWithFix: Boolean = false
+
+  """Match a full package URL, or a version-independent package key."""
+  package: String
+
+  """
+  Match a package ecosystem, such as npm or maven, case-insensitively. Unknown types match no findings.
+  """
+  packageType: String
+
+  """Include only findings with these severities."""
+  severities: [VulnerabilitySeverity!]
+
+  """Whether assessed findings are included."""
+  suppressed: SuppressedFilter = EXCLUDE
+
+  """Match any of these vulnerability identifiers or aliases."""
+  vulnerabilityIdentifiers: [String!]
+}
+
+"""
+Server-side ordering of vulnerability findings, with stable identity tie-breakers.
+"""
+input VulnerabilityFindingOrder {
+  """The sort direction."""
+  direction: OrderDirection!
+
+  """The value to sort by."""
+  field: VulnerabilityFindingOrderField!
+}
+
+"""Values available for ordering vulnerability findings."""
+enum VulnerabilityFindingOrderField {
+  """
+  Bytewise, case-sensitive identifier ordering. Ties use environment, team, workload and package URL ascending.
+  """
+  IDENTIFIER
+
+  """
+  Severity: DESC is CRITICAL, HIGH, MEDIUM, LOW, UNKNOWN; ASC reverses known severities. UNKNOWN is always last. Ties use identifier, environment, team, workload and package URL ascending.
+  """
+  SEVERITY
 }
 
 """Trend of mean time to fix vulnerabilities grouped by severity."""
@@ -13189,6 +13732,87 @@ type VulnerabilityFixSample {
 
   """Total number of workloads with this severity of vulnerabilities."""
   totalWorkloads: Int!
+}
+
+"""A container image identified by repository name and manifest digest."""
+type VulnerabilityImage {
+  """The immutable manifest digest."""
+  digest: String!
+
+  """The image repository name."""
+  name: String!
+}
+
+"""
+Counts for one canonical vulnerability in a filtered workload selection.
+"""
+type VulnerabilityOverview {
+  """
+  Distinct workloads with matching findings, regardless of how many packages are affected.
+  """
+  affectedWorkloadCount: Int!
+
+  """
+  Matching workload/package occurrences, counting shared images once for each workload.
+  """
+  findingCount: Int!
+
+  """
+  Highest known severity among matching findings. UNKNOWN only if all matching findings are UNKNOWN.
+  """
+  severity: VulnerabilitySeverity!
+
+  """Advisory details, if still available."""
+  vulnerability: Vulnerability
+
+  """The canonical vulnerability identifier."""
+  vulnerabilityIdentifier: String!
+}
+
+"""A forward-paginated selection of unique canonical vulnerabilities."""
+type VulnerabilityOverviewConnection {
+  """Vulnerability groups and their continuation cursors."""
+  edges: [VulnerabilityOverviewEdge!]!
+
+  """The groups in the same order as edges."""
+  nodes: [VulnerabilityOverview!]!
+
+  """
+  Pagination information. The total counts unique vulnerabilities, not findings or workloads.
+  """
+  pageInfo: PageInfo!
+}
+
+"""A vulnerability group and its continuation cursor."""
+type VulnerabilityOverviewEdge {
+  """The cursor immediately after this group."""
+  cursor: Cursor!
+
+  """The vulnerability group."""
+  node: VulnerabilityOverview!
+}
+
+"""Server-side ordering of unique vulnerability groups."""
+input VulnerabilityOverviewOrder {
+  """The sort direction."""
+  direction: OrderDirection!
+
+  """The value to sort by."""
+  field: VulnerabilityOverviewOrderField!
+}
+
+"""Values available for ordering unique vulnerability groups."""
+enum VulnerabilityOverviewOrderField {
+  """Number of distinct affected workloads. Ties use identifier ascending."""
+  AFFECTED_WORKLOAD_COUNT
+
+  """Bytewise, case-sensitive canonical identifier ordering."""
+  IDENTIFIER
+
+  """
+  Severity of the group. UNKNOWN is last in both directions. Ties use identifier ascending.
+  """
+  SEVERITY
 }
 
 """
@@ -13227,6 +13851,80 @@ type VulnerabilityRiskAssessment {
 
   """Operational priority derived from the available risk signals."""
   priority: CVEPriority!
+}
+
+"""
+Counts across a filtered workload selection. These scoped statistics have no independent identity.
+"""
+type VulnerabilitySelectionSummary {
+  """Distinct workloads with matching findings."""
+  affectedWorkloadCount: Int!
+
+  """
+  Unique vulnerabilities at their highest known matching severity across the whole selection. UNKNOWN applies only when all matching findings are UNKNOWN.
+  """
+  countsBySeverity: VulnerabilitySeverityCounts!
+
+  """
+  All current workloads in scope, independent of finding filters. Missing or outdated scan inventory counts as PENDING, not clean.
+  """
+  coverage: VulnerabilityCoverageCounts!
+
+  """
+  Matching package/vulnerability occurrences, counting shared images once for each workload.
+  """
+  findingCount: Int!
+
+  """Distinct matching vulnerabilities listed in CISA KEV."""
+  knownExploitedVulnerabilityCount: Int!
+
+  """Distinct workloads with at least one matching KEV finding."""
+  knownExploitedWorkloadCount: Int!
+
+  """
+  Distinct canonical vulnerabilities across the whole selection, not the sum of per-workload unique counts.
+  """
+  uniqueVulnerabilityCount: Int!
+}
+
+"""
+Severity selected by the scanner for the finding, not calculated by Nais.
+"""
+enum VulnerabilitySeverity {
+  """Critical severity."""
+  CRITICAL
+
+  """High severity."""
+  HIGH
+
+  """Low severity."""
+  LOW
+
+  """Medium severity."""
+  MEDIUM
+
+  """The source did not provide a recognized severity."""
+  UNKNOWN
+}
+
+"""
+Counts grouped by severity. The containing field specifies whether findings or unique vulnerabilities are counted.
+"""
+type VulnerabilitySeverityCounts {
+  """Critical-severity items."""
+  critical: Int!
+
+  """High-severity items."""
+  high: Int!
+
+  """Low-severity items."""
+  low: Int!
+
+  """Medium-severity items."""
+  medium: Int!
+
+  """Items without a recognized severity."""
+  unknown: Int!
 }
 
 """Ordering options when fetching vulnerability summaries for workloads."""
@@ -13293,6 +13991,178 @@ enum VulnerabilitySummaryOrderByField {
   VULNERABILITY_SEVERITY_UNASSIGNED
 }
 
+"""
+A current assessment for one workload, image repository, package and vulnerability.
+"""
+type VulnerabilitySuppression implements Node {
+  """The globally unique identifier of the assessment."""
+  id: ID!
+
+  """
+  The image repository name. The assessment survives image version changes.
+  """
+  imageName: String!
+
+  """The package URL without version, qualifiers or subpath."""
+  packageKey: String!
+
+  """The workload owner's reason for the assessment."""
+  reason: String!
+
+  """The current assessment state."""
+  state: VulnerabilitySuppressionState!
+
+  """The time the assessment was last set."""
+  updatedAt: Time!
+
+  """The identity of the actor who last set the assessment."""
+  updatedBy: String!
+
+  """The advisory this assessment applies to."""
+  vulnerability: Vulnerability!
+
+  """The application or job to which the assessment applies."""
+  workload: Workload!
+}
+
+"""An assessment change recorded in the activity log."""
+type VulnerabilitySuppressionActivityLogEntry implements ActivityLogEntry & Node {
+  """The identity of the actor who changed the assessment."""
+  actor: String!
+
+  """The time the activity was recorded."""
+  createdAt: Time!
+
+  """The assessment as set, or as it existed before deletion."""
+  data: VulnerabilitySuppressionActivityLogEntryData!
+
+  """The environment where the assessment applies."""
+  environmentName: String
+
+  """GitHub Actions OIDC claims when authenticated by a GitHub repository."""
+  gitHubActorClaims: GitHubActorClaims
+
+  """The globally unique identifier of the entry."""
+  id: ID!
+
+  """A summary of the assessment change."""
+  message: String!
+
+  """The name of the affected workload."""
+  resourceName: String!
+
+  """The type of resource affected."""
+  resourceType: ActivityLogEntryResourceType!
+
+  """The team owning the assessment."""
+  teamSlug: Slug
+}
+
+"""The assessment associated with an activity log entry."""
+type VulnerabilitySuppressionActivityLogEntryData {
+  """The assessment as set, or as it existed before deletion."""
+  assessment: VulnerabilitySuppressionSnapshot!
+}
+
+"""A forward-paginated selection of workload assessments."""
+type VulnerabilitySuppressionConnection {
+  """Assessments and their continuation cursors."""
+  edges: [VulnerabilitySuppressionEdge!]!
+
+  """The assessments in the same order as edges."""
+  nodes: [VulnerabilitySuppression!]!
+
+  """Pagination information and the full filtered total."""
+  pageInfo: PageInfo!
+}
+
+"""A workload assessment and the cursor immediately after it."""
+type VulnerabilitySuppressionEdge {
+  """A cursor for continuing after this assessment with the same filter."""
+  cursor: Cursor!
+
+  """The workload assessment."""
+  node: VulnerabilitySuppression!
+}
+
+"""Filters applied before assessment pagination."""
+input VulnerabilitySuppressionFilter {
+  """Match an image repository name."""
+  imageName: String
+
+  """Match a vulnerability identifier or alias."""
+  vulnerabilityIdentifier: String
+}
+
+"""Identifies an assessment within the mutation's team."""
+input VulnerabilitySuppressionKeyInput {
+  """The environment where the assessment applies."""
+  environment: String!
+
+  """The image repository name, without a tag or digest."""
+  imageName: String!
+
+  """
+  A package key or full package URL. Version, qualifiers and subpath are ignored.
+  """
+  packageKey: String!
+
+  """
+  A vulnerability identifier or an alias identifying exactly one vulnerability.
+  """
+  vulnerabilityIdentifier: String!
+
+  """The application or job name."""
+  workload: String!
+}
+
+"""
+Stored assessment details, independent of the current workload or advisory.
+"""
+type VulnerabilitySuppressionSnapshot {
+  """The environment where the assessment applied."""
+  environmentName: String!
+
+  """The image repository name."""
+  imageName: String!
+
+  """The package URL without version, qualifiers or subpath."""
+  packageKey: String!
+
+  """The workload owner's reason for the assessment."""
+  reason: String!
+
+  """The recorded assessment state."""
+  state: VulnerabilitySuppressionState!
+
+  """The team owning the assessment at the time."""
+  teamSlug: Slug!
+
+  """The time the assessment was last set."""
+  updatedAt: Time!
+
+  """The identity of the actor who last set the assessment."""
+  updatedBy: String!
+
+  """The stored vulnerability identifier."""
+  vulnerabilityIdentifier: String!
+
+  """The name of the affected workload."""
+  workloadName: String!
+}
+
+"""A workload owner's current assessment of a vulnerability finding."""
+enum VulnerabilitySuppressionState {
+  """The workload owner has accepted the risk."""
+  ACCEPTED_RISK
+
+  """The finding is a false positive."""
+  FALSE_POSITIVE
+
+  """The workload is not affected by the vulnerability."""
+  NOT_AFFECTED
+}
+
 type VulnerabilityUpdatedActivityLogEntry implements ActivityLogEntry & Node {
   """
   The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
@@ -13325,6 +14195,30 @@ type VulnerabilityUpdatedActivityLogEntry implements ActivityLogEntry & Node {
 
   """The team slug that the entry belongs to."""
   teamSlug: Slug
+}
+
+"""
+Counts for one workload's current image after finding filters, with unfiltered scan coverage.
+"""
+type VulnerabilityWorkloadOverview {
+  """
+  Unique vulnerabilities grouped at their highest known matching severity. The sum equals uniqueVulnerabilityCount.
+  """
+  countsBySeverity: VulnerabilitySeverityCounts!
+
+  """
+  Coverage of the current image, independent of finding filters. PENDING means zero known findings must not be interpreted as clean.
+  """
+  coverage: VulnerabilityCoverage!
+
+  """Matching package/vulnerability occurrences."""
+  findingCount: Int!
+
+  """Distinct matching vulnerabilities listed in CISA KEV."""
+  knownExploitedVulnerabilityCount: Int!
+
+  """Distinct canonical vulnerabilities among matching findings."""
+  uniqueVulnerabilityCount: Int!
 }
 
 type VulnerableImageIssue implements Issue & Node {
@@ -13999,14 +14893,47 @@ interface Workload implements ActivityLogger & Node {
     orderBy: ValkeyOrder
   ): ValkeyConnection!
 
+  """Scan coverage of the currently deployed image."""
+  vulnerabilityCoverage: VulnerabilityCoverage!
+
+  """Current vulnerability findings in the deployed image."""
+  vulnerabilityFindings(
+    """Continue after this cursor, using the same filter and ordering."""
+    after: Cursor
+
+    """Filter this workload's findings."""
+    filter: VulnerabilityFindingFilter
+
+    """Get the first n findings, between 1 and 200. Defaults to 20."""
+    first: Int
+
+    """
+    Sort the full selection before pagination. Omitted: identifier and package URL ascending.
+    """
+    orderBy: VulnerabilityFindingOrder
+  ): VulnerabilityFindingConnection!
+
   """Get the mean time to fix history for a workload."""
   vulnerabilityFixHistory(from: Date!): VulnerabilityFixHistory!
+
+  """
+  Server-aggregated counts for this workload's current image. Missing or outdated scan inventory gives zero known findings and PENDING coverage, not a clean result.
+  """
+  vulnerabilityOverview(
+    """
+    Filter findings before counting unique vulnerabilities and selecting their highest known severity.
+    """
+    filter: VulnerabilityFindingFilter
+  ): VulnerabilityWorkloadOverview!
 }
 
 """Workload connection."""
 type WorkloadConnection {
   """List of edges."""
   edges: [WorkloadEdge!]!
+
+  """Counts over the full workload selection, regardless of pagination."""
+  facets: WorkloadFacets!
 
   """List of nodes."""
   nodes: [Workload!]!
@@ -14110,6 +15037,12 @@ input WorkloadEventFilter {
 
   """Only include events triggered before this timestamp."""
   to: Time
+}
+
+"""Facets for a workload selection."""
+type WorkloadFacets {
+  """Vulnerability scan coverage of the selected workloads."""
+  vulnerabilityCoverage: VulnerabilityCoverageCounts!
 }
 
 """A container restart."""

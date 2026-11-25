@@ -62,6 +62,7 @@ function pageData({
 	return {
 		tenantName: 'test',
 		legacyDeployDisabled: false,
+		v0sVulnerabilities: false,
 		isAdmin: false,
 		AdminReconcilerStatus: null,
 		reconcilerStatusError: null,
