@@ -85,6 +85,7 @@ function data(
 	const userInfo = new UserInfoStore();
 	return {
 		legacyDeployDisabled: false,
+		v0sVulnerabilities: false,
 		UserInfo: Object.assign(
 			userInfo,
 			readable({

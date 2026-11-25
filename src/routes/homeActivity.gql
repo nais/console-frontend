@@ -702,6 +702,16 @@ query HomeActivity($from: Time!) {
 				resourceType
 				optionalTeamSlug: teamSlug
 			}
+			... on VulnerabilitySuppressionActivityLogEntry {
+				id
+				createdAt
+				actor
+				message
+				environmentName
+				resourceName
+				resourceType
+				optionalTeamSlug: teamSlug
+			}
 			... on WebhookCreatedActivityLogEntry {
 				id
 				createdAt

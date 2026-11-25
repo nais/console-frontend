@@ -20,6 +20,8 @@ spec:
           env:
             - name: 'LEGACY_DEPLOY_DISABLED'
               value: {{ .Values.legacyDeployDisabled | default false | quote }}
+            - name: 'V0S_VULNERABILITIES_ENABLED'
+              value: {{ .Values.v0sVulnerabilitiesEnabled | default false | quote }}
             - name: 'TENANT_DOMAIN'
               value: '{{ .Values.tenantDomain }}'
             - name: 'TENANT_NAME'

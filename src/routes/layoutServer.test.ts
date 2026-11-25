@@ -1,11 +1,14 @@
 import { vi } from 'vitest';
 import { load } from './+layout.server';
 
-const config = vi.hoisted(() => ({ value: '' }));
+const config = vi.hoisted(() => ({ value: '', v0s: '' }));
 
 vi.mock('$app/env/private', () => ({
 	get LEGACY_DEPLOY_DISABLED() {
 		return config.value;
+	},
+	get V0S_VULNERABILITIES_ENABLED() {
+		return config.v0s;
 	}
 }));
 
@@ -39,3 +42,21 @@ test.each(['TRUE', '1', 'invalid'])(
 		);
 	}
 );
+
+test.each([
+	['', false],
+	['false', false],
+	['true', true]
+])('exposes v0s vulnerabilities %s as the boolean %s', async (value, expected) => {
+	config.value = '';
+	config.v0s = value;
+	expect((await load(event as Parameters<typeof load>[0])).v0sVulnerabilities).toBe(expected);
+});
+
+test.each(['TRUE', '1', 'invalid'])('rejects invalid v0s configuration: %s', async (value) => {
+	config.value = '';
+	config.v0s = value;
+	await expect(load(event as Parameters<typeof load>[0])).rejects.toThrow(
+		'V0S_VULNERABILITIES_ENABLED must be true or false'
+	);
+});

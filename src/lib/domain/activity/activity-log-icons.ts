@@ -106,6 +106,7 @@ export const icons: { [typename: string]: Component } = {
 
 	/* Security / Audit */
 	VulnerabilityUpdatedActivityLogEntry: VirusIcon,
+	VulnerabilitySuppressionActivityLogEntry: VirusIcon,
 	ClusterAuditActivityLogEntry: TerminalIcon,
 	PostgresCreatedActivityLogEntry: PostgreSQLIcon,
 	PostgresUpdatedActivityLogEntry: PostgreSQLIcon,

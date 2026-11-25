@@ -23,6 +23,7 @@ function data(totalCount: number): LayoutProps['data'] {
 	const store = new AdminReconcilerStatusStore();
 	return {
 		legacyDeployDisabled: false,
+		v0sVulnerabilities: false,
 		tenantName: 'test',
 		githubOrganization: 'test',
 		theme: 'light',
