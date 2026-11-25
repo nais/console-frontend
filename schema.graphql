@@ -10464,6 +10464,11 @@ type Team implements ActivityLogger & Node {
     Sort the full selection before pagination. Omitted: environment, team, workload, identifier and package URL ascending.
     """
     orderBy: VulnerabilityFindingOrder
+
+    """
+    Select the team's workloads before finding filters and aggregation. Only environments and labels are supported. Coverage includes all selected workloads.
+    """
+    workloadFilter: TeamWorkloadsFilter
   ): VulnerabilityFindingConnection!
 
   """Get the mean time to fix history for a team."""
@@ -11665,6 +11670,11 @@ input TeamWorkloadsFilter {
 
   """Only return workloads with one of these vulnerability scan statuses."""
   vulnerabilityCoverageStatuses: [VulnerabilityCoverageStatus!]
+
+  """
+  Filter findings used by unique-vulnerability workload ordering, without changing workload membership or coverage. Use the same filter on each workload's vulnerabilityOverview. Requires a VULNERABILITY_UNIQUE order field on Team.workloads; not supported in Team.vulnerabilityFindings.workloadFilter.
+  """
+  vulnerabilityFilter: VulnerabilityFindingFilter
 }
 
 """Filtering options for activity log entries across teams."""
@@ -12735,7 +12745,12 @@ type UserEdge {
 """Filters for the list of users."""
 input UserFilter {
   """
-  Include users from any of these categories. Omit this field to include all users, even those without a recorded source. An empty list matches no users.
+  True to include only global admins, false to include only non-admins. Omit this field to include both.
+  """
+  isAdmin: Boolean
+
+  """
+  Include users from any of these categories. Omit this field to allow any source, including users without a recorded source. An empty list matches no users.
   """
   sources: [UserSource!]
 }
@@ -15143,6 +15158,31 @@ enum WorkloadOrderField {
 
   """Order apps by vulnerability severity unassigned"""
   VULNERABILITY_SEVERITY_UNASSIGNED
+
+  """
+  Order by unique critical vulnerabilities in the current scan, using filter.vulnerabilityFilter. Incomplete scans are first in both directions; ties use name, environment and workload type ascending.
+  """
+  VULNERABILITY_UNIQUE_CRITICAL
+
+  """
+  Order by unique high-severity vulnerabilities in the current scan, using filter.vulnerabilityFilter. Incomplete scans are first in both directions; ties use name, environment and workload type ascending.
+  """
+  VULNERABILITY_UNIQUE_HIGH
+
+  """
+  Order by unique low-severity vulnerabilities in the current scan, using filter.vulnerabilityFilter. Incomplete scans are first in both directions; ties use name, environment and workload type ascending.
+  """
+  VULNERABILITY_UNIQUE_LOW
+
+  """
+  Order by unique medium-severity vulnerabilities in the current scan, using filter.vulnerabilityFilter. Incomplete scans are first in both directions; ties use name, environment and workload type ascending.
+  """
+  VULNERABILITY_UNIQUE_MEDIUM
+
+  """
+  Order by unique vulnerabilities with unknown severity in the current scan, using filter.vulnerabilityFilter. Incomplete scans are first in both directions; ties use name, environment and workload type ascending.
+  """
+  VULNERABILITY_UNIQUE_UNKNOWN
 }
 
 """A Postgres reference from a workload's uses.postgres configuration."""

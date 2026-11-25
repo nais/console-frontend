@@ -50,13 +50,15 @@ When `true`, Console hides legacy deploy keys and deployment history, omits lega
 GraphQL fields, and redirects team and workload deployment-history routes to their
 overviews. Activity logs and modern deployment metadata remain available.
 
-### v0s workload vulnerabilities
+### v0s vulnerabilities
 
 Fasit's `v0sVulnerabilitiesEnabled` is passed to Console as `V0S_VULNERABILITIES_ENABLED`, with
 the same accepted values. When `true`, application and job vulnerability pages read findings,
 coverage and suppressions from v0s and suppress through `setVulnerabilitySuppressions` and
-`deleteVulnerabilitySuppressions`. Enable it together with nais-api's `v0s.suppressionsEnabled`.
-Other vulnerability views still use v13s.
+`deleteVulnerabilitySuppressions`. Tenant and team vulnerability overviews and the known-exploited
+metric in workload health also read v0s scan data. CVE pages, bulk assessments and shared
+vulnerability Issues are not migrated yet. Keep the flag off in production until they are
+migrated and nais-api's `v0s.suppressionsEnabled` is ready for the same tenant.
 
 ### Production assets
 

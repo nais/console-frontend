@@ -6,30 +6,39 @@
 	import type { PageProps } from './$types';
 
 	let { data }: PageProps = $props();
-	let { TenantVulnerabilityTeams } = $derived(data);
-	const teams = $derived($TenantVulnerabilityTeams.data?.teams);
+	const store = $derived(data.TenantV0sTeams ?? data.TenantVulnerabilityTeams);
+	const teams = $derived($store?.data?.teams);
 </script>
 
 <div class="wrapper">
-	<GraphErrors errors={$TenantVulnerabilityTeams.errors} />
+	<GraphErrors errors={$store?.errors} />
 	<div>
 		<Heading as="h2" spacing>Team Security Posture</Heading>
-		<BodyLong>
-			Teams with workloads, listed alphabetically with CVSS severity counts, known exploited
-			vulnerabilities, SBOM coverage, and workload count. Teams without usable SBOMs are marked so
-			missing scan data is not mistaken for no vulnerabilities. Vulnerability counts are the number
-			of vulnerabilities, not the number of workloads affected.
-		</BodyLong>
+		{#if data.TenantV0sTeams}
+			<BodyLong
+				>Teams with workloads, listed alphabetically with scan coverage, known exploited
+				vulnerabilities and unique vulnerabilities by severity. Missing scan data is not counted as
+				zero vulnerabilities.</BodyLong
+			>
+		{:else}
+			<BodyLong>
+				Teams with workloads, listed alphabetically with CVSS severity counts, known exploited
+				vulnerabilities, SBOM coverage, and workload count. Teams without usable SBOMs are marked so
+				missing scan data is not mistaken for no vulnerabilities. Vulnerability counts are the
+				number of vulnerabilities, not the number of workloads affected.
+			</BodyLong>
+		{/if}
 	</div>
 
-	{#if $TenantVulnerabilityTeams.fetching && !$TenantVulnerabilityTeams.data}
+	{#if $store?.fetching && !$store.data}
 		<div class="loading-centered" role="status" aria-label="Loading">
 			<Loader size="3xlarge" />
 		</div>
-	{:else if teams && teams.pageInfo.totalCount > 0}
+	{:else if teams && !$store?.errors?.length && teams.pageInfo.totalCount > 0}
 		<TeamVulnerabilityList
 			{teams}
-			fetching={$TenantVulnerabilityTeams.fetching}
+			fetching={$store?.fetching}
+			v0s={!!data.TenantV0sTeams}
 			loadPage={(direction) => {
 				const page = teams?.pageInfo;
 				return changeParams(
@@ -41,7 +50,7 @@
 				);
 			}}
 		/>
-	{:else if !$TenantVulnerabilityTeams.errors?.length}
+	{:else if !$store?.errors?.length}
 		<BodyLong>No teams found.</BodyLong>
 	{/if}
 </div>
