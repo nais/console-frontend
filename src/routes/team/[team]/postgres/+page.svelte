@@ -1,8 +1,11 @@
 <script lang="ts">
+	import { afterNavigate } from '$app/navigation';
 	import { page } from '$app/state';
 	import { docURL } from '#lib/doc.js';
 	import LabelFacets from '#lib/domain/labels/LabelFacets.svelte';
-	import DeletePostgresBackupModal from '#lib/domain/postgres/DeletePostgresBackupModal.svelte';
+	import DeletePostgresBackupModal, {
+		type PostgresBackupDeletionTarget
+	} from '#lib/domain/postgres/DeletePostgresBackupModal.svelte';
 	import PostgresBackupsTable, {
 		type PostgresBackupRow
 	} from '#lib/domain/postgres/PostgresBackupsTable.svelte';
@@ -34,12 +37,18 @@
 	let { data }: PageProps = $props();
 	let { TeamPostgres } = $derived(data);
 	let filtersOpen = $state(false);
-	let backupToDelete = $state<PostgresBackupRow | null>(null);
+	let backupToDelete = $state<PostgresBackupDeletionTarget | null>(null);
 	let deletedBackupName = $state<string | null>(null);
 	let backupRefreshFailed = $state(false);
 	let deletedBackups = $state<{ id: string; createdAt: Date }[]>([]);
 	const isDeleted = (b: { id: string; createdAt: Date }) =>
 		deletedBackups.some((d) => d.id === b.id && d.createdAt.getTime() === b.createdAt.getTime());
+
+	afterNavigate(({ to }) => {
+		if (backupToDelete && backupToDelete.pathname !== to?.url.pathname) {
+			backupToDelete = null;
+		}
+	});
 
 	$effect(() => {
 		if (!deletedBackupName) return;
@@ -228,7 +237,12 @@
 								teamSlug={page.params.team!}
 								showSource
 								canManage
-								ondelete={(b) => (backupToDelete = b)}
+								ondelete={(backup) =>
+									(backupToDelete = {
+										backup,
+										teamSlug: data.teamSlug,
+										pathname: page.url.pathname
+									})}
 							/>
 						{:else}
 							<EmptyState
@@ -283,10 +297,9 @@
 	</div>
 {/if}
 
-{#if backupToDelete}
+{#if backupToDelete?.pathname === page.url.pathname}
 	<DeletePostgresBackupModal
-		backup={backupToDelete}
-		teamSlug={page.params.team!}
+		target={backupToDelete}
 		ondeleted={async ({ id, name, createdAt }) => {
 			deletedBackups = [...deletedBackups, { id, createdAt }];
 			deletedBackupName = name;

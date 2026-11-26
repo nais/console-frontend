@@ -1,10 +1,12 @@
 import type { ComponentProps } from 'svelte';
+import type { AfterNavigate } from '@sveltejs/kit';
 import { flushSync, mount, unmount } from 'svelte';
 import { readable, writable } from 'svelte/store';
 import BackupsPage from '../../../routes/team/[team]/[env]/postgres/[postgres]/(single)/backups/+page.svelte';
 import TeamPostgresPage from '../../../routes/team/[team]/postgres/+page.svelte';
 
-const { goto, mutate, page } = vi.hoisted(() => ({
+const { afterNavigate, goto, mutate, page } = vi.hoisted(() => ({
+	afterNavigate: vi.fn<(callback: (navigation: AfterNavigate) => void) => void>(),
 	goto: vi.fn(),
 	mutate: vi.fn(),
 	page: {
@@ -14,7 +16,7 @@ const { goto, mutate, page } = vi.hoisted(() => ({
 	}
 }));
 
-vi.mock('$app/navigation', () => ({ goto }));
+vi.mock('$app/navigation', () => ({ afterNavigate, goto }));
 vi.mock('$app/state', () => ({ page }));
 vi.mock('$houdini', () => ({ graphql: () => ({ mutate }) }));
 
@@ -45,6 +47,7 @@ const requestedBackup = {
 let cleanup: (() => Promise<void>) | undefined;
 
 beforeEach(() => {
+	page.params.team = 'test';
 	page.url = new URL('https://console.test/team/test/dev/postgres/database/backups');
 	vi.stubGlobal('matchMedia', () => ({
 		matches: false,
@@ -76,7 +79,7 @@ function mountPage(
 	fetch: ReturnType<typeof vi.fn>,
 	databaseStore = readable(databaseSnapshot())
 ) {
-	const permissions = { teamSlug: 'test', viewerIsMember: true, isAdmin: false };
+	const permissions = { viewerIsMember: true, isAdmin: false };
 	if (view === 'database') {
 		const component = mount(BackupsPage, {
 			target: document.body,
@@ -84,6 +87,9 @@ function mountPage(
 				params,
 				data: {
 					...permissions,
+					get teamSlug() {
+						return page.params.team;
+					},
 					PostgresBackups: {
 						...databaseStore,
 						fetch
@@ -99,6 +105,9 @@ function mountPage(
 				params: { team: params.team },
 				data: {
 					...permissions,
+					get teamSlug() {
+						return page.params.team;
+					},
 					TeamPostgres: {
 						...readable({
 							data: {
@@ -136,6 +145,16 @@ function clickButton(label: string, root: ParentNode = document) {
 
 function openDialog() {
 	return document.querySelector<HTMLElement>('[role="dialog"][data-state="open"]');
+}
+
+function navigateToTeam(team: string) {
+	const from = page.url;
+	page.url = new URL(from.href.replace(`/team/${page.params.team}/`, `/team/${team}/`));
+	page.params.team = team;
+	for (const [callback] of afterNavigate.mock.calls) {
+		callback({ type: 'popstate', from: { url: from }, to: { url: page.url } } as AfterNavigate);
+	}
+	flushSync();
 }
 
 async function submitAndTryEscape(label: string) {
@@ -234,3 +253,42 @@ test.each(['database', 'team'] as const)(
 		expect(document.querySelector('[aria-label="Delete backup snapshot"]')).toBeNull();
 	}
 );
+
+test.each(['database', 'team'] as const)(
+	'clears an unconfirmed %s delete dialog on team navigation and does not reopen it on return',
+	async (view) => {
+		mountPage(view, vi.fn());
+		clickButton('Delete backup snapshot');
+		await vi.waitFor(() => expect(openDialog()).not.toBeNull());
+
+		navigateToTeam('other');
+		expect(openDialog()).toBeNull();
+		navigateToTeam('test');
+		expect(openDialog()).toBeNull();
+		expect(mutate).not.toHaveBeenCalled();
+	}
+);
+
+test('a late deletion response does not affect the dialog or list in another team', async () => {
+	const result = Promise.withResolvers<unknown>();
+	mutate.mockReturnValue(result.promise);
+	const fetch = vi.fn();
+	mountPage('team', fetch);
+	clickButton('Delete backup snapshot');
+	await submitAndTryEscape('Delete backup');
+	expect(mutate).toHaveBeenCalledWith({
+		input: { teamSlug: 'test', environmentName: 'dev', name: 'snapshot' }
+	});
+
+	navigateToTeam('other');
+	clickButton('Delete backup snapshot');
+	await vi.waitFor(() => expect(openDialog()?.textContent).toContain('bucket for other'));
+	const dialog = openDialog();
+	result.resolve({ data: { deletePostgresBackup: { deletionRequested: true } } });
+	await result.promise;
+	flushSync();
+
+	expect(openDialog()).toBe(dialog);
+	expect(fetch).not.toHaveBeenCalled();
+	expect(document.body.textContent).not.toContain('Deletion requested for');
+});

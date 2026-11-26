@@ -1,21 +1,38 @@
 <script lang="ts">
+	import { page } from '$app/state';
 	import { graphql } from '$houdini';
 	import { Alert, Button, Heading, Modal } from '#lib/shadcn/ui/index.js';
 	import GraphErrors from '#lib/ui/GraphErrors.svelte';
+	import { onDestroy } from 'svelte';
 	import type { PostgresBackupRow } from './PostgresBackupsTable.svelte';
 
-	interface Props {
+	export interface PostgresBackupDeletionTarget {
 		backup: PostgresBackupRow;
 		teamSlug: string;
+		pathname: string;
+	}
+
+	interface Props {
+		target: PostgresBackupDeletionTarget;
 		ondeleted: (backup: Pick<PostgresBackupRow, 'id' | 'name' | 'createdAt'>) => Promise<void>;
 		onclose: () => void;
 	}
 
-	let { backup, teamSlug, ondeleted, onclose }: Props = $props();
+	let { target, ondeleted, onclose }: Props = $props();
 
 	let open = $state(true);
 	let deleting = $state(false);
 	let errors = $state<{ message: string }[] | null>(null);
+	let destroyed = false;
+	onDestroy(() => (destroyed = true));
+
+	function isCurrentTarget(pathname: string) {
+		return !destroyed && pathname === page.url.pathname;
+	}
+
+	function close() {
+		if (isCurrentTarget(target.pathname)) onclose();
+	}
 
 	const deleteBackup = graphql(`
 		mutation DeletePostgresBackup($input: DeletePostgresBackupInput!) {
@@ -26,7 +43,8 @@
 	`);
 
 	async function confirmDelete() {
-		if (deleting) return;
+		const { backup, teamSlug, pathname } = target;
+		if (deleting || !isCurrentTarget(pathname)) return;
 		const { id, name, createdAt, environmentName } = backup;
 		deleting = true;
 		errors = null;
@@ -52,19 +70,28 @@
 		} finally {
 			deleting = false;
 		}
-		await ondeleted({ id, name, createdAt });
+		if (isCurrentTarget(pathname)) {
+			await ondeleted({ id, name, createdAt });
+		}
 	}
 </script>
 
-<Modal bind:open width="small" {onclose} closeButton={!deleting} onBeforeClose={() => !deleting}>
+<Modal
+	bind:open
+	width="small"
+	onclose={close}
+	closeButton={!deleting}
+	onBeforeClose={() => !deleting}
+>
 	{#snippet header()}
 		<Heading as="h2" size="medium">Delete standalone backup</Heading>
 	{/snippet}
 
 	<div class="modal-body">
 		<Alert variant="warning">
-			This permanently deletes the standalone backup {backup.name} ({backup.environmentName}) from
-			the team's disaster-recovery bucket. Cleanup continues asynchronously.
+			This permanently deletes the standalone backup {target.backup.name} ({target.backup
+				.environmentName}) from the disaster-recovery bucket for {target.teamSlug}. Cleanup
+			continues asynchronously.
 		</Alert>
 		<GraphErrors {errors} />
 	</div>
@@ -73,7 +100,7 @@
 		<Button variant="danger" size="small" loading={deleting} onclick={confirmDelete}>
 			Delete backup
 		</Button>
-		<Button variant="secondary" size="small" type="button" disabled={deleting} onclick={onclose}>
+		<Button variant="secondary" size="small" type="button" disabled={deleting} onclick={close}>
 			Cancel
 		</Button>
 	{/snippet}

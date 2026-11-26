@@ -38,7 +38,7 @@ vi.mock('$app/state', () => ({
 		params: { team: 'test' }
 	}
 }));
-vi.mock('$app/navigation', () => ({ goto: vi.fn() }));
+vi.mock('$app/navigation', () => ({ goto: vi.fn(), afterNavigate: vi.fn() }));
 vi.mock('$houdini', () => ({
 	TeamPostgresStore: class {
 		subscribe = readable({

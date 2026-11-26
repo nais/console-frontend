@@ -1,7 +1,10 @@
 <script lang="ts">
+	import { afterNavigate } from '$app/navigation';
 	import { page } from '$app/state';
 	import { graphql } from '$houdini';
-	import DeletePostgresBackupModal from '#lib/domain/postgres/DeletePostgresBackupModal.svelte';
+	import DeletePostgresBackupModal, {
+		type PostgresBackupDeletionTarget
+	} from '#lib/domain/postgres/DeletePostgresBackupModal.svelte';
 	import PostgresBackupsTable, {
 		type PostgresBackupRow
 	} from '#lib/domain/postgres/PostgresBackupsTable.svelte';
@@ -43,7 +46,7 @@
 		page.url.searchParams.has('after') || page.url.searchParams.has('before')
 	);
 
-	let backupToDelete = $state<PostgresBackupRow | null>(null);
+	let backupToDelete = $state<PostgresBackupDeletionTarget | null>(null);
 	let deletedBackupName = $state<string | null>(null);
 	let createdBackupName = $state<string | null>(null);
 	const unobservedBackups = new SvelteMap<string, { pathname: string; createdAt: number }>();
@@ -51,6 +54,12 @@
 	let deletedBackups = $state<{ id: string; createdAt: Date }[]>([]);
 	const isDeleted = (b: { id: string; createdAt: Date }) =>
 		deletedBackups.some((d) => d.id === b.id && d.createdAt.getTime() === b.createdAt.getTime());
+
+	afterNavigate(({ to }) => {
+		if (backupToDelete && backupToDelete.pathname !== to?.url.pathname) {
+			backupToDelete = null;
+		}
+	});
 
 	$effect(() => {
 		if (!deletedBackupName) return;
@@ -225,7 +234,8 @@
 					backups={rows}
 					teamSlug={data.teamSlug}
 					{canManage}
-					ondelete={(b) => (backupToDelete = b)}
+					ondelete={(backup) =>
+						(backupToDelete = { backup, teamSlug: data.teamSlug, pathname: page.url.pathname })}
 				/>
 			{:else}
 				<EmptyState
@@ -308,10 +318,9 @@
 	{/snippet}
 </Modal>
 
-{#if backupToDelete}
+{#if backupToDelete?.pathname === page.url.pathname}
 	<DeletePostgresBackupModal
-		backup={backupToDelete}
-		teamSlug={data.teamSlug}
+		target={backupToDelete}
 		ondeleted={async ({ id, name, createdAt }) => {
 			if (unobservedBackups.get(id)?.createdAt === createdAt.getTime()) {
 				unobservedBackups.delete(id);
