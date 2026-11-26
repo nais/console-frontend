@@ -1,6 +1,12 @@
 query TeamPostgres(
 	$team: Slug!
 	$filter: TeamPostgresFilter
+	$backupFilter: PostgresBackupFilter
+	$includeBackups: Boolean!
+	$backupFirst: Int
+	$backupLast: Int
+	$backupBefore: Cursor
+	$backupAfter: Cursor
 	$first: Int
 	$last: Int
 	$before: Cursor
@@ -42,6 +48,43 @@ query TeamPostgres(
 						}
 					}
 					majorVersion
+				}
+			}
+		}
+		postgresBackups(
+			first: $backupFirst
+			last: $backupLast
+			before: $backupBefore
+			after: $backupAfter
+			filter: $backupFilter
+		) @include(if: $includeBackups) {
+			pageInfo {
+				hasNextPage
+				hasPreviousPage
+				pageStart
+				pageEnd
+				totalCount
+				startCursor
+				endCursor
+			}
+			nodes {
+				id
+				name
+				sourcePostgres
+				phase
+				retentionDays
+				majorVersion
+				diskSize
+				extensions
+				sizeBytes
+				createdAt
+				completedAt
+				expiresAt
+				errorMessage
+				teamEnvironment {
+					environment {
+						name
+					}
 				}
 			}
 		}

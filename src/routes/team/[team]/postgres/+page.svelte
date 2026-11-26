@@ -1,7 +1,14 @@
 <script lang="ts">
+	import { afterNavigate } from '$app/navigation';
 	import { page } from '$app/state';
 	import { docURL } from '#lib/doc.js';
 	import LabelFacets from '#lib/domain/labels/LabelFacets.svelte';
+	import DeletePostgresBackupModal, {
+		type PostgresBackupDeletionTarget
+	} from '#lib/domain/postgres/DeletePostgresBackupModal.svelte';
+	import PostgresBackupsTable, {
+		type PostgresBackupRow
+	} from '#lib/domain/postgres/PostgresBackupsTable.svelte';
 	import { envTagVariant } from '#lib/envTagVariant.js';
 	import PostgreSQLIcon from '#lib/icons/PostgreSQLIcon.svelte';
 	import CollapsibleSidebar from '#lib/ui/CollapsibleSidebar.svelte';
@@ -13,6 +20,7 @@
 	import Pagination from '#lib/ui/Pagination.svelte';
 	import SurfaceCard from '#lib/ui/SurfaceCard.svelte';
 	import { changeParams } from '#lib/utils/searchparams.js';
+	import { onDestroy } from 'svelte';
 	import {
 		Alert,
 		Button,
@@ -30,6 +38,32 @@
 	let { data }: PageProps = $props();
 	let { TeamPostgres } = $derived(data);
 	let filtersOpen = $state(false);
+	let backupToDelete = $state<PostgresBackupDeletionTarget | null>(null);
+	let deletedBackupName = $state<string | null>(null);
+	let backupRefreshFailed = $state(false);
+	let routeVersion = 0;
+	let deletedBackups = $state<{ id: string; createdAt: Date }[]>([]);
+	const isDeleted = (b: { id: string; createdAt: Date }) =>
+		deletedBackups.some((d) => d.id === b.id && d.createdAt.getTime() === b.createdAt.getTime());
+
+	afterNavigate(({ from, to }) => {
+		if (!from || from.url.pathname === to?.url.pathname) return;
+
+		routeVersion++;
+		backupToDelete = null;
+		deletedBackupName = null;
+		backupRefreshFailed = false;
+	});
+
+	onDestroy(() => {
+		routeVersion++;
+	});
+
+	$effect(() => {
+		if (!deletedBackupName) return;
+		const timeout = window.setTimeout(() => (deletedBackupName = null), 30_000);
+		return () => window.clearTimeout(timeout);
+	});
 	let hasSupportedEnvironment = $derived(
 		($TeamPostgres.data?.team.environments ?? []).some(
 			(teamEnvironment) => !!teamEnvironment.gcpProjectID
@@ -41,12 +75,30 @@
 	const selectedLabels = $derived(
 		page.url.searchParams.get('labels')?.split(',').filter(Boolean) ?? []
 	);
+	let backups = $derived($TeamPostgres.data?.team.postgresBackups);
+	let filteredBackups = $derived<PostgresBackupRow[]>(
+		(backups?.nodes ?? [])
+			.filter((backup) => !isDeleted(backup))
+			.map((backup) => ({
+				...backup,
+				environmentName: backup.teamEnvironment.environment.name
+			}))
+	);
+	let backupCount = $derived(
+		Math.max(
+			0,
+			(backups?.pageInfo.totalCount ?? 0) - (backups?.nodes ?? []).filter(isDeleted).length
+		)
+	);
 
 	function toggleEnvironment(environment: string) {
 		const next = selectedEnvironments.includes(environment)
 			? selectedEnvironments.filter((selected) => selected !== environment)
 			: [...selectedEnvironments, environment];
-		changeParams({ environments: next.join(','), after: '', before: '' }, { noScroll: true });
+		changeParams(
+			{ environments: next.join(','), after: '', before: '', backupAfter: '', backupBefore: '' },
+			{ noScroll: true }
+		);
 	}
 
 	function handleLabelsChange(selected: string[]) {
@@ -60,6 +112,21 @@
 		<Alert variant="success">
 			Deletion requested for {page.url.searchParams.get('deletionRequested')}. Cleanup is
 			asynchronous; the database may remain in this list until it completes.
+		</Alert>
+	</div>
+{/if}
+{#if deletedBackupName}
+	<div class="deletion-alert">
+		<Alert variant="success">
+			Deletion requested for standalone backup {deletedBackupName}. Cleanup continues
+			asynchronously.
+		</Alert>
+	</div>
+{/if}
+{#if backupRefreshFailed}
+	<div class="deletion-alert">
+		<Alert variant="warning">
+			The backup list could not be refreshed. Reload the page to see the latest backups.
 		</Alert>
 	</div>
 {/if}
@@ -164,6 +231,52 @@
 						)
 				}}
 			/>
+
+			{#if backups}
+				<div class="backups-section">
+					<Collection
+						title="Standalone backups"
+						icon={PostgreSQLIcon}
+						headerBorder={false}
+						count={backupCount}
+					>
+						{#if filteredBackups.length > 0}
+							<PostgresBackupsTable
+								backups={filteredBackups}
+								teamSlug={page.params.team!}
+								showSource
+								canManage
+								ondelete={(backup) =>
+									(backupToDelete = {
+										backup,
+										teamSlug: data.teamSlug,
+										pathname: page.url.pathname
+									})}
+							/>
+						{:else}
+							<EmptyState
+								title="No standalone backups."
+								description="Standalone backups remain available here even after their source Postgres database is deleted."
+							/>
+						{/if}
+					</Collection>
+					<Pagination
+						page={backups.pageInfo}
+						loaders={{
+							loadPreviousPage: () =>
+								changeParams(
+									{ backupAfter: '', backupBefore: backups.pageInfo.startCursor ?? '' },
+									{ noScroll: true }
+								),
+							loadNextPage: () =>
+								changeParams(
+									{ backupBefore: '', backupAfter: backups.pageInfo.endCursor ?? '' },
+									{ noScroll: true }
+								)
+						}}
+					/>
+				</div>
+			{/if}
 		</div>
 		<CollapsibleSidebar bind:open={filtersOpen}>
 			<SurfaceCard title="Filters">
@@ -193,8 +306,37 @@
 	</div>
 {/if}
 
+{#if backupToDelete?.pathname === page.url.pathname}
+	<DeletePostgresBackupModal
+		target={backupToDelete}
+		ondeleted={async ({ id, name, createdAt }) => {
+			const { pathname } = page.url;
+			const version = routeVersion;
+			deletedBackups = [...deletedBackups, { id, createdAt }];
+			deletedBackupName = name;
+			backupToDelete = null;
+			backupRefreshFailed = false;
+			let failed: boolean;
+			try {
+				const result = await TeamPostgres.fetch({ policy: 'NetworkOnly' });
+				failed = Boolean(result.errors?.length);
+			} catch {
+				failed = true;
+			}
+			if (version === routeVersion && pathname === page.url.pathname) {
+				backupRefreshFailed = failed;
+			}
+		}}
+		onclose={() => (backupToDelete = null)}
+	/>
+{/if}
+
 <style>
 	.deletion-alert {
 		margin-bottom: var(--nais-space-24);
+	}
+
+	.backups-section {
+		margin-top: var(--nais-space-24);
 	}
 </style>

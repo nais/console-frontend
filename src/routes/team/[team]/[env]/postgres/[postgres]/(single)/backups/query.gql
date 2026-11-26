@@ -1,0 +1,53 @@
+query PostgresBackups(
+	$team: Slug!
+	$env: String!
+	$name: String!
+	$first: Int
+	$last: Int
+	$before: Cursor
+	$after: Cursor
+) {
+	team(slug: $team) {
+		environment(name: $env) {
+			postgres(name: $name) {
+				id
+				name
+				state
+				backupRetentionDays
+			}
+		}
+		postgresBackups(
+			first: $first
+			last: $last
+			before: $before
+			after: $after
+			filter: { environments: [$env], sourcePostgres: $name }
+		) @paginate(mode: SinglePage) {
+			pageInfo {
+				hasNextPage
+				hasPreviousPage
+				pageStart
+				pageEnd
+				totalCount
+				startCursor
+				endCursor
+			}
+			nodes {
+				id
+				name
+				sourcePostgres
+				phase
+				retentionDays
+				majorVersion
+				diskSize
+				extensions
+				sizeBytes
+				createdAt
+				startedAt
+				completedAt
+				expiresAt
+				errorMessage
+			}
+		}
+	}
+}

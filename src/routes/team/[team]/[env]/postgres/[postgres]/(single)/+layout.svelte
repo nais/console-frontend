@@ -33,6 +33,18 @@
 			label: 'Overview',
 			href: resolve('/team/[team]/[env]/postgres/[postgres]/(single)', page.params as never)
 		},
+		...(data.viewerIsMember
+			? [
+					{
+						value: '/team/[team]/[env]/postgres/[postgres]/(single)/backups',
+						label: 'Backups',
+						href: resolve(
+							'/team/[team]/[env]/postgres/[postgres]/(single)/backups',
+							page.params as never
+						)
+					}
+				]
+			: []),
 		{
 			value: '/team/[team]/[env]/postgres/[postgres]/(single)/insights',
 			label: 'Insights',

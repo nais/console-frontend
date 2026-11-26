@@ -111,6 +111,7 @@ export const icons: { [typename: string]: Component } = {
 	PostgresCreatedActivityLogEntry: PostgreSQLIcon,
 	PostgresUpdatedActivityLogEntry: PostgreSQLIcon,
 	PostgresDeletedActivityLogEntry: PostgreSQLIcon,
+	PostgresBackupActivityLogEntry: PostgreSQLIcon,
 	PostgresGrantAccessActivityLogEntry: PadlockLockedIcon,
 	PostgresPersonalAccessCreatedActivityLogEntry: PadlockLockedIcon,
 	PostgresPersonalAccessConnectionActivityLogEntry: PostgreSQLIcon,
