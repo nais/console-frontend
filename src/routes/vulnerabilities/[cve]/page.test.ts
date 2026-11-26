@@ -6,9 +6,10 @@ import { get, readable } from 'svelte/store';
 import { JSDOM } from 'jsdom';
 import CvePage from './+page.svelte';
 
-const { loadDetails, loadWorkloads } = vi.hoisted(() => ({
+const { loadDetails, loadWorkloads, loadV0s } = vi.hoisted(() => ({
 	loadDetails: vi.fn(async () => ({})),
-	loadWorkloads: vi.fn(async () => ({}))
+	loadWorkloads: vi.fn(async () => ({})),
+	loadV0s: vi.fn(async () => ({}))
 }));
 
 vi.mock('$houdini', async (importOriginal) => ({
@@ -16,7 +17,8 @@ vi.mock('$houdini', async (importOriginal) => ({
 	graphql: () => ({}),
 	fragment: (data: unknown) => readable(data),
 	load_CVEDetails: loadDetails,
-	load_CVEWorkloads: loadWorkloads
+	load_CVEWorkloads: loadWorkloads,
+	load_GlobalV0sCve: loadV0s
 }));
 vi.mock('#lib/domain/vulnerability/cveWorkloadOrder.js', () => ({
 	cveWorkloadOrder: vi.fn(() => ({ field: 'TEAM', direction: 'ASC' }))
@@ -34,9 +36,10 @@ vi.mock('$app/state', () => ({
 
 import { load } from './+page';
 
-function event(query = ''): Parameters<typeof load>[0] {
+function event(query = '', v0sVulnerabilities = false): Parameters<typeof load>[0] {
 	return {
 		params: { cve: 'CVE-2026-1234' },
+		parent: async () => ({ v0sVulnerabilities }),
 		url: new URL(`https://console.example.com/vulnerabilities/CVE-2026-1234${query}`)
 	} as Parameters<typeof load>[0];
 }
@@ -44,6 +47,24 @@ function event(query = ''): Parameters<typeof load>[0] {
 afterEach(() => {
 	vi.restoreAllMocks();
 	vi.clearAllMocks();
+});
+
+test('preserves My teams for v0s affected workloads without narrowing package lookups by team', async () => {
+	await load(event('?myTeams=true&v0sAfter=next&after=legacy', true));
+
+	const rowFilter = { vulnerabilityIdentifiers: ['CVE-2026-1234'], suppressed: 'INCLUDE' };
+	expect(loadV0s).toHaveBeenCalledWith(
+		expect.objectContaining({
+			variables: {
+				identifier: 'CVE-2026-1234',
+				rowFilter,
+				filter: { ...rowFilter, teamScope: { memberOfViewer: true } },
+				after: 'next'
+			}
+		})
+	);
+	expect(loadDetails).not.toHaveBeenCalled();
+	expect(loadWorkloads).not.toHaveBeenCalled();
 });
 
 async function renderDetails(riskAssessment: CVEDetails$result['cve']['riskAssessment']) {
@@ -121,7 +142,7 @@ describe('CVE workload team scope', () => {
 	it('uses viewer memberships when My teams is selected', async () => {
 		const result = await load(event('?myTeams=true'));
 
-		expect(result.onlyMyTeams).toBe(true);
+		expect(result).toMatchObject({ v0s: false, onlyMyTeams: true });
 		expect(loadWorkloads).toHaveBeenCalledWith(
 			expect.objectContaining({
 				variables: expect.objectContaining({
@@ -137,7 +158,7 @@ describe('CVE workload team scope', () => {
 	it.each(['', '?myTeams=false'])('leaves workloads unfiltered for %s', async (query) => {
 		const result = await load(event(query));
 
-		expect(result.onlyMyTeams).toBe(false);
+		expect(result).toMatchObject({ v0s: false, onlyMyTeams: false });
 		expect(loadWorkloads).toHaveBeenCalledWith(
 			expect.objectContaining({
 				variables: expect.objectContaining({ filter: null, onlyMyTeams: false })

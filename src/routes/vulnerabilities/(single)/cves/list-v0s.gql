@@ -1,0 +1,33 @@
+query V0sCveList(
+	$filter: VulnerabilityFindingsFilter
+	$after: Cursor
+	$order: VulnerabilityOverviewOrder!
+) {
+	vulnerabilityFindings(filter: $filter) {
+		summary {
+			coverage {
+				scanned
+				totalWorkloads
+			}
+		}
+		vulnerabilities(first: 20, after: $after, orderBy: $order) {
+			nodes {
+				vulnerabilityIdentifier
+				severity
+				affectedWorkloadCount
+				vulnerability {
+					title
+					knownExploited
+					epss {
+						score
+					}
+				}
+			}
+			pageInfo {
+				totalCount
+				endCursor
+				hasNextPage
+			}
+		}
+	}
+}

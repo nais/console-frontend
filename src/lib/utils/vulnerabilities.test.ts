@@ -274,8 +274,8 @@ describe('vulnerabilities', () => {
 	describe('fix-version guidance', () => {
 		test.each([
 			'../domain/vulnerability/SuppressFinding.svelte',
-			'../../routes/vulnerabilities/[cve]/+page.svelte',
-			'../../routes/team/[team]/vulnerabilities/[cve]/+page.svelte'
+			'../../routes/vulnerabilities/[cve]/LegacyCvePage.svelte',
+			'../../routes/team/[team]/vulnerabilities/[cve]/LegacyTeamCvePage.svelte'
 		])('preserves operator semantics in %s', (path) => {
 			const source = readFileSync(new URL(path, import.meta.url), 'utf8');
 			const guidance = remediationGuidance(parse(source, { modern: true }));

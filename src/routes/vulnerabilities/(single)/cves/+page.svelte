@@ -1,90 +1,102 @@
 <script lang="ts">
-	import CveListView from '#lib/domain/vulnerability/CveList.svelte';
+	import PrioritySignals from '#lib/domain/vulnerability/priority/PrioritySignals.svelte';
+	import V0sCveNavigation from '#lib/domain/vulnerability/V0sCveNavigation.svelte';
+	import V0sCveTeamScope from '#lib/domain/vulnerability/V0sCveTeamScope.svelte';
+	import {
+		v0sCveCursor,
+		v0sCveOrderFields,
+		v0sCveTeamScope
+	} from '#lib/domain/vulnerability/v0sCve.js';
+	import { Alert, Heading, Table, Tbody, Td, Th, Thead, Tr } from '#lib/shadcn/ui/index.js';
 	import GraphErrors from '#lib/ui/GraphErrors.svelte';
 	import OrderByMenu from '#lib/ui/OrderByMenu.svelte';
-	import Pagination from '#lib/ui/Pagination.svelte';
-	import { changeParams } from '#lib/utils/searchparams.js';
 	import { numberFormatter } from '#lib/utils/formatters.js';
-	import { BodyLong, Heading, Loader } from '#lib/shadcn/ui/index.js';
+	import { page } from '$app/state';
+	import LegacyCveListPage from './LegacyCveListPage.svelte';
 	import type { PageProps } from './$types';
-	import {
-		cveOrderFields,
-		cvePageParams,
-		cvePaginationParams,
-		defaultCveOrder
-	} from './pagination.js';
 
-	let { data }: PageProps = $props();
-	let { CveList } = $derived(data);
-	const query = $derived($CveList);
-	const connection = $derived(query.data?.cves);
+	const { data }: PageProps = $props();
+	const store = $derived(data.v0s ? data.V0sCveList : undefined);
+	const connection = $derived($store?.data?.vulnerabilityFindings.vulnerabilities);
+	const coverage = $derived($store?.data?.vulnerabilityFindings.summary.coverage);
 </script>
 
-<div class="wrapper">
-	<GraphErrors errors={query?.errors} />
-	<div>
-		<div class="cve-header">
-			<Heading as="h2">
-				CVE Database
-				{#if connection}
-					({numberFormatter(connection.pageInfo.totalCount)})
-				{/if}
-			</Heading>
+{#if data.v0s}
+	<section aria-labelledby="cve-list-title" class="v0s-list">
+		<Heading as="h2" id="cve-list-title">
+			CVE Database {connection ? `(${numberFormatter(connection.pageInfo.totalCount)})` : ''}
+		</Heading>
+		<div class="controls">
+			<V0sCveTeamScope />
 			<OrderByMenu
-				orderField={cveOrderFields}
-				defaultOrderField={defaultCveOrder.field}
-				defaultOrderDirection={defaultCveOrder.direction}
-				resetParams={cvePaginationParams}
+				orderField={v0sCveOrderFields}
+				defaultOrderField="SEVERITY"
+				defaultOrderDirection="DESC"
+				resetParams={[v0sCveCursor]}
 			/>
 		</div>
-		<BodyLong>
-			Browse the complete list of Common Vulnerabilities and Exposures (CVEs) affecting your
-			workloads. Each CVE entry includes severity, threat signals, and the number of affected
-			workloads.
-		</BodyLong>
-	</div>
-
-	{#if query?.fetching && !query.data}
-		<div class="loading-centered" role="status" aria-label="Loading">
-			<Loader size="3xlarge" />
-		</div>
-	{:else if connection && connection.pageInfo.totalCount > 0}
-		<CveListView cves={connection.edges} />
-		<Pagination
-			page={connection.pageInfo}
-			fetching={query?.fetching}
-			loaders={{
-				loadPreviousPage: () =>
-					changeParams(
-						cvePageParams('previous', connection?.pageInfo.startCursor ?? null, data.cveOrder),
-						{ noScroll: true }
-					),
-				loadNextPage: () =>
-					changeParams(
-						cvePageParams('next', connection?.pageInfo.endCursor ?? null, data.cveOrder),
-						{ noScroll: true }
-					)
-			}}
-		/>
-	{:else if !query?.errors}
-		<BodyLong>No CVEs found.</BodyLong>
-	{/if}
-</div>
+		<GraphErrors errors={$store?.errors} />
+		{#if connection && !$store?.errors?.length}
+			{#if coverage && coverage.scanned < coverage.totalWorkloads}
+				<Alert variant="warning">
+					Scan coverage is incomplete. Results only reflect available scans.
+				</Alert>
+			{/if}
+			{#if connection.nodes.length}
+				<div class="table-scroll">
+					<Table size="small">
+						<Thead>
+							<Tr
+								><Th>Identifier</Th><Th>Title</Th><Th>Severity</Th><Th>Threat signals</Th><Th
+									>Affected workloads</Th
+								></Tr
+							>
+						</Thead>
+						<Tbody>
+							{#each connection.nodes as entry (entry.vulnerabilityIdentifier)}
+								<Tr>
+									<Td
+										><a
+											href="/vulnerabilities/{encodeURIComponent(
+												entry.vulnerabilityIdentifier
+											)}{v0sCveTeamScope(page.url) ? '?myTeams=true' : ''}"
+											>{entry.vulnerabilityIdentifier}</a
+										></Td
+									>
+									<Td>{entry.vulnerability?.title || '—'}</Td>
+									<Td><span class="severity-badge {entry.severity}">{entry.severity}</span></Td>
+									<Td
+										><PrioritySignals
+											hasKevEntry={entry.vulnerability?.knownExploited ?? false}
+											epssScore={entry.vulnerability?.epss?.score ?? null}
+											showHelpText={false}
+										/></Td
+									>
+									<Td>{numberFormatter(entry.affectedWorkloadCount)}</Td>
+								</Tr>
+							{/each}
+						</Tbody>
+					</Table>
+				</div>
+			{:else}
+				<p>{connection.pageInfo.totalCount ? 'No CVEs on this page.' : 'No CVEs found.'}</p>
+			{/if}
+		{/if}
+		<V0sCveNavigation pageInfo={connection?.pageInfo} />
+	</section>
+{:else}
+	<LegacyCveListPage {data} />
+{/if}
 
 <style>
-	.cve-header {
+	.v0s-list {
+		display: grid;
+		gap: var(--nais-space-16);
+		margin-top: var(--spacing-layout);
+	}
+	.controls {
 		display: flex;
-		align-items: center;
-		justify-content: space-between;
 		flex-wrap: wrap;
 		gap: var(--nais-space-8);
-		margin-bottom: var(--nais-space-12);
-	}
-
-	.wrapper {
-		display: flex;
-		flex-direction: column;
-		gap: var(--spacing-layout);
-		margin-top: var(--spacing-layout);
 	}
 </style>

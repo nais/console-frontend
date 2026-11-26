@@ -1,0 +1,13 @@
+query GlobalV0sCve(
+	$identifier: String!
+	$filter: VulnerabilityFindingsFilter!
+	$rowFilter: WorkloadVulnerabilityFindingsFilter!
+	$after: Cursor
+) {
+	vulnerability(identifier: $identifier) {
+		...V0sCveAdvisory @mask_disable
+	}
+	vulnerabilityFindings(filter: $filter) {
+		...V0sCveWorkloads @mask_disable @with(after: $after, rowFilter: $rowFilter)
+	}
+}

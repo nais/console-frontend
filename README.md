@@ -56,9 +56,10 @@ Fasit's `v0sVulnerabilitiesEnabled` is passed to Console as `V0S_VULNERABILITIES
 the same accepted values. When `true`, application and job vulnerability pages read findings,
 coverage and suppressions from v0s and suppress through `setVulnerabilitySuppressions` and
 `deleteVulnerabilitySuppressions`. Tenant and team vulnerability overviews and the known-exploited
-metric in workload health also read v0s scan data. CVE pages, bulk assessments and shared
-vulnerability Issues are not migrated yet. Keep the flag off in production until they are
-migrated and nais-api's `v0s.suppressionsEnabled` is ready for the same tenant.
+metric in workload health also read v0s scan data. The CVE database and global/team CVE details
+use v0s, including affected-workload pagination and package-level bulk assessments on team pages.
+Keep the flag off in production until shared vulnerability Issues use v0s and nais-api's
+`v0s.suppressionsEnabled` is ready for the same tenant.
 
 ### Production assets
 

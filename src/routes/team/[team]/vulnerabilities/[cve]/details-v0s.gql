@@ -1,0 +1,17 @@
+query TeamV0sCve(
+	$team: Slug!
+	$identifier: String!
+	$filter: TeamVulnerabilityFindingsFilter!
+	$rowFilter: WorkloadVulnerabilityFindingsFilter!
+	$after: Cursor
+) {
+	vulnerability(identifier: $identifier) {
+		...V0sCveAdvisory @mask_disable
+	}
+	team(slug: $team) {
+		viewerIsMember
+		vulnerabilityFindings(filter: $filter) {
+			...V0sCveWorkloads @mask_disable @with(after: $after, rowFilter: $rowFilter)
+		}
+	}
+}
