@@ -2,16 +2,12 @@
 	import { graphql } from '$houdini';
 	import { Alert, Button, Heading, Modal } from '#lib/shadcn/ui/index.js';
 	import GraphErrors from '#lib/ui/GraphErrors.svelte';
+	import type { PostgresBackupRow } from './PostgresBackupsTable.svelte';
 
 	interface Props {
-		backup: {
-			id: string;
-			name: string;
-			environmentName: string;
-			sourcePostgres: string;
-		};
+		backup: PostgresBackupRow;
 		teamSlug: string;
-		ondeleted: (backup: { id: string; name: string }) => void | Promise<void>;
+		ondeleted: (backup: Pick<PostgresBackupRow, 'id' | 'name' | 'createdAt'>) => Promise<void>;
 		onclose: () => void;
 	}
 
@@ -31,14 +27,15 @@
 
 	async function confirmDelete() {
 		if (deleting) return;
+		const { id, name, createdAt, environmentName } = backup;
 		deleting = true;
 		errors = null;
 		try {
 			const result = await deleteBackup.mutate({
 				input: {
 					teamSlug,
-					environmentName: backup.environmentName,
-					name: backup.name
+					environmentName,
+					name
 				}
 			});
 			if (result.errors?.length) {
@@ -49,16 +46,17 @@
 				errors = [{ message: 'Backup deletion could not be confirmed.' }];
 				return;
 			}
-			await ondeleted({ id: backup.id, name: backup.name });
 		} catch {
 			errors = [{ message: 'Backup deletion could not be confirmed.' }];
+			return;
 		} finally {
 			deleting = false;
 		}
+		await ondeleted({ id, name, createdAt });
 	}
 </script>
 
-<Modal bind:open width="small" {onclose} closeButton={!deleting}>
+<Modal bind:open width="small" {onclose} closeButton={!deleting} onBeforeClose={() => !deleting}>
 	{#snippet header()}
 		<Heading as="h2" size="medium">Delete standalone backup</Heading>
 	{/snippet}

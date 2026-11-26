@@ -36,6 +36,7 @@
 	let filtersOpen = $state(false);
 	let backupToDelete = $state<PostgresBackupRow | null>(null);
 	let deletedBackupName = $state<string | null>(null);
+	let backupRefreshFailed = $state(false);
 	let deletedBackups = $state<{ id: string; createdAt: Date }[]>([]);
 	const isDeleted = (b: { id: string; createdAt: Date }) =>
 		deletedBackups.some((d) => d.id === b.id && d.createdAt.getTime() === b.createdAt.getTime());
@@ -101,6 +102,13 @@
 		<Alert variant="success">
 			Deletion requested for standalone backup {deletedBackupName}. Cleanup continues
 			asynchronously.
+		</Alert>
+	</div>
+{/if}
+{#if backupRefreshFailed}
+	<div class="deletion-alert">
+		<Alert variant="warning">
+			The backup list could not be refreshed. Reload the page to see the latest backups.
 		</Alert>
 	</div>
 {/if}
@@ -279,13 +287,17 @@
 	<DeletePostgresBackupModal
 		backup={backupToDelete}
 		teamSlug={page.params.team!}
-		ondeleted={async ({ id, name }) => {
-			if (backupToDelete) {
-				deletedBackups = [...deletedBackups, { id, createdAt: backupToDelete.createdAt }];
-			}
+		ondeleted={async ({ id, name, createdAt }) => {
+			deletedBackups = [...deletedBackups, { id, createdAt }];
 			deletedBackupName = name;
 			backupToDelete = null;
-			await TeamPostgres.fetch({ policy: 'NetworkOnly' });
+			backupRefreshFailed = false;
+			try {
+				const result = await TeamPostgres.fetch({ policy: 'NetworkOnly' });
+				backupRefreshFailed = Boolean(result.errors?.length);
+			} catch {
+				backupRefreshFailed = true;
+			}
 		}}
 		onclose={() => (backupToDelete = null)}
 	/>

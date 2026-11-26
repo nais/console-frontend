@@ -41,6 +41,8 @@
 
 	let backupToDelete = $state<PostgresBackupRow | null>(null);
 	let deletedBackupName = $state<string | null>(null);
+	let createdBackupName = $state<string | null>(null);
+	let backupRefreshFailed = $state(false);
 	let deletedBackups = $state<{ id: string; createdAt: Date }[]>([]);
 	const isDeleted = (b: { id: string; createdAt: Date }) =>
 		deletedBackups.some((d) => d.id === b.id && d.createdAt.getTime() === b.createdAt.getTime());
@@ -97,6 +99,24 @@
 		createModalOpen = true;
 	}
 
+	async function refreshBackups({ resetPagination = false } = {}) {
+		backupRefreshFailed = false;
+		try {
+			if (
+				resetPagination &&
+				(page.url.searchParams.has('after') || page.url.searchParams.has('before'))
+			) {
+				await changeParams({ after: '', before: '' }, { noScroll: true });
+				backupRefreshFailed = Boolean($PostgresBackups.errors?.length);
+			} else {
+				const result = await PostgresBackups.fetch({ policy: 'NetworkOnly' });
+				backupRefreshFailed = Boolean(result.errors?.length);
+			}
+		} catch {
+			backupRefreshFailed = true;
+		}
+	}
+
 	async function submitCreateBackup() {
 		nameTouched = true;
 		retentionTouched = true;
@@ -123,17 +143,15 @@
 				createErrors = [{ message: 'Backup creation could not be confirmed.' }];
 				return;
 			}
-			createModalOpen = false;
-			if (page.url.searchParams.has('after') || page.url.searchParams.has('before')) {
-				changeParams({ after: '', before: '' }, { noScroll: true });
-			} else {
-				await PostgresBackups.fetch({ policy: 'NetworkOnly' });
-			}
+			createdBackupName = result.data.createPostgresBackup.backup.name;
 		} catch {
 			createErrors = [{ message: 'Backup creation could not be confirmed.' }];
+			return;
 		} finally {
 			creating = false;
 		}
+		createModalOpen = false;
+		await refreshBackups({ resetPagination: true });
 	}
 
 	onMount(() => {
@@ -154,19 +172,26 @@
 
 <GraphErrors errors={$PostgresBackups.errors} />
 
+{#if createdBackupName}
+	<Alert variant="success">Standalone backup {createdBackupName} was requested.</Alert>
+{/if}
+{#if deletedBackupName}
+	<Alert variant="success">
+		Deletion requested for standalone backup {deletedBackupName}. Cleanup continues asynchronously.
+	</Alert>
+{/if}
+{#if backupRefreshFailed}
+	<Alert variant="warning">
+		The backup list could not be refreshed. Reload the page to see the latest backups.
+	</Alert>
+{/if}
+
 {#if $PostgresBackups.fetching && !backups}
 	<div class="loading-centered" role="status" aria-label="Loading">
 		<Loader size="3xlarge" />
 	</div>
 {:else if backups}
 	<div class="backups-page">
-		{#if deletedBackupName}
-			<Alert variant="success">
-				Deletion requested for standalone backup {deletedBackupName}. Cleanup continues
-				asynchronously.
-			</Alert>
-		{/if}
-
 		<BodyShort size="small" class="backups-intro">
 			Standalone backups are stored in your team's disaster-recovery bucket and survive database
 			deletion{#if postgres}
@@ -217,6 +242,7 @@
 	bind:open={createModalOpen}
 	width="small"
 	closeButton={!creating}
+	onBeforeClose={() => !creating}
 	onclose={() => (createModalOpen = false)}
 >
 	{#snippet header()}
@@ -274,13 +300,11 @@
 	<DeletePostgresBackupModal
 		backup={backupToDelete}
 		teamSlug={data.teamSlug}
-		ondeleted={async ({ id, name }) => {
-			if (backupToDelete) {
-				deletedBackups = [...deletedBackups, { id, createdAt: backupToDelete.createdAt }];
-			}
+		ondeleted={async ({ id, name, createdAt }) => {
+			deletedBackups = [...deletedBackups, { id, createdAt }];
 			deletedBackupName = name;
 			backupToDelete = null;
-			await PostgresBackups.fetch({ policy: 'NetworkOnly' });
+			await refreshBackups();
 		}}
 		onclose={() => (backupToDelete = null)}
 	/>
