@@ -20,6 +20,7 @@
 	import Pagination from '#lib/ui/Pagination.svelte';
 	import SurfaceCard from '#lib/ui/SurfaceCard.svelte';
 	import { changeParams } from '#lib/utils/searchparams.js';
+	import { onDestroy } from 'svelte';
 	import {
 		Alert,
 		Button,
@@ -40,14 +41,22 @@
 	let backupToDelete = $state<PostgresBackupDeletionTarget | null>(null);
 	let deletedBackupName = $state<string | null>(null);
 	let backupRefreshFailed = $state(false);
+	let routeVersion = 0;
 	let deletedBackups = $state<{ id: string; createdAt: Date }[]>([]);
 	const isDeleted = (b: { id: string; createdAt: Date }) =>
 		deletedBackups.some((d) => d.id === b.id && d.createdAt.getTime() === b.createdAt.getTime());
 
-	afterNavigate(({ to }) => {
-		if (backupToDelete && backupToDelete.pathname !== to?.url.pathname) {
-			backupToDelete = null;
-		}
+	afterNavigate(({ from, to }) => {
+		if (!from || from.url.pathname === to?.url.pathname) return;
+
+		routeVersion++;
+		backupToDelete = null;
+		deletedBackupName = null;
+		backupRefreshFailed = false;
+	});
+
+	onDestroy(() => {
+		routeVersion++;
 	});
 
 	$effect(() => {
@@ -301,15 +310,21 @@
 	<DeletePostgresBackupModal
 		target={backupToDelete}
 		ondeleted={async ({ id, name, createdAt }) => {
+			const { pathname } = page.url;
+			const version = routeVersion;
 			deletedBackups = [...deletedBackups, { id, createdAt }];
 			deletedBackupName = name;
 			backupToDelete = null;
 			backupRefreshFailed = false;
+			let failed: boolean;
 			try {
 				const result = await TeamPostgres.fetch({ policy: 'NetworkOnly' });
-				backupRefreshFailed = Boolean(result.errors?.length);
+				failed = Boolean(result.errors?.length);
 			} catch {
-				backupRefreshFailed = true;
+				failed = true;
+			}
+			if (version === routeVersion && pathname === page.url.pathname) {
+				backupRefreshFailed = failed;
 			}
 		}}
 		onclose={() => (backupToDelete = null)}

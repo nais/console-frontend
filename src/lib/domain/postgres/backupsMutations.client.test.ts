@@ -369,3 +369,47 @@ test('does not show an old refresh failure in the destination database', async (
 	expect(document.body.textContent).not.toContain('was requested');
 	expect(document.body.textContent).not.toContain('could not be refreshed');
 });
+
+test('clears team backup feedback on team switches but keeps it on same-team filter changes', async () => {
+	const fetch = vi.fn().mockResolvedValue({ errors: [{ message: 'Refresh failed' }] });
+	mutate.mockResolvedValue({ data: { deletePostgresBackup: { deletionRequested: true } } });
+	mountPage('team', fetch);
+	clickButton('Delete backup snapshot');
+	await submitAndTryEscape('Delete backup');
+
+	await vi.waitFor(() => {
+		expect(document.body.textContent).toContain('Deletion requested for standalone backup');
+		expect(document.body.textContent).toContain('could not be refreshed');
+	});
+	const filtered = new URL(page.url);
+	filtered.searchParams.set('environments', 'dev');
+	navigateTo(filtered);
+	expect(document.body.textContent).toContain('Deletion requested for standalone backup');
+	expect(document.body.textContent).toContain('could not be refreshed');
+
+	navigateToTeam('other');
+	expect(document.body.textContent).not.toContain('Deletion requested for standalone backup');
+	expect(document.body.textContent).not.toContain('could not be refreshed');
+});
+
+test.each(['other', 'test'])(
+	'ignores a delayed deletion refresh after team navigation ending on %s',
+	async (team) => {
+		const refresh = Promise.withResolvers<unknown>();
+		const fetch = vi.fn().mockReturnValue(refresh.promise);
+		mutate.mockResolvedValue({ data: { deletePostgresBackup: { deletionRequested: true } } });
+		mountPage('team', fetch);
+		clickButton('Delete backup snapshot');
+		await submitAndTryEscape('Delete backup');
+		await vi.waitFor(() => expect(fetch).toHaveBeenCalledOnce());
+
+		navigateToTeam('other');
+		if (team === 'test') navigateToTeam('test');
+		refresh.resolve({ errors: [{ message: 'Refresh failed' }] });
+		await refresh.promise;
+		flushSync();
+
+		expect(document.body.textContent).not.toContain('Deletion requested for standalone backup');
+		expect(document.body.textContent).not.toContain('could not be refreshed');
+	}
+);
