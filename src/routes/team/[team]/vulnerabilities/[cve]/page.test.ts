@@ -11,9 +11,10 @@ import { get, readable } from 'svelte/store';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import TeamCvePage from './+page.svelte';
 
-const { loadPage, loadWorkloads, pageUrl } = vi.hoisted(() => ({
+const { loadPage, loadWorkloads, loadV0s, pageUrl } = vi.hoisted(() => ({
 	loadPage: vi.fn(async () => ({})),
 	loadWorkloads: vi.fn(async () => ({})),
+	loadV0s: vi.fn(async () => ({})),
 	pageUrl: new URL('https://console.example.com/team/example-team/vulnerabilities/CVE-2022-22965')
 }));
 
@@ -24,7 +25,8 @@ vi.mock('$houdini', async (importOriginal) => {
 		graphql: () => ({}),
 		fragment: (data: unknown) => readable(data),
 		load_TeamCVEPage: loadPage,
-		load_TeamCVEWorkloads: loadWorkloads
+		load_TeamCVEWorkloads: loadWorkloads,
+		load_TeamV0sCve: loadV0s
 	};
 });
 vi.mock('#lib/utils/pageMeta.js', () => ({ addPageMeta: vi.fn(async () => ({})) }));
@@ -39,6 +41,30 @@ vi.mock('$app/state', () => ({
 }));
 
 import { load } from './+page';
+
+test('loads only the team-scoped v0s detail and uses the same CVE filter for packages', async () => {
+	await load({
+		params: { team: 'example-team', cve: 'GHSA-test' },
+		url: new URL(`${pageUrl}?v0sAfter=second-page`),
+		parent: async () => ({ v0sVulnerabilities: true })
+	} as Parameters<typeof load>[0]);
+
+	const filter = { vulnerabilityIdentifiers: ['GHSA-test'], suppressed: 'INCLUDE' };
+	expect(loadV0s).toHaveBeenCalledWith(
+		expect.objectContaining({
+			blocking: true,
+			variables: {
+				team: 'example-team',
+				identifier: 'GHSA-test',
+				filter,
+				rowFilter: filter,
+				after: 'second-page'
+			}
+		})
+	);
+	expect(loadPage).not.toHaveBeenCalled();
+	expect(loadWorkloads).not.toHaveBeenCalled();
+});
 
 type Finding = TeamCVEWorkloads$result['cve']['workloads']['edges'][number]['node'];
 
@@ -255,6 +281,7 @@ describe('team CVE grouping', () => {
 				);
 				await load({
 					params: { team: 'example-team', cve: 'CVE-2022-22965' },
+					parent: async () => ({ v0sVulnerabilities: false }),
 					url
 				} as Parameters<typeof load>[0]);
 				expect(loadWorkloads).toHaveBeenLastCalledWith({

@@ -145,6 +145,10 @@
 				return 'Issue type';
 			case 'SEVERITY':
 				return 'Severity';
+			case 'AFFECTED_WORKLOAD_COUNT':
+				return 'Affected workloads';
+			case 'IDENTIFIER':
+				return 'Identifier';
 			case 'RESOURCE_NAME':
 				return 'Resource name';
 			case 'RESOURCE_TYPE':
