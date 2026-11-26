@@ -10486,6 +10486,26 @@ type Team implements ActivityLogger & Node {
     orderBy: OpenSearchOrder
   ): OpenSearchConnection!
 
+  """
+  Standalone Postgres backups owned by the team, newest first. Available even after their source databases are deleted.
+  """
+  postgresBackups(
+    """Get backups after this cursor."""
+    after: Cursor
+
+    """Get backups before this cursor."""
+    before: Cursor
+
+    """Filter backups by environment or source database name."""
+    filter: PostgresBackupFilter
+
+    """Get the first n backups."""
+    first: Int
+
+    """Get the last n backups."""
+    last: Int
+  ): PostgresBackupConnection!
+
   """Postgres databases owned by the team."""
   postgreses(
     """Get items after this cursor."""
@@ -10507,35 +10527,6 @@ type Team implements ActivityLogger & Node {
     """
     last: Int
   ): PostgresConnection!
-
-  """Look up a standalone Postgres backup by environment and name."""
-  postgresBackup(
-    """Environment containing the backup."""
-    environmentName: String!
-
-    """Name of the backup."""
-    name: String!
-  ): PostgresBackup!
-
-  """
-  Standalone Postgres backups owned by the team, newest first. Available even after their source databases are deleted.
-  """
-  postgresBackups(
-    """Get backups after this cursor."""
-    after: Cursor
-
-    """Get backups before this cursor."""
-    before: Cursor
-
-    """Filter backups by environment or source database name."""
-    filter: PostgresBackupFilter
-
-    """Get the first n backups."""
-    first: Int
-
-    """Get the last n backups."""
-    last: Int
-  ): PostgresBackupConnection!
 
   """Purpose of the team."""
   purpose: String!
@@ -11100,6 +11091,12 @@ type TeamEnvironment implements Node {
     """Name of the PostgresAccess in this team environment."""
     name: String!
   ): PostgresAccess!
+
+  """Look up a standalone Postgres backup by name."""
+  postgresBackup(
+    """Name of the backup."""
+    name: String!
+  ): PostgresBackup!
 
   """Get a secret by name."""
   secret(name: String!): Secret!
