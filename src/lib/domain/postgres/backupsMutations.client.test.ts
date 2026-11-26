@@ -1,6 +1,6 @@
 import type { ComponentProps } from 'svelte';
 import { flushSync, mount, unmount } from 'svelte';
-import { readable } from 'svelte/store';
+import { readable, writable } from 'svelte/store';
 import BackupsPage from '../../../routes/team/[team]/[env]/postgres/[postgres]/(single)/backups/+page.svelte';
 import TeamPostgresPage from '../../../routes/team/[team]/postgres/+page.svelte';
 
@@ -37,9 +37,15 @@ const backup = {
 const params = page.params;
 const pageInfo = { totalCount: 1, hasNextPage: false, hasPreviousPage: false };
 const postgresBackups = { nodes: [backup], pageInfo };
+const requestedBackup = {
+	...backup,
+	name: 'requested-backup',
+	createdAt: new Date('2026-11-25T10:48:22Z')
+};
 let cleanup: (() => Promise<void>) | undefined;
 
 beforeEach(() => {
+	page.url = new URL('https://console.test/team/test/dev/postgres/database/backups');
 	vi.stubGlobal('matchMedia', () => ({
 		matches: false,
 		addEventListener: vi.fn(),
@@ -51,11 +57,25 @@ afterEach(async () => {
 	await cleanup?.();
 	cleanup = undefined;
 	document.body.replaceChildren();
+	vi.useRealTimers();
+	vi.restoreAllMocks();
 	vi.unstubAllGlobals();
 	vi.resetAllMocks();
 });
 
-function mountPage(view: 'database' | 'team', fetch: ReturnType<typeof vi.fn>) {
+function databaseSnapshot(nodes = [backup]) {
+	return {
+		data: { team: { environment: { postgres: null }, postgresBackups: { nodes, pageInfo } } },
+		errors: null,
+		fetching: false
+	};
+}
+
+function mountPage(
+	view: 'database' | 'team',
+	fetch: ReturnType<typeof vi.fn>,
+	databaseStore = readable(databaseSnapshot())
+) {
 	const permissions = { teamSlug: 'test', viewerIsMember: true, isAdmin: false };
 	if (view === 'database') {
 		const component = mount(BackupsPage, {
@@ -65,11 +85,7 @@ function mountPage(view: 'database' | 'team', fetch: ReturnType<typeof vi.fn>) {
 				data: {
 					...permissions,
 					PostgresBackups: {
-						...readable({
-							data: { team: { environment: { postgres: null }, postgresBackups } },
-							errors: null,
-							fetching: false
-						}),
+						...databaseStore,
 						fetch
 					}
 				} as unknown as ComponentProps<typeof BackupsPage>['data']
@@ -148,7 +164,7 @@ test.each(['fetch', 'pagination'])(
 
 		clickButton('Create backup');
 		await submitAndTryEscape('Create backup');
-		result.resolve({ data: { createPostgresBackup: { backup: { name: 'requested-backup' } } } });
+		result.resolve({ data: { createPostgresBackup: { backup: requestedBackup } } });
 
 		await vi.waitFor(() => {
 			expect(openDialog()).toBeNull();
@@ -165,6 +181,36 @@ test.each(['fetch', 'pagination'])(
 		}
 	}
 );
+
+test('polls through a stale creation response and stops once the new backup completes', async () => {
+	vi.useFakeTimers();
+	vi.spyOn(document, 'visibilityState', 'get').mockReturnValue('visible');
+	const store = writable(databaseSnapshot());
+	const fetch = vi.fn().mockResolvedValue({});
+	mutate.mockResolvedValue({ data: { createPostgresBackup: { backup: requestedBackup } } });
+	mountPage('database', fetch, store);
+
+	clickButton('Create backup');
+	await submitAndTryEscape('Create backup');
+	await vi.waitFor(() => expect(fetch).toHaveBeenCalledTimes(1));
+
+	await vi.advanceTimersByTimeAsync(5_000);
+	expect(fetch).toHaveBeenCalledTimes(2);
+	await vi.advanceTimersByTimeAsync(5_000);
+	expect(fetch).toHaveBeenCalledTimes(3);
+
+	store.set(databaseSnapshot([{ ...requestedBackup, phase: 'RUNNING' }]));
+	await vi.advanceTimersByTimeAsync(5_000);
+	expect(fetch).toHaveBeenCalledTimes(4);
+
+	store.set(databaseSnapshot([requestedBackup]));
+	await vi.advanceTimersByTimeAsync(10_000);
+	expect(fetch).toHaveBeenCalledTimes(4);
+
+	store.set(databaseSnapshot());
+	await vi.advanceTimersByTimeAsync(5_000);
+	expect(fetch).toHaveBeenCalledTimes(4);
+});
 
 test.each(['database', 'team'] as const)(
 	'keeps deletion confirmation visible when the %s backup query returns errors',

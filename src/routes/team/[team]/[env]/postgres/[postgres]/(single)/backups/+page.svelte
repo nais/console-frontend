@@ -29,19 +29,24 @@
 	import { pluralize } from '#lib/utils/formatters.js';
 	import { changeParams } from '#lib/utils/searchparams.js';
 	import { onMount } from 'svelte';
+	import { SvelteMap } from 'svelte/reactivity';
 	import type { PageProps } from './$types';
 
 	let { data }: PageProps = $props();
 	let { PostgresBackups } = $derived(data);
 	let postgres = $derived($PostgresBackups.data?.team.environment.postgres);
 	let backups = $derived($PostgresBackups.data?.team.postgresBackups);
-	let canManage = $derived(data.viewerIsMember || data.isAdmin);
+	let canManage = $derived(data.viewerIsMember);
 	let environmentName = $derived(page.params.env!);
 	let postgresName = $derived(page.params.postgres!);
+	let hasBackupCursor = $derived(
+		page.url.searchParams.has('after') || page.url.searchParams.has('before')
+	);
 
 	let backupToDelete = $state<PostgresBackupRow | null>(null);
 	let deletedBackupName = $state<string | null>(null);
 	let createdBackupName = $state<string | null>(null);
+	const unobservedBackups = new SvelteMap<string, { pathname: string; createdAt: number }>();
 	let backupRefreshFailed = $state(false);
 	let deletedBackups = $state<{ id: string; createdAt: Date }[]>([]);
 	const isDeleted = (b: { id: string; createdAt: Date }) =>
@@ -84,7 +89,7 @@
 				backup {
 					id
 					name
-					phase
+					createdAt
 				}
 			}
 		}
@@ -102,10 +107,7 @@
 	async function refreshBackups({ resetPagination = false } = {}) {
 		backupRefreshFailed = false;
 		try {
-			if (
-				resetPagination &&
-				(page.url.searchParams.has('after') || page.url.searchParams.has('before'))
-			) {
+			if (resetPagination && hasBackupCursor) {
 				await changeParams({ after: '', before: '' }, { noScroll: true });
 				backupRefreshFailed = Boolean($PostgresBackups.errors?.length);
 			} else {
@@ -123,6 +125,7 @@
 		if (creating || nameError || retentionError) {
 			return;
 		}
+		const { pathname } = page.url;
 		creating = true;
 		createErrors = null;
 		try {
@@ -143,7 +146,9 @@
 				createErrors = [{ message: 'Backup creation could not be confirmed.' }];
 				return;
 			}
-			createdBackupName = result.data.createPostgresBackup.backup.name;
+			const { id, name, createdAt } = result.data.createPostgresBackup.backup;
+			unobservedBackups.set(id, { pathname, createdAt: createdAt.getTime() });
+			createdBackupName = name;
 		} catch {
 			createErrors = [{ message: 'Backup creation could not be confirmed.' }];
 			return;
@@ -156,14 +161,21 @@
 
 	onMount(() => {
 		const interval = window.setInterval(() => {
-			if (
-				document.visibilityState !== 'visible' ||
-				$PostgresBackups.fetching ||
-				!(backups?.nodes ?? []).some((b) => backupPending(b.phase))
-			) {
+			if (document.visibilityState !== 'visible' || $PostgresBackups.fetching) {
 				return;
 			}
-			void PostgresBackups.fetch({ policy: 'NetworkOnly' }).catch(() => {});
+			const nodes = backups?.nodes ?? [];
+			for (const { id, createdAt } of nodes) {
+				if (unobservedBackups.get(id)?.createdAt === createdAt.getTime()) {
+					unobservedBackups.delete(id);
+				}
+			}
+			const waitingForCreation =
+				!hasBackupCursor &&
+				[...unobservedBackups.values()].some(({ pathname }) => pathname === page.url.pathname);
+			if (waitingForCreation || nodes.some((backup) => backupPending(backup.phase))) {
+				void refreshBackups();
+			}
 		}, 5_000);
 
 		return () => window.clearInterval(interval);
@@ -301,6 +313,9 @@
 		backup={backupToDelete}
 		teamSlug={data.teamSlug}
 		ondeleted={async ({ id, name, createdAt }) => {
+			if (unobservedBackups.get(id)?.createdAt === createdAt.getTime()) {
+				unobservedBackups.delete(id);
+			}
 			deletedBackups = [...deletedBackups, { id, createdAt }];
 			deletedBackupName = name;
 			backupToDelete = null;
