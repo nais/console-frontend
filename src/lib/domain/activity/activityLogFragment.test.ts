@@ -79,6 +79,7 @@ describe('ActivityLogEntryFragment', () => {
 		'PostgresCreatedActivityLogEntry',
 		'PostgresUpdatedActivityLogEntry',
 		'PostgresDeletedActivityLogEntry',
+		'PostgresBackupActivityLogEntry',
 		'PostgresGrantAccessActivityLogEntry',
 		'PostgresPersonalAccessCreatedActivityLogEntry',
 		'PostgresPersonalAccessConnectionActivityLogEntry'

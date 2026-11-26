@@ -12,6 +12,26 @@ query TeamPostgres(
 			environment {
 				name
 			}
+			postgresBackups(first: 25) {
+				pageInfo {
+					totalCount
+				}
+				nodes {
+					id
+					name
+					sourcePostgres
+					phase
+					retentionDays
+					majorVersion
+					diskSize
+					extensions
+					sizeBytes
+					createdAt
+					completedAt
+					expiresAt
+					errorMessage
+				}
+			}
 		}
 		postgreses(first: $first, last: $last, filter: $filter, before: $before, after: $after)
 			@paginate(mode: SinglePage) {

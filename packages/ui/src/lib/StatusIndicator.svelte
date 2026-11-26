@@ -66,7 +66,7 @@
 	}
 
 	.warning::after {
-		background-color: var(--warning);
+		background-color: var(--warning-indicator);
 		box-shadow: 0 0 0 var(--nais-space-2) var(--warning-muted);
 	}
 

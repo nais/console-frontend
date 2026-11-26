@@ -196,6 +196,17 @@
 						resourceType
 						postgresTeamSlug: teamSlug
 					}
+					... on PostgresBackupActivityLogEntry {
+						__typename
+						id
+						createdAt
+						actor
+						environmentName
+						message
+						resourceName
+						resourceType
+						postgresTeamSlug: teamSlug
+					}
 					... on PostgresPersonalAccessCreatedActivityLogEntry {
 						__typename
 						id

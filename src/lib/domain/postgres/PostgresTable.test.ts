@@ -12,6 +12,28 @@ const fixture = vi.hoisted(() => ({
 		majorVersion: string;
 		state: string;
 		teamEnvironment: { environment: { name: string } };
+	}[],
+	environments: [] as {
+		gcpProjectID: string | null;
+		environment: { name: string };
+		postgresBackups: {
+			pageInfo: { totalCount: number };
+			nodes: {
+				id: string;
+				name: string;
+				sourcePostgres: string;
+				phase: string;
+				retentionDays: number;
+				majorVersion: string | null;
+				diskSize: string | null;
+				extensions: string[];
+				sizeBytes: number | null;
+				createdAt: Date;
+				completedAt: Date | null;
+				expiresAt: Date | null;
+				errorMessage: string | null;
+			}[];
+		};
 	}[]
 }));
 
@@ -28,7 +50,7 @@ vi.mock('$houdini', () => ({
 		subscribe = readable({
 			data: {
 				team: {
-					environments: [],
+					environments: fixture.environments,
 					postgreses: {
 						edges: fixture.nodes.map((node) => ({ node })),
 						pageInfo: { totalCount: fixture.nodes.length },
@@ -78,10 +100,47 @@ describe('Postgres table', () => {
 
 	test('renders guidance without a table when no databases exist', async () => {
 		fixture.nodes = [];
+		fixture.environments = [];
 		const { body } = await renderPage();
 
 		expect(body).not.toContain('<table');
 		expect(body).toContain('No Postgres found.');
 		expect(body).toContain('sidebar-toggle');
+	});
+
+	test('renders standalone backups even after their source database is deleted', async () => {
+		fixture.nodes = [];
+		fixture.environments = [
+			{
+				gcpProjectID: 'project-1',
+				environment: { name: 'dev-gcp' },
+				postgresBackups: {
+					pageInfo: { totalCount: 1 },
+					nodes: [
+						{
+							id: 'backup-1',
+							name: 'frogres-dr-1',
+							sourcePostgres: 'deleted-db',
+							phase: 'COMPLETED',
+							retentionDays: 30,
+							majorVersion: '18',
+							diskSize: '10Gi',
+							extensions: [],
+							sizeBytes: 115250090,
+							createdAt: new Date('2026-11-25T10:47:22Z'),
+							completedAt: new Date('2026-11-25T10:47:57Z'),
+							expiresAt: new Date('2026-12-25T10:47:57Z'),
+							errorMessage: null
+						}
+					]
+				}
+			}
+		];
+		const { body } = await renderPage();
+
+		expect(body).toContain('frogres-dr-1');
+		expect(body).toContain('deleted-db');
+		expect(body).toContain('110 MiB');
+		expect(body).toContain('25 Dec 2026');
 	});
 });

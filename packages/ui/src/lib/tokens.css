@@ -100,6 +100,7 @@
 	--success-border: rgba(22, 163, 74, 0.24);
 
 	--warning: #92400e;
+	--warning-indicator: #f59e0b;
 	--warning-foreground: #ffffff;
 	--warning-muted: rgba(217, 119, 6, 0.1);
 	--warning-border: rgba(217, 119, 6, 0.26);
@@ -197,6 +198,7 @@
 	--success-border: rgba(34, 197, 94, 0.28);
 
 	--warning: #f59e0b;
+	--warning-indicator: #f59e0b;
 	--warning-foreground: #451a03;
 	--warning-muted: rgba(245, 158, 11, 0.12);
 	--warning-border: rgba(245, 158, 11, 0.28);

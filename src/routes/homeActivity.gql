@@ -242,6 +242,16 @@ query HomeActivity($from: Time!) {
 				resourceType
 				teamSlug
 			}
+			... on PostgresBackupActivityLogEntry {
+				id
+				createdAt
+				actor
+				message
+				environmentName
+				resourceName
+				resourceType
+				teamSlug
+			}
 			... on PostgresGrantAccessActivityLogEntry {
 				id
 				createdAt

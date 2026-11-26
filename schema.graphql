@@ -73,6 +73,12 @@ enum ActivityLogActivityType {
   """OpenSearch was updated."""
   OPENSEARCH_UPDATED
 
+  """A standalone Postgres backup was requested."""
+  POSTGRES_BACKUP_CREATED
+
+  """Deletion of a standalone Postgres backup was requested."""
+  POSTGRES_BACKUP_DELETION_REQUESTED
+
   """A Postgres was created"""
   POSTGRES_CREATED
 
@@ -345,6 +351,9 @@ enum ActivityLogEntryResourceType {
   All activity log entries related to Postgres clusters will use this resource type.
   """
   POSTGRES
+
+  """A standalone Postgres backup."""
+  POSTGRES_BACKUP
 
   """
   All activity log entries related to reconcilers will use this resource type.
@@ -2624,6 +2633,30 @@ type CreatePostgresAccessPayload {
   name: String!
 }
 
+"""Input for requesting a standalone Postgres backup."""
+input CreatePostgresBackupInput {
+  """Environment containing the database."""
+  environmentName: String!
+
+  """Name of the new backup."""
+  name: String!
+
+  """Retention in days (1–730). Defaults to 30."""
+  retentionDays: Int
+
+  """Name of the source database in the same team environment."""
+  sourcePostgres: String!
+
+  """Team that owns the database."""
+  teamSlug: Slug!
+}
+
+"""Result of requesting a standalone Postgres backup."""
+type CreatePostgresBackupPayload {
+  """The requested backup. Its phase indicates whether it is ready."""
+  backup: PostgresBackup!
+}
+
 """Input for creating a Postgres."""
 input CreatePostgresInput {
   """
@@ -3032,6 +3065,26 @@ input DeleteOpenSearchInput {
 type DeleteOpenSearchPayload {
   """Whether or not the OpenSearch instance was deleted."""
   openSearchDeleted: Boolean
+}
+
+"""Identifies the standalone Postgres backup to delete."""
+input DeletePostgresBackupInput {
+  """Environment containing the backup."""
+  environmentName: String!
+
+  """Name of the backup."""
+  name: String!
+
+  """Team that owns the backup."""
+  teamSlug: Slug!
+}
+
+"""Result of requesting deletion of a standalone Postgres backup."""
+type DeletePostgresBackupPayload {
+  """
+  Whether deletion has been requested. This does not imply cleanup has completed.
+  """
+  deletionRequested: Boolean!
 }
 
 """
@@ -5704,6 +5757,11 @@ type Mutation {
   """
   createPostgresAccess(input: CreatePostgresAccessInput!): CreatePostgresAccessPayload!
 
+  """
+  Request a standalone backup of a Postgres database in a team environment.
+  """
+  createPostgresBackup(input: CreatePostgresBackupInput!): CreatePostgresBackupPayload!
+
   """Create a new secret."""
   createSecret(input: CreateSecretInput!): CreateSecretPayload!
 
@@ -5786,6 +5844,9 @@ type Mutation {
   Request deletion of a Postgres database and its data. Fails while workloads or bindings reference it; cleanup is asynchronous.
   """
   deletePostgres(input: DeletePostgresInput!): DeletePostgresPayload!
+
+  """Request deletion of a standalone backup. Cleanup is asynchronous."""
+  deletePostgresBackup(input: DeletePostgresBackupInput!): DeletePostgresBackupPayload!
 
   """Delete a secret, and the values it contains."""
   deleteSecret(input: DeleteSecretInput!): DeleteSecretPayload!
@@ -6821,6 +6882,127 @@ enum PostgresAccessState {
 
   """The access and its connection materials are ready."""
   READY
+}
+
+"""
+A standalone backup, independent of the source database's point-in-time recovery window.
+"""
+type PostgresBackup implements Node {
+  """When the standalone copy was completed, if successful."""
+  completedAt: Time
+
+  """When the backup was requested."""
+  createdAt: Time!
+
+  """Disk size recorded from the source database, if known."""
+  diskSize: String
+
+  """User-facing message when the backup fails."""
+  errorMessage: String
+
+  """When the backup expires, if known."""
+  expiresAt: Time
+
+  """PostgreSQL extensions recorded from the source database."""
+  extensions: [String!]!
+
+  """Opaque identifier for this backup."""
+  id: ID!
+
+  """PostgreSQL major version recorded from the source database, if known."""
+  majorVersion: String
+
+  """Name of the backup in its team environment."""
+  name: String!
+
+  """Current phase of the backup."""
+  phase: PostgresBackupPhase!
+
+  """Requested retention in days, measured from completion."""
+  retentionDays: Int!
+
+  """Verified backup size in bytes, if known."""
+  sizeBytes: Int
+
+  """Name of the source database. The database may no longer exist."""
+  sourcePostgres: String!
+
+  """When the backup started, if known."""
+  startedAt: Time
+}
+
+"""
+Activity log entry for a standalone Postgres backup request or deletion request.
+"""
+type PostgresBackupActivityLogEntry implements ActivityLogEntry & Node {
+  """Identity of the actor who performed the action."""
+  actor: String!
+
+  """Creation time of the entry."""
+  createdAt: Time!
+
+  """Environment that the entry belongs to."""
+  environmentName: String
+
+  """GitHub Actions OIDC claims when authenticated by a GitHub repository."""
+  gitHubActorClaims: GitHubActorClaims
+
+  """ID of the entry."""
+  id: ID!
+
+  """Summary of the action."""
+  message: String!
+
+  """Name of the affected backup."""
+  resourceName: String!
+
+  """Type of resource affected."""
+  resourceType: ActivityLogEntryResourceType!
+
+  """Team slug that the entry belongs to."""
+  teamSlug: Slug!
+}
+
+"""A page of standalone Postgres backups."""
+type PostgresBackupConnection {
+  """Backups alongside their pagination cursors."""
+  edges: [PostgresBackupEdge!]!
+
+  """Backups in this page."""
+  nodes: [PostgresBackup!]!
+
+  """Pagination information."""
+  pageInfo: PageInfo!
+}
+
+"""A standalone Postgres backup and its pagination cursor."""
+type PostgresBackupEdge {
+  """Pagination cursor for this backup."""
+  cursor: Cursor!
+
+  """The backup."""
+  node: PostgresBackup!
+}
+
+"""Filters for standalone Postgres backups."""
+input PostgresBackupFilter {
+  """Only return backups with this source database name."""
+  sourcePostgres: String
+}
+
+"""Lifecycle phase of a standalone Postgres backup."""
+enum PostgresBackupPhase {
+  """The standalone backup was copied and verified."""
+  COMPLETED
+
+  """The backup did not complete successfully."""
+  FAILED
+
+  """The backup request is waiting for execution."""
+  PREPARING
+
+  """The backup or its standalone copy is in progress."""
+  RUNNING
 }
 
 """Configured PostgreSQL settings for a database."""
@@ -10464,6 +10646,11 @@ type Team implements ActivityLogger & Node {
     Sort the full selection before pagination. Omitted: environment, team, workload, identifier and package URL ascending.
     """
     orderBy: VulnerabilityFindingOrder
+
+    """
+    Select the team's workloads before finding filters and aggregation. Only environments and labels are supported. Coverage includes all selected workloads.
+    """
+    workloadFilter: TeamWorkloadsFilter
   ): VulnerabilityFindingConnection!
 
   """Get the mean time to fix history for a team."""
@@ -10875,6 +11062,32 @@ type TeamEnvironment implements Node {
     """Name of the PostgresAccess in this team environment."""
     name: String!
   ): PostgresAccess!
+
+  """Look up a standalone Postgres backup by name."""
+  postgresBackup(
+    """Name of the backup."""
+    name: String!
+  ): PostgresBackup!
+
+  """
+  Standalone Postgres backups, newest first. Available even after their source databases are deleted.
+  """
+  postgresBackups(
+    """Get backups after this cursor."""
+    after: Cursor
+
+    """Get backups before this cursor."""
+    before: Cursor
+
+    """Filter backups by their source database name."""
+    filter: PostgresBackupFilter
+
+    """Get the first n backups."""
+    first: Int
+
+    """Get the last n backups."""
+    last: Int
+  ): PostgresBackupConnection!
 
   """Get a secret by name."""
   secret(name: String!): Secret!
@@ -11665,6 +11878,11 @@ input TeamWorkloadsFilter {
 
   """Only return workloads with one of these vulnerability scan statuses."""
   vulnerabilityCoverageStatuses: [VulnerabilityCoverageStatus!]
+
+  """
+  Filter findings used by unique-vulnerability workload ordering, without changing workload membership or coverage. Use the same filter on each workload's vulnerabilityOverview. Requires a VULNERABILITY_UNIQUE order field on Team.workloads; not supported in Team.vulnerabilityFindings.workloadFilter.
+  """
+  vulnerabilityFilter: VulnerabilityFindingFilter
 }
 
 """Filtering options for activity log entries across teams."""
@@ -12735,7 +12953,12 @@ type UserEdge {
 """Filters for the list of users."""
 input UserFilter {
   """
-  Include users from any of these categories. Omit this field to include all users, even those without a recorded source. An empty list matches no users.
+  True to include only global admins, false to include only non-admins. Omit this field to include both.
+  """
+  isAdmin: Boolean
+
+  """
+  Include users from any of these categories. Omit this field to allow any source, including users without a recorded source. An empty list matches no users.
   """
   sources: [UserSource!]
 }
@@ -15143,6 +15366,31 @@ enum WorkloadOrderField {
 
   """Order apps by vulnerability severity unassigned"""
   VULNERABILITY_SEVERITY_UNASSIGNED
+
+  """
+  Order by unique critical vulnerabilities in the current scan, using filter.vulnerabilityFilter. Incomplete scans are first in both directions; ties use name, environment and workload type ascending.
+  """
+  VULNERABILITY_UNIQUE_CRITICAL
+
+  """
+  Order by unique high-severity vulnerabilities in the current scan, using filter.vulnerabilityFilter. Incomplete scans are first in both directions; ties use name, environment and workload type ascending.
+  """
+  VULNERABILITY_UNIQUE_HIGH
+
+  """
+  Order by unique low-severity vulnerabilities in the current scan, using filter.vulnerabilityFilter. Incomplete scans are first in both directions; ties use name, environment and workload type ascending.
+  """
+  VULNERABILITY_UNIQUE_LOW
+
+  """
+  Order by unique medium-severity vulnerabilities in the current scan, using filter.vulnerabilityFilter. Incomplete scans are first in both directions; ties use name, environment and workload type ascending.
+  """
+  VULNERABILITY_UNIQUE_MEDIUM
+
+  """
+  Order by unique vulnerabilities with unknown severity in the current scan, using filter.vulnerabilityFilter. Incomplete scans are first in both directions; ties use name, environment and workload type ascending.
+  """
+  VULNERABILITY_UNIQUE_UNKNOWN
 }
 
 """A Postgres reference from a workload's uses.postgres configuration."""

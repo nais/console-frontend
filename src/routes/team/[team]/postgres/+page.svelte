@@ -2,6 +2,10 @@
 	import { page } from '$app/state';
 	import { docURL } from '#lib/doc.js';
 	import LabelFacets from '#lib/domain/labels/LabelFacets.svelte';
+	import DeletePostgresBackupModal from '#lib/domain/postgres/DeletePostgresBackupModal.svelte';
+	import PostgresBackupsTable, {
+		type PostgresBackupRow
+	} from '#lib/domain/postgres/PostgresBackupsTable.svelte';
 	import { envTagVariant } from '#lib/envTagVariant.js';
 	import PostgreSQLIcon from '#lib/icons/PostgreSQLIcon.svelte';
 	import CollapsibleSidebar from '#lib/ui/CollapsibleSidebar.svelte';
@@ -30,6 +34,15 @@
 	let { data }: PageProps = $props();
 	let { TeamPostgres } = $derived(data);
 	let filtersOpen = $state(false);
+	let backupToDelete = $state<PostgresBackupRow | null>(null);
+	let deletedBackupName = $state<string | null>(null);
+	let deletedBackupIds = $state<string[]>([]);
+
+	$effect(() => {
+		if (!deletedBackupName) return;
+		const timeout = window.setTimeout(() => (deletedBackupName = null), 30_000);
+		return () => window.clearTimeout(timeout);
+	});
 	let hasSupportedEnvironment = $derived(
 		($TeamPostgres.data?.team.environments ?? []).some(
 			(teamEnvironment) => !!teamEnvironment.gcpProjectID
@@ -40,6 +53,23 @@
 	);
 	const selectedLabels = $derived(
 		page.url.searchParams.get('labels')?.split(',').filter(Boolean) ?? []
+	);
+	let filteredBackups = $derived<PostgresBackupRow[]>(
+		($TeamPostgres.data?.team.environments ?? [])
+			.filter(
+				(teamEnvironment) =>
+					selectedEnvironments.length === 0 ||
+					selectedEnvironments.includes(teamEnvironment.environment.name)
+			)
+			.flatMap((teamEnvironment) =>
+				(teamEnvironment.postgresBackups?.nodes ?? [])
+					.filter((backup) => !deletedBackupIds.includes(backup.id))
+					.map((backup) => ({
+						...backup,
+						environmentName: teamEnvironment.environment.name
+					}))
+			)
+			.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
 	);
 
 	function toggleEnvironment(environment: string) {
@@ -60,6 +90,14 @@
 		<Alert variant="success">
 			Deletion requested for {page.url.searchParams.get('deletionRequested')}. Cleanup is
 			asynchronous; the database may remain in this list until it completes.
+		</Alert>
+	</div>
+{/if}
+{#if deletedBackupName}
+	<div class="deletion-alert">
+		<Alert variant="success">
+			Deletion requested for standalone backup {deletedBackupName}. Cleanup continues
+			asynchronously.
 		</Alert>
 	</div>
 {/if}
@@ -164,6 +202,30 @@
 						)
 				}}
 			/>
+
+			<div class="backups-section">
+				<Collection
+					title="Standalone backups"
+					icon={PostgreSQLIcon}
+					headerBorder={false}
+					count={filteredBackups.length}
+				>
+					{#if filteredBackups.length > 0}
+						<PostgresBackupsTable
+							backups={filteredBackups}
+							teamSlug={page.params.team!}
+							showSource
+							canManage={data.viewerIsMember || data.isAdmin}
+							ondelete={(b) => (backupToDelete = b)}
+						/>
+					{:else}
+						<EmptyState
+							title="No standalone backups."
+							description="Standalone backups remain available here even after their source Postgres database is deleted."
+						/>
+					{/if}
+				</Collection>
+			</div>
 		</div>
 		<CollapsibleSidebar bind:open={filtersOpen}>
 			<SurfaceCard title="Filters">
@@ -193,8 +255,26 @@
 	</div>
 {/if}
 
+{#if backupToDelete}
+	<DeletePostgresBackupModal
+		backup={backupToDelete}
+		teamSlug={page.params.team!}
+		ondeleted={async ({ id, name }) => {
+			deletedBackupIds = [...deletedBackupIds, id];
+			deletedBackupName = name;
+			backupToDelete = null;
+			await TeamPostgres.fetch({ policy: 'NetworkOnly' });
+		}}
+		onclose={() => (backupToDelete = null)}
+	/>
+{/if}
+
 <style>
 	.deletion-alert {
 		margin-bottom: var(--nais-space-24);
+	}
+
+	.backups-section {
+		margin-top: var(--nais-space-24);
 	}
 </style>
