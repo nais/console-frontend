@@ -16,14 +16,15 @@
 	import type { PageProps } from './$types';
 
 	const { data }: PageProps = $props();
+	const headingId = $props.id();
 	const store = $derived(data.v0s ? data.V0sCveList : undefined);
 	const connection = $derived($store?.data?.vulnerabilityFindings.vulnerabilities);
 	const coverage = $derived($store?.data?.vulnerabilityFindings.summary.coverage);
 </script>
 
 {#if data.v0s}
-	<section aria-labelledby="cve-list-title" class="v0s-list">
-		<Heading as="h2" id="cve-list-title">
+	<section aria-labelledby={headingId} class="v0s-list">
+		<Heading as="h2" id={headingId}>
 			CVE Database {connection ? `(${numberFormatter(connection.pageInfo.totalCount)})` : ''}
 		</Heading>
 		<div class="controls">
