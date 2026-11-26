@@ -1,0 +1,7 @@
+query TenantV0sOverview {
+	vulnerabilityFindings(first: 1) {
+		summary {
+			...V0sSelectionSummary @mask_disable
+		}
+	}
+}

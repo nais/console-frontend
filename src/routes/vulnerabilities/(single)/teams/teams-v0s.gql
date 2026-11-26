@@ -1,0 +1,31 @@
+query TenantV0sTeams($first: Int, $last: Int, $after: Cursor, $before: Cursor) {
+	teams(
+		first: $first
+		last: $last
+		after: $after
+		before: $before
+		filter: { hasWorkloads: true }
+		orderBy: { field: SLUG, direction: ASC }
+	) {
+		pageInfo {
+			endCursor
+			hasNextPage
+			hasPreviousPage
+			pageEnd
+			pageStart
+			startCursor
+			totalCount
+		}
+		edges {
+			node {
+				id
+				slug
+				vulnerabilityFindings(first: 1) {
+					summary {
+						...V0sSelectionSummary @mask_disable
+					}
+				}
+			}
+		}
+	}
+}

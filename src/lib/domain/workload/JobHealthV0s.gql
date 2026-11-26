@@ -1,0 +1,15 @@
+query JobHealthV0s($team: Slug!, $env: String!, $job: String!) {
+	team(slug: $team) {
+		environment(name: $env) {
+			workload: job(name: $job) {
+				vulnerabilityOverview {
+					knownExploitedVulnerabilityCount
+					coverage {
+						status
+						error
+					}
+				}
+			}
+		}
+	}
+}

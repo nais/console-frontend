@@ -28,7 +28,7 @@
 	]);
 </script>
 
-<GraphErrors errors={$TenantVulnerabilites.errors} />
+<GraphErrors errors={$TenantVulnerabilites?.errors} />
 
 <div class="vuln-layout">
 	<header class="vuln-header">

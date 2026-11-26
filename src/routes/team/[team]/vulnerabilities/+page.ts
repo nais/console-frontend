@@ -2,6 +2,7 @@ import {
 	load_TeamSeverityWorkloads,
 	load_TeamNoSbomWorkloads,
 	load_TeamVulnerabilities,
+	load_TeamV0sOverview,
 	OrderDirection,
 	SBOMStatus,
 	TeamNoSbomWorkloadsStore,
@@ -12,11 +13,38 @@ import {
 import { addPageMeta } from '#lib/utils/pageMeta.js';
 import { get } from 'svelte/store';
 import { parseLabelsParam } from '#lib/domain/labels/labels.js';
+import { teamV0sPage } from '#lib/domain/vulnerability/v0sOverview.js';
 
 export async function load(event) {
 	const team = event.params.team;
 	const environmentName = event.url.searchParams.get('environment') || null;
 	const labels = parseLabelsParam(event.url.searchParams.get('labels')) ?? [];
+	const selection = { environmentName, labels };
+	if ((await event.parent()).v0sVulnerabilities) {
+		const { orderBy, pagination } = teamV0sPage(event.url.searchParams);
+		return {
+			...(await addPageMeta(event, {
+				title: 'Vulnerabilities',
+				docPath: '/services/vulnerabilities'
+			})),
+			...(await load_TeamV0sOverview({
+				event,
+				blocking: true,
+				variables: {
+					team,
+					environments: environmentName ? [environmentName] : null,
+					labels,
+					orderBy,
+					...pagination
+				}
+			})),
+			selection,
+			orderBy,
+			TeamVulnerabilities: undefined,
+			TeamNoSbomWorkloads: undefined,
+			TeamSeverityWorkloads: undefined
+		};
+	}
 
 	const teamVulnerabilities = await load_TeamVulnerabilities({
 		event,
@@ -34,7 +62,9 @@ export async function load(event) {
 	const noSboms = workloadCount > 0 && teamData?.teamVulnerabilitySummary?.sbomCount === 0;
 
 	return {
-		selection: { environmentName, labels },
+		selection,
+		TeamV0sOverview: undefined,
+		orderBy: undefined,
 		...(await addPageMeta(event, {
 			title: 'Vulnerabilities',
 			docPath: '/services/vulnerabilities'
