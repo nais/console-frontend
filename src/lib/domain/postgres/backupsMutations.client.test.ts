@@ -48,6 +48,7 @@ let cleanup: (() => Promise<void>) | undefined;
 
 beforeEach(() => {
 	page.params.team = 'test';
+	page.params.postgres = 'database';
 	page.url = new URL('https://console.test/team/test/dev/postgres/database/backups');
 	vi.stubGlobal('matchMedia', () => ({
 		matches: false,
@@ -147,14 +148,27 @@ function openDialog() {
 	return document.querySelector<HTMLElement>('[role="dialog"][data-state="open"]');
 }
 
-function navigateToTeam(team: string) {
+function navigateTo(url: URL) {
 	const from = page.url;
-	page.url = new URL(from.href.replace(`/team/${page.params.team}/`, `/team/${team}/`));
-	page.params.team = team;
+	page.url = url;
 	for (const [callback] of afterNavigate.mock.calls) {
 		callback({ type: 'popstate', from: { url: from }, to: { url: page.url } } as AfterNavigate);
 	}
 	flushSync();
+}
+
+function navigateToTeam(team: string) {
+	const url = new URL(page.url.href.replace(`/team/${page.params.team}/`, `/team/${team}/`));
+	page.params.team = team;
+	navigateTo(url);
+}
+
+function navigateToDatabase(database: string) {
+	const url = new URL(
+		page.url.href.replace(`/postgres/${page.params.postgres}/`, `/postgres/${database}/`)
+	);
+	page.params.postgres = database;
+	navigateTo(url);
 }
 
 async function submitAndTryEscape(label: string) {
@@ -291,4 +305,67 @@ test('a late deletion response does not affect the dialog or list in another tea
 	expect(openDialog()).toBe(dialog);
 	expect(fetch).not.toHaveBeenCalled();
 	expect(document.body.textContent).not.toContain('Deletion requested for');
+});
+
+test('discards the open creation form on database navigation before submission', async () => {
+	mountPage('database', vi.fn());
+	clickButton('Create backup');
+	await vi.waitFor(() => expect(openDialog()).not.toBeNull());
+
+	navigateToDatabase('other');
+	expect(openDialog()).toBeNull();
+	expect(mutate).not.toHaveBeenCalled();
+
+	clickButton('Create backup');
+	await vi.waitFor(() => expect(openDialog()?.querySelector('input')?.value).toMatch(/^other-/));
+});
+
+test.each([
+	{ data: { createPostgresBackup: { backup: requestedBackup } } },
+	{ errors: [{ message: 'Old database request failed' }] }
+])('ignores a creation response after moving to another database: %j', async (response) => {
+	const result = Promise.withResolvers<unknown>();
+	mutate.mockReturnValue(result.promise);
+	const fetch = vi.fn();
+	mountPage('database', fetch);
+	clickButton('Create backup');
+	await submitAndTryEscape('Create backup');
+	expect(mutate).toHaveBeenCalledWith({
+		input: expect.objectContaining({
+			teamSlug: 'test',
+			environmentName: 'dev',
+			sourcePostgres: 'database'
+		})
+	});
+
+	navigateToDatabase('other');
+	clickButton('Create backup');
+	await vi.waitFor(() => expect(openDialog()).not.toBeNull());
+	const dialog = openDialog();
+	result.resolve(response);
+	await result.promise;
+	flushSync();
+
+	expect(openDialog()).toBe(dialog);
+	expect(fetch).not.toHaveBeenCalled();
+	expect(document.body.textContent).not.toContain('was requested');
+	expect(document.body.textContent).not.toContain('Old database request failed');
+});
+
+test('does not show an old refresh failure in the destination database', async () => {
+	const refresh = Promise.withResolvers<unknown>();
+	const fetch = vi.fn().mockReturnValue(refresh.promise);
+	mutate.mockResolvedValue({ data: { createPostgresBackup: { backup: requestedBackup } } });
+	mountPage('database', fetch);
+	clickButton('Create backup');
+	await submitAndTryEscape('Create backup');
+	await vi.waitFor(() => expect(fetch).toHaveBeenCalledOnce());
+	expect(document.body.textContent).toContain('was requested');
+
+	navigateToDatabase('other');
+	refresh.resolve({ errors: [{ message: 'Old refresh failed' }] });
+	await refresh.promise;
+	flushSync();
+	expect(document.body.textContent).not.toContain('was requested');
+	expect(document.body.textContent).not.toContain('could not be refreshed');
 });

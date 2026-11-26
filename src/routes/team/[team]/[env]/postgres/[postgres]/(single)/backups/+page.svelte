@@ -31,7 +31,7 @@
 	import Pagination from '#lib/ui/Pagination.svelte';
 	import { pluralize } from '#lib/utils/formatters.js';
 	import { changeParams } from '#lib/utils/searchparams.js';
-	import { onMount } from 'svelte';
+	import { onDestroy, onMount } from 'svelte';
 	import { SvelteMap } from 'svelte/reactivity';
 	import type { PageProps } from './$types';
 
@@ -41,7 +41,6 @@
 	let backups = $derived($PostgresBackups.data?.team.postgresBackups);
 	let canManage = $derived(data.viewerIsMember);
 	let environmentName = $derived(page.params.env!);
-	let postgresName = $derived(page.params.postgres!);
 	let hasBackupCursor = $derived(
 		page.url.searchParams.has('after') || page.url.searchParams.has('before')
 	);
@@ -54,12 +53,6 @@
 	let deletedBackups = $state<{ id: string; createdAt: Date }[]>([]);
 	const isDeleted = (b: { id: string; createdAt: Date }) =>
 		deletedBackups.some((d) => d.id === b.id && d.createdAt.getTime() === b.createdAt.getTime());
-
-	afterNavigate(({ to }) => {
-		if (backupToDelete && backupToDelete.pathname !== to?.url.pathname) {
-			backupToDelete = null;
-		}
-	});
 
 	$effect(() => {
 		if (!deletedBackupName) return;
@@ -82,12 +75,40 @@
 	);
 
 	let createModalOpen = $state(false);
+	let createTarget = $state.raw<{
+		pathname: string;
+		teamSlug: string;
+		environmentName: string;
+		sourcePostgres: string;
+	} | null>(null);
 	let backupName = $state('');
 	let retentionDays = $state(String(standaloneBackupRetention.default));
 	let nameTouched = $state(false);
 	let retentionTouched = $state(false);
 	let creating = $state(false);
 	let createErrors = $state<{ message: string }[] | null>(null);
+	let routeVersion = 0;
+
+	afterNavigate(({ from, to }) => {
+		if (!from || from.url.pathname === to?.url.pathname) return;
+
+		routeVersion++;
+		backupToDelete = null;
+		createTarget = null;
+		createModalOpen = false;
+		creating = false;
+		createdBackupName = null;
+		deletedBackupName = null;
+		backupRefreshFailed = false;
+	});
+
+	onDestroy(() => {
+		routeVersion++;
+	});
+
+	function isCurrentRoute(pathname: string, version: number) {
+		return routeVersion === version && page.url.pathname === pathname;
+	}
 
 	let nameError = $derived(standaloneBackupNameError(backupName));
 	let retentionError = $derived(standaloneBackupRetentionError(retentionDays));
@@ -105,7 +126,13 @@
 	`);
 
 	function openCreateModal() {
-		backupName = defaultStandaloneBackupName(postgresName);
+		createTarget = {
+			pathname: page.url.pathname,
+			teamSlug: data.teamSlug,
+			environmentName: page.params.env!,
+			sourcePostgres: page.params.postgres!
+		};
+		backupName = defaultStandaloneBackupName(createTarget.sourcePostgres);
 		retentionDays = String(standaloneBackupRetention.default);
 		nameTouched = false;
 		retentionTouched = false;
@@ -114,39 +141,48 @@
 	}
 
 	async function refreshBackups({ resetPagination = false } = {}) {
+		const { pathname } = page.url;
+		const version = routeVersion;
 		backupRefreshFailed = false;
+		let failed: boolean;
 		try {
 			if (resetPagination && hasBackupCursor) {
 				await changeParams({ after: '', before: '' }, { noScroll: true });
-				backupRefreshFailed = Boolean($PostgresBackups.errors?.length);
+				if (!isCurrentRoute(pathname, version)) return;
+				failed = Boolean($PostgresBackups.errors?.length);
 			} else {
 				const result = await PostgresBackups.fetch({ policy: 'NetworkOnly' });
-				backupRefreshFailed = Boolean(result.errors?.length);
+				failed = Boolean(result.errors?.length);
 			}
 		} catch {
-			backupRefreshFailed = true;
+			failed = true;
+		}
+		if (isCurrentRoute(pathname, version)) {
+			backupRefreshFailed = failed;
 		}
 	}
 
 	async function submitCreateBackup() {
+		const target = createTarget;
+		const version = routeVersion;
+		if (!createModalOpen || !target || !isCurrentRoute(target.pathname, version)) return;
 		nameTouched = true;
 		retentionTouched = true;
 		if (creating || nameError || retentionError) {
 			return;
 		}
-		const { pathname } = page.url;
+		const { pathname, ...destination } = target;
 		creating = true;
 		createErrors = null;
 		try {
 			const result = await createBackup.mutate({
 				input: {
-					teamSlug: data.teamSlug,
-					environmentName,
-					sourcePostgres: postgresName,
+					...destination,
 					name: backupName.trim(),
 					retentionDays: parseStandaloneBackupRetention(retentionDays)
 				}
 			});
+			if (!isCurrentRoute(pathname, version)) return;
 			if (result.errors?.length) {
 				createErrors = result.errors;
 				return;
@@ -159,10 +195,14 @@
 			unobservedBackups.set(id, { pathname, createdAt: createdAt.getTime() });
 			createdBackupName = name;
 		} catch {
-			createErrors = [{ message: 'Backup creation could not be confirmed.' }];
+			if (isCurrentRoute(pathname, version)) {
+				createErrors = [{ message: 'Backup creation could not be confirmed.' }];
+			}
 			return;
 		} finally {
-			creating = false;
+			if (isCurrentRoute(pathname, version)) {
+				creating = false;
+			}
 		}
 		createModalOpen = false;
 		await refreshBackups({ resetPagination: true });
@@ -260,63 +300,65 @@
 	</div>
 {/if}
 
-<Modal
-	bind:open={createModalOpen}
-	width="small"
-	closeButton={!creating}
-	onBeforeClose={() => !creating}
-	onclose={() => (createModalOpen = false)}
->
-	{#snippet header()}
-		<Heading as="h2" size="medium">Create standalone backup</Heading>
-	{/snippet}
-
-	<form
-		class="create-form"
-		onsubmit={(e) => {
-			e.preventDefault();
-			void submitCreateBackup();
-		}}
+{#if createTarget?.pathname === page.url.pathname}
+	<Modal
+		bind:open={createModalOpen}
+		width="small"
+		closeButton={!creating}
+		onBeforeClose={() => !creating}
+		onclose={() => (createModalOpen = false)}
 	>
-		<TextField
-			label="Backup name"
-			bind:value={backupName}
-			onblur={() => (nameTouched = true)}
-			error={nameTouched ? nameError : undefined}
-			description="Lowercase letters, numbers, hyphens or dots."
-		/>
-		<TextField
-			label="Retention (days)"
-			bind:value={retentionDays}
-			inputmode="numeric"
-			onblur={() => (retentionTouched = true)}
-			error={retentionTouched ? retentionError : undefined}
-			description="1–730 days, measured from completion. Defaults to 30."
-		/>
-		<GraphErrors errors={createErrors} />
-	</form>
+		{#snippet header()}
+			<Heading as="h2" size="medium">Create standalone backup</Heading>
+		{/snippet}
 
-	{#snippet footer()}
-		<Button
-			variant="primary"
-			size="small"
-			loading={creating}
-			disabled={Boolean(nameError || retentionError)}
-			onclick={submitCreateBackup}
+		<form
+			class="create-form"
+			onsubmit={(e) => {
+				e.preventDefault();
+				void submitCreateBackup();
+			}}
 		>
-			Create backup
-		</Button>
-		<Button
-			variant="secondary"
-			size="small"
-			type="button"
-			disabled={creating}
-			onclick={() => (createModalOpen = false)}
-		>
-			Cancel
-		</Button>
-	{/snippet}
-</Modal>
+			<TextField
+				label="Backup name"
+				bind:value={backupName}
+				onblur={() => (nameTouched = true)}
+				error={nameTouched ? nameError : undefined}
+				description="Lowercase letters, numbers, hyphens or dots."
+			/>
+			<TextField
+				label="Retention (days)"
+				bind:value={retentionDays}
+				inputmode="numeric"
+				onblur={() => (retentionTouched = true)}
+				error={retentionTouched ? retentionError : undefined}
+				description="1–730 days, measured from completion. Defaults to 30."
+			/>
+			<GraphErrors errors={createErrors} />
+		</form>
+
+		{#snippet footer()}
+			<Button
+				variant="primary"
+				size="small"
+				loading={creating}
+				disabled={Boolean(nameError || retentionError)}
+				onclick={submitCreateBackup}
+			>
+				Create backup
+			</Button>
+			<Button
+				variant="secondary"
+				size="small"
+				type="button"
+				disabled={creating}
+				onclick={() => (createModalOpen = false)}
+			>
+				Cancel
+			</Button>
+		{/snippet}
+	</Modal>
+{/if}
 
 {#if backupToDelete?.pathname === page.url.pathname}
 	<DeletePostgresBackupModal
