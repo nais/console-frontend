@@ -238,7 +238,7 @@ describe('team vulnerability workload view', () => {
 				{ name: { value: 'labels' }, value: { kind: Kind.VARIABLE, name: { value: 'labels' } } }
 			]
 		});
-		const summaryFilter = filter('vulnerabilityFindings', 'workloadFilter');
+		const summaryFilter = filter('vulnerabilityFindings', 'filter');
 		if (!summaryFilter || !workloadFilter) throw new Error('Missing workload scope');
 		expect(print(summaryFilter)).toBe(print(workloadFilter));
 	});
