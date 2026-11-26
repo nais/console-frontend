@@ -6929,6 +6929,12 @@ type PostgresBackup implements Node {
 
   """When the backup started, if known."""
   startedAt: Time
+
+  """Team owning this backup."""
+  team: Team!
+
+  """Team environment containing this backup."""
+  teamEnvironment: TeamEnvironment!
 }
 
 """
@@ -6986,6 +6992,9 @@ type PostgresBackupEdge {
 
 """Filters for standalone Postgres backups."""
 input PostgresBackupFilter {
+  """Only return backups in these environments."""
+  environments: [String!]
+
   """Only return backups with this source database name."""
   sourcePostgres: String
 }
@@ -10498,6 +10507,26 @@ type Team implements ActivityLogger & Node {
     """
     last: Int
   ): PostgresConnection!
+
+  """
+  Standalone Postgres backups owned by the team, newest first. Available even after their source databases are deleted.
+  """
+  postgresBackups(
+    """Get backups after this cursor."""
+    after: Cursor
+
+    """Get backups before this cursor."""
+    before: Cursor
+
+    """Filter backups by environment or source database name."""
+    filter: PostgresBackupFilter
+
+    """Get the first n backups."""
+    first: Int
+
+    """Get the last n backups."""
+    last: Int
+  ): PostgresBackupConnection!
 
   """Purpose of the team."""
   purpose: String!

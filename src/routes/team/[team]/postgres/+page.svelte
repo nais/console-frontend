@@ -55,21 +55,21 @@
 		page.url.searchParams.get('labels')?.split(',').filter(Boolean) ?? []
 	);
 	let filteredBackups = $derived<PostgresBackupRow[]>(
-		($TeamPostgres.data?.team.environments ?? [])
-			.filter(
-				(teamEnvironment) =>
-					selectedEnvironments.length === 0 ||
-					selectedEnvironments.includes(teamEnvironment.environment.name)
-			)
-			.flatMap((teamEnvironment) =>
-				(teamEnvironment.postgresBackups?.nodes ?? [])
-					.filter((backup) => !deletedBackupIds.includes(backup.id))
-					.map((backup) => ({
-						...backup,
-						environmentName: teamEnvironment.environment.name
-					}))
-			)
-			.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+		($TeamPostgres.data?.team.postgresBackups.nodes ?? [])
+			.filter((backup) => !deletedBackupIds.includes(backup.id))
+			.map((backup) => ({
+				...backup,
+				environmentName: backup.teamEnvironment.environment.name
+			}))
+	);
+	let backupCount = $derived(
+		Math.max(
+			0,
+			($TeamPostgres.data?.team.postgresBackups.pageInfo.totalCount ?? 0) -
+				($TeamPostgres.data?.team.postgresBackups.nodes ?? []).filter((b) =>
+					deletedBackupIds.includes(b.id)
+				).length
+		)
 	);
 
 	function toggleEnvironment(environment: string) {
@@ -208,7 +208,7 @@
 					title="Standalone backups"
 					icon={PostgreSQLIcon}
 					headerBorder={false}
-					count={filteredBackups.length}
+					count={backupCount}
 				>
 					{#if filteredBackups.length > 0}
 						<PostgresBackupsTable

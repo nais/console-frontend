@@ -23,6 +23,7 @@ export async function load(event) {
 			variables: {
 				team: event.params.team,
 				filter: { environments, labels },
+				backupFilter: { environments },
 				...(before ? { before, last: rows } : { after, first: rows })
 			}
 		}))

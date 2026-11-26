@@ -1,6 +1,7 @@
 query TeamPostgres(
 	$team: Slug!
 	$filter: TeamPostgresFilter
+	$backupFilter: PostgresBackupFilter
 	$first: Int
 	$last: Int
 	$before: Cursor
@@ -11,26 +12,6 @@ query TeamPostgres(
 			gcpProjectID
 			environment {
 				name
-			}
-			postgresBackups(first: 25) {
-				pageInfo {
-					totalCount
-				}
-				nodes {
-					id
-					name
-					sourcePostgres
-					phase
-					retentionDays
-					majorVersion
-					diskSize
-					extensions
-					sizeBytes
-					createdAt
-					completedAt
-					expiresAt
-					errorMessage
-				}
 			}
 		}
 		postgreses(first: $first, last: $last, filter: $filter, before: $before, after: $after)
@@ -62,6 +43,31 @@ query TeamPostgres(
 						}
 					}
 					majorVersion
+				}
+			}
+		}
+		postgresBackups(first: 25, filter: $backupFilter) {
+			pageInfo {
+				totalCount
+			}
+			nodes {
+				id
+				name
+				sourcePostgres
+				phase
+				retentionDays
+				majorVersion
+				diskSize
+				extensions
+				sizeBytes
+				createdAt
+				completedAt
+				expiresAt
+				errorMessage
+				teamEnvironment {
+					environment {
+						name
+					}
 				}
 			}
 		}
