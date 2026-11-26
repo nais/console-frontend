@@ -94,9 +94,7 @@
 							name: string;
 							teamEnvironment: { environment: { name: string } };
 							serviceAccount: { id: string; name: string } | null;
-						} =>
-							(n.__typename === 'Application' || n.__typename === 'Job') &&
-							!n.teamEnvironment.environment.name.endsWith('-fss')
+						} => n.__typename === 'Application' || n.__typename === 'Job'
 					)
 			: []
 	);
