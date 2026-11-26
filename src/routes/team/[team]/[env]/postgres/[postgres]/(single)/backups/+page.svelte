@@ -41,7 +41,9 @@
 
 	let backupToDelete = $state<PostgresBackupRow | null>(null);
 	let deletedBackupName = $state<string | null>(null);
-	let deletedBackupIds = $state<string[]>([]);
+	let deletedBackups = $state<{ id: string; createdAt: Date }[]>([]);
+	const isDeleted = (b: { id: string; createdAt: Date }) =>
+		deletedBackups.some((d) => d.id === b.id && d.createdAt.getTime() === b.createdAt.getTime());
 
 	$effect(() => {
 		if (!deletedBackupName) return;
@@ -51,7 +53,7 @@
 
 	let rows = $derived<PostgresBackupRow[]>(
 		(backups?.nodes ?? [])
-			.filter((b) => !deletedBackupIds.includes(b.id))
+			.filter((b) => !isDeleted(b))
 			.map((b) => ({
 				...b,
 				environmentName
@@ -59,11 +61,7 @@
 	);
 	let backupCount = $derived(
 		backups
-			? Math.max(
-					0,
-					backups.pageInfo.totalCount -
-						(backups?.nodes ?? []).filter((b) => deletedBackupIds.includes(b.id)).length
-				)
+			? Math.max(0, backups.pageInfo.totalCount - (backups?.nodes ?? []).filter(isDeleted).length)
 			: 0
 	);
 
@@ -126,7 +124,11 @@
 				return;
 			}
 			createModalOpen = false;
-			await PostgresBackups.fetch({ policy: 'NetworkOnly' });
+			if (page.url.searchParams.has('after') || page.url.searchParams.has('before')) {
+				changeParams({ after: '', before: '' }, { noScroll: true });
+			} else {
+				await PostgresBackups.fetch({ policy: 'NetworkOnly' });
+			}
 		} catch {
 			createErrors = [{ message: 'Backup creation could not be confirmed.' }];
 		} finally {
@@ -273,7 +275,9 @@
 		backup={backupToDelete}
 		teamSlug={data.teamSlug}
 		ondeleted={async ({ id, name }) => {
-			deletedBackupIds = [...deletedBackupIds, id];
+			if (backupToDelete) {
+				deletedBackups = [...deletedBackups, { id, createdAt: backupToDelete.createdAt }];
+			}
 			deletedBackupName = name;
 			backupToDelete = null;
 			await PostgresBackups.fetch({ policy: 'NetworkOnly' });

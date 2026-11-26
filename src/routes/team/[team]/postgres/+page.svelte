@@ -36,7 +36,9 @@
 	let filtersOpen = $state(false);
 	let backupToDelete = $state<PostgresBackupRow | null>(null);
 	let deletedBackupName = $state<string | null>(null);
-	let deletedBackupIds = $state<string[]>([]);
+	let deletedBackups = $state<{ id: string; createdAt: Date }[]>([]);
+	const isDeleted = (b: { id: string; createdAt: Date }) =>
+		deletedBackups.some((d) => d.id === b.id && d.createdAt.getTime() === b.createdAt.getTime());
 
 	$effect(() => {
 		if (!deletedBackupName) return;
@@ -54,9 +56,10 @@
 	const selectedLabels = $derived(
 		page.url.searchParams.get('labels')?.split(',').filter(Boolean) ?? []
 	);
+	let backups = $derived($TeamPostgres.data?.team.postgresBackups);
 	let filteredBackups = $derived<PostgresBackupRow[]>(
-		($TeamPostgres.data?.team.postgresBackups.nodes ?? [])
-			.filter((backup) => !deletedBackupIds.includes(backup.id))
+		(backups?.nodes ?? [])
+			.filter((backup) => !isDeleted(backup))
 			.map((backup) => ({
 				...backup,
 				environmentName: backup.teamEnvironment.environment.name
@@ -65,10 +68,7 @@
 	let backupCount = $derived(
 		Math.max(
 			0,
-			($TeamPostgres.data?.team.postgresBackups.pageInfo.totalCount ?? 0) -
-				($TeamPostgres.data?.team.postgresBackups.nodes ?? []).filter((b) =>
-					deletedBackupIds.includes(b.id)
-				).length
+			(backups?.pageInfo.totalCount ?? 0) - (backups?.nodes ?? []).filter(isDeleted).length
 		)
 	);
 
@@ -76,7 +76,10 @@
 		const next = selectedEnvironments.includes(environment)
 			? selectedEnvironments.filter((selected) => selected !== environment)
 			: [...selectedEnvironments, environment];
-		changeParams({ environments: next.join(','), after: '', before: '' }, { noScroll: true });
+		changeParams(
+			{ environments: next.join(','), after: '', before: '', backupAfter: '', backupBefore: '' },
+			{ noScroll: true }
+		);
 	}
 
 	function handleLabelsChange(selected: string[]) {
@@ -203,29 +206,46 @@
 				}}
 			/>
 
-			<div class="backups-section">
-				<Collection
-					title="Standalone backups"
-					icon={PostgreSQLIcon}
-					headerBorder={false}
-					count={backupCount}
-				>
-					{#if filteredBackups.length > 0}
-						<PostgresBackupsTable
-							backups={filteredBackups}
-							teamSlug={page.params.team!}
-							showSource
-							canManage={data.viewerIsMember || data.isAdmin}
-							ondelete={(b) => (backupToDelete = b)}
-						/>
-					{:else}
-						<EmptyState
-							title="No standalone backups."
-							description="Standalone backups remain available here even after their source Postgres database is deleted."
-						/>
-					{/if}
-				</Collection>
-			</div>
+			{#if backups}
+				<div class="backups-section">
+					<Collection
+						title="Standalone backups"
+						icon={PostgreSQLIcon}
+						headerBorder={false}
+						count={backupCount}
+					>
+						{#if filteredBackups.length > 0}
+							<PostgresBackupsTable
+								backups={filteredBackups}
+								teamSlug={page.params.team!}
+								showSource
+								canManage
+								ondelete={(b) => (backupToDelete = b)}
+							/>
+						{:else}
+							<EmptyState
+								title="No standalone backups."
+								description="Standalone backups remain available here even after their source Postgres database is deleted."
+							/>
+						{/if}
+					</Collection>
+					<Pagination
+						page={backups.pageInfo}
+						loaders={{
+							loadPreviousPage: () =>
+								changeParams(
+									{ backupAfter: '', backupBefore: backups.pageInfo.startCursor ?? '' },
+									{ noScroll: true }
+								),
+							loadNextPage: () =>
+								changeParams(
+									{ backupBefore: '', backupAfter: backups.pageInfo.endCursor ?? '' },
+									{ noScroll: true }
+								)
+						}}
+					/>
+				</div>
+			{/if}
 		</div>
 		<CollapsibleSidebar bind:open={filtersOpen}>
 			<SurfaceCard title="Filters">
@@ -260,7 +280,9 @@
 		backup={backupToDelete}
 		teamSlug={page.params.team!}
 		ondeleted={async ({ id, name }) => {
-			deletedBackupIds = [...deletedBackupIds, id];
+			if (backupToDelete) {
+				deletedBackups = [...deletedBackups, { id, createdAt: backupToDelete.createdAt }];
+			}
 			deletedBackupName = name;
 			backupToDelete = null;
 			await TeamPostgres.fetch({ policy: 'NetworkOnly' });
