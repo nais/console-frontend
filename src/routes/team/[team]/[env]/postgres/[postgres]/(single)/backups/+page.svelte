@@ -34,7 +34,7 @@
 	let { data }: PageProps = $props();
 	let { PostgresBackups } = $derived(data);
 	let postgres = $derived($PostgresBackups.data?.team.environment.postgres);
-	let backups = $derived($PostgresBackups.data?.team.environment.postgresBackups);
+	let backups = $derived($PostgresBackups.data?.team.postgresBackups);
 	let canManage = $derived(data.viewerIsMember || data.isAdmin);
 	let environmentName = $derived(page.params.env!);
 	let postgresName = $derived(page.params.postgres!);

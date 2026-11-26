@@ -15,38 +15,38 @@ query PostgresBackups(
 				state
 				backupRetentionDays
 			}
-			postgresBackups(
-				first: $first
-				last: $last
-				before: $before
-				after: $after
-				filter: { sourcePostgres: $name }
-			) @paginate(mode: SinglePage) {
-				pageInfo {
-					hasNextPage
-					hasPreviousPage
-					pageStart
-					pageEnd
-					totalCount
-					startCursor
-					endCursor
-				}
-				nodes {
-					id
-					name
-					sourcePostgres
-					phase
-					retentionDays
-					majorVersion
-					diskSize
-					extensions
-					sizeBytes
-					createdAt
-					startedAt
-					completedAt
-					expiresAt
-					errorMessage
-				}
+		}
+		postgresBackups(
+			first: $first
+			last: $last
+			before: $before
+			after: $after
+			filter: { environments: [$env], sourcePostgres: $name }
+		) @paginate(mode: SinglePage) {
+			pageInfo {
+				hasNextPage
+				hasPreviousPage
+				pageStart
+				pageEnd
+				totalCount
+				startCursor
+				endCursor
+			}
+			nodes {
+				id
+				name
+				sourcePostgres
+				phase
+				retentionDays
+				majorVersion
+				diskSize
+				extensions
+				sizeBytes
+				createdAt
+				startedAt
+				completedAt
+				expiresAt
+				errorMessage
 			}
 		}
 	}
