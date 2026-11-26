@@ -73,6 +73,12 @@ enum ActivityLogActivityType {
   """OpenSearch was updated."""
   OPENSEARCH_UPDATED
 
+  """A standalone Postgres backup was requested."""
+  POSTGRES_BACKUP_CREATED
+
+  """Deletion of a standalone Postgres backup was requested."""
+  POSTGRES_BACKUP_DELETION_REQUESTED
+
   """A Postgres was created"""
   POSTGRES_CREATED
 
@@ -345,6 +351,9 @@ enum ActivityLogEntryResourceType {
   All activity log entries related to Postgres clusters will use this resource type.
   """
   POSTGRES
+
+  """A standalone Postgres backup."""
+  POSTGRES_BACKUP
 
   """
   All activity log entries related to reconcilers will use this resource type.
@@ -967,7 +976,7 @@ type Application implements ActivityLogger & Node & Workload {
     after: Cursor
 
     """Filter this application's findings."""
-    filter: VulnerabilityFindingFilter
+    filter: WorkloadVulnerabilityFindingsFilter
 
     """Get the first n findings, between 1 and 200. Defaults to 20."""
     first: Int
@@ -988,7 +997,7 @@ type Application implements ActivityLogger & Node & Workload {
     """
     Filter findings before counting unique vulnerabilities and selecting their highest known severity.
     """
-    filter: VulnerabilityFindingFilter
+    filter: WorkloadVulnerabilityOverviewFilter
   ): VulnerabilityWorkloadOverview!
 }
 
@@ -2624,6 +2633,30 @@ type CreatePostgresAccessPayload {
   name: String!
 }
 
+"""Input for requesting a standalone Postgres backup."""
+input CreatePostgresBackupInput {
+  """Environment containing the database."""
+  environmentName: String!
+
+  """Name of the new backup."""
+  name: String!
+
+  """Retention in days (1–730). Defaults to 30."""
+  retentionDays: Int
+
+  """Name of the source database in the same team environment."""
+  sourcePostgres: String!
+
+  """Team that owns the database."""
+  teamSlug: Slug!
+}
+
+"""Result of requesting a standalone Postgres backup."""
+type CreatePostgresBackupPayload {
+  """The requested backup. Its phase indicates whether it is ready."""
+  backup: PostgresBackup!
+}
+
 """Input for creating a Postgres."""
 input CreatePostgresInput {
   """
@@ -3032,6 +3065,26 @@ input DeleteOpenSearchInput {
 type DeleteOpenSearchPayload {
   """Whether or not the OpenSearch instance was deleted."""
   openSearchDeleted: Boolean
+}
+
+"""Identifies the standalone Postgres backup to delete."""
+input DeletePostgresBackupInput {
+  """Environment containing the backup."""
+  environmentName: String!
+
+  """Name of the backup."""
+  name: String!
+
+  """Team that owns the backup."""
+  teamSlug: Slug!
+}
+
+"""Result of requesting deletion of a standalone Postgres backup."""
+type DeletePostgresBackupPayload {
+  """
+  Whether deletion has been requested. This does not imply cleanup has completed.
+  """
+  deletionRequested: Boolean!
 }
 
 """
@@ -4644,7 +4697,7 @@ type Job implements ActivityLogger & Node & Workload {
     after: Cursor
 
     """Filter this job's findings."""
-    filter: VulnerabilityFindingFilter
+    filter: WorkloadVulnerabilityFindingsFilter
 
     """Get the first n findings, between 1 and 200. Defaults to 20."""
     first: Int
@@ -4665,7 +4718,7 @@ type Job implements ActivityLogger & Node & Workload {
     """
     Filter findings before counting unique vulnerabilities and selecting their highest known severity.
     """
-    filter: VulnerabilityFindingFilter
+    filter: WorkloadVulnerabilityOverviewFilter
   ): VulnerabilityWorkloadOverview!
 }
 
@@ -5704,6 +5757,11 @@ type Mutation {
   """
   createPostgresAccess(input: CreatePostgresAccessInput!): CreatePostgresAccessPayload!
 
+  """
+  Request a standalone backup of a Postgres database in a team environment.
+  """
+  createPostgresBackup(input: CreatePostgresBackupInput!): CreatePostgresBackupPayload!
+
   """Create a new secret."""
   createSecret(input: CreateSecretInput!): CreateSecretPayload!
 
@@ -5786,6 +5844,9 @@ type Mutation {
   Request deletion of a Postgres database and its data. Fails while workloads or bindings reference it; cleanup is asynchronous.
   """
   deletePostgres(input: DeletePostgresInput!): DeletePostgresPayload!
+
+  """Request deletion of a standalone backup. Cleanup is asynchronous."""
+  deletePostgresBackup(input: DeletePostgresBackupInput!): DeletePostgresBackupPayload!
 
   """Delete a secret, and the values it contains."""
   deleteSecret(input: DeleteSecretInput!): DeleteSecretPayload!
@@ -6823,6 +6884,136 @@ enum PostgresAccessState {
   READY
 }
 
+"""
+A standalone backup, independent of the source database's point-in-time recovery window.
+"""
+type PostgresBackup implements Node {
+  """When the standalone copy was completed, if successful."""
+  completedAt: Time
+
+  """When the backup was requested."""
+  createdAt: Time!
+
+  """Disk size recorded from the source database, if known."""
+  diskSize: String
+
+  """User-facing message when the backup fails."""
+  errorMessage: String
+
+  """When the backup expires, if known."""
+  expiresAt: Time
+
+  """PostgreSQL extensions recorded from the source database."""
+  extensions: [String!]!
+
+  """Opaque identifier for this backup."""
+  id: ID!
+
+  """PostgreSQL major version recorded from the source database, if known."""
+  majorVersion: String
+
+  """Name of the backup in its team environment."""
+  name: String!
+
+  """Current phase of the backup."""
+  phase: PostgresBackupPhase!
+
+  """Requested retention in days, measured from completion."""
+  retentionDays: Int!
+
+  """Verified backup size in bytes, if known."""
+  sizeBytes: Int
+
+  """Name of the source database. The database may no longer exist."""
+  sourcePostgres: String!
+
+  """When the backup started, if known."""
+  startedAt: Time
+
+  """Team owning this backup."""
+  team: Team!
+
+  """Team environment containing this backup."""
+  teamEnvironment: TeamEnvironment!
+}
+
+"""
+Activity log entry for a standalone Postgres backup request or deletion request.
+"""
+type PostgresBackupActivityLogEntry implements ActivityLogEntry & Node {
+  """Identity of the actor who performed the action."""
+  actor: String!
+
+  """Creation time of the entry."""
+  createdAt: Time!
+
+  """Environment that the entry belongs to."""
+  environmentName: String
+
+  """GitHub Actions OIDC claims when authenticated by a GitHub repository."""
+  gitHubActorClaims: GitHubActorClaims
+
+  """ID of the entry."""
+  id: ID!
+
+  """Summary of the action."""
+  message: String!
+
+  """Name of the affected backup."""
+  resourceName: String!
+
+  """Type of resource affected."""
+  resourceType: ActivityLogEntryResourceType!
+
+  """Team slug that the entry belongs to."""
+  teamSlug: Slug!
+}
+
+"""A page of standalone Postgres backups."""
+type PostgresBackupConnection {
+  """Backups alongside their pagination cursors."""
+  edges: [PostgresBackupEdge!]!
+
+  """Backups in this page."""
+  nodes: [PostgresBackup!]!
+
+  """Pagination information."""
+  pageInfo: PageInfo!
+}
+
+"""A standalone Postgres backup and its pagination cursor."""
+type PostgresBackupEdge {
+  """Pagination cursor for this backup."""
+  cursor: Cursor!
+
+  """The backup."""
+  node: PostgresBackup!
+}
+
+"""Filters for standalone Postgres backups."""
+input PostgresBackupFilter {
+  """Only return backups in these environments."""
+  environments: [String!]
+
+  """Only return backups with this source database name."""
+  sourcePostgres: String
+}
+
+"""Lifecycle phase of a standalone Postgres backup."""
+enum PostgresBackupPhase {
+  """The standalone backup was copied and verified."""
+  COMPLETED
+
+  """The backup did not complete successfully."""
+  FAILED
+
+  """The backup request is waiting for execution."""
+  PREPARING
+
+  """The backup or its standalone copy is in progress."""
+  RUNNING
+}
+
 """Configured PostgreSQL settings for a database."""
 type PostgresConfiguration {
   """
@@ -7646,7 +7837,7 @@ type Query {
     after: Cursor
 
     """Filter the full finding selection."""
-    filter: VulnerabilityFindingFilter
+    filter: VulnerabilityFindingsFilter
 
     """Get the first n findings, between 1 and 200. Defaults to 20."""
     first: Int
@@ -10295,6 +10486,26 @@ type Team implements ActivityLogger & Node {
     orderBy: OpenSearchOrder
   ): OpenSearchConnection!
 
+  """
+  Standalone Postgres backups owned by the team, newest first. Available even after their source databases are deleted.
+  """
+  postgresBackups(
+    """Get backups after this cursor."""
+    after: Cursor
+
+    """Get backups before this cursor."""
+    before: Cursor
+
+    """Filter backups by environment or source database name."""
+    filter: PostgresBackupFilter
+
+    """Get the first n backups."""
+    first: Int
+
+    """Get the last n backups."""
+    last: Int
+  ): PostgresBackupConnection!
+
   """Postgres databases owned by the team."""
   postgreses(
     """Get items after this cursor."""
@@ -10455,7 +10666,7 @@ type Team implements ActivityLogger & Node {
     after: Cursor
 
     """Filter the full finding selection."""
-    filter: VulnerabilityFindingFilter
+    filter: TeamVulnerabilityFindingsFilter
 
     """Get the first n findings, between 1 and 200. Defaults to 20."""
     first: Int
@@ -10464,11 +10675,6 @@ type Team implements ActivityLogger & Node {
     Sort the full selection before pagination. Omitted: environment, team, workload, identifier and package URL ascending.
     """
     orderBy: VulnerabilityFindingOrder
-
-    """
-    Select the team's workloads before finding filters and aggregation. Only environments and labels are supported. Coverage includes all selected workloads.
-    """
-    workloadFilter: TeamWorkloadsFilter
   ): VulnerabilityFindingConnection!
 
   """Get the mean time to fix history for a team."""
@@ -10511,7 +10717,7 @@ type Team implements ActivityLogger & Node {
     after: Cursor
 
     """Filter the assessment selection."""
-    filter: VulnerabilitySuppressionFilter
+    filter: TeamVulnerabilitySuppressionsFilter
 
     """Get the first n assessments, between 1 and 200. Defaults to 20."""
     first: Int
@@ -10881,6 +11087,12 @@ type TeamEnvironment implements Node {
     name: String!
   ): PostgresAccess!
 
+  """Look up a standalone Postgres backup by name."""
+  postgresBackup(
+    """Name of the backup."""
+    name: String!
+  ): PostgresBackup!
+
   """Get a secret by name."""
   secret(name: String!): Secret!
 
@@ -10907,7 +11119,7 @@ type TeamEnvironment implements Node {
     after: Cursor
 
     """Filter the full finding selection."""
-    filter: VulnerabilityFindingFilter
+    filter: TeamEnvironmentVulnerabilityFindingsFilter
 
     """Get the first n findings, between 1 and 200. Defaults to 20."""
     first: Int
@@ -10924,7 +11136,7 @@ type TeamEnvironment implements Node {
     after: Cursor
 
     """Filter the assessment selection."""
-    filter: VulnerabilitySuppressionFilter
+    filter: TeamEnvironmentVulnerabilitySuppressionsFilter
 
     """Get the first n assessments, between 1 and 200. Defaults to 20."""
     first: Int
@@ -11003,6 +11215,43 @@ type TeamEnvironmentUpdatedActivityLogEntryDataUpdatedField {
 
   """The old value of the field."""
   oldValue: String
+}
+
+"""
+Filter this team's findings in one environment before pagination and aggregation.
+"""
+input TeamEnvironmentVulnerabilityFindingsFilter {
+  """Include only vulnerabilities listed in CISA KEV."""
+  onlyKnownExploited: Boolean
+
+  """Include only findings with a known fixed version."""
+  onlyWithFix: Boolean
+
+  """Match a full package URL, or a version-independent package key."""
+  package: String
+
+  """
+  Match a package ecosystem, such as npm or maven, case-insensitively. Unknown types match no findings.
+  """
+  packageType: String
+
+  """Include only findings with these severities."""
+  severities: [VulnerabilitySeverity!]
+
+  """Whether assessed findings are included. Defaults to EXCLUDE."""
+  suppressed: SuppressedFilter
+
+  """Match any of these vulnerability identifiers or aliases."""
+  vulnerabilityIdentifiers: [String!]
+}
+
+"""Filter current assessments belonging to this team in one environment."""
+input TeamEnvironmentVulnerabilitySuppressionsFilter {
+  """Match an image repository name."""
+  imageName: String
+
+  """Match a vulnerability identifier or alias."""
+  vulnerabilityIdentifier: String
 }
 
 type TeamExternalResources {
@@ -11525,6 +11774,44 @@ type TeamUtilizationData {
 }
 
 """
+Select this team's workloads and findings before pagination and aggregation. Coverage includes all matching workloads regardless of finding criteria.
+"""
+input TeamVulnerabilityFindingsFilter {
+  """
+  Include workloads in any of these environments. Omitted or empty means all environments.
+  """
+  environments: [String!]
+
+  """
+  Match all labels. An omitted value requires the key to exist; an explicit value, including an empty string, matches exactly.
+  """
+  labels: [LabelFilter!]
+
+  """Include only vulnerabilities listed in CISA KEV."""
+  onlyKnownExploited: Boolean
+
+  """Include only findings with a known fixed version."""
+  onlyWithFix: Boolean
+
+  """Match a full package URL, or a version-independent package key."""
+  package: String
+
+  """
+  Match a package ecosystem, such as npm or maven, case-insensitively. Unknown types match no findings.
+  """
+  packageType: String
+
+  """Include only findings with these severities."""
+  severities: [VulnerabilitySeverity!]
+
+  """Whether assessed findings are included. Defaults to EXCLUDE."""
+  suppressed: SuppressedFilter
+
+  """Match any of these vulnerability identifiers or aliases."""
+  vulnerabilityIdentifiers: [String!]
+}
+
+"""
 Mutually exclusive groups based on the highest operational vulnerability priority.
 """
 enum TeamVulnerabilityPriorityGroup {
@@ -11655,6 +11942,15 @@ input TeamVulnerabilitySummaryFilter {
   single-element priorities list. Ignored if priorities is also set.
   """
   priority: CVEPriority
+}
+
+"""Filter current assessments belonging to this team."""
+input TeamVulnerabilitySuppressionsFilter {
+  """Match an image repository name."""
+  imageName: String
+
+  """Match a vulnerability identifier or alias."""
+  vulnerabilityIdentifier: String
 }
 
 """Input for filtering team workloads."""
@@ -13605,6 +13901,17 @@ type VulnerabilityFinding implements Node {
 
 """A forward-paginated selection of vulnerability findings."""
 type VulnerabilityFindingConnection {
+  """
+  Current workloads with matching findings, deduplicated before pagination. Independent of the finding page and ordered by name, environment, team and workload type ascending. Coverage includes all selected workloads, not just affected workloads.
+  """
+  affectedWorkloads(
+    """Continue with the same scope, workload selection and finding filter."""
+    after: Cursor
+
+    """Get the first n affected workloads, between 1 and 200. Defaults to 20."""
+    first: Int
+  ): WorkloadConnection!
+
   """Findings and their continuation cursors."""
   edges: [VulnerabilityFindingEdge!]!
 
@@ -13672,10 +13979,10 @@ type VulnerabilityFindingFacets {
 """Filters applied before finding pagination and aggregation."""
 input VulnerabilityFindingFilter {
   """Include only vulnerabilities listed in CISA KEV."""
-  onlyKnownExploited: Boolean = false
+  onlyKnownExploited: Boolean
 
   """Include only findings with a known fixed version."""
-  onlyWithFix: Boolean = false
+  onlyWithFix: Boolean
 
   """Match a full package URL, or a version-independent package key."""
   package: String
@@ -13688,8 +13995,8 @@ input VulnerabilityFindingFilter {
   """Include only findings with these severities."""
   severities: [VulnerabilitySeverity!]
 
-  """Whether assessed findings are included."""
-  suppressed: SuppressedFilter = EXCLUDE
+  """Whether assessed findings are included. Defaults to EXCLUDE."""
+  suppressed: SuppressedFilter
 
   """Match any of these vulnerability identifiers or aliases."""
   vulnerabilityIdentifiers: [String!]
@@ -13717,6 +14024,49 @@ enum VulnerabilityFindingOrderField {
   Severity: DESC is CRITICAL, HIGH, MEDIUM, LOW, UNKNOWN; ASC reverses known severities. UNKNOWN is always last. Ties use identifier, environment, team, workload and package URL ascending.
   """
   SEVERITY
+}
+
+"""
+Select workloads and their findings before pagination, grouping and aggregation. Coverage includes all matching workloads regardless of finding criteria.
+"""
+input VulnerabilityFindingsFilter {
+  """
+  Include workloads in any of these environments. Omitted or empty means all environments.
+  """
+  environments: [String!]
+
+  """
+  Match all labels. An omitted value requires the key to exist; an explicit value, including an empty string, matches exactly.
+  """
+  labels: [LabelFilter!]
+
+  """Include only vulnerabilities listed in CISA KEV."""
+  onlyKnownExploited: Boolean
+
+  """Include only findings with a known fixed version."""
+  onlyWithFix: Boolean
+
+  """Match a full package URL, or a version-independent package key."""
+  package: String
+
+  """
+  Match a package ecosystem, such as npm or maven, case-insensitively. Unknown types match no findings.
+  """
+  packageType: String
+
+  """Include only findings with these severities."""
+  severities: [VulnerabilitySeverity!]
+
+  """Whether assessed findings are included. Defaults to EXCLUDE."""
+  suppressed: SuppressedFilter
+
+  """
+  Select explicit teams or teams the viewer belongs to, using the existing union semantics.
+  """
+  teamScope: TeamScopeInput
+
+  """Match any of these vulnerability identifiers or aliases."""
+  vulnerabilityIdentifiers: [String!]
 }
 
 """Trend of mean time to fix vulnerabilities grouped by severity."""
@@ -14917,7 +15267,7 @@ interface Workload implements ActivityLogger & Node {
     after: Cursor
 
     """Filter this workload's findings."""
-    filter: VulnerabilityFindingFilter
+    filter: WorkloadVulnerabilityFindingsFilter
 
     """Get the first n findings, between 1 and 200. Defaults to 20."""
     first: Int
@@ -14938,7 +15288,7 @@ interface Workload implements ActivityLogger & Node {
     """
     Filter findings before counting unique vulnerabilities and selecting their highest known severity.
     """
-    filter: VulnerabilityFindingFilter
+    filter: WorkloadVulnerabilityOverviewFilter
   ): VulnerabilityWorkloadOverview!
 }
 
@@ -15364,6 +15714,62 @@ input WorkloadUtilizationSeriesInput {
 
   """Fetch resource usage from this timestamp."""
   start: Time!
+}
+
+"""
+Filter findings in a workload's currently deployed image before pagination and aggregation.
+"""
+input WorkloadVulnerabilityFindingsFilter {
+  """Include only vulnerabilities listed in CISA KEV."""
+  onlyKnownExploited: Boolean
+
+  """Include only findings with a known fixed version."""
+  onlyWithFix: Boolean
+
+  """Match a full package URL, or a version-independent package key."""
+  package: String
+
+  """
+  Match a package ecosystem, such as npm or maven, case-insensitively. Unknown types match no findings.
+  """
+  packageType: String
+
+  """Include only findings with these severities."""
+  severities: [VulnerabilitySeverity!]
+
+  """Whether assessed findings are included. Defaults to EXCLUDE."""
+  suppressed: SuppressedFilter
+
+  """Match any of these vulnerability identifiers or aliases."""
+  vulnerabilityIdentifiers: [String!]
+}
+
+"""
+Filter the findings counted in a workload's overview. Coverage is not narrowed by finding criteria.
+"""
+input WorkloadVulnerabilityOverviewFilter {
+  """Include only vulnerabilities listed in CISA KEV."""
+  onlyKnownExploited: Boolean
+
+  """Include only findings with a known fixed version."""
+  onlyWithFix: Boolean
+
+  """Match a full package URL, or a version-independent package key."""
+  package: String
+
+  """
+  Match a package ecosystem, such as npm or maven, case-insensitively. Unknown types match no findings.
+  """
+  packageType: String
+
+  """Include only findings with these severities."""
+  severities: [VulnerabilitySeverity!]
+
+  """Whether assessed findings are included. Defaults to EXCLUDE."""
+  suppressed: SuppressedFilter
+
+  """Match any of these vulnerability identifiers or aliases."""
+  vulnerabilityIdentifiers: [String!]
 }
 
 type WorkloadVulnerabilitySummary implements Node {

@@ -33,10 +33,7 @@ query TeamV0sOverview(
 				name
 			}
 		}
-		vulnerabilityFindings(
-			first: 1
-			workloadFilter: { environments: $environments, labels: $labels }
-		) {
+		vulnerabilityFindings(first: 1, filter: { environments: $environments, labels: $labels }) {
 			summary {
 				...V0sSelectionSummary @mask_disable
 			}
