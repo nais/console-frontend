@@ -62,7 +62,7 @@ describe('standalone Postgres backup helpers', () => {
 				now
 			)
 		).toBe(true);
-		expect(backupRestoreError(null, now)).toBe('Select a standalone backup to restore.');
+		expect(backupRestoreError(null, now)).toBe('Select a backup to restore.');
 		expect(
 			backupRestoreError({ phase: 'RUNNING', majorVersion: '18', expiresAt: null }, now)
 		).toMatch(/Only completed/);

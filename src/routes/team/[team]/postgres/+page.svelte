@@ -118,8 +118,7 @@
 {#if deletedBackupName}
 	<div class="deletion-alert">
 		<Alert variant="success">
-			Deletion requested for standalone backup {deletedBackupName}. Cleanup continues
-			asynchronously.
+			Deletion requested for backup {deletedBackupName}. Cleanup continues asynchronously.
 		</Alert>
 	</div>
 {/if}
@@ -235,7 +234,7 @@
 			{#if backups}
 				<div class="backups-section">
 					<Collection
-						title="Standalone backups"
+						title="Backups"
 						icon={PostgreSQLIcon}
 						headerBorder={false}
 						count={backupCount}
@@ -255,8 +254,8 @@
 							/>
 						{:else}
 							<EmptyState
-								title="No standalone backups."
-								description="Standalone backups remain available here even after their source Postgres database is deleted."
+								title="No backups."
+								description="Backups remain available here even after their source Postgres database is deleted."
 							/>
 						{/if}
 					</Collection>

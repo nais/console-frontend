@@ -201,9 +201,7 @@ test.each(['fetch', 'pagination'])(
 
 		await vi.waitFor(() => {
 			expect(openDialog()).toBeNull();
-			expect(document.body.textContent).toContain(
-				'Standalone backup requested-backup was requested.'
-			);
+			expect(document.body.textContent).toContain('Backup requested-backup was requested.');
 			expect(document.body.textContent).toContain('The backup list could not be refreshed.');
 		});
 		if (refresh === 'pagination') {
@@ -259,9 +257,7 @@ test.each(['database', 'team'] as const)(
 
 		await vi.waitFor(() => {
 			expect(openDialog()).toBeNull();
-			expect(document.body.textContent).toContain(
-				'Deletion requested for standalone backup snapshot.'
-			);
+			expect(document.body.textContent).toContain('Deletion requested for backup snapshot.');
 			expect(document.body.textContent).toContain('The backup list could not be refreshed.');
 		});
 		expect(document.querySelector('[aria-label="Delete backup snapshot"]')).toBeNull();
@@ -378,17 +374,17 @@ test('clears team backup feedback on team switches but keeps it on same-team fil
 	await submitAndTryEscape('Delete backup');
 
 	await vi.waitFor(() => {
-		expect(document.body.textContent).toContain('Deletion requested for standalone backup');
+		expect(document.body.textContent).toContain('Deletion requested for backup');
 		expect(document.body.textContent).toContain('could not be refreshed');
 	});
 	const filtered = new URL(page.url);
 	filtered.searchParams.set('environments', 'dev');
 	navigateTo(filtered);
-	expect(document.body.textContent).toContain('Deletion requested for standalone backup');
+	expect(document.body.textContent).toContain('Deletion requested for backup');
 	expect(document.body.textContent).toContain('could not be refreshed');
 
 	navigateToTeam('other');
-	expect(document.body.textContent).not.toContain('Deletion requested for standalone backup');
+	expect(document.body.textContent).not.toContain('Deletion requested for backup');
 	expect(document.body.textContent).not.toContain('could not be refreshed');
 });
 
@@ -409,7 +405,7 @@ test.each(['other', 'test'])(
 		await refresh.promise;
 		flushSync();
 
-		expect(document.body.textContent).not.toContain('Deletion requested for standalone backup');
+		expect(document.body.textContent).not.toContain('Deletion requested for backup');
 		expect(document.body.textContent).not.toContain('could not be refreshed');
 	}
 );

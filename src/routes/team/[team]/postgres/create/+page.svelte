@@ -340,20 +340,19 @@
 					<TabPanel value="backup">
 						<div class="stack">
 							<Alert variant="info"
-								>Restore a completed standalone backup into a new database in the same team and
-								environment. Existing databases are not overwritten. No applications are
-								automatically moved.</Alert
+								>Restore a completed backup into a new database in the same team and environment.
+								Existing databases are not overwritten. No applications are automatically moved.</Alert
 							>
 							<GraphErrors errors={data.recoveryBackups?.errors} />
 							<Select
 								name="backupName"
-								label="Standalone backup"
+								label="Backup"
 								required
 								bind:value={backupChoice}
 								disabled={changingSelection || submitting}
 								onchange={(event) => select({ backup: event.currentTarget.value })}
 							>
-								<option value="">Select a standalone backup</option>
+								<option value="">Select a backup</option>
 								{#if backup && !restorableBackups.some((entry) => entry.name === backup.name)}<option
 										value={backup.name}>{backup.name} ({backup.sourcePostgres})</option
 									>{/if}

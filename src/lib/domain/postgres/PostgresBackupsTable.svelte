@@ -37,7 +37,7 @@
 	let { backups, teamSlug, showSource = false, canManage = false, ondelete }: Props = $props();
 </script>
 
-<ResourceTable label="Standalone backups">
+<ResourceTable label="Backups">
 	{#snippet header()}
 		<Th class="status-column">Status</Th>
 		<Th>Name</Th>

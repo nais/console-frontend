@@ -84,14 +84,13 @@
 	onBeforeClose={() => !deleting}
 >
 	{#snippet header()}
-		<Heading as="h2" size="medium">Delete standalone backup</Heading>
+		<Heading as="h2" size="medium">Delete backup</Heading>
 	{/snippet}
 
 	<div class="modal-body">
 		<Alert variant="warning">
-			This permanently deletes the standalone backup {target.backup.name} ({target.backup
-				.environmentName}) from the disaster-recovery bucket for {target.teamSlug}. Cleanup
-			continues asynchronously.
+			This permanently deletes the backup {target.backup.name} ({target.backup.environmentName})
+			from the disaster-recovery bucket for {target.teamSlug}. Cleanup continues asynchronously.
 		</Alert>
 		<GraphErrors {errors} />
 	</div>

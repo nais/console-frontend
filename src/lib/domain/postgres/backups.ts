@@ -86,12 +86,12 @@ export function backupRestoreError(
 		| undefined,
 	now = new Date()
 ): string | undefined {
-	if (!backup) return 'Select a standalone backup to restore.';
+	if (!backup) return 'Select a backup to restore.';
 	if (backup.phase !== 'COMPLETED' || !backup.majorVersion) {
-		return 'Only completed standalone backups can be restored.';
+		return 'Only completed backups can be restored.';
 	}
 	if (backupExpired(backup.expiresAt, now)) {
-		return 'This standalone backup has expired and can no longer be restored.';
+		return 'This backup has expired and can no longer be restored.';
 	}
 }
 
