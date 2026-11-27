@@ -1,49 +1,51 @@
 <script lang="ts">
-	import type { Snippet } from 'svelte';
+	import { Alert, Heading } from '@nais/ui';
 	import type { HTMLAttributes } from 'svelte/elements';
 
-	interface Props extends HTMLAttributes<HTMLDivElement> {
+	interface Props {
+		class?: HTMLAttributes<HTMLDivElement>['class'];
+		errors?: readonly { message: string }[] | null;
 		size?: 'medium' | 'small';
 		heading?: string;
 		headingTag?: 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6';
-		children: Snippet;
-		[key: string]: unknown;
 	}
 
 	let {
+		errors,
 		size = 'medium',
 		heading = 'You must fix these errors before you can continue',
 		headingTag = 'h2',
-		class: className = '',
-		children,
-		...rest
+		class: className
 	}: Props = $props();
 </script>
 
-<div role="alert" class={['sh-error-summary', `sh-error-summary--${size}`, className]} {...rest}>
-	<svelte:element this={headingTag} class="sh-error-summary__heading">{heading}</svelte:element>
-	<div class="sh-error-summary__body">
-		{@render children()}
-	</div>
-</div>
+{#if errors?.length}
+	<Alert variant="error" {size} class={className}>
+		<Heading as={headingTag} size={size === 'small' ? 'xsmall' : 'small'}>{heading}</Heading>
+		{#if errors.length === 1}
+			<p class="messages">{errors[0].message}</p>
+		{:else}
+			<ul class="messages">
+				{#each errors as error (error)}
+					<li>{error.message}</li>
+				{/each}
+			</ul>
+		{/if}
+	</Alert>
+{/if}
 
 <style>
-	.sh-error-summary {
-		padding: var(--nais-space-16);
-		border-radius: var(--radius);
-		border: var(--sh-border-width) solid var(--destructive-border);
-		background-color: var(--destructive-muted);
-		color: var(--destructive);
-		display: flex;
-		flex-direction: column;
-		gap: var(--nais-space-8);
+	.messages {
+		margin: var(--nais-space-4) 0 0;
+		color: var(--foreground);
 	}
-	.sh-error-summary__heading {
-		margin: 0;
-		font-size: var(--sh-font-size-base);
-		font-weight: var(--sh-font-weight-semibold);
+
+	ul.messages {
+		list-style: disc;
+		padding-inline-start: var(--nais-space-20);
 	}
-	.sh-error-summary__body {
-		font-size: var(--sh-font-size-sm);
+
+	li + li {
+		margin-block-start: var(--nais-space-4);
 	}
 </style>

@@ -17,13 +17,6 @@ vi.mock('$app/environment', () => ({ browser: false, building: false }));
 vi.mock('./Onboarding.svelte', async () => ({
 	default: (await import('@nais/ui')).Heading
 }));
-vi.mock('#lib/ui/PageModal.svelte', async () => ({
-	default: (await import('@nais/ui')).Heading,
-	pageModalClick: vi.fn()
-}));
-vi.mock('./team/create/+page.svelte', async () => ({
-	default: (await import('@nais/ui')).Heading
-}));
 
 beforeEach(() => favorites.setFavorites([]));
 afterEach(() => favorites.setFavorites([]));

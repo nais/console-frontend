@@ -6,17 +6,15 @@
 	import Collection from '#lib/ui/Collection.svelte';
 	import GraphErrors from '#lib/ui/GraphErrors.svelte';
 	import ListItem from '#lib/ui/ListItem.svelte';
-	import PageModal, { pageModalClick } from '#lib/ui/PageModal.svelte';
 	import Pagination from '#lib/ui/Pagination.svelte';
 	import SectionBoundary from '#lib/ui/SectionBoundary.svelte';
 	import { exhaustive } from '#lib/utils/houdini.js';
 	import type { PageProps } from './$types';
 	import FavoritesList from './FavoritesList.svelte';
 	import HomeActivitySection from './HomeActivitySection.svelte';
+	import { filterHomeTeams, homeIssueResource } from './homeOverview.js';
 	import HomeTeamCard from './HomeTeamCard.svelte';
 	import Onboarding from './Onboarding.svelte';
-	import CreatePage from './team/create/+page.svelte';
-	import { filterHomeTeams, homeIssueResource } from './homeOverview.js';
 
 	let { data }: PageProps = $props();
 	let { UserTeams, HomeAttention, HomeActivity, HomeTeamSummaries } = $derived(data);
@@ -177,13 +175,7 @@
 							<Badge variant="secondary">{membership.pageInfo.totalCount}</Badge>
 						{/if}
 					</div>
-					<ShButton
-						variant="outline"
-						size="sm"
-						href="/team/create"
-						icon={PlusIcon}
-						onclick={pageModalClick}
-					>
+					<ShButton variant="outline" size="sm" href="/team/create" icon={PlusIcon}>
 						Create team
 					</ShButton>
 				</div>
@@ -252,7 +244,6 @@
 
 		<HomeActivitySection store={HomeActivity} loadError={data.homeLoadErrors.activity} />
 	{/if}
-	<PageModal content={CreatePage} header="Create a New Team" />
 </div>
 
 <style>

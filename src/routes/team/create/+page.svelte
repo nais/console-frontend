@@ -1,7 +1,6 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
 	import WarningIcon from '#lib/icons/WarningIcon.svelte';
-	import { isPossiblyInModal } from '#lib/ui/PageModal.svelte';
 	import { Button, ErrorSummary, Heading, TextField } from '#lib/shadcn/ui/index.js';
 	import { FloppydiskIcon } from '#lib/icons/index.js';
 	import type { PageProps } from './$types';
@@ -126,17 +125,8 @@
 	<title>Create a New Team - Nais Console</title>
 </svelte:head>
 
-<div class="container" class:partOfModal={isPossiblyInModal()}>
-	{#if !isPossiblyInModal()}
-		<Heading as="h1" size="large" spacing>Create a New Team</Heading>
-	{/if}
-	{#if form?.errors && form.errors.length > 0}
-		<ErrorSummary heading="Error creating team">
-			{#each form.errors as error (error)}
-				<li style="color:inherit!important">{error.message}</li>
-			{/each}
-		</ErrorSummary>
-	{/if}
+<div class="container">
+	<Heading as="h1" size="large" spacing>Create a New Team</Heading>
 	<p>
 		Creating a team in Nais will grant access to certain Nais features, such as Google Cloud
 		projects, Kubernetes namespaces, or your own GitHub team. After the team is created, you will
@@ -154,6 +144,7 @@
 			};
 		}}
 	>
+		<ErrorSummary class="submission-error" heading="Error creating team" errors={form?.errors} />
 		<TextField
 			name="name"
 			value={form?.input.slug}
@@ -218,9 +209,9 @@
 		padding-top: var(--nais-space-64);
 		margin-inline: auto;
 		max-width: 620px;
+	}
 
-		&.partOfModal {
-			padding-top: 0;
-		}
+	form :global(.submission-error) {
+		margin-block-end: var(--nais-space-16);
 	}
 </style>
