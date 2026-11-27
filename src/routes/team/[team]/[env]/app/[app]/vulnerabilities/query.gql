@@ -21,19 +21,6 @@ query ApplicationImageDetails($team: Slug!, $env: String!, $app: String!)
 					ingresses {
 						type
 					}
-					urgentVulnerabilityIssues: issues(
-						first: 1
-						filter: { issueType: EXTERNAL_INGRESS_URGENT_VULNERABILITY }
-					) {
-						edges {
-							node {
-								... on ExternalIngressUrgentVulnerabilityIssue {
-									__typename
-									priorityUrgent
-								}
-							}
-						}
-					}
 					image {
 						id
 						name

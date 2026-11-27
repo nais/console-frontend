@@ -78,16 +78,12 @@
 			{/if}
 
 			{#if $TeamVulnerabilities.data.team.vulnerabilitySummary && !noSboms}
-				{const urgentCount = $derived(
-					$TeamVulnerabilities.data.team.urgentVulnerabilityIssues?.pageInfo.totalCount ?? 0
-				)}
 				{const exploitedWorkloadCount = $derived(
 					$TeamVulnerabilities.data.team.exploitedWorkloads.pageInfo.totalCount
 				)}
 				<VulnerabilitySummary
 					vulnerabilitySummary={$TeamVulnerabilities.data.team.vulnerabilitySummary}
 					knownExploitedHref="#workload-list"
-					{urgentCount}
 					knownExploitedWorkloadCount={exploitedWorkloadCount}
 				/>
 			{/if}

@@ -53,13 +53,15 @@ overviews. Activity logs and modern deployment metadata remain available.
 ### v0s vulnerabilities
 
 Fasit's `v0sVulnerabilitiesEnabled` is passed to Console as `V0S_VULNERABILITIES_ENABLED`, with
-the same accepted values. When `true`, application and job vulnerability pages read findings,
-coverage and suppressions from v0s and suppress through `setVulnerabilitySuppressions` and
-`deleteVulnerabilitySuppressions`. Tenant and team vulnerability overviews and the known-exploited
-metric in workload health also read v0s scan data. The CVE database and global/team CVE details
-use v0s, including affected-workload pagination and package-level bulk assessments on team pages.
-Keep the flag off in production until shared vulnerability Issues use v0s and nais-api's
-`v0s.suppressionsEnabled` is ready for the same tenant.
+the same accepted values. When `true`, the CVE database, CVE details, tenant and team vulnerability
+overviews, and application and job vulnerability pages read from v0s. Workload health also uses
+v0s coverage and known-exploited counts. A v0s request failure does not fall back to v13s.
+The legacy read path is selected only when the flag is off.
+
+Existing v0s assessments remain visible. Console does not offer v0s assessment actions until it
+can confirm that the API supports writes for the tenant; the read flag does not enable writes.
+Console uses scan coverage for scan status and does not use the retired KEV-based Issues as an
+Urgent signal.
 
 ### Production assets
 

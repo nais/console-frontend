@@ -20,7 +20,11 @@ export async function load(event) {
 		})),
 		...(v0s
 			? {
-					...(await load_TenantV0sTeams({ event, blocking: true, variables })),
+					...(await load_TenantV0sTeams({
+						event,
+						blocking: true,
+						variables: { first: rows, after: event.url.searchParams.get('v0sTeamsAfter') || null }
+					})),
 					TenantVulnerabilityTeams: undefined
 				}
 			: {

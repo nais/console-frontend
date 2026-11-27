@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { isRetiredVulnerabilityIssue } from './retiredVulnerabilityIssues.js';
 	import { fragment, graphql, type CriticalIssueRow } from '$houdini';
 	import { BodyLong, Heading } from '#lib/shadcn/ui/index.js';
 	import { ExclamationmarkTriangleFillIcon } from '#lib/icons/index.js';
@@ -37,21 +38,6 @@
 							__typename
 							name
 							image {
-								name
-							}
-						}
-					}
-					... on ExternalIngressUrgentVulnerabilityIssue {
-						priorityUrgent
-						ingresses
-						workload {
-							__typename
-							... on Application {
-								__typename
-								name
-							}
-							... on Job {
-								__typename
 								name
 							}
 						}
@@ -129,12 +115,6 @@
 							name
 						}
 					}
-					... on VulnerableImageIssue {
-						workload {
-							__typename
-							name
-						}
-					}
 					... on WorkloadProblemIssue {
 						workload {
 							__typename
@@ -160,9 +140,7 @@
 			LastRunFailedIssue: 'Last run failed',
 			DeprecatedIngressIssue: 'Deprecated ingress',
 			DeprecatedRegistryIssue: 'Deprecated registry',
-			ExternalIngressUrgentVulnerabilityIssue: 'Known exploited vulnerability on external ingress',
 			MissingSbomIssue: 'Missing SBOM',
-			VulnerableImageIssue: 'Vulnerable image',
 			OpenSearchIssue: 'OpenSearch issue',
 			PostgresIssue: 'Postgres failure',
 			SqlInstanceStateIssue: 'Database unhealthy',
@@ -178,19 +156,21 @@
 	let title = $derived(getIssueTitle($data.__typename));
 </script>
 
-<a class="issue-row surface-interactive" href={resource.href}>
-	<div class="surface-icon">
-		<ExclamationmarkTriangleFillIcon />
-	</div>
-	<div class="issue-content">
-		<Heading size="xsmall" level="2">
-			{title} for {resource.name} in {$data.teamEnvironment.environment.name}
-		</Heading>
-		<BodyLong size="small">
-			{$data.message}
-		</BodyLong>
-	</div>
-</a>
+{#if !isRetiredVulnerabilityIssue($data.__typename)}
+	<a class="issue-row surface-interactive" href={resource.href}>
+		<div class="surface-icon">
+			<ExclamationmarkTriangleFillIcon />
+		</div>
+		<div class="issue-content">
+			<Heading size="xsmall" level="2">
+				{title} for {resource.name} in {$data.teamEnvironment.environment.name}
+			</Heading>
+			<BodyLong size="small">
+				{$data.message}
+			</BodyLong>
+		</div>
+	</a>
+{/if}
 
 <style>
 	.issue-content {

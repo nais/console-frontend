@@ -1,9 +1,4 @@
-query TeamVulnerabilities(
-	$team: Slug!
-	$environmentName: String
-	$labels: [LabelFilter!]
-	$unfiltered: Boolean! = true
-) {
+query TeamVulnerabilities($team: Slug!, $environmentName: String, $labels: [LabelFilter!]) {
 	team(slug: $team) {
 		applications(first: 1) {
 			facets {
@@ -21,12 +16,6 @@ query TeamVulnerabilities(
 					value
 					count
 				}
-			}
-		}
-		urgentVulnerabilityIssues: issues(filter: { issueType: EXTERNAL_INGRESS_URGENT_VULNERABILITY })
-			@include(if: $unfiltered) {
-			pageInfo {
-				totalCount
 			}
 		}
 		exploitedWorkloads: vulnerabilitySummaries(
