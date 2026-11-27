@@ -77,6 +77,34 @@ async function contrast(
 }
 
 for (const theme of ['light', 'dark']) {
+	test(`${theme} form alerts show readable messages without stray bullets`, async ({ page }) => {
+		await page.setViewportSize({ width: 375, height: 900 });
+		await page.goto('/tests/browser/primitive-feedback.html?form-errors');
+		await expect(page.locator('html')).toHaveAttribute('data-ready', 'true');
+		await page.locator('html').evaluate((element, theme) => {
+			element.dataset.theme = theme;
+		}, theme);
+
+		const alerts = page.getByRole('alert');
+		await expect(alerts).toHaveCount(2);
+		const heading = page.getByRole('heading', { name: 'Error creating team', level: 2 });
+		const single = alerts.filter({ has: heading });
+		const message = single.getByText('Team slug is not available.');
+		await expect(message).toHaveRole('paragraph');
+		await expect(single.getByRole('listitem')).toHaveCount(0);
+
+		const multiple = alerts.filter({ hasText: 'Multiple submission errors' });
+		const list = multiple.getByRole('list');
+		await expect(list).toHaveCSS('list-style-type', 'disc');
+		await expect(list.getByRole('listitem')).toHaveText([
+			'Team slug is not available.',
+			'The Slack channel is invalid or could not be found in your workspace.'
+		]);
+		for (const text of [heading, message, ...(await list.getByRole('listitem').all())]) {
+			expect(await contrast(text)).toBeGreaterThanOrEqual(4.5);
+		}
+	});
+
 	for (const width of [375, 1440]) {
 		test(`${theme} cost tooltips are opaque and readable at ${width}px`, async ({ page }) => {
 			await page.setViewportSize({ width, height: 900 });

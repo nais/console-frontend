@@ -9,7 +9,6 @@ import CreateTeam from '../../../routes/team/create/+page.svelte';
 
 vi.mock('$app/navigation', () => ({ goto: vi.fn() }));
 vi.mock('$app/forms', () => ({ enhance: vi.fn() }));
-vi.mock('#lib/ui/PageModal.svelte', () => ({ isPossiblyInModal: () => false }));
 vi.mock('$houdini', () => ({
 	graphql: () => writable({ errors: null })
 }));

@@ -1,5 +1,6 @@
 <script lang="ts">
 	import Loader from '../../src/lib/shadcn/ui/Loader.svelte';
+	import ErrorSummary from '../../src/lib/shadcn/ui/ErrorSummary.svelte';
 	import AddToFavorites from '../../src/lib/ui/AddToFavorites.svelte';
 	import ErrorIndicator from '../../src/lib/ui/ErrorIndicator.svelte';
 	import StateIndicator from '../../src/routes/team/[team]/[env]/postgres/[postgres]/(single)/StateIndicator.svelte';
@@ -51,6 +52,7 @@
 	const showFavoriteDrag = new URLSearchParams(window.location.search).has('favorite-drag');
 	const showCostFormatting = new URLSearchParams(window.location.search).has('cost-formatting');
 	const showUtilization = new URLSearchParams(window.location.search).has('utilization');
+	const showFormErrors = new URLSearchParams(window.location.search).has('form-errors');
 	const utilizationCases = [
 		{ key: 'zero', value: 0 },
 		{ key: 'missing', value: null },
@@ -85,6 +87,20 @@
 </script>
 
 <main>
+	{#if showFormErrors}
+		<ErrorSummary errors={[]} />
+		<ErrorSummary
+			heading="Error creating team"
+			errors={[{ message: 'Team slug is not available.' }]}
+		/>
+		<ErrorSummary
+			heading="Multiple submission errors"
+			errors={[
+				{ message: 'Team slug is not available.' },
+				{ message: 'The Slack channel is invalid or could not be found in your workspace.' }
+			]}
+		/>
+	{/if}
 	{#if showUtilization}
 		<section data-testid="utilization-gauges" aria-label="Utilization gauges">
 			{#each utilizationCases as utilization (utilization.key)}
