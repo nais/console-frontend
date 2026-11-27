@@ -182,7 +182,7 @@ describe('team vulnerability workload view', () => {
 				workloads: {
 					nodes: showRows
 						? (['SCANNED', 'PENDING', 'SCANNED'] as const).map((status, index) => ({
-								__typename: 'Application',
+								__typename: index === 2 ? 'Job' : 'Application',
 								id: `workload-${index}`,
 								name: ['api', 'worker', 'frontend'][index],
 								team: { slug: 'example' },
@@ -222,18 +222,23 @@ describe('team vulnerability workload view', () => {
 			const rows = dom.querySelectorAll<HTMLTableRowElement>('tbody tr');
 			expect(rows[0]?.querySelector('[role="img"][aria-label="Scanned"]')).not.toBeNull();
 			expect(rows[0]?.querySelector('a.severity-badge.CRITICAL')?.getAttribute('href')).toBe(
-				'/team/example/dev/app/api/vulnerabilities'
+				'/team/example/dev/app/api/vulnerabilities?suppressed=EXCLUDE'
 			);
 			expect(rows[0]?.querySelector('a.severity-badge.UNASSIGNED')?.textContent?.trim()).toBe('2');
 			expect(
-				rows[0]?.querySelector('[aria-label="1 known exploited vulnerabilities"]')
-			).not.toBeNull();
+				rows[0]
+					?.querySelector('a[aria-label="1 known exploited vulnerabilities"]')
+					?.getAttribute('href')
+			).toBe('/team/example/dev/app/api/vulnerabilities?suppressed=EXCLUDE');
 			expect(rows[1]?.querySelector('[role="img"][aria-label="Scan pending"]')).not.toBeNull();
 			expect(rows[1]?.querySelector('a.severity-badge')).toBeNull();
 			expect(rows[1]?.textContent).not.toContain('0');
 			expect(rows[1]?.cells[2]?.textContent?.trim()).toBe('—');
 			expect(rows[2]?.cells[2]?.textContent?.trim()).toBe('0');
 			expect(rows[2]?.cells[2]?.querySelector('a')).toBeNull();
+			expect(rows[2]?.querySelector('a.severity-badge.CRITICAL')?.getAttribute('href')).toBe(
+				'/team/example/dev/job/frontend/vulnerabilities?suppressed=EXCLUDE'
+			);
 		}
 		if (totalCount > 0 && !showRows) {
 			expect(body).not.toContain('No workloads match the selection.');
