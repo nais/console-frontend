@@ -80,7 +80,13 @@
 					</Table>
 				</div>
 			{:else}
-				<p>{connection.pageInfo.totalCount ? 'No CVEs on this page.' : 'No CVEs found.'}</p>
+				<p>
+					{connection.pageInfo.totalCount
+						? 'No CVEs on this page.'
+						: coverage && coverage.scanned < coverage.totalWorkloads
+							? 'No matching CVEs found in available scans.'
+							: 'No CVEs found.'}
+				</p>
 			{/if}
 		{/if}
 		<V0sCveNavigation pageInfo={connection?.pageInfo} />

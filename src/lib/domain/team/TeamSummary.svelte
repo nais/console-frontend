@@ -2,7 +2,7 @@
 	import IssuePills from '#lib/domain/issues/IssuePills.svelte';
 	import { ShSpinner } from '#lib/shadcn/ui/index.js';
 	import SurfaceCard from '#lib/ui/SurfaceCard.svelte';
-	import type { TeamSummaryCost$result, TeamSummaryVulnerabilities$result } from '$houdini';
+	import type { TeamSummaryCost$result } from '$houdini';
 	import { BellDotFillIcon, PiggybankIcon, VirusIcon, VitalsIcon } from '#lib/icons/index.js';
 	import { AreaChart } from 'layerchart';
 	import { euroTooltipFormatter } from '#lib/utils/formatters.js';
@@ -14,7 +14,6 @@
 		todoIssues?: number;
 		firingAlerts?: number;
 		loading?: boolean;
-		vulnerabilityData?: TeamSummaryVulnerabilities$result | null;
 		costData?: TeamSummaryCost$result | null;
 		costLoading?: boolean;
 	}
@@ -26,16 +25,11 @@
 		todoIssues = 0,
 		firingAlerts = 0,
 		loading = false,
-		vulnerabilityData = null,
 		costData = null,
 		costLoading = false
 	}: Props = $props();
 
 	let totalIssues = $derived(criticalIssues + warningIssues + todoIssues);
-
-	let urgentVulnerabilityIssues = $derived(
-		vulnerabilityData?.team?.urgentVulnerabilityIssues?.pageInfo?.totalCount ?? 0
-	);
 
 	let costTrend = $derived.by(() => {
 		const series = costData?.team?.cost?.daily?.series;
@@ -74,10 +68,7 @@
 	let dataLoading = $derived(loading);
 
 	let allSuccess = $derived(
-		totalIssues === 0 &&
-			urgentVulnerabilityIssues === 0 &&
-			firingAlerts === 0 &&
-			(!costTrend || costTrend.change <= 5)
+		totalIssues === 0 && firingAlerts === 0 && (!costTrend || costTrend.change <= 5)
 	);
 </script>
 
@@ -115,25 +106,15 @@
 					</div>
 				</a>
 
-				<a
-					href="/team/{teamSlug}/vulnerabilities"
-					class="metric"
-					class:danger={urgentVulnerabilityIssues > 0}
-					class:success={urgentVulnerabilityIssues === 0}
-				>
+				<a href="/team/{teamSlug}/vulnerabilities" class="metric">
 					<div class="metric-top">
 						<span class="metric-category">Vulnerabilities</span>
-						<div
-							class="metric-icon"
-							class:danger={urgentVulnerabilityIssues > 0}
-							class:success={urgentVulnerabilityIssues === 0}
-						>
+						<div class="metric-icon">
 							<VirusIcon />
 						</div>
 					</div>
 					<div class="metric-body">
-						<span class="metric-value">{urgentVulnerabilityIssues}</span>
-						<span class="metric-label">Urgent issues</span>
+						<span class="metric-label">View vulnerabilities</span>
 					</div>
 				</a>
 

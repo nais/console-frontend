@@ -1,7 +1,7 @@
 <script lang="ts">
 	import IssuePills from '#lib/domain/issues/IssuePills.svelte';
 	import { measuredCount, scanStatusLabel } from '#lib/domain/vulnerability/v0sOverview.js';
-	import { ShBadge, ShSpinner, Tooltip } from '#lib/shadcn/ui/index.js';
+	import { ShSpinner, Tooltip } from '#lib/shadcn/ui/index.js';
 
 	import SurfaceCard from '#lib/ui/SurfaceCard.svelte';
 	import { graphql, type AppHealthV0sStore, type JobHealthV0sStore } from '$houdini';
@@ -54,19 +54,6 @@
 			team(slug: $team) {
 				environment(name: $env) {
 					application(name: $app) {
-						urgentVulnerabilityIssues: issues(
-							first: 1
-							filter: { issueType: EXTERNAL_INGRESS_URGENT_VULNERABILITY }
-						) {
-							edges {
-								node {
-									... on ExternalIngressUrgentVulnerabilityIssue {
-										__typename
-										priorityUrgent
-									}
-								}
-							}
-						}
 						image {
 							sbom {
 								status
@@ -172,20 +159,9 @@
 			: $jobVulnQuery?.data?.team?.environment?.job?.image
 	);
 
-	let urgentVulnerabilityCount = $derived.by(() => {
-		if (v0sHealth || workloadType !== 'app') return undefined;
-		const issue =
-			$vulnQuery?.data?.team?.environment?.application?.urgentVulnerabilityIssues?.edges[0]?.node;
-		return issue?.__typename === 'ExternalIngressUrgentVulnerabilityIssue'
-			? issue.priorityUrgent
-			: undefined;
-	});
 	let knownExploitedCount = $derived(
 		imageData?.vulnerabilitySummary?.countsByPriority?.knownExploited
 	);
-	// Prefer the internet-facing+known-exploited (urgent) count when there is
-	// one; otherwise fall back to the plain known-exploited count.
-	let showingUrgent = $derived((urgentVulnerabilityCount ?? 0) > 0);
 	const v0sOverview = $derived($v0sHealth?.data?.team.environment.workload.vulnerabilityOverview);
 	const v0sScan = $derived(v0sOverview?.coverage);
 	const v0sError = $derived(!!$v0sHealth?.errors?.length);
@@ -195,9 +171,7 @@
 					v0sError ? undefined : v0sScan?.status,
 					v0sOverview?.knownExploitedVulnerabilityCount
 				)
-			: showingUrgent
-				? urgentVulnerabilityCount
-				: (knownExploitedCount ?? undefined)
+			: (knownExploitedCount ?? undefined)
 	);
 	let sbomProcessing = $derived(!v0sHealth && imageData?.sbom?.status === 'PROCESSING');
 
@@ -306,24 +280,17 @@
 					<span class="metric-value"
 						>{vulnerabilityValue !== undefined ? vulnerabilityValue : '-'}</span
 					>
-					{#if showingUrgent}
-						<span class="metric-label">
-							<ShBadge size="xs" variant="destructive">Internet-facing</ShBadge>
-							<ShBadge size="xs" variant="warning">Known exploited</ShBadge>
-						</span>
-					{:else}
-						<span class="metric-label">
-							{#if v0sError}
-								Vulnerability data unavailable
-							{:else if v0sHealth && $v0sHealth?.fetching && !v0sScan}
-								Loading scan coverage…
-							{:else if v0sScan && v0sScan.status !== 'SCANNED'}
-								{scanStatusLabel(v0sScan.status)}
-							{:else}
-								Known exploited
-							{/if}
-						</span>
-					{/if}
+					<span class="metric-label">
+						{#if v0sError}
+							Vulnerability data unavailable
+						{:else if v0sHealth && $v0sHealth?.fetching && !v0sScan}
+							Loading scan coverage…
+						{:else if v0sScan && v0sScan.status !== 'SCANNED'}
+							{scanStatusLabel(v0sScan.status)}
+						{:else}
+							Known exploited
+						{/if}
+					</span>
 				</div>
 				{#if sbomProcessing}
 					<div class="metric-processing">

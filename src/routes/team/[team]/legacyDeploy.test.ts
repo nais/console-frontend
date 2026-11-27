@@ -23,8 +23,7 @@ const queries = vi.hoisted(() => ({
 	load_JobWorkloadEvents: vi.fn().mockResolvedValue({}),
 	load_TeamOverview: vi.fn().mockResolvedValue({}),
 	load_TeamHealth: vi.fn().mockResolvedValue({}),
-	load_TeamSummaryCost: vi.fn().mockResolvedValue({}),
-	load_TeamSummaryVulnerabilities: vi.fn().mockResolvedValue({})
+	load_TeamSummaryCost: vi.fn().mockResolvedValue({})
 }));
 
 vi.mock('$houdini', () => queries);
