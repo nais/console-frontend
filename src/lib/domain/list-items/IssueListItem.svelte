@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { isRetiredVulnerabilityIssue } from '#lib/domain/issues/retiredVulnerabilityIssues.js';
 	import { fragment, graphql, type IssueFragment } from '$houdini';
 	import { envTagVariant } from '#lib/envTagVariant.js';
 	import { issueResource } from '#lib/domain/issues/issueResource.js';
@@ -73,23 +74,6 @@
 							image {
 								name
 							}
-						}
-					}
-					... on ExternalIngressUrgentVulnerabilityIssue {
-						__typename
-						severity
-						message
-						teamEnvironment {
-							environment {
-								name
-							}
-							team {
-								slug
-							}
-						}
-						workload {
-							__typename
-							name
 						}
 					}
 					... on LastRunFailedIssue {
@@ -294,23 +278,6 @@
 							name
 						}
 					}
-					... on VulnerableImageIssue {
-						__typename
-						severity
-						message
-						teamEnvironment {
-							environment {
-								name
-							}
-							team {
-								slug
-							}
-						}
-						workload {
-							__typename
-							name
-						}
-					}
 					... on WorkloadProblemIssue {
 						__typename
 						severity
@@ -381,60 +348,62 @@
 	});
 </script>
 
-<details class="item">
-	<summary class="head">
-		<div class="chev">
-			<ChevronRightIcon />
-		</div>
-		<div class="severity-dot">
-			<StatusIndicator
-				compact
-				label="Severity: {capitalizeFirstLetter($data?.severity?.toLowerCase() ?? 'unknown')}"
-				tone={$data?.severity === 'CRITICAL'
-					? 'danger'
-					: $data?.severity === 'WARNING'
-						? 'warning'
-						: 'info'}
-			/>
-		</div>
-		<div class="resource-icon">
-			<ResourceIcon />
-		</div>
-		<div class="resource-group">
-			{#if resource.href}
-				<a
-					class="resource-name"
-					href={resource.href}
-					title={resource.name}
-					onclick={(e) => e.stopPropagation()}>{resource.name}</a
-				>
-			{:else}
-				<span class="resource-name" title={resource.name}>{resource.name}</span>
-			{/if}
-			{#if $data?.teamEnvironment?.environment?.name}
-				<Tag size="xsmall" variant={envTagVariant($data.teamEnvironment.environment.name)}
-					>{$data.teamEnvironment.environment.name}</Tag
-				>
-			{/if}
-		</div>
-		<span class="issue-title">{issueTitle}</span>
-	</summary>
-
-	<div class="detail">
-		<p class="message">{$data?.message}</p>
-		{#if $data?.__typename === 'DeprecatedIngressIssue' && 'ingresses' in ($data as Record<string, unknown>)}
-			{const ingresses = $derived(($data as unknown as { ingresses: string[] }).ingresses)}
-			<div class="extra">
-				<strong>
-					{ingresses.length === 1 ? 'Deprecated ingress:' : 'Deprecated ingresses:'}
-				</strong>
-				{#each ingresses as ingress (ingress)}
-					<span class="ingress">{ingress}</span>
-				{/each}
+{#if !isRetiredVulnerabilityIssue($data?.__typename)}
+	<details class="item">
+		<summary class="head">
+			<div class="chev">
+				<ChevronRightIcon />
 			</div>
-		{/if}
-	</div>
-</details>
+			<div class="severity-dot">
+				<StatusIndicator
+					compact
+					label="Severity: {capitalizeFirstLetter($data?.severity?.toLowerCase() ?? 'unknown')}"
+					tone={$data?.severity === 'CRITICAL'
+						? 'danger'
+						: $data?.severity === 'WARNING'
+							? 'warning'
+							: 'info'}
+				/>
+			</div>
+			<div class="resource-icon">
+				<ResourceIcon />
+			</div>
+			<div class="resource-group">
+				{#if resource.href}
+					<a
+						class="resource-name"
+						href={resource.href}
+						title={resource.name}
+						onclick={(e) => e.stopPropagation()}>{resource.name}</a
+					>
+				{:else}
+					<span class="resource-name" title={resource.name}>{resource.name}</span>
+				{/if}
+				{#if $data?.teamEnvironment?.environment?.name}
+					<Tag size="xsmall" variant={envTagVariant($data.teamEnvironment.environment.name)}
+						>{$data.teamEnvironment.environment.name}</Tag
+					>
+				{/if}
+			</div>
+			<span class="issue-title">{issueTitle}</span>
+		</summary>
+
+		<div class="detail">
+			<p class="message">{$data?.message}</p>
+			{#if $data?.__typename === 'DeprecatedIngressIssue' && 'ingresses' in ($data as Record<string, unknown>)}
+				{const ingresses = $derived(($data as unknown as { ingresses: string[] }).ingresses)}
+				<div class="extra">
+					<strong>
+						{ingresses.length === 1 ? 'Deprecated ingress:' : 'Deprecated ingresses:'}
+					</strong>
+					{#each ingresses as ingress (ingress)}
+						<span class="ingress">{ingress}</span>
+					{/each}
+				</div>
+			{/if}
+		</div>
+	</details>
+{/if}
 
 <style>
 	details > summary {

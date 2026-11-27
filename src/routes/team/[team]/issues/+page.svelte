@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { isRetiredVulnerabilityIssue } from '#lib/domain/issues/retiredVulnerabilityIssues.js';
 	import { page } from '$app/state';
 	import { IssueOrderField, OrderDirection } from '$houdini';
 	import IssuesFacets from '#lib/domain/issues/IssuesFacets.svelte';
@@ -152,7 +153,9 @@
 			>
 				<IssuesFacets
 					severities={severityFacets}
-					issueTypes={facets?.issueTypes ?? []}
+					issueTypes={facets?.issueTypes.filter(
+						({ issueType }) => !isRetiredVulnerabilityIssue(issueType)
+					) ?? []}
 					environments={facets?.environments ?? []}
 					{selectedSeverity}
 					{selectedIssueType}

@@ -132,9 +132,7 @@ describe('team vulnerability workload view', () => {
 					labels: [{ key: 'owner', value: 'team' }],
 					orderBy: { field: 'VULNERABILITY_UNIQUE_HIGH', direction: 'ASC' },
 					first: 20,
-					last: null,
-					after: 'next',
-					before: null
+					after: 'next'
 				}
 			})
 		);
@@ -182,12 +180,12 @@ describe('team vulnerability workload view', () => {
 						nodes: [],
 						pageInfo: {
 							totalCount,
-							hasPreviousPage: totalCount > 0,
-							hasNextPage: false,
+							hasPreviousPage: false,
+							hasNextPage: totalCount > 0,
 							pageStart: 0,
 							pageEnd: 0,
 							startCursor: null,
-							endCursor: null
+							endCursor: totalCount ? 'next' : null
 						}
 					}
 				}
@@ -201,13 +199,14 @@ describe('team vulnerability workload view', () => {
 				}
 			});
 			expect(body).toContain(message);
-			const previous = JSDOM.fragment(body).querySelector('button[aria-label="Previous page"]');
+			const next = JSDOM.fragment(body).querySelector('nav[aria-label="Pagination"] a');
 			if (totalCount > 0) {
 				expect(body).not.toContain('No workloads match the selection.');
-				expect(previous).not.toBeNull();
-				expect(previous?.getAttribute('aria-disabled')).toBeNull();
+				expect(next?.getAttribute('href')).toBe(
+					'/team/mango-panda/vulnerabilities?v0sWorkloadsAfter=next'
+				);
 			} else {
-				expect(previous).toBeNull();
+				expect(next).toBeNull();
 			}
 		}
 	);
@@ -241,6 +240,17 @@ describe('team vulnerability workload view', () => {
 		const summaryFilter = filter('vulnerabilityFindings', 'filter');
 		if (!summaryFilter || !workloadFilter) throw new Error('Missing workload scope');
 		expect(print(summaryFilter)).toBe(print(workloadFilter));
+		const appFacetsFilter = filter('applications', 'filter');
+		if (!appFacetsFilter) throw new Error('Missing application facet scope');
+		expect(print(appFacetsFilter)).toBe(print(workloadFilter));
+		const jobFacetsFilter = filter('jobs', 'filter');
+		if (jobFacetsFilter?.kind !== Kind.OBJECT) throw new Error('Missing job facet scope');
+		expect(
+			print({
+				...jobFacetsFilter,
+				fields: jobFacetsFilter.fields.filter((f) => f.name.value !== 'name')
+			})
+		).toBe(print(workloadFilter));
 	});
 	it('requests the number of workloads with no SBOM', () => {
 		const query = parse(readFileSync(new URL('./query.gql', import.meta.url), 'utf8'));
@@ -661,7 +671,7 @@ describe('team vulnerability workload view', () => {
 		const labels = [{ key: 'owner', value: 'team' }];
 		expect(loadSummary).toHaveBeenCalledWith(
 			expect.objectContaining({
-				variables: { team: 'example', environmentName: 'dev', labels, unfiltered: false }
+				variables: { team: 'example', environmentName: 'dev', labels }
 			})
 		);
 		expect(loadNoSbom).toHaveBeenCalledWith(
@@ -723,8 +733,7 @@ describe('team vulnerability workload view', () => {
 							{ key, value: 'team' },
 							{ key: 'region', value: undefined },
 							{ key: 'empty', value: '' }
-						],
-						unfiltered: false
+						]
 					})
 				})
 			);

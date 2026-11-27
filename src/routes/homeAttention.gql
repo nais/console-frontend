@@ -87,28 +87,6 @@ query HomeAttention {
 					}
 				}
 			}
-			... on ExternalIngressUrgentVulnerabilityIssue {
-				id
-				message
-				teamEnvironment {
-					team {
-						slug
-					}
-					environment {
-						name
-					}
-				}
-				workload {
-					... on Application {
-						__typename
-						name
-					}
-					... on Job {
-						__typename
-						name
-					}
-				}
-			}
 			... on FailedSynchronizationIssue {
 				id
 				message
@@ -300,28 +278,6 @@ query HomeAttention {
 				}
 				valkey {
 					name
-				}
-			}
-			... on VulnerableImageIssue {
-				id
-				message
-				teamEnvironment {
-					team {
-						slug
-					}
-					environment {
-						name
-					}
-				}
-				workload {
-					... on Application {
-						__typename
-						name
-					}
-					... on Job {
-						__typename
-						name
-					}
 				}
 			}
 			... on WorkloadProblemIssue {

@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { isRetiredVulnerabilityIssue } from '#lib/domain/issues/retiredVulnerabilityIssues.js';
 	import { Alert, Badge, Heading, ShButton, ShInput, Tag } from '#lib/shadcn/ui/index.js';
 	import { MagnifyingGlassIcon, PlusIcon } from '#lib/icons/index.js';
 	import { envTagVariant } from '#lib/envTagVariant.js';
@@ -42,7 +43,11 @@
 			!$HomeAttention?.errors?.length &&
 			!data.homeLoadErrors.attention
 	);
-	const issues = $derived(exhaustive(attention?.nodes ?? []));
+	const issues = $derived(
+		exhaustive(attention?.nodes ?? []).filter(
+			(issue) => !isRetiredVulnerabilityIssue(issue.__typename)
+		)
+	);
 	const summaries = $derived(
 		new Map(($HomeTeamSummaries?.data?.teams.nodes ?? []).map((team) => [team.slug, team]))
 	);

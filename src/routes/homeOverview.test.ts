@@ -65,6 +65,12 @@ describe('home queries', () => {
 					(field) =>
 						field.kind === Kind.INLINE_FRAGMENT && field.typeCondition?.name.value === type.name
 				);
+				if (
+					['ExternalIngressUrgentVulnerabilityIssue', 'VulnerableImageIssue'].includes(type.name)
+				) {
+					expect(concrete).toBeUndefined();
+					continue;
+				}
 				if (concrete?.kind !== Kind.INLINE_FRAGMENT) throw new Error(`Missing ${type.name}`);
 				expect(
 					concrete.selectionSet.selections
@@ -128,7 +134,7 @@ describe('home queries', () => {
 		(type) => {
 			const workload =
 				attentionArtifact.selection.fields.issues.selection.fields.nodes.selection.abstractFields
-					.fields.ExternalIngressUrgentVulnerabilityIssue.workload.selection;
+					.fields.MissingSbomIssue.workload.selection;
 			expect(workload.abstractFields.fields[type].name.visible).toBe(true);
 			expect(workload.abstractFields.fields[type].__typename.visible).toBe(true);
 		}

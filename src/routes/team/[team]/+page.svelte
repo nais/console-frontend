@@ -10,8 +10,7 @@
 	import type { PageProps } from './$types';
 
 	let { data }: PageProps = $props();
-	let { TeamHealth, TeamOverview, TeamSummaryVulnerabilities, TeamSummaryCost, teamSlug, purpose } =
-		$derived(data);
+	let { TeamHealth, TeamOverview, TeamSummaryCost, teamSlug, purpose } = $derived(data);
 </script>
 
 {#if purpose}
@@ -39,7 +38,6 @@
 			todoIssues={$TeamOverview.data?.team.todoIssues.pageInfo.totalCount ?? 0}
 			firingAlerts={$TeamOverview.data?.team.firingAlerts.pageInfo.totalCount ?? 0}
 			loading={$TeamOverview.fetching}
-			vulnerabilityData={$TeamSummaryVulnerabilities.data}
 			costData={$TeamSummaryCost.data}
 			costLoading={$TeamSummaryCost.fetching}
 		/>

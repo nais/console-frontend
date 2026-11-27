@@ -3,13 +3,11 @@ query TeamV0sOverview(
 	$environments: [String!]
 	$labels: [LabelFilter!]
 	$first: Int
-	$last: Int
 	$after: Cursor
-	$before: Cursor
 	$orderBy: WorkloadOrder!
 ) {
 	team(slug: $team) {
-		applications(first: 1) {
+		applications(first: 1, filter: { environments: $environments, labels: $labels }) {
 			facets {
 				labels {
 					key
@@ -18,7 +16,7 @@ query TeamV0sOverview(
 				}
 			}
 		}
-		jobs(first: 1) {
+		jobs(first: 1, filter: { name: "", environments: $environments, labels: $labels }) {
 			facets {
 				labels {
 					key
@@ -40,9 +38,7 @@ query TeamV0sOverview(
 		}
 		workloads(
 			first: $first
-			last: $last
 			after: $after
-			before: $before
 			filter: { environments: $environments, labels: $labels }
 			orderBy: $orderBy
 		) {

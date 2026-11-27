@@ -51,8 +51,7 @@ export async function load(event) {
 		variables: {
 			team,
 			environmentName,
-			labels,
-			unfiltered: !environmentName && labels.length === 0
+			labels
 		},
 		blocking: true
 	});
