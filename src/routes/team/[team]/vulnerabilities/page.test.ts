@@ -154,7 +154,7 @@ describe('team vulnerability workload view', () => {
 	it.each([
 		{ totalCount: 0, message: 'No workloads match the selection.', showRows: false },
 		{ totalCount: 5, message: 'No workloads on this page.', showRows: false },
-		{ totalCount: 2, message: 'Threat signals', showRows: true }
+		{ totalCount: 3, message: 'Threat signals', showRows: true }
 	])('renders the workload table state: $message', async ({ totalCount, message, showRows }) => {
 		const { TeamV0sOverviewStore } = await vi.importActual<typeof import('$houdini')>('$houdini');
 		const store = new TeamV0sOverviewStore();
@@ -181,16 +181,16 @@ describe('team vulnerability workload view', () => {
 				},
 				workloads: {
 					nodes: showRows
-						? (['SCANNED', 'PENDING'] as const).map((status) => ({
+						? (['SCANNED', 'PENDING', 'SCANNED'] as const).map((status, index) => ({
 								__typename: 'Application',
-								id: status,
-								name: status === 'SCANNED' ? 'api' : 'worker',
+								id: `workload-${index}`,
+								name: ['api', 'worker', 'frontend'][index],
 								team: { slug: 'example' },
 								teamEnvironment: { environment: { name: 'dev' } },
 								vulnerabilityOverview: {
 									' $fragments': { V0sWorkloadOverview: {} },
 									coverage: { status, error: null, scannedAt: null },
-									knownExploitedVulnerabilityCount: 1,
+									knownExploitedVulnerabilityCount: index === 2 ? 0 : 1,
 									countsBySeverity: { critical: 3, high: 0, medium: 0, low: 0, unknown: 2 }
 								}
 							}))
@@ -219,7 +219,7 @@ describe('team vulnerability workload view', () => {
 		const dom = JSDOM.fragment(body);
 		const next = dom.querySelector('nav[aria-label="Pagination"] a');
 		if (showRows) {
-			const rows = dom.querySelectorAll('tbody tr');
+			const rows = dom.querySelectorAll<HTMLTableRowElement>('tbody tr');
 			expect(rows[0]?.querySelector('[role="img"][aria-label="Scanned"]')).not.toBeNull();
 			expect(rows[0]?.querySelector('a.severity-badge.CRITICAL')?.getAttribute('href')).toBe(
 				'/team/example/dev/app/api/vulnerabilities'
@@ -231,6 +231,9 @@ describe('team vulnerability workload view', () => {
 			expect(rows[1]?.querySelector('[role="img"][aria-label="Scan pending"]')).not.toBeNull();
 			expect(rows[1]?.querySelector('a.severity-badge')).toBeNull();
 			expect(rows[1]?.textContent).not.toContain('0');
+			expect(rows[1]?.cells[2]?.textContent?.trim()).toBe('—');
+			expect(rows[2]?.cells[2]?.textContent?.trim()).toBe('0');
+			expect(rows[2]?.cells[2]?.querySelector('a')).toBeNull();
 		}
 		if (totalCount > 0 && !showRows) {
 			expect(body).not.toContain('No workloads match the selection.');
