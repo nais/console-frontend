@@ -58,8 +58,11 @@ overviews, and application and job vulnerability pages read from v0s. Workload h
 v0s coverage and known-exploited counts. A v0s request failure does not fall back to v13s.
 The legacy read path is selected only when the flag is off.
 
-Existing v0s assessments remain visible. Console does not offer v0s assessment actions until it
-can confirm that the API supports writes for the tenant; the read flag does not enable writes.
+The same flag exposes direct v0s assessment actions to team members on workload and team CVE
+pages. Enable `nais-api`'s `v0s.suppressionsEnabled` for every tenant with the Console flag on
+as part of the same rollout. The API still authorizes each write. Verify creating, updating, and
+removing assessments before disabling v13s suppression forwarding. New direct v0s writes are
+not written back to v13s on rollback.
 Console uses scan coverage for scan status and does not use the retired KEV-based Issues as an
 Urgent signal.
 

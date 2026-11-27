@@ -10,8 +10,8 @@ values:
     computed:
       template: '{{ .Env.legacyDeployDisabled | default "false" }}'
   v0sVulnerabilitiesEnabled:
-    displayName: Workload vulnerabilities from v0s
-    description: Defaults to false. Shows workload findings and suppressions from v0s. Enable only together with nais-api v0s.suppressionsEnabled.
+    displayName: Vulnerabilities and assessments from v0s
+    description: Defaults to false. Switches vulnerability views and assessment actions to v0s. Enable only together with nais-api v0s.suppressionsEnabled.
     config:
       type: bool
   host:
