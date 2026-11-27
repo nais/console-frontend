@@ -90,6 +90,10 @@ vi.mock('$app/state', () => ({
 		data: { tenantName: 'nais' }
 	}
 }));
+vi.mock('$app/paths', () => ({
+	resolve: (route: string, params: Record<string, string>) =>
+		route.replace(/\[(\w+)\]/g, (_, key: string) => encodeURIComponent(params[key]))
+}));
 
 import { load } from './+page';
 import TeamVulnerabilityPage from './+page.svelte';
@@ -148,68 +152,95 @@ describe('team vulnerability workload view', () => {
 	});
 
 	it.each([
-		{ totalCount: 0, message: 'No workloads match the selection.' },
-		{ totalCount: 5, message: 'No workloads on this page.' }
-	])(
-		'renders the correct empty state with $totalCount matching workloads',
-		async ({ totalCount, message }) => {
-			const { TeamV0sOverviewStore } = await vi.importActual<typeof import('$houdini')>('$houdini');
-			const store = new TeamV0sOverviewStore();
-			const data: TeamV0sOverview$result = {
-				team: {
-					applications: { facets: null },
-					jobs: { facets: null },
-					environments: [],
-					vulnerabilityFindings: {
-						summary: {
-							' $fragments': { V0sSelectionSummary: {} },
-							countsBySeverity: { critical: 0, high: 0, medium: 0, low: 0, unknown: 0 },
-							knownExploitedVulnerabilityCount: 0,
-							knownExploitedWorkloadCount: 0,
-							coverage: {
-								totalWorkloads: totalCount,
-								scanned: 0,
-								noSbom: 0,
-								pending: totalCount,
-								failed: 0,
-								unresolvedImage: 0
-							}
-						}
-					},
-					workloads: {
-						nodes: [],
-						pageInfo: {
-							totalCount,
-							hasPreviousPage: false,
-							hasNextPage: totalCount > 0,
-							pageStart: 0,
-							pageEnd: 0,
-							startCursor: null,
-							endCursor: totalCount ? 'next' : null
+		{ totalCount: 0, message: 'No workloads match the selection.', showRows: false },
+		{ totalCount: 5, message: 'No workloads on this page.', showRows: false },
+		{ totalCount: 2, message: 'Threat signals', showRows: true }
+	])('renders the workload table state: $message', async ({ totalCount, message, showRows }) => {
+		const { TeamV0sOverviewStore } = await vi.importActual<typeof import('$houdini')>('$houdini');
+		const store = new TeamV0sOverviewStore();
+		const data: TeamV0sOverview$result = {
+			team: {
+				applications: { facets: null },
+				jobs: { facets: null },
+				environments: [],
+				vulnerabilityFindings: {
+					summary: {
+						' $fragments': { V0sSelectionSummary: {} },
+						countsBySeverity: { critical: 0, high: 0, medium: 0, low: 0, unknown: 0 },
+						knownExploitedVulnerabilityCount: 0,
+						knownExploitedWorkloadCount: 0,
+						coverage: {
+							totalWorkloads: totalCount,
+							scanned: 0,
+							noSbom: 0,
+							pending: totalCount,
+							failed: 0,
+							unresolvedImage: 0
 						}
 					}
+				},
+				workloads: {
+					nodes: showRows
+						? (['SCANNED', 'PENDING'] as const).map((status) => ({
+								__typename: 'Application',
+								id: status,
+								name: status === 'SCANNED' ? 'api' : 'worker',
+								team: { slug: 'example' },
+								teamEnvironment: { environment: { name: 'dev' } },
+								vulnerabilityOverview: {
+									' $fragments': { V0sWorkloadOverview: {} },
+									coverage: { status, error: null, scannedAt: null },
+									knownExploitedVulnerabilityCount: 1,
+									countsBySeverity: { critical: 3, high: 0, medium: 0, low: 0, unknown: 2 }
+								}
+							}))
+						: [],
+					pageInfo: {
+						totalCount,
+						hasPreviousPage: false,
+						hasNextPage: totalCount > 0 && !showRows,
+						pageStart: 0,
+						pageEnd: 0,
+						startCursor: null,
+						endCursor: totalCount && !showRows ? 'next' : null
+					}
 				}
-			};
-			const { body } = await render(TeamV0sWorkloads, {
-				props: {
-					store: Object.assign(store, writable({ ...get(store), data, fetching: false })),
-					team: 'example',
-					selection: { environmentName: null, labels: [] },
-					orderBy: { field: 'NAME', direction: 'ASC' }
-				}
-			});
-			expect(body).toContain(message);
-			const next = JSDOM.fragment(body).querySelector('nav[aria-label="Pagination"] a');
-			if (totalCount > 0) {
-				expect(body).not.toContain('No workloads match the selection.');
-				expect(next?.getAttribute('href')).toBe(
-					'/team/mango-panda/vulnerabilities?v0sWorkloadsAfter=next'
-				);
-			} else {
-				expect(next).toBeNull();
 			}
+		};
+		const { body } = await render(TeamV0sWorkloads, {
+			props: {
+				store: Object.assign(store, writable({ ...get(store), data, fetching: false })),
+				team: 'example',
+				selection: { environmentName: null, labels: [] },
+				orderBy: { field: 'NAME', direction: 'ASC' }
+			}
+		});
+		expect(body).toContain(message);
+		const dom = JSDOM.fragment(body);
+		const next = dom.querySelector('nav[aria-label="Pagination"] a');
+		if (showRows) {
+			const rows = dom.querySelectorAll('tbody tr');
+			expect(rows[0]?.querySelector('[role="img"][aria-label="Scanned"]')).not.toBeNull();
+			expect(rows[0]?.querySelector('a.severity-badge.CRITICAL')?.getAttribute('href')).toBe(
+				'/team/example/dev/app/api/vulnerabilities'
+			);
+			expect(rows[0]?.querySelector('a.severity-badge.UNASSIGNED')?.textContent?.trim()).toBe('2');
+			expect(
+				rows[0]?.querySelector('[aria-label="1 known exploited vulnerabilities"]')
+			).not.toBeNull();
+			expect(rows[1]?.querySelector('[role="img"][aria-label="Scan pending"]')).not.toBeNull();
+			expect(rows[1]?.querySelector('a.severity-badge')).toBeNull();
+			expect(rows[1]?.textContent).not.toContain('0');
 		}
-	);
+		if (totalCount > 0 && !showRows) {
+			expect(body).not.toContain('No workloads match the selection.');
+			expect(next?.getAttribute('href')).toBe(
+				'/team/mango-panda/vulnerabilities?v0sWorkloadsAfter=next'
+			);
+		} else {
+			expect(next).toBeNull();
+		}
+	});
 
 	it('uses the same environment and labels for the v0s summary and workload selection', () => {
 		const query = parse(readFileSync(new URL('./overview-v0s.gql', import.meta.url), 'utf8'));
