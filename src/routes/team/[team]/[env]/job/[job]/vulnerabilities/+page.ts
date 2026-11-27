@@ -5,12 +5,16 @@ import {
 	load_WorkloadFindings,
 	OrderDirection
 } from '$houdini';
-import { initialWorkloadFindingsVariables } from '#lib/domain/vulnerability/workloadFindings.js';
+import {
+	includeSuppressedWorkloadFindings,
+	initialWorkloadFindingsVariables
+} from '#lib/domain/vulnerability/workloadFindings.js';
 import { addPageMeta } from '#lib/utils/pageMeta.js';
 import { get } from 'svelte/store';
 
 export async function load(event) {
 	if ((await event.parent()).v0sVulnerabilities) {
+		const showSuppressed = includeSuppressedWorkloadFindings(event.url.searchParams);
 		return {
 			...(await addPageMeta(event, { title: 'Vulnerabilities' })),
 			...(await load_WorkloadFindings({
@@ -19,9 +23,11 @@ export async function load(event) {
 				variables: initialWorkloadFindingsVariables(
 					event.params.team,
 					event.params.env,
-					event.params.job
+					event.params.job,
+					showSuppressed
 				)
 			})),
+			showSuppressed,
 			v0sVulnerabilities: true as const
 		};
 	}

@@ -37,6 +37,7 @@
 	{#key data.WorkloadFindings}
 		<WorkloadFindings
 			store={data.WorkloadFindings}
+			initialShowSuppressed={data.showSuppressed}
 			team={page.params.team ?? ''}
 			environment={page.params.env ?? ''}
 			workload={page.params.app ?? ''}
