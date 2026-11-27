@@ -1,4 +1,9 @@
-import { graphql, PostgresAvailableValuesStore, PostgresRecoverySourceStore } from '$houdini';
+import {
+	graphql,
+	PostgresAvailableValuesStore,
+	PostgresRecoveryBackupStore,
+	PostgresRecoverySourceStore
+} from '$houdini';
 import { parseCloneMode, parseInstant, resolveCloneTarget } from '#lib/domain/postgres/recovery.js';
 import { labelRowsHaveErrors, rowsFromArrays, toLabelInput } from '#lib/domain/labels/labels.js';
 import { requirePostgresAccess } from '#lib/domain/postgres/access.server.js';
@@ -6,6 +11,7 @@ import {
 	backupRetentionError,
 	parseBackupRetention
 } from '#lib/domain/postgres/backupRetention.js';
+import { backupRestoreError } from '#lib/domain/postgres/backups.js';
 import {
 	cloneBaseline,
 	cloneOverrides,
@@ -59,9 +65,11 @@ export const actions = {
 			data.getAll('label_key').map((value) => (typeof value === 'string' ? value : '')),
 			data.getAll('label_value').map((value) => (typeof value === 'string' ? value : ''))
 		);
+		const backupNameInput = formString(data, 'backupName');
 		const values = {
 			mode: formString(data, 'mode'),
 			sourcePostgres: formString(data, 'sourcePostgres'),
+			...(backupNameInput ? { backupName: backupNameInput } : {}),
 			targetTime: formString(data, 'targetTime'),
 			name: formString(data, 'name'),
 			environment: formString(data, 'environment'),
@@ -77,8 +85,10 @@ export const actions = {
 		if (labelRowsHaveErrors(labelRows)) {
 			return fail(400, { ...values, errors, error: 'Check the label fields below.' });
 		}
-		const recovering = parseCloneMode(values.mode) === 'clone';
-		if (!values.name || !values.environment || (!recovering && !values.majorVersion)) {
+		const mode = parseCloneMode(values.mode);
+		const recovering = mode === 'clone';
+		const restoringBackup = mode === 'backup';
+		if (!values.name || !values.environment || (mode === 'empty' && !values.majorVersion)) {
 			return fail(400, { ...values, errors, error: 'Name, environment and version are required.' });
 		}
 		const environmentsResult = await environmentsQuery.fetch({
@@ -111,6 +121,7 @@ export const actions = {
 			});
 		}
 		let recovery: { sourcePostgres: string; targetTime: Date } | undefined;
+		let backupName: string | undefined;
 		let cloneInput: ReturnType<typeof cloneOverrides> | undefined;
 		if (recovering) {
 			if (!values.sourcePostgres || values.name === values.sourcePostgres) {
@@ -179,6 +190,71 @@ export const actions = {
 			}
 			cloneInput = cloneOverrides(values, values.extensions, baseline);
 			recovery = { sourcePostgres: source.name, targetTime: resolved.target };
+		} else if (restoringBackup) {
+			if (!values.backupName) {
+				return fail(400, {
+					...values,
+					errors,
+					error: 'Select a standalone backup and a new database name.'
+				});
+			}
+			const result = await new PostgresRecoveryBackupStore().fetch({
+				event,
+				policy: 'NetworkOnly',
+				variables: { team: event.params.team, env: values.environment, name: values.backupName }
+			});
+			const backup = result.data?.team.environment.postgresBackup;
+			if (result.errors?.length || !backup) {
+				return fail(400, {
+					...values,
+					errors,
+					error: 'Could not verify the standalone backup. Select a backup and try again.'
+				});
+			}
+			const restoreError = backupRestoreError(backup, new Date());
+			if (restoreError) return fail(400, { ...values, errors, error: restoreError });
+			values.majorVersion = backup.majorVersion!;
+			const baseline = cloneBaseline({
+				majorVersion: backup.majorVersion!,
+				extensions: backup.extensions,
+				highAvailability: false,
+				resources: { diskSize: backup.diskSize }
+			});
+			errors = configurationErrors(values, baseline.diskSizeMin);
+			if (Object.keys(errors).length) {
+				return fail(400, { ...values, errors, error: 'Check the resource fields below.' });
+			}
+			const { added, missing } = extensionDelta(values.extensions ?? baseline.extensions, [
+				...baseline.extensions
+			]);
+			if (missing.length) {
+				return fail(400, {
+					...values,
+					errors,
+					error: `Extensions from the backup cannot be removed: ${missing.join(', ')}.`
+				});
+			}
+			if (added.length) {
+				const available = await new PostgresAvailableValuesStore().fetch({
+					event,
+					variables: { team: event.params.team, env: values.environment },
+					policy: 'NetworkOnly'
+				});
+				if (available.errors?.length || !available.data) {
+					return fail(500, {
+						...values,
+						errors,
+						error: 'Could not load Postgres options for this environment.'
+					});
+				}
+				const extensionError = extensionSelectionError(
+					added,
+					available.data.team.environment.environment.availableValues.postgresExtensions.values
+				);
+				if (extensionError) return fail(400, { ...values, errors, error: extensionError });
+			}
+			cloneInput = cloneOverrides(values, values.extensions, baseline);
+			backupName = backup.name;
 		} else {
 			const available = await new PostgresAvailableValuesStore().fetch({
 				event,
@@ -226,11 +302,12 @@ export const actions = {
 						teamSlug: event.params.team,
 						environmentName: values.environment,
 						majorVersion: values.majorVersion,
-						extensions: recovering ? cloneInput?.extensions : values.extensions,
+						extensions: recovering || restoringBackup ? cloneInput?.extensions : values.extensions,
 						recovery,
+						backupName,
 						labels: toLabelInput(labelRows),
 						backupRetentionDays: parseBackupRetention(values.backupRetentionDays),
-						...(recovering
+						...(recovering || restoringBackup
 							? {
 									cpu: cloneInput?.cpu,
 									memory: cloneInput?.memory,

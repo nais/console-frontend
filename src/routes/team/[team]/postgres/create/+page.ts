@@ -1,6 +1,8 @@
 import {
 	load_CreatePostgresEnvironments,
 	load_PostgresAvailableValues,
+	load_PostgresRecoveryBackups,
+	load_PostgresRecoveryBackup,
 	load_PostgresRecoverySources,
 	load_PostgresRecoverySource
 } from '$houdini';
@@ -13,6 +15,10 @@ export async function load(event) {
 	const parent = await event.parent();
 	if (!parent.viewerIsMember && !parent.isAdmin) {
 		error(403, 'You do not have permission to manage Postgres for this team.');
+	}
+	const mode = parseCloneMode(event.url.searchParams.get('mode'));
+	if (mode === 'backup' && !parent.viewerIsMember) {
+		error(403, 'Only team members can view Postgres backups.');
 	}
 	const environments = await load_CreatePostgresEnvironments({
 		event,
@@ -45,7 +51,9 @@ export async function load(event) {
 		supported[0]?.environment.name ??
 		'';
 	const sourceName = event.url.searchParams.get('source') ?? '';
-	const recoveryMode = parseCloneMode(event.url.searchParams.get('mode')) === 'clone';
+	const backupName = event.url.searchParams.get('backup') ?? '';
+	const recoveryMode = mode === 'clone';
+	const backupMode = mode === 'backup';
 	const sources =
 		selectedEnvironment && recoveryMode
 			? await load_PostgresRecoverySources({
@@ -66,14 +74,40 @@ export async function load(event) {
 					variables: { team: event.params.team, env: selectedEnvironment, name: sourceName }
 				})
 			: null;
+	const backups =
+		selectedEnvironment && backupMode
+			? await load_PostgresRecoveryBackups({
+					event,
+					blocking: true,
+					variables: {
+						team: event.params.team,
+						env: selectedEnvironment,
+						after: event.url.searchParams.get('after')
+					}
+				})
+			: null;
+	const backup =
+		selectedEnvironment && backupName && backupMode
+			? await load_PostgresRecoveryBackup({
+					event,
+					blocking: true,
+					variables: { team: event.params.team, env: selectedEnvironment, name: backupName }
+				})
+			: null;
 	return {
 		...(await addPageMeta(event, { title: 'Create Postgres' })),
 		...environments,
+		viewerIsMember: Boolean(parent.viewerIsMember),
 		postgresOptions,
 		selectedEnvironment,
 		sourceName,
+		backupName,
+		mode,
 		recoveryMode,
+		backupMode,
 		recoverySources: sources ? get(sources.PostgresRecoverySources) : null,
-		recoverySource: source ? get(source.PostgresRecoverySource) : null
+		recoverySource: source ? get(source.PostgresRecoverySource) : null,
+		recoveryBackups: backups ? get(backups.PostgresRecoveryBackups) : null,
+		recoveryBackup: backup ? get(backup.PostgresRecoveryBackup) : null
 	};
 }

@@ -2660,6 +2660,11 @@ type CreatePostgresBackupPayload {
 """Input for creating a Postgres."""
 input CreatePostgresInput {
   """
+  Initialize from a completed standalone backup in the same team and environment instead of creating an empty database. Omitted disk size and extension settings are taken from the backup.
+  """
+  backupName: String
+
+  """
   How many days back in time the database can be recovered to, from 2 to 30. If omitted, the platform default is used.
   """
   backupRetentionDays: Int
@@ -7284,6 +7289,11 @@ type PostgresPersonalAccessCreatedActivityLogEntryData {
 """Origin and progress of a database created by recovery."""
 type PostgresRecovery {
   """
+  Name of the standalone backup restored from, when restored from a standalone backup.
+  """
+  backupName: String
+
+  """
   True once the database is independent of the source and has its own backup.
   """
   completed: Boolean!
@@ -7294,8 +7304,10 @@ type PostgresRecovery {
   """Name of the source database. It may have been deleted since."""
   sourcePostgres: String!
 
-  """The point in time restored to."""
-  targetTime: Time!
+  """
+  The point in time restored to, when restored using point-in-time recovery.
+  """
+  targetTime: Time
 }
 
 """An explicit point-in-time recovery source for a new Postgres database."""

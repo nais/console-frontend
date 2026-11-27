@@ -1,7 +1,10 @@
 import {
+	backupExpired,
 	backupPending,
 	backupPhaseLabel,
 	backupPhaseTone,
+	backupRestorable,
+	backupRestoreError,
 	defaultStandaloneBackupName,
 	parseStandaloneBackupRetention,
 	standaloneBackupNameError,
@@ -45,5 +48,38 @@ describe('standalone Postgres backup helpers', () => {
 		expect(backupPending('RUNNING')).toBe(true);
 		expect(backupPending('COMPLETED')).toBe(false);
 		expect(backupPending('FAILED')).toBe(false);
+	});
+
+	test('validates whether a standalone backup can be restored', () => {
+		const now = new Date('2026-11-25T12:00:00Z');
+		expect(
+			backupRestorable(
+				{
+					phase: 'COMPLETED',
+					majorVersion: '18',
+					expiresAt: new Date('2026-12-25T12:00:00Z')
+				},
+				now
+			)
+		).toBe(true);
+		expect(backupRestoreError(null, now)).toBe('Select a standalone backup to restore.');
+		expect(
+			backupRestoreError({ phase: 'RUNNING', majorVersion: '18', expiresAt: null }, now)
+		).toMatch(/Only completed/);
+		expect(
+			backupRestoreError({ phase: 'COMPLETED', majorVersion: null, expiresAt: null }, now)
+		).toMatch(/Only completed/);
+		expect(
+			backupRestoreError(
+				{
+					phase: 'COMPLETED',
+					majorVersion: '18',
+					expiresAt: new Date('2026-11-25T12:00:00Z')
+				},
+				now
+			)
+		).toMatch(/expired/);
+		expect(backupExpired(null, now)).toBe(false);
+		expect(backupExpired(new Date('2026-11-25T11:59:59Z'), now)).toBe(true);
 	});
 });

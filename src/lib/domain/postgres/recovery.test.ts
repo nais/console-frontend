@@ -10,7 +10,8 @@ import {
 	recoveryPending,
 	recoveryTimeError,
 	recoveryTimeMinimum,
-	resolveCloneTarget
+	resolveCloneTarget,
+	restorePostgresBackupHref
 } from './recovery.js';
 
 const oslo = 'Europe/Oslo';
@@ -152,8 +153,21 @@ describe('clone entry points', () => {
 	test('keeps the legacy recovery mode value working', () => {
 		expect(parseCloneMode('clone')).toBe('clone');
 		expect(parseCloneMode('recovery')).toBe('clone');
+		expect(parseCloneMode('backup')).toBe('backup');
 		expect(parseCloneMode('empty')).toBe('empty');
 		expect(parseCloneMode(null)).toBe('empty');
+	});
+	test('standalone backup entry point presets the shared create flow', () => {
+		const url = new URL(
+			restorePostgresBackupHref('my-team', 'dev-gcp', 'frogres-dr-1'),
+			'https://console.test'
+		);
+		expect(url.pathname).toBe('/team/my-team/postgres/create');
+		expect(Object.fromEntries(url.searchParams)).toEqual({
+			environment: 'dev-gcp',
+			backup: 'frogres-dr-1',
+			mode: 'backup'
+		});
 	});
 	test('polls pending recovery independently of database availability', () => {
 		expect(recoveryPending({ completed: false })).toBe(true);

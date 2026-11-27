@@ -5,15 +5,21 @@
 export const CLONE_LATEST_POINT_BUFFER_MINUTES = 10;
 const CLONE_LATEST_POINT_BUFFER_MS = CLONE_LATEST_POINT_BUFFER_MINUTES * 60_000;
 
-export type CloneMode = 'empty' | 'clone';
+export type CloneMode = 'empty' | 'clone' | 'backup';
 
 /** `recovery` is the legacy name of the clone mode and is still accepted in old links/forms. */
 export function parseCloneMode(value: string | null | undefined): CloneMode {
-	return value === 'clone' || value === 'recovery' ? 'clone' : 'empty';
+	if (value === 'clone' || value === 'recovery') return 'clone';
+	if (value === 'backup') return 'backup';
+	return 'empty';
 }
 
 export function clonePostgresHref(team: string, environment: string, source: string) {
 	return `/team/${encodeURIComponent(team)}/postgres/create?${new URLSearchParams({ environment, source, mode: 'clone' })}`;
+}
+
+export function restorePostgresBackupHref(team: string, environment: string, backup: string) {
+	return `/team/${encodeURIComponent(team)}/postgres/create?${new URLSearchParams({ environment, backup, mode: 'backup' })}`;
 }
 
 export function browserTimeZone(): string {

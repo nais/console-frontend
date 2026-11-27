@@ -18,6 +18,7 @@ query PostgresOverview($team: Slug!, $env: String!, $name: String!) {
 				earliestRestoreTime
 				recovery {
 					sourcePostgres
+					backupName
 					targetTime
 					completed
 					failureMessage

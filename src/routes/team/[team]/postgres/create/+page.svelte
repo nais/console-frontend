@@ -14,6 +14,7 @@
 	import LabelRows from '#lib/domain/labels/LabelRows.svelte';
 	import { labelRowsHaveErrors, type LabelRow } from '#lib/domain/labels/labels.js';
 	import PostgresBackupRetentionField from '#lib/domain/postgres/PostgresBackupRetentionField.svelte';
+	import { backupRestorable, backupRestoreError } from '#lib/domain/postgres/backups.js';
 	import { backupRetention } from '#lib/domain/postgres/backupRetention.js';
 	import { quantityInUnits, postgresResources } from '#lib/domain/postgres/forms.js';
 	import PostgresConfigurationFields from '#lib/domain/postgres/PostgresConfigurationFields.svelte';
@@ -45,13 +46,28 @@
 		)
 	);
 	let selectedEnvironment = $derived(form?.environment ?? data.selectedEnvironment);
-	let recovering = $derived(form ? parseCloneMode(form.mode) === 'clone' : data.recoveryMode);
+	let mode = $derived(
+		form
+			? parseCloneMode(form.mode)
+			: (data.mode ?? (data.recoveryMode ? 'clone' : data.backupMode ? 'backup' : 'empty'))
+	);
+	let recovering = $derived(mode === 'clone');
+	let restoringBackup = $derived(mode === 'backup');
+	let canUseBackups = $derived(Boolean(data.viewerIsMember) || restoringBackup);
 	let source = $derived(data.recoverySource?.data?.team.environment.postgres);
+	let backup = $derived(data.recoveryBackup?.data?.team.environment.postgresBackup);
 	// Selects may show pending choices, but configuration uses only the loaded context.
-	let modeChoice = $derived(recovering ? 'clone' : 'empty');
+	let modeChoice = $derived(mode);
 	let environmentChoice = $derived(selectedEnvironment);
 	let sourceChoice = $derived(source?.name ?? '');
+	let backupChoice = $derived(backup?.name ?? '');
 	let sources = $derived(data.recoverySources?.data?.team.postgreses);
+	let backups = $derived(data.recoveryBackups?.data?.team.postgresBackups);
+	let now = $state<Date>();
+	let restorableBackups = $derived(
+		(backups?.nodes ?? []).filter((entry) => backupRestorable(entry, now))
+	);
+	let backupError = $derived(backup ? backupRestoreError(backup, now) : undefined);
 	let changingSelection = $state(false);
 	let navigationError = $state('');
 	// Navigation clears action data. Keep the user's draft independently of it.
@@ -73,7 +89,6 @@
 		untrack(() => !!form && 'outcomeUnknown' in form && form.outcomeUnknown === true)
 	);
 	let submissionError = $state('');
-	let now = $state<Date>();
 	// Browser time zone (never shown); UTC until mounted so server and client markup agree.
 	let timeZone = $state('UTC');
 	let timeError = $derived(
@@ -107,9 +122,10 @@
 		} catch {
 			navigationError = 'Could not load clone options. Please try again.';
 		} finally {
-			modeChoice = recovering ? 'clone' : 'empty';
+			modeChoice = mode;
 			environmentChoice = selectedEnvironment;
 			sourceChoice = source?.name ?? '';
+			backupChoice = backup?.name ?? '';
 			changingSelection = false;
 		}
 	}
@@ -130,7 +146,9 @@
 		Number(
 			(recovering
 				? quantityInUnits(source?.resources?.diskSize, 'GiB')
-				: resources.diskSize.trim()) || postgresResources.diskSize.default
+				: restoringBackup
+					? quantityInUnits(backup?.diskSize, 'GiB')
+					: resources.diskSize.trim()) || postgresResources.diskSize.default
 		)
 	);
 	let labelRows = $state<LabelRow[]>(untrack(() => form?.labelRows ?? [{ key: '', value: '' }]));
@@ -176,19 +194,23 @@
 				>Create a Postgres database for {data.teamSlug}. Provisioning is asynchronous.</BodyShort
 			>
 		</div>
-		<input type="hidden" name="mode" value={recovering ? 'clone' : 'empty'} />
+		<input type="hidden" name="mode" value={mode} />
 		<Tabs
 			value={modeChoice}
 			onChange={(next) => {
 				const previous = modeChoice;
-				modeChoice = next;
-				if (next === previous || (next === 'clone') === recovering) return;
-				select({ mode: next, source: '', after: '' });
+				const nextMode = parseCloneMode(next);
+				modeChoice = nextMode;
+				if (nextMode === previous || nextMode === mode) return;
+				select({ mode: nextMode, source: '', backup: '', after: '' });
 			}}
 		>
 			<TabList aria-label="Create database">
 				<Tab value="empty" disabled={changingSelection || submitting}>Empty database</Tab>
 				<Tab value="clone" disabled={changingSelection || submitting}>Clone existing database</Tab>
+				{#if canUseBackups}<Tab value="backup" disabled={changingSelection || submitting}
+						>Restore from backup</Tab
+					>{/if}
 			</TabList>
 			<div class="stack tab-content">
 				<TextField name="name" label="Database name" required bind:value={databaseName} />
@@ -199,7 +221,7 @@
 					bind:value={environmentChoice}
 					disabled={changingSelection || submitting}
 					onchange={(event) =>
-						select({ environment: event.currentTarget.value, source: '', after: '' })}
+						select({ environment: event.currentTarget.value, source: '', backup: '', after: '' })}
 				>
 					{#each environments as environment (environment.environment.name)}
 						<option value={environment.environment.name}>{environment.environment.name}</option>
@@ -314,6 +336,76 @@
 							>
 						</div>
 					</TabPanel>
+				{:else if restoringBackup}
+					<TabPanel value="backup">
+						<div class="stack">
+							<Alert variant="info"
+								>Restore a completed standalone backup into a new database in the same team and
+								environment. Existing databases are not overwritten. No applications are
+								automatically moved.</Alert
+							>
+							<GraphErrors errors={data.recoveryBackups?.errors} />
+							<Select
+								name="backupName"
+								label="Standalone backup"
+								required
+								bind:value={backupChoice}
+								disabled={changingSelection || submitting}
+								onchange={(event) => select({ backup: event.currentTarget.value })}
+							>
+								<option value="">Select a standalone backup</option>
+								{#if backup && !restorableBackups.some((entry) => entry.name === backup.name)}<option
+										value={backup.name}>{backup.name} ({backup.sourcePostgres})</option
+									>{/if}
+								{#each restorableBackups as entry (entry.id)}<option value={entry.name}
+										>{entry.name} ({entry.sourcePostgres})</option
+									>{/each}
+							</Select>
+							{#if page.url.searchParams.has('after')}<Button
+									variant="tertiary"
+									type="button"
+									disabled={changingSelection || submitting}
+									onclick={() => select({ after: '' })}>First backups</Button
+								>{/if}
+							{#if backups?.pageInfo.hasNextPage}<Button
+									variant="tertiary"
+									type="button"
+									disabled={changingSelection || submitting}
+									onclick={() => select({ after: backups?.pageInfo.endCursor ?? '' })}
+									>More backups</Button
+								>{/if}
+							<GraphErrors errors={data.recoveryBackup?.errors} />
+							{#if backup && !data.recoveryBackup?.errors?.length}
+								{#if backupError}
+									<Alert variant="warning">{backupError}</Alert>
+								{:else if backup.majorVersion}
+									<fieldset class="stack clone-fields" disabled={changingSelection}>
+										{#key backup.name}
+											<PostgresCloneConfiguration
+												source={{
+													majorVersion: backup.majorVersion,
+													extensions: backup.extensions,
+													highAvailability: false,
+													resources: { diskSize: backup.diskSize }
+												}}
+												availableExtensions={options?.postgresExtensions.values}
+												draft={form &&
+												parseCloneMode(form.mode) === 'backup' &&
+												form.backupName === backup.name
+													? form
+													: null}
+												errors={form?.errors}
+											/>
+										{/key}
+										<BodyShort
+											>Restores backup <strong>{backup.name}</strong> (source: {backup.sourcePostgres}{#if backup.completedAt && now},
+												completed {formatLocalTime(backup.completedAt, timeZone)}{/if}).</BodyShort
+										>
+									</fieldset>
+								{/if}
+							{/if}
+						</div>
+					</TabPanel>
 				{:else}
 					<TabPanel value="empty">
 						<div class="stack">
@@ -380,10 +472,16 @@
 						labelsInvalid ||
 						(recovering
 							? !source?.earliestRestoreTime || !!data.recoverySource?.errors?.length || !!timeError
-							: !options ||
-								!!selectedOptions?.errors?.length ||
-								!options.postgresMajorVersions.values.length)}
-					>{recovering ? 'Clone database' : 'Create Postgres'}</Button
+							: restoringBackup
+								? !backup || !!backupError || !!data.recoveryBackup?.errors?.length
+								: !options ||
+									!!selectedOptions?.errors?.length ||
+									!options.postgresMajorVersions.values.length)}
+					>{recovering
+						? 'Clone database'
+						: restoringBackup
+							? 'Restore database'
+							: 'Create Postgres'}</Button
 				>
 			</div>
 		</Tabs>
@@ -392,7 +490,7 @@
 
 <style>
 	form {
-		max-width: var(--nais-breakpoint-sm);
+		max-width: var(--nais-breakpoint-md);
 	}
 	.intro {
 		margin-bottom: var(--nais-space-16);

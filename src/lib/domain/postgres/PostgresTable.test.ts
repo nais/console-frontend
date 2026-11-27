@@ -107,30 +107,38 @@ describe('Postgres table', () => {
 	});
 
 	test('renders standalone backups even after their source database is deleted', async () => {
-		fixture.nodes = [];
-		fixture.backups = [
-			{
-				id: 'backup-1',
-				name: 'frogres-dr-1',
-				sourcePostgres: 'deleted-db',
-				phase: 'COMPLETED',
-				retentionDays: 30,
-				majorVersion: '18',
-				diskSize: '10Gi',
-				extensions: [],
-				sizeBytes: 115250090,
-				createdAt: new Date('2026-11-25T10:47:22Z'),
-				completedAt: new Date('2026-11-25T10:47:57Z'),
-				expiresAt: new Date('2026-12-25T10:47:57Z'),
-				errorMessage: null,
-				teamEnvironment: { environment: { name: 'dev-gcp' } }
-			}
-		];
-		const { body } = await renderPage();
+		vi.useFakeTimers({ now: new Date('2026-11-25T12:00:00Z') });
+		try {
+			fixture.nodes = [];
+			fixture.backups = [
+				{
+					id: 'backup-1',
+					name: 'frogres-dr-1',
+					sourcePostgres: 'deleted-db',
+					phase: 'COMPLETED',
+					retentionDays: 30,
+					majorVersion: '18',
+					diskSize: '10Gi',
+					extensions: [],
+					sizeBytes: 115250090,
+					createdAt: new Date('2026-11-25T10:47:22Z'),
+					completedAt: new Date('2026-11-25T10:47:57Z'),
+					expiresAt: new Date('2026-12-25T10:47:57Z'),
+					errorMessage: null,
+					teamEnvironment: { environment: { name: 'dev-gcp' } }
+				}
+			];
+			const { body } = await renderPage();
 
-		expect(body).toContain('frogres-dr-1');
-		expect(body).toContain('deleted-db');
-		expect(body).toContain('110 MiB');
-		expect(body).toContain('25 Dec 2026');
+			expect(body).toContain('frogres-dr-1');
+			expect(body).toContain('deleted-db');
+			expect(body).toContain('110 MiB');
+			expect(body).toContain('25 Dec 2026');
+			expect(body).toContain(
+				'href="/team/test/postgres/create?environment=dev-gcp&amp;backup=frogres-dr-1&amp;mode=backup"'
+			);
+		} finally {
+			vi.useRealTimers();
+		}
 	});
 });
