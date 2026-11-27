@@ -234,11 +234,11 @@
 <GraphErrors errors={$PostgresBackups.errors} />
 
 {#if createdBackupName}
-	<Alert variant="success">Standalone backup {createdBackupName} was requested.</Alert>
+	<Alert variant="success">Backup {createdBackupName} was requested.</Alert>
 {/if}
 {#if deletedBackupName}
 	<Alert variant="success">
-		Deletion requested for standalone backup {deletedBackupName}. Cleanup continues asynchronously.
+		Deletion requested for backup {deletedBackupName}. Cleanup continues asynchronously.
 	</Alert>
 {/if}
 {#if backupRefreshFailed}
@@ -254,15 +254,14 @@
 {:else if backups}
 	<div class="backups-page">
 		<BodyShort size="small" class="backups-intro">
-			Standalone backups are stored in your team's disaster-recovery bucket and survive database
-			deletion{#if postgres}
+			Backups are stored in your team's disaster-recovery bucket and survive database deletion{#if postgres}
 				(distinct from this database's rolling {postgres.backupRetentionDays}-{pluralize(
 					postgres.backupRetentionDays,
 					'day'
 				)} point-in-time recovery window){/if}.
 		</BodyShort>
 
-		<Collection title="Standalone backups" headerBorder={false} count={backupCount}>
+		<Collection title="Backups" headerBorder={false} count={backupCount}>
 			{#snippet actions()}
 				{#if canManage}
 					<Button size="small" variant="secondary" onclick={openCreateModal}>Create backup</Button>
@@ -279,8 +278,8 @@
 				/>
 			{:else}
 				<EmptyState
-					title="No standalone backups."
-					description="Standalone backups are kept in your team's disaster-recovery bucket and remain available even if this database is deleted."
+					title="No backups."
+					description="Backups are kept in your team's disaster-recovery bucket and remain available even if this database is deleted."
 				/>
 			{/if}
 		</Collection>
@@ -309,7 +308,7 @@
 		onclose={() => (createModalOpen = false)}
 	>
 		{#snippet header()}
-			<Heading as="h2" size="medium">Create standalone backup</Heading>
+			<Heading as="h2" size="medium">Create backup</Heading>
 		{/snippet}
 
 		<form

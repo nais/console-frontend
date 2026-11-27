@@ -195,7 +195,7 @@ export const actions = {
 				return fail(400, {
 					...values,
 					errors,
-					error: 'Select a standalone backup and a new database name.'
+					error: 'Select a backup and a new database name.'
 				});
 			}
 			const result = await new PostgresRecoveryBackupStore().fetch({
@@ -208,7 +208,7 @@ export const actions = {
 				return fail(400, {
 					...values,
 					errors,
-					error: 'Could not verify the standalone backup. Select a backup and try again.'
+					error: 'Could not verify the backup. Select a backup and try again.'
 				});
 			}
 			const restoreError = backupRestoreError(backup, new Date());
