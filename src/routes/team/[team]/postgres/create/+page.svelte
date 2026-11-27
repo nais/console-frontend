@@ -490,7 +490,7 @@
 
 <style>
 	form {
-		max-width: var(--nais-breakpoint-sm);
+		max-width: 600px;
 	}
 	.intro {
 		margin-bottom: var(--nais-space-16);
