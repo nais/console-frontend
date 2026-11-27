@@ -68,3 +68,43 @@ export function backupPhaseLabel(phase: string): string {
 export function backupPending(phase: string | null | undefined): boolean {
 	return phase === 'PREPARING' || phase === 'RUNNING';
 }
+
+export function backupExpired(expiresAt: Date | null | undefined, now = new Date()): boolean {
+	return (
+		!!expiresAt && Number.isFinite(expiresAt.getTime()) && expiresAt.getTime() <= now.getTime()
+	);
+}
+
+export function backupRestoreError(
+	backup:
+		| {
+				phase: string;
+				majorVersion: string | null;
+				expiresAt: Date | null;
+		  }
+		| null
+		| undefined,
+	now = new Date()
+): string | undefined {
+	if (!backup) return 'Select a standalone backup to restore.';
+	if (backup.phase !== 'COMPLETED' || !backup.majorVersion) {
+		return 'Only completed standalone backups can be restored.';
+	}
+	if (backupExpired(backup.expiresAt, now)) {
+		return 'This standalone backup has expired and can no longer be restored.';
+	}
+}
+
+export function backupRestorable(
+	backup:
+		| {
+				phase: string;
+				majorVersion: string | null;
+				expiresAt: Date | null;
+		  }
+		| null
+		| undefined,
+	now = new Date()
+): boolean {
+	return !backupRestoreError(backup, now);
+}

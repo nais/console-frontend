@@ -38,6 +38,7 @@ async function renderPage({
 	state = 'AVAILABLE',
 	extensions = [],
 	workloads = [],
+	recovery = null,
 	viewerIsMember = false,
 	isAdmin = false
 }: {
@@ -45,6 +46,13 @@ async function renderPage({
 	state?: string;
 	extensions?: string[];
 	workloads?: WorkloadUsage[];
+	recovery?: {
+		sourcePostgres: string;
+		backupName: string | null;
+		targetTime: Date | null;
+		completed: boolean;
+		failureMessage: string | null;
+	} | null;
 	viewerIsMember?: boolean;
 	isAdmin?: boolean;
 } = {}) {
@@ -62,6 +70,7 @@ async function renderPage({
 						highAvailability: false,
 						majorVersion: '18',
 						extensions,
+						recovery,
 						resources: { cpu: '100m', memory: '512Mi', diskSize: '10Gi' },
 						workloads: { nodes: workloads, pageInfo: { totalCount: workloads.length } },
 						labels: []
@@ -231,5 +240,21 @@ describe('Postgres overview', () => {
 		const { html } = parameterPanel(body);
 		expect(html).toContain('work_mem');
 		expect(html).not.toMatch(/<(button|input|select|textarea|form)\b/);
+	});
+
+	test('shows standalone backup restore status in the provisioning alert', async () => {
+		const { body } = await renderPage({
+			state: 'PROGRESSING',
+			recovery: {
+				sourcePostgres: 'deleted-source',
+				backupName: 'frogres-dr-1',
+				targetTime: null,
+				completed: false,
+				failureMessage: null
+			}
+		});
+		expect(body).toContain('Restore from backup is in progress. Status updates automatically.');
+		expect(body).toContain('Backup: frogres-dr-1 (source: deleted-source).');
+		expect(body).not.toContain('Cloned as of');
 	});
 });

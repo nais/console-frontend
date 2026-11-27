@@ -143,13 +143,20 @@
 						? 'success'
 						: 'info'}
 			>
-				{#if postgres.recovery.failureMessage}Cloning failed: {postgres.recovery.failureMessage}
-				{:else if postgres.recovery.completed}Cloning completed.
-				{:else}Cloning is in progress. Status updates automatically.{/if}
-				Source: {postgres.recovery.sourcePostgres}. Cloned as of {formatLocalTime(
-					postgres.recovery.targetTime,
-					timeZone
-				)}. The source is unchanged. No applications are automatically moved.
+				{#if postgres.recovery.backupName}
+					{#if postgres.recovery.failureMessage}Restore failed: {postgres.recovery.failureMessage}
+					{:else if postgres.recovery.completed}Restore completed.
+					{:else}Restore from backup is in progress. Status updates automatically.{/if}
+					Backup: {postgres.recovery.backupName} (source: {postgres.recovery.sourcePostgres}). No
+					applications are automatically moved.
+				{:else}
+					{#if postgres.recovery.failureMessage}Cloning failed: {postgres.recovery.failureMessage}
+					{:else if postgres.recovery.completed}Cloning completed.
+					{:else}Cloning is in progress. Status updates automatically.{/if}
+					Source: {postgres.recovery.sourcePostgres}.{#if postgres.recovery.targetTime}
+						Cloned as of {formatLocalTime(postgres.recovery.targetTime, timeZone)}.{/if} The source is
+					unchanged. No applications are automatically moved.
+				{/if}
 			</Alert>
 		</div>
 	{/if}

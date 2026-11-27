@@ -8,7 +8,8 @@ const {
 	environmentCheck,
 	currentResources,
 	availableValues,
-	recoverySource
+	recoverySource,
+	recoveryBackup
 } = vi.hoisted(() => ({
 	access: { fetch: vi.fn() },
 	create: { mutate: vi.fn() },
@@ -17,12 +18,16 @@ const {
 	environmentCheck: { fetch: vi.fn() },
 	currentResources: { fetch: vi.fn() },
 	availableValues: { fetch: vi.fn() },
-	recoverySource: { fetch: vi.fn() }
+	recoverySource: { fetch: vi.fn() },
+	recoveryBackup: { fetch: vi.fn() }
 }));
 
 vi.mock('$houdini', () => ({
 	PostgresRecoverySourceStore: class {
 		fetch = recoverySource.fetch;
+	},
+	PostgresRecoveryBackupStore: class {
+		fetch = recoveryBackup.fetch;
 	},
 	PostgresAvailableValuesStore: class {
 		fetch = availableValues.fetch;
@@ -397,6 +402,113 @@ describe('Postgres management actions', () => {
 		test('ignores empty-tab fields for the version', async () => {
 			await clone({ majorVersion: '18' });
 			expect(sent().majorVersion).toBe('17');
+		});
+	});
+	describe('standalone backup restore', () => {
+		const backup = {
+			name: 'frogres-dr-1',
+			sourcePostgres: 'deleted-source',
+			phase: 'COMPLETED',
+			majorVersion: '17',
+			diskSize: '20Gi',
+			extensions: ['vector'],
+			completedAt: new Date('2026-11-25T10:00:00Z'),
+			expiresAt: null
+		};
+		beforeEach(() => {
+			recoveryBackup.fetch.mockResolvedValue({
+				data: { team: { environment: { postgresBackup: backup } } }
+			});
+			create.mutate.mockResolvedValue({
+				data: {
+					createPostgres: {
+						postgres: {
+							id: 'restored',
+							name: 'restored',
+							teamEnvironment: { environment: { name: 'dev' } }
+						}
+					}
+				}
+			});
+		});
+
+		test('restores from a completed backup with inherited version, disk and extensions', async () => {
+			await expect(
+				createActions.default(
+					createEvent({
+						mode: 'backup',
+						name: 'deleted-source',
+						environment: 'dev',
+						backupName: 'frogres-dr-1',
+						diskSize: '20',
+						extensionsPresent: 'true',
+						extensions: ['vector']
+					})
+				)
+			).rejects.toMatchObject({ status: 303 });
+			const input = create.mutate.mock.calls[0][0].input;
+			expect(input).toMatchObject({
+				name: 'deleted-source',
+				majorVersion: '17',
+				backupName: 'frogres-dr-1',
+				recovery: undefined
+			});
+			for (const field of ['cpu', 'memory', 'diskSize', 'highAvailability', 'extensions'])
+				expect(input[field]).toBeUndefined();
+		});
+
+		test('rejects incomplete, expired or smaller-disk backup restores', async () => {
+			recoveryBackup.fetch.mockResolvedValueOnce({
+				data: {
+					team: { environment: { postgresBackup: { ...backup, phase: 'RUNNING' } } }
+				}
+			});
+			const incomplete = await createActions.default(
+				createEvent({
+					mode: 'backup',
+					name: 'restored',
+					environment: 'dev',
+					backupName: 'frogres-dr-1'
+				})
+			);
+			expect(incomplete).toMatchObject({ status: 400 });
+			expect(incomplete?.data.error).toContain('Only completed');
+
+			recoveryBackup.fetch.mockResolvedValueOnce({
+				data: {
+					team: {
+						environment: {
+							postgresBackup: {
+								...backup,
+								expiresAt: new Date('2020-01-01T00:00:00Z')
+							}
+						}
+					}
+				}
+			});
+			const expired = await createActions.default(
+				createEvent({
+					mode: 'backup',
+					name: 'restored',
+					environment: 'dev',
+					backupName: 'frogres-dr-1'
+				})
+			);
+			expect(expired).toMatchObject({ status: 400 });
+			expect(expired?.data.error).toContain('expired');
+
+			const smallDisk = await createActions.default(
+				createEvent({
+					mode: 'backup',
+					name: 'restored',
+					environment: 'dev',
+					backupName: 'frogres-dr-1',
+					diskSize: '10'
+				})
+			);
+			expect(smallDisk).toMatchObject({ status: 400 });
+			expect(smallDisk?.data.errors.diskSize).toContain('between 20 and 1000');
+			expect(create.mutate).not.toHaveBeenCalled();
 		});
 	});
 	test('creates with platform defaults and redirects to the returned database', async () => {

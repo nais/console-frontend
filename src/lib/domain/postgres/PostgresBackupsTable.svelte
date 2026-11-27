@@ -6,7 +6,8 @@
 	import Time from '#lib/ui/Time.svelte';
 	import { pluralize } from '#lib/utils/formatters.js';
 	import prettyBytes from 'pretty-bytes';
-	import { backupPhaseLabel, backupPhaseTone } from './backups.js';
+	import { backupPhaseLabel, backupPhaseTone, backupRestorable } from './backups.js';
+	import { restorePostgresBackupHref } from './recovery.js';
 
 	export interface PostgresBackupRow {
 		id: string;
@@ -33,7 +34,7 @@
 		ondelete?: (backup: PostgresBackupRow) => void;
 	}
 
-	let { backups, showSource = false, canManage = false, ondelete }: Props = $props();
+	let { backups, teamSlug, showSource = false, canManage = false, ondelete }: Props = $props();
 </script>
 
 <ResourceTable label="Standalone backups">
@@ -48,7 +49,7 @@
 		<Th>Size</Th>
 		<Th>Created</Th>
 		<Th>Expires</Th>
-		{#if canManage && ondelete}
+		{#if canManage}
 			<Th><span class="sr-only">Actions</span></Th>
 		{/if}
 	{/snippet}
@@ -110,16 +111,29 @@
 					{/if}
 				</span>
 			</Td>
-			{#if canManage && ondelete}
+			{#if canManage}
 				<Td>
 					<div class="action-cell">
-						<Button
-							variant="tertiary"
-							size="xsmall"
-							icon={TrashIcon}
-							aria-label="Delete backup {backup.name}"
-							onclick={() => ondelete(backup)}
-						/>
+						{#if backupRestorable(backup)}
+							<Button
+								as="a"
+								href={restorePostgresBackupHref(teamSlug, backup.environmentName, backup.name)}
+								variant="tertiary"
+								size="xsmall"
+								aria-label="Restore backup {backup.name}"
+							>
+								Restore
+							</Button>
+						{/if}
+						{#if ondelete}
+							<Button
+								variant="tertiary"
+								size="xsmall"
+								icon={TrashIcon}
+								aria-label="Delete backup {backup.name}"
+								onclick={() => ondelete(backup)}
+							/>
+						{/if}
 					</div>
 				</Td>
 			{/if}
@@ -137,6 +151,8 @@
 
 	.action-cell {
 		display: flex;
+		align-items: center;
 		justify-content: flex-end;
+		gap: var(--nais-space-4);
 	}
 </style>

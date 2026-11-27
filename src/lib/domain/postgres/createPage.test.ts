@@ -5,12 +5,15 @@ import { vi } from 'vitest';
 import CreatePage from '../../../routes/team/[team]/postgres/create/+page.svelte';
 import { load } from '../../../routes/team/[team]/postgres/create/+page.js';
 
-const { loadEnvironments, loadOptions, loadSources, loadSource } = vi.hoisted(() => ({
-	loadSources: vi.fn(),
-	loadSource: vi.fn(),
-	loadEnvironments: vi.fn(),
-	loadOptions: vi.fn()
-}));
+const { loadEnvironments, loadOptions, loadSources, loadSource, loadBackups, loadBackup } =
+	vi.hoisted(() => ({
+		loadSources: vi.fn(),
+		loadSource: vi.fn(),
+		loadBackups: vi.fn(),
+		loadBackup: vi.fn(),
+		loadEnvironments: vi.fn(),
+		loadOptions: vi.fn()
+	}));
 
 vi.mock('$app/forms', () => ({ enhance: () => {} }));
 vi.mock('$app/navigation', () => ({ goto: vi.fn() }));
@@ -22,7 +25,9 @@ vi.mock('$houdini', () => ({
 	load_CreatePostgresEnvironments: loadEnvironments,
 	load_PostgresAvailableValues: loadOptions,
 	load_PostgresRecoverySources: loadSources,
-	load_PostgresRecoverySource: loadSource
+	load_PostgresRecoverySource: loadSource,
+	load_PostgresRecoveryBackups: loadBackups,
+	load_PostgresRecoveryBackup: loadBackup
 }));
 
 const environments = [
@@ -39,25 +44,44 @@ async function renderPage({
 	form = null,
 	available = options,
 	errors = null,
+	viewerIsMember = false,
 	recovery = false,
-	source = null
+	backupMode = false,
+	source = null,
+	backup = null
 }: {
 	form?: ComponentProps<typeof CreatePage>['form'];
 	available?: typeof options | undefined;
 	errors?: { message: string }[] | null;
+	viewerIsMember?: boolean;
 	recovery?: boolean;
+	backupMode?: boolean;
 	source?: {
 		name: string;
 		majorVersion: string;
 		extensions: string[];
 		earliestRestoreTime: Date | null;
 	} | null;
+	backup?: {
+		id: string;
+		name: string;
+		sourcePostgres: string;
+		phase: string;
+		majorVersion: string | null;
+		diskSize: string | null;
+		extensions: string[];
+		completedAt: Date | null;
+		expiresAt: Date | null;
+	} | null;
 } = {}) {
 	return render(CreatePage, {
 		props: {
 			data: {
+				viewerIsMember,
 				selectedEnvironment: 'dev',
+				mode: recovery ? 'clone' : backupMode ? 'backup' : 'empty',
 				recoveryMode: recovery,
+				backupMode,
 				recoverySource: source ? { data: { team: { environment: { postgres: source } } } } : null,
 				recoverySources: {
 					data: {
@@ -69,6 +93,19 @@ async function renderPage({
 						}
 					}
 				},
+				recoveryBackup: backup
+					? { data: { team: { environment: { postgresBackup: backup } } } }
+					: null,
+				recoveryBackups: {
+					data: {
+						team: {
+							postgresBackups: {
+								nodes: backup ? [backup] : [],
+								pageInfo: { hasNextPage: true, endCursor: 'next-backup' }
+							}
+						}
+					}
+				},
 				teamSlug: 'test',
 				CreatePostgresEnvironments: readable({ data: { team: { environments } }, errors: null }),
 				postgresOptions: environments.slice(0, 2).map(({ environment }) => ({
@@ -76,7 +113,7 @@ async function renderPage({
 					options: available,
 					errors
 				}))
-			} as ComponentProps<typeof CreatePage>['data'],
+			} as unknown as ComponentProps<typeof CreatePage>['data'],
 			form,
 			params: { team: 'test' }
 		}
@@ -199,6 +236,38 @@ describe('Postgres creation loading', () => {
 			expect.objectContaining({ variables: { team: 'test', env: 'prod', name: 'original' } })
 		);
 	});
+	test('loads the preset backup and paginated backups for team members in backup mode', async () => {
+		loadEnvironments.mockResolvedValue({
+			CreatePostgresEnvironments: readable({ data: { team: { environments } } })
+		});
+		loadOptions.mockResolvedValue({ PostgresAvailableValues: readable({ data: null }) });
+		loadBackups.mockResolvedValue({ PostgresRecoveryBackups: readable({ data: null }) });
+		loadBackup.mockResolvedValue({ PostgresRecoveryBackup: readable({ data: null }) });
+		const result = await load({
+			parent: async () => ({ viewerIsMember: true }),
+			params: { team: 'test' },
+			url: new URL(
+				'https://console.test/team/test/postgres/create?mode=backup&environment=prod&backup=frogres-dr-1&after=cursor'
+			)
+		} as Parameters<typeof load>[0]);
+		expect(result.backupMode).toBe(true);
+		expect(result.selectedEnvironment).toBe('prod');
+		expect(loadBackups).toHaveBeenCalledWith(
+			expect.objectContaining({ variables: { team: 'test', env: 'prod', after: 'cursor' } })
+		);
+		expect(loadBackup).toHaveBeenCalledWith(
+			expect.objectContaining({ variables: { team: 'test', env: 'prod', name: 'frogres-dr-1' } })
+		);
+	});
+	test('rejects non-members when requesting backup mode even if admin', async () => {
+		await expect(
+			load({
+				parent: async () => ({ viewerIsMember: false, isAdmin: true }),
+				params: { team: 'test' },
+				url: new URL('https://console.test/team/test/postgres/create?mode=backup')
+			} as Parameters<typeof load>[0])
+		).rejects.toMatchObject({ status: 403 });
+	});
 });
 
 describe('shared recovery creation flow', () => {
@@ -258,5 +327,32 @@ describe('shared recovery creation flow', () => {
 		});
 		expect(body).toContain('no available recovery window');
 		expect(body).toMatch(/<button(?=[^>]*type="submit")(?=[^>]*disabled)[^>]*>/);
+	});
+	test('opens the backup restore tab for team members with the backup preselected', async () => {
+		const { body } = await renderPage({
+			viewerIsMember: true,
+			backupMode: true,
+			backup: {
+				id: 'backup-1',
+				name: 'frogres-dr-1',
+				sourcePostgres: 'deleted-source',
+				phase: 'COMPLETED',
+				majorVersion: '17',
+				diskSize: '20Gi',
+				extensions: ['vector'],
+				completedAt: new Date('2026-11-25T10:00:00Z'),
+				expiresAt: null
+			}
+		});
+		expect(body).toMatch(
+			/<button(?=[^>]*role="tab")(?=[^>]*aria-selected="true")[^>]*>(?:(?!<\/button>)[\s\S])*Restore from backup/
+		);
+		expect(body).toMatch(/<input(?=[^>]*type="hidden")(?=[^>]*name="mode")(?=[^>]*value="backup")/);
+		expect(body).toMatch(/<option[^>]*value="frogres-dr-1"[^>]*selected/);
+		expect(body).toMatch(/PostgreSQL\s*(<!---->)?\s*17/);
+		expect(body).toContain('Restores backup');
+		expect(body).toContain('deleted-source');
+		expect(body).toContain('>Restore database<');
+		expect(body).toContain('More backups');
 	});
 });

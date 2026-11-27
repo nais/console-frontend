@@ -132,5 +132,8 @@ describe('Postgres table', () => {
 		expect(body).toContain('deleted-db');
 		expect(body).toContain('110 MiB');
 		expect(body).toContain('25 Dec 2026');
+		expect(body).toContain(
+			'href="/team/test/postgres/create?environment=dev-gcp&amp;backup=frogres-dr-1&amp;mode=backup"'
+		);
 	});
 });
